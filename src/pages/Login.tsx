@@ -71,11 +71,11 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8 animate-fadeIn">
         <div className="text-center">
           <img
-            src="/lovable-uploads/b3c0260e-f8ab-47b7-83f1-f32afb34a749.png"
-            alt="MuseTera Logo"
+            src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
+            alt="Musicoterapia Logo"
             className="mx-auto h-24 w-24 mb-4"
           />
-          <h2 className="text-4xl font-bold text-primary mb-2">MuseTera</h2>
+          <h2 className="text-4xl font-bold text-primary mb-2">Musicoterapia</h2>
           <h3 className="text-xl text-gray-600">{isRegistering ? "Registro" : "Login"}</h3>
           <p className="mt-2 text-gray-600">
             {isRegistering

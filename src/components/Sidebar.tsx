@@ -40,11 +40,11 @@ export default function Sidebar() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <img
-            src="/lovable-uploads/b3c0260e-f8ab-47b7-83f1-f32afb34a749.png"
-            alt="MuseTera"
+            src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
+            alt="Musicoterapia"
             className="h-8 w-8"
           />
-          {!collapsed && <span className="text-xl font-bold text-primary">MuseTera</span>}
+          {!collapsed && <span className="text-xl font-bold text-primary">Musicoterapia</span>}
         </div>
         <Button
           variant="ghost"
