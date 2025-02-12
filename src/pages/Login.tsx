@@ -5,30 +5,64 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Login() {
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, hardcoded credentials
-    if (email === "admin@musetera.com" && password === "admin") {
+    setIsLoading(true);
+
+    try {
+      let result;
+      
+      if (isRegistering) {
+        result = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name: email.split('@')[0], // Default name from email
+            },
+          },
+        });
+        
+        if (result.error) throw result.error;
+        
+        toast({
+          title: "Registration successful!",
+          description: "Please check your email to verify your account.",
+        });
+      } else {
+        result = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (result.error) throw result.error;
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome to MuseTera!",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
       toast({
-        title: "Login successful",
-        description: "Welcome to MuseTera!",
-      });
-      navigate("/dashboard");
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials",
+        title: isRegistering ? "Registration failed" : "Login failed",
+        description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,10 +76,14 @@ export default function Login() {
             className="mx-auto h-24 w-24 mb-4"
           />
           <h2 className="text-4xl font-bold text-primary mb-2">MuseTera</h2>
-          <h3 className="text-xl text-gray-600">Login</h3>
-          <p className="mt-2 text-gray-600">Insira suas credenciais abaixo:</p>
+          <h3 className="text-xl text-gray-600">{isRegistering ? "Registro" : "Login"}</h3>
+          <p className="mt-2 text-gray-600">
+            {isRegistering
+              ? "Crie sua conta para acessar o sistema"
+              : "Insira suas credenciais abaixo:"}
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left">
@@ -57,7 +95,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1"
-                placeholder="admin@musetera.com"
+                placeholder="seu@email.com"
                 required
               />
             </div>
@@ -99,14 +137,32 @@ export default function Login() {
                 Lembrar-me
               </label>
             </div>
-            <a href="#" className="text-sm text-primary hover:text-primary/80">
-              Recuperar senha
-            </a>
+            {!isRegistering && (
+              <a href="#" className="text-sm text-primary hover:text-primary/80">
+                Recuperar senha
+              </a>
+            )}
           </div>
 
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-            Entrar
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90"
+            disabled={isLoading}
+          >
+            {isLoading ? "Carregando..." : isRegistering ? "Registrar" : "Entrar"}
           </Button>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-sm text-primary hover:text-primary/80"
+            >
+              {isRegistering
+                ? "Já tem uma conta? Faça login"
+                : "Não tem uma conta? Registre-se"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
