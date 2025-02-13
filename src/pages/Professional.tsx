@@ -34,9 +34,11 @@ export default function Professional() {
         .from('professionals')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
       if (data) {
         setFormData({
