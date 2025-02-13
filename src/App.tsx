@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
+import Professional from "./pages/Professional";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/professional" element={<div>Professional MT</div>} />
+            <Route path="/professional" element={<Professional />} />
             <Route path="/patients" element={<div>Patients</div>} />
             <Route path="/processes" element={<div>Processes</div>} />
             <Route path="/hawkins" element={<div>Hawkins</div>} />
