@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,24 +11,79 @@ import { supabase } from "@/integrations/supabase/client";
 
 export default function Professional() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    name: "JOSÉ CARLOS BATISTA",
-    register: "100-90",
-    phone: "(11) 99999-9999",
-    email: "jose.batista@example.com",
-    specialty: "MUSICOTERAPEUTA"
+    name: "",
+    register: "",
+    phone: "",
+    email: "",
+    specialty: ""
   });
   const { toast } = useToast();
 
+  useEffect(() => {
+    loadProfessionalData();
+  }, []);
+
+  const loadProfessionalData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('professionals')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setFormData({
+          name: data.name || '',
+          register: data.register || '',
+          phone: data.phone || '',
+          email: data.email || '',
+          specialty: data.specialty || ''
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar os dados do profissional.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSave = async () => {
     try {
-      // Aqui você implementará a lógica para salvar no Supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const { error } = await supabase
+        .from('professionals')
+        .upsert({
+          user_id: user.id,
+          name: formData.name,
+          register: formData.register,
+          phone: formData.phone,
+          email: formData.email,
+          specialty: formData.specialty
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Sucesso!",
         description: "Dados atualizados com sucesso.",
       });
       setIsEditing(false);
     } catch (error) {
+      console.error('Erro ao salvar:', error);
       toast({
         title: "Erro",
         description: "Não foi possível salvar as alterações.",
@@ -36,6 +91,14 @@ export default function Professional() {
       });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8 animate-fadeIn">
