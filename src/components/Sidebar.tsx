@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
@@ -26,14 +30,15 @@ export default function Sidebar() {
     { icon: Book, text: "Hawkins", path: "/hawkins" },
   ];
 
-  const handleLogout = () => {
-    navigate("/");
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onNavigate?.();
   };
 
   return (
     <div
       className={cn(
-        "h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
+        "h-full bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
         collapsed ? "w-20" : "w-64"
       )}
     >
@@ -61,6 +66,7 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={() => onNavigate?.()}
             className={({ isActive }) =>
               cn(
                 "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
@@ -79,7 +85,7 @@ export default function Sidebar() {
         <Button
           variant="ghost"
           className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-100"
-          onClick={handleLogout}
+          onClick={() => handleNavigation("/")}
         >
           <LogOut size={20} />
           {!collapsed && <span>Sair do Sistema</span>}
