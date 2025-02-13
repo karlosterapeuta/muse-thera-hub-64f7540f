@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Pen } from "lucide-react";
+import { Pen, Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Professional() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     register: "",
@@ -48,6 +49,7 @@ export default function Professional() {
           email: data.email || '',
           specialty: data.specialty || ''
         });
+        setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -61,6 +63,55 @@ export default function Professional() {
     }
   };
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Upload image
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update professional record
+      const { error: updateError } = await supabase
+        .from('professionals')
+        .upsert({
+          user_id: user.id,
+          avatar_url: publicUrl,
+          ...formData
+        });
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      toast({
+        title: "Sucesso!",
+        description: "Imagem atualizada com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar avatar:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar a imagem.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSave = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -70,11 +121,8 @@ export default function Professional() {
         .from('professionals')
         .upsert({
           user_id: user.id,
-          name: formData.name,
-          register: formData.register,
-          phone: formData.phone,
-          email: formData.email,
-          specialty: formData.specialty
+          avatar_url: avatarUrl,
+          ...formData
         });
 
       if (error) throw error;
@@ -106,10 +154,27 @@ export default function Professional() {
     <div className="max-w-2xl mx-auto p-4 space-y-8 animate-fadeIn">
       <Card className="p-6">
         <div className="flex flex-col items-center space-y-4 mb-8">
-          <Avatar className="w-32 h-32">
-            <AvatarImage src="/lovable-uploads/2d7fe17c-c370-4c99-8211-c3e8f49ad3d1.png" alt="Foto do Profissional" />
-            <AvatarFallback>MT</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-32 h-32">
+              <AvatarImage src={avatarUrl || "/lovable-uploads/2d7fe17c-c370-4c99-8211-c3e8f49ad3d1.png"} alt="Foto do Profissional" />
+              <AvatarFallback>MT</AvatarFallback>
+            </Avatar>
+            {isEditing && (
+              <label 
+                htmlFor="avatar-upload" 
+                className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg cursor-pointer hover:bg-gray-100"
+              >
+                <Camera className="h-5 w-5 text-gray-600" />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </label>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">Musicoterapeuta</h1>
             <Button
