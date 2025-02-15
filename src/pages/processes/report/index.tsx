@@ -93,54 +93,59 @@ export default function ReportPage() {
       const selectedPatient = patients.find(p => p.id === formData.patient_id);
       const reportType = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
       
+      console.log("Conteúdo do relatório:", formData.content); // Debug para verificar o conteúdo
+
       // Formatação melhorada do PDF
       const element = document.createElement('div');
+      
+      let contentHtml = '';
+      
+      // Processa o conteúdo do formulário
+      if (formData.content && typeof formData.content === 'object') {
+        Object.entries(formData.content).forEach(([key, value]) => {
+          if (value && value.toString().trim()) {
+            const label = key.split('_')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ');
+
+            contentHtml += `
+              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                <h3 style="color: #374151; font-size: 16px; font-weight: 600; margin-bottom: 8px;">
+                  ${label}
+                </h3>
+                <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 12px;">
+                  <p style="margin: 0; color: #1F2937; line-height: 1.6;">
+                    ${value.toString().replace(/\n/g, '<br>')}
+                  </p>
+                </div>
+              </div>
+            `;
+          }
+        });
+      }
+
       element.innerHTML = `
-        <div style="padding: 20px; font-family: Arial, sans-serif;">
+        <div style="padding: 30px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2563eb; margin-bottom: 10px;">${reportType}</h1>
-            <h2 style="color: #374151;">Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
-            <p style="color: #6B7280;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+            <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px;">
+              ${reportType}
+            </h1>
+            <h2 style="color: #374151; font-size: 18px; margin-bottom: 5px;">
+              Paciente: ${selectedPatient?.name || 'Não especificado'}
+            </h2>
+            <p style="color: #6B7280;">
+              Data: ${new Date().toLocaleDateString('pt-BR')}
+            </p>
           </div>
-          <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
+          
+          <hr style="border: none; border-top: 2px solid #E5E7EB; margin: 20px 0;" />
+          
           <div style="margin-top: 20px;">
-            ${Object.entries(formData.content || {}).length > 0 ? 
-              Object.entries(formData.content).map(([key, value]) => {
-                if (!value) return '';
-                
-                // Formatação especial para campos de data
-                if (key.includes('date') || key.includes('data_session') || key.includes('month') || key.includes('semester')) {
-                  const formattedDate = typeof value === 'string' ? value : '';
-                  return `
-                    <div style="margin-bottom: 15px;">
-                      <h3 style="color: #4B5563; margin-bottom: 5px;">Data</h3>
-                      <p style="margin: 0; padding: 8px; background-color: #F3F4F6; border-radius: 4px;">${formattedDate}</p>
-                    </div>
-                  `;
-                }
-                
-                // Formatação para campos de texto
-                const formattedKey = key.split('_')
-                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(' ');
-                
-                const formattedValue = typeof value === 'string' ? value.replace(/\n/g, '<br>') : '';
-                
-                return `
-                  <div style="margin-bottom: 25px;">
-                    <h3 style="color: #4B5563; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 10px;">
-                      ${formattedKey}
-                    </h3>
-                    <div style="line-height: 1.6; color: #1F2937; background-color: #F9FAFB; padding: 15px; border-radius: 6px; border: 1px solid #E5E7EB;">
-                      ${formattedValue}
-                    </div>
-                  </div>
-                `;
-              }).join('') :
-              '<p style="text-align: center; color: #6B7280;">Nenhum conteúdo disponível</p>'
-            }
+            ${contentHtml || '<p style="text-align: center; color: #6B7280;">Nenhum conteúdo disponível</p>'}
           </div>
-          <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
+          
+          <hr style="border: none; border-top: 2px solid #E5E7EB; margin: 20px 0;" />
+          
           <div style="text-align: center; margin-top: 30px; color: #6B7280;">
             <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
           </div>
