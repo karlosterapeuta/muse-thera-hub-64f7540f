@@ -82,7 +82,6 @@ export default function ReportPage() {
     }
 
     try {
-      // Primeiro, salva o relatório no banco de dados
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
         type: formData.type,
@@ -91,36 +90,60 @@ export default function ReportPage() {
 
       if (error) throw error;
 
-      // Encontra o paciente selecionado
       const selectedPatient = patients.find(p => p.id === formData.patient_id);
       const reportType = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
       
-      // Cria um elemento temporário para renderizar o conteúdo do PDF
+      // Formatação melhorada do PDF
       const element = document.createElement('div');
       element.innerHTML = `
         <div style="padding: 20px; font-family: Arial, sans-serif;">
-          <h1 style="text-align: center;">${reportType}</h1>
-          <h2>Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
-          <hr />
-          ${Object.entries(formData.content).map(([key, value]) => `
-            <div style="margin-bottom: 20px;">
-              <h3>${key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}</h3>
-              <p style="white-space: pre-line;">${value}</p>
-            </div>
-          `).join('')}
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #2563eb; margin-bottom: 10px;">${reportType}</h1>
+            <h2 style="color: #374151;">Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
+            <p style="color: #6B7280;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+          </div>
+          <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
+          <div style="margin-top: 20px;">
+            ${Object.entries(formData.content).map(([key, value]) => {
+              // Formatação especial para campos de data
+              if (key.includes('date') || key.includes('data_session') || key.includes('month') || key.includes('semester')) {
+                return `
+                  <div style="margin-bottom: 15px;">
+                    <h3 style="color: #4B5563; margin-bottom: 5px;">Data</h3>
+                    <p style="margin: 0; padding: 8px; background-color: #F3F4F6; border-radius: 4px;">${value}</p>
+                  </div>
+                `;
+              }
+              
+              // Formatação para campos de texto longo
+              return `
+                <div style="margin-bottom: 25px;">
+                  <h3 style="color: #4B5563; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 10px;">
+                    ${key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </h3>
+                  <div style="white-space: pre-line; line-height: 1.6; color: #1F2937; background-color: #F9FAFB; padding: 15px; border-radius: 6px; border: 1px solid #E5E7EB;">
+                    ${value}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
+          <div style="text-align: center; margin-top: 30px; color: #6B7280;">
+            <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+          </div>
         </div>
       `;
 
-      // Configurações do PDF
       const opt = {
-        margin: 1,
+        margin: [15, 15, 15, 15],
         filename: `${reportType} - ${selectedPatient?.name || 'Relatório'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      // Gera o PDF
       await html2pdf().from(element).set(opt).save();
 
       toast({
