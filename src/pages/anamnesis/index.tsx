@@ -51,6 +51,14 @@ export default function AnamnesisForm() {
     observations: "",
   });
 
+  const formatNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart
+      .split(/[._-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -63,16 +71,16 @@ export default function AnamnesisForm() {
       if (!user) throw new Error("Usuário não autenticado");
 
       setUserEmail(user.email || "");
+      setUserName(formatNameFromEmail(user.email || ""));
 
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
-        .select("id, name")
+        .select("id")
         .eq("user_id", user.id)
         .single();
 
       if (professionalError) throw professionalError;
       setProfessionalId(professionalData.id);
-      setUserName(professionalData.name || "");
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
