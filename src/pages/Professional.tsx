@@ -28,7 +28,9 @@ export default function Professional() {
 
   const loadProfessionalData = async () => {
     try {
+      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
         toast({
           title: "Erro",
@@ -38,7 +40,7 @@ export default function Professional() {
         return;
       }
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('professionals')
         .select('*')
         .eq('user_id', user.id)
@@ -49,30 +51,37 @@ export default function Professional() {
         throw error;
       }
 
-      if (data) {
-        setFormData({
-          name: data.name || '',
-          register: data.register || '',
-          phone: data.phone || '',
-          email: data.email || '',
-          specialty: data.specialty || ''
-        });
-        setAvatarUrl(data.avatar_url);
-      } else {
+      if (!data) {
         // Se não existir registro, criar um novo
-        const { error: insertError } = await supabase
+        const { data: newProfile, error: insertError } = await supabase
           .from('professionals')
           .insert({
             user_id: user.id,
             name: '',
             register: '',
             phone: '',
-            email: '',
+            email: user.email || '',
             specialty: ''
-          });
+          })
+          .select()
+          .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Erro ao criar perfil:', insertError);
+          throw insertError;
+        }
+
+        data = newProfile;
       }
+
+      setFormData({
+        name: data.name || '',
+        register: data.register || '',
+        phone: data.phone || '',
+        email: data.email || '',
+        specialty: data.specialty || ''
+      });
+      setAvatarUrl(data.avatar_url);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast({
