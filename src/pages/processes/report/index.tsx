@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,10 +122,10 @@ export default function ReportPage() {
               .filter(field => content[field.key])
               .map(field => `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                  <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
                     ${field.label}
                   </div>
-                  <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                  <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
                     ${String(content[field.key] || '').split('\n').join('<br>')}
                   </div>
                 </div>
@@ -135,8 +134,8 @@ export default function ReportPage() {
 
             if (sectionContent) {
               return `
-                <div style="margin-bottom: 24px;">
-                  <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                <div style="margin-bottom: 28px;">
+                  <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
                     ${section.title}
                   </h2>
                   ${sectionContent}
@@ -158,10 +157,10 @@ export default function ReportPage() {
 
           return `
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
                 ${label}
               </div>
-              <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
                 ${String(value).split('\n').join('<br>')}
               </div>
             </div>
@@ -180,13 +179,13 @@ export default function ReportPage() {
           <div style="margin-bottom: 24px;">
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
-          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+          <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
             ${reportTitle}
           </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+          <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
           </h2>
-          <p style="color: #6B7280; font-size: 14px;">
+          <p style="color: #6B7280; font-size: 16px;">
             Data: ${new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
@@ -196,16 +195,16 @@ export default function ReportPage() {
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
           </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Musicoterapeuta: ${userName}
           </p>
-          <p style="color: #6B7280; font-size: 11px;">
+          <p style="color: #6B7280; font-size: 13px;">
             Email: ${userEmail}
           </p>
         </div>
