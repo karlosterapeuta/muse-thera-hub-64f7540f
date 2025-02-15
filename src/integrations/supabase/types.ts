@@ -97,85 +97,241 @@ export type Database = {
       }
       anamnesis: {
         Row: {
-          attention_span: string | null
-          auditory_processing: string | null
-          cognitive_functions: string | null
-          communication_skills: string | null
+          active_musical_listening: boolean | null
+          active_sound_search: boolean | null
+          adhd: boolean | null
+          adverse_sound_reactivity: boolean | null
+          anxiety: boolean | null
+          anxiety_disorders: boolean | null
+          auditory_hypersensitivity: boolean | null
+          autism_spectrum: boolean | null
+          autonomous_walking: boolean | null
+          babbling: boolean | null
+          body_expression: boolean | null
+          body_musical_expression: boolean | null
+          brazilian_popular: boolean | null
+          broad_motor_dev: boolean | null
+          cervical_control: boolean | null
+          children_repertoire: boolean | null
+          choral_activities: boolean | null
+          chronic_encephalopathy: boolean | null
+          classical_music: boolean | null
+          country_music: boolean | null
+          crawling_pattern: boolean | null
           created_at: string | null
-          current_medications: string | null
-          emotional_expression: string | null
-          emotional_response_to_music: string | null
-          family_history: string | null
+          current_medication: string | null
+          down_syndrome: boolean | null
+          echolalia: boolean | null
+          emotional_ability: boolean | null
+          equine_therapy: boolean | null
+          extracurricular_activities: string | null
+          family_relationship: string | null
+          fine_motor_dev: boolean | null
+          first_words: boolean | null
+          frequent_crying: boolean | null
+          heteroaggressive: boolean | null
           id: string
-          main_complaint: string | null
-          medical_history: string | null
-          memory_function: string | null
-          motor_skills: string | null
-          musical_background: string | null
-          musical_preferences: string | null
-          musical_skills: string | null
-          observations: string | null
+          independent_sitting: boolean | null
+          instrumental_exploration: boolean | null
+          instrumental_practice: boolean | null
+          intellectual_disability: boolean | null
+          irritability: boolean | null
+          legal_guardian: string | null
+          low_frustration_tolerance: boolean | null
+          main_clinical_demand: string | null
+          musical_education: boolean | null
+          no_musical_experience: boolean | null
+          nominal_call_response: boolean | null
+          nonverbal_communication: boolean | null
+          occupational_therapy: boolean | null
+          other_diagnoses: boolean | null
+          other_musical_genres: boolean | null
           patient_id: string | null
+          peer_interaction: boolean | null
+          physiotherapy: boolean | null
+          positive_musical_response: boolean | null
           professional_id: string | null
-          rhythmic_responses: string | null
-          social_interaction: string | null
+          psychological_support: boolean | null
+          psychopedagogical: boolean | null
+          referral_professional: string | null
+          restricted_interests: boolean | null
+          rock_genre: boolean | null
+          sacred_gospel: boolean | null
+          school_adaptation: string | null
+          school_enrollment: string | null
+          shared_play: boolean | null
+          simple_phrases: boolean | null
+          social_isolation: boolean | null
+          sound_responsiveness: boolean | null
+          sound_source_location: boolean | null
+          specific_sound_aversion: boolean | null
+          speech_therapy: boolean | null
+          spontaneous_vocal: boolean | null
+          stereotyped_behavior: boolean | null
           therapeutic_goals: string | null
           treatment_approach: string | null
           updated_at: string | null
+          verbal_language_absence: boolean | null
+          visual_contact: boolean | null
+          vocal_expression: boolean | null
         }
         Insert: {
-          attention_span?: string | null
-          auditory_processing?: string | null
-          cognitive_functions?: string | null
-          communication_skills?: string | null
+          active_musical_listening?: boolean | null
+          active_sound_search?: boolean | null
+          adhd?: boolean | null
+          adverse_sound_reactivity?: boolean | null
+          anxiety?: boolean | null
+          anxiety_disorders?: boolean | null
+          auditory_hypersensitivity?: boolean | null
+          autism_spectrum?: boolean | null
+          autonomous_walking?: boolean | null
+          babbling?: boolean | null
+          body_expression?: boolean | null
+          body_musical_expression?: boolean | null
+          brazilian_popular?: boolean | null
+          broad_motor_dev?: boolean | null
+          cervical_control?: boolean | null
+          children_repertoire?: boolean | null
+          choral_activities?: boolean | null
+          chronic_encephalopathy?: boolean | null
+          classical_music?: boolean | null
+          country_music?: boolean | null
+          crawling_pattern?: boolean | null
           created_at?: string | null
-          current_medications?: string | null
-          emotional_expression?: string | null
-          emotional_response_to_music?: string | null
-          family_history?: string | null
+          current_medication?: string | null
+          down_syndrome?: boolean | null
+          echolalia?: boolean | null
+          emotional_ability?: boolean | null
+          equine_therapy?: boolean | null
+          extracurricular_activities?: string | null
+          family_relationship?: string | null
+          fine_motor_dev?: boolean | null
+          first_words?: boolean | null
+          frequent_crying?: boolean | null
+          heteroaggressive?: boolean | null
           id?: string
-          main_complaint?: string | null
-          medical_history?: string | null
-          memory_function?: string | null
-          motor_skills?: string | null
-          musical_background?: string | null
-          musical_preferences?: string | null
-          musical_skills?: string | null
-          observations?: string | null
+          independent_sitting?: boolean | null
+          instrumental_exploration?: boolean | null
+          instrumental_practice?: boolean | null
+          intellectual_disability?: boolean | null
+          irritability?: boolean | null
+          legal_guardian?: string | null
+          low_frustration_tolerance?: boolean | null
+          main_clinical_demand?: string | null
+          musical_education?: boolean | null
+          no_musical_experience?: boolean | null
+          nominal_call_response?: boolean | null
+          nonverbal_communication?: boolean | null
+          occupational_therapy?: boolean | null
+          other_diagnoses?: boolean | null
+          other_musical_genres?: boolean | null
           patient_id?: string | null
+          peer_interaction?: boolean | null
+          physiotherapy?: boolean | null
+          positive_musical_response?: boolean | null
           professional_id?: string | null
-          rhythmic_responses?: string | null
-          social_interaction?: string | null
+          psychological_support?: boolean | null
+          psychopedagogical?: boolean | null
+          referral_professional?: string | null
+          restricted_interests?: boolean | null
+          rock_genre?: boolean | null
+          sacred_gospel?: boolean | null
+          school_adaptation?: string | null
+          school_enrollment?: string | null
+          shared_play?: boolean | null
+          simple_phrases?: boolean | null
+          social_isolation?: boolean | null
+          sound_responsiveness?: boolean | null
+          sound_source_location?: boolean | null
+          specific_sound_aversion?: boolean | null
+          speech_therapy?: boolean | null
+          spontaneous_vocal?: boolean | null
+          stereotyped_behavior?: boolean | null
           therapeutic_goals?: string | null
           treatment_approach?: string | null
           updated_at?: string | null
+          verbal_language_absence?: boolean | null
+          visual_contact?: boolean | null
+          vocal_expression?: boolean | null
         }
         Update: {
-          attention_span?: string | null
-          auditory_processing?: string | null
-          cognitive_functions?: string | null
-          communication_skills?: string | null
+          active_musical_listening?: boolean | null
+          active_sound_search?: boolean | null
+          adhd?: boolean | null
+          adverse_sound_reactivity?: boolean | null
+          anxiety?: boolean | null
+          anxiety_disorders?: boolean | null
+          auditory_hypersensitivity?: boolean | null
+          autism_spectrum?: boolean | null
+          autonomous_walking?: boolean | null
+          babbling?: boolean | null
+          body_expression?: boolean | null
+          body_musical_expression?: boolean | null
+          brazilian_popular?: boolean | null
+          broad_motor_dev?: boolean | null
+          cervical_control?: boolean | null
+          children_repertoire?: boolean | null
+          choral_activities?: boolean | null
+          chronic_encephalopathy?: boolean | null
+          classical_music?: boolean | null
+          country_music?: boolean | null
+          crawling_pattern?: boolean | null
           created_at?: string | null
-          current_medications?: string | null
-          emotional_expression?: string | null
-          emotional_response_to_music?: string | null
-          family_history?: string | null
+          current_medication?: string | null
+          down_syndrome?: boolean | null
+          echolalia?: boolean | null
+          emotional_ability?: boolean | null
+          equine_therapy?: boolean | null
+          extracurricular_activities?: string | null
+          family_relationship?: string | null
+          fine_motor_dev?: boolean | null
+          first_words?: boolean | null
+          frequent_crying?: boolean | null
+          heteroaggressive?: boolean | null
           id?: string
-          main_complaint?: string | null
-          medical_history?: string | null
-          memory_function?: string | null
-          motor_skills?: string | null
-          musical_background?: string | null
-          musical_preferences?: string | null
-          musical_skills?: string | null
-          observations?: string | null
+          independent_sitting?: boolean | null
+          instrumental_exploration?: boolean | null
+          instrumental_practice?: boolean | null
+          intellectual_disability?: boolean | null
+          irritability?: boolean | null
+          legal_guardian?: string | null
+          low_frustration_tolerance?: boolean | null
+          main_clinical_demand?: string | null
+          musical_education?: boolean | null
+          no_musical_experience?: boolean | null
+          nominal_call_response?: boolean | null
+          nonverbal_communication?: boolean | null
+          occupational_therapy?: boolean | null
+          other_diagnoses?: boolean | null
+          other_musical_genres?: boolean | null
           patient_id?: string | null
+          peer_interaction?: boolean | null
+          physiotherapy?: boolean | null
+          positive_musical_response?: boolean | null
           professional_id?: string | null
-          rhythmic_responses?: string | null
-          social_interaction?: string | null
+          psychological_support?: boolean | null
+          psychopedagogical?: boolean | null
+          referral_professional?: string | null
+          restricted_interests?: boolean | null
+          rock_genre?: boolean | null
+          sacred_gospel?: boolean | null
+          school_adaptation?: string | null
+          school_enrollment?: string | null
+          shared_play?: boolean | null
+          simple_phrases?: boolean | null
+          social_isolation?: boolean | null
+          sound_responsiveness?: boolean | null
+          sound_source_location?: boolean | null
+          specific_sound_aversion?: boolean | null
+          speech_therapy?: boolean | null
+          spontaneous_vocal?: boolean | null
+          stereotyped_behavior?: boolean | null
           therapeutic_goals?: string | null
           treatment_approach?: string | null
           updated_at?: string | null
+          verbal_language_absence?: boolean | null
+          visual_contact?: boolean | null
+          vocal_expression?: boolean | null
         }
         Relationships: [
           {
