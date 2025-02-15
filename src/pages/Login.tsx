@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -71,12 +70,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-50">
-      {/* 3D Scene Section */}
       <div className="w-full md:w-1/2 h-[300px] md:h-screen order-2 md:order-1">
         <Card className="w-full h-full bg-black/[0.96] relative overflow-hidden">
           <Spotlight
             className="-top-40 left-0 md:left-60 md:-top-20"
-            fill="white"
           />
           <div className="relative h-full z-10">
             <SplineScene 
@@ -87,7 +84,6 @@ export default function Login() {
         </Card>
       </div>
 
-      {/* Login Form Section */}
       <div className="w-full md:w-1/2 px-6 order-1 md:order-2">
         <div className="max-w-md w-full mx-auto space-y-8 animate-fadeIn">
           <div className="text-center">
