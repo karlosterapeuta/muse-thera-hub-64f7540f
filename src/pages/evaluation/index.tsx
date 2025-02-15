@@ -1,9 +1,17 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ResponsiveContainer } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Evaluation() {
   const [patient] = useState({
@@ -11,6 +19,7 @@ export default function Evaluation() {
     birthDate: "06/02/2025"
   });
 
+  const [selectedEvaluation, setSelectedEvaluation] = useState("1");
   const [selections, setSelections] = useState<Record<string, string>>({});
 
   const evaluationSections = [
@@ -158,9 +167,21 @@ export default function Evaluation() {
             <h1 className="text-xl sm:text-2xl font-bold">{patient.name}</h1>
             <p className="text-sm sm:text-base text-gray-600">Data de Nascimento: {patient.birthDate}</p>
           </div>
-          <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm sm:text-base">
-            Avaliação 1
-          </div>
+          <Select
+            value={selectedEvaluation}
+            onValueChange={setSelectedEvaluation}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Selecione a avaliação" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Avaliação 1</SelectItem>
+              <SelectItem value="2">Avaliação 2</SelectItem>
+              <SelectItem value="3">Avaliação 3</SelectItem>
+              <SelectItem value="4">Avaliação 4</SelectItem>
+              <SelectItem value="5">Avaliação 5</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {evaluationSections.map((section, sectionIndex) => (
