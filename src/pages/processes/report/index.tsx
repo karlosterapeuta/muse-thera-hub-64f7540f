@@ -91,63 +91,86 @@ export default function ReportPage() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      // Função auxiliar para formatar arrays e objetos
-      const formatValue = (value: any): string => {
-        if (Array.isArray(value)) {
-          return value.join(', ');
-        } else if (typeof value === 'object' && value !== null) {
-          // Formata objetos de forma mais legível
-          return Object.entries(value)
-            .map(([k, v]) => `${k}: ${formatValue(v)}`)
-            .join('\n');
-        }
-        return String(value);
-      };
+      // Se for um relatório de sessão individual, usamos um formato específico
+      if (formData.type === 'individual_session') {
+        const sections = [
+          {
+            title: "Dados da Sessão",
+            fields: [
+              { key: "data_session", label: "Data da Sessão" },
+              { key: "objectives", label: "Objetivos" }
+            ]
+          },
+          {
+            title: "Desenvolvimento",
+            fields: [
+              { key: "activities", label: "Atividades Realizadas" },
+              { key: "patient_response", label: "Resposta do Paciente" }
+            ]
+          },
+          {
+            title: "Conclusão",
+            fields: [
+              { key: "observations", label: "Observações" },
+              { key: "next_steps", label: "Próximos Passos" }
+            ]
+          }
+        ];
 
-      // Agrupa o conteúdo por seções
-      const sections: Record<string, any[]> = {};
-      Object.entries(content).forEach(([key, value]) => {
-        if (value === undefined || value === null || value === '') return;
-
-        const sectionName = key.includes('_') 
-          ? key.split('_')[0].charAt(0).toUpperCase() + key.split('_')[0].slice(1)
-          : 'Geral';
-        
-        if (!sections[sectionName]) {
-          sections[sectionName] = [];
-        }
-
-        const label = key.split('_')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-
-        sections[sectionName].push({
-          label,
-          value: formatValue(value)
-        });
-      });
-
-      // Gera o HTML para cada seção
-      return Object.entries(sections)
-        .map(([sectionName, items]) => `
-          <div style="margin-bottom: 24px;">
-            <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
-              ${sectionName}
-            </h2>
-            ${items.map(item => `
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
-                  ${item.label}
+        return sections
+          .map(section => {
+            const sectionContent = section.fields
+              .filter(field => content[field.key])
+              .map(field => `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                    ${field.label}
+                  </div>
+                  <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                    ${String(content[field.key] || '').split('\n').join('<br>')}
+                  </div>
                 </div>
-                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
-                  ${item.value.replace(/\n/g, '<br>')}
+              `)
+              .join('');
+
+            if (sectionContent) {
+              return `
+                <div style="margin-bottom: 24px;">
+                  <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                    ${section.title}
+                  </h2>
+                  ${sectionContent}
                 </div>
+              `;
+            }
+            return '';
+          })
+          .join('');
+      }
+
+      // Para outros tipos de relatório, mantemos a lógica anterior
+      return Object.entries(content)
+        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => {
+          const label = key.split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          return `
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                ${label}
               </div>
-            `).join('')}
-          </div>
-        `)
+              <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                ${String(value).split('\n').join('<br>')}
+              </div>
+            </div>
+          `;
+        })
         .join('');
     };
+
+    console.log("Conteúdo do formulário:", formData.content); // Para debug
 
     const reportTitle = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
 
