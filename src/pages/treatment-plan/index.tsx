@@ -181,7 +181,6 @@ export default function TreatmentPlanForm() {
     return translations[value] || value;
   };
 
-  // Atualiza a função generatePDF para usar as traduções
   const generatePDF = async (patientName: string) => {
     const element = document.createElement('div');
     
