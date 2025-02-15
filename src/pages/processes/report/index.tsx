@@ -18,6 +18,7 @@ import { TeaScaleForm } from "./components/TeaScaleForm";
 import { FamilyReportForm } from "./components/FamilyReportForm";
 import { TeamReportForm } from "./components/TeamReportForm";
 import { TechnicalReportForm } from "./components/TechnicalReportForm";
+import html2pdf from "html2pdf.js";
 import type { ReportFormData } from "./types";
 
 const reportTypes = [
@@ -70,44 +71,70 @@ export default function ReportPage() {
     loadPatients();
   }, [toast]);
 
-  const handleSubmit = async () => {
+  const handleDownloadPDF = async () => {
     if (!formData.patient_id) {
       toast({
         variant: "destructive",
-        title: "Erro ao salvar relatório",
+        title: "Erro ao gerar relatório",
         description: "Por favor, selecione um paciente",
       });
       return;
     }
 
     try {
-      console.log("Enviando dados do relatório:", formData);
-
+      // Primeiro, salva o relatório no banco de dados
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
         type: formData.type,
         content: formData.content,
       });
 
-      if (error) {
-        console.error("Erro ao inserir relatório:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("Relatório salvo com sucesso");
+      // Encontra o paciente selecionado
+      const selectedPatient = patients.find(p => p.id === formData.patient_id);
+      const reportType = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
+      
+      // Cria um elemento temporário para renderizar o conteúdo do PDF
+      const element = document.createElement('div');
+      element.innerHTML = `
+        <div style="padding: 20px; font-family: Arial, sans-serif;">
+          <h1 style="text-align: center;">${reportType}</h1>
+          <h2>Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
+          <hr />
+          ${Object.entries(formData.content).map(([key, value]) => `
+            <div style="margin-bottom: 20px;">
+              <h3>${key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}</h3>
+              <p style="white-space: pre-line;">${value}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Configurações do PDF
+      const opt = {
+        margin: 1,
+        filename: `${reportType} - ${selectedPatient?.name || 'Relatório'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Gera o PDF
+      await html2pdf().from(element).set(opt).save();
 
       toast({
-        title: "Relatório salvo com sucesso",
-        description: "O relatório foi registrado no sistema",
+        title: "Relatório gerado com sucesso",
+        description: "O relatório foi salvo e baixado em PDF",
       });
 
       navigate("/processos/relatorios");
     } catch (error) {
-      console.error("Erro ao salvar relatório:", error);
+      console.error("Erro ao gerar relatório:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao salvar relatório",
-        description: "Ocorreu um erro ao tentar salvar o relatório",
+        title: "Erro ao gerar relatório",
+        description: "Ocorreu um erro ao tentar gerar o relatório",
       });
     }
   };
@@ -176,8 +203,8 @@ export default function ReportPage() {
 
         {renderForm()}
 
-        <Button onClick={handleSubmit} className="w-full">
-          Salvar Relatório
+        <Button onClick={handleDownloadPDF} className="w-full">
+          Baixar Relatório
         </Button>
       </CardContent>
     </Card>
