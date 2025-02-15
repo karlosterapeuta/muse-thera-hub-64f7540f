@@ -760,6 +760,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_invite_code: {
+        Args: {
+          expiration_days?: number
+        }
+        Returns: string
+      }
       validate_and_use_invite_code: {
         Args: {
           invite_code: string
