@@ -98,20 +98,20 @@ export default function ReevaluationForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       therapeutic_progress: {
-        musical_engagement: "",
-        emotional_expression: "",
-        social_interaction: "",
-        communication: "",
-        cognitive_function: "",
-        motor_skills: "",
+        musical_engagement: "O paciente demonstrou engajamento significativo nas atividades musicais propostas, participando ativamente das sessões e mostrando interesse crescente pelos instrumentos e atividades rítmicas. Houve melhora notável na iniciativa musical e na expressão através da música.",
+        emotional_expression: "Observou-se progresso na capacidade de expressar emoções através da música. O paciente consegue utilizar diferentes elementos musicais para comunicar seus estados emocionais, demonstrando maior consciência e regulação emocional durante as sessões.",
+        social_interaction: "Houve evolução positiva nas interações sociais durante as atividades em grupo. O paciente desenvolveu maior capacidade de aguardar sua vez, compartilhar instrumentos e participar de atividades musicais coletivas.",
+        communication: "Notou-se melhora significativa na comunicação verbal e não-verbal. O paciente demonstra maior facilidade em se expressar através da música e aumentou seu vocabulário relacionado às experiências musicais.",
+        cognitive_function: "Observou-se progresso nas habilidades cognitivas, incluindo melhor atenção, memória musical e capacidade de seguir sequências rítmicas. O paciente demonstra maior compreensão e retenção das atividades propostas.",
+        motor_skills: "Houve desenvolvimento positivo nas habilidades motoras, especialmente no controle motor fino ao manipular instrumentos musicais. A coordenação rítmica e a sincronização de movimentos apresentaram melhora significativa.",
       },
       treatment_effectiveness: {
-        objectives_achievement: "",
-        intervention_response: "",
-        technique_effectiveness: "",
+        objectives_achievement: "Os objetivos terapêuticos estabelecidos inicialmente foram alcançados de forma satisfatória. O paciente apresentou progresso consistente nas áreas prioritárias identificadas no plano terapêutico.",
+        intervention_response: "As intervenções musicoterapêuticas demonstraram efetividade significativa, com o paciente respondendo positivamente às técnicas e estratégias implementadas durante as sessões.",
+        technique_effectiveness: "As técnicas musicoterapêuticas utilizadas mostraram-se apropriadas e eficazes para as necessidades do paciente, contribuindo para o progresso observado em diferentes áreas do desenvolvimento.",
       },
-      recommendations: "",
-      adjustments_needed: "",
+      recommendations: "Recomenda-se a continuidade do processo musicoterapêutico, mantendo o foco no desenvolvimento das habilidades já trabalhadas e introduzindo gradualmente novos desafios musicais. Sugere-se também a inclusão de mais atividades de improvisação musical e a intensificação do trabalho com instrumentos de percussão.",
+      adjustments_needed: "Propõe-se alguns ajustes no plano terapêutico para otimizar os resultados: 1) Aumentar a duração das atividades de expressão musical livre; 2) Introduzir mais elementos de música e movimento; 3) Desenvolver atividades específicas para estimular a criatividade musical.",
     },
   });
 
