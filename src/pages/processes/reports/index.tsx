@@ -97,7 +97,7 @@ export default function ReportsPage() {
                   <TableCell>
                     {format(new Date(report.created_at), "dd/MM/yyyy HH:mm")}
                   </TableCell>
-                  <TableCell>{report.patient.name}</TableCell>
+                  <TableCell>{report.patient?.name || 'N/A'}</TableCell>
                   <TableCell>{reportTypeLabels[report.type] || report.type}</TableCell>
                 </TableRow>
               ))}
