@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -430,7 +429,7 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} value={field.value || ''} />
+                            <Textarea {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -452,7 +451,7 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} value={field.value || ''} />
+                            <Textarea {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -472,7 +471,6 @@ export default function ReevaluationForm() {
                       <Textarea
                         placeholder="Registre as recomendações para o processo terapêutico"
                         {...field}
-                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -490,7 +488,6 @@ export default function ReevaluationForm() {
                       <Textarea
                         placeholder="Descreva os ajustes necessários no plano terapêutico"
                         {...field}
-                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />
