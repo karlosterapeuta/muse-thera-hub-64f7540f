@@ -20,7 +20,7 @@ const LogoRound = ({ className, size = "md" }: LogoRoundProps) => {
       className
     )}>
       <img
-        src="/lovable-uploads/8a84d01a-8aaa-441f-b9d1-25a16819205b.png"
+        src="/lovable-uploads/2d7fe17c-c370-4c99-8211-c3e8f49ad3d1.png"
         alt="Musetera Logo"
         className="w-full h-full object-contain"
       />
@@ -29,3 +29,4 @@ const LogoRound = ({ className, size = "md" }: LogoRoundProps) => {
 };
 
 export default LogoRound;
+
