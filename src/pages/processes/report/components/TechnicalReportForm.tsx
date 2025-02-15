@@ -1,3 +1,4 @@
+
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { DateField } from "./DateField";
 
@@ -28,21 +29,21 @@ export function TechnicalReportForm({ content, onChange }: FormProps) {
             key: "summary",
             label: "Resumo",
             placeholder: "Descreva o resumo do relatório",
-            value: content.summary || "",
+            value: content.summary || "Resumo do processo musicoterapêutico:\n\n1. Contexto Clínico:\n- Início do acompanhamento\n- Demanda inicial\n- Abordagem utilizada\n\n2. Desenvolvimento:\n- Principais intervenções realizadas\n- Resposta ao tratamento\n- Evolução observada",
             onChange: (value) => handleFieldChange("summary", value),
           },
           {
             key: "observations",
             label: "Observações",
             placeholder: "Anote observações relevantes",
-            value: content.observations || "",
+            value: content.observations || "Observações técnicas relevantes:\n\n1. Aspectos Musicais:\n- Preferências sonoro-musicais\n- Respostas às intervenções\n- Padrões de expressão musical\n\n2. Aspectos Terapêuticos:\n- Vínculo terapêutico\n- Dinâmica das sessões\n- Pontos de atenção",
             onChange: (value) => handleFieldChange("observations", value),
           },
           {
             key: "recommendations",
             label: "Recomendações",
             placeholder: "Liste as recomendações",
-            value: content.recommendations || "",
+            value: content.recommendations || "Recomendações técnicas:\n\n1. Orientações Específicas:\n- Continuidade do processo musicoterapêutico\n- Adaptações necessárias\n- Encaminhamentos complementares\n\n2. Sugestões de Intervenção:\n- Abordagens musicais recomendadas\n- Estratégias terapêuticas\n- Metas de desenvolvimento",
             onChange: (value) => handleFieldChange("recommendations", value),
           },
         ]}
