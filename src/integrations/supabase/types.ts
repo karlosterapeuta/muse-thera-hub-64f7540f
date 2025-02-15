@@ -328,6 +328,51 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          patient_id: string | null
+          professional_id: string | null
+          type: Database["public"]["Enums"]["report_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          professional_id?: string | null
+          type: Database["public"]["Enums"]["report_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          professional_id?: string | null
+          type?: Database["public"]["Enums"]["report_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Session: {
         Row: {
           expires: string
@@ -529,7 +574,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      report_type:
+        | "initial_evaluation"
+        | "progress_report"
+        | "session_summary"
+        | "discharge_summary"
+        | "assessment_report"
     }
     CompositeTypes: {
       [_ in never]: never
