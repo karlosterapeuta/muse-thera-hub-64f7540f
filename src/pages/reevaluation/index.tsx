@@ -429,7 +429,10 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} placeholder={`Descreva o progresso em ${label.toLowerCase()}`} />
+                            <Textarea 
+                              {...field} 
+                              placeholder={`Descreva ${label.toLowerCase()}, incluindo observações sobre desenvolvimentos positivos, desafios encontrados e áreas que necessitam atenção especial`} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -451,7 +454,10 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} placeholder={`Avalie ${label.toLowerCase()}`} />
+                            <Textarea 
+                              {...field} 
+                              placeholder={`Avalie ${label.toLowerCase()}, considerando o progresso do paciente em relação aos objetivos estabelecidos e a resposta às intervenções propostas`} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
