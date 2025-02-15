@@ -564,6 +564,7 @@ export type Database = {
           date: string
           emotional_state: Json | null
           id: string
+          intervention_activities: Json | null
           notes: string | null
           patient_id: string | null
           updated_at: string | null
@@ -573,6 +574,7 @@ export type Database = {
           date: string
           emotional_state?: Json | null
           id?: string
+          intervention_activities?: Json | null
           notes?: string | null
           patient_id?: string | null
           updated_at?: string | null
@@ -582,6 +584,7 @@ export type Database = {
           date?: string
           emotional_state?: Json | null
           id?: string
+          intervention_activities?: Json | null
           notes?: string | null
           patient_id?: string | null
           updated_at?: string | null
