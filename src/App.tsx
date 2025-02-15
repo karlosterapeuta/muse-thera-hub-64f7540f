@@ -14,6 +14,7 @@ import AnamnesisForm from "./pages/anamnesis";
 import Patients from "./pages/patients";
 import TreatmentPlanForm from "./pages/treatment-plan";
 import InterventionForm from "./pages/intervention";
+import ReevaluationForm from "./pages/reevaluation";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ const App = () => (
             <Route path="/anamnesis" element={<AnamnesisForm />} />
             <Route path="/processos/plano" element={<TreatmentPlanForm />} />
             <Route path="/intervention" element={<InterventionForm />} />
-            <Route path="/processos/reavaliacao" element={<div>Em desenvolvimento</div>} />
+            <Route path="/processos/reavaliacao" element={<ReevaluationForm />} />
             <Route path="/processos/relatorio" element={<div>Em desenvolvimento</div>} />
             <Route path="/hawkins" element={<div>Hawkins</div>} />
           </Route>
