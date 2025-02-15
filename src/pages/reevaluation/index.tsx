@@ -124,7 +124,7 @@ export default function ReevaluationForm() {
   async function onSubmit(data: FormValues) {
     const { error } = await supabase.from("assessments").insert({
       patient_id: data.patient_id,
-      date: data.date,
+      date: format(data.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       type: "reevaluation",
       content: {
         therapeutic_progress: data.therapeutic_progress,
