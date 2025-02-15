@@ -32,10 +32,6 @@ export default function Dashboard() {
     <div className="space-y-6 md:space-y-8 animate-fadeIn">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
-        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-          <span className="text-sm text-gray-600">Admin</span>
-          <span className="text-sm text-gray-600">admin@musetera.com</span>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
