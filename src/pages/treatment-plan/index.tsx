@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import html2pdf from "html2pdf.js";
 
 type Patient = {
   id: string;
@@ -26,6 +27,8 @@ export default function TreatmentPlanForm() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -41,12 +44,26 @@ export default function TreatmentPlanForm() {
     additional_notes: "",
   });
 
+  const formatNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart
+      .split(/[._-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   useEffect(() => {
-    loadPatients();
+    loadData();
   }, []);
 
-  const loadPatients = async () => {
+  const loadData = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      setUserEmail(user.email || "");
+      setUserName(formatNameFromEmail(user.email || ""));
+
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
@@ -66,8 +83,140 @@ export default function TreatmentPlanForm() {
     }
   };
 
+  const generatePDF = async (patientName: string) => {
+    const element = document.createElement('div');
+    
+    const generateContentHTML = (content: Record<string, any>) => {
+      const sections = [
+        {
+          title: "Configuração do Tratamento",
+          fields: [
+            { key: "approach_type", label: "Abordagem Terapêutica" },
+            { key: "intervention_frequency", label: "Frequência das Intervenções" },
+            { key: "session_duration", label: "Duração das Sessões" }
+          ]
+        },
+        {
+          title: "Metodologia e Recursos",
+          fields: [
+            { key: "treatment_model", label: "Modelo de Tratamento" },
+            { key: "musical_methods", label: "Métodos Musicais" }
+          ]
+        },
+        {
+          title: "Objetivos e Avaliação",
+          fields: [
+            { key: "therapeutic_focus", label: "Foco Terapêutico" },
+            { key: "expected_outcomes", label: "Resultados Esperados" }
+          ]
+        },
+        {
+          title: "Estratégias e Recursos",
+          fields: [
+            { key: "intervention_strategies", label: "Estratégias de Intervenção" },
+            { key: "musical_resources", label: "Recursos Musicais" }
+          ]
+        },
+        {
+          title: "Observações Adicionais",
+          fields: [
+            { key: "additional_notes", label: "Notas Complementares" }
+          ]
+        }
+      ];
+
+      return sections
+        .map(section => {
+          const sectionContent = section.fields
+            .filter(field => content[field.key])
+            .map(field => `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                  ${field.label}
+                </div>
+                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                  ${String(content[field.key] || '').split('\n').join('<br>')}
+                </div>
+              </div>
+            `)
+            .join('');
+
+          if (sectionContent) {
+            return `
+              <div style="margin-bottom: 24px;">
+                <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                  ${section.title}
+                </h2>
+                ${sectionContent}
+              </div>
+            `;
+          }
+          return '';
+        })
+        .join('');
+    };
+
+    element.innerHTML = `
+      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+          <div style="margin-bottom: 24px;">
+            <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+          </div>
+          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+            Plano Terapêutico Musicoterapêutico
+          </h1>
+          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+            Paciente: ${patientName}
+          </h2>
+          <p style="color: #6B7280; font-size: 14px;">
+            Data: ${new Date().toLocaleDateString('pt-BR')}
+          </p>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          ${generateContentHTML(formData)}
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Musetera - Sistema de Gestão para Musicoterapia
+          </p>
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Musicoterapeuta: ${userName}
+          </p>
+          <p style="color: #6B7280; font-size: 11px;">
+            Email: ${userEmail}
+          </p>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: [20, 20, 20, 20],
+      filename: `Plano Terapêutico - ${patientName}.pdf`,
+      pagebreak: { mode: 'avoid-all' },
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        backgroundColor: '#ffffff',
+      },
+    };
+
+    await html2pdf().from(element).set(opt).save();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!selectedPatient) {
       toast({
         title: "Atenção",
@@ -78,13 +227,10 @@ export default function TreatmentPlanForm() {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
-
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
         .single();
 
       if (professionalError) throw professionalError;
@@ -101,10 +247,16 @@ export default function TreatmentPlanForm() {
 
       if (error) throw error;
 
+      const selectedPatientData = patients.find(p => p.id === selectedPatient);
+      if (selectedPatientData) {
+        await generatePDF(selectedPatientData.name);
+      }
+
       toast({
         title: "Sucesso!",
-        description: "Plano terapêutico criado com sucesso.",
+        description: "Plano terapêutico salvo e PDF gerado com sucesso.",
       });
+
       navigate("/processes");
     } catch (error) {
       console.error("Erro ao salvar plano terapêutico:", error);
