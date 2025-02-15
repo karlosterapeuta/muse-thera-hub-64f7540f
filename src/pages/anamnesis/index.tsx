@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,9 +48,7 @@ export default function AnamnesisForm() {
     attention_span: "",
     memory_function: "",
     
-    // Plano Terapêutico
-    therapeutic_goals: "",
-    treatment_approach: "",
+    // Observações Gerais
     observations: "",
   });
 
@@ -292,22 +289,8 @@ export default function AnamnesisForm() {
       ],
     },
     {
-      title: "Plano Terapêutico",
+      title: "Observações Gerais",
       fields: [
-        {
-          key: "therapeutic_goals",
-          label: "Objetivos Terapêuticos",
-          placeholder: "Objetivos específicos, metas musicoterapêuticas",
-          value: formData.therapeutic_goals,
-          onChange: (value: string) => handleInputChange("therapeutic_goals", value),
-        },
-        {
-          key: "treatment_approach",
-          label: "Abordagem de Tratamento",
-          placeholder: "Métodos musicoterapêuticos, técnicas planejadas",
-          value: formData.treatment_approach,
-          onChange: (value: string) => handleInputChange("treatment_approach", value),
-        },
         {
           key: "observations",
           label: "Observações Técnicas",
