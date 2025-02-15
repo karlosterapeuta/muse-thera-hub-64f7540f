@@ -322,12 +322,12 @@ export default function ReevaluationForm() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4 space-y-6 max-w-4xl">
       <Card>
         <CardHeader>
           <CardTitle>Reavaliação Musicoterapêutica</CardTitle>
           <CardDescription>
-            Avalie o progresso e a efetividade do tratamento musicoterapêutico
+            Registre a reavaliação do processo musicoterapêutico
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -405,81 +405,57 @@ export default function ReevaluationForm() {
 
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Progresso Terapêutico</h3>
-                {Object.entries({
-                  musical_engagement: "Engajamento Musical",
-                  emotional_expression: "Expressão Emocional",
-                  social_interaction: "Interação Social",
-                  communication: "Comunicação",
-                  cognitive_function: "Função Cognitiva",
-                  motor_skills: "Habilidades Motoras",
-                }).map(([key, label]) => (
-                  <FormField
-                    key={key}
-                    control={form.control}
-                    name={`therapeutic_progress.${key}` as any}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{label}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries({
+                    musical_engagement: "Engajamento Musical",
+                    emotional_expression: "Expressão Emocional",
+                    social_interaction: "Interação Social",
+                    communication: "Comunicação",
+                    cognitive_function: "Função Cognitiva",
+                    motor_skills: "Habilidades Motoras",
+                  }).map(([key, label]) => (
+                    <FormField
+                      key={key}
+                      control={form.control}
+                      name={`therapeutic_progress.${key}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o nível de progresso" />
-                            </SelectTrigger>
+                            <Textarea {...field} />
                           </FormControl>
-                          <SelectContent>
-                            {progressOptions.levels.map((level) => (
-                              <SelectItem key={level.value} value={level.value}>
-                                {level.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Efetividade do Tratamento</h3>
-                {Object.entries({
-                  objectives_achievement: "Alcance dos Objetivos",
-                  intervention_response: "Resposta às Intervenções",
-                  technique_effectiveness: "Efetividade das Técnicas",
-                }).map(([key, label]) => (
-                  <FormField
-                    key={key}
-                    control={form.control}
-                    name={`treatment_effectiveness.${key}` as any}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{label}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries({
+                    objectives_achievement: "Alcance dos Objetivos",
+                    intervention_response: "Resposta às Intervenções",
+                    technique_effectiveness: "Efetividade das Técnicas",
+                  }).map(([key, label]) => (
+                    <FormField
+                      key={key}
+                      control={form.control}
+                      name={`treatment_effectiveness.${key}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o nível de efetividade" />
-                            </SelectTrigger>
+                            <Textarea {...field} />
                           </FormControl>
-                          <SelectContent>
-                            {effectivenessOptions.levels.map((level) => (
-                              <SelectItem key={level.value} value={level.value}>
-                                {level.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                </div>
               </div>
 
               <FormField
@@ -490,8 +466,7 @@ export default function ReevaluationForm() {
                     <FormLabel>Recomendações</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Registre aqui as recomendações para o continuidade do tratamento"
-                        className="min-h-[100px]"
+                        placeholder="Registre as recomendações para o processo terapêutico"
                         {...field}
                       />
                     </FormControl>
@@ -509,7 +484,6 @@ export default function ReevaluationForm() {
                     <FormControl>
                       <Textarea
                         placeholder="Descreva os ajustes necessários no plano terapêutico"
-                        className="min-h-[100px]"
                         {...field}
                       />
                     </FormControl>
@@ -518,9 +492,19 @@ export default function ReevaluationForm() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Salvar Reavaliação
-              </Button>
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/processes")}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  <Download className="mr-2 h-4 w-4" />
+                  Exportar PDF
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
