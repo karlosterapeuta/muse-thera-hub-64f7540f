@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import Professional from "./pages/Professional";
 import Processes from "./pages/processes";
 import Evaluation from "./pages/evaluation";
+import AnamnesisForm from "./pages/anamnesis";
 import Patients from "./pages/patients";
 
 const queryClient = new QueryClient();
@@ -29,7 +30,7 @@ const App = () => (
             <Route path="/patients" element={<Patients />} />
             <Route path="/processes" element={<Processes />} />
             <Route path="/processos/avaliacao" element={<Evaluation />} />
-            <Route path="/processos/anamnese" element={<div>Em desenvolvimento</div>} />
+            <Route path="/anamnesis" element={<AnamnesisForm />} />
             <Route path="/processos/plano" element={<div>Em desenvolvimento</div>} />
             <Route path="/processos/intervencao" element={<div>Em desenvolvimento</div>} />
             <Route path="/processos/reavaliacao" element={<div>Em desenvolvimento</div>} />
