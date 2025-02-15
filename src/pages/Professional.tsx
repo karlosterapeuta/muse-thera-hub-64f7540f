@@ -40,22 +40,25 @@ export default function Professional() {
         return;
       }
 
-      let { data, error } = await supabase
+      // Primeiro tenta encontrar o registro existente
+      let { data: existingProfile, error: fetchError } = await supabase
         .from('professionals')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error) {
-        console.error('Erro ao carregar dados:', error);
-        throw error;
+      if (fetchError) {
+        console.error('Erro ao buscar dados:', fetchError);
+        throw fetchError;
       }
 
-      if (!data) {
-        // Se não existir registro, criar um novo
+      let finalData = existingProfile;
+
+      // Se não existir perfil, cria um novo
+      if (!existingProfile) {
         const { data: newProfile, error: insertError } = await supabase
           .from('professionals')
-          .insert({
+          .upsert({
             user_id: user.id,
             name: '',
             register: '',
@@ -71,17 +74,19 @@ export default function Professional() {
           throw insertError;
         }
 
-        data = newProfile;
+        finalData = newProfile;
       }
 
-      setFormData({
-        name: data.name || '',
-        register: data.register || '',
-        phone: data.phone || '',
-        email: data.email || '',
-        specialty: data.specialty || ''
-      });
-      setAvatarUrl(data.avatar_url);
+      if (finalData) {
+        setFormData({
+          name: finalData.name || '',
+          register: finalData.register || '',
+          phone: finalData.phone || '',
+          email: finalData.email || '',
+          specialty: finalData.specialty || ''
+        });
+        setAvatarUrl(finalData.avatar_url);
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast({
@@ -127,11 +132,10 @@ export default function Professional() {
       // Update professional record
       const { error: updateError } = await supabase
         .from('professionals')
-        .upsert({
-          user_id: user.id,
-          avatar_url: publicUrl,
-          ...formData
-        });
+        .update({
+          avatar_url: publicUrl
+        })
+        .eq('user_id', user.id);
 
       if (updateError) throw updateError;
 
@@ -164,11 +168,11 @@ export default function Professional() {
 
       const { error } = await supabase
         .from('professionals')
-        .upsert({
-          user_id: user.id,
-          avatar_url: avatarUrl,
-          ...formData
-        });
+        .update({
+          ...formData,
+          avatar_url: avatarUrl
+        })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
