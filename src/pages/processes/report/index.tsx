@@ -92,73 +92,53 @@ export default function ReportPage() {
 
       const selectedPatient = patients.find(p => p.id === formData.patient_id);
       const reportType = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
-      
-      console.log("Conteúdo do relatório:", formData.content); // Debug para verificar o conteúdo
 
-      // Formatação melhorada do PDF
       const element = document.createElement('div');
-      
-      let contentHtml = '';
-      
-      // Processa o conteúdo do formulário
-      if (formData.content && typeof formData.content === 'object') {
-        Object.entries(formData.content).forEach(([key, value]) => {
-          if (value && value.toString().trim()) {
-            const label = key.split('_')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ');
+      element.style.padding = '20px';
+      element.style.fontFamily = 'Arial, sans-serif';
 
-            contentHtml += `
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                <h3 style="color: #374151; font-size: 16px; font-weight: 600; margin-bottom: 8px;">
-                  ${label}
-                </h3>
-                <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 12px;">
-                  <p style="margin: 0; color: #1F2937; line-height: 1.6;">
-                    ${value.toString().replace(/\n/g, '<br>')}
-                  </p>
-                </div>
-              </div>
-            `;
-          }
-        });
-      }
+      // Cabeçalho
+      const header = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #2563eb; margin-bottom: 10px;">${reportType}</h1>
+          <h2 style="color: #374151;">Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
+          <p style="color: #6B7280;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+      `;
+
+      // Conteúdo do relatório
+      let content = '';
+      Object.entries(formData.content).forEach(([key, value]) => {
+        const label = key.split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        content += `
+          <div style="margin-bottom: 15px; border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px;">
+            <h3 style="color: #374151; margin-bottom: 8px;">${label}</h3>
+            <div style="color: #1F2937; line-height: 1.6;">
+              ${String(value).replace(/\n/g, '<br>')}
+            </div>
+          </div>
+        `;
+      });
 
       element.innerHTML = `
-        <div style="padding: 30px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px;">
-              ${reportType}
-            </h1>
-            <h2 style="color: #374151; font-size: 18px; margin-bottom: 5px;">
-              Paciente: ${selectedPatient?.name || 'Não especificado'}
-            </h2>
-            <p style="color: #6B7280;">
-              Data: ${new Date().toLocaleDateString('pt-BR')}
-            </p>
-          </div>
-          
-          <hr style="border: none; border-top: 2px solid #E5E7EB; margin: 20px 0;" />
-          
-          <div style="margin-top: 20px;">
-            ${contentHtml || '<p style="text-align: center; color: #6B7280;">Nenhum conteúdo disponível</p>'}
-          </div>
-          
-          <hr style="border: none; border-top: 2px solid #E5E7EB; margin: 20px 0;" />
-          
-          <div style="text-align: center; margin-top: 30px; color: #6B7280;">
-            <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-          </div>
+        ${header}
+        <div style="margin-top: 20px;">
+          ${content}
+        </div>
+        <div style="text-align: center; margin-top: 20px; color: #6B7280;">
+          <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
         </div>
       `;
 
       const opt = {
-        margin: [15, 15, 15, 15],
+        margin: 10,
         filename: `${reportType} - ${selectedPatient?.name || 'Relatório'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
       await html2pdf().from(element).set(opt).save();
