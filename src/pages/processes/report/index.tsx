@@ -69,7 +69,7 @@ export default function ReportPage() {
     }
 
     try {
-      console.log("Enviando dados do relatório:", formData); // Debug log
+      console.log("Enviando dados do relatório:", formData);
 
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
@@ -78,11 +78,11 @@ export default function ReportPage() {
       });
 
       if (error) {
-        console.error("Erro ao inserir relatório:", error); // Debug log
+        console.error("Erro ao inserir relatório:", error);
         throw error;
       }
 
-      console.log("Relatório salvo com sucesso"); // Debug log
+      console.log("Relatório salvo com sucesso");
 
       toast({
         title: "Relatório salvo com sucesso",

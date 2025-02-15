@@ -40,24 +40,26 @@ export default function ReportsPage() {
 
   useEffect(() => {
     async function loadReports() {
-      console.log("Carregando relatórios..."); // Debug log
+      console.log("Carregando relatórios...");
       try {
         const { data, error } = await supabase
           .from("reports")
           .select(`
-            *,
-            patient:patients!reports_patient_id_fkey (
+            id,
+            type,
+            created_at,
+            patient:patients (
               name
             )
           `)
           .order("created_at", { ascending: false });
 
         if (error) {
-          console.error("Erro Supabase:", error); // Debug log
+          console.error("Erro Supabase:", error);
           throw error;
         }
 
-        console.log("Relatórios carregados:", data); // Debug log
+        console.log("Relatórios carregados:", data);
         setReports(data || []);
       } catch (error) {
         console.error("Erro ao carregar relatórios:", error);
