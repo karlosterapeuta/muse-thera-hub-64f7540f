@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ResponsiveContainer } from 'recharts';
 
 export default function Evaluation() {
   const [patient] = useState({
@@ -151,164 +151,168 @@ export default function Evaluation() {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <Card className="p-6">
-        <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold">{patient.name}</h1>
-            <p className="text-gray-600">Data de Nascimento: {patient.birthDate}</p>
+            <h1 className="text-xl sm:text-2xl font-bold">{patient.name}</h1>
+            <p className="text-sm sm:text-base text-gray-600">Data de Nascimento: {patient.birthDate}</p>
           </div>
-          <div className="bg-primary/10 text-primary px-4 py-2 rounded-full">
+          <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm sm:text-base">
             Avaliação 1
           </div>
         </div>
 
         {evaluationSections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="mb-8">
+          <div key={sectionIndex} className="mb-6 sm:mb-8">
             <div className="mb-4">
-              <h2 className="text-xl font-semibold">{section.title}</h2>
-              <p className="text-sm text-gray-600">{section.description}</p>
+              <h2 className="text-lg sm:text-xl font-semibold">{section.title}</h2>
+              <p className="text-xs sm:text-sm text-gray-600">{section.description}</p>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Parâmetros</TableHead>
-                  <TableHead className="w-24 text-center">Não</TableHead>
-                  <TableHead className="w-24 text-center">Pouco</TableHead>
-                  <TableHead className="w-24 text-center">Muito</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {section.parameters.map((parameter, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{parameter}</TableCell>
-                    <TableCell className="text-center">
-                      <RadioGroup
-                        value={selections[`${section.title}-${parameter}`]}
-                        onValueChange={(value) => 
-                          setSelections(prev => ({
-                            ...prev,
-                            [`${section.title}-${parameter}`]: value
-                          }))
-                        }
-                        className="flex justify-center"
-                      >
-                        <div className="relative">
-                          <RadioGroupItem
-                            value="nao"
-                            id={`${section.title}-${parameter}-nao`}
-                            className="sr-only"
-                          />
-                          <label
-                            htmlFor={`${section.title}-${parameter}-nao`}
-                            className={`block w-4 h-4 rounded-full border-2 border-red-500 cursor-pointer ${
-                              selections[`${section.title}-${parameter}`] === "nao"
-                                ? "bg-red-500"
-                                : "bg-white"
-                            }`}
-                          />
-                        </div>
-                      </RadioGroup>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[120px]">Parâmetros</TableHead>
+                    <TableHead className="w-16 sm:w-24 text-center">Não</TableHead>
+                    <TableHead className="w-16 sm:w-24 text-center">Pouco</TableHead>
+                    <TableHead className="w-16 sm:w-24 text-center">Muito</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {section.parameters.map((parameter, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="text-sm sm:text-base">{parameter}</TableCell>
+                      <TableCell className="text-center p-2 sm:p-4">
+                        <RadioGroup
+                          value={selections[`${section.title}-${parameter}`]}
+                          onValueChange={(value) => 
+                            setSelections(prev => ({
+                              ...prev,
+                              [`${section.title}-${parameter}`]: value
+                            }))
+                          }
+                          className="flex justify-center"
+                        >
+                          <div className="relative">
+                            <RadioGroupItem
+                              value="nao"
+                              id={`${section.title}-${parameter}-nao`}
+                              className="sr-only"
+                            />
+                            <label
+                              htmlFor={`${section.title}-${parameter}-nao`}
+                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-red-500 cursor-pointer ${
+                                selections[`${section.title}-${parameter}`] === "nao"
+                                  ? "bg-red-500"
+                                  : "bg-white"
+                              }`}
+                            />
+                          </div>
+                        </RadioGroup>
+                      </TableCell>
+                      <TableCell className="text-center p-2 sm:p-4">
+                        <RadioGroup
+                          value={selections[`${section.title}-${parameter}`]}
+                          onValueChange={(value) => 
+                            setSelections(prev => ({
+                              ...prev,
+                              [`${section.title}-${parameter}`]: value
+                            }))
+                          }
+                          className="flex justify-center"
+                        >
+                          <div className="relative">
+                            <RadioGroupItem
+                              value="pouco"
+                              id={`${section.title}-${parameter}-pouco`}
+                              className="sr-only"
+                            />
+                            <label
+                              htmlFor={`${section.title}-${parameter}-pouco`}
+                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-yellow-500 cursor-pointer ${
+                                selections[`${section.title}-${parameter}`] === "pouco"
+                                  ? "bg-yellow-500"
+                                  : "bg-white"
+                              }`}
+                            />
+                          </div>
+                        </RadioGroup>
+                      </TableCell>
+                      <TableCell className="text-center p-2 sm:p-4">
+                        <RadioGroup
+                          value={selections[`${section.title}-${parameter}`]}
+                          onValueChange={(value) => 
+                            setSelections(prev => ({
+                              ...prev,
+                              [`${section.title}-${parameter}`]: value
+                            }))
+                          }
+                          className="flex justify-center"
+                        >
+                          <div className="relative">
+                            <RadioGroupItem
+                              value="muito"
+                              id={`${section.title}-${parameter}-muito`}
+                              className="sr-only"
+                            />
+                            <label
+                              htmlFor={`${section.title}-${parameter}-muito`}
+                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-green-500 cursor-pointer ${
+                                selections[`${section.title}-${parameter}`] === "muito"
+                                  ? "bg-green-500"
+                                  : "bg-white"
+                              }`}
+                            />
+                          </div>
+                        </RadioGroup>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell className="font-semibold text-sm sm:text-base">Pontuação</TableCell>
+                    <TableCell className="text-center text-sm sm:text-base">
+                      {section.inverseScoring ? "2" : "0"}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <RadioGroup
-                        value={selections[`${section.title}-${parameter}`]}
-                        onValueChange={(value) => 
-                          setSelections(prev => ({
-                            ...prev,
-                            [`${section.title}-${parameter}`]: value
-                          }))
-                        }
-                        className="flex justify-center"
-                      >
-                        <div className="relative">
-                          <RadioGroupItem
-                            value="pouco"
-                            id={`${section.title}-${parameter}-pouco`}
-                            className="sr-only"
-                          />
-                          <label
-                            htmlFor={`${section.title}-${parameter}-pouco`}
-                            className={`block w-4 h-4 rounded-full border-2 border-yellow-500 cursor-pointer ${
-                              selections[`${section.title}-${parameter}`] === "pouco"
-                                ? "bg-yellow-500"
-                                : "bg-white"
-                            }`}
-                          />
-                        </div>
-                      </RadioGroup>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <RadioGroup
-                        value={selections[`${section.title}-${parameter}`]}
-                        onValueChange={(value) => 
-                          setSelections(prev => ({
-                            ...prev,
-                            [`${section.title}-${parameter}`]: value
-                          }))
-                        }
-                        className="flex justify-center"
-                      >
-                        <div className="relative">
-                          <RadioGroupItem
-                            value="muito"
-                            id={`${section.title}-${parameter}-muito`}
-                            className="sr-only"
-                          />
-                          <label
-                            htmlFor={`${section.title}-${parameter}-muito`}
-                            className={`block w-4 h-4 rounded-full border-2 border-green-500 cursor-pointer ${
-                              selections[`${section.title}-${parameter}`] === "muito"
-                                ? "bg-green-500"
-                                : "bg-white"
-                            }`}
-                          />
-                        </div>
-                      </RadioGroup>
+                    <TableCell className="text-center text-sm sm:text-base">1</TableCell>
+                    <TableCell className="text-center text-sm sm:text-base">
+                      {section.inverseScoring ? "0" : "2"}
                     </TableCell>
                   </TableRow>
-                ))}
-                <TableRow>
-                  <TableCell className="font-semibold">Pontuação</TableCell>
-                  <TableCell className="text-center">
-                    {section.inverseScoring ? "2" : "0"}
-                  </TableCell>
-                  <TableCell className="text-center">1</TableCell>
-                  <TableCell className="text-center">
-                    {section.inverseScoring ? "0" : "2"}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                </TableBody>
+              </Table>
+            </div>
           </div>
         ))}
 
-        <h2 className="text-2xl font-bold mb-6 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
           Resultados da Escala de Avaliação TEA
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
               Habilidades Adquiridas
             </h3>
-            <div className="h-[300px] flex items-center justify-center">
-              <PieChart width={300} height={300}>
-                <Pie
-                  data={pieData}
-                  cx={150}
-                  cy={150}
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
+            <div className="h-[250px] sm:h-[300px] w-full flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="60%"
+                    outerRadius="80%"
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
             <div className="flex justify-center gap-4 mt-4">
               {pieData.map((entry, index) => (
@@ -317,29 +321,35 @@ export default function Evaluation() {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: COLORS[index] }}
                   />
-                  <span className="text-sm">{entry.name} ({entry.value}%)</span>
+                  <span className="text-xs sm:text-sm">{entry.name} ({entry.value}%)</span>
                 </div>
               ))}
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-center">
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
               Desempenho por Categoria
             </h3>
-            <div className="h-[300px]">
-              <BarChart
-                width={500}
-                height={300}
-                data={categoryData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-                <YAxis domain={[0, 100]} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#6D28D9" />
-              </BarChart>
+            <div className="h-[250px] sm:h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={categoryData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={100}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#6D28D9" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </Card>
         </div>
