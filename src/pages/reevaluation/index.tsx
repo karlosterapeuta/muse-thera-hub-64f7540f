@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -72,6 +72,21 @@ type Patient = {
   id: string;
   name: string;
 };
+
+const therapeuticProgressFields = {
+  musical_engagement: "Engajamento Musical",
+  emotional_expression: "Expressão Emocional",
+  social_interaction: "Interação Social",
+  communication: "Comunicação",
+  cognitive_function: "Função Cognitiva",
+  motor_skills: "Habilidades Motoras",
+} as const;
+
+const treatmentEffectivenessFields = {
+  objectives_achievement: "Alcance dos Objetivos",
+  intervention_response: "Resposta às Intervenções",
+  technique_effectiveness: "Efetividade das Técnicas",
+} as const;
 
 export default function ReevaluationForm() {
   const { toast } = useToast();
@@ -406,23 +421,16 @@ export default function ReevaluationForm() {
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Progresso Terapêutico</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries({
-                    musical_engagement: "Engajamento Musical",
-                    emotional_expression: "Expressão Emocional",
-                    social_interaction: "Interação Social",
-                    communication: "Comunicação",
-                    cognitive_function: "Função Cognitiva",
-                    motor_skills: "Habilidades Motoras",
-                  }).map(([key, label]) => (
+                  {(Object.entries(therapeuticProgressFields) as [keyof typeof therapeuticProgressFields, string][]).map(([key, label]) => (
                     <FormField
                       key={key}
                       control={form.control}
-                      name={`therapeutic_progress.${key}`}
+                      name={`therapeutic_progress.${key}` as const}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} />
+                            <Textarea {...field} value={field.value || ''} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -435,20 +443,16 @@ export default function ReevaluationForm() {
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Efetividade do Tratamento</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries({
-                    objectives_achievement: "Alcance dos Objetivos",
-                    intervention_response: "Resposta às Intervenções",
-                    technique_effectiveness: "Efetividade das Técnicas",
-                  }).map(([key, label]) => (
+                  {(Object.entries(treatmentEffectivenessFields) as [keyof typeof treatmentEffectivenessFields, string][]).map(([key, label]) => (
                     <FormField
                       key={key}
                       control={form.control}
-                      name={`treatment_effectiveness.${key}`}
+                      name={`treatment_effectiveness.${key}` as const}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} />
+                            <Textarea {...field} value={field.value || ''} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -468,6 +472,7 @@ export default function ReevaluationForm() {
                       <Textarea
                         placeholder="Registre as recomendações para o processo terapêutico"
                         {...field}
+                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -485,6 +490,7 @@ export default function ReevaluationForm() {
                       <Textarea
                         placeholder="Descreva os ajustes necessários no plano terapêutico"
                         {...field}
+                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />
