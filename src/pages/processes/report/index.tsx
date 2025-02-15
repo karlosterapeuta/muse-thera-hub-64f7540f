@@ -91,31 +91,61 @@ export default function ReportPage() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      return Object.entries(content)
-        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-        .map(([key, value]) => {
-          const label = key.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
+      // Função auxiliar para formatar arrays e objetos
+      const formatValue = (value: any): string => {
+        if (Array.isArray(value)) {
+          return value.join(', ');
+        } else if (typeof value === 'object' && value !== null) {
+          // Formata objetos de forma mais legível
+          return Object.entries(value)
+            .map(([k, v]) => `${k}: ${formatValue(v)}`)
+            .join('\n');
+        }
+        return String(value);
+      };
 
-          let displayValue = value;
-          if (Array.isArray(value)) {
-            displayValue = value.join('\n');
-          } else if (typeof value === 'object') {
-            displayValue = JSON.stringify(value, null, 2);
-          }
+      // Agrupa o conteúdo por seções
+      const sections: Record<string, any[]> = {};
+      Object.entries(content).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === '') return;
 
-          return `
-            <div style="margin-bottom: 20px; page-break-inside: avoid;">
-              <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
-                ${label}
+        const sectionName = key.includes('_') 
+          ? key.split('_')[0].charAt(0).toUpperCase() + key.split('_')[0].slice(1)
+          : 'Geral';
+        
+        if (!sections[sectionName]) {
+          sections[sectionName] = [];
+        }
+
+        const label = key.split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        sections[sectionName].push({
+          label,
+          value: formatValue(value)
+        });
+      });
+
+      // Gera o HTML para cada seção
+      return Object.entries(sections)
+        .map(([sectionName, items]) => `
+          <div style="margin-bottom: 24px;">
+            <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+              ${sectionName}
+            </h2>
+            ${items.map(item => `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                  ${item.label}
+                </div>
+                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                  ${item.value.replace(/\n/g, '<br>')}
+                </div>
               </div>
-              <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
-                ${String(displayValue).replace(/\n/g, '<br>')}
-              </div>
-            </div>
-          `;
-        })
+            `).join('')}
+          </div>
+        `)
         .join('');
     };
 
@@ -123,26 +153,26 @@ export default function ReportPage() {
 
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
+        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
           <div style="margin-bottom: 24px;">
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
             ${reportTitle}
           </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
+          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
             Paciente: ${patientName}
           </h2>
-          <p style="color: #6B7280; font-size: 13px;">
+          <p style="color: #6B7280; font-size: 14px;">
             Data: ${new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
 
-        <div style="margin-bottom: 24px;">
+        <div style="margin-bottom: 32px;">
           ${generateContentHTML(formData.content)}
         </div>
 
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 2px solid #E5E7EB; text-align: center;">
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
           <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
           </p>
