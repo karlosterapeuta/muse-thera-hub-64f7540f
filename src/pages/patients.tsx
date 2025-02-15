@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +33,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -45,8 +53,18 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+type Patient = {
+  id: string;
+  name: string;
+  birth_date: string | null;
+  contact: string | null;
+  responsible: string | null;
+  created_at: string;
+};
+
 export default function Patients() {
   const { toast } = useToast();
+  const [patients, setPatients] = useState<Patient[]>([]);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,10 +74,31 @@ export default function Patients() {
     },
   });
 
+  const fetchPatients = async () => {
+    const { data, error } = await supabase
+      .from("patients")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar pacientes",
+        description: "Ocorreu um erro ao carregar a lista de pacientes.",
+      });
+      return;
+    }
+
+    setPatients(data);
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
   async function onSubmit(values: FormValues) {
-    // Converter a data para o formato esperado pelo Supabase (YYYY-MM-DD)
     const formattedValues = {
-      name: values.name, // Garantir que name é passado
+      name: values.name,
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
@@ -85,11 +124,12 @@ export default function Patients() {
     });
 
     form.reset();
+    fetchPatients(); // Atualiza a lista após cadastrar
   }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-2xl">
-      <Card>
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+      <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Cadastro de Paciente</CardTitle>
           <CardDescription>
@@ -195,6 +235,50 @@ export default function Patients() {
               </Button>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Pacientes Cadastrados</CardTitle>
+          <CardDescription>
+            Lista de todos os pacientes cadastrados no sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Data de Nascimento</TableHead>
+                  <TableHead>Contato</TableHead>
+                  <TableHead>Responsável</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {patients.map((patient) => (
+                  <TableRow key={patient.id}>
+                    <TableCell>{patient.name}</TableCell>
+                    <TableCell>
+                      {patient.birth_date
+                        ? format(new Date(patient.birth_date), "dd/MM/yyyy")
+                        : "-"}
+                    </TableCell>
+                    <TableCell>{patient.contact || "-"}</TableCell>
+                    <TableCell>{patient.responsible || "-"}</TableCell>
+                  </TableRow>
+                ))}
+                {patients.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      Nenhum paciente cadastrado
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
