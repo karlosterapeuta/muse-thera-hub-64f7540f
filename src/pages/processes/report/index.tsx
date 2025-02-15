@@ -104,29 +104,41 @@ export default function ReportPage() {
           </div>
           <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
           <div style="margin-top: 20px;">
-            ${Object.entries(formData.content).map(([key, value]) => {
-              // Formatação especial para campos de data
-              if (key.includes('date') || key.includes('data_session') || key.includes('month') || key.includes('semester')) {
+            ${Object.entries(formData.content || {}).length > 0 ? 
+              Object.entries(formData.content).map(([key, value]) => {
+                if (!value) return '';
+                
+                // Formatação especial para campos de data
+                if (key.includes('date') || key.includes('data_session') || key.includes('month') || key.includes('semester')) {
+                  const formattedDate = typeof value === 'string' ? value : '';
+                  return `
+                    <div style="margin-bottom: 15px;">
+                      <h3 style="color: #4B5563; margin-bottom: 5px;">Data</h3>
+                      <p style="margin: 0; padding: 8px; background-color: #F3F4F6; border-radius: 4px;">${formattedDate}</p>
+                    </div>
+                  `;
+                }
+                
+                // Formatação para campos de texto
+                const formattedKey = key.split('_')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+                
+                const formattedValue = typeof value === 'string' ? value.replace(/\n/g, '<br>') : '';
+                
                 return `
-                  <div style="margin-bottom: 15px;">
-                    <h3 style="color: #4B5563; margin-bottom: 5px;">Data</h3>
-                    <p style="margin: 0; padding: 8px; background-color: #F3F4F6; border-radius: 4px;">${value}</p>
+                  <div style="margin-bottom: 25px;">
+                    <h3 style="color: #4B5563; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 10px;">
+                      ${formattedKey}
+                    </h3>
+                    <div style="line-height: 1.6; color: #1F2937; background-color: #F9FAFB; padding: 15px; border-radius: 6px; border: 1px solid #E5E7EB;">
+                      ${formattedValue}
+                    </div>
                   </div>
                 `;
-              }
-              
-              // Formatação para campos de texto longo
-              return `
-                <div style="margin-bottom: 25px;">
-                  <h3 style="color: #4B5563; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 10px;">
-                    ${key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                  </h3>
-                  <div style="white-space: pre-line; line-height: 1.6; color: #1F2937; background-color: #F9FAFB; padding: 15px; border-radius: 6px; border: 1px solid #E5E7EB;">
-                    ${value}
-                  </div>
-                </div>
-              `;
-            }).join('')}
+              }).join('') :
+              '<p style="text-align: center; color: #6B7280;">Nenhum conteúdo disponível</p>'
+            }
           </div>
           <hr style="border: 1px solid #E5E7EB; margin: 20px 0;" />
           <div style="text-align: center; margin-top: 30px; color: #6B7280;">
