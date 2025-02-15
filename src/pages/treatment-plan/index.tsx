@@ -462,7 +462,12 @@ export default function TreatmentPlanForm() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">Salvar Plano Terapêutico</Button>
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Salvar e Baixar PDF
+              </Button>
             </div>
           </form>
         </CardContent>
