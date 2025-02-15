@@ -29,7 +29,14 @@ export default function Professional() {
   const loadProfessionalData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data, error } = await supabase
         .from('professionals')
@@ -37,7 +44,8 @@ export default function Professional() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
+        console.error('Erro ao carregar dados:', error);
         throw error;
       }
 
@@ -50,6 +58,20 @@ export default function Professional() {
           specialty: data.specialty || ''
         });
         setAvatarUrl(data.avatar_url);
+      } else {
+        // Se não existir registro, criar um novo
+        const { error: insertError } = await supabase
+          .from('professionals')
+          .insert({
+            user_id: user.id,
+            name: '',
+            register: '',
+            phone: '',
+            email: '',
+            specialty: ''
+          });
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -69,7 +91,14 @@ export default function Professional() {
       if (!file) return;
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Upload image
       const fileExt = file.name.split('.').pop();
@@ -115,7 +144,14 @@ export default function Professional() {
   const handleSave = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Usuário não autenticado');
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('professionals')
