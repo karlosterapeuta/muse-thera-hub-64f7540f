@@ -40,6 +40,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     async function loadReports() {
+      console.log("Carregando relatórios..."); // Debug log
       try {
         const { data, error } = await supabase
           .from("reports")
@@ -51,8 +52,12 @@ export default function ReportsPage() {
           `)
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Erro Supabase:", error); // Debug log
+          throw error;
+        }
 
+        console.log("Relatórios carregados:", data); // Debug log
         setReports(data || []);
       } catch (error) {
         console.error("Erro ao carregar relatórios:", error);
@@ -72,7 +77,7 @@ export default function ReportsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle>Relatórios</CardTitle>
-          <Button onClick={() => navigate("/processes/report")} size="sm">
+          <Button onClick={() => navigate("/processos/relatorio")} size="sm">
             <PlusIcon className="h-4 w-4 mr-2" />
             Novo Relatório
           </Button>

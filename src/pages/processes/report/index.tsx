@@ -83,7 +83,7 @@ export default function ReportPage() {
       });
 
       // Corrigindo o redirecionamento para a rota correta
-      navigate("/processos/relatorios");
+      navigate("/processos/relatorio");
     } catch (error) {
       console.error("Erro ao salvar relatório:", error);
       toast({
