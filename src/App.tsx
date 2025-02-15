@@ -18,7 +18,7 @@ import ReportPage from "./pages/processes/report";
 import ReportsPage from "./pages/processes/reports";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
-import Index from "./pages/Index";
+import InviteCodes from "./pages/InviteCodes";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -78,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: "/processos/relatorio",
         element: <ReportPage />,
+      },
+      {
+        path: "/invite-codes",
+        element: <InviteCodes />,
       },
     ],
   },

@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
+    { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ];
 
   const handleNavigation = (path: string) => {
