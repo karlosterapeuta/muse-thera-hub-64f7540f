@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,8 @@ import { PatientSelect } from "./components/PatientSelect";
 import { SelectField } from "./components/SelectField";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Download } from "lucide-react";
+import html2pdf from "html2pdf.js";
 
 type Patient = {
   id: string;
@@ -31,7 +32,7 @@ export default function AnamnesisForm() {
     musical_background: "",
     musical_preferences: "",
     musical_skills: "",
-    emotional_response_to_music: "", // Corrigido de emotional_response
+    emotional_response_to_music: "",
     social_interaction: "",
     communication_skills: "",
     emotional_expression: "",
@@ -84,6 +85,76 @@ export default function AnamnesisForm() {
     }
   };
 
+  const generatePDF = async (patientName: string) => {
+    const element = document.createElement('div');
+    
+    const generateContentHTML = (content: Record<string, string>) => {
+      return Object.entries(content)
+        .filter(([_, value]) => value !== '')
+        .map(([key, value]) => {
+          const label = key.split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          return `
+            <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1F2937;">
+                ${label}
+              </div>
+              <div style="background-color: #F3F4F6; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 13px; line-height: 1.5; color: #374151;">
+                ${String(value).replace(/\n/g, '<br>')}
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    };
+
+    element.innerHTML = `
+      <div style="padding: 40px 20px; font-family: Arial, sans-serif;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 style="color: #2563EB; font-size: 24px; margin-bottom: 16px;">
+            Anamnese Musicoterapêutica
+          </h1>
+          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+            Paciente: ${patientName}
+          </h2>
+          <p style="color: #6B7280; font-size: 14px;">
+            Data: ${new Date().toLocaleDateString('pt-BR')}
+          </p>
+        </div>
+
+        <div style="max-width: 700px; margin: 0 auto;">
+          ${generateContentHTML(formData)}
+        </div>
+
+        <div style="margin-top: 40px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px;">
+          <p style="color: #6B7280; font-size: 12px;">
+            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+          </p>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: [15, 15, 15, 15],
+      filename: `Anamnese - ${patientName}.pdf`,
+      pagebreak: { mode: 'avoid-all' },
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+      },
+    };
+
+    await html2pdf().from(element).set(opt).save();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -107,9 +178,14 @@ export default function AnamnesisForm() {
 
       if (error) throw error;
 
+      const selectedPatientData = patients.find(p => p.id === selectedPatient);
+      if (selectedPatientData) {
+        await generatePDF(selectedPatientData.name);
+      }
+
       toast({
         title: "Sucesso!",
-        description: "Anamnese registrada com sucesso.",
+        description: "Anamnese registrada e PDF gerado com sucesso.",
       });
 
       navigate("/processes");
@@ -318,7 +394,10 @@ export default function AnamnesisForm() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">Salvar Anamnese</Button>
+              <Button type="submit">
+                <Download className="mr-2" />
+                Salvar e Baixar PDF
+              </Button>
             </div>
           </form>
         </CardContent>
