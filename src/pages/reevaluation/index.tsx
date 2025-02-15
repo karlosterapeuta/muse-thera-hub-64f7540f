@@ -429,7 +429,7 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} />
+                            <Textarea {...field} placeholder={`Descreva o progresso em ${label.toLowerCase()}`} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -451,7 +451,7 @@ export default function ReevaluationForm() {
                         <FormItem>
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                            <Textarea {...field} />
+                            <Textarea {...field} placeholder={`Avalie ${label.toLowerCase()}`} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
