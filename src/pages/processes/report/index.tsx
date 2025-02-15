@@ -116,23 +116,39 @@ export default function ReportForm() {
     const generateContentHTML = (content: Record<string, any>) => {
       const sections = [
         {
-          title: "Dados da Sessão",
+          title: "Progresso Terapêutico",
           fields: [
             { key: "objectives", label: "Objetivos", value: content.objectives },
-          ]
-        },
-        {
-          title: "Desenvolvimento",
-          fields: [
             { key: "activities", label: "Atividades Realizadas", value: content.activities },
             { key: "patient_response", label: "Resposta do Paciente", value: content.patient_response },
           ]
         },
         {
-          title: "Conclusão",
+          title: "Desenvolvimento da Sessão",
+          fields: [
+            { key: "engagement", label: "Engajamento Musical", value: content.engagement },
+            { key: "emotional_expression", label: "Expressão Emocional", value: content.emotional_expression },
+            { key: "social_interaction", label: "Interação Social", value: content.social_interaction },
+            { key: "communication", label: "Comunicação", value: content.communication },
+            { key: "cognitive_function", label: "Função Cognitiva", value: content.cognitive_function },
+            { key: "motor_skills", label: "Habilidades Motoras", value: content.motor_skills },
+          ]
+        },
+        {
+          title: "Efetividade do Tratamento",
+          fields: [
+            { key: "goals_achievement", label: "Alcance dos Objetivos", value: content.goals_achievement },
+            { key: "intervention_response", label: "Resposta às Intervenções", value: content.intervention_response },
+            { key: "techniques_effectiveness", label: "Efetividade das Técnicas", value: content.techniques_effectiveness },
+          ]
+        },
+        {
+          title: "Conclusões e Recomendações",
           fields: [
             { key: "observations", label: "Observações", value: content.observations },
             { key: "next_steps", label: "Próximos Passos", value: content.next_steps },
+            { key: "recommendations", label: "Recomendações", value: content.recommendations },
+            { key: "adjustments", label: "Ajustes Necessários", value: content.adjustments },
           ]
         }
       ];
@@ -175,13 +191,13 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            Relatório de Sessão Individual
+            Relatório de Avaliação Musicoterapêutica
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data da Sessão: ${format(formData.date, 'PPP', { locale: ptBR })}
+            Data da Avaliação: ${format(formData.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
 
@@ -191,7 +207,7 @@ export default function ReportForm() {
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
           </p>
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Musetera - Sistema de Gestão para Musicoterapia
@@ -208,7 +224,7 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `Relatório de Sessão Individual - ${patientName}.pdf`,
+      filename: `Relatório de Avaliação - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
