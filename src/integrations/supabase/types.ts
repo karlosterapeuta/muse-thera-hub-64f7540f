@@ -388,6 +388,36 @@ export type Database = {
           },
         ]
       }
+      invite_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          status: Database["public"]["Enums"]["invite_code_status"]
+          used_at: string | null
+          used_by_user_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          status?: Database["public"]["Enums"]["invite_code_status"]
+          used_at?: string | null
+          used_by_user_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["invite_code_status"]
+          used_at?: string | null
+          used_by_user_id?: string | null
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           birth_date: string | null
@@ -730,9 +760,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_and_use_invite_code: {
+        Args: {
+          invite_code: string
+          user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      invite_code_status: "unused" | "used" | "expired"
       report_type:
         | "initial_evaluation"
         | "progress_report"

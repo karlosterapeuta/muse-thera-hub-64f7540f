@@ -11,11 +11,27 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const validateInviteCode = async (code: string) => {
+    const { data, error } = await supabase
+      .from('invite_codes')
+      .select('*')
+      .eq('code', code)
+      .eq('status', 'unused')
+      .gt('expires_at', new Date().toISOString())
+      .single();
+
+    if (error || !data) {
+      throw new Error("Código de convite inválido ou expirado");
+    }
+    return true;
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +41,20 @@ export default function Login() {
       let result;
       
       if (isRegistering) {
+        // Validar código de convite
+        try {
+          await validateInviteCode(inviteCode);
+        } catch (error: any) {
+          toast({
+            title: "Código de convite inválido",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Registrar usuário
         result = await supabase.auth.signUp({
           email,
           password,
@@ -36,10 +66,21 @@ export default function Login() {
         });
         
         if (result.error) throw result.error;
+
+        // Marcar código como usado
+        const { error: updateError } = await supabase.rpc(
+          'validate_and_use_invite_code',
+          { 
+            invite_code: inviteCode,
+            user_id: result.data.user?.id
+          }
+        );
+
+        if (updateError) throw updateError;
         
         toast({
-          title: "Registration successful!",
-          description: "Please check your email to verify your account.",
+          title: "Registro realizado com sucesso!",
+          description: "Por favor, verifique seu email para confirmar sua conta.",
         });
       } else {
         result = await supabase.auth.signInWithPassword({
@@ -50,14 +91,14 @@ export default function Login() {
         if (result.error) throw result.error;
         
         toast({
-          title: "Login successful",
-          description: "Welcome to MuseTera!",
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo ao MuseTera!",
         });
         navigate("/dashboard");
       }
     } catch (error: any) {
       toast({
-        title: isRegistering ? "Registration failed" : "Login failed",
+        title: isRegistering ? "Falha no registro" : "Falha no login",
         description: error.message,
         variant: "destructive",
       });
@@ -123,6 +164,23 @@ export default function Login() {
                 </button>
               </div>
             </div>
+
+            {isRegistering && (
+              <div>
+                <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700">
+                  Código de Convite
+                </label>
+                <Input
+                  id="inviteCode"
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                  className="mt-1"
+                  placeholder="Digite seu código de convite"
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between">
