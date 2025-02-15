@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,6 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -54,6 +54,7 @@ const formSchema = z.object({
     interaction: z.string(),
     musicality: z.string(),
   }),
+  intervention_activities: z.array(z.string()).optional(),
   notes: z.string().optional(),
 });
 
@@ -78,6 +79,7 @@ export default function InterventionForm() {
         interaction: "",
         musicality: "",
       },
+      intervention_activities: [],
       notes: "",
     },
   });
@@ -155,6 +157,17 @@ export default function InterventionForm() {
       { value: "nao_musical", label: "Não Musical" },
     ],
   };
+
+  const interventionSuggestions = [
+    { value: "canto_livre", label: "Canto Livre" },
+    { value: "improvisacao_instrumental", label: "Improvisação Instrumental" },
+    { value: "composicao", label: "Composição Musical" },
+    { value: "recriacao", label: "Recriação Musical" },
+    { value: "escuta_musical", label: "Escuta Musical" },
+    { value: "movimento_corporal", label: "Movimento Corporal com Música" },
+    { value: "jogos_musicais", label: "Jogos Musicais" },
+    { value: "relaxamento_musical", label: "Relaxamento com Música" },
+  ];
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -237,6 +250,43 @@ export default function InterventionForm() {
                   </FormItem>
                 )}
               />
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Técnicas de Intervenção</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {interventionSuggestions.map((suggestion) => (
+                    <FormField
+                      key={suggestion.value}
+                      control={form.control}
+                      name="intervention_activities"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(suggestion.value)}
+                                onCheckedChange={(checked) => {
+                                  const activities = field.value || [];
+                                  if (checked) {
+                                    field.onChange([...activities, suggestion.value]);
+                                  } else {
+                                    field.onChange(
+                                      activities.filter((value) => value !== suggestion.value)
+                                    );
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {suggestion.label}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
 
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Estado Emocional</h3>
@@ -362,7 +412,7 @@ export default function InterventionForm() {
                     <FormLabel>Observações</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Registre aqui as observações relevantes da sessão"
+                        placeholder="Registre aqui as observações relevantes da sessão, incluindo outras técnicas utilizadas e resultados observados"
                         className="min-h-[100px]"
                         {...field}
                       />
