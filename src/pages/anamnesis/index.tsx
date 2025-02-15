@@ -16,10 +16,15 @@ type Patient = {
   name: string;
 };
 
+type Professional = {
+  email: string;
+};
+
 export default function AnamnesisForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [professionalId, setProfessionalId] = useState<string>("");
+  const [professionalEmail, setProfessionalEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -58,12 +63,13 @@ export default function AnamnesisForm() {
 
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
-        .select("id")
+        .select("id, email")
         .eq("user_id", user.id)
         .single();
 
       if (professionalError) throw professionalError;
       setProfessionalId(professionalData.id);
+      setProfessionalEmail(professionalData.email || user.email || "");
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -198,6 +204,9 @@ export default function AnamnesisForm() {
           </p>
           <p style="color: #6B7280; font-size: 12px;">
             Musetera - Sistema de Gestão para Musicoterapia
+          </p>
+          <p style="color: #6B7280; font-size: 12px;">
+            Profissional: ${professionalEmail}
           </p>
         </div>
       </div>
@@ -339,7 +348,7 @@ export default function AnamnesisForm() {
       fields: [
         {
           key: "communication_skills",
-          label: "Nível de Comunicação",
+          label: "Nível de Comunicaç��o",
           options: [
             { value: "nao_verbal", label: "Não-verbal" },
             { value: "limitada", label: "Comunicação limitada" },
