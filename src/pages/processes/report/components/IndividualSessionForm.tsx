@@ -12,12 +12,24 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
     onChange({ ...content, [key]: value });
   };
 
+  const defaultContent = {
+    data_session: "",
+    objectives: "1. Promover engajamento musical e autoexpressão\n2. Desenvolver habilidades de comunicação não-verbal\n3. Estimular interação social através da música\n4. Trabalhar aspectos emocionais e cognitivos\n5. Aprimorar habilidades motoras através de atividades rítmicas",
+    activities: "- Re-criação musical utilizando instrumentos de percussão e melódicos\n- Improvisação musical livre e direcionada\n- Técnicas receptivas com audição musical selecionada\n- Atividades de movimento corporal com suporte musical\n- Exercícios de coordenação rítmica\n- Jogos musicais interativos",
+    patient_response: "O paciente demonstrou:\n- Engajamento significativo nas atividades propostas\n- Boa resposta às intervenções musicais\n- Progresso na expressão emocional através da música\n- Melhora na interação social durante atividades em grupo\n- Desenvolvimento positivo das habilidades motoras\n- Aumento da atenção e participação nas atividades",
+    observations: "Durante a sessão, observou-se progresso significativo no desenvolvimento musical e terapêutico. O paciente demonstrou maior consciência rítmica, melhor coordenação motora e aumentou sua capacidade de expressão através da música. As intervenções musicoterapêuticas mostraram-se efetivas, contribuindo para o alcance dos objetivos estabelecidos.",
+    next_steps: "Para as próximas sessões, propõe-se:\n1. Intensificar atividades de improvisação musical\n2. Introduzir novos instrumentos musicais\n3. Aumentar complexidade dos exercícios rítmicos\n4. Desenvolver atividades específicas para comunicação não-verbal\n5. Manter foco no desenvolvimento da expressão emocional através da música",
+  };
+
+  // Merge defaultContent with existing content
+  const mergedContent = { ...defaultContent, ...content };
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
         <DateField
           label="Data da Sessão"
-          value={content.data_session || ""}
+          value={mergedContent.data_session}
           onChange={(value) => handleFieldChange("data_session", value)}
         />
       </div>
@@ -29,7 +41,7 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
             key: "objectives",
             label: "Objetivos",
             placeholder: "Ex: Desenvolvimento de habilidades de comunicação não-verbal através da expressão musical",
-            value: content.objectives || "1. Promover autoexpressão através da música\n2. Desenvolver habilidades de comunicação não-verbal\n3. Estimular interação social através de atividades musicais\n4. Trabalhar aspectos emocionais através da expressão sonoro-musical",
+            value: mergedContent.objectives,
             onChange: (value) => handleFieldChange("objectives", value),
           },
         ]}
@@ -42,14 +54,14 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
             key: "activities",
             label: "Atividades Realizadas",
             placeholder: "Descreva as intervenções musicoterapêuticas realizadas",
-            value: content.activities || "- Re-criação musical com instrumentos de percussão\n- Improvisação musical livre\n- Técnicas receptivas com audição musical\n- Composição musical terapêutica\n- Movimento corporal com suporte musical",
+            value: mergedContent.activities,
             onChange: (value) => handleFieldChange("activities", value),
           },
           {
             key: "patient_response",
             label: "Resposta do Paciente",
             placeholder: "Como o paciente respondeu às intervenções musicoterapêuticas",
-            value: content.patient_response || "- Demonstrou engajamento nas atividades propostas\n- Apresentou respostas rítmicas consistentes\n- Estabeleceu contato visual durante as interações musicais\n- Expressou emoções através da improvisação musical\n- Manteve atenção sustentada durante as atividades",
+            value: mergedContent.patient_response,
             onChange: (value) => handleFieldChange("patient_response", value),
           },
         ]}
@@ -62,14 +74,14 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
             key: "observations",
             label: "Observações",
             placeholder: "Observações sobre o processo musicoterapêutico",
-            value: content.observations || "O paciente demonstrou progresso significativo na expressão sonoro-musical, evidenciando desenvolvimento nas áreas de comunicação não-verbal e interação social através das experiências musicais propostas.",
+            value: mergedContent.observations,
             onChange: (value) => handleFieldChange("observations", value),
           },
           {
             key: "next_steps",
             label: "Próximos Passos",
             placeholder: "Planejamento para as próximas intervenções",
-            value: content.next_steps || "- Expandir repertório de experiências musicais\n- Introduzir novas técnicas de improvisação\n- Desenvolver atividades de composição musical terapêutica\n- Aprofundar trabalho com expressão emocional através da música",
+            value: mergedContent.next_steps,
             onChange: (value) => handleFieldChange("next_steps", value),
           },
         ]}
