@@ -1,49 +1,76 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { SelectField } from "@/pages/anamnesis/components/SelectField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Calendar as CalendarIcon, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
-import { IndividualSessionForm } from "./components/IndividualSessionForm";
-import { GroupSessionForm } from "./components/GroupSessionForm";
-import { DailyEvolutionForm } from "./components/DailyEvolutionForm";
-import { MonthlyEvolutionForm } from "./components/MonthlyEvolutionForm";
-import { SemesterEvolutionForm } from "./components/SemesterEvolutionForm";
-import { TherapeuticDischargeForm } from "./components/TherapeuticDischargeForm";
-import { AdministrativeDischargeForm } from "./components/AdministrativeDischargeForm";
-import { TeaScaleForm } from "./components/TeaScaleForm";
-import { FamilyReportForm } from "./components/FamilyReportForm";
-import { TeamReportForm } from "./components/TeamReportForm";
-import { TechnicalReportForm } from "./components/TechnicalReportForm";
 import html2pdf from "html2pdf.js";
-import type { ReportFormData } from "./types";
+import { IndividualSessionForm } from "./components/IndividualSessionForm";
 
-const reportTypes = [
-  { value: "individual_session", label: "Relatório de Sessão Individual" },
-  { value: "group_session", label: "Relatório de Sessão em Grupo" },
-  { value: "daily_evolution", label: "Evolução Diária" },
-  { value: "monthly_evolution", label: "Evolução Mensal" },
-  { value: "semester_evolution", label: "Evolução Semestral" },
-  { value: "therapeutic_discharge", label: "Alta Terapêutica" },
-  { value: "administrative_discharge", label: "Alta Administrativa" },
-  { value: "tea_scale", label: "Escala TEA" },
-  { value: "family_report", label: "Relatório para Família" },
-  { value: "team_report", label: "Relatório para Equipe" },
-  { value: "technical_report", label: "Relatório Técnico" },
-];
+const formSchema = z.object({
+  patient_id: z.string({
+    required_error: "Por favor, selecione um paciente",
+  }),
+  date: z.date({
+    required_error: "Por favor, selecione uma data",
+  }),
+  type: z.string(),
+  content: z.record(z.any()),
+});
 
-export default function ReportPage() {
+type FormValues = z.infer<typeof formSchema>;
+
+type Patient = {
+  id: string;
+  name: string;
+};
+
+export default function ReportForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [patients, setPatients] = useState<Array<{ id: string; name: string }>>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [formData, setFormData] = useState<ReportFormData>({
-    patient_id: "",
-    type: "individual_session",
-    content: {},
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: {},
+    },
   });
 
   const formatNameFromEmail = (email: string) => {
@@ -55,7 +82,7 @@ export default function ReportPage() {
   };
 
   useEffect(() => {
-    async function loadData() {
+    async function fetchData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Usuário não autenticado");
@@ -69,10 +96,7 @@ export default function ReportPage() {
           .order("name");
 
         if (error) throw error;
-
-        if (data) {
-          setPatients(data);
-        }
+        setPatients(data || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast({
@@ -83,95 +107,66 @@ export default function ReportPage() {
       }
     }
 
-    loadData();
+    fetchData();
   }, [toast]);
 
-  const generatePDF = async (patientName: string) => {
+  const generatePDF = async (patientName: string, formData: FormValues) => {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      // Se for um relatório de sessão individual, usamos um formato específico
-      if (formData.type === 'individual_session') {
-        const sections = [
-          {
-            title: "Dados da Sessão",
-            fields: [
-              { key: "data_session", label: "Data da Sessão" },
-              { key: "objectives", label: "Objetivos" }
-            ]
-          },
-          {
-            title: "Desenvolvimento",
-            fields: [
-              { key: "activities", label: "Atividades Realizadas" },
-              { key: "patient_response", label: "Resposta do Paciente" }
-            ]
-          },
-          {
-            title: "Conclusão",
-            fields: [
-              { key: "observations", label: "Observações" },
-              { key: "next_steps", label: "Próximos Passos" }
-            ]
+      const sections = [
+        {
+          title: "Dados da Sessão",
+          fields: [
+            { key: "objectives", label: "Objetivos", value: content.objectives },
+          ]
+        },
+        {
+          title: "Desenvolvimento",
+          fields: [
+            { key: "activities", label: "Atividades Realizadas", value: content.activities },
+            { key: "patient_response", label: "Resposta do Paciente", value: content.patient_response },
+          ]
+        },
+        {
+          title: "Conclusão",
+          fields: [
+            { key: "observations", label: "Observações", value: content.observations },
+            { key: "next_steps", label: "Próximos Passos", value: content.next_steps },
+          ]
+        }
+      ];
+
+      return sections
+        .map(section => {
+          const sectionContent = section.fields
+            .filter(field => field.value)
+            .map(field => `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                  ${field.label}
+                </div>
+                <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                  ${String(field.value || '').split('\n').join('<br>')}
+                </div>
+              </div>
+            `)
+            .join('');
+
+          if (sectionContent) {
+            return `
+              <div style="margin-bottom: 28px;">
+                <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+                  ${section.title}
+                </h2>
+                ${sectionContent}
+              </div>
+            `;
           }
-        ];
-
-        return sections
-          .map(section => {
-            const sectionContent = section.fields
-              .filter(field => content[field.key])
-              .map(field => `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                    ${field.label}
-                  </div>
-                  <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                    ${String(content[field.key] || '').split('\n').join('<br>')}
-                  </div>
-                </div>
-              `)
-              .join('');
-
-            if (sectionContent) {
-              return `
-                <div style="margin-bottom: 28px;">
-                  <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-                    ${section.title}
-                  </h2>
-                  ${sectionContent}
-                </div>
-              `;
-            }
-            return '';
-          })
-          .join('');
-      }
-
-      // Para outros tipos de relatório, mantemos a lógica anterior
-      return Object.entries(content)
-        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-        .map(([key, value]) => {
-          const label = key.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-
-          return `
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                ${label}
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(value).split('\n').join('<br>')}
-              </div>
-            </div>
-          `;
+          return '';
         })
         .join('');
     };
-
-    console.log("Conteúdo do formulário:", formData.content); // Para debug
-
-    const reportTitle = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
 
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
@@ -180,13 +175,13 @@ export default function ReportPage() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${reportTitle}
+            Relatório de Sessão Individual
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data: ${new Date().toLocaleDateString('pt-BR')}
+            Data da Sessão: ${format(formData.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
 
@@ -213,7 +208,7 @@ export default function ReportPage() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${reportTitle} - ${patientName}.pdf`,
+      filename: `Relatório de Sessão Individual - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
@@ -231,114 +226,236 @@ export default function ReportPage() {
     await html2pdf().from(element).set(opt).save();
   };
 
-  const handleDownloadPDF = async () => {
-    if (!formData.patient_id) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao gerar relatório",
-        description: "Por favor, selecione um paciente",
-      });
-      return;
-    }
-
+  const onSubmit = async (data: FormValues) => {
     try {
-      const { error } = await supabase.from("reports").insert({
-        patient_id: formData.patient_id,
-        type: formData.type,
-        content: formData.content,
-      });
+      const selectedPatient = patients.find(p => p.id === data.patient_id);
+      if (!selectedPatient) {
+        throw new Error("Paciente não encontrado");
+      }
+
+      const { error } = await supabase
+        .from("assessments")
+        .insert({
+          patient_id: data.patient_id,
+          date: format(data.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+          type: data.type,
+          content: data.content,
+        });
 
       if (error) throw error;
 
-      const selectedPatient = patients.find(p => p.id === formData.patient_id);
-      if (selectedPatient) {
-        await generatePDF(selectedPatient.name);
-      }
+      await generatePDF(selectedPatient.name, data);
 
       toast({
         title: "Sucesso!",
-        description: "Relatório salvo e PDF gerado com sucesso.",
+        description: "Relatório registrado e PDF gerado com sucesso.",
       });
 
-      navigate("/processos/relatorios");
+      navigate("/processes");
     } catch (error) {
-      console.error("Erro ao gerar relatório:", error);
+      console.error("Erro ao salvar relatório:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao gerar relatório",
-        description: "Ocorreu um erro ao tentar gerar o relatório",
+        title: "Erro",
+        description: "Não foi possível salvar o relatório.",
       });
     }
   };
 
-  const renderForm = () => {
-    const props = {
-      content: formData.content,
-      onChange: (content: Record<string, any>) =>
-        setFormData((prev) => ({ ...prev, content })),
-    };
-
-    switch (formData.type) {
+  const renderFormByType = (type: string) => {
+    switch (type) {
       case "individual_session":
-        return <IndividualSessionForm {...props} />;
+        return (
+          <IndividualSessionForm
+            content={form.getValues("content")}
+            onChange={(content) => form.setValue("content", content)}
+          />
+        );
       case "group_session":
-        return <GroupSessionForm {...props} />;
+        return null;
       case "daily_evolution":
-        return <DailyEvolutionForm {...props} />;
+        return null;
       case "monthly_evolution":
-        return <MonthlyEvolutionForm {...props} />;
+        return null;
       case "semester_evolution":
-        return <SemesterEvolutionForm {...props} />;
+        return null;
       case "therapeutic_discharge":
-        return <TherapeuticDischargeForm {...props} />;
+        return null;
       case "administrative_discharge":
-        return <AdministrativeDischargeForm {...props} />;
+        return null;
       case "tea_scale":
-        return <TeaScaleForm {...props} />;
+        return null;
       case "family_report":
-        return <FamilyReportForm {...props} />;
+        return null;
       case "team_report":
-        return <TeamReportForm {...props} />;
+        return null;
       case "technical_report":
-        return <TechnicalReportForm {...props} />;
+        return null;
       default:
         return null;
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Novo Relatório</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <PatientSelect
-          patients={patients}
-          selectedPatient={formData.patient_id}
-          onSelect={(value) =>
-            setFormData((prev) => ({ ...prev, patient_id: value }))
-          }
-        />
+    <div className="container mx-auto p-4 space-y-6 max-w-4xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Novo Relatório</CardTitle>
+          <CardDescription>
+            Registre um novo relatório para o paciente
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="patient_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Paciente</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um paciente" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {patients.map((patient) => (
+                          <SelectItem key={patient.id} value={patient.id}>
+                            {patient.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <SelectField
-          label="Tipo de Relatório"
-          value={formData.type}
-          onChange={(value) =>
-            setFormData((prev) => ({
-              ...prev,
-              type: value as ReportFormData["type"],
-              content: {},
-            }))
-          }
-          options={reportTypes}
-        />
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data do Relatório</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: ptBR })
+                            ) : (
+                              <span>Selecione uma data</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {renderForm()}
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Relatório</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("content", {});
+                      }}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo de relatório" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="individual_session">
+                          Relatório de Sessão Individual
+                        </SelectItem>
+                        <SelectItem value="group_session">
+                          Relatório de Sessão em Grupo
+                        </SelectItem>
+                        <SelectItem value="daily_evolution">
+                          Evolução Diária
+                        </SelectItem>
+                        <SelectItem value="monthly_evolution">
+                          Evolução Mensal
+                        </SelectItem>
+                        <SelectItem value="semester_evolution">
+                          Evolução Semestral
+                        </SelectItem>
+                        <SelectItem value="therapeutic_discharge">
+                          Alta Terapêutica
+                        </SelectItem>
+                        <SelectItem value="administrative_discharge">
+                          Alta Administrativa
+                        </SelectItem>
+                        <SelectItem value="tea_scale">
+                          Escala TEA
+                        </SelectItem>
+                        <SelectItem value="family_report">
+                          Relatório para Família
+                        </SelectItem>
+                        <SelectItem value="team_report">
+                          Relatório para Equipe
+                        </SelectItem>
+                        <SelectItem value="technical_report">
+                          Relatório Técnico
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <Button onClick={handleDownloadPDF} className="w-full">
-          Baixar Relatório
-        </Button>
-      </CardContent>
-    </Card>
+              {form.watch("type") && renderFormByType(form.watch("type"))}
+
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/processes")}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  <Download className="mr-2 h-4 w-4" />
+                  Gerar Relatório
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
