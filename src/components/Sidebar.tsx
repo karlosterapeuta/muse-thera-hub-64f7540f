@@ -84,11 +84,14 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       <div className="p-4 border-t border-gray-200">
         <Button
           variant="ghost"
-          className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-100"
+          className={cn(
+            "w-full justify-center text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors",
+            !collapsed && "justify-start"
+          )}
           onClick={() => handleNavigation("/")}
         >
           <LogOut size={20} />
-          {!collapsed && <span>Sair do Sistema</span>}
+          {!collapsed && <span className="ml-3">Sair do Sistema</span>}
         </Button>
       </div>
     </div>
