@@ -24,7 +24,7 @@ export default function AnamnesisForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [professionalId, setProfessionalId] = useState<string>("");
-  const [professionalEmail, setProfessionalEmail] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -61,15 +61,16 @@ export default function AnamnesisForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
+      setUserEmail(user.email || "");
+
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
-        .select("id, email")
+        .select("id")
         .eq("user_id", user.id)
         .single();
 
       if (professionalError) throw professionalError;
       setProfessionalId(professionalData.id);
-      setProfessionalEmail(professionalData.email || user.email || "");
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -206,7 +207,7 @@ export default function AnamnesisForm() {
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p style="color: #6B7280; font-size: 12px;">
-            Profissional: ${professionalEmail}
+            Profissional: ${userEmail}
           </p>
         </div>
       </div>
@@ -336,7 +337,7 @@ export default function AnamnesisForm() {
           options: [
             { value: "popular", label: "Música Popular" },
             { value: "infantil", label: "Música Infantil" },
-            { value: "classica", label: "Música Clássica" },
+            { value: "classica", label: "Música Cl��ssica" },
             { value: "religiosa", label: "Música Religiosa" },
             { value: "variada", label: "Preferências Variadas" },
           ],
