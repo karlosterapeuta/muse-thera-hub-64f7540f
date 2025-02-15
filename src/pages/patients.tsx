@@ -59,8 +59,10 @@ export default function Patients() {
   async function onSubmit(values: FormValues) {
     // Converter a data para o formato esperado pelo Supabase (YYYY-MM-DD)
     const formattedValues = {
-      ...values,
+      name: values.name, // Garantir que name é passado
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
+      contact: values.contact || null,
+      responsible: values.responsible || null,
     };
 
     const { data, error } = await supabase
