@@ -580,6 +580,17 @@ export type Database = {
         | "session_summary"
         | "discharge_summary"
         | "assessment_report"
+        | "individual_session"
+        | "group_session"
+        | "daily_evolution"
+        | "monthly_evolution"
+        | "semester_evolution"
+        | "therapeutic_discharge"
+        | "administrative_discharge"
+        | "tea_scale"
+        | "family_report"
+        | "team_report"
+        | "technical_report"
     }
     CompositeTypes: {
       [_ in never]: never

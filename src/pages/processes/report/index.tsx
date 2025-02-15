@@ -7,19 +7,31 @@ import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
 import { SelectField } from "@/pages/anamnesis/components/SelectField";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
-import { ProgressReportForm } from "./components/ProgressReportForm";
-import { SessionSummaryForm } from "./components/SessionSummaryForm";
-import { DischargeSummaryForm } from "./components/DischargeSummaryForm";
-import { AssessmentReportForm } from "./components/AssessmentReportForm";
+import { IndividualSessionForm } from "./components/IndividualSessionForm";
+import { GroupSessionForm } from "./components/GroupSessionForm";
+import { DailyEvolutionForm } from "./components/DailyEvolutionForm";
+import { MonthlyEvolutionForm } from "./components/MonthlyEvolutionForm";
+import { SemesterEvolutionForm } from "./components/SemesterEvolutionForm";
+import { TherapeuticDischargeForm } from "./components/TherapeuticDischargeForm";
+import { AdministrativeDischargeForm } from "./components/AdministrativeDischargeForm";
+import { TeaScaleForm } from "./components/TeaScaleForm";
+import { FamilyReportForm } from "./components/FamilyReportForm";
+import { TeamReportForm } from "./components/TeamReportForm";
+import { TechnicalReportForm } from "./components/TechnicalReportForm";
 import type { ReportFormData } from "./types";
 
 const reportTypes = [
-  { value: "initial_evaluation", label: "Avaliação Inicial" },
-  { value: "progress_report", label: "Relatório de Progresso" },
-  { value: "session_summary", label: "Resumo de Sessão" },
-  { value: "discharge_summary", label: "Resumo de Alta" },
-  { value: "assessment_report", label: "Relatório de Avaliação" },
+  { value: "individual_session", label: "Relatório de Sessão Individual" },
+  { value: "group_session", label: "Relatório de Sessão em Grupo" },
+  { value: "daily_evolution", label: "Evolução Diária" },
+  { value: "monthly_evolution", label: "Evolução Mensal" },
+  { value: "semester_evolution", label: "Evolução Semestral" },
+  { value: "therapeutic_discharge", label: "Alta Terapêutica" },
+  { value: "administrative_discharge", label: "Alta Administrativa" },
+  { value: "tea_scale", label: "Escala TEA" },
+  { value: "family_report", label: "Relatório para Família" },
+  { value: "team_report", label: "Relatório para Equipe" },
+  { value: "technical_report", label: "Relatório Técnico" },
 ];
 
 export default function ReportPage() {
@@ -28,7 +40,7 @@ export default function ReportPage() {
   const [patients, setPatients] = useState<Array<{ id: string; name: string }>>([]);
   const [formData, setFormData] = useState<ReportFormData>({
     patient_id: "",
-    type: "initial_evaluation",
+    type: "individual_session",
     content: {},
   });
 
@@ -108,16 +120,28 @@ export default function ReportPage() {
     };
 
     switch (formData.type) {
-      case "initial_evaluation":
-        return <InitialEvaluationForm {...props} />;
-      case "progress_report":
-        return <ProgressReportForm {...props} />;
-      case "session_summary":
-        return <SessionSummaryForm {...props} />;
-      case "discharge_summary":
-        return <DischargeSummaryForm {...props} />;
-      case "assessment_report":
-        return <AssessmentReportForm {...props} />;
+      case "individual_session":
+        return <IndividualSessionForm {...props} />;
+      case "group_session":
+        return <GroupSessionForm {...props} />;
+      case "daily_evolution":
+        return <DailyEvolutionForm {...props} />;
+      case "monthly_evolution":
+        return <MonthlyEvolutionForm {...props} />;
+      case "semester_evolution":
+        return <SemesterEvolutionForm {...props} />;
+      case "therapeutic_discharge":
+        return <TherapeuticDischargeForm {...props} />;
+      case "administrative_discharge":
+        return <AdministrativeDischargeForm {...props} />;
+      case "tea_scale":
+        return <TeaScaleForm {...props} />;
+      case "family_report":
+        return <FamilyReportForm {...props} />;
+      case "team_report":
+        return <TeamReportForm {...props} />;
+      case "technical_report":
+        return <TechnicalReportForm {...props} />;
       default:
         return null;
     }

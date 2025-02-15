@@ -26,11 +26,17 @@ type Report = {
 };
 
 const reportTypeLabels: Record<string, string> = {
-  initial_evaluation: "Avaliação Inicial",
-  progress_report: "Relatório de Progresso",
-  session_summary: "Resumo de Sessão",
-  discharge_summary: "Resumo de Alta",
-  assessment_report: "Relatório de Avaliação",
+  individual_session: "Relatório de Sessão Individual",
+  group_session: "Relatório de Sessão em Grupo",
+  daily_evolution: "Evolução Diária",
+  monthly_evolution: "Evolução Mensal",
+  semester_evolution: "Evolução Semestral",
+  therapeutic_discharge: "Alta Terapêutica",
+  administrative_discharge: "Alta Administrativa",
+  tea_scale: "Escala TEA",
+  family_report: "Relatório para Família",
+  team_report: "Relatório para Equipe",
+  technical_report: "Relatório Técnico",
 };
 
 export default function ReportsPage() {
