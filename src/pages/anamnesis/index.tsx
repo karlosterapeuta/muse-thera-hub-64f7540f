@@ -92,45 +92,65 @@ export default function AnamnesisForm() {
       const sections = [
         {
           title: "Identificação e Histórico",
-          fields: ["main_complaint", "medical_history", "current_medications", "family_history"]
+          fields: [
+            { key: "main_complaint", label: "Queixa Principal" },
+            { key: "medical_history", label: "Histórico Médico" },
+            { key: "current_medications", label: "Medicações Atuais" },
+            { key: "family_history", label: "Histórico Familiar" }
+          ]
         },
         {
           title: "Avaliação Musical",
-          fields: ["musical_background", "musical_preferences", "musical_skills", "emotional_response_to_music"]
+          fields: [
+            { key: "musical_background", label: "Experiência Musical" },
+            { key: "musical_preferences", label: "Preferências Musicais" },
+            { key: "musical_skills", label: "Habilidades Musicais" },
+            { key: "emotional_response_to_music", label: "Resposta Emocional à Música" }
+          ]
         },
         {
           title: "Avaliação Comunicativa",
-          fields: ["communication_skills", "social_interaction", "emotional_expression"]
+          fields: [
+            { key: "communication_skills", label: "Habilidades de Comunicação" },
+            { key: "social_interaction", label: "Interação Social" },
+            { key: "emotional_expression", label: "Expressão Emocional" }
+          ]
         },
         {
           title: "Avaliação Sensório-Motora",
-          fields: ["motor_skills", "auditory_processing", "rhythmic_responses"]
+          fields: [
+            { key: "motor_skills", label: "Habilidades Motoras" },
+            { key: "auditory_processing", label: "Processamento Auditivo" },
+            { key: "rhythmic_responses", label: "Respostas Rítmicas" }
+          ]
         },
         {
           title: "Avaliação Cognitiva",
-          fields: ["cognitive_functions", "attention_span", "memory_function"]
+          fields: [
+            { key: "cognitive_functions", label: "Funções Cognitivas" },
+            { key: "attention_span", label: "Capacidade de Atenção" },
+            { key: "memory_function", label: "Função da Memória" }
+          ]
         },
         {
           title: "Observações Adicionais",
-          fields: ["observations"]
+          fields: [
+            { key: "observations", label: "Observações" }
+          ]
         }
       ];
 
       return sections.map(section => {
         const sectionContent = section.fields
-          .filter(field => content[field])
+          .filter(field => content[field.key])
           .map(field => {
-            const label = field.split('_')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ');
-
             return `
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #374151;">
-                  ${label}
+                  ${field.label}
                 </div>
                 <div style="background-color: #F9FAFB; padding: 12px; border-radius: 6px; border: 1px solid #E5E7EB; white-space: pre-wrap; font-size: 13px; line-height: 1.6; color: #1F2937;">
-                  ${String(content[field]).replace(/\n/g, '<br>')}
+                  ${String(content[field.key]).replace(/\n/g, '<br>')}
                 </div>
               </div>
             `;
@@ -164,7 +184,7 @@ export default function AnamnesisForm() {
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 14px;">
-            Data: ${new Date().toLocaleDateString('pt-BR')}
+            Data da Avaliação: ${new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
 
