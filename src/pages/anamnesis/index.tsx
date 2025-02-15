@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +31,7 @@ export default function AnamnesisForm() {
     musical_background: "",
     musical_preferences: "",
     musical_skills: "",
-    emotional_response: "",
+    emotional_response_to_music: "", // Corrigido de emotional_response
     social_interaction: "",
     communication_skills: "",
     emotional_expression: "",
