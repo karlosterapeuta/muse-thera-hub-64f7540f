@@ -1,5 +1,5 @@
-
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,18 +13,13 @@ export function FamilyReportForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <FormSection
-        title="Identificação"
-        fields={[
-          {
-            key: "report_date",
-            label: "Data do Relatório",
-            placeholder: "dd/mm/aaaa",
-            value: content.report_date || "",
-            onChange: (value) => handleFieldChange("report_date", value),
-          },
-        ]}
-      />
+      <div className="mb-6">
+        <DateField
+          label="Data do Relatório"
+          value={content.report_date || ""}
+          onChange={(value) => handleFieldChange("report_date", value)}
+        />
+      </div>
 
       <FormSection
         title="Evolução"
