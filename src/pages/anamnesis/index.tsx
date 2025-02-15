@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
-import { FormSection } from "./components/FormSection";
+import { SelectField } from "./components/SelectField";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 type Patient = {
   id: string;
@@ -21,34 +23,23 @@ export default function AnamnesisForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    // Identificação e Histórico
     main_complaint: "",
     medical_history: "",
     current_medications: "",
     family_history: "",
-    
-    // Avaliação Musical
     musical_background: "",
     musical_preferences: "",
     musical_skills: "",
-    emotional_response_to_music: "",
-    
-    // Avaliação Comunicativa
+    emotional_response: "",
     social_interaction: "",
-    communication_skills: "",
+    communication_level: "",
     emotional_expression: "",
-    
-    // Avaliação Sensório-Motora
     motor_skills: "",
     auditory_processing: "",
     rhythmic_responses: "",
-    
-    // Avaliação Cognitiva
     cognitive_functions: "",
     attention_span: "",
     memory_function: "",
-    
-    // Observações Gerais
     observations: "",
   });
 
@@ -150,30 +141,25 @@ export default function AnamnesisForm() {
         {
           key: "main_complaint",
           label: "Queixa Principal",
-          placeholder: "Descreva a queixa principal e motivo do encaminhamento",
-          value: formData.main_complaint,
-          onChange: (value: string) => handleInputChange("main_complaint", value),
+          options: [
+            { value: "ansiedade", label: "Ansiedade" },
+            { value: "depressao", label: "Depressão" },
+            { value: "autismo", label: "Transtorno do Espectro Autista" },
+            { value: "desenvolvimento", label: "Atraso no Desenvolvimento" },
+            { value: "comportamental", label: "Problemas Comportamentais" },
+            { value: "outro", label: "Outro" },
+          ],
         },
         {
           key: "medical_history",
-          label: "Histórico Médico e Diagnóstico",
-          placeholder: "Condições médicas, diagnósticos, tratamentos anteriores",
-          value: formData.medical_history,
-          onChange: (value: string) => handleInputChange("medical_history", value),
-        },
-        {
-          key: "current_medications",
-          label: "Medicamentos em Uso",
-          placeholder: "Medicamentos atuais, dosagens e frequência",
-          value: formData.current_medications,
-          onChange: (value: string) => handleInputChange("current_medications", value),
-        },
-        {
-          key: "family_history",
-          label: "Histórico Familiar Relevante",
-          placeholder: "Condições hereditárias, histórico familiar relevante",
-          value: formData.family_history,
-          onChange: (value: string) => handleInputChange("family_history", value),
+          label: "Histórico Médico",
+          options: [
+            { value: "sem_historico", label: "Sem histórico relevante" },
+            { value: "neurologico", label: "Condição Neurológica" },
+            { value: "psiquiatrico", label: "Condição Psiquiátrica" },
+            { value: "desenvolvimento", label: "Atraso no Desenvolvimento" },
+            { value: "outro", label: "Outro" },
+          ],
         },
       ],
     },
@@ -182,31 +168,24 @@ export default function AnamnesisForm() {
       fields: [
         {
           key: "musical_background",
-          label: "Histórico Musical",
-          placeholder: "Formação musical, experiências prévias, instrumentos",
-          value: formData.musical_background,
-          onChange: (value: string) => handleInputChange("musical_background", value),
+          label: "Experiência Musical",
+          options: [
+            { value: "nenhuma", label: "Nenhuma experiência" },
+            { value: "basica", label: "Experiência básica" },
+            { value: "intermediaria", label: "Experiência intermediária" },
+            { value: "avancada", label: "Experiência avançada" },
+          ],
         },
         {
           key: "musical_preferences",
           label: "Preferências Musicais",
-          placeholder: "Gêneros musicais, artistas, canções significativas",
-          value: formData.musical_preferences,
-          onChange: (value: string) => handleInputChange("musical_preferences", value),
-        },
-        {
-          key: "musical_skills",
-          label: "Habilidades Musicais",
-          placeholder: "Capacidades vocais, instrumentais, percepção musical",
-          value: formData.musical_skills,
-          onChange: (value: string) => handleInputChange("musical_skills", value),
-        },
-        {
-          key: "emotional_response_to_music",
-          label: "Resposta Emocional à Música",
-          placeholder: "Reações emocionais, memórias associadas, ISO musical",
-          value: formData.emotional_response_to_music,
-          onChange: (value: string) => handleInputChange("emotional_response_to_music", value),
+          options: [
+            { value: "popular", label: "Música Popular" },
+            { value: "infantil", label: "Música Infantil" },
+            { value: "classica", label: "Música Clássica" },
+            { value: "religiosa", label: "Música Religiosa" },
+            { value: "variada", label: "Preferências Variadas" },
+          ],
         },
       ],
     },
@@ -214,25 +193,24 @@ export default function AnamnesisForm() {
       title: "Avaliação Comunicativa",
       fields: [
         {
+          key: "communication_level",
+          label: "Nível de Comunicação",
+          options: [
+            { value: "nao_verbal", label: "Não-verbal" },
+            { value: "limitada", label: "Comunicação limitada" },
+            { value: "funcional", label: "Comunicação funcional" },
+            { value: "fluente", label: "Comunicação fluente" },
+          ],
+        },
+        {
           key: "social_interaction",
           label: "Interação Social",
-          placeholder: "Padrões de socialização, vínculos, isolamento",
-          value: formData.social_interaction,
-          onChange: (value: string) => handleInputChange("social_interaction", value),
-        },
-        {
-          key: "communication_skills",
-          label: "Habilidades de Comunicação",
-          placeholder: "Comunicação verbal/não-verbal, expressão musical",
-          value: formData.communication_skills,
-          onChange: (value: string) => handleInputChange("communication_skills", value),
-        },
-        {
-          key: "emotional_expression",
-          label: "Expressão Emocional",
-          placeholder: "Regulação emocional, expressão através da música",
-          value: formData.emotional_expression,
-          onChange: (value: string) => handleInputChange("emotional_expression", value),
+          options: [
+            { value: "isolado", label: "Isolamento social" },
+            { value: "limitada", label: "Interação limitada" },
+            { value: "seletiva", label: "Interação seletiva" },
+            { value: "adequada", label: "Interação adequada" },
+          ],
         },
       ],
     },
@@ -242,23 +220,22 @@ export default function AnamnesisForm() {
         {
           key: "motor_skills",
           label: "Habilidades Motoras",
-          placeholder: "Motricidade, coordenação, resposta motora à música",
-          value: formData.motor_skills,
-          onChange: (value: string) => handleInputChange("motor_skills", value),
-        },
-        {
-          key: "auditory_processing",
-          label: "Processamento Auditivo",
-          placeholder: "Discriminação sonora, atenção auditiva, memória musical",
-          value: formData.auditory_processing,
-          onChange: (value: string) => handleInputChange("auditory_processing", value),
+          options: [
+            { value: "comprometida", label: "Severamente comprometida" },
+            { value: "limitada", label: "Limitada" },
+            { value: "moderada", label: "Moderada" },
+            { value: "adequada", label: "Adequada" },
+          ],
         },
         {
           key: "rhythmic_responses",
           label: "Respostas Rítmicas",
-          placeholder: "Sincronização, pulsação, padrões rítmicos",
-          value: formData.rhythmic_responses,
-          onChange: (value: string) => handleInputChange("rhythmic_responses", value),
+          options: [
+            { value: "ausente", label: "Ausente" },
+            { value: "inconsistente", label: "Inconsistente" },
+            { value: "moderada", label: "Moderada" },
+            { value: "adequada", label: "Adequada" },
+          ],
         },
       ],
     },
@@ -266,37 +243,24 @@ export default function AnamnesisForm() {
       title: "Avaliação Cognitiva",
       fields: [
         {
-          key: "cognitive_functions",
-          label: "Funções Cognitivas",
-          placeholder: "Atenção, memória, funções executivas musicais",
-          value: formData.cognitive_functions,
-          onChange: (value: string) => handleInputChange("cognitive_functions", value),
-        },
-        {
           key: "attention_span",
           label: "Capacidade de Atenção",
-          placeholder: "Foco em atividades musicais, tempo de engajamento",
-          value: formData.attention_span,
-          onChange: (value: string) => handleInputChange("attention_span", value),
+          options: [
+            { value: "muito_baixa", label: "Muito baixa" },
+            { value: "baixa", label: "Baixa" },
+            { value: "moderada", label: "Moderada" },
+            { value: "adequada", label: "Adequada" },
+          ],
         },
         {
           key: "memory_function",
           label: "Função da Memória",
-          placeholder: "Memória musical, recordação de letras e melodias",
-          value: formData.memory_function,
-          onChange: (value: string) => handleInputChange("memory_function", value),
-        },
-      ],
-    },
-    {
-      title: "Observações Gerais",
-      fields: [
-        {
-          key: "observations",
-          label: "Observações Técnicas",
-          placeholder: "Observações específicas, recomendações adicionais",
-          value: formData.observations,
-          onChange: (value: string) => handleInputChange("observations", value),
+          options: [
+            { value: "comprometida", label: "Comprometida" },
+            { value: "limitada", label: "Limitada" },
+            { value: "moderada", label: "Moderada" },
+            { value: "preservada", label: "Preservada" },
+          ],
         },
       ],
     },
@@ -306,7 +270,7 @@ export default function AnamnesisForm() {
     <div className="container mx-auto p-4 space-y-6 max-w-4xl">
       <Card>
         <CardHeader>
-          <CardTitle>Anamnese Musicoterapêutica Profissional</CardTitle>
+          <CardTitle>Anamnese Musicoterapêutica</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -317,12 +281,33 @@ export default function AnamnesisForm() {
             />
             
             {sections.map((section) => (
-              <FormSection
-                key={section.title}
-                title={section.title}
-                fields={section.fields}
-              />
+              <div key={section.title} className="space-y-4">
+                <h3 className="text-lg font-semibold pt-4">{section.title}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {section.fields.map((field) => (
+                    <SelectField
+                      key={field.key}
+                      label={field.label}
+                      value={formData[field.key as keyof typeof formData]}
+                      onChange={(value) => handleInputChange(field.key as keyof typeof formData, value)}
+                      options={field.options}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold pt-4">Observações Adicionais</h3>
+              <div>
+                <Label>Observações</Label>
+                <Textarea
+                  value={formData.observations}
+                  onChange={(e) => handleInputChange("observations", e.target.value)}
+                  placeholder="Adicione observações relevantes que não se encaixam nas categorias acima"
+                />
+              </div>
+            </div>
 
             <div className="flex justify-end space-x-4">
               <Button
