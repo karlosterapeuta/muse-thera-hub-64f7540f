@@ -19,7 +19,7 @@ export default function Layout() {
             <Button
               variant="ghost"
               size="icon"
-              className="fixed top-4 left-4 z-50 lg:hidden hover:bg-primary/10 transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center shadow-sm border border-gray-200 bg-white/80 backdrop-blur-sm"
+              className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden hover:bg-primary/10 transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center shadow-md border border-gray-200/80 bg-white/90 backdrop-blur-md hover:scale-105 active:scale-95"
             >
               <Menu className="h-5 w-5 text-primary" />
             </Button>
