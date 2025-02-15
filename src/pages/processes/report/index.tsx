@@ -82,6 +82,8 @@ export default function ReportPage() {
     }
 
     try {
+      console.log("Conteúdo do formulário:", formData.content);
+
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
         type: formData.type,
@@ -93,83 +95,82 @@ export default function ReportPage() {
       const selectedPatient = patients.find(p => p.id === formData.patient_id);
       const reportType = reportTypes.find(t => t.value === formData.type)?.label || "Relatório";
 
-      // Criar um elemento temporário para renderizar o PDF
       const element = document.createElement('div');
       
-      // Construir o HTML do relatório
-      let reportContent = '';
-      Object.entries(formData.content).forEach(([key, value]) => {
-        if (value) {
-          const label = key.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-          
-          let displayValue = value;
-          if (Array.isArray(value)) {
-            displayValue = value.join('\n');
-          }
-          
-          reportContent += `
-            <div style="margin-bottom: 15px;">
-              <div style="font-weight: bold; margin-bottom: 5px; color: #333;">${label}:</div>
-              <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap;">${String(displayValue).replace(/\n/g, '<br>')}</div>
-            </div>
-          `;
-        }
-      });
+      const generateContentHTML = (content: Record<string, any>) => {
+        return Object.entries(content)
+          .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+          .map(([key, value]) => {
+            const label = key.split('_')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ');
+
+            let displayValue = value;
+            if (Array.isArray(value)) {
+              displayValue = value.join('\n');
+            } else if (typeof value === 'object') {
+              displayValue = JSON.stringify(value, null, 2);
+            }
+
+            return `
+              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1F2937;">
+                  ${label}
+                </div>
+                <div style="background-color: #F3F4F6; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 13px; line-height: 1.5; color: #374151;">
+                  ${String(displayValue).replace(/\n/g, '<br>')}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      };
 
       element.innerHTML = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px;">${reportType}</h1>
-            <h2 style="font-size: 18px; margin-bottom: 5px;">Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
-            <p style="color: #666;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+        <div style="padding: 40px 20px; font-family: Arial, sans-serif;">
+          <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="color: #2563EB; font-size: 24px; margin-bottom: 16px;">
+              ${reportType}
+            </h1>
+            <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+              Paciente: ${selectedPatient?.name || 'Não especificado'}
+            </h2>
+            <p style="color: #6B7280; font-size: 14px;">
+              Data: ${new Date().toLocaleDateString('pt-BR')}
+            </p>
           </div>
-          
-          <div style="margin: 20px 0;">
-            ${reportContent}
+
+          <div style="max-width: 700px; margin: 0 auto;">
+            ${generateContentHTML(formData.content)}
           </div>
-          
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 12px; color: #666;">
-            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+
+          <div style="margin-top: 40px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px;">
+            <p style="color: #6B7280; font-size: 12px;">
+              Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
           </div>
         </div>
       `;
 
-      // Configurações para a geração do PDF
-      const opt = {
-        margin: 10,
+      console.log("HTML gerado:", element.innerHTML);
+
+      const worker = html2pdf().from(element).set({
+        margin: [15, 15, 15, 15],
         filename: `${reportType} - ${selectedPatient?.name || 'Relatório'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+        html2canvas: {
           scale: 2,
           useCORS: true,
           letterRendering: true,
-          logging: false
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          hotfixes: ["px_scaling"]
-        }
-      };
+      });
 
-      // Gerar o PDF
-      await html2pdf()
-        .from(element)
-        .set(opt)
-        .toPdf()
-        .get('pdf')
-        .then((pdf) => {
-          pdf.setProperties({
-            title: reportType,
-            subject: `Relatório - ${selectedPatient?.name}`,
-            creator: 'MuseWave',
-            author: 'MuseWave'
-          });
-        })
-        .save();
+      await worker.save();
 
       toast({
         title: "Relatório gerado com sucesso",
