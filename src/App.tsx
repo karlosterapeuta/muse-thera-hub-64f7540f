@@ -1,52 +1,75 @@
 
+import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Layout from "./components/Layout";
 import Professional from "./pages/Professional";
 import Processes from "./pages/processes";
-import Evaluation from "./pages/evaluation";
 import AnamnesisForm from "./pages/anamnesis";
-import Patients from "./pages/patients";
-import TreatmentPlanForm from "./pages/treatment-plan";
 import InterventionForm from "./pages/intervention";
-import ReevaluationForm from "./pages/reevaluation";
 import ReportPage from "./pages/processes/report";
 import ReportsPage from "./pages/processes/reports";
+import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
+import Index from "./pages/Index";
 
-const queryClient = new QueryClient();
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/professional",
+        element: <Professional />,
+      },
+      {
+        path: "/processes",
+        element: <Processes />,
+      },
+      {
+        path: "/anamnesis",
+        element: <AnamnesisForm />,
+      },
+      {
+        path: "/intervention",
+        element: <InterventionForm />,
+      },
+      {
+        path: "/processos/relatorios",
+        element: <ReportsPage />,
+      },
+      {
+        path: "/processos/relatorio",
+        element: <ReportPage />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+function App() {
+  return (
+    <>
+      <RouterProvider router={router} />
       <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/professional" element={<Professional />} />
-            <Route path="/patients" element={<Patients />} />
-            <Route path="/processes" element={<Processes />} />
-            <Route path="/processos/avaliacao" element={<Evaluation />} />
-            <Route path="/anamnesis" element={<AnamnesisForm />} />
-            <Route path="/processos/plano" element={<TreatmentPlanForm />} />
-            <Route path="/intervention" element={<InterventionForm />} />
-            <Route path="/processos/reavaliacao" element={<ReevaluationForm />} />
-            <Route path="/processos/relatorio" element={<ReportPage />} />
-            <Route path="/processos/relatorios" element={<ReportsPage />} />
-            <Route path="/hawkins" element={<div>Hawkins</div>} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </>
+  );
+}
 
 export default App;
