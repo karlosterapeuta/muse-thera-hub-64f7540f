@@ -156,7 +156,7 @@ export default function Professional() {
         <div className="flex flex-col items-center space-y-4 mb-8">
           <div className="relative">
             <Avatar className="w-32 h-32">
-              <AvatarImage src={avatarUrl || "/lovable-uploads/2d7fe17c-c370-4c99-8211-c3e8f49ad3d1.png"} alt="Foto do Profissional" />
+              <AvatarImage src={avatarUrl || ""} alt="Foto do Profissional" />
               <AvatarFallback>MT</AvatarFallback>
             </Avatar>
             {isEditing && (
