@@ -30,8 +30,10 @@ const upcomingSessions = [
 export default function Dashboard() {
   return (
     <div className="space-y-6 md:space-y-8 animate-fadeIn">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+      <div className="flex justify-center items-center w-full mb-6">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 text-center">
+          Dashboard
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
