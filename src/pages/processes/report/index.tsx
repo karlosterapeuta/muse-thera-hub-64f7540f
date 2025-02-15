@@ -69,20 +69,26 @@ export default function ReportPage() {
     }
 
     try {
+      console.log("Enviando dados do relatório:", formData); // Debug log
+
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
         type: formData.type,
         content: formData.content,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao inserir relatório:", error); // Debug log
+        throw error;
+      }
+
+      console.log("Relatório salvo com sucesso"); // Debug log
 
       toast({
         title: "Relatório salvo com sucesso",
         description: "O relatório foi registrado no sistema",
       });
 
-      // Corrigindo o redirecionamento para a rota correta
       navigate("/processos/relatorios");
     } catch (error) {
       console.error("Erro ao salvar relatório:", error);
