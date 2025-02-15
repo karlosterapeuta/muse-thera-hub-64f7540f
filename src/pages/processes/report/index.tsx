@@ -82,8 +82,6 @@ export default function ReportPage() {
     }
 
     try {
-      console.log("Conteúdo do formulário:", formData.content); // Debug
-
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
         type: formData.type,
@@ -97,45 +95,50 @@ export default function ReportPage() {
 
       const element = document.createElement('div');
       element.innerHTML = `
-        <div style="padding: 40px; font-family: Arial, sans-serif;">
+        <div style="padding: 20px; font-family: Arial, sans-serif;">
           <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="color: #2563eb; margin-bottom: 10px; font-size: 24px;">${reportType}</h1>
             <h2 style="color: #374151; font-size: 18px;">Paciente: ${selectedPatient?.name || 'Não especificado'}</h2>
             <p style="color: #6B7280;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
           </div>
 
-          <div id="report-content" style="margin-top: 30px;">
+          <div style="margin-top: 20px;">
             ${Object.entries(formData.content || {}).map(([key, value]) => {
               if (!value) return '';
               const label = key.split('_')
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
               
+              // Converte arrays para string se necessário
+              const displayValue = Array.isArray(value) ? value.join(', ') : value;
+              
               return `
-                <div style="margin-bottom: 20px; border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background-color: #FFFFFF;">
-                  <h3 style="color: #1F2937; margin-bottom: 10px; font-size: 16px; font-weight: 600;">${label}</h3>
-                  <div style="color: #374151; line-height: 1.6; white-space: pre-wrap;">
-                    ${String(value).replace(/\n/g, '<br>')}
+                <div style="margin-bottom: 20px;">
+                  <h3 style="color: #1F2937; margin-bottom: 8px; font-size: 16px; font-weight: 600;">${label}</h3>
+                  <div style="color: #374151; line-height: 1.6; white-space: pre-wrap; background-color: #F9FAFB; padding: 12px; border-radius: 6px;">
+                    ${String(displayValue).replace(/\n/g, '<br>')}
                   </div>
                 </div>
               `;
             }).join('')}
           </div>
 
-          <div style="text-align: center; margin-top: 40px; color: #6B7280; font-size: 12px;">
-            <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+          <div style="text-align: center; margin-top: 40px; border-top: 1px solid #E5E7EB; padding-top: 20px;">
+            <p style="color: #6B7280; font-size: 12px;">
+              Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
           </div>
         </div>
       `;
 
       const opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: `${reportType} - ${selectedPatient?.name || 'Relatório'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
-          logging: true, // Adiciona logs para debug
-          useCORS: true
+          useCORS: true,
+          logging: true
         },
         jsPDF: { 
           unit: 'mm', 
@@ -144,7 +147,7 @@ export default function ReportPage() {
         }
       };
 
-      await html2pdf().from(element).set(opt).save();
+      await html2pdf().set(opt).from(element).save();
 
       toast({
         title: "Relatório gerado com sucesso",
