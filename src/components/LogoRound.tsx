@@ -20,7 +20,7 @@ const LogoRound = ({ className, size = "md" }: LogoRoundProps) => {
       className
     )}>
       <img
-        src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
+        src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
         alt="Musetera Logo"
         className="w-full h-full object-contain"
       />
