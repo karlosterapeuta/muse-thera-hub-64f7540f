@@ -16,7 +16,7 @@ export default function Processes() {
       title: "Anamnese",
       description: "Coleta inicial de informações e histórico do paciente",
       icon: ClipboardList,
-      path: "/processos/anamnese"
+      path: "/anamnesis"
     },
     {
       title: "Avaliação",
