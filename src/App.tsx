@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import Professional from "./pages/Professional";
 import Processes from "./pages/processes";
 import Evaluation from "./pages/evaluation";
+import Patients from "./pages/patients";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/professional" element={<Professional />} />
-            <Route path="/patients" element={<div>Patients</div>} />
+            <Route path="/patients" element={<Patients />} />
             <Route path="/processes" element={<Processes />} />
             <Route path="/processos/avaliacao" element={<Evaluation />} />
             <Route path="/processos/anamnese" element={<div>Em desenvolvimento</div>} />
