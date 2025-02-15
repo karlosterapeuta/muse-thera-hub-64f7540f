@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Layout() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +32,10 @@ export default function Layout() {
       ) : (
         <Sidebar />
       )}
-      <main className="flex-1 p-4 md:p-6 lg:p-8 bg-gray-50 min-h-screen">
+      <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background min-h-screen relative">
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>
