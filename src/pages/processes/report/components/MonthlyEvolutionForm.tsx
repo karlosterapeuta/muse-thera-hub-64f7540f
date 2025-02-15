@@ -1,5 +1,5 @@
-
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,18 +13,13 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <FormSection
-        title="Período"
-        fields={[
-          {
-            key: "month",
-            label: "Mês/Ano",
-            placeholder: "mm/aaaa",
-            value: content.month || "",
-            onChange: (value) => handleFieldChange("month", value),
-          },
-        ]}
-      />
+      <div className="mb-6">
+        <DateField
+          label="Data"
+          value={content.month || ""}
+          onChange={(value) => handleFieldChange("month", value)}
+        />
+      </div>
 
       <FormSection
         title="Evolução"

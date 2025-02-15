@@ -1,5 +1,6 @@
 
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,16 +14,17 @@ export function DailyEvolutionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
+      <div className="mb-6">
+        <DateField
+          label="Data"
+          value={content.date || ""}
+          onChange={(value) => handleFieldChange("date", value)}
+        />
+      </div>
+
       <FormSection
         title="Informações do Dia"
         fields={[
-          {
-            key: "date",
-            label: "Data",
-            placeholder: "dd/mm/aaaa",
-            value: content.date || "",
-            onChange: (value) => handleFieldChange("date", value),
-          },
           {
             key: "emotional_state",
             label: "Estado Emocional",

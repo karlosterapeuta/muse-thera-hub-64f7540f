@@ -1,5 +1,5 @@
-
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,35 +13,37 @@ export function AdministrativeDischargeForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <FormSection
-        title="Dados da Alta"
-        fields={[
-          {
-            key: "discharge_date",
-            label: "Data da Alta",
-            placeholder: "dd/mm/aaaa",
-            value: content.discharge_date || "",
-            onChange: (value) => handleFieldChange("discharge_date", value),
-          },
-          {
-            key: "reason",
-            label: "Motivo",
-            placeholder: "Motivo da alta administrativa",
-            value: content.reason || "1. Motivo Principal:\n- [Especificar o motivo administrativo]\n\n2. Contextualização:\n- Período de atendimento realizado\n- Frequência das sessões\n- Histórico de participação",
-            onChange: (value) => handleFieldChange("reason", value),
-          },
-        ]}
-      />
+      <div className="mb-6">
+        <DateField
+          label="Data da Alta"
+          value={content.discharge_date || ""}
+          onChange={(value) => handleFieldChange("discharge_date", value)}
+        />
+      </div>
 
       <FormSection
-        title="Informações Adicionais"
+        title="Informações da Alta"
         fields={[
           {
-            key: "observations",
-            label: "Observações",
-            placeholder: "Observações relevantes",
-            value: content.observations || "1. Status do Processo Terapêutico:\n- Resumo do desenvolvimento alcançado\n- Pontos relevantes do processo\n- Recomendações para continuidade do cuidado\n\n2. Considerações Administrativas:\n- Documentação necessária\n- Procedimentos realizados\n- Encaminhamentos sugeridos",
-            onChange: (value) => handleFieldChange("observations", value),
+            key: "reason",
+            label: "Motivo da Alta",
+            placeholder: "Descreva o motivo da alta",
+            value: content.reason || "",
+            onChange: (value) => handleFieldChange("reason", value),
+          },
+          {
+            key: "recommendations",
+            label: "Recomendações",
+            placeholder: "Anote as recomendações para o paciente",
+            value: content.recommendations || "",
+            onChange: (value) => handleFieldChange("recommendations", value),
+          },
+          {
+            key: "follow_up",
+            label: "Acompanhamento",
+            placeholder: "Descreva o plano de acompanhamento",
+            value: content.follow_up || "",
+            onChange: (value) => handleFieldChange("follow_up", value),
           },
         ]}
       />

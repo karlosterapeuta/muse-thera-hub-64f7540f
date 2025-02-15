@@ -1,5 +1,5 @@
-
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,18 +13,13 @@ export function TherapeuticDischargeForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <FormSection
-        title="Dados da Alta"
-        fields={[
-          {
-            key: "discharge_date",
-            label: "Data da Alta",
-            placeholder: "dd/mm/aaaa",
-            value: content.discharge_date || "",
-            onChange: (value) => handleFieldChange("discharge_date", value),
-          },
-        ]}
-      />
+      <div className="mb-6">
+        <DateField
+          label="Data da Alta"
+          value={content.discharge_date || ""}
+          onChange={(value) => handleFieldChange("discharge_date", value)}
+        />
+      </div>
 
       <FormSection
         title="Avaliação Final"

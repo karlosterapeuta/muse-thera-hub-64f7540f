@@ -1,5 +1,5 @@
-
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,18 +13,13 @@ export function TeaScaleForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <FormSection
-        title="Dados da Avaliação"
-        fields={[
-          {
-            key: "evaluation_date",
-            label: "Data da Avaliação",
-            placeholder: "dd/mm/aaaa",
-            value: content.evaluation_date || "",
-            onChange: (value) => handleFieldChange("evaluation_date", value),
-          },
-        ]}
-      />
+      <div className="mb-6">
+        <DateField
+          label="Data da Avaliação"
+          value={content.evaluation_date || ""}
+          onChange={(value) => handleFieldChange("evaluation_date", value)}
+        />
+      </div>
 
       <FormSection
         title="Áreas Avaliadas"
