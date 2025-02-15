@@ -83,10 +83,122 @@ export default function TreatmentPlanForm() {
     }
   };
 
+  const translateApproachType = (value: string): string => {
+    const translations: Record<string, string> = {
+      'behavioral': 'Musicoterapia Comportamental',
+      'nordoff_robbins': 'Modelo Nordoff-Robbins',
+      'neurologic': 'Musicoterapia Neurológica (NMT)',
+      'analytical': 'Musicoterapia Analítica',
+      'creative': 'Processos Criativos em Musicoterapia',
+      'gim': 'Imagery Guiada e Música (GIM)',
+    };
+    return translations[value] || value;
+  };
+
+  const translateInterventionFrequency = (value: string): string => {
+    const translations: Record<string, string> = {
+      'twice_week': '2 vezes por semana',
+      'weekly': 'Semanal',
+      'biweekly': 'Quinzenal',
+      'monthly': 'Mensal',
+    };
+    return translations[value] || value;
+  };
+
+  const translateSessionDuration = (value: string): string => {
+    const translations: Record<string, string> = {
+      '30min': '30 minutos',
+      '45min': '45 minutos',
+      '60min': '60 minutos',
+      '90min': '90 minutos',
+    };
+    return translations[value] || value;
+  };
+
+  const translateTreatmentModel = (value: string): string => {
+    const translations: Record<string, string> = {
+      'individual': 'Terapia Individual',
+      'group': 'Terapia em Grupo',
+      'family': 'Terapia Familiar',
+      'mixed': 'Modelo Misto',
+    };
+    return translations[value] || value;
+  };
+
+  const translateMusicalMethods = (value: string): string => {
+    const translations: Record<string, string> = {
+      'improvisation': 'Improvisação Clínica',
+      'receptive': 'Escuta Musical Terapêutica',
+      'recreation': 'Re-criação Musical',
+      'composition': 'Composição Terapêutica',
+      'combined': 'Métodos Combinados',
+    };
+    return translations[value] || value;
+  };
+
+  const translateTherapeuticFocus = (value: string): string => {
+    const translations: Record<string, string> = {
+      'emotional': 'Regulação Emocional',
+      'cognitive': 'Desenvolvimento Cognitivo',
+      'motor': 'Habilidades Motoras',
+      'social': 'Interação Social',
+      'communication': 'Comunicação',
+      'multiple': 'Múltiplos Focos',
+    };
+    return translations[value] || value;
+  };
+
+  const translateExpectedOutcomes = (value: string): string => {
+    const translations: Record<string, string> = {
+      'emotional_regulation': 'Melhora na Regulação Emocional',
+      'skill_development': 'Desenvolvimento de Habilidades',
+      'social_improvement': 'Progresso na Interação Social',
+      'functional_gains': 'Ganhos Funcionais',
+      'quality_life': 'Aumento na Qualidade de Vida',
+    };
+    return translations[value] || value;
+  };
+
+  const translateInterventionStrategies = (value: string): string => {
+    const translations: Record<string, string> = {
+      'active_music': 'Musicoterapia Ativa',
+      'receptive_music': 'Musicoterapia Receptiva',
+      'combined_approach': 'Abordagem Combinada',
+      'iso_principle': 'Princípio ISO',
+      'entrainment': 'Entrainment',
+    };
+    return translations[value] || value;
+  };
+
+  const translateMusicalResources = (value: string): string => {
+    const translations: Record<string, string> = {
+      'percussion': 'Instrumentos de Percussão',
+      'melodic': 'Instrumentos Melódicos',
+      'voice': 'Recursos Vocais',
+      'technology': 'Tecnologia Musical',
+      'mixed_resources': 'Recursos Mistos',
+    };
+    return translations[value] || value;
+  };
+
+  // Atualiza a função generatePDF para usar as traduções
   const generatePDF = async (patientName: string) => {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
+      const translatedContent = {
+        ...content,
+        approach_type: translateApproachType(content.approach_type),
+        intervention_frequency: translateInterventionFrequency(content.intervention_frequency),
+        session_duration: translateSessionDuration(content.session_duration),
+        treatment_model: translateTreatmentModel(content.treatment_model),
+        musical_methods: translateMusicalMethods(content.musical_methods),
+        therapeutic_focus: translateTherapeuticFocus(content.therapeutic_focus),
+        expected_outcomes: translateExpectedOutcomes(content.expected_outcomes),
+        intervention_strategies: translateInterventionStrategies(content.intervention_strategies),
+        musical_resources: translateMusicalResources(content.musical_resources),
+      };
+
       const sections = [
         {
           title: "Configuração do Tratamento",
@@ -128,14 +240,14 @@ export default function TreatmentPlanForm() {
       return sections
         .map(section => {
           const sectionContent = section.fields
-            .filter(field => content[field.key])
+            .filter(field => translatedContent[field.key])
             .map(field => `
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
                   ${field.label}
                 </div>
                 <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
-                  ${String(content[field.key] || '').split('\n').join('<br>')}
+                  ${String(translatedContent[field.key] || '').split('\n').join('<br>')}
                 </div>
               </div>
             `)
