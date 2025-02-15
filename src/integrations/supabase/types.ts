@@ -395,6 +395,81 @@ export type Database = {
           },
         ]
       }
+      treatment_plans: {
+        Row: {
+          additional_notes: string | null
+          approach_type: string | null
+          created_at: string | null
+          evaluation_criteria: string | null
+          expected_outcomes: string | null
+          id: string
+          intervention_frequency: string | null
+          intervention_strategies: string | null
+          musical_methods: string | null
+          musical_resources: string | null
+          patient_id: string | null
+          professional_id: string | null
+          session_duration: string | null
+          status: string | null
+          therapeutic_focus: string | null
+          treatment_model: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          additional_notes?: string | null
+          approach_type?: string | null
+          created_at?: string | null
+          evaluation_criteria?: string | null
+          expected_outcomes?: string | null
+          id?: string
+          intervention_frequency?: string | null
+          intervention_strategies?: string | null
+          musical_methods?: string | null
+          musical_resources?: string | null
+          patient_id?: string | null
+          professional_id?: string | null
+          session_duration?: string | null
+          status?: string | null
+          therapeutic_focus?: string | null
+          treatment_model?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          additional_notes?: string | null
+          approach_type?: string | null
+          created_at?: string | null
+          evaluation_criteria?: string | null
+          expected_outcomes?: string | null
+          id?: string
+          intervention_frequency?: string | null
+          intervention_strategies?: string | null
+          musical_methods?: string | null
+          musical_resources?: string | null
+          patient_id?: string | null
+          professional_id?: string | null
+          session_duration?: string | null
+          status?: string | null
+          therapeutic_focus?: string | null
+          treatment_model?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_plans_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatment_plans_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       User: {
         Row: {
           createdAt: string
