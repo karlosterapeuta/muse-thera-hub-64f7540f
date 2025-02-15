@@ -2,6 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CalendarDays, Users } from "lucide-react";
+import LogoRound from "@/components/LogoRound";
 
 const data = [
   { name: "Jan", sessions: 20 },
@@ -30,7 +31,8 @@ const upcomingSessions = [
 export default function Dashboard() {
   return (
     <div className="space-y-6 md:space-y-8 animate-fadeIn">
-      <div className="flex justify-center items-center w-full mb-6">
+      <div className="flex flex-col items-center justify-center w-full mb-6 space-y-4">
+        <LogoRound size="lg" className="animate-pulse" />
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 text-center">
           Dashboard
         </h1>
