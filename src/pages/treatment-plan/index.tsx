@@ -187,15 +187,16 @@ export default function TreatmentPlanForm() {
     const generateContentHTML = (content: Record<string, any>) => {
       const translatedContent = {
         ...content,
-        approach_type: translateApproachType(content.approach_type),
-        intervention_frequency: translateInterventionFrequency(content.intervention_frequency),
-        session_duration: translateSessionDuration(content.session_duration),
-        treatment_model: translateTreatmentModel(content.treatment_model),
-        musical_methods: translateMusicalMethods(content.musical_methods),
-        therapeutic_focus: translateTherapeuticFocus(content.therapeutic_focus),
-        expected_outcomes: translateExpectedOutcomes(content.expected_outcomes),
-        intervention_strategies: translateInterventionStrategies(content.intervention_strategies),
-        musical_resources: translateMusicalResources(content.musical_resources),
+        approach_type: content.approach_type ? translateApproachType(content.approach_type) : '',
+        intervention_frequency: content.intervention_frequency ? translateInterventionFrequency(content.intervention_frequency) : '',
+        session_duration: content.session_duration ? translateSessionDuration(content.session_duration) : '',
+        treatment_model: content.treatment_model ? translateTreatmentModel(content.treatment_model) : '',
+        musical_methods: content.musical_methods ? translateMusicalMethods(content.musical_methods) : '',
+        therapeutic_focus: content.therapeutic_focus ? translateTherapeuticFocus(content.therapeutic_focus) : '',
+        expected_outcomes: content.expected_outcomes ? translateExpectedOutcomes(content.expected_outcomes) : '',
+        intervention_strategies: content.intervention_strategies ? translateInterventionStrategies(content.intervention_strategies) : '',
+        musical_resources: content.musical_resources ? translateMusicalResources(content.musical_resources) : '',
+        additional_notes: content.additional_notes || ''
       };
 
       const sections = [
@@ -267,62 +268,72 @@ export default function TreatmentPlanForm() {
         .join('');
     };
 
-    element.innerHTML = `
-      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
-          <div style="margin-bottom: 24px;">
-            <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+    try {
+      element.innerHTML = `
+        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+            <div style="margin-bottom: 24px;">
+              <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+            </div>
+            <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+              Plano Terapêutico Musicoterapêutico
+            </h1>
+            <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+              Paciente: ${patientName || 'Não informado'}
+            </h2>
+            <p style="color: #6B7280; font-size: 14px;">
+              Data: ${new Date().toLocaleDateString('pt-BR')}
+            </p>
           </div>
-          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
-            Plano Terapêutico Musicoterapêutico
-          </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
-            Paciente: ${patientName}
-          </h2>
-          <p style="color: #6B7280; font-size: 14px;">
-            Data: ${new Date().toLocaleDateString('pt-BR')}
-          </p>
+
+          <div style="margin-bottom: 32px;">
+            ${generateContentHTML(formData)}
+          </div>
+
+          <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Musetera - Sistema de Gestão para Musicoterapia
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Musicoterapeuta: ${userName || 'Não informado'}
+            </p>
+            <p style="color: #6B7280; font-size: 11px;">
+              Email: ${userEmail || 'Não informado'}
+            </p>
+          </div>
         </div>
+      `;
 
-        <div style="margin-bottom: 32px;">
-          ${generateContentHTML(formData)}
-        </div>
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `Plano Terapêutico - ${patientName}.pdf`,
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+        },
+      };
 
-        <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musetera - Sistema de Gestão para Musicoterapia
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}
-          </p>
-          <p style="color: #6B7280; font-size: 11px;">
-            Email: ${userEmail}
-          </p>
-        </div>
-      </div>
-    `;
+      await html2pdf().from(element).set(opt).save();
 
-    const opt = {
-      margin: [20, 20, 20, 20],
-      filename: `Plano Terapêutico - ${patientName}.pdf`,
-      pagebreak: { mode: 'avoid-all' },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-      },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        backgroundColor: '#ffffff',
-      },
-    };
-
-    await html2pdf().from(element).set(opt).save();
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o PDF. Por favor, tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
