@@ -22,7 +22,7 @@ type Report = {
   created_at: string;
   patient: {
     name: string;
-  };
+  } | null;
 };
 
 const reportTypeLabels: Record<string, string> = {
@@ -45,10 +45,10 @@ export default function ReportsPage() {
         const { data, error } = await supabase
           .from("reports")
           .select(`
-            id,
-            type,
-            created_at,
-            patient:patients(name)
+            *,
+            patient:patients!reports_patient_id_fkey (
+              name
+            )
           `)
           .order("created_at", { ascending: false });
 
