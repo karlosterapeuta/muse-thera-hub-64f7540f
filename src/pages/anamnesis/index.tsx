@@ -25,6 +25,7 @@ export default function AnamnesisForm() {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [professionalId, setProfessionalId] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -65,12 +66,13 @@ export default function AnamnesisForm() {
 
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
-        .select("id")
+        .select("id, name")
         .eq("user_id", user.id)
         .single();
 
       if (professionalError) throw professionalError;
       setProfessionalId(professionalData.id);
+      setUserName(professionalData.name || "");
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -203,11 +205,14 @@ export default function AnamnesisForm() {
           <p style="color: #6B7280; font-size: 12px; margin-bottom: 8px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
           </p>
-          <p style="color: #6B7280; font-size: 12px;">
+          <p style="color: #6B7280; font-size: 12px; margin-bottom: 8px;">
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
+          <p style="color: #6B7280; font-size: 12px; margin-bottom: 8px;">
+            Musicoterapeuta: ${userName}
+          </p>
           <p style="color: #6B7280; font-size: 12px;">
-            Profissional: ${userEmail}
+            Email: ${userEmail}
           </p>
         </div>
       </div>
