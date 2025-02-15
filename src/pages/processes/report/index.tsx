@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,42 @@ export default function ReportPage() {
     content: {},
   });
 
+  useEffect(() => {
+    async function loadPatients() {
+      try {
+        const { data, error } = await supabase
+          .from("patients")
+          .select("id, name")
+          .order("name");
+
+        if (error) throw error;
+
+        if (data) {
+          setPatients(data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar pacientes:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar pacientes",
+          description: "Não foi possível carregar a lista de pacientes",
+        });
+      }
+    }
+
+    loadPatients();
+  }, [toast]);
+
   const handleSubmit = async () => {
+    if (!formData.patient_id) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar relatório",
+        description: "Por favor, selecione um paciente",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from("reports").insert({
         patient_id: formData.patient_id,
@@ -49,6 +84,7 @@ export default function ReportPage() {
 
       navigate("/processes");
     } catch (error) {
+      console.error("Erro ao salvar relatório:", error);
       toast({
         variant: "destructive",
         title: "Erro ao salvar relatório",
