@@ -14,6 +14,7 @@ import {
   Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdmin } from "@/hooks/use-admin";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -22,6 +23,7 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { data: isAdmin } = useAdmin();
 
   const menuItems = [
     { icon: BarChart2, text: "Dashboard", path: "/dashboard" },
@@ -29,8 +31,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
-    { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
-  ];
+    isAdmin && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
+  ].filter(Boolean);
 
   const handleNavigation = (path: string) => {
     navigate(path);

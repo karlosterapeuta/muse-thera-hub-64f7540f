@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { useAdmin } from "@/hooks/use-admin";
+import { Navigate } from "react-router-dom";
 
 type InviteCode = {
   id: string;
@@ -26,6 +28,7 @@ type InviteCode = {
 export default function InviteCodes() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { data: isAdmin, isLoading: isLoadingAdmin } = useAdmin();
 
   const { data: inviteCodes, refetch } = useQuery({
     queryKey: ["inviteCodes"],
@@ -38,7 +41,18 @@ export default function InviteCodes() {
       if (error) throw error;
       return data as InviteCode[];
     },
+    enabled: isAdmin,
   });
+
+  // Se ainda está carregando, não mostra nada
+  if (isLoadingAdmin) {
+    return null;
+  }
+
+  // Se não é admin, redireciona para o dashboard
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const generateCode = async () => {
     setIsGenerating(true);

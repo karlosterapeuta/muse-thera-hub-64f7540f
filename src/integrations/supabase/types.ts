@@ -737,6 +737,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       VerificationToken: {
         Row: {
           expires: string
@@ -766,6 +787,12 @@ export type Database = {
         }
         Returns: string
       }
+      has_role: {
+        Args: {
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       validate_and_use_invite_code: {
         Args: {
           invite_code: string
@@ -775,6 +802,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "admin" | "professional"
       invite_code_status: "unused" | "used" | "expired"
       report_type:
         | "initial_evaluation"
