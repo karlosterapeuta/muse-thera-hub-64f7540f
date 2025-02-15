@@ -89,34 +89,78 @@ export default function AnamnesisForm() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, string>) => {
-      return Object.entries(content)
-        .filter(([_, value]) => value !== '')
-        .map(([key, value]) => {
-          const label = key.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
+      const sections = [
+        {
+          title: "Identificação e Histórico",
+          fields: ["main_complaint", "medical_history", "current_medications", "family_history"]
+        },
+        {
+          title: "Avaliação Musical",
+          fields: ["musical_background", "musical_preferences", "musical_skills", "emotional_response_to_music"]
+        },
+        {
+          title: "Avaliação Comunicativa",
+          fields: ["communication_skills", "social_interaction", "emotional_expression"]
+        },
+        {
+          title: "Avaliação Sensório-Motora",
+          fields: ["motor_skills", "auditory_processing", "rhythmic_responses"]
+        },
+        {
+          title: "Avaliação Cognitiva",
+          fields: ["cognitive_functions", "attention_span", "memory_function"]
+        },
+        {
+          title: "Observações Adicionais",
+          fields: ["observations"]
+        }
+      ];
 
+      return sections.map(section => {
+        const sectionContent = section.fields
+          .filter(field => content[field])
+          .map(field => {
+            const label = field.split('_')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ');
+
+            return `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #374151;">
+                  ${label}
+                </div>
+                <div style="background-color: #F9FAFB; padding: 12px; border-radius: 6px; border: 1px solid #E5E7EB; white-space: pre-wrap; font-size: 13px; line-height: 1.6; color: #1F2937;">
+                  ${String(content[field]).replace(/\n/g, '<br>')}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        if (sectionContent) {
           return `
-            <div style="margin-bottom: 20px; page-break-inside: avoid;">
-              <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1F2937;">
-                ${label}
-              </div>
-              <div style="background-color: #F3F4F6; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 13px; line-height: 1.5; color: #374151;">
-                ${String(value).replace(/\n/g, '<br>')}
-              </div>
+            <div style="margin-bottom: 32px;">
+              <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #E5E7EB;">
+                ${section.title}
+              </h2>
+              ${sectionContent}
             </div>
           `;
-        })
-        .join('');
+        }
+        return '';
+      }).join('');
     };
 
     element.innerHTML = `
-      <div style="padding: 40px 20px; font-family: Arial, sans-serif;">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="color: #2563EB; font-size: 24px; margin-bottom: 16px;">
+      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 48px; padding-bottom: 32px; border-bottom: 2px solid #E5E7EB;">
+          <div style="margin-bottom: 24px;">
+            <img src="/favicon.ico" style="width: 64px; height: 64px; margin: 0 auto;">
+          </div>
+          <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
             Anamnese Musicoterapêutica
           </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+          <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 14px;">
@@ -124,20 +168,23 @@ export default function AnamnesisForm() {
           </p>
         </div>
 
-        <div style="max-width: 700px; margin: 0 auto;">
+        <div style="margin-bottom: 48px;">
           ${generateContentHTML(formData)}
         </div>
 
-        <div style="margin-top: 40px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px;">
-          <p style="color: #6B7280; font-size: 12px;">
+        <div style="margin-top: 48px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
+          <p style="color: #6B7280; font-size: 12px; margin-bottom: 8px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          <p style="color: #6B7280; font-size: 12px;">
+            MuseWave - Sistema de Gestão para Musicoterapia
           </p>
         </div>
       </div>
     `;
 
     const opt = {
-      margin: [15, 15, 15, 15],
+      margin: [20, 20, 20, 20],
       filename: `Anamnese - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
@@ -149,6 +196,7 @@ export default function AnamnesisForm() {
         scale: 2,
         useCORS: true,
         letterRendering: true,
+        backgroundColor: '#ffffff',
       },
     };
 
