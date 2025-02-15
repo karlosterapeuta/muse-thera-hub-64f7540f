@@ -1,10 +1,10 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ResponsiveContainer } from 'recharts';
+import { supabase } from "@/integrations/supabase/client";
 import {
   Select,
   SelectContent,
@@ -13,14 +13,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface Patient {
+  id: string;
+  name: string;
+  birth_date: string | null;
+}
+
 export default function Evaluation() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<string>("");
+  const [selectedEvaluation, setSelectedEvaluation] = useState("1");
+  const [selections, setSelections] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    async function fetchPatients() {
+      const { data, error } = await supabase
+        .from('patients')
+        .select('id, name, birth_date')
+        .order('name');
+      
+      if (error) {
+        console.error('Erro ao carregar pacientes:', error);
+        return;
+      }
+      
+      setPatients(data);
+      if (data.length > 0) {
+        setSelectedPatient(data[0].id);
+      }
+    }
+
+    fetchPatients();
+  }, []);
+
+  const selectedPatientData = patients.find(p => p.id === selectedPatient);
+
   const [patient] = useState({
     name: "ANA",
     birthDate: "06/02/2025"
   });
-
-  const [selectedEvaluation, setSelectedEvaluation] = useState("1");
-  const [selections, setSelections] = useState<Record<string, string>>({});
 
   const evaluationSections = [
     {
@@ -163,9 +194,29 @@ export default function Evaluation() {
     <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
       <Card className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold">{patient.name}</h1>
-            <p className="text-sm sm:text-base text-gray-600">Data de Nascimento: {patient.birthDate}</p>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <Select
+              value={selectedPatient}
+              onValueChange={setSelectedPatient}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Selecione o paciente" />
+              </SelectTrigger>
+              <SelectContent>
+                {patients.map((patient) => (
+                  <SelectItem key={patient.id} value={patient.id}>
+                    {patient.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedPatientData && (
+              <div>
+                <p className="text-sm sm:text-base text-gray-600">
+                  Data de Nascimento: {selectedPatientData.birth_date ? new Date(selectedPatientData.birth_date).toLocaleDateString('pt-BR') : 'Não informada'}
+                </p>
+              </div>
+            )}
           </div>
           <Select
             value={selectedEvaluation}
