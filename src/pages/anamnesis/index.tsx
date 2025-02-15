@@ -85,7 +85,6 @@ export default function AnamnesisForm() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      // Função para gerar conteúdo em HTML com base nos checkboxes marcados
       const renderSection = (title: string, items: { id: string, label: string }[]) => {
         const checkedItems = items
           .filter(item => content[item.id])
@@ -126,6 +125,28 @@ export default function AnamnesisForm() {
           ]
         },
         {
+          title: "Comportamento Musical",
+          checkboxes: [
+            { id: "active_musical_listening", label: "Escuta Musical Ativa" },
+            { id: "body_expression", label: "Expressão Corporal" },
+            { id: "sound_responsiveness", label: "Responsividade Sonora" },
+            { id: "spontaneous_vocal", label: "Emissões Vocais Espontâneas" },
+            { id: "instrumental_exploration", label: "Exploração Instrumental" },
+            { id: "adverse_sound_reactivity", label: "Reatividade Sonora Adversa" }
+          ]
+        },
+        {
+          title: "Processamento Sonoro",
+          checkboxes: [
+            { id: "auditory_hypersensitivity", label: "Hipersensibilidade Auditiva" },
+            { id: "positive_musical_response", label: "Resposta Musical Positiva" },
+            { id: "nominal_call_response", label: "Resposta ao Chamado Nominal" },
+            { id: "active_sound_search", label: "Busca Ativa por Sons" },
+            { id: "specific_sound_aversion", label: "Aversão a Sons Específicos" },
+            { id: "sound_source_location", label: "Localização de Fonte Sonora" }
+          ]
+        },
+        {
           title: "Preferências Musicais",
           checkboxes: [
             { id: "children_repertoire", label: "Repertório Infantil" },
@@ -133,10 +154,91 @@ export default function AnamnesisForm() {
             { id: "sacred_gospel", label: "Sacra/Gospel" },
             { id: "brazilian_popular", label: "MPB" },
             { id: "country_music", label: "Sertanejo" },
-            { id: "classical_music", label: "Música Clássica" }
+            { id: "classical_music", label: "Música Clássica" },
+            { id: "other_musical_genres", label: "Outros Gêneros" }
           ]
         },
-        // ... continue com outras seções
+        {
+          title: "Desenvolvimento",
+          checkboxes: [
+            { id: "cervical_control", label: "Controle Cervical" },
+            { id: "crawling_pattern", label: "Padrão de Engatinhar" },
+            { id: "fine_motor_dev", label: "Desenvolvimento Motor Fino" },
+            { id: "independent_sitting", label: "Sentar Independente" },
+            { id: "autonomous_walking", label: "Marcha Autônoma" },
+            { id: "broad_motor_dev", label: "Desenvolvimento Motor Amplo" }
+          ]
+        },
+        {
+          title: "Desenvolvimento da Linguagem",
+          checkboxes: [
+            { id: "babbling", label: "Balbucios" },
+            { id: "simple_phrases", label: "Frases Simples" },
+            { id: "echolalia", label: "Ecolalia" },
+            { id: "first_words", label: "Primeiras Palavras" },
+            { id: "nonverbal_communication", label: "Comunicação Não-verbal" },
+            { id: "verbal_language_absence", label: "Ausência de Linguagem Verbal" }
+          ]
+        },
+        {
+          title: "Comportamento",
+          checkboxes: [
+            { id: "visual_contact", label: "Contato Visual" },
+            { id: "shared_play", label: "Brincadeira Compartilhada" },
+            { id: "stereotyped_behavior", label: "Comportamentos Estereotipados" },
+            { id: "peer_interaction", label: "Interação com Pares" },
+            { id: "social_isolation", label: "Isolamento Social" },
+            { id: "restricted_interests", label: "Interesses Restritos" }
+          ]
+        },
+        {
+          title: "Regulação Emocional",
+          checkboxes: [
+            { id: "irritability", label: "Irritabilidade" },
+            { id: "heteroaggressive", label: "Heteroagressividade" },
+            { id: "emotional_ability", label: "Capacidade Emocional" },
+            { id: "anxiety", label: "Ansiedade" },
+            { id: "frequent_crying", label: "Choro Frequente" },
+            { id: "low_frustration_tolerance", label: "Baixa Tolerância à Frustração" }
+          ]
+        },
+        {
+          title: "Saúde",
+          checkboxes: [
+            { id: "autism_spectrum", label: "Transtorno do Espectro Autista" },
+            { id: "down_syndrome", label: "Síndrome de Down" },
+            { id: "intellectual_disability", label: "Deficiência Intelectual" },
+            { id: "adhd", label: "TDAH" },
+            { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
+            { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
+            { id: "other_diagnoses", label: "Outros Diagnósticos" }
+          ]
+        },
+        {
+          title: "Medicação e Terapias",
+          checkboxes: [
+            { id: "speech_therapy", label: "Fonoaudiologia" },
+            { id: "psychological_support", label: "Acompanhamento Psicológico" },
+            { id: "psychopedagogical", label: "Psicopedagogia" },
+            { id: "occupational_therapy", label: "Terapia Ocupacional" },
+            { id: "physiotherapy", label: "Fisioterapia" },
+            { id: "equine_therapy", label: "Equoterapia" }
+          ]
+        },
+        {
+          title: "Medicação",
+          textFields: [
+            { key: "current_medication", label: "Medicação Atual" }
+          ]
+        },
+        {
+          title: "Aspectos Sociais",
+          textFields: [
+            { key: "school_enrollment", label: "Matrícula Escolar" },
+            { key: "school_adaptation", label: "Adaptação Escolar" },
+            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+          ]
+        }
       ];
 
       return sections.map(section => {
