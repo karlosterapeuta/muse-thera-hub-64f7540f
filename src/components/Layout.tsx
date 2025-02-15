@@ -19,9 +19,9 @@ export default function Layout() {
             <Button
               variant="ghost"
               size="icon"
-              className="fixed top-4 left-4 z-50 lg:hidden"
+              className="fixed top-4 left-4 z-50 lg:hidden hover:bg-primary/10 transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center shadow-sm border border-gray-200 bg-white/80 backdrop-blur-sm"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5 text-primary" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72">
