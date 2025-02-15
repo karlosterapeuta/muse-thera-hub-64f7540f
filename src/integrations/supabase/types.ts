@@ -95,6 +95,105 @@ export type Database = {
           },
         ]
       }
+      anamnesis: {
+        Row: {
+          attention_span: string | null
+          auditory_processing: string | null
+          cognitive_functions: string | null
+          communication_skills: string | null
+          created_at: string | null
+          current_medications: string | null
+          emotional_expression: string | null
+          emotional_response_to_music: string | null
+          family_history: string | null
+          id: string
+          main_complaint: string | null
+          medical_history: string | null
+          memory_function: string | null
+          motor_skills: string | null
+          musical_background: string | null
+          musical_preferences: string | null
+          musical_skills: string | null
+          observations: string | null
+          patient_id: string | null
+          professional_id: string | null
+          rhythmic_responses: string | null
+          social_interaction: string | null
+          therapeutic_goals: string | null
+          treatment_approach: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attention_span?: string | null
+          auditory_processing?: string | null
+          cognitive_functions?: string | null
+          communication_skills?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          emotional_expression?: string | null
+          emotional_response_to_music?: string | null
+          family_history?: string | null
+          id?: string
+          main_complaint?: string | null
+          medical_history?: string | null
+          memory_function?: string | null
+          motor_skills?: string | null
+          musical_background?: string | null
+          musical_preferences?: string | null
+          musical_skills?: string | null
+          observations?: string | null
+          patient_id?: string | null
+          professional_id?: string | null
+          rhythmic_responses?: string | null
+          social_interaction?: string | null
+          therapeutic_goals?: string | null
+          treatment_approach?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attention_span?: string | null
+          auditory_processing?: string | null
+          cognitive_functions?: string | null
+          communication_skills?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          emotional_expression?: string | null
+          emotional_response_to_music?: string | null
+          family_history?: string | null
+          id?: string
+          main_complaint?: string | null
+          medical_history?: string | null
+          memory_function?: string | null
+          motor_skills?: string | null
+          musical_background?: string | null
+          musical_preferences?: string | null
+          musical_skills?: string | null
+          observations?: string | null
+          patient_id?: string | null
+          professional_id?: string | null
+          rhythmic_responses?: string | null
+          social_interaction?: string | null
+          therapeutic_goals?: string | null
+          treatment_approach?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anamnesis_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anamnesis_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessments: {
         Row: {
           content: Json | null
