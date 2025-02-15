@@ -162,11 +162,11 @@ export default function AnamnesisForm() {
           .filter(field => content[field.key])
           .map(field => {
             return `
-              <div style="margin-bottom: 12px;">
-                <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #374151;">
+              <div style="margin-bottom: 8px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
                   ${field.label}
                 </div>
-                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; white-space: pre-wrap; font-size: 11px; line-height: 1.4; color: #1F2937;">
+                <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; white-space: pre-wrap; font-size: 12px; line-height: 1.3; color: #1F2937;">
                   ${String(content[field.key]).replace(/\n/g, '<br>')}
                 </div>
               </div>
@@ -176,8 +176,8 @@ export default function AnamnesisForm() {
 
         if (sectionContent) {
           return `
-            <div style="margin-bottom: 24px;">
-              <h2 style="color: #1F2937; font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            <div style="margin-bottom: 16px;">
+              <h2 style="color: #1F2937; font-size: 15px; font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
                 ${section.title}
               </h2>
               ${sectionContent}
@@ -190,7 +190,7 @@ export default function AnamnesisForm() {
 
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 36px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
           <div style="margin-bottom: 24px;">
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
@@ -200,26 +200,26 @@ export default function AnamnesisForm() {
           <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
             Paciente: ${patientName}
           </h2>
-          <p style="color: #6B7280; font-size: 12px;">
+          <p style="color: #6B7280; font-size: 13px;">
             Data da Avaliação: ${new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
 
-        <div style="margin-bottom: 36px;">
+        <div style="margin-bottom: 24px;">
           ${generateContentHTML(formData)}
         </div>
 
-        <div style="margin-top: 36px; padding-top: 18px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 10px; margin-bottom: 6px;">
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 2px solid #E5E7EB; text-align: center;">
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
           </p>
-          <p style="color: #6B7280; font-size: 10px; margin-bottom: 6px;">
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
-          <p style="color: #6B7280; font-size: 10px; margin-bottom: 6px;">
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
             Musicoterapeuta: ${userName}
           </p>
-          <p style="color: #6B7280; font-size: 10px;">
+          <p style="color: #6B7280; font-size: 11px;">
             Email: ${userEmail}
           </p>
         </div>
