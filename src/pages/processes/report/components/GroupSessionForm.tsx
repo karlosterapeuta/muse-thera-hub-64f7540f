@@ -26,15 +26,15 @@ export function GroupSessionForm({ content, onChange }: FormProps) {
           {
             key: "participants",
             label: "Participantes",
-            placeholder: "Nomes dos participantes",
+            placeholder: "Liste os participantes do grupo",
             value: content.participants || "",
             onChange: (value) => handleFieldChange("participants", value),
           },
           {
             key: "theme",
             label: "Tema",
-            placeholder: "Tema da sessão em grupo",
-            value: content.theme || "",
+            placeholder: "Tema central da sessão em grupo",
+            value: content.theme || "Integração Social através da Música:\n- Desenvolvimento de habilidades sociais\n- Promoção de interação musical em grupo\n- Fortalecimento de vínculos interpessoais",
             onChange: (value) => handleFieldChange("theme", value),
           },
         ]}
@@ -47,14 +47,14 @@ export function GroupSessionForm({ content, onChange }: FormProps) {
             key: "group_dynamics",
             label: "Dinâmica do Grupo",
             placeholder: "Descreva a dinâmica e interações do grupo",
-            value: content.group_dynamics || "",
+            value: content.group_dynamics || "- Realização de círculo musical interativo\n- Atividades de improvisação em grupo\n- Jogos musicais cooperativos\n- Criação coletiva de canções\n- Exercícios de escuta ativa e resposta musical",
             onChange: (value) => handleFieldChange("group_dynamics", value),
           },
           {
             key: "activities",
             label: "Atividades Realizadas",
-            placeholder: "Descreva as atividades realizadas",
-            value: content.activities || "",
+            placeholder: "Descreva as atividades musicoterapêuticas realizadas",
+            value: content.activities || "1. Aquecimento musical com percussão corporal\n2. Improvisação musical coletiva\n3. Re-criação de canções significativas\n4. Composição musical em grupo\n5. Relaxamento com audição musical guiada",
             onChange: (value) => handleFieldChange("activities", value),
           },
         ]}
@@ -66,15 +66,15 @@ export function GroupSessionForm({ content, onChange }: FormProps) {
           {
             key: "group_response",
             label: "Resposta do Grupo",
-            placeholder: "Como o grupo respondeu às atividades",
-            value: content.group_response || "",
+            placeholder: "Como o grupo respondeu às intervenções",
+            value: content.group_response || "O grupo demonstrou:\n- Boa coesão nas atividades musicais\n- Desenvolvimento da escuta mútua\n- Capacidade de sincronização rítmica\n- Expressão emocional através da música\n- Suporte mútuo nas atividades propostas",
             onChange: (value) => handleFieldChange("group_response", value),
           },
           {
             key: "observations",
             label: "Observações",
             placeholder: "Observações gerais sobre a sessão",
-            value: content.observations || "",
+            value: content.observations || "A sessão em grupo promoveu importante desenvolvimento das habilidades sociais através das experiências musicais compartilhadas, fortalecendo vínculos e estimulando a expressão individual dentro do contexto coletivo.",
             onChange: (value) => handleFieldChange("observations", value),
           },
         ]}
