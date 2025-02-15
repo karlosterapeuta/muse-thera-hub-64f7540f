@@ -40,7 +40,6 @@ export default function ReportsPage() {
 
   useEffect(() => {
     async function loadReports() {
-      console.log("Carregando relatórios...");
       try {
         const { data, error } = await supabase
           .from("reports")
@@ -55,7 +54,7 @@ export default function ReportsPage() {
           .order("created_at", { ascending: false });
 
         if (error) {
-          console.error("Erro Supabase:", error);
+          console.error("Erro ao carregar relatórios:", error);
           throw error;
         }
 
