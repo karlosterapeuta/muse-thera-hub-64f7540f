@@ -10,14 +10,83 @@ export default function Evaluation() {
     birthDate: "06/02/2025"
   });
 
-  const restrictiveBehaviors = [
-    { parameter: "Estereotipias", value: "não" },
-    { parameter: "Agressividade", value: "não" },
-    { parameter: "Desinteresse", value: "não" },
-    { parameter: "Passividade", value: "não" },
-    { parameter: "Resistência", value: "não" },
-    { parameter: "Reclusão (isolamento)", value: "não" },
-    { parameter: "Pirraça", value: "não" },
+  const evaluationSections = [
+    {
+      title: "Comportamentos restritivos",
+      description: "Não = 2, Pouco = 1, Muito = 0",
+      parameters: [
+        "Estereotipias",
+        "Agressividade",
+        "Desinteresse",
+        "Passividade",
+        "Resistência",
+        "Reclusão (isolamento)",
+        "Pirraça"
+      ]
+    },
+    {
+      title: "Interação social / Cognição",
+      description: "Não = 0, Pouco = 1, Muito = 2",
+      parameters: [
+        "Contato visual",
+        "Comunicação verbal",
+        "Interação com instrumentos musicais",
+        "Interação com outros objetos",
+        "Interação com educador ou musicoterapeuta",
+        "Interação com pais (se aplicável)",
+        "Interação com pares (se aplicável)",
+        "Atenção",
+        "Imitação"
+      ]
+    },
+    {
+      title: "Percepção / Exploração rítmica",
+      description: "Não = 0, Pouco = 1, Muito = 2",
+      parameters: [
+        "Pulso interno (x2)",
+        "Regulação temporal (x2)",
+        "Apoio (x2)",
+        "Ritmo real (x2)",
+        "Contrastes de andamento (x2)"
+      ]
+    },
+    {
+      title: "Percepção / Exploração sonora",
+      description: "Não = 0, Pouco = 1, Muito = 2",
+      parameters: [
+        "Som/silêncio",
+        "Timbre",
+        "Planos de altura",
+        "Movimento sonoro",
+        "Contrastes de intensidade",
+        "Repetição de ideias rítmicas e/ou melódicas",
+        "Senso de conclusão"
+      ]
+    },
+    {
+      title: "Exploração vocal",
+      description: "Não = 0, Pouco = 1, Muito = 2",
+      parameters: [
+        "Vocalizações",
+        "Balbucios",
+        "Sílabas canônica",
+        "Imitação de canções (x2)",
+        "Criação vocal (x2)"
+      ]
+    },
+    {
+      title: "Movimentação corporal com a música",
+      description: "Não = 0, Pouco = 1, Muito = 2",
+      parameters: [
+        "Andar",
+        "Correr",
+        "Parar",
+        "Dançar",
+        "Pular",
+        "Gesticular",
+        "Movimentar-se no lugar"
+      ]
+    }
   ];
 
   const categoryData = [
@@ -49,47 +118,52 @@ export default function Evaluation() {
           </div>
         </div>
 
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Comportamentos restritivos</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Parâmetros</TableHead>
-                <TableHead className="w-24 text-center">Não</TableHead>
-                <TableHead className="w-24 text-center">Pouco</TableHead>
-                <TableHead className="w-24 text-center">Muito</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {restrictiveBehaviors.map((behavior, index) => (
-                <TableRow key={index}>
-                  <TableCell>{behavior.parameter}</TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <div className="w-4 h-4 rounded-full border-2 border-red-500 bg-white" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <div className="w-4 h-4 rounded-full border-2 border-yellow-500 bg-white" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <div className="w-4 h-4 rounded-full border-2 border-green-500 bg-white" />
-                    </div>
-                  </TableCell>
+        {evaluationSections.map((section, sectionIndex) => (
+          <div key={sectionIndex} className="mb-8">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">{section.title}</h2>
+              <p className="text-sm text-gray-600">{section.description}</p>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Parâmetros</TableHead>
+                  <TableHead className="w-24 text-center">Não</TableHead>
+                  <TableHead className="w-24 text-center">Pouco</TableHead>
+                  <TableHead className="w-24 text-center">Muito</TableHead>
                 </TableRow>
-              ))}
-              <TableRow>
-                <TableCell className="font-semibold">Pontuação</TableCell>
-                <TableCell className="text-center">2</TableCell>
-                <TableCell className="text-center">1</TableCell>
-                <TableCell className="text-center">0</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {section.parameters.map((parameter, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{parameter}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <div className="w-4 h-4 rounded-full border-2 border-red-500 bg-white" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <div className="w-4 h-4 rounded-full border-2 border-yellow-500 bg-white" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <div className="w-4 h-4 rounded-full border-2 border-green-500 bg-white" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell className="font-semibold">Pontuação</TableCell>
+                  <TableCell className="text-center">2</TableCell>
+                  <TableCell className="text-center">1</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        ))}
 
         <h2 className="text-2xl font-bold mb-6 text-center">
           Resultados da Escala de Avaliação TEA
