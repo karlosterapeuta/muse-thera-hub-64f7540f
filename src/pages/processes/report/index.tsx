@@ -82,7 +82,8 @@ export default function ReportPage() {
         description: "O relatório foi registrado no sistema",
       });
 
-      navigate("/processes");
+      // Corrigindo o redirecionamento para a rota correta
+      navigate("/processos/relatorios");
     } catch (error) {
       console.error("Erro ao salvar relatório:", error);
       toast({
