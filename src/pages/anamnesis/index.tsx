@@ -32,7 +32,7 @@ export default function AnamnesisForm() {
     musical_skills: "",
     emotional_response: "",
     social_interaction: "",
-    communication_level: "",
+    communication_skills: "",
     emotional_expression: "",
     motor_skills: "",
     auditory_processing: "",
@@ -193,7 +193,7 @@ export default function AnamnesisForm() {
       title: "Avaliação Comunicativa",
       fields: [
         {
-          key: "communication_level",
+          key: "communication_skills",
           label: "Nível de Comunicação",
           options: [
             { value: "nao_verbal", label: "Não-verbal" },
