@@ -1,5 +1,6 @@
 
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
+import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -13,16 +14,17 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
+      <div className="mb-6">
+        <DateField
+          label="Data da Sessão"
+          value={content.data_session || ""}
+          onChange={(value) => handleFieldChange("data_session", value)}
+        />
+      </div>
+
       <FormSection
         title="Dados da Sessão"
         fields={[
-          {
-            key: "data_session",
-            label: "Data da Sessão",
-            placeholder: "dd/mm/aaaa",
-            value: content.data_session || "",
-            onChange: (value) => handleFieldChange("data_session", value),
-          },
           {
             key: "objectives",
             label: "Objetivos",
