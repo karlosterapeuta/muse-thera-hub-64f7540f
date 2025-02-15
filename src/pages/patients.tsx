@@ -43,9 +43,11 @@ const formSchema = z.object({
   responsible: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export default function Patients() {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -54,10 +56,16 @@ export default function Patients() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
+    // Converter a data para o formato esperado pelo Supabase (YYYY-MM-DD)
+    const formattedValues = {
+      ...values,
+      birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
+    };
+
     const { data, error } = await supabase
       .from("patients")
-      .insert([values])
+      .insert(formattedValues)
       .select();
 
     if (error) {
