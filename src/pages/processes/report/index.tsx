@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -115,74 +114,77 @@ export default function ReportForm() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      const sections = [
-        {
-          title: "Progresso Terapêutico",
-          fields: [
-            { key: "objectives", label: "Objetivos", value: content.objectives },
-            { key: "activities", label: "Atividades Realizadas", value: content.activities },
-            { key: "patient_response", label: "Resposta do Paciente", value: content.patient_response },
-          ]
-        },
-        {
-          title: "Desenvolvimento da Sessão",
-          fields: [
-            { key: "engagement", label: "Engajamento Musical", value: content.engagement },
-            { key: "emotional_expression", label: "Expressão Emocional", value: content.emotional_expression },
-            { key: "social_interaction", label: "Interação Social", value: content.social_interaction },
-            { key: "communication", label: "Comunicação", value: content.communication },
-            { key: "cognitive_function", label: "Função Cognitiva", value: content.cognitive_function },
-            { key: "motor_skills", label: "Habilidades Motoras", value: content.motor_skills },
-          ]
-        },
-        {
-          title: "Efetividade do Tratamento",
-          fields: [
-            { key: "goals_achievement", label: "Alcance dos Objetivos", value: content.goals_achievement },
-            { key: "intervention_response", label: "Resposta às Intervenções", value: content.intervention_response },
-            { key: "techniques_effectiveness", label: "Efetividade das Técnicas", value: content.techniques_effectiveness },
-          ]
-        },
-        {
-          title: "Conclusões e Recomendações",
-          fields: [
-            { key: "observations", label: "Observações", value: content.observations },
-            { key: "next_steps", label: "Próximos Passos", value: content.next_steps },
-            { key: "recommendations", label: "Recomendações", value: content.recommendations },
-            { key: "adjustments", label: "Ajustes Necessários", value: content.adjustments },
-          ]
-        }
-      ];
-
-      return sections
-        .map(section => {
-          const sectionContent = section.fields
-            .filter(field => field.value)
-            .map(field => `
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                  ${field.label}
-                </div>
-                <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                  ${String(field.value || '').split('\n').join('<br>')}
-                </div>
+      if (formData.type === "individual_session") {
+        return `
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Dados da Sessão
+            </h2>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Data da Sessão
               </div>
-            `)
-            .join('');
-
-          if (sectionContent) {
-            return `
-              <div style="margin-bottom: 28px;">
-                <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-                  ${section.title}
-                </h2>
-                ${sectionContent}
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937;">
+                ${format(new Date(content.data_session), 'PPP', { locale: ptBR })}
               </div>
-            `;
-          }
-          return '';
-        })
-        .join('');
+            </div>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Objetivos
+              </div>
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                ${String(content.objectives || '').split('\n').join('<br>')}
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Desenvolvimento
+            </h2>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Atividades Realizadas
+              </div>
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                ${String(content.activities || '').split('\n').join('<br>')}
+              </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Resposta do Paciente
+              </div>
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                ${String(content.patient_response || '').split('\n').join('<br>')}
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Conclusão
+            </h2>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Observações
+              </div>
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                ${String(content.observations || '').split('\n').join('<br>')}
+              </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
+                Próximos Passos
+              </div>
+              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+                ${String(content.next_steps || '').split('\n').join('<br>')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      return '';
     };
 
     element.innerHTML = `
@@ -192,13 +194,13 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            Relatório de Avaliação Musicoterapêutica
+            Relatório de Sessão Individual
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data da Avaliação: ${format(formData.date, 'PPP', { locale: ptBR })}
+            Data do Relatório: ${format(formData.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
 
