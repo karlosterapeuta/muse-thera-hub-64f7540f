@@ -9,7 +9,9 @@ type FormProps = {
 
 export function IndividualSessionForm({ content, onChange }: FormProps) {
   const handleFieldChange = (key: string, value: string) => {
-    onChange({ ...content, [key]: value });
+    const updatedContent = { ...content, [key]: value };
+    console.log("Atualizando conteúdo:", updatedContent); // Debug log
+    onChange(updatedContent);
   };
 
   const defaultContent = {
@@ -21,7 +23,7 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
     next_steps: "Para as próximas sessões, propõe-se:\n1. Intensificar atividades de improvisação musical\n2. Introduzir novos instrumentos musicais\n3. Aumentar complexidade dos exercícios rítmicos\n4. Desenvolver atividades específicas para comunicação não-verbal\n5. Manter foco no desenvolvimento da expressão emocional através da música",
   };
 
-  // Merge defaultContent with existing content
+  // Merge defaultContent with existing content, preserving any existing values
   const mergedContent = { ...defaultContent, ...content };
 
   return (

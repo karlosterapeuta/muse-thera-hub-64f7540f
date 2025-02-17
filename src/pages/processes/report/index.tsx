@@ -115,7 +115,7 @@ export default function ReportForm() {
     
     const generateContentHTML = (content: Record<string, any>) => {
       if (formData.type === "individual_session") {
-        console.log("Conteúdo do relatório:", content); // Para debug
+        console.log("Conteúdo do relatório:", content);
         
         const sessionDate = content.data_session ? new Date(content.data_session) : null;
         const formattedDate = sessionDate && !isNaN(sessionDate.getTime()) 
