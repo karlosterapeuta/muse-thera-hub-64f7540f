@@ -115,6 +115,8 @@ export default function ReportForm() {
     
     const generateContentHTML = (content: Record<string, any>) => {
       if (formData.type === "individual_session") {
+        console.log("Conteúdo do relatório:", content); // Para debug
+        
         const sessionDate = content.data_session ? new Date(content.data_session) : null;
         const formattedDate = sessionDate && !isNaN(sessionDate.getTime()) 
           ? format(sessionDate, 'PPP', { locale: ptBR })
@@ -192,6 +194,8 @@ export default function ReportForm() {
       return '';
     };
 
+    console.log("Dados do formulário:", formData);
+
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
@@ -232,7 +236,7 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `Relatório de Avaliação - ${patientName}.pdf`,
+      filename: `Relatório de Sessão - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
