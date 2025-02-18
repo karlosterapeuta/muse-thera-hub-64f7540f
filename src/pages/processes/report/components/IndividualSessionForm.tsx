@@ -9,11 +9,12 @@ type FormProps = {
 
 export function IndividualSessionForm({ content, onChange }: FormProps) {
   const handleFieldChange = (key: string, value: string) => {
-    const updatedContent = { ...content, [key]: value };
-    console.log("Atualizando conteúdo:", updatedContent); // Debug log
-    onChange(updatedContent);
+    const newContent = { ...content, [key]: value };
+    console.log("Atualizando conteúdo:", newContent);
+    onChange(newContent);
   };
 
+  // Define o conteúdo inicial caso não exista
   const defaultContent = {
     data_session: "",
     objectives: "1. Promover engajamento musical e autoexpressão\n2. Desenvolver habilidades de comunicação não-verbal\n3. Estimular interação social através da música\n4. Trabalhar aspectos emocionais e cognitivos\n5. Aprimorar habilidades motoras através de atividades rítmicas",
@@ -23,7 +24,14 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
     next_steps: "Para as próximas sessões, propõe-se:\n1. Intensificar atividades de improvisação musical\n2. Introduzir novos instrumentos musicais\n3. Aumentar complexidade dos exercícios rítmicos\n4. Desenvolver atividades específicas para comunicação não-verbal\n5. Manter foco no desenvolvimento da expressão emocional através da música",
   };
 
-  // Merge defaultContent with existing content, preserving any existing values
+  // Inicializa o conteúdo com os valores padrão se estiver vazio
+  React.useEffect(() => {
+    if (Object.keys(content).length === 0) {
+      onChange(defaultContent);
+    }
+  }, []);
+
+  // Combina o conteúdo existente com os valores padrão
   const mergedContent = { ...defaultContent, ...content };
 
   return (

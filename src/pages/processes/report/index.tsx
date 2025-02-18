@@ -115,7 +115,7 @@ export default function ReportForm() {
     
     const generateContentHTML = (content: Record<string, any>) => {
       if (formData.type === "individual_session") {
-        console.log("Conteúdo do relatório:", content);
+        console.log("Gerando PDF com conteúdo:", content);
         
         const sessionDate = content.data_session ? new Date(content.data_session) : null;
         const formattedDate = sessionDate && !isNaN(sessionDate.getTime()) 
@@ -256,6 +256,7 @@ export default function ReportForm() {
 
   const onSubmit = async (data: FormValues) => {
     try {
+      console.log("Submetendo formulário com dados:", data);
       const selectedPatient = patients.find(p => p.id === data.patient_id);
       if (!selectedPatient) {
         throw new Error("Paciente não encontrado");
@@ -296,7 +297,10 @@ export default function ReportForm() {
         return (
           <IndividualSessionForm
             content={form.getValues("content")}
-            onChange={(content) => form.setValue("content", content)}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
           />
         );
       case "group_session":
