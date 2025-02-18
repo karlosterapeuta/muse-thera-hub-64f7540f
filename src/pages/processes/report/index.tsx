@@ -39,7 +39,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
-import { IndividualSessionForm } from "./components/IndividualSessionForm";
+import { IndividualSessionForm, GroupSessionForm } from "./components";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -304,7 +304,15 @@ export default function ReportForm() {
           />
         );
       case "group_session":
-        return null;
+        return (
+          <GroupSessionForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "daily_evolution":
         return null;
       case "monthly_evolution":
