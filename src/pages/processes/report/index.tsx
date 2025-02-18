@@ -39,7 +39,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
-import { IndividualSessionForm, GroupSessionForm } from "./components";
+import { IndividualSessionForm } from "./components/IndividualSessionForm";
+import { GroupSessionForm } from "./components/GroupSessionForm";
 
 const formSchema = z.object({
   patient_id: z.string({
