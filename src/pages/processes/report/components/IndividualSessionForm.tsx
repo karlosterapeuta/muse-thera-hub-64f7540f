@@ -1,4 +1,5 @@
 
+import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { DateField } from "./DateField";
 
@@ -25,7 +26,7 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
   };
 
   // Inicializa o conteúdo com os valores padrão se estiver vazio
-  React.useEffect(() => {
+  useEffect(() => {
     if (Object.keys(content).length === 0) {
       onChange(defaultContent);
     }
