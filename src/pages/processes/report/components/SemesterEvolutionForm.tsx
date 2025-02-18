@@ -1,3 +1,5 @@
+
+import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { DateField } from "./DateField";
 
@@ -8,47 +10,89 @@ type FormProps = {
 
 export function SemesterEvolutionForm({ content, onChange }: FormProps) {
   const handleFieldChange = (key: string, value: string) => {
-    onChange({ ...content, [key]: value });
+    const newContent = { ...content, [key]: value };
+    onChange(newContent);
   };
+
+  const defaultContent = {
+    date: "",
+    semester: "",
+    initial_evaluation: "Avaliação inicial do semestre:\n- Estado no início do período\n- Principais desafios identificados\n- Objetivos estabelecidos",
+    therapeutic_process: "Processo terapêutico:\n1. Abordagens utilizadas\n2. Adaptações realizadas\n3. Desenvolvimento das intervenções\n4. Resposta às intervenções",
+    evolution_areas: "Áreas de evolução:\n- Desenvolvimento musical\n- Aspectos comunicativos\n- Habilidades motoras\n- Desenvolvimento socioemocional\n- Aspectos cognitivos",
+    family_involvement: "Envolvimento familiar:\n- Participação da família\n- Orientações fornecidas\n- Feedback recebido",
+    conclusions: "Conclusões do período:\n- Resultados alcançados\n- Áreas de maior progresso\n- Aspectos a serem desenvolvidos",
+    recommendations: "Recomendações:\n1. Continuidade do tratamento\n2. Ajustes necessários\n3. Objetivos para o próximo semestre\n4. Estratégias propostas"
+  };
+
+  useEffect(() => {
+    if (Object.keys(content).length === 0) {
+      onChange(defaultContent);
+    }
+  }, []);
+
+  const mergedContent = { ...defaultContent, ...content };
 
   return (
     <div className="space-y-6">
       <div className="mb-6">
         <DateField
-          label="Semestre/Ano"
-          value={content.semester || ""}
-          onChange={(value) => handleFieldChange("semester", value)}
+          label="Data"
+          value={mergedContent.date}
+          onChange={(value) => handleFieldChange("date", value)}
         />
       </div>
 
       <FormSection
-        title="Avaliação Geral"
+        title="Evolução Semestral"
         fields={[
           {
-            key: "overall_progress",
-            label: "Progresso Geral",
-            placeholder: "Descreva o progresso geral do semestre",
-            value: content.overall_progress || "Durante este semestre, observou-se evolução significativa nos seguintes aspectos:\n\n1. Desenvolvimento Musical:\n- Aumento da complexidade nas respostas musicais\n- Maior engajamento em atividades de improvisação\n- Ampliação do repertório musical terapêutico\n\n2. Aspectos Terapêuticos:\n- Fortalecimento do vínculo terapêutico\n- Maior autonomia nas expressões sonoro-musicais\n- Desenvolvimento da comunicação através da música",
-            onChange: (value) => handleFieldChange("overall_progress", value),
+            key: "semester",
+            label: "Semestre de Avaliação",
+            placeholder: "Ex: 1º Semestre 2024",
+            value: mergedContent.semester,
+            onChange: (value) => handleFieldChange("semester", value),
           },
           {
-            key: "therapeutic_goals",
-            label: "Objetivos Terapêuticos",
-            placeholder: "Avaliação dos objetivos terapêuticos",
-            value: content.therapeutic_goals || "1. Objetivos Alcançados:\n- Estabelecimento de canais de comunicação não-verbal\n- Desenvolvimento de habilidades de interação musical\n- Ampliação da expressão emocional\n\n2. Objetivos em Desenvolvimento:\n- Aprofundamento da consciência corporal-musical\n- Fortalecimento da autonomia nas escolhas musicais\n- Expansão das formas de expressão sonora",
-            onChange: (value) => handleFieldChange("therapeutic_goals", value),
+            key: "initial_evaluation",
+            label: "Avaliação Inicial",
+            placeholder: "Descreva a avaliação inicial do semestre",
+            value: mergedContent.initial_evaluation,
+            onChange: (value) => handleFieldChange("initial_evaluation", value),
           },
-        ]}
-      />
-
-      <FormSection
-        title="Recomendações"
-        fields={[
+          {
+            key: "therapeutic_process",
+            label: "Processo Terapêutico",
+            placeholder: "Descreva o processo terapêutico",
+            value: mergedContent.therapeutic_process,
+            onChange: (value) => handleFieldChange("therapeutic_process", value),
+          },
+          {
+            key: "evolution_areas",
+            label: "Áreas de Evolução",
+            placeholder: "Descreva as áreas de evolução",
+            value: mergedContent.evolution_areas,
+            onChange: (value) => handleFieldChange("evolution_areas", value),
+          },
+          {
+            key: "family_involvement",
+            label: "Envolvimento Familiar",
+            placeholder: "Descreva o envolvimento familiar",
+            value: mergedContent.family_involvement,
+            onChange: (value) => handleFieldChange("family_involvement", value),
+          },
+          {
+            key: "conclusions",
+            label: "Conclusões",
+            placeholder: "Descreva as conclusões do período",
+            value: mergedContent.conclusions,
+            onChange: (value) => handleFieldChange("conclusions", value),
+          },
           {
             key: "recommendations",
             label: "Recomendações",
-            placeholder: "Recomendações para o próximo semestre",
-            value: content.recommendations || "Para o próximo semestre, recomenda-se:\n\n1. Intervenções Musicoterapêuticas:\n- Intensificar experiências de composição musical\n- Desenvolver atividades de improvisação direcionada\n- Implementar técnicas receptivas específicas\n\n2. Abordagem Terapêutica:\n- Manter a frequência atual das sessões\n- Introduzir novas modalidades de expressão musical\n- Fortalecer o trabalho com dinâmicas em grupo",
+            placeholder: "Liste as recomendações para o próximo período",
+            value: mergedContent.recommendations,
             onChange: (value) => handleFieldChange("recommendations", value),
           },
         ]}

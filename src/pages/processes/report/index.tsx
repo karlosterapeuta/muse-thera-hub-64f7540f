@@ -41,6 +41,9 @@ import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
 import { IndividualSessionForm } from "./components/IndividualSessionForm";
 import { GroupSessionForm } from "./components/GroupSessionForm";
+import { DailyEvolutionForm } from "./components/DailyEvolutionForm";
+import { MonthlyEvolutionForm } from "./components/MonthlyEvolutionForm";
+import { SemesterEvolutionForm } from "./components/SemesterEvolutionForm";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -315,11 +318,35 @@ export default function ReportForm() {
           />
         );
       case "daily_evolution":
-        return null;
+        return (
+          <DailyEvolutionForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "monthly_evolution":
-        return null;
+        return (
+          <MonthlyEvolutionForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "semester_evolution":
-        return null;
+        return (
+          <SemesterEvolutionForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "therapeutic_discharge":
         return null;
       case "administrative_discharge":
