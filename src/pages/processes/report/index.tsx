@@ -47,6 +47,9 @@ import { SemesterEvolutionForm } from "./components/SemesterEvolutionForm";
 import { TherapeuticDischargeForm } from "./components/TherapeuticDischargeForm";
 import { AdministrativeDischargeForm } from "./components/AdministrativeDischargeForm";
 import { TeaScaleForm } from "./components/TeaScaleForm";
+import { FamilyReportForm } from "./components/FamilyReportForm";
+import { TeamReportForm } from "./components/TeamReportForm";
+import { TechnicalReportForm } from "./components/TechnicalReportForm";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -381,11 +384,35 @@ export default function ReportForm() {
           />
         );
       case "family_report":
-        return null;
+        return (
+          <FamilyReportForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "team_report":
-        return null;
+        return (
+          <TeamReportForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       case "technical_report":
-        return null;
+        return (
+          <TechnicalReportForm
+            content={form.getValues("content")}
+            onChange={(content) => {
+              console.log("Atualizando conteúdo do formulário:", content);
+              form.setValue("content", content);
+            }}
+          />
+        );
       default:
         return null;
     }
