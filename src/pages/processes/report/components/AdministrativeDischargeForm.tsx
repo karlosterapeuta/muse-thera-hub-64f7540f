@@ -1,4 +1,5 @@
 
+import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { DateField } from "./DateField";
 
@@ -12,12 +13,27 @@ export function AdministrativeDischargeForm({ content, onChange }: FormProps) {
     onChange({ ...content, [key]: value });
   };
 
+  const defaultContent = {
+    discharge_date: "",
+    reason: "Motivos que levaram à alta administrativa:\n\n1. Aspectos Administrativos:\n- Mudança de residência\n- Impossibilidade de manutenção do tratamento\n- Questões relacionadas à frequência\n\n2. Contexto Familiar:\n- Reorganização da dinâmica familiar\n- Alterações na disponibilidade de horários",
+    recommendations: "Recomendações para continuidade do cuidado:\n\n1. Encaminhamentos:\n- Buscar serviço de musicoterapia na nova localidade\n- Manter acompanhamento com equipe multidisciplinar\n\n2. Orientações:\n- Manter as práticas musicais desenvolvidas\n- Continuar atividades que favoreçam o desenvolvimento",
+    follow_up: "Plano de acompanhamento pós-alta:\n\n1. Transição:\n- Período de adaptação de 30 dias\n- Contatos de referência fornecidos\n\n2. Suporte:\n- Disponibilidade para orientações pontuais\n- Articulação com nova equipe quando necessário"
+  };
+
+  useEffect(() => {
+    if (Object.keys(content).length === 0) {
+      onChange(defaultContent);
+    }
+  }, []);
+
+  const mergedContent = { ...defaultContent, ...content };
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
         <DateField
           label="Data da Alta"
-          value={content.discharge_date || ""}
+          value={mergedContent.discharge_date}
           onChange={(value) => handleFieldChange("discharge_date", value)}
         />
       </div>
@@ -29,21 +45,21 @@ export function AdministrativeDischargeForm({ content, onChange }: FormProps) {
             key: "reason",
             label: "Motivo da Alta",
             placeholder: "Descreva o motivo da alta",
-            value: content.reason || "Motivos que levaram à alta administrativa:\n\n1. Aspectos Administrativos:\n- Mudança de residência\n- Impossibilidade de manutenção do tratamento\n- Questões relacionadas à frequência\n\n2. Contexto Familiar:\n- Reorganização da dinâmica familiar\n- Alterações na disponibilidade de horários",
+            value: mergedContent.reason,
             onChange: (value) => handleFieldChange("reason", value),
           },
           {
             key: "recommendations",
             label: "Recomendações",
             placeholder: "Anote as recomendações para o paciente",
-            value: content.recommendations || "Recomendações para continuidade do cuidado:\n\n1. Encaminhamentos:\n- Buscar serviço de musicoterapia na nova localidade\n- Manter acompanhamento com equipe multidisciplinar\n\n2. Orientações:\n- Manter as práticas musicais desenvolvidas\n- Continuar atividades que favoreçam o desenvolvimento",
+            value: mergedContent.recommendations,
             onChange: (value) => handleFieldChange("recommendations", value),
           },
           {
             key: "follow_up",
             label: "Acompanhamento",
             placeholder: "Descreva o plano de acompanhamento",
-            value: content.follow_up || "Plano de acompanhamento pós-alta:\n\n1. Transição:\n- Período de adaptação de 30 dias\n- Contatos de referência fornecidos\n\n2. Suporte:\n- Disponibilidade para orientações pontuais\n- Articulação com nova equipe quando necessário",
+            value: mergedContent.follow_up,
             onChange: (value) => handleFieldChange("follow_up", value),
           },
         ]}
