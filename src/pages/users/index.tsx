@@ -30,9 +30,23 @@ export default function Users() {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data: profiles } = await supabase
+      const { data: profiles, error } = await supabase
         .from("profiles")
-        .select("*, user_roles(role)");
+        .select(`
+          id,
+          name,
+          avatar_url,
+          created_at,
+          user_roles (
+            role
+          )
+        `);
+
+      if (error) {
+        console.error('Error fetching profiles:', error);
+        return [];
+      }
+
       return profiles as Profile[];
     },
   });
