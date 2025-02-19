@@ -14,6 +14,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { UserCircle } from "lucide-react";
 
+type UserRole = {
+  role: 'admin' | 'professional'
+}
+
+type Profile = {
+  id: string;
+  name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  user_roles: UserRole[];
+}
+
 export default function Users() {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
@@ -21,7 +33,7 @@ export default function Users() {
       const { data: profiles } = await supabase
         .from("profiles")
         .select("*, user_roles(role)");
-      return profiles;
+      return profiles as Profile[];
     },
   });
 
