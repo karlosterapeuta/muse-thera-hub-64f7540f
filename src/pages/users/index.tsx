@@ -67,25 +67,49 @@ export default function Users() {
   });
 
   const handleDeleteUser = async (userId: string) => {
-    const { error } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', userId);
+    try {
+      // Primeiro deletamos os user_roles associados
+      const { error: userRolesError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId);
 
-    if (error) {
+      if (userRolesError) {
+        console.error('Error deleting user roles:', userRolesError);
+        throw userRolesError;
+      }
+
+      // Depois deletamos o perfil
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        throw profileError;
+      }
+
+      // Atualiza a lista de usuários imediatamente no client-side
+      queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
+        return oldData?.filter(user => user.id !== userId) ?? [];
+      });
+
+      // Invalida a query para buscar dados atualizados do servidor
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+
+      toast({
+        title: "Usuário excluído",
+        description: "O usuário foi excluído com sucesso.",
+      });
+    } catch (error) {
+      console.error('Error in deletion process:', error);
       toast({
         variant: "destructive",
         title: "Erro ao excluir usuário",
         description: "Ocorreu um erro ao tentar excluir o usuário. Tente novamente.",
       });
-      return;
     }
-
-    queryClient.invalidateQueries({ queryKey: ["users"] });
-    toast({
-      title: "Usuário excluído",
-      description: "O usuário foi excluído com sucesso.",
-    });
   };
 
   if (isLoading) {
