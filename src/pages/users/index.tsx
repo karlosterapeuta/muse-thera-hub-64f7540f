@@ -8,11 +8,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { UserCircle } from "lucide-react";
+import { Trash2, UserCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
 type UserRole = {
   role: 'admin' | 'professional'
@@ -27,6 +40,8 @@ type Profile = {
 }
 
 export default function Users() {
+  const queryClient = useQueryClient();
+  
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
@@ -51,6 +66,28 @@ export default function Users() {
     },
   });
 
+  const handleDeleteUser = async (userId: string) => {
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir usuário",
+        description: "Ocorreu um erro ao tentar excluir o usuário. Tente novamente.",
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["users"] });
+    toast({
+      title: "Usuário excluído",
+      description: "O usuário foi excluído com sucesso.",
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -73,6 +110,7 @@ export default function Users() {
               <TableHead>Função</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Data de Cadastro</TableHead>
+              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -102,6 +140,32 @@ export default function Users() {
                 </TableCell>
                 <TableCell>
                   {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                </TableCell>
+                <TableCell>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Excluir usuário</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Excluir
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}
