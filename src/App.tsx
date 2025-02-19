@@ -19,6 +19,7 @@ import ReportsPage from "./pages/processes/reports";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import InviteCodes from "./pages/InviteCodes";
+import Users from "./pages/users";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "/invite-codes",
         element: <InviteCodes />,
+      },
+      {
+        path: "/users",
+        element: <Users />,
       },
     ],
   },
