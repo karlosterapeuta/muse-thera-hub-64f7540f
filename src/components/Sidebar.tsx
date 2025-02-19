@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -26,13 +28,23 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   const navigate = useNavigate();
   const { data: isAdmin } = useAdmin();
 
+  // Buscar o email do usuário atual
+  const { data: userEmail } = useQuery({
+    queryKey: ["userEmail"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user?.email || null;
+    },
+  });
+
   const menuItems = [
     { icon: BarChart2, text: "Dashboard", path: "/dashboard" },
     { icon: UserCircle, text: "Profissional-MT", path: "/professional" },
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
-    { icon: UsersRound, text: "Usuários", path: "/users" },
+    // Somente mostrar a opção de Usuários se o email for o permitido
+    userEmail === "musicoterapeutakarlos@gmail.com" && { icon: UsersRound, text: "Usuários", path: "/users" },
     isAdmin && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ].filter(Boolean);
 
@@ -69,21 +81,23 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
       <nav className="flex-1 py-4">
         {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            onClick={() => onNavigate?.()}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
-                isActive && "bg-primary/10 text-primary",
-                collapsed && "justify-center"
-              )
-            }
-          >
-            <item.icon size={20} />
-            {!collapsed && <span>{item.text}</span>}
-          </NavLink>
+          item && (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => onNavigate?.()}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
+                  isActive && "bg-primary/10 text-primary",
+                  collapsed && "justify-center"
+                )
+              }
+            >
+              <item.icon size={20} />
+              {!collapsed && <span>{item.text}</span>}
+            </NavLink>
+          )
         ))}
       </nav>
 
