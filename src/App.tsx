@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import InviteCodes from "./pages/InviteCodes";
 import Users from "./pages/users";
+import HawkinsScale from "./pages/hawkins";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
       {
         path: "/users",
         element: <Users />,
+      },
+      {
+        path: "/hawkins",
+        element: <HawkinsScale />,
       },
     ],
   },
