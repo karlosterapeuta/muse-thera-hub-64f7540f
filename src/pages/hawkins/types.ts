@@ -9,4 +9,9 @@ export type ConsciousnessLevel = {
   color: string;
   direction: "up" | "down";
   suggestedSongs: string[];
+  description: string;
+  therapeuticGoals: string[];
+  technicalObservations: string;
+  mainCharacteristics: string[];
+  interventionStrategies: string[];
 };

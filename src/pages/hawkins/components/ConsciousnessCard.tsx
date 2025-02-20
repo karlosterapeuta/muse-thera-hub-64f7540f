@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Gauge } from "lucide-react";
+import { Gauge, List, Target, Brain, Lightbulb } from "lucide-react";
 import { ConsciousnessLevel } from "../types";
 
 type ConsciousnessCardProps = {
@@ -27,15 +27,43 @@ export function ConsciousnessCard({ level, isSelected, onClick }: ConsciousnessC
           {level.direction === "up" ? "↑" : "↓"} {level.emotion}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="text-sm">
-          <span className="font-medium">Visão de Vida:</span> {level.lifeView}
-        </div>
-        <div className="text-sm">
-          <span className="font-medium">Visão de Deus:</span> {level.divineView}
-        </div>
-        <div className="text-sm">
-          <span className="font-medium">Processo:</span> {level.process}
+      <CardContent className="space-y-4">
+        <div className="text-sm space-y-2">
+          <p>{level.description}</p>
+          
+          <div>
+            <span className="font-medium flex items-center gap-1">
+              <Brain className="h-4 w-4" /> Visão de Vida:
+            </span> 
+            {level.lifeView}
+          </div>
+          
+          <div>
+            <span className="font-medium flex items-center gap-1">
+              <Lightbulb className="h-4 w-4" /> Visão de Deus:
+            </span> 
+            {level.divineView}
+          </div>
+          
+          <div>
+            <span className="font-medium flex items-center gap-1">
+              <List className="h-4 w-4" /> Processo:
+            </span> 
+            {level.process}
+          </div>
+
+          <div>
+            <span className="font-medium flex items-center gap-1 mb-1">
+              <Target className="h-4 w-4" /> Características Principais:
+            </span>
+            <ul className="list-disc list-inside pl-2 space-y-1">
+              {level.mainCharacteristics.map((char, index) => (
+                <li key={index} className="text-sm text-muted-foreground">
+                  {char}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </CardContent>
     </Card>

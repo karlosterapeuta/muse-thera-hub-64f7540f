@@ -20,11 +20,12 @@ export default function HawkinsScale() {
         <p className="text-muted-foreground max-w-3xl">
           Desenvolvida pelo Dr. David Hawkins, esta escala mapeia os níveis de consciência 
           humana, desde estados mais densos até os mais elevados, medindo a frequência 
-          vibracional de 20 Hz a 1000 Hz.
+          vibracional de 20 Hz a 1000 Hz. A escala é uma ferramenta valiosa para 
+          compreender o desenvolvimento da consciência e planejar intervenções terapêuticas apropriadas.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {consciousnessLevels.map((level) => (
           <ConsciousnessCard
             key={level.level}
