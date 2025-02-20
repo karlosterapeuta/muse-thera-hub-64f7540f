@@ -8,7 +8,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Eu Sou",
     divineView: "Eu",
     process: "Plena Consciência",
-    color: "bg-purple-900",
+    color: "dark:bg-violet-400 bg-violet-600",
     direction: "up",
     description: "Nível mais elevado de consciência, caracterizado por uma compreensão profunda da unidade com todo o universo.",
     mainCharacteristics: [
@@ -41,7 +41,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Perfeito",
     divineView: "Onipresença",
     process: "Iluminação",
-    color: "bg-purple-600",
+    color: "dark:bg-violet-300 bg-violet-500",
     direction: "up",
     description: "Estado de serenidade profunda e compreensão da perfeição inerente da realidade.",
     mainCharacteristics: [
@@ -74,7 +74,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Completo",
     divineView: "Unidade",
     process: "Transmutação",
-    color: "bg-purple-500",
+    color: "dark:bg-indigo-300 bg-indigo-500",
     direction: "up",
     description: "Estado de alegria pura, onde a felicidade é uma expressão natural da vida.",
     mainCharacteristics: [
@@ -106,7 +106,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Benigno",
     divineView: "Amoroso",
     process: "Revelação",
-    color: "bg-purple-400",
+    color: "dark:bg-blue-300 bg-blue-500",
     direction: "up",
     description: "Experiência de amor incondicional e compaixão por todos os seres.",
     mainCharacteristics: [
@@ -138,7 +138,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Significativo",
     divineView: "Sábio",
     process: "Abstração",
-    color: "bg-blue-500",
+    color: "dark:bg-cyan-300 bg-cyan-500",
     direction: "up",
     description: "Capacidade de raciocínio lógico e análise crítica.",
     mainCharacteristics: [
@@ -170,7 +170,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Harmonioso",
     divineView: "Misericordioso",
     process: "Transcendência",
-    color: "bg-blue-400",
+    color: "dark:bg-teal-300 bg-teal-500",
     direction: "up",
     description: "Capacidade de aceitar a vida como ela é, sem resistência.",
     mainCharacteristics: [
@@ -202,7 +202,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Possível",
     divineView: "Permissor",
     process: "Empoderamento",
-    color: "bg-green-500",
+    color: "dark:bg-emerald-300 bg-emerald-500",
     direction: "up",
     description: "Capacidade de enfrentar desafios e tomar decisões.",
     mainCharacteristics: [
@@ -234,7 +234,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Exigente",
     divineView: "Indiferente",
     process: "Inflação",
-    color: "bg-green-400",
+    color: "dark:bg-yellow-300 bg-yellow-500",
     direction: "down",
     description: "Estado de ego elevado, onde a comparação e o julgamento são comuns.",
     mainCharacteristics: [
@@ -265,7 +265,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Antagônico",
     divineView: "Rancoroso",
     process: "Agressão",
-    color: "bg-teal-500",
+    color: "dark:bg-orange-300 bg-orange-500",
     direction: "down",
     description: "Estado de intensa frustração e ressentimento.",
     mainCharacteristics: [
@@ -296,7 +296,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Assustador",
     divineView: "Punitivo",
     process: "Evasão",
-    color: "bg-yellow-500",
+    color: "dark:bg-amber-300 bg-amber-500",
     direction: "down",
     description: "Estado de medo e insegurança, onde a evitação é comum.",
     mainCharacteristics: [
@@ -327,7 +327,7 @@ export const consciousnessLevels: ConsciousnessLevel[] = [
     lifeView: "Miserável",
     divineView: "Desprezador",
     process: "Eliminação",
-    color: "bg-red-600",
+    color: "dark:bg-red-300 bg-red-500",
     direction: "down",
     description: "Estado de vergonha profunda e desconexão.",
     mainCharacteristics: [
