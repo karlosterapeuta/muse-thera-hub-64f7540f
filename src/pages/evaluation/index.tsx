@@ -211,25 +211,33 @@ export default function Evaluation() {
         useCORS: true,
         logging: true,
         allowTaint: true,
-        foreignObjectRendering: true
+        foreignObjectRendering: true,
+        onrendered: function(canvas: HTMLCanvasElement) {
+          const context = canvas.getContext('2d');
+          if (context) {
+            context.webkitImageSmoothingEnabled = true;
+            context.mozImageSmoothingEnabled = true;
+            context.imageSmoothingEnabled = true;
+          }
+        }
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait',
+        compress: true
+      }
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.promise(
-        html2pdf()
-          .set(opt)
-          .from(element)
-          .save(),
-        {
-          loading: "Gerando PDF...",
-          success: "PDF gerado com sucesso!",
-          error: "Erro ao gerar PDF"
-        }
-      );
+      await html2pdf()
+        .set(opt)
+        .from(element)
+        .save();
+      
+      toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF");

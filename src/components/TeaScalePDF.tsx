@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 interface TeaScalePDFProps {
   evaluationSections: any[];
@@ -67,7 +67,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div className="h-[300px] w-full flex items-center justify-center">
+          <div style={{ width: '100%', height: '300px' }}>
             <PieChart width={400} height={300}>
               <Pie
                 data={pieData}
@@ -102,7 +102,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
-          <div className="h-[300px] w-full">
+          <div style={{ width: '100%', height: '300px' }}>
             <BarChart
               width={400}
               height={300}
