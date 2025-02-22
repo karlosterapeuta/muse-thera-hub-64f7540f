@@ -211,15 +211,7 @@ export default function Evaluation() {
         useCORS: true,
         logging: true,
         allowTaint: true,
-        foreignObjectRendering: true,
-        onrendered: function(canvas: HTMLCanvasElement) {
-          const context = canvas.getContext('2d');
-          if (context) {
-            context.webkitImageSmoothingEnabled = true;
-            context.mozImageSmoothingEnabled = true;
-            context.imageSmoothingEnabled = true;
-          }
-        }
+        foreignObjectRendering: true
       },
       jsPDF: { 
         unit: 'mm', 
