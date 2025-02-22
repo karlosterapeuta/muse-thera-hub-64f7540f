@@ -5,6 +5,11 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ResponsiveContainer } from 'recharts';
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
+import html2pdf from "html2pdf.js";
+import { toast } from "sonner";
+import { TeaScalePDF } from "@/components/TeaScalePDF";
 import {
   Select,
   SelectContent,
@@ -190,6 +195,33 @@ export default function Evaluation() {
 
   const COLORS = ['#4ade80', '#ffa1b5'];
 
+  const handleGeneratePDF = async () => {
+    const element = document.getElementById('pdf-content');
+    if (!element) {
+      toast.error("Erro ao gerar PDF");
+      return;
+    }
+
+    const opt = {
+      margin: 10,
+      filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+      toast.promise(html2pdf().set(opt).from(element).save(), {
+        loading: "Gerando PDF...",
+        success: "PDF gerado com sucesso!",
+        error: "Erro ao gerar PDF"
+      });
+    } catch (error) {
+      toast.error("Erro ao gerar PDF");
+      console.error(error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
       <Card className="p-4 sm:p-6">
@@ -218,21 +250,31 @@ export default function Evaluation() {
               </div>
             )}
           </div>
-          <Select
-            value={selectedEvaluation}
-            onValueChange={setSelectedEvaluation}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecione a avaliação" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Avaliação 1</SelectItem>
-              <SelectItem value="2">Avaliação 2</SelectItem>
-              <SelectItem value="3">Avaliação 3</SelectItem>
-              <SelectItem value="4">Avaliação 4</SelectItem>
-              <SelectItem value="5">Avaliação 5</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-4">
+            <Select
+              value={selectedEvaluation}
+              onValueChange={setSelectedEvaluation}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Selecione a avaliação" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Avaliação 1</SelectItem>
+                <SelectItem value="2">Avaliação 2</SelectItem>
+                <SelectItem value="3">Avaliação 3</SelectItem>
+                <SelectItem value="4">Avaliação 4</SelectItem>
+                <SelectItem value="5">Avaliação 5</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleGeneratePDF}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              Gerar PDF
+            </Button>
+          </div>
         </div>
 
         {evaluationSections.map((section, sectionIndex) => (
