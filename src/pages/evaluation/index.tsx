@@ -203,22 +203,36 @@ export default function Evaluation() {
     }
 
     const opt = {
-      margin: 10,
+      margin: [10, 10],
       filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: true,
+        allowTaint: true,
+        foreignObjectRendering: true
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-      toast.promise(html2pdf().set(opt).from(element).save(), {
-        loading: "Gerando PDF...",
-        success: "PDF gerado com sucesso!",
-        error: "Erro ao gerar PDF"
-      });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      toast.promise(
+        html2pdf()
+          .set(opt)
+          .from(element)
+          .save(),
+        {
+          loading: "Gerando PDF...",
+          success: "PDF gerado com sucesso!",
+          error: "Erro ao gerar PDF"
+        }
+      );
     } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF");
-      console.error(error);
     }
   };
 
