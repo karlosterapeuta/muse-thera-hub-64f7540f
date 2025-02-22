@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface TeaScalePDFProps {
   evaluationSections: any[];
@@ -20,7 +20,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   return (
-    <div className="bg-white p-8" id="pdf-content">
+    <div className="bg-white p-8 w-full" id="pdf-content">
       <h1 className="text-2xl font-bold mb-6 text-center">Escala de Avaliação TEA</h1>
 
       {evaluationSections.map((section, sectionIndex) => (
@@ -67,8 +67,8 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div style={{ width: '100%', height: '300px' }}>
-            <PieChart width={400} height={300}>
+          <div className="w-full h-[300px]">
+            <PieChart width={400} height={300} className="mx-auto">
               <Pie
                 data={pieData}
                 cx={200}
@@ -102,12 +102,13 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
-          <div style={{ width: '100%', height: '300px' }}>
+          <div className="w-full h-[300px]">
             <BarChart
               width={400}
               height={300}
               data={categoryData}
               margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              className="mx-auto"
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -127,4 +128,3 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
-

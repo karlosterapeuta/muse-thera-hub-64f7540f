@@ -203,7 +203,7 @@ export default function Evaluation() {
     }
 
     const opt = {
-      margin: [10, 10],
+      margin: 10,
       filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -222,12 +222,12 @@ export default function Evaluation() {
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      await html2pdf()
-        .set(opt)
-        .from(element)
-        .save();
+      const pdf = await html2pdf().set(opt).from(element).outputPdf();
+      const blob = new Blob([pdf], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
       
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
