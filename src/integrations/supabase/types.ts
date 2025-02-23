@@ -425,6 +425,7 @@ export type Database = {
           created_at: string | null
           id: string
           name: string
+          professional_id: string | null
           responsible: string | null
           updated_at: string | null
         }
@@ -434,6 +435,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           name: string
+          professional_id?: string | null
           responsible?: string | null
           updated_at?: string | null
         }
@@ -443,10 +445,19 @@ export type Database = {
           created_at?: string | null
           id?: string
           name?: string
+          professional_id?: string | null
           responsible?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "patients_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       professionals: {
         Row: {

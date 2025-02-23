@@ -75,7 +75,6 @@ export default function Patients() {
   });
 
   const fetchPatients = async () => {
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -91,6 +90,7 @@ export default function Patients() {
     const { data, error } = await supabase
       .from("patients")
       .select("*")
+      .eq('professional_id', user.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -110,7 +110,6 @@ export default function Patients() {
   }, []);
 
   async function onSubmit(values: FormValues) {
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -127,13 +126,14 @@ export default function Patients() {
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
-      professional_id: user.id // Adiciona o ID do profissional ao cadastrar
+      professional_id: user.id // Add the professional_id when creating a new patient
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("patients")
       .insert(formattedValues)
-      .select();
+      .select()
+      .single();
 
     if (error) {
       toast({
@@ -150,7 +150,7 @@ export default function Patients() {
     });
 
     form.reset();
-    fetchPatients(); // Atualiza a lista após cadastrar
+    fetchPatients(); // Refresh the list after adding a new patient
   }
 
   return (
@@ -204,7 +204,7 @@ export default function Patients() {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 sm:w-[280px] lg:w-[300px]" align="start">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -213,7 +213,6 @@ export default function Patients() {
                             date > new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
-                          className="w-full"
                         />
                       </PopoverContent>
                     </Popover>
