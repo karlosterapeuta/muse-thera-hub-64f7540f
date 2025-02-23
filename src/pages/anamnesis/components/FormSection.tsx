@@ -20,16 +20,19 @@ export function FormSection({ title, fields }: FormSectionProps) {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold pt-4">{title}</h3>
       {fields.map((field) => (
-        <div key={field.key}>
-          <Label>{field.label}</Label>
+        <div key={field.key} className="space-y-2">
+          <Label htmlFor={field.key}>{field.label}</Label>
           {field.type === "text" ? (
             <Input
+              id={field.key}
+              type="text"
               value={field.value}
               onChange={(e) => field.onChange(e.target.value)}
               placeholder={field.placeholder}
             />
           ) : (
             <Textarea
+              id={field.key}
               value={field.value}
               onChange={(e) => field.onChange(e.target.value)}
               placeholder={field.placeholder}

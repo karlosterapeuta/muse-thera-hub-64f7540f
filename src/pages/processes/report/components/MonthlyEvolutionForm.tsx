@@ -23,7 +23,7 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
   };
 
   useEffect(() => {
-    if (Object.keys(content).length === 0) {
+    if (!content || Object.keys(content).length === 0) {
       onChange(defaultContent);
     }
   }, []);
