@@ -127,24 +127,11 @@ export default function ReportForm() {
       if (formData.type === "individual_session") {
         console.log("Gerando PDF com conteúdo:", content);
         
-        const sessionDate = content.data_session ? new Date(content.data_session) : null;
-        const formattedDate = sessionDate && !isNaN(sessionDate.getTime()) 
-          ? format(sessionDate, 'PPP', { locale: ptBR })
-          : 'Data não especificada';
-
         return `
           <div style="margin-bottom: 28px;">
             <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
               Dados da Sessão
             </h2>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Data da Sessão
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937;">
-                ${formattedDate}
-              </div>
-            </div>
             <div style="margin-bottom: 16px;">
               <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
                 Objetivos
