@@ -10,6 +10,7 @@ import { FileDown } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
+import ReactDOM from 'react-dom';
 import {
   Select,
   SelectContent,
