@@ -120,8 +120,8 @@ export default function ReportForm() {
     fetchData();
   }, [toast]);
 
-  const generateContentHTML = (content: Record<string, any>) => {
-    if (formData.type === "daily_evolution") {
+  const generateContentHTML = (content: Record<string, any>, type: string) => {
+    if (type === "daily_evolution") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -159,7 +159,7 @@ export default function ReportForm() {
           </div>
         </div>
       `;
-    } else if (formData.type === "monthly_evolution") {
+    } else if (type === "monthly_evolution") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -206,7 +206,7 @@ export default function ReportForm() {
           </div>
         </div>
       `;
-    } else if (formData.type === "semester_evolution") {
+    } else if (type === "semester_evolution") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -262,7 +262,7 @@ export default function ReportForm() {
           </div>
         </div>
       `;
-    } else if (formData.type === "therapeutic_discharge") {
+    } else if (type === "therapeutic_discharge") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -291,7 +291,7 @@ export default function ReportForm() {
           </div>
         </div>
       `;
-    } else if (formData.type === "individual_session") {
+    } else if (type === "individual_session") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -338,7 +338,7 @@ export default function ReportForm() {
           </div>
         </div>
       `;
-    } else if (formData.type === "group_session") {
+    } else if (type === "group_session") {
       return `
         <div style="margin-bottom: 28px;">
           <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
@@ -380,7 +380,7 @@ export default function ReportForm() {
     return '';
   };
 
-  const generatePDF = async (patientName: string, formData: FormValues) => {
+  const generatePDF = async (patientName: string, formValues: FormValues) => {
     const element = document.createElement('div');
     
     element.innerHTML = `
@@ -390,15 +390,15 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${formData.type === "monthly_evolution" 
+            ${formValues.type === "monthly_evolution" 
               ? "Evolução Mensal" 
-              : formData.type === "daily_evolution" 
+              : formValues.type === "daily_evolution" 
               ? "Evolução Diária" 
-              : formData.type === "therapeutic_discharge"
+              : formValues.type === "therapeutic_discharge"
               ? "Alta Terapêutica"
-              : formData.type === "individual_session"
+              : formValues.type === "individual_session"
               ? "Relatório de Sessão Individual"
-              : formData.type === "group_session"
+              : formValues.type === "group_session"
               ? "Relatório de Sessão em Grupo"
               : "Evolução Semestral"}
           </h1>
@@ -406,12 +406,12 @@ export default function ReportForm() {
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data do Relatório: ${format(formData.date, 'PPP', { locale: ptBR })}
+            Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
 
         <div style="margin-bottom: 32px;">
-          ${generateContentHTML(formData.content)}
+          ${generateContentHTML(formValues.content, formValues.type)}
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
@@ -433,15 +433,15 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${formData.type === "monthly_evolution" 
+      filename: `${formValues.type === "monthly_evolution" 
         ? "Evolução Mensal" 
-        : formData.type === "daily_evolution" 
+        : formValues.type === "daily_evolution" 
         ? "Evolução Diária"
-        : formData.type === "therapeutic_discharge"
+        : formValues.type === "therapeutic_discharge"
         ? "Alta Terapêutica"
-        : formData.type === "individual_session"
+        : formValues.type === "individual_session"
         ? "Relatório de Sessão Individual"
-        : formData.type === "group_session"
+        : formValues.type === "group_session"
         ? "Relatório de Sessão em Grupo"
         : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
@@ -495,123 +495,6 @@ export default function ReportForm() {
         title: "Erro",
         description: "Não foi possível salvar o relatório.",
       });
-    }
-  };
-
-  const renderFormByType = (type: string) => {
-    switch (type) {
-      case "individual_session":
-        return (
-          <IndividualSessionForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "group_session":
-        return (
-          <GroupSessionForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "daily_evolution":
-        return (
-          <DailyEvolutionForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "monthly_evolution":
-        return (
-          <MonthlyEvolutionForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "semester_evolution":
-        return (
-          <SemesterEvolutionForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "therapeutic_discharge":
-        return (
-          <TherapeuticDischargeForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "administrative_discharge":
-        return (
-          <AdministrativeDischargeForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "tea_scale":
-        return (
-          <TeaScaleForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "family_report":
-        return (
-          <FamilyReportForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "team_report":
-        return (
-          <TeamReportForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      case "technical_report":
-        return (
-          <TechnicalReportForm
-            content={form.getValues("content")}
-            onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
-              form.setValue("content", content);
-            }}
-          />
-        );
-      default:
-        return null;
     }
   };
 
@@ -671,110 +554,4 @@ export default function ReportForm() {
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: ptBR })
-                            ) : (
-                              <span>Selecione uma data</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Relatório</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        form.setValue("content", {});
-                      }}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo de relatório" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="individual_session">
-                          Relatório de Sessão Individual
-                        </SelectItem>
-                        <SelectItem value="group_session">
-                          Relatório de Sessão em Grupo
-                        </SelectItem>
-                        <SelectItem value="daily_evolution">
-                          Evolução Diária
-                        </SelectItem>
-                        <SelectItem value="monthly_evolution">
-                          Evolução Mensal
-                        </SelectItem>
-                        <SelectItem value="semester_evolution">
-                          Evolução Semestral
-                        </SelectItem>
-                        <SelectItem value="therapeutic_discharge">
-                          Alta Terapêutica
-                        </SelectItem>
-                        <SelectItem value="administrative_discharge">
-                          Alta Administrativa
-                        </SelectItem>
-                        <SelectItem value="tea_scale">
-                          Escala TEA
-                        </SelectItem>
-                        <SelectItem value="family_report">
-                          Relatório para Família
-                        </SelectItem>
-                        <SelectItem value="team_report">
-                          Relatório para Equipe
-                        </SelectItem>
-                        <SelectItem value="technical_report">
-                          Relatório Técnico
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {form.watch("type") && renderFormByType(form.watch("type"))}
-
-              <div className="flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/processes")}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  <Download className="mr-2 h-4 w-4" />
-                  Gerar Relatório
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+                            {field
