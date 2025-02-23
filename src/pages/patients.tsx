@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -76,6 +76,7 @@ type Patient = {
 export default function Patients() {
   const { toast } = useToast();
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -194,6 +195,42 @@ export default function Patients() {
       description: "Todos os pacientes foram removidos do sistema.",
     });
 
+    fetchPatients();
+  };
+
+  const handleDeletePatient = async (patient: Patient) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao remover paciente",
+        description: "Usuário não autenticado.",
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("patients")
+      .delete()
+      .eq('id', patient.id)
+      .eq('professional_id', user.id);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao remover paciente",
+        description: "Ocorreu um erro ao tentar remover o paciente. Tente novamente.",
+      });
+      return;
+    }
+
+    toast({
+      title: "Paciente removido com sucesso!",
+      description: `O paciente ${patient.name} foi removido do sistema.`,
+    });
+
+    setPatientToDelete(null);
     fetchPatients();
   };
 
@@ -351,6 +388,7 @@ export default function Patients() {
                   <TableHead>Data de Nascimento</TableHead>
                   <TableHead>Contato</TableHead>
                   <TableHead>Responsável</TableHead>
+                  <TableHead className="w-[100px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -364,11 +402,44 @@ export default function Patients() {
                     </TableCell>
                     <TableCell>{patient.contact || "-"}</TableCell>
                     <TableCell>{patient.responsible || "-"}</TableCell>
+                    <TableCell>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => setPatientToDelete(patient)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
+                              Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeletePatient(patient)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Sim, excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {patients.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
                       Nenhum paciente cadastrado
                     </TableCell>
                   </TableRow>
