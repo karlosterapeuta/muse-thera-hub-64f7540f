@@ -7,6 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Patient = {
   id: string;
@@ -20,6 +22,31 @@ type PatientSelectProps = {
 };
 
 export function PatientSelect({ patients, selectedPatient, onSelect }: PatientSelectProps) {
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+
+  useEffect(() => {
+    const fetchPatientsForProfessional = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Buscar apenas pacientes associados ao profissional logado
+      const { data: patientsData, error } = await supabase
+        .from('patients')
+        .select('id, name')
+        .eq('professional_id', user.id)
+        .order('name');
+
+      if (error) {
+        console.error('Erro ao carregar pacientes:', error);
+        return;
+      }
+
+      setFilteredPatients(patientsData || []);
+    };
+
+    fetchPatientsForProfessional();
+  }, []);
+
   return (
     <div>
       <Label>Paciente</Label>
@@ -28,7 +55,7 @@ export function PatientSelect({ patients, selectedPatient, onSelect }: PatientSe
           <SelectValue placeholder="Selecione um paciente" />
         </SelectTrigger>
         <SelectContent>
-          {patients.map((patient) => (
+          {filteredPatients.map((patient) => (
             <SelectItem key={patient.id} value={patient.id}>
               {patient.name}
             </SelectItem>
