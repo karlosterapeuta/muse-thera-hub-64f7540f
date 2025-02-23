@@ -34,7 +34,7 @@ export default function Processes() {
       title: "Intervenção",
       description: "Aplicação das técnicas e atividades musicoterapêuticas",
       icon: Users,
-      path: "/intervention" // Ajustando a rota para corresponder ao arquivo
+      path: "/intervention"
     },
     {
       title: "Reavaliação",
