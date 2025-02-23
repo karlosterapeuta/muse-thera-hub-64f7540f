@@ -208,27 +208,25 @@ export default function Evaluation() {
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2,
-        useCORS: true,
         logging: true,
+        useCORS: true,
         allowTaint: true,
-        foreignObjectRendering: true
+        foreignObjectRendering: true,
+        scrollY: -window.scrollY,
+        windowWidth: element.offsetWidth,
+        windowHeight: element.offsetHeight
       },
       jsPDF: { 
         unit: 'mm', 
         format: 'a4', 
-        orientation: 'portrait',
-        compress: true
+        orientation: 'portrait'
       }
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const pdf = await html2pdf().set(opt).from(element).outputPdf();
-      const blob = new Blob([pdf], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      window.open(url);
-      
+      const pdf = await html2pdf().set(opt).from(element).save();
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
