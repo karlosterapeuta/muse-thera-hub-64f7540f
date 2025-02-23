@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -15,7 +14,6 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    date: "",
     period: "",
     therapeutic_objectives: "Objetivos terapêuticos trabalhados:\n1. Desenvolvimento de habilidades de comunicação\n2. Estimulação sensorial através da música\n3. Fortalecimento de aspectos motores\n4. Desenvolvimento socioemocional",
     achievements: "Conquistas alcançadas:\n- Progresso na comunicação não-verbal\n- Maior engajamento em atividades musicais\n- Desenvolvimento de habilidades motoras\n- Melhora na interação social",
@@ -34,14 +32,6 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data"
-          value={mergedContent.date}
-          onChange={(value) => handleFieldChange("date", value)}
-        />
-      </div>
-
       <FormSection
         title="Evolução Mensal"
         fields={[
