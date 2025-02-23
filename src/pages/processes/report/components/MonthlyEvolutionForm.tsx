@@ -14,7 +14,6 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    period: "",
     therapeutic_objectives: "Objetivos terapêuticos trabalhados:\n1. Desenvolvimento de habilidades de comunicação\n2. Estimulação sensorial através da música\n3. Fortalecimento de aspectos motores\n4. Desenvolvimento socioemocional",
     achievements: "Conquistas alcançadas:\n- Progresso na comunicação não-verbal\n- Maior engajamento em atividades musicais\n- Desenvolvimento de habilidades motoras\n- Melhora na interação social",
     challenges: "Desafios encontrados:\n- Áreas que necessitam maior atenção\n- Dificuldades específicas\n- Barreiras a serem superadas",
@@ -35,14 +34,6 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
       <FormSection
         title="Evolução Mensal"
         fields={[
-          {
-            key: "period",
-            label: "Período de Avaliação",
-            placeholder: "Ex: Janeiro/2024",
-            value: mergedContent.period || "",
-            onChange: (value) => handleFieldChange("period", value),
-            type: "text"
-          },
           {
             key: "therapeutic_objectives",
             label: "Objetivos Terapêuticos",
