@@ -47,18 +47,45 @@ export default function AnamnesisForm() {
       setIsLoading(true);
       
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      if (!user) {
+        toast({
+          title: "Erro de autenticação",
+          description: "Usuário não autenticado. Por favor, faça login novamente.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
 
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
+      // Usando maybeSingle() em vez de single()
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (professionalError) throw professionalError;
+      if (professionalError) {
+        console.error("Erro ao buscar profissional:", professionalError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados do profissional.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!professionalData) {
+        toast({
+          title: "Perfil não encontrado",
+          description: "Perfil profissional não encontrado. Entre em contato com o suporte.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setProfessionalId(professionalData.id);
 
       const { data: patientsData, error: patientsError } = await supabase
@@ -66,8 +93,17 @@ export default function AnamnesisForm() {
         .select("id, name")
         .order("name");
 
-      if (patientsError) throw patientsError;
-      setPatients(patientsData);
+      if (patientsError) {
+        console.error("Erro ao carregar pacientes:", patientsError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a lista de pacientes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setPatients(patientsData || []);
 
     } catch (error) {
       console.error("Erro ao carregar dados iniciais:", error);
@@ -425,3 +461,4 @@ export default function AnamnesisForm() {
     </div>
   );
 }
+
