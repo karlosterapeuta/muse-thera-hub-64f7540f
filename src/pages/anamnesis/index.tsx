@@ -93,9 +93,11 @@ export default function AnamnesisForm() {
 
       setProfessionalId(professionalData.id);
 
+      // Modificação aqui: adicionando filtro por professional_id
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
+        .eq("professional_id", professionalData.id)
         .order("name");
 
       if (patientsError) {
