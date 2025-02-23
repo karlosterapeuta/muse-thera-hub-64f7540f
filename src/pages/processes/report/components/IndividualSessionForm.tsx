@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -15,9 +14,7 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
     onChange(newContent);
   };
 
-  // Define o conteúdo inicial caso não exista
   const defaultContent = {
-    data_session: "",
     objectives: "1. Promover engajamento musical e autoexpressão\n2. Desenvolver habilidades de comunicação não-verbal\n3. Estimular interação social através da música\n4. Trabalhar aspectos emocionais e cognitivos\n5. Aprimorar habilidades motoras através de atividades rítmicas",
     activities: "- Re-criação musical utilizando instrumentos de percussão e melódicos\n- Improvisação musical livre e direcionada\n- Técnicas receptivas com audição musical selecionada\n- Atividades de movimento corporal com suporte musical\n- Exercícios de coordenação rítmica\n- Jogos musicais interativos",
     patient_response: "O paciente demonstrou:\n- Engajamento significativo nas atividades propostas\n- Boa resposta às intervenções musicais\n- Progresso na expressão emocional através da música\n- Melhora na interação social durante atividades em grupo\n- Desenvolvimento positivo das habilidades motoras\n- Aumento da atenção e participação nas atividades",
@@ -25,26 +22,16 @@ export function IndividualSessionForm({ content, onChange }: FormProps) {
     next_steps: "Para as próximas sessões, propõe-se:\n1. Intensificar atividades de improvisação musical\n2. Introduzir novos instrumentos musicais\n3. Aumentar complexidade dos exercícios rítmicos\n4. Desenvolver atividades específicas para comunicação não-verbal\n5. Manter foco no desenvolvimento da expressão emocional através da música",
   };
 
-  // Inicializa o conteúdo com os valores padrão se estiver vazio
   useEffect(() => {
     if (Object.keys(content).length === 0) {
       onChange(defaultContent);
     }
   }, []);
 
-  // Combina o conteúdo existente com os valores padrão
   const mergedContent = { ...defaultContent, ...content };
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data da Sessão"
-          value={mergedContent.data_session}
-          onChange={(value) => handleFieldChange("data_session", value)}
-        />
-      </div>
-
       <FormSection
         title="Dados da Sessão"
         fields={[
