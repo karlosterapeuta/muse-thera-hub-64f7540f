@@ -209,6 +209,62 @@ export default function ReportForm() {
             </div>
           </div>
         `;
+      } else if (formData.type === "semester_evolution") {
+        return `
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Avaliação Inicial
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.initial_evaluation || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Processo Terapêutico
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.therapeutic_process || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Áreas de Evolução
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.evolution_areas || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Envolvimento Familiar
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.family_involvement || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Conclusões
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.conclusions || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Recomendações
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.recommendations || '').split('\n').join('<br>')}
+            </div>
+          </div>
+        `;
       }
       
       return '';
@@ -223,7 +279,7 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${formData.type === "monthly_evolution" ? "Evolução Mensal" : "Evolução Diária"}
+            ${formData.type === "monthly_evolution" ? "Evolução Mensal" : formData.type === "daily_evolution" ? "Evolução Diária" : "Evolução Semestral"}
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
@@ -256,7 +312,7 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${formData.type === "monthly_evolution" ? "Evolução Mensal" : "Evolução Diária"} - ${patientName}.pdf`,
+      filename: `${formData.type === "monthly_evolution" ? "Evolução Mensal" : formData.type === "daily_evolution" ? "Evolução Diária" : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
