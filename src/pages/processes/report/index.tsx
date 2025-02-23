@@ -124,65 +124,41 @@ export default function ReportForm() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
-      if (formData.type === "individual_session") {
-        console.log("Gerando PDF com conteúdo:", content);
-        
+      if (formData.type === "daily_evolution") {
         return `
           <div style="margin-bottom: 28px;">
             <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Dados da Sessão
+              Estado Inicial
             </h2>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Objetivos
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(content.objectives || '').split('\n').join('<br>')}
-              </div>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.initial_state || '').split('\n').join('<br>')}
             </div>
           </div>
 
           <div style="margin-bottom: 28px;">
             <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Desenvolvimento
+              Atividades Realizadas
             </h2>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Atividades Realizadas
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(content.activities || '').split('\n').join('<br>')}
-              </div>
-            </div>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Resposta do Paciente
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(content.patient_response || '').split('\n').join('<br>')}
-              </div>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.activities || '').split('\n').join('<br>')}
             </div>
           </div>
 
           <div style="margin-bottom: 28px;">
             <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Conclusão
+              Respostas Observadas
             </h2>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Observações
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(content.observations || '').split('\n').join('<br>')}
-              </div>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.responses || '').split('\n').join('<br>')}
             </div>
-            <div style="margin-bottom: 16px;">
-              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: #374151;">
-                Próximos Passos
-              </div>
-              <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-                ${String(content.next_steps || '').split('\n').join('<br>')}
-              </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Observações
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.observations || '').split('\n').join('<br>')}
             </div>
           </div>
         `;
@@ -200,7 +176,7 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            Relatório de Sessão Individual
+            Evolução Diária
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
@@ -233,7 +209,7 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `Relatório de Sessão - ${patientName}.pdf`,
+      filename: `Evolução Diária - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
@@ -295,7 +271,7 @@ export default function ReportForm() {
           <IndividualSessionForm
             content={form.getValues("content")}
             onChange={(content) => {
-              console.log("Atualizando conteúdo do formulário:", content);
+              console.log("Atualizando conte��do do formulário:", content);
               form.setValue("content", content);
             }}
           />
