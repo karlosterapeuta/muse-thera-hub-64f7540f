@@ -3,6 +3,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface TeaScalePDFProps {
   evaluationSections: any[];
@@ -68,22 +69,24 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             Habilidades Adquiridas
           </h3>
           <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
-            <PieChart width={300} height={200}>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={40}
-                outerRadius={60}
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {pieData.map((entry: any, index: number) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+            <TooltipProvider>
+              <PieChart width={300} height={200}>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={60}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {pieData.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </TooltipProvider>
           </div>
           <div className="flex justify-center gap-4 mt-4">
             {pieData.map((entry: any, index: number) => (
@@ -103,29 +106,30 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             Desempenho por Categoria
           </h3>
           <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
-            <BarChart
-              width={300}
-              height={200}
-              data={categoryData}
-              margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="name"
-                angle={-45}
-                textAnchor="end"
-                height={60}
-                interval={0}
-                fontSize={8}
-              />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#6D28D9" />
-            </BarChart>
+            <TooltipProvider>
+              <BarChart
+                width={300}
+                height={200}
+                data={categoryData}
+                margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  interval={0}
+                  fontSize={8}
+                />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#6D28D9" />
+              </BarChart>
+            </TooltipProvider>
           </div>
         </Card>
       </div>
     </div>
   );
 };
-
