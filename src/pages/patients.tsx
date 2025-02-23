@@ -105,6 +105,7 @@ export default function Patients() {
       .order("created_at", { ascending: false });
 
     if (error) {
+      console.error('Error fetching patients:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar pacientes",
@@ -113,7 +114,7 @@ export default function Patients() {
       return;
     }
 
-    setPatients(data);
+    setPatients(data || []);
   };
 
   useEffect(() => {
@@ -137,16 +138,19 @@ export default function Patients() {
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
-      professional_id: user.id
+      professional_id: user.id  // Ensure we're explicitly setting the professional_id
     };
 
-    const { error } = await supabase
+    console.log('Creating patient with values:', formattedValues);
+
+    const { data, error } = await supabase
       .from("patients")
       .insert(formattedValues)
       .select()
       .single();
 
     if (error) {
+      console.error('Error creating patient:', error);
       toast({
         variant: "destructive",
         title: "Erro ao cadastrar paciente",
