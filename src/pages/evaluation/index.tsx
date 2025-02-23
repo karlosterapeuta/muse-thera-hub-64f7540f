@@ -197,16 +197,32 @@ export default function Evaluation() {
 
   const handleGeneratePDF = async () => {
     try {
-      const element = document.getElementById('pdf-content');
-      if (!element) {
-        throw new Error("Elemento não encontrado");
-      }
+      const pdfContent = (
+        <div id="pdf-content" style={{ display: 'block' }}>
+          <TeaScalePDF
+            evaluationSections={evaluationSections}
+            selections={selections}
+            categoryData={categoryData}
+            pieData={pieData}
+          />
+        </div>
+      );
+
+      // Render the PDF content to the DOM
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      // Wait for charts to render
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.loading("Gerando PDF...");
-
-      // Ajusta o elemento para garantir que está visível durante a geração
-      const originalDisplay = element.style.display;
-      element.style.display = 'block';
 
       const opt = {
         margin: [10, 10],
@@ -216,7 +232,6 @@ export default function Evaluation() {
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          logging: true,
           backgroundColor: '#ffffff'
         },
         jsPDF: { 
@@ -227,10 +242,10 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(element).save();
+      await html2pdf().set(opt).from(root).save();
       
-      // Restaura o display original após a geração
-      element.style.display = originalDisplay;
+      // Cleanup
+      document.body.removeChild(container);
       
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
