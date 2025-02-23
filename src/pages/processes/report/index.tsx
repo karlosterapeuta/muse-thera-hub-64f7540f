@@ -162,6 +162,53 @@ export default function ReportForm() {
             </div>
           </div>
         `;
+      } else if (formData.type === "monthly_evolution") {
+        return `
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Objetivos Terapêuticos
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.therapeutic_objectives || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Conquistas
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.achievements || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Desafios
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.challenges || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Ajustes Necessários
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.adjustments || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Próximos Passos
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.next_steps || '').split('\n').join('<br>')}
+            </div>
+          </div>
+        `;
       }
       
       return '';
@@ -176,7 +223,7 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            Evolução Diária
+            ${formData.type === "monthly_evolution" ? "Evolução Mensal" : "Evolução Diária"}
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
@@ -209,7 +256,7 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `Evolução Diária - ${patientName}.pdf`,
+      filename: `${formData.type === "monthly_evolution" ? "Evolução Mensal" : "Evolução Diária"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
