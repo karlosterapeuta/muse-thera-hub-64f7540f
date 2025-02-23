@@ -20,7 +20,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   return (
-    <div className="bg-white p-8 w-full min-h-screen" id="pdf-content" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="bg-white p-8" id="pdf-content" style={{ width: '800px', margin: '0 auto' }}>
       <h1 className="text-2xl font-bold mb-6 text-center">Escala de Avaliação TEA</h1>
 
       {evaluationSections.map((section, sectionIndex) => (
@@ -62,17 +62,17 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
         Resultados da Escala de Avaliação TEA
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-8">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div style={{ width: '100%', maxWidth: '400px', height: '300px', margin: '0 auto' }}>
-            <PieChart width={400} height={300}>
+          <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
+            <PieChart width={300} height={300}>
               <Pie
                 data={pieData}
-                cx="50%"
-                cy="50%"
+                cx={150}
+                cy={150}
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
@@ -102,12 +102,12 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
-          <div style={{ width: '100%', maxWidth: '400px', height: '300px', margin: '0 auto' }}>
+          <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
             <BarChart
-              width={400}
+              width={300}
               height={300}
               data={categoryData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -116,6 +116,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 textAnchor="end"
                 height={100}
                 interval={0}
+                fontSize={10}
               />
               <YAxis domain={[0, 100]} />
               <Tooltip />
@@ -127,4 +128,3 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
-
