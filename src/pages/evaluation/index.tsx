@@ -203,7 +203,7 @@ export default function Evaluation() {
     }
 
     const opt = {
-      margin: 10,
+      margin: [10, 10],
       filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -213,20 +213,36 @@ export default function Evaluation() {
         allowTaint: true,
         foreignObjectRendering: true,
         scrollY: -window.scrollY,
+        width: element.offsetWidth,
+        height: element.offsetHeight,
         windowWidth: element.offsetWidth,
         windowHeight: element.offsetHeight
       },
       jsPDF: { 
         unit: 'mm', 
         format: 'a4', 
-        orientation: 'portrait'
+        orientation: 'portrait',
+        compress: true,
+        hotfixes: ["px_scaling"]
       }
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      const pdf = await html2pdf().set(opt).from(element).save();
+      const pdf = await html2pdf()
+        .set(opt)
+        .from(element)
+        .toPdf()
+        .output('datauristring');
+
+      const newWindow = window.open();
+      if (newWindow) {
+        newWindow.document.write(
+          `<iframe width='100%' height='100%' src='${pdf}'></iframe>`
+        );
+      }
+
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
