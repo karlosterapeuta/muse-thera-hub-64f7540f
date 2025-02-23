@@ -294,6 +294,53 @@ export default function ReportForm() {
             </div>
           </div>
         `;
+      } else if (formData.type === "individual_session") {
+        return `
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Objetivos
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.objectives || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Atividades Realizadas
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.activities || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Resposta do Paciente
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.patient_response || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Observações
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.observations || '').split('\n').join('<br>')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+              Próximos Passos
+            </h2>
+            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+              ${String(content.next_steps || '').split('\n').join('<br>')}
+            </div>
+          </div>
+        `;
       }
       
       return '';
@@ -314,6 +361,8 @@ export default function ReportForm() {
               ? "Evolução Diária" 
               : formData.type === "therapeutic_discharge"
               ? "Alta Terapêutica"
+              : formData.type === "individual_session"
+              ? "Relatório de Sessão Individual"
               : "Evolução Semestral"}
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
@@ -353,6 +402,8 @@ export default function ReportForm() {
         ? "Evolução Diária"
         : formData.type === "therapeutic_discharge"
         ? "Alta Terapêutica"
+        : formData.type === "individual_session"
+        ? "Relatório de Sessão Individual"
         : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
@@ -415,7 +466,7 @@ export default function ReportForm() {
           <IndividualSessionForm
             content={form.getValues("content")}
             onChange={(content) => {
-              console.log("Atualizando conte��do do formulário:", content);
+              console.log("Atualizando conteúdo do formulário:", content);
               form.setValue("content", content);
             }}
           />
