@@ -626,22 +626,40 @@ export default function ReportForm() {
                   return (
                     <FormItem>
                       {selectedType === "individual_session" && (
-                        <IndividualSessionForm field={field} />
+                        <IndividualSessionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                       {selectedType === "group_session" && (
-                        <GroupSessionForm field={field} />
+                        <GroupSessionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                       {selectedType === "daily_evolution" && (
-                        <DailyEvolutionForm field={field} />
+                        <DailyEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                       {selectedType === "monthly_evolution" && (
-                        <MonthlyEvolutionForm field={field} />
+                        <MonthlyEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                       {selectedType === "semester_evolution" && (
-                        <SemesterEvolutionForm field={field} />
+                        <SemesterEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                       {selectedType === "therapeutic_discharge" && (
-                        <TherapeuticDischargeForm field={field} />
+                        <TherapeuticDischargeForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
                       )}
                     </FormItem>
                   );

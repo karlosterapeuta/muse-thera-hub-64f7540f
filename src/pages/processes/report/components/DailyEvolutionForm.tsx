@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 
-type FormProps = {
+export type FormProps = {
   content: Record<string, any>;
   onChange: (content: Record<string, any>) => void;
 };
