@@ -48,7 +48,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
@@ -66,7 +66,6 @@ const formSchema = z.object({
   }),
   intervention_activities: z.array(z.string()).optional(),
   therapeutic_goals: z.array(z.string()).optional(),
-  musical_resources: z.array(z.string()).optional(),
   notes: z.string().optional(),
 });
 
@@ -95,7 +94,6 @@ export default function InterventionForm() {
       },
       intervention_activities: [],
       therapeutic_goals: [],
-      musical_resources: [],
       notes: "",
     },
   });
@@ -355,7 +353,6 @@ export default function InterventionForm() {
         emotional_state: values.emotional_state,
         intervention_activities: values.intervention_activities || [],
         therapeutic_goals: values.therapeutic_goals || [],
-        musical_resources: values.musical_resources || [],
         notes: values.notes,
       });
 
