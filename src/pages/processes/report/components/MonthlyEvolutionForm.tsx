@@ -39,8 +39,9 @@ export function MonthlyEvolutionForm({ content, onChange }: FormProps) {
             key: "period",
             label: "Período de Avaliação",
             placeholder: "Ex: Janeiro/2024",
-            value: mergedContent.period,
+            value: mergedContent.period || "",
             onChange: (value) => handleFieldChange("period", value),
+            type: "text"
           },
           {
             key: "therapeutic_objectives",
