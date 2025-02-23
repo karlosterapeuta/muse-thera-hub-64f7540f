@@ -763,7 +763,7 @@ export default function InterventionForm() {
                       <FormField
                         key={resource.value}
                         control={form.control}
-                        name="musical_resources"
+                        name="intervention_activities"
                         render={({ field }) => {
                           return (
                             <FormItem key={resource.value} className="space-y-0">
