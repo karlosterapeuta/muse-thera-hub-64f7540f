@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 export type FormProps = {
   content: Record<string, any>;
@@ -14,7 +13,6 @@ export function TherapeuticDischargeForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    discharge_date: "",
     treatment_summary: "O processo musicoterapêutico desenvolvido alcançou significativos avanços nas seguintes áreas:\n\n1. Desenvolvimento Musical:\n- Ampliação do repertório sonoro-musical\n- Desenvolvimento de habilidades expressivas\n- Autonomia nas experiências musicais\n\n2. Aspectos Terapêuticos:\n- Fortalecimento da comunicação não-verbal\n- Desenvolvimento da expressão emocional\n- Melhora na interação social\n\n3. Evolução Clínica:\n- Alcance dos objetivos terapêuticos estabelecidos\n- Desenvolvimento de recursos internos\n- Integração das experiências musicais no cotidiano",
     achieved_goals: "1. Comunicação e Expressão:\n- Desenvolvimento da comunicação não-verbal através da música\n- Ampliação das formas de expressão emocional\n- Estabelecimento de diálogo sonoro-musical\n\n2. Aspectos Sociais:\n- Melhora na interação em grupo\n- Desenvolvimento de habilidades sociais\n- Participação ativa em experiências musicais coletivas\n\n3. Desenvolvimento Pessoal:\n- Aumento da autoexpressão\n- Fortalecimento da autonomia\n- Desenvolvimento da identidade sonora",
     recommendations: "Para a continuidade do desenvolvimento alcançado, recomenda-se:\n\n1. Manutenção das Práticas Musicais:\n- Participação em atividades musicais comunitárias\n- Manutenção do vínculo com a música como recurso expressivo\n- Exploração contínua de instrumentos musicais\n\n2. Suporte Complementar:\n- Acompanhamento periódico para avaliação\n- Integração com outras atividades artísticas\n- Participação em grupos musicais"
@@ -30,14 +28,6 @@ export function TherapeuticDischargeForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data da Alta"
-          value={mergedContent.discharge_date}
-          onChange={(value) => handleFieldChange("discharge_date", value)}
-        />
-      </div>
-
       <FormSection
         title="Avaliação Final"
         fields={[
