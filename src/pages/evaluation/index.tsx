@@ -202,16 +202,24 @@ export default function Evaluation() {
       return;
     }
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const opt = {
       margin: [10, 10],
       filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
+      image: { 
+        type: 'jpeg', 
+        quality: 0.98 
+      },
       html2canvas: { 
-        scale: 1,
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         logging: true,
         backgroundColor: '#ffffff',
+        onrendered: function(canvas: HTMLCanvasElement) {
+          canvas.style.imageRendering = 'high-quality';
+        }
       },
       jsPDF: { 
         unit: 'mm', 
@@ -222,11 +230,7 @@ export default function Evaluation() {
     };
 
     try {
-      await html2pdf()
-        .set(opt)
-        .from(element)
-        .save();
-
+      const pdf = await html2pdf().from(element).set(opt).save();
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);

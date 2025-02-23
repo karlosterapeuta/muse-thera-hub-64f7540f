@@ -20,7 +20,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   return (
-    <div className="bg-white p-8" id="pdf-content" style={{ width: '800px', margin: '0 auto' }}>
+    <div className="bg-white p-8" id="pdf-content" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <h1 className="text-2xl font-bold mb-6 text-center">Escala de Avaliação TEA</h1>
 
       {evaluationSections.map((section, sectionIndex) => (
@@ -67,12 +67,12 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
-            <PieChart width={300} height={300}>
+          <div style={{ width: '100%', height: '250px', margin: '0 auto' }}>
+            <PieChart width={350} height={250}>
               <Pie
                 data={pieData}
-                cx={150}
-                cy={150}
+                cx="50%"
+                cy="50%"
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
@@ -102,10 +102,10 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
-          <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
+          <div style={{ width: '100%', height: '250px', margin: '0 auto' }}>
             <BarChart
-              width={300}
-              height={300}
+              width={350}
+              height={250}
               data={categoryData}
               margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
             >
@@ -128,3 +128,4 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
+
