@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,16 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Download } from "lucide-react";
+import { 
+  CalendarIcon, 
+  Download,
+  Music2,
+  Heart,
+  Users,
+  Brain,
+  Clipboard,
+  ArrowRight
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -56,6 +66,8 @@ const formSchema = z.object({
     musicality: z.string(),
   }),
   intervention_activities: z.array(z.string()).optional(),
+  therapeutic_goals: z.array(z.string()).optional(),
+  musical_resources: z.array(z.string()).optional(),
   notes: z.string().optional(),
 });
 
@@ -83,6 +95,8 @@ export default function InterventionForm() {
         musicality: "",
       },
       intervention_activities: [],
+      therapeutic_goals: [],
+      musical_resources: [],
       notes: "",
     },
   });
@@ -140,7 +154,11 @@ export default function InterventionForm() {
       escuta_musical: "Escuta Musical",
       movimento_corporal: "Movimento Corporal com Música",
       jogos_musicais: "Jogos Musicais",
-      relaxamento_musical: "Relaxamento com Música"
+      relaxamento_musical: "Relaxamento com Música",
+      musica_e_imagem: "Música e Imagem Guiada",
+      musicoterapia_neurologic: "Musicoterapia Neurológica",
+      ritmo_e_movimento: "Ritmo e Movimento",
+      expressao_vocal: "Expressão Vocal"
     };
 
     return activities.map(activity => translations[activity] || activity);
@@ -318,6 +336,8 @@ export default function InterventionForm() {
       date: values.date.toISOString(),
       emotional_state: values.emotional_state,
       intervention_activities: values.intervention_activities,
+      therapeutic_goals: values.therapeutic_goals,
+      musical_resources: values.musical_resources,
       notes: values.notes,
     });
 
@@ -371,21 +391,50 @@ export default function InterventionForm() {
   };
 
   const interventionSuggestions = [
-    { value: "canto_livre", label: "Canto Livre" },
-    { value: "improvisacao_instrumental", label: "Improvisação Instrumental" },
-    { value: "composicao", label: "Composição Musical" },
-    { value: "recriacao", label: "Recriação Musical" },
-    { value: "escuta_musical", label: "Escuta Musical" },
-    { value: "movimento_corporal", label: "Movimento Corporal com Música" },
-    { value: "jogos_musicais", label: "Jogos Musicais" },
-    { value: "relaxamento_musical", label: "Relaxamento com Música" },
+    { value: "canto_livre", label: "Canto Livre", icon: Music2, description: "Expressão vocal livre e espontânea" },
+    { value: "improvisacao_instrumental", label: "Improvisação Instrumental", icon: Music2, description: "Criação musical espontânea com instrumentos" },
+    { value: "composicao", label: "Composição Musical", icon: Music2, description: "Criação de músicas originais" },
+    { value: "recriacao", label: "Recriação Musical", icon: Music2, description: "Reprodução e interpretação de músicas conhecidas" },
+    { value: "escuta_musical", label: "Escuta Musical", icon: Heart, description: "Audição ativa e receptiva de músicas" },
+    { value: "movimento_corporal", label: "Movimento Corporal com Música", icon: Users, description: "Integração entre música e expressão corporal" },
+    { value: "jogos_musicais", label: "Jogos Musicais", icon: Brain, description: "Atividades lúdicas com elementos musicais" },
+    { value: "relaxamento_musical", label: "Relaxamento com Música", icon: Heart, description: "Técnicas de relaxamento guiadas por música" },
+    { value: "musica_e_imagem", label: "Música e Imagem Guiada", icon: Brain, description: "Visualização criativa com suporte musical" },
+    { value: "musicoterapia_neurologic", label: "Musicoterapia Neurológica", icon: Brain, description: "Técnicas específicas para reabilitação neurológica" },
+    { value: "ritmo_e_movimento", label: "Ritmo e Movimento", icon: Users, description: "Trabalho com padrões rítmicos e movimento" },
+    { value: "expressao_vocal", label: "Expressão Vocal", icon: Music2, description: "Trabalho específico com a voz e canto" }
+  ];
+
+  const therapeuticGoalsSuggestions = [
+    { value: "comunicacao", label: "Desenvolvimento da Comunicação" },
+    { value: "emocional", label: "Regulação Emocional" },
+    { value: "cognitivo", label: "Estimulação Cognitiva" },
+    { value: "motor", label: "Desenvolvimento Motor" },
+    { value: "social", label: "Interação Social" },
+    { value: "linguagem", label: "Desenvolvimento da Linguagem" },
+    { value: "atencao", label: "Atenção e Concentração" },
+    { value: "memoria", label: "Memória e Aprendizagem" }
+  ];
+
+  const musicalResourcesSuggestions = [
+    { value: "voz", label: "Voz e Canto" },
+    { value: "violao", label: "Violão" },
+    { value: "piano", label: "Piano/Teclado" },
+    { value: "percussao", label: "Instrumentos de Percussão" },
+    { value: "flauta", label: "Flauta" },
+    { value: "gravacoes", label: "Músicas Gravadas" },
+    { value: "tecnologia", label: "Recursos Tecnológicos" },
+    { value: "instrumentos_alternativos", label: "Instrumentos Alternativos" }
   ];
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <Card>
+      <Card className="border-primary/20">
         <CardHeader>
-          <CardTitle>Registro de Intervenção Terapêutica</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-primary">
+            <Music2 className="h-6 w-6" />
+            Registro de Intervenção Musicoterapêutica
+          </CardTitle>
           <CardDescription>
             Registre os detalhes da sessão de intervenção musicoterapêutica
           </CardDescription>
@@ -393,135 +442,23 @@ export default function InterventionForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="patient_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Paciente</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um paciente" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {patients.map((patient) => (
-                          <SelectItem key={patient.id} value={patient.id}>
-                            {patient.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Data da Sessão</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: ptBR })
-                            ) : (
-                              <span>Selecione uma data</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Técnicas de Intervenção</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {interventionSuggestions.map((suggestion) => (
-                    <FormField
-                      key={suggestion.value}
-                      control={form.control}
-                      name="intervention_activities"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(suggestion.value)}
-                                onCheckedChange={(checked) => {
-                                  const activities = field.value || [];
-                                  if (checked) {
-                                    field.onChange([...activities, suggestion.value]);
-                                  } else {
-                                    field.onChange(
-                                      activities.filter((value) => value !== suggestion.value)
-                                    );
-                                  }
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {suggestion.label}
-                            </FormLabel>
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Estado Emocional</h3>
-                
+              <div className="grid gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
-                  name="emotional_state.receptivity"
+                  name="patient_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Receptividade</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Paciente</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o nível de receptividade" />
+                            <SelectValue placeholder="Selecione um paciente" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {emotionalStateOptions.receptivity.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                          {patients.map((patient) => (
+                            <SelectItem key={patient.id} value={patient.id}>
+                              {patient.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -533,88 +470,312 @@ export default function InterventionForm() {
 
                 <FormField
                   control={form.control}
-                  name="emotional_state.participation"
+                  name="date"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Participação</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o nível de participação" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {emotionalStateOptions.participation.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="emotional_state.interaction"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Interação</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o nível de interação" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {emotionalStateOptions.interaction.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="emotional_state.musicality"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Musicalidade</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o nível de musicalidade" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {emotionalStateOptions.musicality.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Data da Sessão</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: ptBR })
+                              ) : (
+                                <span>Selecione uma data</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                    Estado Emocional
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="emotional_state.receptivity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Receptividade</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o nível de receptividade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {emotionalStateOptions.receptivity.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="emotional_state.participation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Participação</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o nível de participação" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {emotionalStateOptions.participation.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="emotional_state.interaction"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Interação</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o nível de interação" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {emotionalStateOptions.interaction.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="emotional_state.musicality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Musicalidade</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o nível de musicalidade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {emotionalStateOptions.musicality.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Music2 className="h-5 w-5 text-primary" />
+                    Técnicas de Intervenção
+                  </CardTitle>
+                  <CardDescription>
+                    Selecione as técnicas utilizadas durante a sessão
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {interventionSuggestions.map((suggestion) => (
+                      <FormField
+                        key={suggestion.value}
+                        control={form.control}
+                        name="intervention_activities"
+                        render={({ field }) => {
+                          return (
+                            <FormItem key={suggestion.value} className="space-y-0">
+                              <FormControl>
+                                <div className={cn(
+                                  "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors",
+                                  field.value?.includes(suggestion.value) && "border-primary bg-primary/5"
+                                )}>
+                                  <Checkbox
+                                    checked={field.value?.includes(suggestion.value)}
+                                    onCheckedChange={(checked) => {
+                                      const activities = field.value || [];
+                                      if (checked) {
+                                        field.onChange([...activities, suggestion.value]);
+                                      } else {
+                                        field.onChange(
+                                          activities.filter((value) => value !== suggestion.value)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <div className="space-y-1">
+                                    <div className="text-sm font-medium leading-none flex items-center gap-2">
+                                      <suggestion.icon className="h-4 w-4 text-primary" />
+                                      {suggestion.label}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      {suggestion.description}
+                                    </p>
+                                  </div>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-primary" />
+                    Objetivos Terapêuticos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {therapeuticGoalsSuggestions.map((goal) => (
+                      <FormField
+                        key={goal.value}
+                        control={form.control}
+                        name="therapeutic_goals"
+                        render={({ field }) => {
+                          return (
+                            <FormItem key={goal.value} className="space-y-0">
+                              <FormControl>
+                                <div className={cn(
+                                  "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors",
+                                  field.value?.includes(goal.value) && "border-primary bg-primary/5"
+                                )}>
+                                  <Checkbox
+                                    checked={field.value?.includes(goal.value)}
+                                    onCheckedChange={(checked) => {
+                                      const goals = field.value || [];
+                                      if (checked) {
+                                        field.onChange([...goals, goal.value]);
+                                      } else {
+                                        field.onChange(
+                                          goals.filter((value) => value !== goal.value)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <label className="text-sm font-medium leading-none">
+                                    {goal.label}
+                                  </label>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Music2 className="h-5 w-5 text-primary" />
+                    Recursos Musicais Utilizados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {musicalResourcesSuggestions.map((resource) => (
+                      <FormField
+                        key={resource.value}
+                        control={form.control}
+                        name="musical_resources"
+                        render={({ field }) => {
+                          return (
+                            <FormItem key={resource.value} className="space-y-0">
+                              <FormControl>
+                                <div className={cn(
+                                  "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors",
+                                  field.value?.includes(resource.value) && "border-primary bg-primary/5"
+                                )}>
+                                  <Checkbox
+                                    checked={field.value?.includes(resource.value)}
+                                    onCheckedChange={(checked) => {
+                                      const resources = field.value || [];
+                                      if (checked) {
+                                        field.onChange([...resources, resource.value]);
+                                      } else {
+                                        field.onChange(
+                                          resources.filter((value) => value !== resource.value)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <label className="text-sm font-medium leading-none">
+                                    {resource.label}
+                                  </label>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
               <FormField
                 control={form.control}
@@ -625,7 +786,7 @@ export default function InterventionForm() {
                     <FormControl>
                       <Textarea
                         placeholder="Registre aqui as observações relevantes da sessão, incluindo outras técnicas utilizadas e resultados observados"
-                        className="min-h-[100px]"
+                        className="min-h-[100px] resize-y"
                         {...field}
                       />
                     </FormControl>
