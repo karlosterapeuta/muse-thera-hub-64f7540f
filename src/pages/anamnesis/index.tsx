@@ -42,6 +42,12 @@ export default function AnamnesisForm() {
     loadInitialData();
   }, []);
 
+  useEffect(() => {
+    if (selectedPatient) {
+      loadPatientAnamnesis();
+    }
+  }, [selectedPatient]);
+
   const loadInitialData = async () => {
     try {
       setIsLoading(true);
@@ -60,7 +66,6 @@ export default function AnamnesisForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      // Usando maybeSingle() em vez de single()
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id")
@@ -110,6 +115,45 @@ export default function AnamnesisForm() {
       toast({
         title: "Erro",
         description: "Não foi possível carregar os dados necessários.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadPatientAnamnesis = async () => {
+    if (!selectedPatient) return;
+
+    try {
+      setIsLoading(true);
+      const { data: anamnesisData, error } = await supabase
+        .from("anamnesis")
+        .select("*")
+        .eq("patient_id", selectedPatient)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Erro ao carregar anamnese:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados da anamnese.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (anamnesisData) {
+        setFormData(anamnesisData);
+      } else {
+        // Reset form data if no anamnesis exists for this patient
+        setFormData({});
+      }
+    } catch (error) {
+      console.error("Erro ao carregar anamnese:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar os dados da anamnese.",
         variant: "destructive",
       });
     } finally {
@@ -461,4 +505,3 @@ export default function AnamnesisForm() {
     </div>
   );
 }
-
