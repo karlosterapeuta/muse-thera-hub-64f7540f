@@ -9,6 +9,7 @@ import {
   Edit,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { PatientSelect } from "./processes/patient-select";
 
 export default function Processes() {
   const processes = [
@@ -55,6 +56,11 @@ export default function Processes() {
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-primary">
         Processos Musicoterapêuticos
       </h1>
+      
+      <div className="mb-8">
+        <PatientSelect />
+      </div>
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {processes.map((process, index) => (
           <Link to={process.path} key={index}>
