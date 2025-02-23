@@ -196,6 +196,29 @@ export default function Evaluation() {
 
   const COLORS = ['#4ade80', '#ffa1b5'];
 
+  const [userName, setUserName] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email || "");
+        setUserName(formatNameFromEmail(user.email || ""));
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const formatNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart
+      .split(/[._-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const handleGeneratePDF = async () => {
     try {
       const pdfContent = (
@@ -205,6 +228,9 @@ export default function Evaluation() {
             selections={selections}
             categoryData={categoryData}
             pieData={pieData}
+            patientName={selectedPatientData?.name}
+            evaluatorName={userName}
+            evaluatorEmail={userEmail}
           />
         </div>
       );
