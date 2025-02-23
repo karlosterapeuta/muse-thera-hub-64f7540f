@@ -197,14 +197,16 @@ export default function Evaluation() {
 
   const handleGeneratePDF = async () => {
     try {
-      toast.loading("Gerando PDF...");
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-
       const element = document.getElementById('pdf-content');
       if (!element) {
         throw new Error("Elemento não encontrado");
       }
+
+      toast.loading("Gerando PDF...");
+
+      // Ajusta o elemento para garantir que está visível durante a geração
+      const originalDisplay = element.style.display;
+      element.style.display = 'block';
 
       const opt = {
         margin: [10, 10],
@@ -226,6 +228,10 @@ export default function Evaluation() {
       };
 
       await html2pdf().set(opt).from(element).save();
+      
+      // Restaura o display original após a geração
+      element.style.display = originalDisplay;
+      
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
