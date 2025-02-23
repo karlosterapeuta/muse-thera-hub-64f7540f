@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -34,16 +33,9 @@ export default function Evaluation() {
 
   useEffect(() => {
     async function fetchPatients() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('Usuário não autenticado');
-        return;
-      }
-
       const { data, error } = await supabase
         .from('patients')
         .select('id, name, birth_date')
-        .eq('professional_id', user.id)
         .order('name');
       
       if (error) {

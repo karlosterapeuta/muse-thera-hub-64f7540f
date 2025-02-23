@@ -25,15 +25,10 @@ export function PatientSelect({ patients, selectedPatient, onSelect }: PatientSe
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
 
   useEffect(() => {
-    const fetchPatientsForProfessional = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Buscar apenas pacientes associados ao profissional logado
+    const fetchPatients = async () => {
       const { data: patientsData, error } = await supabase
         .from('patients')
         .select('id, name')
-        .eq('professional_id', user.id)
         .order('name');
 
       if (error) {
@@ -44,7 +39,7 @@ export function PatientSelect({ patients, selectedPatient, onSelect }: PatientSe
       setFilteredPatients(patientsData || []);
     };
 
-    fetchPatientsForProfessional();
+    fetchPatients();
   }, []);
 
   return (
