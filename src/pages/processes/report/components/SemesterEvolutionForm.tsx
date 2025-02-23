@@ -14,7 +14,6 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    semester: "",
     initial_evaluation: "Avaliação inicial do semestre:\n- Estado no início do período\n- Principais desafios identificados\n- Objetivos estabelecidos",
     therapeutic_process: "Processo terapêutico:\n1. Abordagens utilizadas\n2. Adaptações realizadas\n3. Desenvolvimento das intervenções\n4. Resposta às intervenções",
     evolution_areas: "Áreas de evolução:\n- Desenvolvimento musical\n- Aspectos comunicativos\n- Habilidades motoras\n- Desenvolvimento socioemocional\n- Aspectos cognitivos",
@@ -36,13 +35,6 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
       <FormSection
         title="Evolução Semestral"
         fields={[
-          {
-            key: "semester",
-            label: "Semestre de Avaliação",
-            placeholder: "Ex: 1º Semestre 2024",
-            value: mergedContent.semester,
-            onChange: (value) => handleFieldChange("semester", value),
-          },
           {
             key: "initial_evaluation",
             label: "Avaliação Inicial",
@@ -90,4 +82,3 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
     </div>
   );
 }
-
