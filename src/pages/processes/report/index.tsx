@@ -308,7 +308,13 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${formData.type === "monthly_evolution" ? "Evolução Mensal" : formData.type === "daily_evolution" ? "Evolução Diária" : "Evolução Semestral"}
+            ${formData.type === "monthly_evolution" 
+              ? "Evolução Mensal" 
+              : formData.type === "daily_evolution" 
+              ? "Evolução Diária" 
+              : formData.type === "therapeutic_discharge"
+              ? "Alta Terapêutica"
+              : "Evolução Semestral"}
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
             Paciente: ${patientName}
@@ -341,7 +347,13 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${formData.type === "monthly_evolution" ? "Evolução Mensal" : formData.type === "daily_evolution" ? "Evolução Diária" : "Evolução Semestral"} - ${patientName}.pdf`,
+      filename: `${formData.type === "monthly_evolution" 
+        ? "Evolução Mensal" 
+        : formData.type === "daily_evolution" 
+        ? "Evolução Diária"
+        : formData.type === "therapeutic_discharge"
+        ? "Alta Terapêutica"
+        : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {
         unit: 'mm',
