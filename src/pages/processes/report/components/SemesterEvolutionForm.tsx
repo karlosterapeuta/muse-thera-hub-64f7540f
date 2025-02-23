@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -15,7 +14,6 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    date: "",
     semester: "",
     initial_evaluation: "Avaliação inicial do semestre:\n- Estado no início do período\n- Principais desafios identificados\n- Objetivos estabelecidos",
     therapeutic_process: "Processo terapêutico:\n1. Abordagens utilizadas\n2. Adaptações realizadas\n3. Desenvolvimento das intervenções\n4. Resposta às intervenções",
@@ -35,14 +33,6 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data"
-          value={mergedContent.date}
-          onChange={(value) => handleFieldChange("date", value)}
-        />
-      </div>
-
       <FormSection
         title="Evolução Semestral"
         fields={[
@@ -100,3 +90,4 @@ export function SemesterEvolutionForm({ content, onChange }: FormProps) {
     </div>
   );
 }
+
