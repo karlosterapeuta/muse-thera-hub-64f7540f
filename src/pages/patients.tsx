@@ -41,6 +41,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -86,7 +97,6 @@ export default function Patients() {
       return;
     }
 
-    // Fetch only patients associated with the current professional
     const { data, error } = await supabase
       .from("patients")
       .select("*")
@@ -126,7 +136,7 @@ export default function Patients() {
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
-      professional_id: user.id // Add the professional_id when creating a new patient
+      professional_id: user.id
     };
 
     const { error } = await supabase
@@ -150,8 +160,42 @@ export default function Patients() {
     });
 
     form.reset();
-    fetchPatients(); // Refresh the list after adding a new patient
+    fetchPatients();
   }
+
+  const handleDeleteAllPatients = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao remover pacientes",
+        description: "Usuário não autenticado.",
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("patients")
+      .delete()
+      .eq('professional_id', user.id);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao remover pacientes",
+        description: "Ocorreu um erro ao tentar remover os pacientes. Tente novamente.",
+      });
+      return;
+    }
+
+    toast({
+      title: "Pacientes removidos com sucesso!",
+      description: "Todos os pacientes foram removidos do sistema.",
+    });
+
+    fetchPatients();
+  };
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
@@ -264,11 +308,39 @@ export default function Patients() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Pacientes Cadastrados</CardTitle>
-          <CardDescription>
-            Lista de todos os pacientes cadastrados no sistema
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Pacientes Cadastrados</CardTitle>
+            <CardDescription>
+              Lista de todos os pacientes cadastrados no sistema
+            </CardDescription>
+          </div>
+          {patients.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  Remover Todos os Pacientes
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Todos os pacientes serão removidos permanentemente do sistema.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteAllPatients}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Sim, remover todos
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
