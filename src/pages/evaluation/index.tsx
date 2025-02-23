@@ -196,34 +196,35 @@ export default function Evaluation() {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   const handleGeneratePDF = async () => {
-    const element = document.getElementById('pdf-content');
-    if (!element) {
-      toast.error("Erro ao gerar PDF: Elemento não encontrado");
-      return;
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const opt = {
-      margin: 10,
-      filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
-      image: { type: 'png', quality: 1 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
-        orientation: 'portrait'
-      }
-    };
-
     try {
       toast.loading("Gerando PDF...");
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const element = document.getElementById('pdf-content');
+      if (!element) {
+        throw new Error("Elemento não encontrado");
+      }
+
+      const opt = {
+        margin: [10, 10],
+        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
+
       await html2pdf().set(opt).from(element).save();
       toast.success("PDF gerado com sucesso!");
     } catch (error) {

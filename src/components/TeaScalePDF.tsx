@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -19,9 +19,16 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   pieData
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.style.visibility = 'visible';
+    }
+  }, []);
 
   return (
-    <div className="bg-white p-8" id="pdf-content" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+    <div ref={contentRef} className="bg-white p-8" id="pdf-content" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', visibility: 'hidden' }}>
       <h1 className="text-2xl font-bold mb-6 text-center">Escala de Avaliação TEA</h1>
 
       {evaluationSections.map((section, sectionIndex) => (
@@ -133,3 +140,4 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
+
