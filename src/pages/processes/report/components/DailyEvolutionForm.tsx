@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -15,7 +14,6 @@ export function DailyEvolutionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    date: "",
     initial_state: "Estado inicial do paciente:\n- Humor\n- Disposição\n- Nível de engajamento",
     activities: "Atividades realizadas:\n1. Exercícios de atenção musical\n2. Técnicas de expressão sonora\n3. Atividades rítmicas\n4. Improvisação musical",
     responses: "Respostas observadas:\n- Engajamento nas atividades\n- Interação musical\n- Expressão emocional\n- Desenvolvimento motor",
@@ -32,14 +30,6 @@ export function DailyEvolutionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data"
-          value={mergedContent.date}
-          onChange={(value) => handleFieldChange("date", value)}
-        />
-      </div>
-
       <FormSection
         title="Evolução Diária"
         fields={[
@@ -76,3 +66,4 @@ export function DailyEvolutionForm({ content, onChange }: FormProps) {
     </div>
   );
 }
+
