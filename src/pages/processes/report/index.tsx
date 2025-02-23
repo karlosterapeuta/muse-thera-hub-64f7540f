@@ -120,234 +120,269 @@ export default function ReportForm() {
     fetchData();
   }, [toast]);
 
+  const generateContentHTML = (content: Record<string, any>) => {
+    if (formData.type === "daily_evolution") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Estado Inicial
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.initial_state || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Atividades Realizadas
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.activities || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Respostas Observadas
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.responses || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Observações
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.observations || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    } else if (formData.type === "monthly_evolution") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Objetivos Terapêuticos
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.therapeutic_objectives || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Conquistas
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.achievements || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Desafios
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.challenges || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Ajustes Necessários
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.adjustments || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Próximos Passos
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.next_steps || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    } else if (formData.type === "semester_evolution") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Avaliação Inicial
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.initial_evaluation || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Processo Terapêutico
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.therapeutic_process || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Áreas de Evolução
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.evolution_areas || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Envolvimento Familiar
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.family_involvement || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Conclusões
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.conclusions || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Recomendações
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.recommendations || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    } else if (formData.type === "therapeutic_discharge") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Resumo do Tratamento
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.treatment_summary || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Objetivos Alcançados
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.achieved_goals || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Recomendações
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.recommendations || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    } else if (formData.type === "individual_session") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Objetivos
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.objectives || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Atividades Realizadas
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.activities || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Resposta do Paciente
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.patient_response || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Observações
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.observations || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Próximos Passos
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            ${String(content.next_steps || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    } else if (formData.type === "group_session") {
+      return `
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Dados da Sessão em Grupo
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            <strong>Participantes:</strong><br>
+            ${String(content.participants || '').split('\n').join('<br>')}<br><br>
+            <strong>Tema:</strong><br>
+            ${String(content.theme || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Desenvolvimento
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            <strong>Dinâmica do Grupo:</strong><br>
+            ${String(content.group_dynamics || '').split('\n').join('<br>')}<br><br>
+            <strong>Atividades Realizadas:</strong><br>
+            ${String(content.activities || '').split('\n').join('<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 28px;">
+          <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
+            Avaliação
+          </h2>
+          <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
+            <strong>Resposta do Grupo:</strong><br>
+            ${String(content.group_response || '').split('\n').join('<br>')}<br><br>
+            <strong>Observações:</strong><br>
+            ${String(content.observations || '').split('\n').join('<br>')}
+          </div>
+        </div>
+      `;
+    }
+    return '';
+  };
+
   const generatePDF = async (patientName: string, formData: FormValues) => {
     const element = document.createElement('div');
     
-    const generateContentHTML = (content: Record<string, any>) => {
-      if (formData.type === "daily_evolution") {
-        return `
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Estado Inicial
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.initial_state || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Atividades Realizadas
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.activities || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Respostas Observadas
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.responses || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Observações
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.observations || '').split('\n').join('<br>')}
-            </div>
-          </div>
-        `;
-      } else if (formData.type === "monthly_evolution") {
-        return `
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Objetivos Terapêuticos
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.therapeutic_objectives || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Conquistas
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.achievements || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Desafios
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.challenges || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Ajustes Necessários
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.adjustments || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Próximos Passos
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.next_steps || '').split('\n').join('<br>')}
-            </div>
-          </div>
-        `;
-      } else if (formData.type === "semester_evolution") {
-        return `
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Avaliação Inicial
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.initial_evaluation || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Processo Terapêutico
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.therapeutic_process || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Áreas de Evolução
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.evolution_areas || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Envolvimento Familiar
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.family_involvement || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Conclusões
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.conclusions || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Recomendações
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.recommendations || '').split('\n').join('<br>')}
-            </div>
-          </div>
-        `;
-      } else if (formData.type === "therapeutic_discharge") {
-        return `
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Resumo do Tratamento
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.treatment_summary || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Objetivos Alcançados
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.achieved_goals || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Recomendações
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.recommendations || '').split('\n').join('<br>')}
-            </div>
-          </div>
-        `;
-      } else if (formData.type === "individual_session") {
-        return `
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Objetivos
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.objectives || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Atividades Realizadas
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.activities || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Resposta do Paciente
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.patient_response || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Observações
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.observations || '').split('\n').join('<br>')}
-            </div>
-          </div>
-
-          <div style="margin-bottom: 28px;">
-            <h2 style="color: #1F2937; font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #E5E7EB;">
-              Próximos Passos
-            </h2>
-            <div style="background-color: #F9FAFB; padding: 12px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 14px; line-height: 1.6; color: #1F2937; white-space: pre-wrap;">
-              ${String(content.next_steps || '').split('\n').join('<br>')}
-            </div>
-          </div>
-        `;
-      }
-      
-      return '';
-    };
-
-    console.log("Dados do formulário:", formData);
-
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
@@ -363,6 +398,8 @@ export default function ReportForm() {
               ? "Alta Terapêutica"
               : formData.type === "individual_session"
               ? "Relatório de Sessão Individual"
+              : formData.type === "group_session"
+              ? "Relatório de Sessão em Grupo"
               : "Evolução Semestral"}
           </h1>
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
@@ -404,6 +441,8 @@ export default function ReportForm() {
         ? "Alta Terapêutica"
         : formData.type === "individual_session"
         ? "Relatório de Sessão Individual"
+        : formData.type === "group_session"
+        ? "Relatório de Sessão em Grupo"
         : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
       jsPDF: {

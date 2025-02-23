@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
-import { DateField } from "./DateField";
 
 type FormProps = {
   content: Record<string, any>;
@@ -16,7 +15,6 @@ export function GroupSessionForm({ content, onChange }: FormProps) {
   };
 
   const defaultContent = {
-    date: "",
     participants: "",
     theme: "Integração Social através da Música:\n- Desenvolvimento de habilidades sociais\n- Promoção de interação musical em grupo\n- Fortalecimento de vínculos interpessoais",
     group_dynamics: "- Realização de círculo musical interativo\n- Atividades de improvisação em grupo\n- Jogos musicais cooperativos\n- Criação coletiva de canções\n- Exercícios de escuta ativa e resposta musical",
@@ -35,14 +33,6 @@ export function GroupSessionForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <DateField
-          label="Data"
-          value={mergedContent.date}
-          onChange={(value) => handleFieldChange("date", value)}
-        />
-      </div>
-
       <FormSection
         title="Dados da Sessão em Grupo"
         fields={[
