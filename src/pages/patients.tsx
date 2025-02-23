@@ -75,6 +75,19 @@ export default function Patients() {
   });
 
   const fetchPatients = async () => {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar pacientes",
+        description: "Usuário não autenticado.",
+      });
+      return;
+    }
+
+    // Fetch only patients associated with the current professional
     const { data, error } = await supabase
       .from("patients")
       .select("*")
@@ -97,11 +110,24 @@ export default function Patients() {
   }, []);
 
   async function onSubmit(values: FormValues) {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao cadastrar paciente",
+        description: "Usuário não autenticado.",
+      });
+      return;
+    }
+
     const formattedValues = {
       name: values.name,
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
+      professional_id: user.id // Adiciona o ID do profissional ao cadastrar
     };
 
     const { data, error } = await supabase
