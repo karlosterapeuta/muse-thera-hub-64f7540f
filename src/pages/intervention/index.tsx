@@ -161,11 +161,27 @@ export default function InterventionForm() {
     return activities.map(activity => translations[activity] || activity);
   };
 
+  const translateTherapeuticGoals = (goals: string[] = []) => {
+    const translations: Record<string, string> = {
+      comunicacao: "Desenvolvimento da Comunicação",
+      emocional: "Regulação Emocional",
+      cognitivo: "Estimulação Cognitiva",
+      motor: "Desenvolvimento Motor",
+      social: "Interação Social",
+      linguagem: "Desenvolvimento da Linguagem",
+      atencao: "Atenção e Concentração",
+      memoria: "Memória e Aprendizagem"
+    };
+
+    return goals.map(goal => translations[goal] || goal);
+  };
+
   const generatePDF = async (values: FormValues, patientName: string) => {
     try {
       const element = document.createElement('div');
       const translatedEmotionalState = translateEmotionalState(values.emotional_state);
       const translatedActivities = translateInterventionActivities(values.intervention_activities);
+      const translatedGoals = translateTherapeuticGoals(values.therapeutic_goals);
 
       const generateContentHTML = () => {
         const sections = [
@@ -197,6 +213,15 @@ export default function InterventionForm() {
               { 
                 label: "Atividades Realizadas", 
                 value: translatedActivities.length > 0 ? translatedActivities.join(", ") : "Nenhuma atividade registrada"
+              }
+            ]
+          },
+          {
+            title: "Objetivos Terapêuticos",
+            fields: [
+              {
+                label: "Objetivos Trabalhados",
+                value: translatedGoals.length > 0 ? translatedGoals.join(", ") : "Nenhum objetivo registrado"
               }
             ]
           }
