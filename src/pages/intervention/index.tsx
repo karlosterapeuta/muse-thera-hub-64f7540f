@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -138,14 +137,14 @@ export default function InterventionForm() {
     };
 
     return {
-      receptivity: translations.receptivity[state.receptivity] || state.receptivity,
-      participation: translations.participation[state.participation] || state.participation,
-      interaction: translations.interaction[state.interaction] || state.interaction,
-      musicality: translations.musicality[state.musicality] || state.musicality
+      receptivity: translations.receptivity[state.receptivity] || "Não avaliado",
+      participation: translations.participation[state.participation] || "Não avaliado",
+      interaction: translations.interaction[state.interaction] || "Não avaliado",
+      musicality: translations.musicality[state.musicality] || "Não avaliado"
     };
   };
 
-  const translateInterventionActivities = (activities: string[]) => {
+  const translateInterventionActivities = (activities: string[] = []) => {
     const translations: Record<string, string> = {
       canto_livre: "Canto Livre",
       improvisacao_instrumental: "Improvisação Instrumental",
@@ -165,138 +164,156 @@ export default function InterventionForm() {
   };
 
   const generatePDF = async (values: FormValues, patientName: string) => {
-    const element = document.createElement('div');
-    const translatedEmotionalState = translateEmotionalState(values.emotional_state);
-    const translatedActivities = values.intervention_activities ? 
-      translateInterventionActivities(values.intervention_activities) : [];
+    try {
+      const element = document.createElement('div');
+      const translatedEmotionalState = translateEmotionalState(values.emotional_state);
+      const translatedActivities = translateInterventionActivities(values.intervention_activities);
 
-    const generateContentHTML = () => {
-      const sections = [
-        {
-          title: "Informações da Sessão",
-          fields: [
-            { 
-              label: "Data da Sessão", 
-              value: format(values.date, "PPP", { locale: ptBR }) 
-            }
-          ]
-        },
-        {
-          title: "Estado Emocional",
-          fields: [
-            { label: "Receptividade", value: translatedEmotionalState.receptivity },
-            { label: "Participação", value: translatedEmotionalState.participation },
-            { label: "Interação", value: translatedEmotionalState.interaction },
-            { label: "Musicalidade", value: translatedEmotionalState.musicality }
-          ]
-        },
-        {
-          title: "Técnicas de Intervenção",
-          fields: [
-            { 
-              label: "Atividades Realizadas", 
-              value: translatedActivities.join(", ") 
-            }
-          ]
-        },
-        {
-          title: "Observações",
-          fields: [
-            { 
-              label: "Notas da Sessão", 
-              value: values.notes || "Sem observações registradas" 
-            }
-          ]
-        }
-      ];
-
-      return sections
-        .map(section => {
-          const sectionContent = section.fields
-            .filter(field => field.value)
-            .map(field => `
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
-                  ${field.label}
-                </div>
-                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
-                  ${String(field.value).split('\n').join('<br>')}
-                </div>
-              </div>
-            `)
-            .join('');
-
-          if (sectionContent) {
-            return `
-              <div style="margin-bottom: 24px;">
-                <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
-                  ${section.title}
-                </h2>
-                ${sectionContent}
-              </div>
-            `;
+      const generateContentHTML = () => {
+        const sections = [
+          {
+            title: "Informações da Sessão",
+            fields: [
+              { 
+                label: "Data da Sessão", 
+                value: format(values.date, "PPP", { locale: ptBR }) 
+              },
+              {
+                label: "Paciente",
+                value: patientName
+              }
+            ]
+          },
+          {
+            title: "Estado Emocional",
+            fields: [
+              { label: "Receptividade", value: translatedEmotionalState.receptivity },
+              { label: "Participação", value: translatedEmotionalState.participation },
+              { label: "Interação", value: translatedEmotionalState.interaction },
+              { label: "Musicalidade", value: translatedEmotionalState.musicality }
+            ]
+          },
+          {
+            title: "Técnicas de Intervenção",
+            fields: [
+              { 
+                label: "Atividades Realizadas", 
+                value: translatedActivities.length > 0 ? translatedActivities.join(", ") : "Nenhuma atividade registrada"
+              }
+            ]
           }
-          return '';
-        })
-        .join('');
-    };
+        ];
 
-    element.innerHTML = `
-      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
-          <div style="margin-bottom: 24px;">
-            <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+        if (values.notes) {
+          sections.push({
+            title: "Observações",
+            fields: [
+              { 
+                label: "Notas da Sessão", 
+                value: values.notes
+              }
+            ]
+          });
+        }
+
+        return sections
+          .map(section => {
+            const sectionContent = section.fields
+              .filter(field => field.value)
+              .map(field => `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                    ${field.label}
+                  </div>
+                  <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                    ${String(field.value).split('\n').join('<br>')}
+                  </div>
+                </div>
+              `)
+              .join('');
+
+            if (sectionContent) {
+              return `
+                <div style="margin-bottom: 24px;">
+                  <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                    ${section.title}
+                  </h2>
+                  ${sectionContent}
+                </div>
+              `;
+            }
+            return '';
+          })
+          .join('');
+      };
+
+      element.innerHTML = `
+        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+            <div style="margin-bottom: 24px;">
+              <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+            </div>
+            <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+              Registro de Intervenção Musicoterapêutica
+            </h1>
+            <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+              ${patientName}
+            </h2>
+            <p style="color: #6B7280; font-size: 14px;">
+              Data: ${format(values.date, "PPP", { locale: ptBR })}
+            </p>
           </div>
-          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
-            Registro de Intervenção Terapêutica
-          </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
-            Paciente: ${patientName}
-          </h2>
-          <p style="color: #6B7280; font-size: 14px;">
-            Data: ${format(values.date, "PPP", { locale: ptBR })}
-          </p>
+
+          <div style="margin-bottom: 32px;">
+            ${generateContentHTML()}
+          </div>
+
+          <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Documento gerado em ${format(new Date(), "PPP", { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Musetera - Sistema de Gestão para Musicoterapia
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Musicoterapeuta: ${userName}
+            </p>
+            <p style="color: #6B7280; font-size: 11px;">
+              Email: ${userEmail}
+            </p>
+          </div>
         </div>
+      `;
 
-        <div style="margin-bottom: 32px;">
-          ${generateContentHTML()}
-        </div>
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `Intervenção - ${patientName} - ${format(values.date, "dd-MM-yyyy")}.pdf`,
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+        },
+      };
 
-        <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musetera - Sistema de Gestão para Musicoterapia
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}
-          </p>
-          <p style="color: #6B7280; font-size: 11px;">
-            Email: ${userEmail}
-          </p>
-        </div>
-      </div>
-    `;
-
-    const opt = {
-      margin: [20, 20, 20, 20],
-      filename: `Intervenção - ${patientName} - ${format(values.date, "dd-MM-yyyy")}.pdf`,
-      pagebreak: { mode: 'avoid-all' },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-      },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        backgroundColor: '#ffffff',
-      },
-    };
-
-    await html2pdf().from(element).set(opt).save();
+      await html2pdf().from(element).set(opt).save();
+      
+      return true;
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível gerar o PDF da intervenção.",
+      });
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -331,36 +348,44 @@ export default function InterventionForm() {
   }, [toast]);
 
   const onSubmit = async (values: FormValues) => {
-    const { error } = await supabase.from("sessions").insert({
-      patient_id: values.patient_id,
-      date: values.date.toISOString(),
-      emotional_state: values.emotional_state,
-      intervention_activities: values.intervention_activities,
-      therapeutic_goals: values.therapeutic_goals,
-      musical_resources: values.musical_resources,
-      notes: values.notes,
-    });
+    try {
+      const { error } = await supabase.from("sessions").insert({
+        patient_id: values.patient_id,
+        date: values.date.toISOString(),
+        emotional_state: values.emotional_state,
+        intervention_activities: values.intervention_activities || [],
+        therapeutic_goals: values.therapeutic_goals || [],
+        musical_resources: values.musical_resources || [],
+        notes: values.notes,
+      });
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      const selectedPatientData = patients.find(p => p.id === values.patient_id);
+      if (!selectedPatientData) {
+        throw new Error("Paciente não encontrado");
+      }
+
+      const pdfGenerated = await generatePDF(values, selectedPatientData.name);
+      
+      if (pdfGenerated) {
+        toast({
+          title: "Sucesso!",
+          description: "Intervenção registrada e PDF gerado com sucesso.",
+        });
+
+        navigate("/processes");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar intervenção:", error);
       toast({
         variant: "destructive",
         title: "Erro ao salvar intervenção",
         description: "Ocorreu um erro ao salvar os dados da intervenção.",
       });
-      return;
     }
-
-    const selectedPatientData = patients.find(p => p.id === values.patient_id);
-    if (selectedPatientData) {
-      await generatePDF(values, selectedPatientData.name);
-    }
-
-    toast({
-      title: "Sucesso!",
-      description: "Intervenção registrada e PDF gerado com sucesso.",
-    });
-
-    navigate("/processes");
   };
 
   const emotionalStateOptions = {
