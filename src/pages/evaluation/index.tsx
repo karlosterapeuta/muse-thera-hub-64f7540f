@@ -198,43 +198,37 @@ export default function Evaluation() {
   const handleGeneratePDF = async () => {
     const element = document.getElementById('pdf-content');
     if (!element) {
-      toast.error("Erro ao gerar PDF");
+      toast.error("Erro ao gerar PDF: Elemento não encontrado");
       return;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const opt = {
-      margin: [10, 10],
+      margin: 10,
       filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
-      image: { 
-        type: 'jpeg', 
-        quality: 0.98 
-      },
+      image: { type: 'png', quality: 1 },
       html2canvas: { 
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        logging: true,
-        backgroundColor: '#ffffff',
-        onrendered: function(canvas: HTMLCanvasElement) {
-          canvas.style.imageRendering = 'high-quality';
-        }
+        logging: false,
+        backgroundColor: '#ffffff'
       },
       jsPDF: { 
         unit: 'mm', 
         format: 'a4', 
-        orientation: 'portrait',
-        compress: true
+        orientation: 'portrait'
       }
     };
 
     try {
-      const pdf = await html2pdf().from(element).set(opt).save();
+      toast.loading("Gerando PDF...");
+      await html2pdf().set(opt).from(element).save();
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
     }
   };
 

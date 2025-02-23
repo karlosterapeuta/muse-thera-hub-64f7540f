@@ -67,14 +67,14 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div style={{ width: '100%', height: '250px', margin: '0 auto' }}>
-            <PieChart width={350} height={250}>
+          <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
+            <PieChart width={300} height={200}>
               <Pie
                 data={pieData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={40}
+                outerRadius={60}
                 paddingAngle={5}
                 dataKey="value"
               >
@@ -102,21 +102,21 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
-          <div style={{ width: '100%', height: '250px', margin: '0 auto' }}>
+          <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
             <BarChart
-              width={350}
-              height={250}
+              width={300}
+              height={200}
               data={categoryData}
-              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+              margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="name"
                 angle={-45}
                 textAnchor="end"
-                height={100}
+                height={60}
                 interval={0}
-                fontSize={10}
+                fontSize={8}
               />
               <YAxis domain={[0, 100]} />
               <Tooltip />
