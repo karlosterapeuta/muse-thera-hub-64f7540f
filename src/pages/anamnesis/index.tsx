@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,38 +65,12 @@ export default function AnamnesisForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      console.log('Buscando pacientes para usuário:', user.id);
 
-      if (professionalError) {
-        console.error("Erro ao buscar profissional:", professionalError);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar os dados do profissional.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!professionalData) {
-        toast({
-          title: "Perfil não encontrado",
-          description: "Perfil profissional não encontrado. Entre em contato com o suporte.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setProfessionalId(professionalData.id);
-
-      // Modificação aqui: adicionando filtro por professional_id
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
-        .eq("professional_id", professionalData.id)
+        .eq("professional_id", user.id)
         .order("name");
 
       if (patientsError) {
