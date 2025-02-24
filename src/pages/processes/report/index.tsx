@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar as CalendarIcon, Download } from "lucide-react";
+import { CalendarIcon, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
@@ -640,22 +641,40 @@ export default function ReportForm() {
               />
 
               {form.watch("type") === "daily_evolution" && (
-                <DailyEvolutionForm form={form} />
+                <DailyEvolutionForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
               {form.watch("type") === "monthly_evolution" && (
-                <MonthlyEvolutionForm form={form} />
+                <MonthlyEvolutionForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
               {form.watch("type") === "semester_evolution" && (
-                <SemesterEvolutionForm form={form} />
+                <SemesterEvolutionForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
               {form.watch("type") === "therapeutic_discharge" && (
-                <TherapeuticDischargeForm form={form} />
+                <TherapeuticDischargeForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
               {form.watch("type") === "individual_session" && (
-                <IndividualSessionForm form={form} />
+                <IndividualSessionForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
               {form.watch("type") === "group_session" && (
-                <GroupSessionForm form={form} />
+                <GroupSessionForm
+                  content={form.watch("content")}
+                  onChange={(content) => form.setValue("content", content)}
+                />
               )}
 
               <div className="flex justify-end space-x-4">
