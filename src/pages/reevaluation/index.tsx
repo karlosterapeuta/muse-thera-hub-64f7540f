@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -122,7 +123,10 @@ export default function ReevaluationForm() {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
+        
+        // Verificar se o usuário está autenticado
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) throw authError;
         if (!user) throw new Error("Usuário não autenticado");
 
         setUserEmail(user.email || "");
@@ -145,6 +149,8 @@ export default function ReevaluationForm() {
           throw new Error('Profissional não encontrado');
         }
 
+        console.log('Professional ID:', professionalData.id);
+
         // Buscar pacientes do profissional
         const { data: patientsData, error: patientsError } = await supabase
           .from('patients')
@@ -157,7 +163,9 @@ export default function ReevaluationForm() {
           throw patientsError;
         }
 
+        console.log('Patients loaded:', patientsData);
         setPatients(patientsData || []);
+
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast({
