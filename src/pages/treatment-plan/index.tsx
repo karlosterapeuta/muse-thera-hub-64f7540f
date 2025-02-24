@@ -7,13 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SelectField } from "./components/SelectField";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import html2pdf from "html2pdf.js";
 
 type Patient = {
@@ -181,7 +174,7 @@ export default function TreatmentPlanForm() {
     return translations[value] || value;
   };
 
-  const generatePDF = async (patientName: string) => {
+  const generatePDF = async () => {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
@@ -279,7 +272,7 @@ export default function TreatmentPlanForm() {
               Plano Terapêutico Musicoterapêutico
             </h1>
             <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
-              Paciente: ${patientName || 'Não informado'}
+              Musicoterapeuta: ${userName || 'Não informado'}
             </h2>
             <p style="color: #6B7280; font-size: 14px;">
               Data: ${new Date().toLocaleDateString('pt-BR')}
@@ -309,7 +302,7 @@ export default function TreatmentPlanForm() {
 
       const opt = {
         margin: [20, 20, 20, 20],
-        filename: `Plano Terapêutico - ${patientName}.pdf`,
+        filename: `Plano Terapêutico.pdf`,
         pagebreak: { mode: 'avoid-all' },
         jsPDF: {
           unit: 'mm',
@@ -338,15 +331,6 @@ export default function TreatmentPlanForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!selectedPatient) {
-      toast({
-        title: "Atenção",
-        description: "Por favor, selecione um paciente.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     try {
       const { data: professionalData, error: professionalError } = await supabase
@@ -361,7 +345,6 @@ export default function TreatmentPlanForm() {
         .from("treatment_plans")
         .insert({
           ...formData,
-          patient_id: selectedPatient,
           professional_id: professionalData.id,
           status: "active",
           created_at: new Date().toISOString(),
@@ -369,14 +352,11 @@ export default function TreatmentPlanForm() {
 
       if (error) throw error;
 
-      const selectedPatientData = patients.find(p => p.id === selectedPatient);
-      if (selectedPatientData) {
-        await generatePDF(selectedPatientData.name);
-      }
+      await generatePDF();
 
       toast({
         title: "Sucesso!",
-        description: "Plano terapêutico salvo e PDF gerado com sucesso.",
+        description: "Plano terapêutico salvo com sucesso.",
       });
 
       navigate("/processes");
@@ -531,22 +511,6 @@ export default function TreatmentPlanForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <Label>Paciente</Label>
-              <Select value={selectedPatient} onValueChange={setSelectedPatient}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um paciente" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((patient) => (
-                    <SelectItem key={patient.id} value={patient.id}>
-                      {patient.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             {sections.map((section) => (
               <div key={section.title} className="space-y-4">
                 <h3 className="text-lg font-semibold pt-4">{section.title}</h3>
