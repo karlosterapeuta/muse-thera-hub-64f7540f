@@ -40,6 +40,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
+import { PatientSelect } from "../anamnesis/components/PatientSelect";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -131,20 +132,12 @@ export default function ReevaluationForm() {
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
-
-        const { data, error } = await supabase
-          .from("patients")
-          .select("id, name")
-          .order("name");
-
-        if (error) throw error;
-        setPatients(data || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar dados",
-          description: "Não foi possível carregar a lista de pacientes",
+          description: "Não foi possível carregar os dados do usuário",
         });
       }
     }
@@ -352,24 +345,11 @@ export default function ReevaluationForm() {
                 name="patient_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Paciente</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um paciente" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {patients.map((patient) => (
-                          <SelectItem key={patient.id} value={patient.id}>
-                            {patient.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <PatientSelect
+                      patients={patients}
+                      selectedPatient={field.value}
+                      onSelect={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
