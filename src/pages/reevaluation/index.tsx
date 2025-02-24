@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,13 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -95,6 +87,7 @@ export default function ReevaluationForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -128,6 +121,7 @@ export default function ReevaluationForm() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Usuário não autenticado");
 
@@ -139,11 +133,16 @@ export default function ReevaluationForm() {
           .from('professionals')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (professionalError) {
           console.error('Erro ao buscar profissional:', professionalError);
-          return;
+          throw professionalError;
+        }
+
+        if (!professionalData) {
+          console.error('Profissional não encontrado');
+          throw new Error('Profissional não encontrado');
         }
 
         // Buscar pacientes do profissional
@@ -166,6 +165,8 @@ export default function ReevaluationForm() {
           title: "Erro ao carregar dados",
           description: "Não foi possível carregar os dados do usuário ou pacientes",
         });
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -376,6 +377,7 @@ export default function ReevaluationForm() {
                       patients={patients}
                       selectedPatient={field.value}
                       onSelect={field.onChange}
+                      isLoading={isLoading}
                     />
                     <FormMessage />
                   </FormItem>
