@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -131,6 +130,8 @@ export default function ReevaluationForm() {
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
+
+        console.log('Fetching professional ID for user:', user.id);
 
         // Buscar o ID do profissional
         const { data: professionalData, error: professionalError } = await supabase
