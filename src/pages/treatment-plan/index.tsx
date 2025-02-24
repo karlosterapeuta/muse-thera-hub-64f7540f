@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,6 @@ export default function TreatmentPlanForm() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [professionalId, setProfessionalId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -53,38 +52,25 @@ export default function TreatmentPlanForm() {
 
   const loadData = async () => {
     try {
-      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq('user_id', user.id)
-        .single();
-
-      if (professionalError) {
-        console.error("Erro ao buscar professional_id:", professionalError);
-        throw new Error("Erro ao buscar dados do profissional");
-      }
-
-      setProfessionalId(professionalData.id);
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      const { data: patientsData, error: patientsError } = await supabase
+      const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', professionalData.id)
+        .eq('professional_id', user.id)
         .order("name");
 
-      if (patientsError) throw patientsError;
-      setPatients(patientsData || []);
+      if (error) throw error;
+      setPatients(data || []);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error("Erro ao carregar pacientes:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar a lista de pacientes",
+        description: "Não foi possível carregar a lista de pacientes.",
         variant: "destructive",
       });
     } finally {
@@ -358,22 +344,16 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    if (!professionalId) {
-      toast({
-        title: "Erro",
-        description: "Dados do profissional não encontrados.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: professionalId,
+          professional_id: user.id,
           status: "active",
           created_at: new Date().toISOString(),
         });
