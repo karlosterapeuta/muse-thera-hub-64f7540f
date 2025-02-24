@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -132,12 +133,38 @@ export default function ReevaluationForm() {
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
+
+        // Buscar o ID do profissional
+        const { data: professionalData, error: professionalError } = await supabase
+          .from('professionals')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (professionalError) {
+          console.error('Erro ao buscar profissional:', professionalError);
+          return;
+        }
+
+        // Buscar pacientes do profissional
+        const { data: patientsData, error: patientsError } = await supabase
+          .from('patients')
+          .select('id, name')
+          .eq('professional_id', professionalData.id)
+          .order('name');
+
+        if (patientsError) {
+          console.error('Erro ao carregar pacientes:', patientsError);
+          throw patientsError;
+        }
+
+        setPatients(patientsData || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados do usuário",
+          description: "Não foi possível carregar os dados do usuário ou pacientes",
         });
       }
     }
