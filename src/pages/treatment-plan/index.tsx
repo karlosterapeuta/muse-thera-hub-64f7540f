@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +62,6 @@ export default function TreatmentPlanForm() {
         return;
       }
 
-      // Buscar dados do profissional
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id, name, email")
@@ -92,7 +90,6 @@ export default function TreatmentPlanForm() {
 
       setProfessional(professionalData);
 
-      // Buscar pacientes usando o ID do profissional
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
@@ -412,10 +409,7 @@ export default function TreatmentPlanForm() {
 
       if (error) throw error;
 
-      const selectedPatientData = patients.find(p => p.id === selectedPatient);
-      if (selectedPatientData) {
-        await generatePDF(selectedPatientData.name);
-      }
+      await generatePDF();
 
       toast({
         title: "Sucesso!",
