@@ -52,9 +52,11 @@ export default function TreatmentPlanForm() {
   const loadData = async () => {
     try {
       setIsLoading(true);
+      console.log("Iniciando carregamento de dados...");
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
+        console.error("Usuário não autenticado");
         toast({
           title: "Erro",
           description: "Usuário não autenticado",
@@ -62,6 +64,7 @@ export default function TreatmentPlanForm() {
         });
         return;
       }
+      console.log("ID do usuário autenticado:", user.id);
 
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
@@ -80,7 +83,7 @@ export default function TreatmentPlanForm() {
       }
 
       if (!professionalData) {
-        console.error("Profissional não encontrado");
+        console.error("Profissional não encontrado para o user_id:", user.id);
         toast({
           title: "Erro",
           description: "Perfil profissional não encontrado.",
@@ -89,9 +92,9 @@ export default function TreatmentPlanForm() {
         return;
       }
 
+      console.log("Dados do profissional:", professionalData);
       setProfessional(professionalData);
 
-      // Aqui está a principal mudança: filtragem por professional_id
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
@@ -576,7 +579,7 @@ export default function TreatmentPlanForm() {
               onSelect={setSelectedPatient}
               isLoading={isLoading}
             />
-
+            
             {sections.map((section) => (
               <div key={section.title} className="space-y-4">
                 <h3 className="text-lg font-semibold pt-4">{section.title}</h3>
