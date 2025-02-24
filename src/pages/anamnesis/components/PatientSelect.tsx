@@ -27,9 +27,7 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
   const getPlaceholderText = () => {
     if (isLoading) return "Carregando...";
     if (!patients || patients.length === 0) return "Nenhum paciente encontrado";
-    if (!selectedPatient) return "Selecione um paciente";
-    const patient = patients.find(p => p.id === selectedPatient);
-    return patient ? patient.name : "Selecione um paciente";
+    return "Selecione um paciente";
   };
 
   return (

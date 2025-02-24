@@ -62,15 +62,17 @@ export default function TreatmentPlanForm() {
           description: "Usuário não autenticado",
           variant: "destructive",
         });
+        navigate("/login");
         return;
       }
       console.log("ID do usuário autenticado:", user.id);
 
+      // Primeiro, buscar dados do profissional
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id, name, email")
         .eq("user_id", user.id)
-        .maybeSingle();
+        .single();
 
       if (professionalError) {
         console.error("Erro ao carregar dados do profissional:", professionalError);
@@ -95,6 +97,7 @@ export default function TreatmentPlanForm() {
       console.log("Dados do profissional:", professionalData);
       setProfessional(professionalData);
 
+      // Agora, buscar pacientes associados a este profissional
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
@@ -112,6 +115,10 @@ export default function TreatmentPlanForm() {
       }
 
       console.log("Pacientes carregados:", patientsData);
+      if (!patientsData || patientsData.length === 0) {
+        console.log("Nenhum paciente encontrado para o profissional:", professionalData.id);
+      }
+      
       setPatients(patientsData || []);
 
     } catch (error) {
