@@ -21,10 +21,12 @@ type PatientSelectProps = {
   isLoading?: boolean;
 };
 
-export function PatientSelect({ patients, selectedPatient, onSelect, isLoading = false }: PatientSelectProps) {
-  console.log('PatientSelect - patients:', patients);
-  console.log('PatientSelect - selectedPatient:', selectedPatient);
-  
+export function PatientSelect({ 
+  patients, 
+  selectedPatient, 
+  onSelect, 
+  isLoading = false 
+}: PatientSelectProps) {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -66,4 +68,3 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
     </div>
   );
 }
-

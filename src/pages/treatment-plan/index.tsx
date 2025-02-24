@@ -51,66 +51,60 @@ export default function TreatmentPlanForm() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      console.log("Iniciando carregamento de dados...");
-
-      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Get current user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) throw authError;
+      
       if (!user) {
-        console.error("Usuário não autenticado");
         toast({
-          title: "Erro",
-          description: "Usuário não autenticado",
+          title: "Sessão expirada",
+          description: "Por favor, faça login novamente.",
           variant: "destructive",
         });
         navigate("/login");
         return;
       }
 
-      // Buscar dados do profissional
-      const professionalResult = await supabase
+      // Get professional data
+      const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id, name, email")
         .eq("user_id", user.id)
         .single();
 
-      if (professionalResult.error) {
-        console.error("Erro ao carregar dados do profissional:", professionalResult.error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar os dados do profissional.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setProfessional(professionalResult.data);
-
-      if (professionalResult.data) {
-        // Buscar pacientes usando o professional_id
-        const patientsResult = await supabase
-          .from("patients")
-          .select("id, name")
-          .eq("professional_id", professionalResult.data.id)
-          .order("name");
-
-        if (patientsResult.error) {
-          console.error("Erro ao carregar pacientes:", patientsResult.error);
+      if (professionalError) {
+        if (professionalError.code === 'PGRST116') {
           toast({
-            title: "Erro",
-            description: "Não foi possível carregar a lista de pacientes.",
+            title: "Perfil não encontrado",
+            description: "Não foi possível encontrar seu perfil profissional.",
             variant: "destructive",
           });
           return;
         }
-
-        console.log("Pacientes encontrados:", patientsResult.data);
-        setPatients(patientsResult.data || []);
+        throw professionalError;
       }
+
+      setProfessional(professionalData);
+
+      // Get patients data
+      const { data: patientsData, error: patientsError } = await supabase
+        .from("patients")
+        .select("id, name")
+        .eq("professional_id", professionalData.id)
+        .order("name");
+
+      if (patientsError) throw patientsError;
+
+      console.log("Dados dos pacientes carregados:", patientsData);
+      setPatients(patientsData || []);
 
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
       toast({
-        title: "Erro",
-        description: "Não foi possível carregar os dados necessários.",
+        title: "Erro ao carregar dados",
+        description: "Ocorreu um erro ao carregar os dados necessários. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
