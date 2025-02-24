@@ -23,6 +23,7 @@ export default function TreatmentPlanForm() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [professionalData, setProfessionalData] = useState<{ id: string } | null>(null);
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -58,19 +59,28 @@ export default function TreatmentPlanForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      const { data, error } = await supabase
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq('user_id', user.id)
+        .single();
+
+      if (professionalError) throw professionalError;
+      setProfessionalData(professionalData);
+
+      const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', user.id)
+        .eq('professional_id', professionalData.id)
         .order("name");
 
-      if (error) throw error;
-      setPatients(data || []);
+      if (patientsError) throw patientsError;
+      setPatients(patientsData || []);
     } catch (error) {
-      console.error("Erro ao carregar pacientes:", error);
+      console.error("Erro ao carregar dados:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar a lista de pacientes.",
+        description: "Não foi possível carregar os dados necessários.",
         variant: "destructive",
       });
     } finally {
@@ -344,16 +354,22 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+    if (!professionalData?.id) {
+      toast({
+        title: "Erro",
+        description: "Dados do profissional não encontrados.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: user.id,
+          professional_id: professionalData.id,
           status: "active",
           created_at: new Date().toISOString(),
         });
