@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,7 +97,7 @@ export default function TreatmentPlanForm() {
       console.log("Dados do profissional:", professionalData);
       setProfessional(professionalData);
 
-      // Buscar pacientes
+      // Buscar pacientes usando o professional_id
       const patientsResult = await supabase
         .from("patients")
         .select("id, name")
