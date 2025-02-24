@@ -136,30 +136,12 @@ export default function ReevaluationForm() {
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
 
-        console.log('Buscando dados para usuário:', user.id);
-
-        const { data: professionalData, error: professionalError } = await supabase
-          .from('professionals')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (professionalError) {
-          console.error('Erro ao buscar profissional:', professionalError);
-          throw professionalError;
-        }
-
-        if (!professionalData) {
-          console.error('Profissional não encontrado');
-          throw new Error('Profissional não encontrado');
-        }
-
-        console.log('ID do profissional encontrado:', professionalData.id);
+        console.log('Buscando pacientes para usuário:', user.id);
 
         const { data: patientsData, error: patientsError } = await supabase
           .from('patients')
           .select('id, name')
-          .eq('professional_id', professionalData.id)
+          .eq('professional_id', user.id)
           .order('name');
 
         if (patientsError) {
