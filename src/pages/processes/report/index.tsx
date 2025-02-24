@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
@@ -76,7 +75,6 @@ export default function ReportForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [mtRegister, setMtRegister] = useState<string>("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -97,34 +95,14 @@ export default function ReportForm() {
     async function fetchData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast({
-            variant: "destructive",
-            title: "Erro de autenticação",
-            description: "Usuário não está autenticado",
-          });
-          return;
-        }
+        if (!user) throw new Error("Usuário não autenticado");
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
 
-        const { data: professionalData, error: professionalError } = await supabase
-          .from("professionals")
-          .select("register")
-          .eq('user_id', user.id)
-          .single();
-
-        if (professionalError) {
-          console.error("Erro ao buscar dados do profissional:", professionalError);
-        } else if (professionalData) {
-          setMtRegister(professionalData.register || "");
-        }
-
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
-          .eq('professional_id', user.id)
           .order("name");
 
         if (error) throw error;
@@ -402,25 +380,25 @@ export default function ReportForm() {
     return '';
   };
 
-  const generatePDF = async (patientName: string) => {
+  const generatePDF = async (patientName: string, formValues: FormValues) => {
     const element = document.createElement('div');
     
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
+        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
           <div style="margin-bottom: 24px;">
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${form.getValues("type") === "monthly_evolution" 
+            ${formValues.type === "monthly_evolution" 
               ? "Evolução Mensal" 
-              : form.getValues("type") === "daily_evolution" 
+              : formValues.type === "daily_evolution" 
               ? "Evolução Diária" 
-              : form.getValues("type") === "therapeutic_discharge"
+              : formValues.type === "therapeutic_discharge"
               ? "Alta Terapêutica"
-              : form.getValues("type") === "individual_session"
+              : formValues.type === "individual_session"
               ? "Relatório de Sessão Individual"
-              : form.getValues("type") === "group_session"
+              : formValues.type === "group_session"
               ? "Relatório de Sessão em Grupo"
               : "Evolução Semestral"}
           </h1>
@@ -428,12 +406,12 @@ export default function ReportForm() {
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data do Relatório: ${format(form.getValues("date"), 'PPP', { locale: ptBR })}
+            Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
 
         <div style="margin-bottom: 32px;">
-          ${generateContentHTML(form.getValues("content"), form.getValues("type"))}
+          ${generateContentHTML(formValues.content, formValues.type)}
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
@@ -444,7 +422,7 @@ export default function ReportForm() {
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}${mtRegister ? ` - MT-${mtRegister}` : ''}
+            Musicoterapeuta: ${userName}
           </p>
           <p style="color: #6B7280; font-size: 13px;">
             Email: ${userEmail}
@@ -455,15 +433,15 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${form.getValues("type") === "monthly_evolution" 
+      filename: `${formValues.type === "monthly_evolution" 
         ? "Evolução Mensal" 
-        : form.getValues("type") === "daily_evolution" 
+        : formValues.type === "daily_evolution" 
         ? "Evolução Diária"
-        : form.getValues("type") === "therapeutic_discharge"
+        : formValues.type === "therapeutic_discharge"
         ? "Alta Terapêutica"
-        : form.getValues("type") === "individual_session"
+        : formValues.type === "individual_session"
         ? "Relatório de Sessão Individual"
-        : form.getValues("type") === "group_session"
+        : formValues.type === "group_session"
         ? "Relatório de Sessão em Grupo"
         : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
@@ -502,7 +480,7 @@ export default function ReportForm() {
 
       if (error) throw error;
 
-      await generatePDF(selectedPatient.name);
+      await generatePDF(selectedPatient.name, data);
 
       toast({
         title: "Sucesso!",
@@ -565,14 +543,14 @@ export default function ReportForm() {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Data</FormLabel>
+                    <FormLabel>Data do Relatório</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[280px] pl-3 text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -590,9 +568,6 @@ export default function ReportForm() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -608,13 +583,22 @@ export default function ReportForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipo de Relatório</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o tipo de relatório" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="individual_session">
+                          Sessão Individual
+                        </SelectItem>
+                        <SelectItem value="group_session">
+                          Sessão em Grupo
+                        </SelectItem>
                         <SelectItem value="daily_evolution">
                           Evolução Diária
                         </SelectItem>
@@ -623,12 +607,6 @@ export default function ReportForm() {
                         </SelectItem>
                         <SelectItem value="semester_evolution">
                           Evolução Semestral
-                        </SelectItem>
-                        <SelectItem value="individual_session">
-                          Sessão Individual
-                        </SelectItem>
-                        <SelectItem value="group_session">
-                          Sessão em Grupo
                         </SelectItem>
                         <SelectItem value="therapeutic_discharge">
                           Alta Terapêutica
@@ -640,46 +618,61 @@ export default function ReportForm() {
                 )}
               />
 
-              {form.watch("type") === "daily_evolution" && (
-                <DailyEvolutionForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
-              {form.watch("type") === "monthly_evolution" && (
-                <MonthlyEvolutionForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
-              {form.watch("type") === "semester_evolution" && (
-                <SemesterEvolutionForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
-              {form.watch("type") === "therapeutic_discharge" && (
-                <TherapeuticDischargeForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
-              {form.watch("type") === "individual_session" && (
-                <IndividualSessionForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
-              {form.watch("type") === "group_session" && (
-                <GroupSessionForm
-                  content={form.watch("content")}
-                  onChange={(content) => form.setValue("content", content)}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => {
+                  const selectedType = form.watch("type");
+                  return (
+                    <FormItem>
+                      {selectedType === "individual_session" && (
+                        <IndividualSessionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                      {selectedType === "group_session" && (
+                        <GroupSessionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                      {selectedType === "daily_evolution" && (
+                        <DailyEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                      {selectedType === "monthly_evolution" && (
+                        <MonthlyEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                      {selectedType === "semester_evolution" && (
+                        <SemesterEvolutionForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                      {selectedType === "therapeutic_discharge" && (
+                        <TherapeuticDischargeForm
+                          content={field.value || {}}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    </FormItem>
+                  );
+                }}
+              />
 
               <div className="flex justify-end space-x-4">
-                <Button type="submit">
-                  Salvar e Gerar PDF <Download className="ml-2 h-4 w-4" />
+                <Button
+                  type="submit"
+                  className="w-32"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Gerar PDF
                 </Button>
               </div>
             </form>

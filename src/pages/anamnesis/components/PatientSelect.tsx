@@ -7,7 +7,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type Patient = {
   id: string;
@@ -21,44 +20,35 @@ type PatientSelectProps = {
   isLoading?: boolean;
 };
 
-export function PatientSelect({ 
-  patients, 
-  selectedPatient, 
-  onSelect, 
-  isLoading = false 
-}: PatientSelectProps) {
-  if (isLoading) {
-    return (
-      <div className="space-y-2">
-        <Label>Paciente</Label>
-        <Skeleton className="h-10 w-full" />
-      </div>
-    );
-  }
+export function PatientSelect({ patients, selectedPatient, onSelect, isLoading = false }: PatientSelectProps) {
+  const getPlaceholderText = () => {
+    if (isLoading) return "Carregando...";
+    if (!Array.isArray(patients)) return "Erro ao carregar pacientes";
+    if (patients.length === 0) return "Nenhum paciente encontrado";
+    if (!selectedPatient) return "Selecione um paciente";
+    const patient = patients.find(p => p.id === selectedPatient);
+    return patient ? patient.name : "Selecione um paciente";
+  };
 
   return (
-    <div className="space-y-2">
+    <div>
       <Label>Paciente</Label>
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
         disabled={isLoading}
       >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={
-            patients && patients.length > 0 
-              ? "Selecione um paciente" 
-              : "Nenhum paciente encontrado"
-          } />
+        <SelectTrigger>
+          <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent>
-          {patients && patients.length > 0 ? (
+          {!isLoading && Array.isArray(patients) && patients.length > 0 ? (
             patients.map((patient) => (
               <SelectItem key={patient.id} value={patient.id}>
                 {patient.name}
               </SelectItem>
             ))
-          ) : (
+          ) : !isLoading && (
             <SelectItem value="no-patients" disabled>
               Nenhum paciente encontrado
             </SelectItem>

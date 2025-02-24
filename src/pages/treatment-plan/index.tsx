@@ -9,17 +9,10 @@ import { Label } from "@/components/ui/label";
 import { SelectField } from "./components/SelectField";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import html2pdf from "html2pdf.js";
-import { Download } from "lucide-react";
 
 type Patient = {
   id: string;
   name: string;
-};
-
-type Professional = {
-  id: string;
-  name: string;
-  email: string;
 };
 
 export default function TreatmentPlanForm() {
@@ -28,7 +21,8 @@ export default function TreatmentPlanForm() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [professional, setProfessional] = useState<Professional | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -44,67 +38,39 @@ export default function TreatmentPlanForm() {
     additional_notes: "",
   });
 
+  const formatNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart
+      .split(/[._-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
     try {
-      setIsLoading(true);
-      
-      // Get current user
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) throw authError;
-      
-      if (!user) {
-        toast({
-          title: "Sessão expirada",
-          description: "Por favor, faça login novamente.",
-          variant: "destructive",
-        });
-        navigate("/login");
-        return;
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
-      // Get professional data
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id, name, email")
-        .eq("user_id", user.id)
-        .single();
+      setUserEmail(user.email || "");
+      setUserName(formatNameFromEmail(user.email || ""));
 
-      if (professionalError) {
-        if (professionalError.code === 'PGRST116') {
-          toast({
-            title: "Perfil não encontrado",
-            description: "Não foi possível encontrar seu perfil profissional.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw professionalError;
-      }
-
-      setProfessional(professionalData);
-
-      // Get patients data
-      const { data: patientsData, error: patientsError } = await supabase
+      const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq("professional_id", professionalData.id)
+        .eq('professional_id', user.id)
         .order("name");
 
-      if (patientsError) throw patientsError;
-
-      console.log("Dados dos pacientes carregados:", patientsData);
-      setPatients(patientsData || []);
-
+      if (error) throw error;
+      setPatients(data || []);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error("Erro ao carregar pacientes:", error);
       toast({
-        title: "Erro ao carregar dados",
-        description: "Ocorreu um erro ao carregar os dados necessários. Por favor, tente novamente.",
+        title: "Erro",
+        description: "Não foi possível carregar a lista de pacientes.",
         variant: "destructive",
       });
     } finally {
@@ -328,10 +294,10 @@ export default function TreatmentPlanForm() {
               Musetera - Sistema de Gestão para Musicoterapia
             </p>
             <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-              Musicoterapeuta: ${professional?.name || 'Não informado'}
+              Musicoterapeuta: ${userName || 'Não informado'}
             </p>
             <p style="color: #6B7280; font-size: 11px;">
-              Email: ${professional?.email || 'Não informado'}
+              Email: ${userEmail || 'Não informado'}
             </p>
           </div>
         </div>
@@ -378,22 +344,16 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    if (!professional) {
-      toast({
-        title: "Erro",
-        description: "Dados do profissional não encontrados.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: professional.id,
+          professional_id: user.id,
           status: "active",
           created_at: new Date().toISOString(),
         });
@@ -563,9 +523,8 @@ export default function TreatmentPlanForm() {
               patients={patients}
               selectedPatient={selectedPatient}
               onSelect={setSelectedPatient}
-              isLoading={isLoading}
             />
-            
+
             {sections.map((section) => (
               <div key={section.title} className="space-y-4">
                 <h3 className="text-lg font-semibold pt-4">{section.title}</h3>
@@ -603,8 +562,10 @@ export default function TreatmentPlanForm() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">
-                <Download className="mr-2" />
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 Salvar e Baixar PDF
               </Button>
             </div>
