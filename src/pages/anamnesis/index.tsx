@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,15 +15,16 @@ type Patient = {
 };
 
 type Professional = {
+  id: string;
   email: string;
+  name: string;
 };
 
 export default function AnamnesisForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [professionalId, setProfessionalId] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
+  const [professional, setProfessional] = useState<Professional | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const { toast } = useToast();
@@ -64,10 +64,34 @@ export default function AnamnesisForm() {
       }
 
       setProfessionalId(user.id);
-      setUserEmail(user.email || "");
-      setUserName(formatNameFromEmail(user.email || ""));
 
-      console.log('Buscando pacientes para usuário:', user.id);
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id, name, email")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (professionalError) {
+        console.error("Erro ao carregar dados do profissional:", professionalError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados do profissional.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (professionalData) {
+        setProfessional(professionalData);
+      } else {
+        console.error("Profissional não encontrado");
+        toast({
+          title: "Erro",
+          description: "Perfil profissional não encontrado.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -123,7 +147,6 @@ export default function AnamnesisForm() {
       if (anamnesisData) {
         setFormData(anamnesisData);
       } else {
-        // Reset form data if no anamnesis exists for this patient
         setFormData({});
       }
     } catch (error) {
@@ -292,8 +315,8 @@ export default function AnamnesisForm() {
           title: "Aspectos Sociais",
           textFields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
-            { key: "school_adaptation", label: "Adaptação Escolar" },
-            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+            { id: "school_adaptation", label: "Adaptação Escolar" },
+            { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
       ];
@@ -363,10 +386,10 @@ export default function AnamnesisForm() {
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}
+            Musicoterapeuta: ${professional?.name}
           </p>
           <p style="color: #6B7280; font-size: 11px;">
-            Email: ${userEmail}
+            Email: ${professional?.email}
           </p>
         </div>
       </div>
@@ -493,4 +516,3 @@ export default function AnamnesisForm() {
     </div>
   );
 }
-
