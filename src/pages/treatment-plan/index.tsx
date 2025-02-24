@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,6 +91,7 @@ export default function TreatmentPlanForm() {
 
       setProfessional(professionalData);
 
+      // Aqui está a principal mudança: filtragem por professional_id
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
