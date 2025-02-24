@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,6 +75,7 @@ export default function ReportForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [mtRegister, setMtRegister] = useState<string>("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -107,6 +107,18 @@ export default function ReportForm() {
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
+
+        const { data: professionalData, error: professionalError } = await supabase
+          .from("professionals")
+          .select("register")
+          .eq('user_id', user.id)
+          .single();
+
+        if (professionalError) {
+          console.error("Erro ao buscar dados do profissional:", professionalError);
+        } else if (professionalData) {
+          setMtRegister(professionalData.register || "");
+        }
 
         const { data, error } = await supabase
           .from("patients")
@@ -389,25 +401,25 @@ export default function ReportForm() {
     return '';
   };
 
-  const generatePDF = async (patientName: string, formValues: FormValues) => {
+  const generatePDF = async (patientName: string) => {
     const element = document.createElement('div');
     
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
           <div style="margin-bottom: 24px;">
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${formValues.type === "monthly_evolution" 
+            ${form.getValues("type") === "monthly_evolution" 
               ? "Evolução Mensal" 
-              : formValues.type === "daily_evolution" 
+              : form.getValues("type") === "daily_evolution" 
               ? "Evolução Diária" 
-              : formValues.type === "therapeutic_discharge"
+              : form.getValues("type") === "therapeutic_discharge"
               ? "Alta Terapêutica"
-              : formValues.type === "individual_session"
+              : form.getValues("type") === "individual_session"
               ? "Relatório de Sessão Individual"
-              : formValues.type === "group_session"
+              : form.getValues("type") === "group_session"
               ? "Relatório de Sessão em Grupo"
               : "Evolução Semestral"}
           </h1>
@@ -415,12 +427,12 @@ export default function ReportForm() {
             Paciente: ${patientName}
           </h2>
           <p style="color: #6B7280; font-size: 16px;">
-            Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
+            Data do Relatório: ${format(form.getValues("date"), 'PPP', { locale: ptBR })}
           </p>
         </div>
 
         <div style="margin-bottom: 32px;">
-          ${generateContentHTML(formValues.content, formValues.type)}
+          ${generateContentHTML(form.getValues("content"), form.getValues("type"))}
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
@@ -431,7 +443,7 @@ export default function ReportForm() {
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}
+            Musicoterapeuta: ${userName}${mtRegister ? ` - MT-${mtRegister}` : ''}
           </p>
           <p style="color: #6B7280; font-size: 13px;">
             Email: ${userEmail}
@@ -442,15 +454,15 @@ export default function ReportForm() {
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${formValues.type === "monthly_evolution" 
+      filename: `${form.getValues("type") === "monthly_evolution" 
         ? "Evolução Mensal" 
-        : formValues.type === "daily_evolution" 
+        : form.getValues("type") === "daily_evolution" 
         ? "Evolução Diária"
-        : formValues.type === "therapeutic_discharge"
+        : form.getValues("type") === "therapeutic_discharge"
         ? "Alta Terapêutica"
-        : formValues.type === "individual_session"
+        : form.getValues("type") === "individual_session"
         ? "Relatório de Sessão Individual"
-        : formValues.type === "group_session"
+        : form.getValues("type") === "group_session"
         ? "Relatório de Sessão em Grupo"
         : "Evolução Semestral"} - ${patientName}.pdf`,
       pagebreak: { mode: 'avoid-all' },
