@@ -21,14 +21,20 @@ type PatientSelectProps = {
 };
 
 export function PatientSelect({ patients, selectedPatient, onSelect, isLoading = false }: PatientSelectProps) {
+  const getPlaceholderText = () => {
+    if (isLoading) return "Carregando...";
+    if (patients.length === 0) return "Nenhum paciente encontrado";
+    if (!selectedPatient) return "Selecione um paciente";
+    const patient = patients.find(p => p.id === selectedPatient);
+    return patient ? patient.name : "Selecione um paciente";
+  };
+
   return (
     <div>
       <Label>Paciente</Label>
       <Select value={selectedPatient} onValueChange={onSelect}>
         <SelectTrigger>
-          <SelectValue 
-            placeholder={isLoading ? "Carregando..." : patients.length === 0 ? "Nenhum paciente encontrado" : "Selecione um paciente"} 
-          />
+          <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent>
           {!isLoading && patients.length > 0 ? (

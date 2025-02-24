@@ -123,7 +123,6 @@ export default function ReevaluationForm() {
       try {
         setIsLoading(true);
         
-        // Verificar se o usuário está autenticado
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError) throw authError;
         if (!user) throw new Error("Usuário não autenticado");
@@ -133,7 +132,6 @@ export default function ReevaluationForm() {
 
         console.log('Fetching professional ID for user:', user.id);
 
-        // Buscar o ID do profissional
         const { data: professionalData, error: professionalError } = await supabase
           .from('professionals')
           .select('id')
@@ -152,7 +150,6 @@ export default function ReevaluationForm() {
 
         console.log('Professional ID:', professionalData.id);
 
-        // Buscar pacientes do profissional
         const { data: patientsData, error: patientsError } = await supabase
           .from('patients')
           .select('id, name')
