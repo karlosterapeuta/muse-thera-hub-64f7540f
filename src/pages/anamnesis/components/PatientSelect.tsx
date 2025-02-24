@@ -21,34 +21,36 @@ type PatientSelectProps = {
 };
 
 export function PatientSelect({ patients, selectedPatient, onSelect, isLoading = false }: PatientSelectProps) {
+  console.log('PatientSelect - patients:', patients);
+  console.log('PatientSelect - selectedPatient:', selectedPatient);
+  
   const getPlaceholderText = () => {
     if (isLoading) return "Carregando...";
-    if (!Array.isArray(patients)) return "Erro ao carregar pacientes";
-    if (patients.length === 0) return "Nenhum paciente encontrado";
+    if (!patients || patients.length === 0) return "Nenhum paciente encontrado";
     if (!selectedPatient) return "Selecione um paciente";
     const patient = patients.find(p => p.id === selectedPatient);
     return patient ? patient.name : "Selecione um paciente";
   };
 
   return (
-    <div>
+    <div className="space-y-2">
       <Label>Paciente</Label>
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
         disabled={isLoading}
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent>
-          {!isLoading && Array.isArray(patients) && patients.length > 0 ? (
+          {patients && patients.length > 0 ? (
             patients.map((patient) => (
               <SelectItem key={patient.id} value={patient.id}>
                 {patient.name}
               </SelectItem>
             ))
-          ) : !isLoading && (
+          ) : (
             <SelectItem value="no-patients" disabled>
               Nenhum paciente encontrado
             </SelectItem>
