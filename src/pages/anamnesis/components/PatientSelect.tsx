@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Patient = {
   id: string;
@@ -24,11 +25,14 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
   console.log('PatientSelect - patients:', patients);
   console.log('PatientSelect - selectedPatient:', selectedPatient);
   
-  const getPlaceholderText = () => {
-    if (isLoading) return "Carregando...";
-    if (!patients || patients.length === 0) return "Nenhum paciente encontrado";
-    return "Selecione um paciente";
-  };
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <Label>Paciente</Label>
+        <Skeleton className="h-10 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
@@ -39,7 +43,11 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
         disabled={isLoading}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={getPlaceholderText()} />
+          <SelectValue placeholder={
+            patients && patients.length > 0 
+              ? "Selecione um paciente" 
+              : "Nenhum paciente encontrado"
+          } />
         </SelectTrigger>
         <SelectContent>
           {patients && patients.length > 0 ? (
@@ -58,3 +66,4 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
     </div>
   );
 }
+

@@ -64,7 +64,6 @@ export default function TreatmentPlanForm() {
         navigate("/login");
         return;
       }
-      console.log("ID do usuário autenticado:", user.id);
 
       // Buscar dados do profissional
       const professionalResult = await supabase
@@ -83,47 +82,29 @@ export default function TreatmentPlanForm() {
         return;
       }
 
-      const professionalData = professionalResult.data;
-      if (!professionalData) {
-        console.error("Profissional não encontrado para o user_id:", user.id);
-        toast({
-          title: "Erro",
-          description: "Perfil profissional não encontrado.",
-          variant: "destructive",
-        });
-        return;
+      setProfessional(professionalResult.data);
+
+      if (professionalResult.data) {
+        // Buscar pacientes usando o professional_id
+        const patientsResult = await supabase
+          .from("patients")
+          .select("id, name")
+          .eq("professional_id", professionalResult.data.id)
+          .order("name");
+
+        if (patientsResult.error) {
+          console.error("Erro ao carregar pacientes:", patientsResult.error);
+          toast({
+            title: "Erro",
+            description: "Não foi possível carregar a lista de pacientes.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        console.log("Pacientes encontrados:", patientsResult.data);
+        setPatients(patientsResult.data || []);
       }
-
-      console.log("Dados do profissional:", professionalData);
-      setProfessional(professionalData);
-
-      // Buscar pacientes usando o professional_id
-      const patientsResult = await supabase
-        .from("patients")
-        .select("id, name")
-        .eq("professional_id", professionalData.id)
-        .order("name");
-
-      console.log("Resultado da consulta de pacientes:", patientsResult);
-
-      if (patientsResult.error) {
-        console.error("Erro ao carregar pacientes:", patientsResult.error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar a lista de pacientes.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!patientsResult.data || patientsResult.data.length === 0) {
-        console.log("Nenhum paciente encontrado para o profissional:", professionalData.id);
-      } else {
-        console.log("Pacientes encontrados:", patientsResult.data.length);
-        console.log("Lista de pacientes:", patientsResult.data);
-      }
-
-      setPatients(patientsResult.data || []);
 
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
