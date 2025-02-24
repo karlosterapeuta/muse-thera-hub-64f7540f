@@ -124,19 +124,25 @@ export default function ReevaluationForm() {
         setIsLoading(true);
         
         const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError) throw authError;
-        if (!user) throw new Error("Usuário não autenticado");
+        if (authError) {
+          console.error('Erro de autenticação:', authError);
+          throw authError;
+        }
+        if (!user) {
+          console.error('Usuário não autenticado');
+          throw new Error("Usuário não autenticado");
+        }
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
 
-        console.log('Fetching professional ID for user:', user.id);
+        console.log('Buscando dados para usuário:', user.id);
 
         const { data: professionalData, error: professionalError } = await supabase
           .from('professionals')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
         if (professionalError) {
           console.error('Erro ao buscar profissional:', professionalError);
@@ -148,7 +154,7 @@ export default function ReevaluationForm() {
           throw new Error('Profissional não encontrado');
         }
 
-        console.log('Professional ID:', professionalData.id);
+        console.log('ID do profissional encontrado:', professionalData.id);
 
         const { data: patientsData, error: patientsError } = await supabase
           .from('patients')
@@ -157,19 +163,26 @@ export default function ReevaluationForm() {
           .order('name');
 
         if (patientsError) {
-          console.error('Erro ao carregar pacientes:', patientsError);
+          console.error('Erro ao buscar pacientes:', patientsError);
           throw patientsError;
         }
 
-        console.log('Patients loaded:', patientsData);
+        console.log('Dados dos pacientes retornados:', patientsData);
+        
+        if (!patientsData || patientsData.length === 0) {
+          console.log('Nenhum paciente encontrado para o profissional');
+        } else {
+          console.log(`${patientsData.length} pacientes encontrados`);
+        }
+
         setPatients(patientsData || []);
 
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        console.error("Erro detalhado ao carregar dados:", error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados do usuário ou pacientes",
+          description: "Não foi possível carregar os dados do usuário ou pacientes. Por favor, tente novamente.",
         });
       } finally {
         setIsLoading(false);
