@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,14 +16,19 @@ type Patient = {
   name: string;
 };
 
+type Professional = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 export default function TreatmentPlanForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
+  const [professional, setProfessional] = useState<Professional | null>(null);
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -38,14 +44,6 @@ export default function TreatmentPlanForm() {
     additional_notes: "",
   });
 
-  const formatNameFromEmail = (email: string) => {
-    const namePart = email.split('@')[0];
-    return namePart
-      .split(/[._-]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
-
   useEffect(() => {
     loadData();
   }, []);
@@ -55,19 +53,46 @@ export default function TreatmentPlanForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      setUserEmail(user.email || "");
-      setUserName(formatNameFromEmail(user.email || ""));
+      // Fetch professional data
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id, name, email")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-      const { data, error } = await supabase
+      if (professionalError) {
+        console.error("Erro ao carregar dados do profissional:", professionalError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados do profissional.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!professionalData) {
+        console.error("Profissional não encontrado");
+        toast({
+          title: "Erro",
+          description: "Perfil profissional não encontrado.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProfessional(professionalData);
+
+      // Fetch patients data
+      const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', user.id)
+        .eq('professional_id', professionalData.id)
         .order("name");
 
-      if (error) throw error;
-      setPatients(data || []);
+      if (patientsError) throw patientsError;
+      setPatients(patientsData || []);
     } catch (error) {
-      console.error("Erro ao carregar pacientes:", error);
+      console.error("Erro ao carregar dados:", error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar a lista de pacientes.",
@@ -294,10 +319,10 @@ export default function TreatmentPlanForm() {
               Musetera - Sistema de Gestão para Musicoterapia
             </p>
             <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-              Musicoterapeuta: ${userName || 'Não informado'}
+              Musicoterapeuta: ${professional?.name || 'Não informado'}
             </p>
             <p style="color: #6B7280; font-size: 11px;">
-              Email: ${userEmail || 'Não informado'}
+              Email: ${professional?.email || 'Não informado'}
             </p>
           </div>
         </div>
@@ -344,16 +369,22 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+    if (!professional) {
+      toast({
+        title: "Erro",
+        description: "Dados do profissional não encontrados.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: user.id,
+          professional_id: professional.id,
           status: "active",
           created_at: new Date().toISOString(),
         });
