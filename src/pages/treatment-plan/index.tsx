@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ export default function TreatmentPlanForm() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
+  const [professionalId, setProfessionalId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -68,10 +70,29 @@ export default function TreatmentPlanForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
+      // Buscar o ID do profissional
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq('user_id', user.id)
+        .single();
+
+      if (professionalError) {
+        console.error("Erro ao buscar profissional:", professionalError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar o perfil do profissional.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProfessionalId(professionalData.id);
+
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', user.id)
+        .eq('professional_id', professionalData.id)
         .order("name");
 
       if (error) throw error;
@@ -354,7 +375,7 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    if (!userId) {
+    if (!professionalId) {
       toast({
         title: "Erro",
         description: "ID do profissional não encontrado.",
@@ -369,7 +390,7 @@ export default function TreatmentPlanForm() {
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: userId,
+          professional_id: professionalId,
           status: "active",
         });
 
