@@ -50,10 +50,19 @@ export default function TreatmentPlanForm() {
 
   const loadData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      setIsLoading(true);
 
-      // Fetch professional data
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Buscar dados do profissional primeiro
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id, name, email")
@@ -82,20 +91,31 @@ export default function TreatmentPlanForm() {
 
       setProfessional(professionalData);
 
-      // Fetch patients data
+      // Agora buscar os pacientes usando o ID do profissional
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', professionalData.id)
+        .eq("professional_id", professionalData.id)
         .order("name");
 
-      if (patientsError) throw patientsError;
+      if (patientsError) {
+        console.error("Erro ao carregar pacientes:", patientsError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a lista de pacientes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Pacientes carregados:", patientsData);
       setPatients(patientsData || []);
+
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar a lista de pacientes.",
+        description: "Não foi possível carregar os dados necessários.",
         variant: "destructive",
       });
     } finally {
@@ -554,6 +574,7 @@ export default function TreatmentPlanForm() {
               patients={patients}
               selectedPatient={selectedPatient}
               onSelect={setSelectedPatient}
+              isLoading={isLoading}
             />
 
             {sections.map((section) => (
@@ -606,3 +627,4 @@ export default function TreatmentPlanForm() {
     </div>
   );
 }
+
