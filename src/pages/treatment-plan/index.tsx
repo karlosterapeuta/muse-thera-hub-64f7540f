@@ -67,15 +67,15 @@ export default function TreatmentPlanForm() {
       }
       console.log("ID do usuário autenticado:", user.id);
 
-      // Primeiro, buscar dados do profissional
-      const { data: professionalData, error: professionalError } = await supabase
+      // Buscar dados do profissional
+      const professionalResult = await supabase
         .from("professionals")
         .select("id, name, email")
         .eq("user_id", user.id)
         .single();
 
-      if (professionalError) {
-        console.error("Erro ao carregar dados do profissional:", professionalError);
+      if (professionalResult.error) {
+        console.error("Erro ao carregar dados do profissional:", professionalResult.error);
         toast({
           title: "Erro",
           description: "Não foi possível carregar os dados do profissional.",
@@ -84,6 +84,7 @@ export default function TreatmentPlanForm() {
         return;
       }
 
+      const professionalData = professionalResult.data;
       if (!professionalData) {
         console.error("Profissional não encontrado para o user_id:", user.id);
         toast({
@@ -97,15 +98,17 @@ export default function TreatmentPlanForm() {
       console.log("Dados do profissional:", professionalData);
       setProfessional(professionalData);
 
-      // Agora, buscar pacientes associados a este profissional
-      const { data: patientsData, error: patientsError } = await supabase
+      // Buscar pacientes
+      const patientsResult = await supabase
         .from("patients")
         .select("id, name")
         .eq("professional_id", professionalData.id)
         .order("name");
 
-      if (patientsError) {
-        console.error("Erro ao carregar pacientes:", patientsError);
+      console.log("Resultado da consulta de pacientes:", patientsResult);
+
+      if (patientsResult.error) {
+        console.error("Erro ao carregar pacientes:", patientsResult.error);
         toast({
           title: "Erro",
           description: "Não foi possível carregar a lista de pacientes.",
@@ -114,12 +117,14 @@ export default function TreatmentPlanForm() {
         return;
       }
 
-      console.log("Pacientes carregados:", patientsData);
-      if (!patientsData || patientsData.length === 0) {
+      if (!patientsResult.data || patientsResult.data.length === 0) {
         console.log("Nenhum paciente encontrado para o profissional:", professionalData.id);
+      } else {
+        console.log("Pacientes encontrados:", patientsResult.data.length);
+        console.log("Lista de pacientes:", patientsResult.data);
       }
-      
-      setPatients(patientsData || []);
+
+      setPatients(patientsResult.data || []);
 
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
