@@ -23,6 +23,7 @@ export default function TreatmentPlanForm() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     approach_type: "",
@@ -53,8 +54,17 @@ export default function TreatmentPlanForm() {
   const loadData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
 
+      setUserId(user.id);
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
@@ -344,18 +354,23 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+    if (!userId) {
+      toast({
+        title: "Erro",
+        description: "ID do profissional não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: user.id,
+          professional_id: userId,
           status: "active",
-          created_at: new Date().toISOString(),
         });
 
       if (error) throw error;
