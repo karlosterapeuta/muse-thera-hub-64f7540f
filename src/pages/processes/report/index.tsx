@@ -1,4 +1,4 @@
-<lov-code>
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -547,3 +547,128 @@ export default function ReportForm() {
                           <SelectValue placeholder="Selecione um paciente" />
                         </SelectTrigger>
                       </FormControl>
+                      <SelectContent>
+                        {patients.map((patient) => (
+                          <SelectItem key={patient.id} value={patient.id}>
+                            {patient.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data do Relatório</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: ptBR })
+                            ) : (
+                              <span>Selecione uma data</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Relatório</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo de relatório" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="daily_evolution">
+                          Evolução Diária
+                        </SelectItem>
+                        <SelectItem value="monthly_evolution">
+                          Evolução Mensal
+                        </SelectItem>
+                        <SelectItem value="semester_evolution">
+                          Evolução Semestral
+                        </SelectItem>
+                        <SelectItem value="therapeutic_discharge">
+                          Alta Terapêutica
+                        </SelectItem>
+                        <SelectItem value="individual_session">
+                          Sessão Individual
+                        </SelectItem>
+                        <SelectItem value="group_session">
+                          Sessão em Grupo
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("type") === "daily_evolution" && (
+                <DailyEvolutionForm control={form.control} />
+              )}
+              {form.watch("type") === "monthly_evolution" && (
+                <MonthlyEvolutionForm control={form.control} />
+              )}
+              {form.watch("type") === "semester_evolution" && (
+                <SemesterEvolutionForm control={form.control} />
+              )}
+              {form.watch("type") === "therapeutic_discharge" && (
+                <TherapeuticDischargeForm control={form.control} />
+              )}
+              {form.watch("type") === "individual_session" && (
+                <IndividualSessionForm control={form.control} />
+              )}
+              {form.watch("type") === "group_session" && (
+                <GroupSessionForm control={form.control} />
+              )}
+
+              <Button type="submit" className="w-full">
+                Gerar Relatório <Download className="w-4 h-4 ml-2" />
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
