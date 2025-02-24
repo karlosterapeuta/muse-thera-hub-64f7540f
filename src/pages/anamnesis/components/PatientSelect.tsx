@@ -26,14 +26,22 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
       <Label>Paciente</Label>
       <Select value={selectedPatient} onValueChange={onSelect}>
         <SelectTrigger>
-          <SelectValue placeholder={isLoading ? "Carregando..." : "Selecione um paciente"} />
+          <SelectValue 
+            placeholder={isLoading ? "Carregando..." : patients.length === 0 ? "Nenhum paciente encontrado" : "Selecione um paciente"} 
+          />
         </SelectTrigger>
         <SelectContent>
-          {!isLoading && patients.map((patient) => (
-            <SelectItem key={patient.id} value={patient.id}>
-              {patient.name}
+          {!isLoading && patients.length > 0 ? (
+            patients.map((patient) => (
+              <SelectItem key={patient.id} value={patient.id}>
+                {patient.name}
+              </SelectItem>
+            ))
+          ) : !isLoading && (
+            <SelectItem value="no-patients" disabled>
+              Nenhum paciente encontrado
             </SelectItem>
-          ))}
+          )}
         </SelectContent>
       </Select>
     </div>
