@@ -71,26 +71,15 @@ export function PatientSelect({ patients, selectedPatient, onSelect }: PatientSe
     fetchPatients();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div>
-        <Label>Paciente</Label>
-        <SelectTrigger>
-          <SelectValue placeholder="Carregando..." />
-        </SelectTrigger>
-      </div>
-    );
-  }
-
   return (
     <div>
       <Label>Paciente</Label>
       <Select value={selectedPatient} onValueChange={onSelect}>
         <SelectTrigger>
-          <SelectValue placeholder="Selecione um paciente" />
+          <SelectValue placeholder={isLoading ? "Carregando..." : "Selecione um paciente"} />
         </SelectTrigger>
         <SelectContent>
-          {filteredPatients.map((patient) => (
+          {!isLoading && filteredPatients.map((patient) => (
             <SelectItem key={patient.id} value={patient.id}>
               {patient.name}
             </SelectItem>
