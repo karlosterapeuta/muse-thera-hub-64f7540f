@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,6 +63,7 @@ export default function AnamnesisForm() {
         return;
       }
 
+      setProfessionalId(user.id);
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
@@ -402,14 +404,25 @@ export default function AnamnesisForm() {
       return;
     }
 
+    if (!professionalId) {
+      toast({
+        title: "Erro de autenticação",
+        description: "ID do profissional não encontrado. Por favor, faça login novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("anamnesis")
-        .insert({
+        .upsert({
           ...formData,
           patient_id: selectedPatient,
           professional_id: professionalId,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -480,3 +493,4 @@ export default function AnamnesisForm() {
     </div>
   );
 }
+
