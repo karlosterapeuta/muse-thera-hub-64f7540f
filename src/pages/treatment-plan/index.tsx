@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { SelectField } from "./components/SelectField";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import html2pdf from "html2pdf.js";
+import { Download } from "lucide-react";
 
 type Patient = {
   id: string;
@@ -62,7 +63,7 @@ export default function TreatmentPlanForm() {
         return;
       }
 
-      // Buscar dados do profissional primeiro
+      // Buscar dados do profissional
       const { data: professionalData, error: professionalError } = await supabase
         .from("professionals")
         .select("id, name, email")
@@ -91,7 +92,7 @@ export default function TreatmentPlanForm() {
 
       setProfessional(professionalData);
 
-      // Agora buscar os pacientes usando o ID do profissional
+      // Buscar pacientes usando o ID do profissional
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
@@ -411,7 +412,10 @@ export default function TreatmentPlanForm() {
 
       if (error) throw error;
 
-      await generatePDF();
+      const selectedPatientData = patients.find(p => p.id === selectedPatient);
+      if (selectedPatientData) {
+        await generatePDF(selectedPatientData.name);
+      }
 
       toast({
         title: "Sucesso!",
@@ -614,10 +618,8 @@ export default function TreatmentPlanForm() {
               >
                 Cancelar
               </Button>
-              <Button 
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700"
-              >
+              <Button type="submit">
+                <Download className="mr-2" />
                 Salvar e Baixar PDF
               </Button>
             </div>
@@ -627,4 +629,3 @@ export default function TreatmentPlanForm() {
     </div>
   );
 }
-
