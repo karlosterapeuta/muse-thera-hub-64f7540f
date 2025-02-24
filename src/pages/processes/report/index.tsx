@@ -546,4 +546,127 @@ export default function ReportForm() {
                           <SelectValue placeholder="Selecione um paciente" />
                         </SelectTrigger>
                       </FormControl>
-                      <
+                      <SelectContent>
+                        {patients.map((patient) => (
+                          <SelectItem key={patient.id} value={patient.id}>
+                            {patient.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[280px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: ptBR })
+                            ) : (
+                              <span>Selecione uma data</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Relatório</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo de relatório" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="daily_evolution">
+                          Evolução Diária
+                        </SelectItem>
+                        <SelectItem value="monthly_evolution">
+                          Evolução Mensal
+                        </SelectItem>
+                        <SelectItem value="semester_evolution">
+                          Evolução Semestral
+                        </SelectItem>
+                        <SelectItem value="individual_session">
+                          Sessão Individual
+                        </SelectItem>
+                        <SelectItem value="group_session">
+                          Sessão em Grupo
+                        </SelectItem>
+                        <SelectItem value="therapeutic_discharge">
+                          Alta Terapêutica
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("type") === "daily_evolution" && (
+                <DailyEvolutionForm form={form} />
+              )}
+              {form.watch("type") === "monthly_evolution" && (
+                <MonthlyEvolutionForm form={form} />
+              )}
+              {form.watch("type") === "semester_evolution" && (
+                <SemesterEvolutionForm form={form} />
+              )}
+              {form.watch("type") === "therapeutic_discharge" && (
+                <TherapeuticDischargeForm form={form} />
+              )}
+              {form.watch("type") === "individual_session" && (
+                <IndividualSessionForm form={form} />
+              )}
+              {form.watch("type") === "group_session" && (
+                <GroupSessionForm form={form} />
+              )}
+
+              <div className="flex justify-end space-x-4">
+                <Button type="submit">
+                  Salvar e Gerar PDF <Download className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
