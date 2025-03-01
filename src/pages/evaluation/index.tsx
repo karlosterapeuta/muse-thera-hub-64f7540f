@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -34,25 +33,13 @@ export default function Evaluation() {
 
   useEffect(() => {
     async function fetchPatients() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.error('Usuário não encontrado');
-        toast.error('Erro ao carregar pacientes: usuário não encontrado');
-        return;
-      }
-
-      console.log('Buscando pacientes para usuário:', user.id);
-      
       const { data, error } = await supabase
         .from('patients')
         .select('id, name, birth_date')
-        .eq('professional_id', user.id)
         .order('name');
       
       if (error) {
         console.error('Erro ao carregar pacientes:', error);
-        toast.error('Erro ao carregar pacientes');
         return;
       }
       

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,14 +95,7 @@ export default function ReportForm() {
     async function fetchData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast({
-            variant: "destructive",
-            title: "Erro de autenticação",
-            description: "Usuário não está autenticado",
-          });
-          return;
-        }
+        if (!user) throw new Error("Usuário não autenticado");
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
@@ -111,7 +103,6 @@ export default function ReportForm() {
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
-          .eq('professional_id', user.id)
           .order("name");
 
         if (error) throw error;

@@ -349,20 +349,9 @@ export default function InterventionForm() {
     };
 
     const fetchPatients = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Erro de autenticação",
-          description: "Usuário não está autenticado.",
-        });
-        return;
-      }
-
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq('professional_id', user.id)
         .order("name");
 
       if (error) {
@@ -453,7 +442,7 @@ export default function InterventionForm() {
     { value: "improvisacao_instrumental", label: "Improvisação Instrumental", icon: Music2, description: "Criação musical espontânea com instrumentos" },
     { value: "composicao", label: "Composição Musical", icon: Music2, description: "Criação de músicas originais" },
     { value: "recriacao", label: "Recriação Musical", icon: Music2, description: "Reprodução e interpretação de músicas conhecidas" },
-    { value: "escuta_musical", label: "Escuta Musical", icon: Heart, description: "Audi��ão ativa e receptiva de músicas" },
+    { value: "escuta_musical", label: "Escuta Musical", icon: Heart, description: "Audição ativa e receptiva de músicas" },
     { value: "movimento_corporal", label: "Movimento Corporal com Música", icon: Users, description: "Integração entre música e expressão corporal" },
     { value: "jogos_musicais", label: "Jogos Musicais", icon: Brain, description: "Atividades lúdicas com elementos musicais" },
     { value: "relaxamento_musical", label: "Relaxamento com Música", icon: Heart, description: "Técnicas de relaxamento guiadas por música" },
