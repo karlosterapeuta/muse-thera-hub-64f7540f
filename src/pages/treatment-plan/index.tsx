@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,6 +61,7 @@ export default function TreatmentPlanForm() {
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
+        .eq('professional_id', user.id)
         .order("name");
 
       if (error) throw error;
@@ -345,20 +345,15 @@ export default function TreatmentPlanForm() {
     }
 
     try {
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      if (professionalError) throw professionalError;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: professionalData.id,
+          professional_id: user.id,
           status: "active",
           created_at: new Date().toISOString(),
         });

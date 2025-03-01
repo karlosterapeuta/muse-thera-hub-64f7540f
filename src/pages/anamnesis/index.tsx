@@ -26,7 +26,6 @@ export default function AnamnesisForm() {
   const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -65,10 +64,6 @@ export default function AnamnesisForm() {
 
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
-
-      // Usando o user.id diretamente como professional_id
-      // Isso garante que usaremos o ID da tabela users que está conectado à tabela auth.users
-      setProfessionalId(user.id);
 
       console.log('Buscando pacientes para usuário:', user.id);
 
@@ -125,11 +120,9 @@ export default function AnamnesisForm() {
 
       if (anamnesisData) {
         setFormData(anamnesisData);
-        setExistingAnamnesisId(anamnesisData.id);
       } else {
         // Reset form data if no anamnesis exists for this patient
         setFormData({});
-        setExistingAnamnesisId(null);
       }
     } catch (error) {
       console.error("Erro ao carregar anamnese:", error);
@@ -409,44 +402,16 @@ export default function AnamnesisForm() {
       return;
     }
 
-    if (!professionalId) {
-      toast({
-        title: "Erro",
-        description: "ID do profissional não encontrado.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
-      let result;
-      
-      // Create the data object with the necessary fields
-      const anamnesisData = {
-        ...formData,
-        patient_id: selectedPatient,
-        professional_id: professionalId,
-      };
+      const { error } = await supabase
+        .from("anamnesis")
+        .insert({
+          ...formData,
+          patient_id: selectedPatient,
+          professional_id: professionalId,
+        });
 
-      console.log("Saving anamnesis with professional_id:", professionalId);
-
-      // Determine whether to insert or update
-      if (existingAnamnesisId) {
-        // Update existing record
-        result = await supabase
-          .from("anamnesis")
-          .update(anamnesisData)
-          .eq("id", existingAnamnesisId);
-      } else {
-        // Insert new record
-        result = await supabase
-          .from("anamnesis")
-          .insert(anamnesisData);
-      }
-
-      if (result.error) {
-        throw result.error;
-      }
+      if (error) throw error;
 
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (selectedPatientData) {
