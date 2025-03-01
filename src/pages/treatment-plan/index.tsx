@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -349,29 +348,12 @@ export default function TreatmentPlanForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Verificar se o usuário tem um registro na tabela professionals
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      let professionalId;
-      
-      if (professionalError || !professionalData) {
-        // Se não houver registro na tabela professionals, use o ID do usuário diretamente
-        console.log("Registro de profissional não encontrado, usando user.id como professional_id");
-        professionalId = user.id;
-      } else {
-        professionalId = professionalData.id;
-      }
-
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: professionalId,
+          professional_id: user.id,
           status: "active",
           created_at: new Date().toISOString(),
         });
