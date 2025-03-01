@@ -90,6 +90,12 @@ export default function AnamnesisForm() {
         setProfessionalId(professionalData.id);
       }
 
+      // If we couldn't get the professional_id from the professionals table,
+      // try to get it directly from the user ID as a fallback
+      if (!professionalData) {
+        setProfessionalId(user.id);
+      }
+
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
         .select("id, name")
@@ -445,6 +451,8 @@ export default function AnamnesisForm() {
         patient_id: selectedPatient,
         professional_id: professionalId,
       };
+
+      console.log("Saving anamnesis with professional_id:", professionalId);
 
       // Determine whether to insert or update
       if (existingAnamnesisId) {
