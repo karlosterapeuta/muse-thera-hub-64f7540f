@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,34 +66,11 @@ export default function AnamnesisForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
+      // Usando o user.id diretamente como professional_id
+      // Isso garante que usaremos o ID da tabela users que está conectado à tabela auth.users
+      setProfessionalId(user.id);
+
       console.log('Buscando pacientes para usuário:', user.id);
-
-      // Get professional_id from the professionals table
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (professionalError) {
-        console.error("Erro ao buscar dados do profissional:", professionalError);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar os dados do profissional.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (professionalData) {
-        setProfessionalId(professionalData.id);
-      }
-
-      // If we couldn't get the professional_id from the professionals table,
-      // try to get it directly from the user ID as a fallback
-      if (!professionalData) {
-        setProfessionalId(user.id);
-      }
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
