@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,7 @@ export default function AnamnesisForm() {
   const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -66,6 +68,27 @@ export default function AnamnesisForm() {
       setUserName(formatNameFromEmail(user.email || ""));
 
       console.log('Buscando pacientes para usuário:', user.id);
+
+      // Get professional_id from the professionals table
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (professionalError) {
+        console.error("Erro ao buscar dados do profissional:", professionalError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados do profissional.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (professionalData) {
+        setProfessionalId(professionalData.id);
+      }
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -120,9 +143,11 @@ export default function AnamnesisForm() {
 
       if (anamnesisData) {
         setFormData(anamnesisData);
+        setExistingAnamnesisId(anamnesisData.id);
       } else {
         // Reset form data if no anamnesis exists for this patient
         setFormData({});
+        setExistingAnamnesisId(null);
       }
     } catch (error) {
       console.error("Erro ao carregar anamnese:", error);
@@ -402,16 +427,42 @@ export default function AnamnesisForm() {
       return;
     }
 
-    try {
-      const { error } = await supabase
-        .from("anamnesis")
-        .insert({
-          ...formData,
-          patient_id: selectedPatient,
-          professional_id: professionalId,
-        });
+    if (!professionalId) {
+      toast({
+        title: "Erro",
+        description: "ID do profissional não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      if (error) throw error;
+    try {
+      let result;
+      
+      // Create the data object with the necessary fields
+      const anamnesisData = {
+        ...formData,
+        patient_id: selectedPatient,
+        professional_id: professionalId,
+      };
+
+      // Determine whether to insert or update
+      if (existingAnamnesisId) {
+        // Update existing record
+        result = await supabase
+          .from("anamnesis")
+          .update(anamnesisData)
+          .eq("id", existingAnamnesisId);
+      } else {
+        // Insert new record
+        result = await supabase
+          .from("anamnesis")
+          .insert(anamnesisData);
+      }
+
+      if (result.error) {
+        throw result.error;
+      }
 
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (selectedPatientData) {
