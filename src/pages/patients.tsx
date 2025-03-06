@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -440,9 +442,11 @@ function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
         .from("patients")
         .insert([
           { 
-            ...values,
+            name: values.name,
             professional_id: user.id,
             birth_date: values.birth_date.toISOString(),
+            responsible: values.responsible,
+            contact: values.contact
           },
         ])
         .select();
