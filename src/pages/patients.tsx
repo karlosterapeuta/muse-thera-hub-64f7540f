@@ -7,31 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, Trash2, Plus, UserRound } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -40,6 +16,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,140 +36,109 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { format } from "date-fns";
+import { 
+  Search, 
+  PlusCircle, 
+  Pencil, 
+  Trash2,
+  UserRoundPlus,
+  FileEdit,
+  File
+} from "lucide-react";
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "O nome deve ter pelo menos 2 caracteres.",
-  }),
-  birth_date: z.date().optional(),
-  contact: z.string().optional(),
-  responsible: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 type Patient = {
   id: string;
+  created_at: string;
+  updated_at: string;
   name: string;
   birth_date: string | null;
-  contact: string | null;
   responsible: string | null;
-  created_at: string;
+  contact: string | null;
 };
 
-export default function Patients() {
-  const { toast } = useToast();
+interface PatientFilter {
+  searchTerm: string;
+}
+
+export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const isMobile = useIsMobile();
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      contact: "",
-      responsible: "",
-    },
-  });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { toast } = useToast();
 
-  const fetchPatients = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao carregar pacientes",
-        description: "Usuário não autenticado.",
-      });
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("patients")
-      .select("*")
-      .eq('professional_id', user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error('Error fetching patients:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao carregar pacientes",
-        description: "Ocorreu um erro ao carregar a lista de pacientes.",
-      });
-      return;
-    }
-
-    setPatients(data || []);
-  };
-
-  useEffect(() => {
-    fetchPatients();
-  }, []);
-
-  async function onSubmit(values: FormValues) {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao cadastrar paciente",
-        description: "Usuário não autenticado.",
-      });
-      return;
-    }
-
-    const formattedValues = {
-      name: values.name,
-      birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
-      contact: values.contact || null,
-      responsible: values.responsible || null,
-      professional_id: user.id
-    };
-
-    console.log('Creating patient with values:', formattedValues);
-
-    const { data, error } = await supabase
-      .from("patients")
-      .insert(formattedValues)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating patient:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao cadastrar paciente",
-        description: "Ocorreu um erro ao tentar cadastrar o paciente. Tente novamente.",
-      });
-      return;
-    }
-
-    toast({
-      title: "Paciente cadastrado com sucesso!",
-      description: `O paciente ${values.name} foi cadastrado com sucesso.`,
-    });
-
-    form.reset();
-    fetchPatients();
-    
-    if (isMobile) setShowForm(false);
-  }
-
-  const handleDeleteAllPatients = async () => {
+  const loadPatients = async () => {
     try {
-      setIsDeleting(true);
-      
+      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast({
           variant: "destructive",
-          title: "Erro ao remover pacientes",
-          description: "Usuário não autenticado.",
+          title: "Erro",
+          description: "Usuário não encontrado",
+        });
+        return;
+      }
+      const { data, error } = await supabase
+        .from("patients")
+        .select("*")
+        .eq('professional_id', user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao carregar pacientes:", error);
+        throw error;
+      }
+
+      setPatients(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar pacientes:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível carregar a lista de pacientes",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPatients();
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const applyFilters = (patients: Patient[], filters: PatientFilter): Patient[] => {
+    return patients.filter((patient) => {
+      const searchTermLower = filters.searchTerm.toLowerCase();
+      return (
+        patient.name.toLowerCase().includes(searchTermLower) ||
+        (patient.responsible?.toLowerCase().includes(searchTermLower) ?? false)
+      );
+    });
+  };
+
+  const filteredPatients = applyFilters(patients, { searchTerm });
+
+  const handleDeleteAllPatients = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Usuário não encontrado",
         });
         return;
       }
@@ -194,480 +148,415 @@ export default function Patients() {
         .select("id")
         .eq('professional_id', user.id);
 
-      if (patientsToDelete && patientsToDelete.length > 0) {
-        for (const patient of patientsToDelete) {
-          await supabase
-            .from("anamnesis")
-            .delete()
-            .eq('patient_id', patient.id);
-            
-          await supabase
-            .from("assessments")
-            .delete()
-            .eq('patient_id', patient.id);
-            
-          await supabase
-            .from("treatment_plans")
-            .delete()
-            .eq('patient_id', patient.id);
-            
-          await supabase
-            .from("sessions")
-            .delete()
-            .eq('patient_id', patient.id);
-            
-          await supabase
-            .from("reports")
-            .delete()
-            .eq('patient_id', patient.id);
-        }
-      }
-
+      // Now we can directly delete the patients since CASCADE is set up
       const { error } = await supabase
         .from("patients")
         .delete()
         .eq('professional_id', user.id);
 
       if (error) {
+        console.error("Erro ao excluir pacientes:", error);
         throw error;
       }
 
+      setPatients([]);
       toast({
-        title: "Pacientes removidos com sucesso!",
-        description: "Todos os pacientes foram removidos do sistema.",
+        title: "Sucesso",
+        description: "Todos os pacientes foram excluídos",
       });
-
-      fetchPatients();
     } catch (error) {
-      console.error('Error deleting all patients:', error);
+      console.error("Erro ao excluir pacientes:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao remover pacientes",
-        description: "Ocorreu um erro ao tentar remover os pacientes. Tente novamente.",
+        title: "Erro",
+        description: "Não foi possível excluir os pacientes",
       });
     } finally {
-      setIsDeleting(false);
+      setIsLoading(false);
+      setShowDeleteConfirm(false);
     }
   };
 
   const handleDeletePatient = async (patient: Patient) => {
     try {
-      setIsDeleting(true);
+      setIsLoading(true);
       
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao remover paciente",
-          description: "Usuário não autenticado.",
-        });
-        return;
-      }
-
-      const { error: anamnesisError } = await supabase
-        .from("anamnesis")
-        .delete()
-        .eq('patient_id', patient.id);
-        
-      if (anamnesisError) {
-        console.error('Error deleting anamnesis records:', anamnesisError);
-      }
-      
-      const { error: assessmentsError } = await supabase
-        .from("assessments")
-        .delete()
-        .eq('patient_id', patient.id);
-        
-      if (assessmentsError) {
-        console.error('Error deleting assessment records:', assessmentsError);
-      }
-      
-      const { error: treatmentPlansError } = await supabase
-        .from("treatment_plans")
-        .delete()
-        .eq('patient_id', patient.id);
-        
-      if (treatmentPlansError) {
-        console.error('Error deleting treatment plans:', treatmentPlansError);
-      }
-      
-      const { error: sessionsError } = await supabase
-        .from("sessions")
-        .delete()
-        .eq('patient_id', patient.id);
-        
-      if (sessionsError) {
-        console.error('Error deleting sessions:', sessionsError);
-      }
-      
-      const { error: reportsError } = await supabase
-        .from("reports")
-        .delete()
-        .eq('patient_id', patient.id);
-        
-      if (reportsError) {
-        console.error('Error deleting reports:', reportsError);
-      }
-
+      // We can now directly delete the patient record
+      // All related records will be automatically deleted due to ON DELETE CASCADE
       const { error } = await supabase
         .from("patients")
         .delete()
-        .eq('id', patient.id)
-        .eq('professional_id', user.id);
+        .eq('id', patient.id);
 
       if (error) {
+        console.error("Erro ao excluir paciente:", error);
         throw error;
       }
 
+      loadPatients();
       toast({
-        title: "Paciente removido com sucesso!",
-        description: `O paciente ${patient.name} foi removido do sistema.`,
+        title: "Sucesso",
+        description: "Paciente excluído com sucesso",
       });
-
-      setPatientToDelete(null);
-      fetchPatients();
     } catch (error) {
-      console.error('Error deleting patient:', error);
+      console.error("Erro ao excluir paciente:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao remover paciente",
-        description: "Ocorreu um erro ao tentar remover o paciente. Tente novamente.",
+        title: "Erro",
+        description: "Não foi possível excluir o paciente",
       });
     } finally {
-      setIsDeleting(false);
+      setIsLoading(false);
+      setPatientToDelete(null);
     }
   };
 
-  const toggleFormVisibility = () => {
-    setShowForm(!showForm);
-    
-    if (showForm && isMobile) {
-      form.reset();
-    }
-  };
-
-  const PatientCard = ({ patient }: { patient: Patient }) => (
-    <Card className="mb-4">
-      <CardContent className="pt-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-medium text-lg flex items-center">
-              <UserRound className="h-5 w-5 mr-2 text-primary" />
-              {patient.name}
-            </h3>
-            <div className="grid gap-1 mt-2 text-sm text-muted-foreground">
-              <div className="flex items-start">
-                <span className="font-medium min-w-20">Nascimento:</span>
-                <span>{patient.birth_date
-                  ? format(new Date(patient.birth_date), "dd/MM/yyyy")
-                  : "-"}</span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium min-w-20">Contato:</span>
-                <span>{patient.contact || "-"}</span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium min-w-20">Responsável:</span>
-                <span>{patient.responsible || "-"}</span>
-              </div>
-            </div>
+  return (
+    <div className="container mx-auto py-8">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle>Pacientes</CardTitle>
+          <Button onClick={() => setIsDialogOpen(true)} size="sm">
+            <UserRoundPlus className="h-4 w-4 mr-2" />
+            Novo Paciente
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 flex items-center space-x-2">
+            <Search className="h-4 w-4 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Buscar paciente..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
           </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Data de Nascimento</TableHead>
+                <TableHead>Responsável</TableHead>
+                <TableHead>Contato</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPatients.map((patient) => (
+                <TableRow key={patient.id}>
+                  <TableCell>{patient.name}</TableCell>
+                  <TableCell>
+                    {patient.birth_date
+                      ? format(new Date(patient.birth_date), "dd/MM/yyyy")
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{patient.responsible || "N/A"}</TableCell>
+                  <TableCell>{patient.contact || "N/A"}</TableCell>
+                  <TableCell className="text-right font-medium">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        window.location.href = `/processos/paciente/editar/${patient.id}`
+                      }
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Editar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        window.location.href = `/processos/anamnese/${patient.id}`
+                      }
+                    >
+                      <FileEdit className="h-4 w-4 mr-2" />
+                      Anamnese
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        window.location.href = `/processos/prontuario/${patient.id}`
+                      }
+                    >
+                      <File className="h-4 w-4 mr-2" />
+                      Prontuário
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Excluir
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta ação irá excluir o paciente permanentemente e
+                            não poderá ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              setPatientToDelete(patient);
+                              handleDeletePatient(patient);
+                            }}
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {filteredPatients.length === 0 && (
+            <div className="text-center text-gray-500 mt-4">
+              Nenhum paciente encontrado.
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-between items-center p-4">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => setPatientToDelete(patient)}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4" />
+              <Button variant="destructive" size="sm">
+                Excluir Todos os Pacientes
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
+                  Esta ação irá excluir todos os pacientes permanentemente e não
+                  poderá ser desfeita.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
-                  Cancelar
-                </AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => handleDeletePatient(patient)}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  disabled={isDeleting}
+                  onClick={() => {
+                    setShowDeleteConfirm(true);
+                    handleDeleteAllPatients();
+                  }}
                 >
-                  {isDeleting ? "Excluindo..." : "Sim, excluir"}
+                  Excluir Todos
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </div>
-      </CardContent>
-    </Card>
+          {isLoading && <div className="text-gray-500">Carregando...</div>}
+        </CardFooter>
+      </Card>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Open Dialog</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Adicionar Paciente</DialogTitle>
+            <DialogDescription>
+              Crie um novo paciente para iniciar o processo.
+            </DialogDescription>
+          </DialogHeader>
+          <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsDialogOpen(false)}/>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
+}
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { format as dateformat } from "date-fns";
+import { ptBR } from 'date-fns/locale';
+
+const FormSchema = z.object({
+  name: z.string().min(2, {
+    message: "Nome deve ter pelo menos 2 caracteres.",
+  }),
+  birth_date: z.date({
+    required_error: "Uma data de nascimento é necessária.",
+  }),
+  responsible: z.string().min(2, {
+    message: "Nome do responsável deve ter pelo menos 2 caracteres.",
+  }),
+  contact: z.string().min(10, {
+    message: "Número de contato deve ter pelo menos 10 caracteres.",
+  }).max(15, {
+    message: "Número de contato deve ter no máximo 15 caracteres.",
+  }),
+});
+
+interface AddPatientDialogProps {
+  loadPatients: () => void;
+  closeModal: () => void;
+}
+
+function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: "",
+      birth_date: new Date(),
+      responsible: "",
+      contact: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Usuário não encontrado",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("patients")
+        .insert([
+          { 
+            ...values,
+            professional_id: user.id,
+            birth_date: values.birth_date.toISOString(),
+          },
+        ])
+        .select();
+
+      if (error) {
+        console.error("Erro ao criar paciente:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Paciente criado com sucesso",
+      });
+      loadPatients();
+    } catch (error) {
+      console.error("Erro ao criar paciente:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível criar o paciente",
+      });
+    } finally {
+      closeModal();
+    }
+  }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-      {isMobile && (
-        <div className="sticky top-16 z-10 flex justify-end mb-4">
-          <Button
-            onClick={toggleFormVisibility}
-            className="shadow-md"
-            size="sm"
-          >
-            {showForm ? "Cancelar" : (
-              <>
-                <Plus className="mr-1 h-4 w-4" />
-                Novo Paciente
-              </>
-            )}
-          </Button>
-        </div>
-      )}
-
-      {(!isMobile || showForm) && (
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>Cadastro de Paciente</CardTitle>
-            <CardDescription>
-              Preencha os dados do paciente para cadastrá-lo no sistema.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome completo</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite o nome do paciente" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="birth_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data de nascimento</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP", { locale: ptBR })
-                              ) : (
-                                <span>Selecione uma data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="contact"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contato</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite o telefone ou email" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Telefone ou email para contato
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="responsible"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Responsável</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite o nome do responsável" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Para pacientes menores de idade
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" className="w-full">
-                  Cadastrar Paciente
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      )}
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
-          <div>
-            <CardTitle>Pacientes Cadastrados</CardTitle>
-            <CardDescription>
-              Lista de todos os pacientes cadastrados no sistema
-            </CardDescription>
-          </div>
-          {patients.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button 
-                  variant="destructive" 
-                  size={isMobile ? "sm" : "default"}
-                  disabled={isDeleting}
-                >
-                  {isDeleting 
-                    ? "Removendo..." 
-                    : (isMobile ? "Remover Todos" : "Remover Todos os Pacientes")}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta ação não pode ser desfeita. Todos os pacientes serão removidos permanentemente do sistema.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteAllPatients}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Removendo..." : "Sim, remover todos"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome do paciente" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </CardHeader>
-        <CardContent>
-          {isMobile ? (
-            patients.length > 0 ? (
-              <div className="space-y-2">
-                {patients.map((patient) => (
-                  <PatientCard key={patient.id} patient={patient} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                Nenhum paciente cadastrado
-              </div>
-            )
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Data de Nascimento</TableHead>
-                    <TableHead>Contato</TableHead>
-                    <TableHead>Responsável</TableHead>
-                    <TableHead className="w-[100px]">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {patients.map((patient) => (
-                    <TableRow key={patient.id}>
-                      <TableCell>{patient.name}</TableCell>
-                      <TableCell>
-                        {patient.birth_date
-                          ? format(new Date(patient.birth_date), "dd/MM/yyyy")
-                          : "-"}
-                      </TableCell>
-                      <TableCell>{patient.contact || "-"}</TableCell>
-                      <TableCell>{patient.responsible || "-"}</TableCell>
-                      <TableCell>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="hover:bg-destructive/10 hover:text-destructive"
-                              onClick={() => setPatientToDelete(patient)}
-                              disabled={isDeleting}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
-                                Cancelar
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeletePatient(patient)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                disabled={isDeleting}
-                              >
-                                {isDeleting ? "Excluindo..." : "Sim, excluir"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {patients.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
-                        Nenhum paciente cadastrado
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+        />
+        <FormField
+          control={form.control}
+          name="birth_date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Data de Nascimento</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        dateformat(field.value, "PP", { locale: ptBR })
+                      ) : (
+                        <span>Selecione a data</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    locale={ptBR}
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        />
+        <FormField
+          control={form.control}
+          name="responsible"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Responsável</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome do responsável" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="contact"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contato</FormLabel>
+              <FormControl>
+                <Input placeholder="(99) 99999-9999" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <DialogFooter>
+          <Button type="submit">Criar Paciente</Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 }
