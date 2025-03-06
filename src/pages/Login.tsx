@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -31,19 +30,15 @@ export default function Login() {
             const hashParams = new URLSearchParams(hash.substring(1));
             const accessToken = hashParams.get('access_token');
             const refreshToken = hashParams.get('refresh_token');
-            const expiresIn = hashParams.get('expires_in');
-            const tokenType = hashParams.get('token_type');
             
             if (!accessToken) {
               throw new Error("Token de acesso não encontrado");
             }
             
-            // Set the session with the token from the URL
+            // Set the session with the token from the URL - only pass the properties that the type expects
             await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken || '',
-              expires_in: parseInt(expiresIn || '3600'),
-              token_type: tokenType || 'bearer',
             });
             
             toast({
