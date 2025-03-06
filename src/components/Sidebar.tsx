@@ -64,10 +64,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         <div className="flex items-center space-x-3">
           <img
             src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
-            alt="Musicoterapia"
+            alt="MuseTera"
             className="h-8 w-8"
           />
-          {!collapsed && <span className="text-xl font-bold text-primary">Musicoterapia</span>}
+          {!collapsed && <span className="text-xl font-bold text-primary">MuseTera</span>}
         </div>
         <Button
           variant="ghost"
