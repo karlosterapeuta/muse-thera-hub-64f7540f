@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, Trash2 } from "lucide-react";
+import { CalendarIcon, Trash2, Plus, UserRound } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -52,6 +51,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -77,6 +77,9 @@ export default function Patients() {
   const { toast } = useToast();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const isMobile = useIsMobile();
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -138,7 +141,7 @@ export default function Patients() {
       birth_date: values.birth_date ? format(values.birth_date, 'yyyy-MM-dd') : null,
       contact: values.contact || null,
       responsible: values.responsible || null,
-      professional_id: user.id  // Ensure we're explicitly setting the professional_id
+      professional_id: user.id
     };
 
     console.log('Creating patient with values:', formattedValues);
@@ -166,6 +169,8 @@ export default function Patients() {
 
     form.reset();
     fetchPatients();
+    
+    if (isMobile) setShowForm(false);
   }
 
   const handleDeleteAllPatients = async () => {
@@ -238,118 +243,207 @@ export default function Patients() {
     fetchPatients();
   };
 
+  const toggleFormVisibility = () => {
+    setShowForm(!showForm);
+    
+    if (showForm && isMobile) {
+      form.reset();
+    }
+  };
+
+  const PatientCard = ({ patient }: { patient: Patient }) => (
+    <Card className="mb-4">
+      <CardContent className="pt-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-medium text-lg flex items-center">
+              <UserRound className="h-5 w-5 mr-2 text-primary" />
+              {patient.name}
+            </h3>
+            <div className="grid gap-1 mt-2 text-sm text-muted-foreground">
+              <div className="flex items-start">
+                <span className="font-medium min-w-20">Nascimento:</span>
+                <span>{patient.birth_date
+                  ? format(new Date(patient.birth_date), "dd/MM/yyyy")
+                  : "-"}</span>
+              </div>
+              <div className="flex items-start">
+                <span className="font-medium min-w-20">Contato:</span>
+                <span>{patient.contact || "-"}</span>
+              </div>
+              <div className="flex items-start">
+                <span className="font-medium min-w-20">Responsável:</span>
+                <span>{patient.responsible || "-"}</span>
+              </div>
+            </div>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => setPatientToDelete(patient)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
+                  Cancelar
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => handleDeletePatient(patient)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Sim, excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Cadastro de Paciente</CardTitle>
-          <CardDescription>
-            Preencha os dados do paciente para cadastrá-lo no sistema.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome completo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Digite o nome do paciente" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      {isMobile && (
+        <div className="sticky top-16 z-10 flex justify-end mb-4">
+          <Button
+            onClick={toggleFormVisibility}
+            className="shadow-md"
+            size="sm"
+          >
+            {showForm ? "Cancelar" : (
+              <>
+                <Plus className="mr-1 h-4 w-4" />
+                Novo Paciente
+              </>
+            )}
+          </Button>
+        </div>
+      )}
 
-              <FormField
-                control={form.control}
-                name="birth_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Data de nascimento</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: ptBR })
-                            ) : (
-                              <span>Selecione uma data</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      {(!isMobile || showForm) && (
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Cadastro de Paciente</CardTitle>
+            <CardDescription>
+              Preencha os dados do paciente para cadastrá-lo no sistema.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome completo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o nome do paciente" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="contact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contato</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Digite o telefone ou email" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Telefone ou email para contato
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="birth_date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Data de nascimento</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: ptBR })
+                              ) : (
+                                <span>Selecione uma data</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="responsible"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Responsável</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Digite o nome do responsável" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Para pacientes menores de idade
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="contact"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contato</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o telefone ou email" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Telefone ou email para contato
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <Button type="submit" className="w-full">
-                Cadastrar Paciente
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                <FormField
+                  control={form.control}
+                  name="responsible"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Responsável</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o nome do responsável" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Para pacientes menores de idade
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full">
+                  Cadastrar Paciente
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Pacientes Cadastrados</CardTitle>
             <CardDescription>
@@ -359,8 +453,8 @@ export default function Patients() {
           {patients.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  Remover Todos os Pacientes
+                <Button variant="destructive" size={isMobile ? "sm" : "default"}>
+                  {isMobile ? "Remover Todos" : "Remover Todos os Pacientes"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -384,73 +478,87 @@ export default function Patients() {
           )}
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Data de Nascimento</TableHead>
-                  <TableHead>Contato</TableHead>
-                  <TableHead>Responsável</TableHead>
-                  <TableHead className="w-[100px]">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+          {isMobile ? (
+            patients.length > 0 ? (
+              <div className="space-y-2">
                 {patients.map((patient) => (
-                  <TableRow key={patient.id}>
-                    <TableCell>{patient.name}</TableCell>
-                    <TableCell>
-                      {patient.birth_date
-                        ? format(new Date(patient.birth_date), "dd/MM/yyyy")
-                        : "-"}
-                    </TableCell>
-                    <TableCell>{patient.contact || "-"}</TableCell>
-                    <TableCell>{patient.responsible || "-"}</TableCell>
-                    <TableCell>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="hover:bg-destructive/10 hover:text-destructive"
-                            onClick={() => setPatientToDelete(patient)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
-                              Cancelar
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeletePatient(patient)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Sim, excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </TableCell>
-                  </TableRow>
+                  <PatientCard key={patient.id} patient={patient} />
                 ))}
-                {patients.length === 0 && (
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum paciente cadastrado
+              </div>
+            )
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      Nenhum paciente cadastrado
-                    </TableCell>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Data de Nascimento</TableHead>
+                    <TableHead>Contato</TableHead>
+                    <TableHead>Responsável</TableHead>
+                    <TableHead className="w-[100px]">Ações</TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {patients.map((patient) => (
+                    <TableRow key={patient.id}>
+                      <TableCell>{patient.name}</TableCell>
+                      <TableCell>
+                        {patient.birth_date
+                          ? format(new Date(patient.birth_date), "dd/MM/yyyy")
+                          : "-"}
+                      </TableCell>
+                      <TableCell>{patient.contact || "-"}</TableCell>
+                      <TableCell>{patient.responsible || "-"}</TableCell>
+                      <TableCell>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => setPatientToDelete(patient)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza que deseja excluir o paciente {patient.name}? Esta ação não pode ser desfeita.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
+                                Cancelar
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeletePatient(patient)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Sim, excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {patients.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                        Nenhum paciente cadastrado
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
