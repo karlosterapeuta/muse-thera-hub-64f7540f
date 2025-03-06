@@ -355,12 +355,26 @@ export default function TreatmentPlanForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      let professional_id = user.id;
+      
+      if (professionalData && !professionalError) {
+        professional_id = professionalData.id;
+      } else {
+        console.log("Profissional não encontrado, usando user_id como professional_id");
+      }
+
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: user.id,
+          professional_id: professional_id,
           status: "active",
           created_at: new Date().toISOString(),
         });
