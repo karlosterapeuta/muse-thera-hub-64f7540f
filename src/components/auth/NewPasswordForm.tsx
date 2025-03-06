@@ -40,12 +40,18 @@ export default function NewPasswordForm() {
     }
 
     try {
+      console.log("Attempting to update password");
+      
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating password:", error);
+        throw error;
+      }
 
+      console.log("Password updated successfully");
       setSuccess(true);
       toast({
         title: "Senha atualizada com sucesso",

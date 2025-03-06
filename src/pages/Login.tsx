@@ -28,11 +28,11 @@ export default function Login() {
 
   useEffect(() => {
     const handlePasswordReset = async () => {
-      // Get the full URL including hash
-      const fullUrl = window.location.href;
-      
       // Check if URL has recovery token parameters
-      if (fullUrl.includes('type=recovery')) {
+      const fullUrl = window.location.href;
+      const hasHashParams = window.location.hash && window.location.hash.length > 1;
+      
+      if (fullUrl.includes('type=recovery') && hasHashParams) {
         try {
           // Set the form to new password mode
           setIsSettingNewPassword(true);
@@ -42,12 +42,16 @@ export default function Login() {
           const hash = window.location.hash.substring(1);
           
           hash.split('&').forEach(pair => {
-            const [key, value] = pair.split('=');
-            hashParams[key] = decodeURIComponent(value);
+            if (pair && pair.includes('=')) {
+              const [key, value] = pair.split('=');
+              hashParams[key] = decodeURIComponent(value || '');
+            }
           });
           
           // Check if we have the access token
           if (hashParams.access_token) {
+            console.log("Found access token, setting session");
+            
             // Set the session with only the parameters that the type expects
             await supabase.auth.setSession({
               access_token: hashParams.access_token,
@@ -58,12 +62,20 @@ export default function Login() {
               title: "Redefinição de senha",
               description: "Agora você pode definir uma nova senha."
             });
+          } else {
+            console.error("Access token not found in URL hash parameters");
+            toast({
+              title: "Erro na redefinição de senha",
+              description: "Link inválido ou expirado. Por favor, solicite um novo link.",
+              variant: "destructive",
+            });
+            setIsSettingNewPassword(false);
           }
         } catch (error: any) {
           console.error("Erro ao processar redefinição de senha:", error);
           toast({
             title: "Erro na redefinição de senha",
-            description: error.message,
+            description: error.message || "Ocorreu um erro ao processar sua solicitação.",
             variant: "destructive",
           });
           
