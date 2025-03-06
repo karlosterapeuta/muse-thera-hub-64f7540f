@@ -19,6 +19,7 @@ type PatientSelectProps = {
   onSelect: (value: string) => void;
   isLoading?: boolean;
   emptyMessage?: string;
+  label?: string;
 };
 
 export function PatientSelect({ 
@@ -26,7 +27,8 @@ export function PatientSelect({
   selectedPatient, 
   onSelect, 
   isLoading = false,
-  emptyMessage = "Nenhum paciente encontrado" 
+  emptyMessage = "Nenhum paciente encontrado",
+  label = "Paciente"
 }: PatientSelectProps) {
   const getPlaceholderText = () => {
     if (isLoading) return "Carregando...";
@@ -39,7 +41,7 @@ export function PatientSelect({
 
   return (
     <div>
-      <Label>Paciente</Label>
+      <Label>{label}</Label>
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}

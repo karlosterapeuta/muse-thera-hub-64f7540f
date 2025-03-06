@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,18 +52,34 @@ export default function TreatmentPlanForm() {
 
   const loadData = async () => {
     try {
+      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (professionalError) throw professionalError;
+      
+      console.log("Buscando pacientes para profissional ID:", professionalData.id);
+
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
+        .eq("professional_id", professionalData.id)
         .order("name");
 
       if (error) throw error;
+      
+      console.log("Dados dos pacientes retornados:", data);
+      console.log(`${data?.length || 0} pacientes encontrados`);
+      
       setPatients(data || []);
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
@@ -528,6 +543,8 @@ export default function TreatmentPlanForm() {
               patients={patients}
               selectedPatient={selectedPatient}
               onSelect={setSelectedPatient}
+              isLoading={isLoading}
+              emptyMessage="Nenhum paciente cadastrado por você"
             />
 
             {sections.map((section) => (
