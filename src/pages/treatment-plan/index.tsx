@@ -59,20 +59,11 @@ export default function TreatmentPlanForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (professionalError) throw professionalError;
+      console.log("Buscando pacientes para usuário:", user.id);
       
-      console.log("Buscando pacientes para profissional ID:", professionalData.id);
-
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq("professional_id", professionalData.id)
         .order("name");
 
       if (error) throw error;
