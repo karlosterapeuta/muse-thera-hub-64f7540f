@@ -50,6 +50,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -80,8 +81,10 @@ export default function InterventionForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [selectedPatient, setSelectedPatient] = useState<string>("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -341,34 +344,57 @@ export default function InterventionForm() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      try {
+        setIsLoadingPatients(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            variant: "destructive",
+            title: "Não autenticado",
+            description: "Você precisa estar logado para acessar esta página.",
+          });
+          navigate("/login");
+          return;
+        }
+
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
-      }
-    };
 
-    const fetchPatients = async () => {
-      const { data, error } = await supabase
-        .from("patients")
-        .select("id, name")
-        .order("name");
+        console.log("Buscando pacientes para usuário:", user.id);
+        
+        const { data, error } = await supabase
+          .from("patients")
+          .select("id, name")
+          .eq("professional_id", user.id)
+          .order("name");
 
-      if (error) {
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao carregar pacientes",
+            description: "Não foi possível carregar a lista de pacientes.",
+          });
+          console.error("Erro ao carregar pacientes:", error);
+          return;
+        }
+
+        setPatients(data || []);
+        console.log("Dados dos pacientes retornados:", data);
+        console.log(`${data?.length || 0} pacientes encontrados`);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
         toast({
           variant: "destructive",
-          title: "Erro ao carregar pacientes",
-          description: "Não foi possível carregar a lista de pacientes.",
+          title: "Erro ao carregar dados",
+          description: "Ocorreu um erro ao buscar informações do usuário.",
         });
-        return;
+      } finally {
+        setIsLoadingPatients(false);
       }
-
-      setPatients(data);
     };
 
     fetchUserData();
-    fetchPatients();
-  }, [toast]);
+  }, [toast, navigate]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -408,6 +434,11 @@ export default function InterventionForm() {
         description: "Ocorreu um erro ao salvar os dados da intervenção.",
       });
     }
+  };
+
+  const handlePatientSelect = (patientId: string) => {
+    setSelectedPatient(patientId);
+    form.setValue("patient_id", patientId);
   };
 
   const emotionalStateOptions = {
@@ -496,20 +527,15 @@ export default function InterventionForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Paciente</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione um paciente" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {patients.map((patient) => (
-                            <SelectItem key={patient.id} value={patient.id}>
-                              {patient.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <PatientSelect 
+                          patients={patients}
+                          selectedPatient={field.value}
+                          onSelect={field.onChange}
+                          isLoading={isLoadingPatients}
+                          emptyMessage="Nenhum paciente cadastrado por você"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
