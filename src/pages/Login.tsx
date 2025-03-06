@@ -9,6 +9,16 @@ import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { supabase } from "@/integrations/supabase/client";
 
+// Define interface for hash parameters to avoid TypeScript errors
+interface HashParams {
+  [key: string]: string;
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: string;
+  token_type?: string;
+  type?: string;
+}
+
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
@@ -28,7 +38,7 @@ export default function Login() {
           setIsSettingNewPassword(true);
           
           // Parse hash parameters
-          const hashParams = {};
+          const hashParams: HashParams = {};
           const hash = window.location.hash.substring(1);
           
           hash.split('&').forEach(pair => {
