@@ -19,11 +19,8 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
     setIsLoading(true);
 
     try {
-      // Get the application URL - use the deployed URL if available, otherwise use current origin
+      // Use the current origin for the redirect URL, rather than hardcoded localhost
       const siteUrl = window.location.origin;
-      
-      // Log the redirect URL for debugging
-      console.log("Using redirect URL:", `${siteUrl}/login`);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${siteUrl}/login`,

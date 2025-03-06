@@ -7,6 +7,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -18,45 +19,55 @@ export default function Login() {
   useEffect(() => {
     const handlePasswordReset = async () => {
       const hash = location.hash;
-      try {
-        // Handle the recovery link (type=recovery)
-        if (hash && hash.includes('type=recovery')) {
+      
+      // Check if URL has recovery token parameters
+      if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+        try {
+          // Set the form to new password mode
           setIsSettingNewPassword(true);
           
-          const hashParams = new URLSearchParams(hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          
-          if (!accessToken) {
-            throw new Error("Token de acesso não encontrado");
+          // If there's an access token in the URL, we're in recovery mode
+          if (hash.includes('access_token')) {
+            const hashParams = new URLSearchParams(hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+            const expiresIn = hashParams.get('expires_in');
+            const tokenType = hashParams.get('token_type');
+            
+            if (!accessToken) {
+              throw new Error("Token de acesso não encontrado");
+            }
+            
+            // Set the session with the token from the URL
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+              expires_in: parseInt(expiresIn || '3600'),
+              token_type: tokenType || 'bearer',
+            });
+            
+            toast({
+              title: "Redefinição de senha",
+              description: "Agora você pode definir uma nova senha."
+            });
           }
-          
+        } catch (error: any) {
+          console.error("Erro ao processar redefinição de senha:", error);
           toast({
-            title: "Redefina sua senha",
-            description: "Por favor, digite uma nova senha."
-          });
-        } 
-        // Handle expired or invalid token error
-        else if (hash && hash.includes('error=access_denied')) {
-          toast({
-            title: "Link expirado",
-            description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
+            title: "Erro na redefinição de senha",
+            description: error.message,
             variant: "destructive",
           });
-        }
-        // Handle recovery token directly
-        else if (hash && hash.includes('access_token') && hash.includes('type=recovery')) {
-          setIsSettingNewPassword(true);
           
-          toast({
-            title: "Redefina sua senha",
-            description: "Por favor, digite uma nova senha."
-          });
+          // Reset to login form on error
+          setIsSettingNewPassword(false);
         }
-      } catch (error: any) {
-        console.error("Erro ao processar redefinição de senha:", error);
+      } 
+      // Handle expired or invalid token error
+      else if (hash && hash.includes('error=access_denied')) {
         toast({
-          title: "Erro na redefinição de senha",
-          description: error.message,
+          title: "Link expirado",
+          description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
           variant: "destructive",
         });
       }

@@ -9,12 +9,34 @@ import { supabase } from "@/integrations/supabase/client";
 export default function NewPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Validate password
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Senhas não coincidem",
+        description: "Por favor, verifique se as senhas são iguais.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Senha muito curta",
+        description: "A senha deve ter pelo menos 6 caracteres.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.updateUser({
@@ -30,6 +52,11 @@ export default function NewPasswordForm() {
       
       // Clear hash from URL after successful password update
       window.history.replaceState(null, '', window.location.pathname);
+
+      // Redirect to login after successful password reset
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar senha",
@@ -57,6 +84,7 @@ export default function NewPasswordForm() {
               className="mt-1"
               placeholder="********"
               required
+              minLength={6}
             />
             <button
               type="button"
@@ -65,6 +93,24 @@ export default function NewPasswordForm() {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+          </div>
+        </div>
+
+        <div className="relative">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            Confirmar Senha
+          </label>
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1"
+              placeholder="********"
+              required
+              minLength={6}
+            />
           </div>
         </div>
       </div>
