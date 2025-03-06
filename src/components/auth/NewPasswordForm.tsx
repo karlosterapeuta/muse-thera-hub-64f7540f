@@ -58,9 +58,10 @@ export default function NewPasswordForm() {
         window.location.href = "/login";
       }, 2000);
     } catch (error: any) {
+      console.error("Erro ao atualizar senha:", error);
       toast({
         title: "Erro ao atualizar senha",
-        description: error.message,
+        description: error.message || "Ocorreu um erro ao tentar redefinir sua senha.",
         variant: "destructive",
       });
     } finally {

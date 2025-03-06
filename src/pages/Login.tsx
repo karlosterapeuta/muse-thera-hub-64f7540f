@@ -18,28 +18,30 @@ export default function Login() {
 
   useEffect(() => {
     const handlePasswordReset = async () => {
-      const hash = location.hash;
+      // Get the full URL including hash
+      const fullUrl = window.location.href;
       
       // Check if URL has recovery token parameters
-      if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+      if (fullUrl.includes('type=recovery')) {
         try {
           // Set the form to new password mode
           setIsSettingNewPassword(true);
           
-          // If there's an access token in the URL, we're in recovery mode
-          if (hash.includes('access_token')) {
-            const hashParams = new URLSearchParams(hash.substring(1));
-            const accessToken = hashParams.get('access_token');
-            const refreshToken = hashParams.get('refresh_token');
-            
-            if (!accessToken) {
-              throw new Error("Token de acesso não encontrado");
-            }
-            
-            // Set the session with the token from the URL - only pass the properties that the type expects
+          // Parse hash parameters
+          const hashParams = {};
+          const hash = window.location.hash.substring(1);
+          
+          hash.split('&').forEach(pair => {
+            const [key, value] = pair.split('=');
+            hashParams[key] = decodeURIComponent(value);
+          });
+          
+          // Check if we have the access token
+          if (hashParams.access_token) {
+            // Set the session with only the parameters that the type expects
             await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken || '',
+              access_token: hashParams.access_token,
+              refresh_token: hashParams.refresh_token || '',
             });
             
             toast({
@@ -60,7 +62,7 @@ export default function Login() {
         }
       } 
       // Handle expired or invalid token error
-      else if (hash && hash.includes('error=access_denied')) {
+      else if (location.hash && location.hash.includes('error=access_denied')) {
         toast({
           title: "Link expirado",
           description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
