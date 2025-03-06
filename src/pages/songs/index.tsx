@@ -65,15 +65,15 @@ export default function SongsPage() {
     <div className="container mx-auto py-6">
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Músicas</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl">Músicas</CardTitle>
+          <CardDescription className="text-xl">
             Repertório de músicas para sessões de musicoterapia
           </CardDescription>
           <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <Input
               placeholder="Buscar música ou artista..."
-              className="pl-10"
+              className="pl-10 text-lg py-6"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -85,15 +85,15 @@ export default function SongsPage() {
               {filteredSongs.map((song) => (
                 <div
                   key={song.id}
-                  className="p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="p-6 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <h3 className="font-medium text-lg">{song.title}</h3>
-                  <p className="text-gray-600">{song.artist}</p>
+                  <h3 className="font-medium text-2xl mb-1">{song.title}</h3>
+                  <p className="text-gray-600 text-xl">{song.artist}</p>
                 </div>
               ))}
               
               {filteredSongs.length === 0 && (
-                <div className="py-8 text-center text-gray-500">
+                <div className="py-12 text-center text-gray-500 text-xl">
                   Nenhuma música encontrada com o termo "{searchTerm}"
                 </div>
               )}
