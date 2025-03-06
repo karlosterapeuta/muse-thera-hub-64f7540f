@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Song {
   id: number;
@@ -55,6 +56,7 @@ export default function SongsPage() {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
+  const isMobile = useIsMobile();
   
   const filteredSongs = songs.filter(song => 
     song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -65,15 +67,15 @@ export default function SongsPage() {
     <div className="container mx-auto py-6">
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="text-3xl">Músicas</CardTitle>
-          <CardDescription className="text-xl">
+          <CardTitle className={`${isMobile ? "text-4xl" : "text-3xl"} mb-2`}>Músicas</CardTitle>
+          <CardDescription className={`${isMobile ? "text-2xl" : "text-xl"}`}>
             Repertório de músicas para sessões de musicoterapia
           </CardDescription>
-          <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <div className="relative mt-6">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
             <Input
               placeholder="Buscar música ou artista..."
-              className="pl-10 text-lg py-6"
+              className={`pl-12 ${isMobile ? "text-xl py-7" : "text-lg py-6"} rounded-xl`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -85,15 +87,15 @@ export default function SongsPage() {
               {filteredSongs.map((song) => (
                 <div
                   key={song.id}
-                  className="p-6 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                  className={`p-6 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer ${isMobile ? "mb-4" : ""}`}
                 >
-                  <h3 className="font-medium text-2xl mb-1">{song.title}</h3>
-                  <p className="text-gray-600 text-xl">{song.artist}</p>
+                  <h3 className={`font-medium ${isMobile ? "text-3xl" : "text-2xl"} mb-2`}>{song.title}</h3>
+                  <p className={`text-gray-600 ${isMobile ? "text-2xl" : "text-xl"}`}>{song.artist}</p>
                 </div>
               ))}
               
               {filteredSongs.length === 0 && (
-                <div className="py-12 text-center text-gray-500 text-xl">
+                <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
                   Nenhuma música encontrada com o termo "{searchTerm}"
                 </div>
               )}
