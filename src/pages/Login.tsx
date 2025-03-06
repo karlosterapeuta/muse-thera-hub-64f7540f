@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,6 +31,33 @@ export default function Login() {
       throw new Error("Código de convite inválido ou expirado");
     }
     return true;
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email enviado",
+        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+      });
+      setIsResettingPassword(false);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao enviar email",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -117,15 +144,19 @@ export default function Login() {
             className="mx-auto h-24 w-24 mb-4"
           />
           <h2 className="text-4xl font-bold text-primary mb-2">Musicoterapia</h2>
-          <h3 className="text-xl text-gray-600">{isRegistering ? "Registro" : "Login"}</h3>
+          <h3 className="text-xl text-gray-600">
+            {isResettingPassword ? "Recuperar Senha" : isRegistering ? "Registro" : "Login"}
+          </h3>
           <p className="mt-2 text-gray-600">
-            {isRegistering
+            {isResettingPassword
+              ? "Digite seu email para receber o link de recuperação"
+              : isRegistering
               ? "Crie sua conta para acessar o sistema"
               : "Insira suas credenciais abaixo:"}
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleAuth}>
+        <form className="mt-8 space-y-6" onSubmit={isResettingPassword ? handleResetPassword : handleAuth}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -141,31 +172,34 @@ export default function Login() {
                 required
               />
             </div>
-            <div className="relative">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Senha
-              </label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1"
-                  placeholder="********"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
 
-            {isRegistering && (
+            {!isResettingPassword && (
+              <div className="relative">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Senha
+                </label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1"
+                    placeholder="********"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {isRegistering && !isResettingPassword && (
               <div>
                 <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700">
                   Código de Convite
@@ -183,44 +217,68 @@ export default function Login() {
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Lembrar-me
-              </label>
+          {!isResettingPassword && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                  Lembrar-me
+                </label>
+              </div>
+              {!isRegistering && (
+                <button
+                  type="button"
+                  onClick={() => setIsResettingPassword(true)}
+                  className="text-sm text-primary hover:text-primary/80"
+                >
+                  Recuperar senha
+                </button>
+              )}
             </div>
-            {!isRegistering && (
-              <a href="#" className="text-sm text-primary hover:text-primary/80">
-                Recuperar senha
-              </a>
-            )}
-          </div>
+          )}
 
           <Button
             type="submit"
             className="w-full bg-primary hover:bg-primary/90"
             disabled={isLoading}
           >
-            {isLoading ? "Carregando..." : isRegistering ? "Registrar" : "Entrar"}
+            {isLoading
+              ? "Carregando..."
+              : isResettingPassword
+              ? "Enviar email de recuperação"
+              : isRegistering
+              ? "Registrar"
+              : "Entrar"}
           </Button>
 
-          <div className="text-center">
+          <div className="text-center space-y-2">
             <button
               type="button"
-              onClick={() => setIsRegistering(!isRegistering)}
+              onClick={() => {
+                setIsRegistering(!isRegistering);
+                setIsResettingPassword(false);
+              }}
               className="text-sm text-primary hover:text-primary/80"
             >
               {isRegistering
                 ? "Já tem uma conta? Faça login"
                 : "Não tem uma conta? Registre-se"}
             </button>
+            {isResettingPassword && (
+              <button
+                type="button"
+                onClick={() => setIsResettingPassword(false)}
+                className="block w-full text-sm text-primary hover:text-primary/80"
+              >
+                Voltar ao login
+              </button>
+            )}
           </div>
         </form>
       </div>
