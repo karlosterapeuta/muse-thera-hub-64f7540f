@@ -26,6 +26,7 @@ export default function Login() {
     const handlePasswordReset = async () => {
       const hash = location.hash;
       try {
+        // Handle the recovery link (type=recovery)
         if (hash && hash.includes('type=recovery')) {
           setIsSettingNewPassword(true);
           
@@ -40,12 +41,22 @@ export default function Login() {
             title: "Redefina sua senha",
             description: "Por favor, digite uma nova senha."
           });
-        } else if (hash && hash.includes('error=access_denied')) {
-          // Handle expired or invalid token error
+        } 
+        // Handle expired or invalid token error
+        else if (hash && hash.includes('error=access_denied')) {
           toast({
             title: "Link expirado",
             description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
             variant: "destructive",
+          });
+        }
+        // Handle recovery token directly
+        else if (hash && hash.includes('access_token') && hash.includes('type=recovery')) {
+          setIsSettingNewPassword(true);
+          
+          toast({
+            title: "Redefina sua senha",
+            description: "Por favor, digite uma nova senha."
           });
         }
       } catch (error: any) {
