@@ -103,8 +103,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Get the current site URL dynamically
+      // Get the current deployment URL dynamically
       const siteUrl = window.location.origin;
+      
+      // Log the redirect URL for debugging
+      console.log("Using redirect URL:", `${siteUrl}/login`);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${siteUrl}/login`,
