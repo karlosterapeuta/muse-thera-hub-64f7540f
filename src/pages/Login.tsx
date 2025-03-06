@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      // Get the current site URL dynamically
       const siteUrl = window.location.origin;
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
