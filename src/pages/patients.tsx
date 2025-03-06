@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -190,21 +189,18 @@ export default function Patients() {
         return;
       }
 
-      // First get all patients
       const { data: patientsToDelete } = await supabase
         .from("patients")
         .select("id")
         .eq('professional_id', user.id);
 
       if (patientsToDelete && patientsToDelete.length > 0) {
-        // First delete related records from anamnesis table
         for (const patient of patientsToDelete) {
           await supabase
             .from("anamnesis")
             .delete()
             .eq('patient_id', patient.id);
             
-          // Also delete related records from other tables if needed
           await supabase
             .from("assessments")
             .delete()
@@ -227,7 +223,6 @@ export default function Patients() {
         }
       }
 
-      // Then delete all patients
       const { error } = await supabase
         .from("patients")
         .delete()
@@ -270,34 +265,51 @@ export default function Patients() {
         return;
       }
 
-      // First delete related records from anamnesis table
-      await supabase
+      const { error: anamnesisError } = await supabase
         .from("anamnesis")
         .delete()
         .eq('patient_id', patient.id);
         
-      // Also delete related records from other tables if needed
-      await supabase
+      if (anamnesisError) {
+        console.error('Error deleting anamnesis records:', anamnesisError);
+      }
+      
+      const { error: assessmentsError } = await supabase
         .from("assessments")
         .delete()
         .eq('patient_id', patient.id);
         
-      await supabase
+      if (assessmentsError) {
+        console.error('Error deleting assessment records:', assessmentsError);
+      }
+      
+      const { error: treatmentPlansError } = await supabase
         .from("treatment_plans")
         .delete()
         .eq('patient_id', patient.id);
         
-      await supabase
+      if (treatmentPlansError) {
+        console.error('Error deleting treatment plans:', treatmentPlansError);
+      }
+      
+      const { error: sessionsError } = await supabase
         .from("sessions")
         .delete()
         .eq('patient_id', patient.id);
         
-      await supabase
+      if (sessionsError) {
+        console.error('Error deleting sessions:', sessionsError);
+      }
+      
+      const { error: reportsError } = await supabase
         .from("reports")
         .delete()
         .eq('patient_id', patient.id);
+        
+      if (reportsError) {
+        console.error('Error deleting reports:', reportsError);
+      }
 
-      // Then delete the patient
       const { error } = await supabase
         .from("patients")
         .delete()
