@@ -11,6 +11,7 @@ export default function NewPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { toast } = useToast();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -45,6 +46,7 @@ export default function NewPasswordForm() {
 
       if (error) throw error;
 
+      setSuccess(true);
       toast({
         title: "Senha atualizada com sucesso",
         description: "Você pode fazer login com sua nova senha agora.",
@@ -68,6 +70,19 @@ export default function NewPasswordForm() {
       setIsLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="mt-8 space-y-6 text-center">
+        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+          <h3 className="font-medium text-green-800">Senha atualizada!</h3>
+          <p className="mt-2 text-sm text-green-700">
+            Sua senha foi atualizada com sucesso. Você será redirecionado para a página de login.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className="mt-8 space-y-6" onSubmit={handleUpdatePassword}>
