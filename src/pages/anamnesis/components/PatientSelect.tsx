@@ -45,7 +45,7 @@ export function PatientSelect({
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
-        disabled={isLoading}
+        disabled={isLoading || (Array.isArray(patients) && patients.length === 0)}
       >
         <SelectTrigger>
           <SelectValue placeholder={getPlaceholderText()} />

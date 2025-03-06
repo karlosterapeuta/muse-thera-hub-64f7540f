@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,11 +60,25 @@ export default function TreatmentPlanForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      console.log("Buscando pacientes para usuário:", user.id);
+      // Get the professional ID associated with the current user
+      const { data: professionalData, error: professionalError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (professionalError) {
+        console.error("Erro ao buscar profissional:", professionalError);
+        throw professionalError;
+      }
+
+      console.log("Buscando pacientes para profissional ID:", professionalData.id);
       
+      // Query patients filtered by the professional_id
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
+        .eq("professional_id", professionalData.id)
         .order("name");
 
       if (error) throw error;
@@ -535,7 +550,7 @@ export default function TreatmentPlanForm() {
               selectedPatient={selectedPatient}
               onSelect={setSelectedPatient}
               isLoading={isLoading}
-              emptyMessage="Nenhum paciente cadastrado por você"
+              emptyMessage="Nenhum paciente encontrado para sua conta"
             />
 
             {sections.map((section) => (
