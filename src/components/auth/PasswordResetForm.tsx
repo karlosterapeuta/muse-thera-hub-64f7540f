@@ -34,8 +34,12 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
       const siteUrl = window.location.origin;
       console.log("Using site URL for password reset:", siteUrl);
       
+      // Explicitly set the redirect path to /login to ensure correct redirection
+      const redirectUrl = `${siteUrl}/login`;
+      console.log("Setting redirect URL to:", redirectUrl);
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/login`,
+        redirectTo: redirectUrl,
       });
 
       if (error) throw error;

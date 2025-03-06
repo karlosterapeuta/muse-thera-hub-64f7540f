@@ -42,6 +42,14 @@ export default function NewPasswordForm() {
     try {
       console.log("Attempting to update password");
       
+      // Get current session to verify we're authenticated for password reset
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log("Current session:", sessionData?.session ? "Active" : "None");
+      
+      if (!sessionData?.session) {
+        throw new Error("Sessão expirada. Por favor, solicite um novo link de recuperação de senha.");
+      }
+      
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });

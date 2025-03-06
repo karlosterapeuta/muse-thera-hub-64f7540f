@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -28,83 +27,83 @@ export default function Login() {
 
   useEffect(() => {
     const handlePasswordReset = async () => {
-      // Check if URL has recovery token parameters
-      const fullUrl = window.location.href;
+      // Debug: Log the full URL for troubleshooting
+      console.log("Current URL:", window.location.href);
+      console.log("Hash:", window.location.hash);
+      console.log("Search params:", window.location.search);
       
-      // Make sure we have a hash to parse
-      if (!window.location.hash || window.location.hash.length <= 1) {
-        // Check if there's an error in the hash or query params
-        if (location.hash.includes('error=') || location.search.includes('error=')) {
-          toast({
-            title: "Link expirado ou inválido",
-            description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
-            variant: "destructive",
-          });
-        }
-        return;
-      }
-      
-      console.log("URL hash found:", window.location.hash);
-      
-      // Check if the URL contains recovery type
-      if (fullUrl.includes('type=recovery')) {
-        try {
-          // Set the form to new password mode
-          setIsSettingNewPassword(true);
+      // First check if we have a hash with an access token or error
+      if (window.location.hash) {
+        console.log("Found hash in URL");
+        
+        // Parse hash parameters
+        const hashParams: HashParams = {};
+        const hash = window.location.hash.substring(1);
+        
+        hash.split('&').forEach(pair => {
+          if (pair && pair.includes('=')) {
+            const [key, value] = pair.split('=');
+            hashParams[key] = decodeURIComponent(value || '');
+          }
+        });
+        
+        console.log("Parsed hash params:", hashParams);
+        
+        // Check if this is a recovery type
+        if (hashParams.type === 'recovery') {
+          console.log("This is a password recovery flow");
           
-          // Parse hash parameters
-          const hashParams: HashParams = {};
-          const hash = window.location.hash.substring(1);
-          
-          hash.split('&').forEach(pair => {
-            if (pair && pair.includes('=')) {
-              const [key, value] = pair.split('=');
-              hashParams[key] = decodeURIComponent(value || '');
+          try {
+            // Set the form to new password mode
+            setIsSettingNewPassword(true);
+            
+            // Check if we have the access token
+            if (hashParams.access_token) {
+              console.log("Found access token, setting session");
+              
+              // Set the session with the parameters
+              await supabase.auth.setSession({
+                access_token: hashParams.access_token,
+                refresh_token: hashParams.refresh_token || '',
+              });
+              
+              toast({
+                title: "Redefinição de senha",
+                description: "Agora você pode definir uma nova senha."
+              });
+            } else {
+              console.error("Access token not found in URL hash parameters");
+              toast({
+                title: "Erro na redefinição de senha",
+                description: "Link inválido ou expirado. Por favor, solicite um novo link.",
+                variant: "destructive",
+              });
+              setIsSettingNewPassword(false);
             }
-          });
-          
-          console.log("Hash params:", hashParams);
-          
-          // Check if we have the access token
-          if (hashParams.access_token) {
-            console.log("Found access token, setting session");
-            
-            // Set the session with only the parameters that the type expects
-            await supabase.auth.setSession({
-              access_token: hashParams.access_token,
-              refresh_token: hashParams.refresh_token || '',
-            });
-            
-            toast({
-              title: "Redefinição de senha",
-              description: "Agora você pode definir uma nova senha."
-            });
-          } else {
-            console.error("Access token not found in URL hash parameters");
+          } catch (error: any) {
+            console.error("Erro ao processar redefinição de senha:", error);
             toast({
               title: "Erro na redefinição de senha",
-              description: "Link inválido ou expirado. Por favor, solicite um novo link.",
+              description: error.message || "Ocorreu um erro ao processar sua solicitação.",
               variant: "destructive",
             });
+            
+            // Reset to login form on error
             setIsSettingNewPassword(false);
           }
-        } catch (error: any) {
-          console.error("Erro ao processar redefinição de senha:", error);
-          toast({
-            title: "Erro na redefinição de senha",
-            description: error.message || "Ocorreu um erro ao processar sua solicitação.",
-            variant: "destructive",
-          });
-          
-          // Reset to login form on error
-          setIsSettingNewPassword(false);
         }
-      } 
-      // Handle expired or invalid token error
-      else if (location.hash && location.hash.includes('error=access_denied')) {
+      }
+      
+      // Handle expired or invalid token error from query parameters
+      const searchParams = new URLSearchParams(window.location.search);
+      const errorCode = searchParams.get('error');
+      const errorDescription = searchParams.get('error_description');
+      
+      if (errorCode) {
+        console.error("Error in query params:", errorCode, errorDescription);
         toast({
-          title: "Link expirado",
-          description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
+          title: "Link expirado ou inválido",
+          description: errorDescription || "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
           variant: "destructive",
         });
       }
