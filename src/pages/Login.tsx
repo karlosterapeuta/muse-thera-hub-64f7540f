@@ -40,6 +40,13 @@ export default function Login() {
             title: "Redefina sua senha",
             description: "Por favor, digite uma nova senha."
           });
+        } else if (hash && hash.includes('error=access_denied')) {
+          // Handle expired or invalid token error
+          toast({
+            title: "Link expirado",
+            description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
+            variant: "destructive",
+          });
         }
       } catch (error: any) {
         console.error("Erro ao processar redefinição de senha:", error);
@@ -87,6 +94,8 @@ export default function Login() {
       
       setIsSettingNewPassword(false);
       setNewPassword("");
+      // Clear hash from URL after successful password update
+      window.history.replaceState(null, '', window.location.pathname);
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar senha",
@@ -103,7 +112,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Get the current deployment URL dynamically
+      // Get the application URL - use the deployed URL if available, otherwise use current origin
       const siteUrl = window.location.origin;
       
       // Log the redirect URL for debugging
