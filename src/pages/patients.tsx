@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,6 +79,7 @@ export default function Patients() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useIsMobile();
   
   const form = useForm<FormValues>({
@@ -174,73 +176,155 @@ export default function Patients() {
   }
 
   const handleDeleteAllPatients = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+    try {
+      setIsDeleting(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao remover pacientes",
+          description: "Usuário não autenticado.",
+        });
+        return;
+      }
+
+      // First get all patients
+      const { data: patientsToDelete } = await supabase
+        .from("patients")
+        .select("id")
+        .eq('professional_id', user.id);
+
+      if (patientsToDelete && patientsToDelete.length > 0) {
+        // First delete related records from anamnesis table
+        for (const patient of patientsToDelete) {
+          await supabase
+            .from("anamnesis")
+            .delete()
+            .eq('patient_id', patient.id);
+            
+          // Also delete related records from other tables if needed
+          await supabase
+            .from("assessments")
+            .delete()
+            .eq('patient_id', patient.id);
+            
+          await supabase
+            .from("treatment_plans")
+            .delete()
+            .eq('patient_id', patient.id);
+            
+          await supabase
+            .from("sessions")
+            .delete()
+            .eq('patient_id', patient.id);
+            
+          await supabase
+            .from("reports")
+            .delete()
+            .eq('patient_id', patient.id);
+        }
+      }
+
+      // Then delete all patients
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .eq('professional_id', user.id);
+
+      if (error) {
+        throw error;
+      }
+
       toast({
-        variant: "destructive",
-        title: "Erro ao remover pacientes",
-        description: "Usuário não autenticado.",
+        title: "Pacientes removidos com sucesso!",
+        description: "Todos os pacientes foram removidos do sistema.",
       });
-      return;
-    }
 
-    const { error } = await supabase
-      .from("patients")
-      .delete()
-      .eq('professional_id', user.id);
-
-    if (error) {
+      fetchPatients();
+    } catch (error) {
+      console.error('Error deleting all patients:', error);
       toast({
         variant: "destructive",
         title: "Erro ao remover pacientes",
         description: "Ocorreu um erro ao tentar remover os pacientes. Tente novamente.",
       });
-      return;
+    } finally {
+      setIsDeleting(false);
     }
-
-    toast({
-      title: "Pacientes removidos com sucesso!",
-      description: "Todos os pacientes foram removidos do sistema.",
-    });
-
-    fetchPatients();
   };
 
   const handleDeletePatient = async (patient: Patient) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+    try {
+      setIsDeleting(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao remover paciente",
+          description: "Usuário não autenticado.",
+        });
+        return;
+      }
+
+      // First delete related records from anamnesis table
+      await supabase
+        .from("anamnesis")
+        .delete()
+        .eq('patient_id', patient.id);
+        
+      // Also delete related records from other tables if needed
+      await supabase
+        .from("assessments")
+        .delete()
+        .eq('patient_id', patient.id);
+        
+      await supabase
+        .from("treatment_plans")
+        .delete()
+        .eq('patient_id', patient.id);
+        
+      await supabase
+        .from("sessions")
+        .delete()
+        .eq('patient_id', patient.id);
+        
+      await supabase
+        .from("reports")
+        .delete()
+        .eq('patient_id', patient.id);
+
+      // Then delete the patient
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .eq('id', patient.id)
+        .eq('professional_id', user.id);
+
+      if (error) {
+        throw error;
+      }
+
       toast({
-        variant: "destructive",
-        title: "Erro ao remover paciente",
-        description: "Usuário não autenticado.",
+        title: "Paciente removido com sucesso!",
+        description: `O paciente ${patient.name} foi removido do sistema.`,
       });
-      return;
-    }
 
-    const { error } = await supabase
-      .from("patients")
-      .delete()
-      .eq('id', patient.id)
-      .eq('professional_id', user.id);
-
-    if (error) {
+      setPatientToDelete(null);
+      fetchPatients();
+    } catch (error) {
+      console.error('Error deleting patient:', error);
       toast({
         variant: "destructive",
         title: "Erro ao remover paciente",
         description: "Ocorreu um erro ao tentar remover o paciente. Tente novamente.",
       });
-      return;
+    } finally {
+      setIsDeleting(false);
     }
-
-    toast({
-      title: "Paciente removido com sucesso!",
-      description: `O paciente ${patient.name} foi removido do sistema.`,
-    });
-
-    setPatientToDelete(null);
-    fetchPatients();
   };
 
   const toggleFormVisibility = () => {
@@ -284,6 +368,7 @@ export default function Patients() {
                 size="icon"
                 className="hover:bg-destructive/10 hover:text-destructive"
                 onClick={() => setPatientToDelete(patient)}
+                disabled={isDeleting}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -302,8 +387,9 @@ export default function Patients() {
                 <AlertDialogAction
                   onClick={() => handleDeletePatient(patient)}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={isDeleting}
                 >
-                  Sim, excluir
+                  {isDeleting ? "Excluindo..." : "Sim, excluir"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -453,8 +539,14 @@ export default function Patients() {
           {patients.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size={isMobile ? "sm" : "default"}>
-                  {isMobile ? "Remover Todos" : "Remover Todos os Pacientes"}
+                <Button 
+                  variant="destructive" 
+                  size={isMobile ? "sm" : "default"}
+                  disabled={isDeleting}
+                >
+                  {isDeleting 
+                    ? "Removendo..." 
+                    : (isMobile ? "Remover Todos" : "Remover Todos os Pacientes")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -469,8 +561,9 @@ export default function Patients() {
                   <AlertDialogAction
                     onClick={handleDeleteAllPatients}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    disabled={isDeleting}
                   >
-                    Sim, remover todos
+                    {isDeleting ? "Removendo..." : "Sim, remover todos"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -521,6 +614,7 @@ export default function Patients() {
                               size="icon"
                               className="hover:bg-destructive/10 hover:text-destructive"
                               onClick={() => setPatientToDelete(patient)}
+                              disabled={isDeleting}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -539,8 +633,9 @@ export default function Patients() {
                               <AlertDialogAction
                                 onClick={() => handleDeletePatient(patient)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                disabled={isDeleting}
                               >
-                                Sim, excluir
+                                {isDeleting ? "Excluindo..." : "Sim, excluir"}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
