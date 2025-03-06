@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -15,8 +15,43 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [isSettingNewPassword, setIsSettingNewPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const handlePasswordReset = async () => {
+      const hash = location.hash;
+      try {
+        if (hash && hash.includes('type=recovery')) {
+          setIsSettingNewPassword(true);
+          
+          const hashParams = new URLSearchParams(hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          
+          if (!accessToken) {
+            throw new Error("Token de acesso não encontrado");
+          }
+          
+          toast({
+            title: "Redefina sua senha",
+            description: "Por favor, digite uma nova senha."
+          });
+        }
+      } catch (error: any) {
+        console.error("Erro ao processar redefinição de senha:", error);
+        toast({
+          title: "Erro na redefinição de senha",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    };
+
+    handlePasswordReset();
+  }, [location, toast]);
 
   const validateInviteCode = async (code: string) => {
     const { data, error } = await supabase
@@ -33,13 +68,44 @@ export default function Login() {
     return true;
   };
 
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Senha atualizada com sucesso",
+        description: "Você pode fazer login com sua nova senha agora.",
+      });
+      
+      setIsSettingNewPassword(false);
+      setNewPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar senha",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      const siteUrl = window.location.origin;
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
+        redirectTo: `${siteUrl}/login`,
       });
 
       if (error) throw error;
@@ -68,7 +134,6 @@ export default function Login() {
       let result;
       
       if (isRegistering) {
-        // Validar código de convite
         try {
           await validateInviteCode(inviteCode);
         } catch (error: any) {
@@ -81,7 +146,6 @@ export default function Login() {
           return;
         }
 
-        // Registrar usuário
         result = await supabase.auth.signUp({
           email,
           password,
@@ -94,7 +158,6 @@ export default function Login() {
         
         if (result.error) throw result.error;
 
-        // Marcar código como usado
         const { error: updateError } = await supabase.rpc(
           'validate_and_use_invite_code',
           { 
@@ -133,6 +196,63 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  if (isSettingNewPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <img
+              src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
+              alt="Musicoterapia Logo"
+              className="mx-auto h-24 w-24 mb-4"
+            />
+            <h2 className="text-4xl font-bold text-primary mb-2">Musicoterapia</h2>
+            <h3 className="text-xl text-gray-600">Definir Nova Senha</h3>
+            <p className="mt-2 text-gray-600">
+              Digite sua nova senha abaixo:
+            </p>
+          </div>
+
+          <form className="mt-8 space-y-6" onSubmit={handleUpdatePassword}>
+            <div className="space-y-4">
+              <div className="relative">
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                  Nova Senha
+                </label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="mt-1"
+                    placeholder="********"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90"
+              disabled={isLoading}
+            >
+              {isLoading ? "Carregando..." : "Atualizar Senha"}
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
