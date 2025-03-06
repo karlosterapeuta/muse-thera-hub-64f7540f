@@ -30,9 +30,24 @@ export default function Login() {
     const handlePasswordReset = async () => {
       // Check if URL has recovery token parameters
       const fullUrl = window.location.href;
-      const hasHashParams = window.location.hash && window.location.hash.length > 1;
       
-      if (fullUrl.includes('type=recovery') && hasHashParams) {
+      // Make sure we have a hash to parse
+      if (!window.location.hash || window.location.hash.length <= 1) {
+        // Check if there's an error in the hash or query params
+        if (location.hash.includes('error=') || location.search.includes('error=')) {
+          toast({
+            title: "Link expirado ou inválido",
+            description: "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+      
+      console.log("URL hash found:", window.location.hash);
+      
+      // Check if the URL contains recovery type
+      if (fullUrl.includes('type=recovery')) {
         try {
           // Set the form to new password mode
           setIsSettingNewPassword(true);
@@ -47,6 +62,8 @@ export default function Login() {
               hashParams[key] = decodeURIComponent(value || '');
             }
           });
+          
+          console.log("Hash params:", hashParams);
           
           // Check if we have the access token
           if (hashParams.access_token) {
