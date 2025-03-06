@@ -11,13 +11,7 @@ import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import ReactDOM from 'react-dom';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { PatientSelect } from "../anamnesis/components/PatientSelect";
 
 interface Patient {
   id: string;
@@ -30,22 +24,38 @@ export default function Evaluation() {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedEvaluation, setSelectedEvaluation] = useState("1");
   const [selections, setSelections] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPatients() {
-      const { data, error } = await supabase
-        .from('patients')
-        .select('id, name, birth_date')
-        .order('name');
-      
-      if (error) {
-        console.error('Erro ao carregar pacientes:', error);
-        return;
-      }
-      
-      setPatients(data);
-      if (data.length > 0) {
-        setSelectedPatient(data[0].id);
+      setIsLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.error('Usuário não autenticado');
+          return;
+        }
+        
+        const { data, error } = await supabase
+          .from('patients')
+          .select('id, name, birth_date')
+          .eq('professional_id', user.id)
+          .order('name');
+        
+        if (error) {
+          console.error('Erro ao carregar pacientes:', error);
+          return;
+        }
+        
+        console.log('Pacientes carregados:', data);
+        setPatients(data || []);
+        if (data && data.length > 0) {
+          setSelectedPatient(data[0].id);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar pacientes:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -235,7 +245,6 @@ export default function Evaluation() {
         </div>
       );
 
-      // Render the PDF content to the DOM
       const container = document.createElement('div');
       container.style.position = 'absolute';
       container.style.left = '-9999px';
@@ -246,7 +255,6 @@ export default function Evaluation() {
 
       ReactDOM.render(pdfContent, root);
 
-      // Wait for charts to render
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.loading("Gerando PDF...");
@@ -271,7 +279,6 @@ export default function Evaluation() {
 
       await html2pdf().set(opt).from(root).save();
       
-      // Cleanup
       document.body.removeChild(container);
       
       toast.success("PDF gerado com sucesso!");
@@ -286,21 +293,13 @@ export default function Evaluation() {
       <Card className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <Select
-              value={selectedPatient}
-              onValueChange={setSelectedPatient}
-            >
-              <SelectTrigger className="w-[250px]">
-                <SelectValue placeholder="Selecione o paciente" />
-              </SelectTrigger>
-              <SelectContent>
-                {patients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <PatientSelect
+              patients={patients}
+              selectedPatient={selectedPatient}
+              onSelect={setSelectedPatient}
+              isLoading={isLoading}
+              emptyMessage="Nenhum paciente cadastrado por você"
+            />
             {selectedPatientData && (
               <div>
                 <p className="text-sm sm:text-base text-gray-600">

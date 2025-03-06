@@ -30,10 +30,12 @@ export function PatientSelect({
   emptyMessage = "Nenhum paciente encontrado",
   label = "Paciente"
 }: PatientSelectProps) {
+  const hasPatients = Array.isArray(patients) && patients.length > 0;
+  
   const getPlaceholderText = () => {
     if (isLoading) return "Carregando...";
     if (!Array.isArray(patients)) return "Erro ao carregar pacientes";
-    if (patients.length === 0) return emptyMessage;
+    if (!hasPatients) return emptyMessage;
     if (!selectedPatient) return "Selecione um paciente";
     const patient = patients.find(p => p.id === selectedPatient);
     return patient ? patient.name : "Selecione um paciente";
@@ -45,13 +47,13 @@ export function PatientSelect({
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
-        disabled={isLoading || (Array.isArray(patients) && patients.length === 0)}
+        disabled={isLoading || !hasPatients}
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent>
-          {!isLoading && Array.isArray(patients) && patients.length > 0 ? (
+          {!isLoading && hasPatients ? (
             patients.map((patient) => (
               <SelectItem key={patient.id} value={patient.id}>
                 {patient.name}
