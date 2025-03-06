@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Key,
   UsersRound,
+  Music,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -43,6 +44,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
+    { icon: Music, text: "Músicas", path: "/songs" },
     // Somente mostrar a opção de Usuários se o email for o permitido
     userEmail === "musicoterapeutakarlos@gmail.com" && { icon: UsersRound, text: "Usuários", path: "/users" },
     isAdmin && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },

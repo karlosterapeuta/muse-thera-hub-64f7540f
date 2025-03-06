@@ -21,6 +21,7 @@ import Layout from "./components/Layout";
 import InviteCodes from "./pages/InviteCodes";
 import Users from "./pages/users";
 import HawkinsScale from "./pages/hawkins";
+import SongsPage from "./pages/songs";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
       {
         path: "/hawkins",
         element: <HawkinsScale />,
+      },
+      {
+        path: "/songs",
+        element: <SongsPage />,
       },
     ],
   },
