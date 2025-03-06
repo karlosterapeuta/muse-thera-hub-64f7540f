@@ -73,8 +73,10 @@ export default function ReportForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [userId, setUserId] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -94,18 +96,25 @@ export default function ReportForm() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoadingPatients(true);
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Usuário não autenticado");
 
         setUserEmail(user.email || "");
         setUserName(formatNameFromEmail(user.email || ""));
+        setUserId(user.id);
 
+        console.log("Buscando pacientes para usuário:", user.id);
+        
+        // Only fetch patients registered by the current user
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
+          .eq("professional_id", user.id)
           .order("name");
 
         if (error) throw error;
+        
         setPatients(data || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -114,6 +123,8 @@ export default function ReportForm() {
           title: "Erro ao carregar dados",
           description: "Não foi possível carregar a lista de pacientes",
         });
+      } finally {
+        setIsLoadingPatients(false);
       }
     }
 
@@ -522,15 +533,21 @@ export default function ReportForm() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione um paciente" />
+                          <SelectValue placeholder={isLoadingPatients ? "Carregando pacientes..." : "Selecione um paciente"} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {patients.map((patient) => (
-                          <SelectItem key={patient.id} value={patient.id}>
-                            {patient.name}
+                        {patients.length > 0 ? (
+                          patients.map((patient) => (
+                            <SelectItem key={patient.id} value={patient.id}>
+                              {patient.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-patients" disabled>
+                            {isLoadingPatients ? "Carregando pacientes..." : "Nenhum paciente encontrado"}
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -18,13 +18,20 @@ type PatientSelectProps = {
   selectedPatient: string;
   onSelect: (value: string) => void;
   isLoading?: boolean;
+  emptyMessage?: string;
 };
 
-export function PatientSelect({ patients, selectedPatient, onSelect, isLoading = false }: PatientSelectProps) {
+export function PatientSelect({ 
+  patients, 
+  selectedPatient, 
+  onSelect, 
+  isLoading = false,
+  emptyMessage = "Nenhum paciente encontrado" 
+}: PatientSelectProps) {
   const getPlaceholderText = () => {
     if (isLoading) return "Carregando...";
     if (!Array.isArray(patients)) return "Erro ao carregar pacientes";
-    if (patients.length === 0) return "Nenhum paciente encontrado";
+    if (patients.length === 0) return emptyMessage;
     if (!selectedPatient) return "Selecione um paciente";
     const patient = patients.find(p => p.id === selectedPatient);
     return patient ? patient.name : "Selecione um paciente";
@@ -50,7 +57,7 @@ export function PatientSelect({ patients, selectedPatient, onSelect, isLoading =
             ))
           ) : !isLoading && (
             <SelectItem value="no-patients" disabled>
-              Nenhum paciente encontrado
+              {emptyMessage}
             </SelectItem>
           )}
         </SelectContent>
