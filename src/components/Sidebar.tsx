@@ -45,8 +45,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
     { icon: Music, text: "Músicas", path: "/songs" },
-    // Somente mostrar a opção de Usuários se o email for o permitido
-    userEmail === "musicoterapeutakarlos@gmail.com" && { icon: UsersRound, text: "Usuários", path: "/users" },
+    // Always show Users menu for musicoterapeutakarlos@gmail.com
+    (userEmail === "musicoterapeutakarlos@gmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },
     isAdmin && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ].filter(Boolean);
 
