@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +41,6 @@ import {
 import { format } from "date-fns";
 import { 
   Search, 
-  PlusCircle, 
   Pencil, 
   Trash2,
   UserRoundPlus
@@ -67,8 +67,10 @@ export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast } = useToast();
 
@@ -207,12 +209,17 @@ export default function PatientsPage() {
     }
   };
 
+  const handleEditClick = (patient: Patient) => {
+    setPatientToEdit(patient);
+    setIsEditDialogOpen(true);
+  };
+
   return (
     <div className="container mx-auto py-8">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle>Pacientes</CardTitle>
-          <Button onClick={() => setIsDialogOpen(true)} size="sm">
+          <Button onClick={() => setIsAddDialogOpen(true)} size="sm">
             <UserRoundPlus className="h-4 w-4 mr-2" />
             Novo Paciente
           </Button>
@@ -252,14 +259,12 @@ export default function PatientsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() =>
-                        window.location.href = `/processos/paciente/editar/${patient.id}`
-                      }
+                      onClick={() => handleEditClick(patient)}
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Editar
                     </Button>
-                    <AlertDialog>
+                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="sm">
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -329,10 +334,9 @@ export default function PatientsPage() {
           {isLoading && <div className="text-gray-500">Carregando...</div>}
         </CardFooter>
       </Card>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline">Open Dialog</Button>
-        </DialogTrigger>
+
+      {/* Add Patient Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Adicionar Paciente</DialogTitle>
@@ -340,7 +344,26 @@ export default function PatientsPage() {
               Crie um novo paciente para iniciar o processo.
             </DialogDescription>
           </DialogHeader>
-          <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsDialogOpen(false)}/>
+          <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Patient Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Paciente</DialogTitle>
+            <DialogDescription>
+              Atualize as informações do paciente.
+            </DialogDescription>
+          </DialogHeader>
+          {patientToEdit && (
+            <EditPatientDialog 
+              patient={patientToEdit} 
+              loadPatients={loadPatients} 
+              closeModal={() => setIsEditDialogOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
@@ -533,6 +556,171 @@ function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
         />
         <DialogFooter>
           <Button type="submit">Criar Paciente</Button>
+        </DialogFooter>
+      </form>
+    </Form>
+  );
+}
+
+interface EditPatientDialogProps {
+  patient: Patient;
+  loadPatients: () => void;
+  closeModal: () => void;
+}
+
+function EditPatientDialog({ patient, loadPatients, closeModal }: EditPatientDialogProps) {
+  const { toast } = useToast();
+  
+  // Create a form schema for editing
+  const EditFormSchema = z.object({
+    name: z.string().min(2, {
+      message: "Nome deve ter pelo menos 2 caracteres.",
+    }),
+    birth_date: z.date({
+      required_error: "Uma data de nascimento é necessária.",
+    }),
+    responsible: z.string().min(2, {
+      message: "Nome do responsável deve ter pelo menos 2 caracteres.",
+    }),
+    contact: z.string().min(10, {
+      message: "Número de contato deve ter pelo menos 10 caracteres.",
+    }).max(15, {
+      message: "Número de contato deve ter no máximo 15 caracteres.",
+    }),
+  });
+
+  // Set up the form with existing patient data
+  const form = useForm<z.infer<typeof EditFormSchema>>({
+    resolver: zodResolver(EditFormSchema),
+    defaultValues: {
+      name: patient.name,
+      birth_date: patient.birth_date ? new Date(patient.birth_date) : new Date(),
+      responsible: patient.responsible || "",
+      contact: patient.contact || "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof EditFormSchema>) {
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .update({
+          name: values.name,
+          birth_date: values.birth_date.toISOString(),
+          responsible: values.responsible,
+          contact: values.contact,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', patient.id);
+
+      if (error) {
+        console.error("Erro ao atualizar paciente:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Paciente atualizado com sucesso",
+      });
+      loadPatients();
+    } catch (error) {
+      console.error("Erro ao atualizar paciente:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível atualizar o paciente",
+      });
+    } finally {
+      closeModal();
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome do paciente" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="birth_date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Data de Nascimento</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        dateformat(field.value, "PP", { locale: ptBR })
+                      ) : (
+                        <span>Selecione a data</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    locale={ptBR}
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="responsible"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Responsável</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome do responsável" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="contact"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contato</FormLabel>
+              <FormControl>
+                <Input placeholder="(99) 99999-9999" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <DialogFooter>
+          <Button type="submit">Salvar Alterações</Button>
         </DialogFooter>
       </form>
     </Form>
