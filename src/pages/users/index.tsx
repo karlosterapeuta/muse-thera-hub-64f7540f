@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, UserCircle } from "lucide-react";
+import { Trash2, UserCircle, AlertCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,7 +68,28 @@ export default function Users() {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      // Primeiro deletamos os user_roles associados
+      // First check if the user has any patients
+      const { data: patients, error: patientsError } = await supabase
+        .from('patients')
+        .select('id')
+        .eq('professional_id', userId);
+
+      if (patientsError) {
+        console.error('Error checking for patients:', patientsError);
+        throw patientsError;
+      }
+
+      if (patients && patients.length > 0) {
+        toast({
+          variant: "destructive",
+          title: "Não é possível excluir o usuário",
+          description: "Este usuário tem pacientes associados. Exclua os pacientes primeiro.",
+        });
+        return;
+      }
+
+      // Proceed with deletion if no patients are found
+      // First delete the user_roles associated
       const { error: userRolesError } = await supabase
         .from('user_roles')
         .delete()
@@ -79,7 +100,7 @@ export default function Users() {
         throw userRolesError;
       }
 
-      // Depois deletamos o perfil
+      // Then delete the profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -90,12 +111,12 @@ export default function Users() {
         throw profileError;
       }
 
-      // Atualiza a lista de usuários imediatamente no client-side
+      // Update the users list immediately on the client-side
       queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
         return oldData?.filter(user => user.id !== userId) ?? [];
       });
 
-      // Invalida a query para buscar dados atualizados do servidor
+      // Invalidate the query to fetch updated data from the server
       await queryClient.invalidateQueries({ queryKey: ["users"] });
 
       toast({
