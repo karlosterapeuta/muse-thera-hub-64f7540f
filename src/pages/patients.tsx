@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,9 +43,7 @@ import {
   PlusCircle, 
   Pencil, 
   Trash2,
-  UserRoundPlus,
-  FileEdit,
-  File
+  UserRoundPlus
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -150,7 +147,6 @@ export default function PatientsPage() {
         .select("id")
         .eq('professional_id', user.id);
 
-      // Now we can directly delete the patients since CASCADE is set up
       const { error } = await supabase
         .from("patients")
         .delete()
@@ -183,8 +179,6 @@ export default function PatientsPage() {
     try {
       setIsLoading(true);
       
-      // We can now directly delete the patient record
-      // All related records will be automatically deleted due to ON DELETE CASCADE
       const { error } = await supabase
         .from("patients")
         .delete()
@@ -264,26 +258,6 @@ export default function PatientsPage() {
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Editar
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        window.location.href = `/processos/anamnese/${patient.id}`
-                      }
-                    >
-                      <FileEdit className="h-4 w-4 mr-2" />
-                      Anamnese
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        window.location.href = `/processos/prontuario/${patient.id}`
-                      }
-                    >
-                      <File className="h-4 w-4 mr-2" />
-                      Prontuário
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
