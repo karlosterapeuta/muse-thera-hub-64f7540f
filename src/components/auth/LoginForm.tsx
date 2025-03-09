@@ -53,7 +53,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
     <form className="mt-8 space-y-6" onSubmit={handleLogin}>
       <div className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="block text-base font-medium text-gray-700">
             E-mail
           </label>
           <Input
@@ -61,14 +61,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1"
+            className="mt-1 text-base"
             placeholder="seu@email.com"
             required
           />
         </div>
 
         <div className="relative">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="password" className="block text-base font-medium text-gray-700">
             Senha
           </label>
           <div className="relative">
@@ -77,7 +77,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1"
+              className="mt-1 text-base"
               placeholder="********"
               required
             />
@@ -101,14 +101,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
           />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+          <label htmlFor="remember-me" className="ml-2 block text-base text-gray-700">
             Lembrar-me
           </label>
         </div>
         <button
           type="button"
           onClick={onSwitchToPasswordReset}
-          className="text-sm text-primary hover:text-primary/80"
+          className="text-base text-primary hover:text-primary/80"
         >
           Recuperar senha
         </button>
@@ -116,7 +116,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
 
       <Button
         type="submit"
-        className="w-full bg-primary hover:bg-primary/90"
+        className="w-full bg-primary hover:bg-primary/90 text-base py-6"
         disabled={isLoading}
       >
         {isLoading ? "Carregando..." : "Entrar"}
@@ -126,7 +126,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
         <button
           type="button"
           onClick={onSwitchToRegister}
-          className="text-sm text-primary hover:text-primary/80"
+          className="text-base text-primary hover:text-primary/80"
         >
           Não tem uma conta? Registre-se
         </button>
