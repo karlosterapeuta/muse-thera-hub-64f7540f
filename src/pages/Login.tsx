@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -131,7 +132,7 @@ export default function Login() {
     } else {
       return {
         title: "Login",
-        description: "Insira suas credenciais abaixo:"
+        description: "Sistema Para Musicoterapeutas"
       };
     }
   };
