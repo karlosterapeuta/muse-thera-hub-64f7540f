@@ -45,6 +45,9 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             onSelect={(date) => onChange(date ? date.toISOString() : "")}
             initialFocus
             locale={ptBR}
+            captionLayout="dropdown-buttons"
+            fromYear={1900}
+            toYear={new Date().getFullYear()}
           />
         </PopoverContent>
       </Popover>
