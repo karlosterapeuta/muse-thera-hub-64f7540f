@@ -83,7 +83,11 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
 
+      // Ensure we use the correct date from the calendar
       const formattedDate = formatDateForStorage(values.birth_date);
+
+      console.log("Data selecionada:", format(values.birth_date, 'dd/MM/yyyy'));
+      console.log("Data formatada para armazenamento:", formattedDate);
 
       const { data, error } = await supabase
         .from("patients")
@@ -121,15 +125,20 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
     }
   }
 
-  // Fix the date formatting to ensure it preserves the exact selected date
   function formatDateForStorage(date: Date): string {
-    // Get the date in YYYY-MM-DD format directly from the local date components
-    // This avoids timezone conversion issues completely
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // Force the date to be treated as a local date without timezone conversion
+    // This is crucial to prevent the day from shifting due to timezone differences
+    const localISOString = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      12, // Set to noon to avoid any daylight saving time issues
+      0,
+      0,
+      0
+    ).toISOString().split('T')[0];
     
-    return `${year}-${month}-${day}`;
+    return localISOString;
   }
 
   return (
@@ -273,22 +282,31 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
-  // Fix the date formatting to ensure it preserves the exact selected date
   function formatDateForStorage(date: Date): string {
-    // Get the date in YYYY-MM-DD format directly from the local date components
-    // This avoids timezone conversion issues completely
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // Force the date to be treated as a local date without timezone conversion
+    // This is crucial to prevent the day from shifting due to timezone differences
+    const localISOString = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      12, // Set to noon to avoid any daylight saving time issues
+      0,
+      0,
+      0
+    ).toISOString().split('T')[0];
     
-    return `${year}-${month}-${day}`;
+    return localISOString;
   }
 
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
     try {
       setIsSubmitting(true);
       
+      // Ensure we use the correct date from the calendar
       const formattedDate = formatDateForStorage(values.birth_date);
+      
+      console.log("Data selecionada para edição:", format(values.birth_date, 'dd/MM/yyyy'));
+      console.log("Data formatada para armazenamento:", formattedDate);
       
       const { error } = await supabase
         .from("patients")
