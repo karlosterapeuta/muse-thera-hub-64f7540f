@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Music2, Download, FilePdf } from "lucide-react";
+import { Music2, Download, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
@@ -359,7 +359,7 @@ export default function MusicalBells() {
                           downloadSongPDF(index);
                         }}
                       >
-                        <FilePdf className="mr-1 h-4 w-4" />
+                        <FileText className="mr-1 h-4 w-4" />
                         PDF
                       </Button>
                       <Button 
