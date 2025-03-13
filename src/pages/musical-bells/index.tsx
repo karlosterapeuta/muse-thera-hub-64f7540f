@@ -326,14 +326,14 @@ export default function MusicalBells() {
                     <div className="font-semibold text-lg mb-2">{song.title}</div>
                     <p className="text-sm text-gray-600 mb-3">{song.description}</p>
                     
-                    {/* Notes with lyrics */}
-                    <div className="mb-4">
+                    {/* Notes with lyrics - Modified to display all notes properly */}
+                    <div className="mb-4 flex flex-wrap">
                       {song.notes.map((note, noteIndex) => {
                         const noteData = notes.find(n => n.note === note);
                         return (
-                          <div key={`${note}-${noteIndex}`} className="inline-block text-center mx-1 mb-2">
+                          <div key={`${note}-${noteIndex}`} className="inline-block text-center mr-2 mb-2">
                             <div
-                              className="w-12 h-12 rounded-full flex items-center justify-center text-base font-bold mx-auto"
+                              className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto"
                               style={{ 
                                 backgroundColor: noteData?.color,
                                 color: ["C8", "E"].includes(note) ? "#333" : "white"
