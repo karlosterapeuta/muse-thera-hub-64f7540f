@@ -2,8 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, User, Phone } from "lucide-react";
-import { format } from "date-fns";
+import { Pencil, Trash2, User, Phone } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,12 +15,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+// Updated Patient type to include both birth_date and age
 type Patient = {
   id: string;
   name: string;
   birth_date: string | null;
   responsible: string | null;
   contact: string | null;
+  age: number | null;
 };
 
 interface PatientCardProps {
@@ -37,11 +38,9 @@ export function PatientCard({ patient, onEdit, onDelete }: PatientCardProps) {
         <h3 className="text-lg font-bold mb-3">{patient.name}</h3>
         <div className="space-y-2 text-sm">
           <div className="flex items-center text-gray-600">
-            <Calendar className="h-4 w-4 mr-2" />
+            <User className="h-4 w-4 mr-2" />
             <span>
-              {patient.birth_date
-                ? format(new Date(patient.birth_date), "dd/MM/yyyy")
-                : "Data não informada"}
+              {patient.age !== null ? `${patient.age} anos` : "Idade não informada"}
             </span>
           </div>
           <div className="flex items-center text-gray-600">

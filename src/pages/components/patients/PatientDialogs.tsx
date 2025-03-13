@@ -14,16 +14,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { format } from "date-fns";
-import { ptBR } from 'date-fns/locale';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
+// Updated Patient type to include both birth_date and age
 type Patient = {
   id: string;
   created_at: string;
   updated_at: string;
   name: string;
+  birth_date: string | null;
   age: number | null;
   responsible: string | null;
   contact: string | null;

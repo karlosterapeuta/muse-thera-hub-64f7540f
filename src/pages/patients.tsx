@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,21 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -38,11 +27,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { format } from "date-fns";
 import { 
   Search, 
-  Pencil, 
-  Trash2,
   UserRoundPlus,
   Loader2
 } from "lucide-react";
@@ -62,6 +48,7 @@ type Patient = {
   birth_date: string | null;
   responsible: string | null;
   contact: string | null;
+  age: number | null;
 };
 
 interface PatientFilter {
@@ -313,7 +300,6 @@ export default function PatientsPage() {
         </CardFooter>
       </Card>
 
-      {/* Add Patient Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -326,7 +312,6 @@ export default function PatientsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Patient Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

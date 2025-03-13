@@ -22,14 +22,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+// Updated Patient type to match the one used in patients.tsx
 type Patient = {
   id: string;
   created_at: string;
   updated_at: string;
   name: string;
-  age: number | null;
+  birth_date: string | null;
   responsible: string | null;
   contact: string | null;
+  age: number | null;
 };
 
 interface PatientListProps {
