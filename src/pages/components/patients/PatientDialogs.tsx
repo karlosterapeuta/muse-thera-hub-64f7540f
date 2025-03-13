@@ -55,22 +55,22 @@ interface AddPatientDialogProps {
   closeModal: () => void;
 }
 
-// Fixed implementation of formatDateWithoutTimezoneIssue to ensure it respects the selected date
+// Improved date formatting function that maintains the exact selected date
 function getFormattedDateString(date: Date): string {
-  // Setting specific time (noon) to avoid any timezone offset issues
-  const correctedDate = new Date(date);
-  correctedDate.setHours(12, 0, 0, 0);
+  // Create a new Date object to avoid modifying the original
+  const selectedDate = new Date(date);
   
-  const year = correctedDate.getFullYear();
-  const month = String(correctedDate.getMonth() + 1).padStart(2, '0');
-  const day = String(correctedDate.getDate()).padStart(2, '0');
+  // Extract date components directly from the date object
+  // Add 1 to month because JavaScript months are zero-based (0-11)
+  const year = selectedDate.getFullYear();
+  const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(selectedDate.getDate()).padStart(2, '0');
   
-  // Log all date representations to debug
-  console.log("Selected date object:", date);
-  console.log("Corrected date object:", correctedDate);
-  console.log("Date components - Year:", year, "Month:", month, "Day:", day);
+  // Log information for debugging
+  console.log("Original selected date:", date);
+  console.log("Date components being used - Year:", year, "Month:", month, "Day:", day);
   
-  // Return date in YYYY-MM-DD format
+  // Return the formatted string in YYYY-MM-DD format
   return `${year}-${month}-${day}`;
 }
 
@@ -102,7 +102,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
       
-      // Get the formatted date string using our improved function
+      // Format the date string using our improved function
       const formattedDate = getFormattedDateString(values.birth_date);
       
       console.log("Data selecionada no formulário (local):", format(values.birth_date, 'dd/MM/yyyy'));
@@ -195,9 +195,15 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
                     selected={field.value}
                     onSelect={(date) => {
                       if (date) {
-                        // Log when user selects a date
+                        // When a date is selected, log it for debugging
                         console.log("Data selecionada pelo usuário:", date);
-                        field.onChange(date);
+                        
+                        // Set the time to noon to help avoid timezone issues
+                        const newDate = new Date(date);
+                        newDate.setHours(12, 0, 0, 0);
+                        console.log("Data ajustada para meio-dia:", newDate);
+                        
+                        field.onChange(newDate);
                       }
                     }}
                     disabled={(date) =>
@@ -298,7 +304,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     try {
       setIsSubmitting(true);
       
-      // Get the formatted date string using our improved function
+      // Format the date string using our improved function
       const formattedDate = getFormattedDateString(values.birth_date);
       
       console.log("Data selecionada para edição (local):", format(values.birth_date, 'dd/MM/yyyy'));
@@ -390,9 +396,15 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
                     selected={field.value}
                     onSelect={(date) => {
                       if (date) {
-                        // Log when user selects a date
+                        // When a date is selected, log it for debugging
                         console.log("Data selecionada pelo usuário (edição):", date);
-                        field.onChange(date);
+                        
+                        // Set the time to noon to help avoid timezone issues
+                        const newDate = new Date(date);
+                        newDate.setHours(12, 0, 0, 0);
+                        console.log("Data ajustada para meio-dia (edição):", newDate);
+                        
+                        field.onChange(newDate);
                       }
                     }}
                     disabled={(date) =>
