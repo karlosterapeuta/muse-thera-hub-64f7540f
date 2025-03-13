@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -86,9 +85,8 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       // Log the raw date object from the form
       console.log("Data original do formulário:", values.birth_date);
       
-      // SOLUÇÃO DEFINITIVA: Usar o objeto Date para extrair componentes e formatar manualmente
-      // Esta abordagem ignora completamente o fuso horário na formatação
-      const formattedDate = formatDateForStorage(values.birth_date);
+      // SOLUÇÃO DEFINITIVA: Usar os componentes locais da data para garantir o dia correto
+      const formattedDate = formatDateWithoutTimezoneIssue(values.birth_date);
       
       console.log("Data selecionada no formulário (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento:", formattedDate);
@@ -132,33 +130,15 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
     }
   }
 
-  function formatDateForStorage(date: Date): string {
-    // SOLUÇÃO DEFINITIVA:
-    // 1. Extrair os componentes da data (ano, mês, dia) no fuso horário local
-    // 2. Construir uma string ISO 8601 com o formato YYYY-MM-DD
-    // 3. Forçar o uso de setUTCHours(12) para garantir que o dia não mude em nenhum fuso horário
+  // Nova função de formatação que garante que o dia selecionado seja o mesmo salvo no banco
+  function formatDateWithoutTimezoneIssue(date: Date): string {
+    // Obter os componentes da data no fuso horário LOCAL do usuário
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+    const day = String(date.getDate()).padStart(2, '0');
     
-    // Cria uma nova data para não alterar a original
-    const newDate = new Date(date);
-    
-    // Definir o horário para meio-dia UTC, garantindo que o dia não mude
-    // em qualquer conversão de fuso horário (mesmo com +/- 12 horas)
-    newDate.setUTCHours(12, 0, 0, 0);
-    
-    // Obter os componentes da data no formato UTC após fixar o horário
-    const year = newDate.getUTCFullYear();
-    const month = String(newDate.getUTCMonth() + 1).padStart(2, '0'); // Janeiro é 0
-    const day = String(newDate.getUTCDate()).padStart(2, '0');
-    
-    // Construir a string de data no formato YYYY-MM-DD
-    const formattedDate = `${year}-${month}-${day}`;
-    
-    console.log("Data original enviada para formatação:", date);
-    console.log("Data ajustada para meio-dia UTC:", newDate);
-    console.log("Ano UTC:", year, "Mês UTC:", month, "Dia UTC:", day);
-    console.log("Data formatada final para DB:", formattedDate);
-    
-    return formattedDate;
+    // Criar string de data no formato ISO YYYY-MM-DD sem informações de timezone
+    return `${year}-${month}-${day}`;
   }
 
   return (
@@ -209,7 +189,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
                     selected={field.value}
                     onSelect={(date) => {
                       if (date) {
-                        // Importante: quando o usuário seleciona uma data, registramos isso
+                        // Log when user selects a date
                         console.log("Data selecionada pelo usuário:", date);
                         field.onChange(date);
                       }
@@ -308,33 +288,15 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
-  function formatDateForStorage(date: Date): string {
-    // SOLUÇÃO DEFINITIVA:
-    // 1. Extrair os componentes da data (ano, mês, dia) no fuso horário local
-    // 2. Construir uma string ISO 8601 com o formato YYYY-MM-DD
-    // 3. Forçar o uso de setUTCHours(12) para garantir que o dia não mude em nenhum fuso horário
+  // Nova função de formatação que garante que o dia selecionado seja o mesmo salvo no banco
+  function formatDateWithoutTimezoneIssue(date: Date): string {
+    // Obter os componentes da data no fuso horário LOCAL do usuário
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+    const day = String(date.getDate()).padStart(2, '0');
     
-    // Cria uma nova data para não alterar a original
-    const newDate = new Date(date);
-    
-    // Definir o horário para meio-dia UTC, garantindo que o dia não mude
-    // em qualquer conversão de fuso horário (mesmo com +/- 12 horas)
-    newDate.setUTCHours(12, 0, 0, 0);
-    
-    // Obter os componentes da data no formato UTC após fixar o horário
-    const year = newDate.getUTCFullYear();
-    const month = String(newDate.getUTCMonth() + 1).padStart(2, '0'); // Janeiro é 0
-    const day = String(newDate.getUTCDate()).padStart(2, '0');
-    
-    // Construir a string de data no formato YYYY-MM-DD
-    const formattedDate = `${year}-${month}-${day}`;
-    
-    console.log("Data original enviada para formatação (edição):", date);
-    console.log("Data ajustada para meio-dia UTC (edição):", newDate);
-    console.log("Ano UTC:", year, "Mês UTC:", month, "Dia UTC:", day);
-    console.log("Data formatada final para DB (edição):", formattedDate);
-    
-    return formattedDate;
+    // Criar string de data no formato ISO YYYY-MM-DD sem informações de timezone
+    return `${year}-${month}-${day}`;
   }
 
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
@@ -344,8 +306,8 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
       // Log the raw date object from the form
       console.log("Data original do formulário (edição):", values.birth_date);
       
-      // Format the date for storage ensuring we preserve the exact day
-      const formattedDate = formatDateForStorage(values.birth_date);
+      // Format the date for storage using our new function
+      const formattedDate = formatDateWithoutTimezoneIssue(values.birth_date);
       
       console.log("Data selecionada para edição (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento (edição):", formattedDate);
