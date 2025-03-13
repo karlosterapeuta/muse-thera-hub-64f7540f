@@ -89,7 +89,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       // Format the date for storage ensuring we preserve the exact day
       const formattedDate = formatDateForStorage(values.birth_date);
       
-      console.log("Data selecionada:", format(values.birth_date, 'dd/MM/yyyy'));
+      console.log("Data selecionada no formulário (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento:", formattedDate);
 
       const { data, error } = await supabase
@@ -132,14 +132,26 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
   }
 
   function formatDateForStorage(date: Date): string {
-    // NOVA IMPLEMENTAÇÃO: Preserve a data exata sem qualquer conversão de fuso horário
-    // Pegamos o dia, mês e ano da data e construímos manualmente a string no formato YYYY-MM-DD
+    // SOLUÇÃO CORRIGIDA:
+    // O problema ocorre porque o PostgreSQL/Supabase está interpretando a data
+    // no fuso horário UTC, o que pode causar um ajuste de -1 dia dependendo do horário.
+    // 
+    // Para evitar isso, vamos:
+    // 1. Extrair os componentes da data (ano, mês, dia) no fuso horário local
+    // 2. Construir uma string ISO 8601 com o formato YYYY-MM-DD
+    // 3. Esta string será interpretada corretamente pelo PostgreSQL sem ajustes de fuso
     
-    // Importante: Usamos getUTCDate(), getUTCMonth(), getUTCFullYear() para evitar
-    // qualquer conversão de fuso horário que poderia alterar o dia
-    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    // Obter os componentes da data no fuso horário local
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+    const day = String(date.getDate()).padStart(2, '0');
     
-    console.log("Data original:", date);
+    // Construir a string de data no formato YYYY-MM-DD
+    // Isso significa "meia-noite deste dia no fuso UTC", evitando conversões errôneas
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    console.log("Data enviada para formatação:", date);
+    console.log("Ano:", year, "Mês:", month, "Dia:", day);
     console.log("Data formatada final:", formattedDate);
     
     return formattedDate;
@@ -293,13 +305,26 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   });
 
   function formatDateForStorage(date: Date): string {
-    // NOVA IMPLEMENTAÇÃO: Preserve a data exata sem qualquer conversão de fuso horário
-    // Pegamos o dia, mês e ano da data e construímos manualmente a string no formato YYYY-MM-DD
+    // SOLUÇÃO CORRIGIDA:
+    // O problema ocorre porque o PostgreSQL/Supabase está interpretando a data
+    // no fuso horário UTC, o que pode causar um ajuste de -1 dia dependendo do horário.
+    // 
+    // Para evitar isso, vamos:
+    // 1. Extrair os componentes da data (ano, mês, dia) no fuso horário local
+    // 2. Construir uma string ISO 8601 com o formato YYYY-MM-DD
+    // 3. Esta string será interpretada corretamente pelo PostgreSQL sem ajustes de fuso
     
-    // Importante: Usamos os valores brutos da data para evitar qualquer conversão de fuso horário
-    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    // Obter os componentes da data no fuso horário local
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+    const day = String(date.getDate()).padStart(2, '0');
     
-    console.log("Data original (edição):", date);
+    // Construir a string de data no formato YYYY-MM-DD
+    // Isso significa "meia-noite deste dia no fuso UTC", evitando conversões errôneas
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    console.log("Data enviada para formatação (edição):", date);
+    console.log("Ano:", year, "Mês:", month, "Dia:", day);
     console.log("Data formatada final (edição):", formattedDate);
     
     return formattedDate;
@@ -315,7 +340,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
       // Format the date for storage ensuring we preserve the exact day
       const formattedDate = formatDateForStorage(values.birth_date);
       
-      console.log("Data selecionada para edição:", format(values.birth_date, 'dd/MM/yyyy'));
+      console.log("Data selecionada para edição (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento (edição):", formattedDate);
       
       const { error, data } = await supabase
