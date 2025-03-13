@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import { format } from "date-fns";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +27,7 @@ type Patient = {
   created_at: string;
   updated_at: string;
   name: string;
-  birth_date: string | null;
+  age: number | null;
   responsible: string | null;
   contact: string | null;
 };
@@ -54,7 +53,7 @@ export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
         <TableHeader className="bg-gray-50 dark:bg-gray-800">
           <TableRow>
             <TableHead className="font-medium">Nome</TableHead>
-            <TableHead className="font-medium">Data de Nascimento</TableHead>
+            <TableHead className="font-medium">Idade</TableHead>
             <TableHead className="font-medium">Responsável</TableHead>
             <TableHead className="font-medium">Contato</TableHead>
             <TableHead className="text-right font-medium">Ações</TableHead>
@@ -65,9 +64,7 @@ export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
             <TableRow key={patient.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
               <TableCell className="font-medium">{patient.name}</TableCell>
               <TableCell>
-                {patient.birth_date
-                  ? format(new Date(patient.birth_date), "dd/MM/yyyy")
-                  : "N/A"}
+                {patient.age !== null ? `${patient.age} anos` : "N/A"}
               </TableCell>
               <TableCell>{patient.responsible || "N/A"}</TableCell>
               <TableCell>{patient.contact || "N/A"}</TableCell>

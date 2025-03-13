@@ -14,10 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { supabase } from "@/integrations/supabase/client";
@@ -28,7 +24,7 @@ type Patient = {
   created_at: string;
   updated_at: string;
   name: string;
-  birth_date: string | null;
+  age: number | null;
   responsible: string | null;
   contact: string | null;
 };
@@ -37,8 +33,10 @@ const FormSchema = z.object({
   name: z.string().min(2, {
     message: "Nome deve ter pelo menos 2 caracteres.",
   }),
-  birth_date: z.date({
-    required_error: "Uma data de nascimento é necessária.",
+  age: z.coerce.number().min(0, {
+    message: "Idade deve ser um número positivo.",
+  }).max(120, {
+    message: "Idade deve ser menor que 120 anos.",
   }),
   responsible: z.string().min(2, {
     message: "Nome do responsável deve ter pelo menos 2 caracteres.",
@@ -55,25 +53,6 @@ interface AddPatientDialogProps {
   closeModal: () => void;
 }
 
-// Improved date formatting function that maintains the exact selected date
-function getFormattedDateString(date: Date): string {
-  // Create a new Date object to avoid modifying the original
-  const selectedDate = new Date(date);
-  
-  // Extract date components directly from the date object
-  // Add 1 to month because JavaScript months are zero-based (0-11)
-  const year = selectedDate.getFullYear();
-  const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-  const day = String(selectedDate.getDate()).padStart(2, '0');
-  
-  // Log information for debugging
-  console.log("Original selected date:", date);
-  console.log("Date components being used - Year:", year, "Month:", month, "Day:", day);
-  
-  // Return the formatted string in YYYY-MM-DD format
-  return `${year}-${month}-${day}`;
-}
-
 export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +61,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      birth_date: new Date(),
+      age: 0,
       responsible: "",
       contact: "",
     },
@@ -102,11 +81,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
       
-      // Format the date string using our improved function
-      const formattedDate = getFormattedDateString(values.birth_date);
-      
-      console.log("Data selecionada no formulário (local):", format(values.birth_date, 'dd/MM/yyyy'));
-      console.log("Data formatada para armazenamento:", formattedDate);
+      console.log("Idade fornecida:", values.age);
 
       const { data, error } = await supabase
         .from("patients")
@@ -114,7 +89,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           { 
             name: values.name,
             professional_id: user.id,
-            birth_date: formattedDate,
+            age: values.age,
             responsible: values.responsible,
             contact: values.contact
           },
@@ -165,64 +140,19 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         />
         <FormField
           control={form.control}
-          name="birth_date"
+          name="age"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Data de Nascimento</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "dd/MM/yyyy", { locale: ptBR })
-                      ) : (
-                        <span>Selecione a data</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    locale={ptBR}
-                    selected={field.value}
-                    onSelect={(date) => {
-                      if (date) {
-                        // When a date is selected, log it for debugging
-                        console.log("Data selecionada pelo usuário:", date);
-                        
-                        // Set the time to noon to help avoid timezone issues
-                        const newDate = new Date(date);
-                        newDate.setHours(12, 0, 0, 0);
-                        console.log("Data ajustada para meio-dia:", newDate);
-                        
-                        field.onChange(newDate);
-                      }
-                    }}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={1900}
-                    toYear={new Date().getFullYear()}
-                    classNames={{
-                      caption_label: "hidden",
-                      dropdown_month: "w-full",
-                      dropdown_year: "w-full",
-                      caption: "flex justify-center pt-1",
-                      dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+            <FormItem>
+              <FormLabel>Idade</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder="Idade do paciente" 
+                  min={0} 
+                  max={120} 
+                  {...field} 
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -277,8 +207,10 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     name: z.string().min(2, {
       message: "Nome deve ter pelo menos 2 caracteres.",
     }),
-    birth_date: z.date({
-      required_error: "Uma data de nascimento é necessária.",
+    age: z.coerce.number().min(0, {
+      message: "Idade deve ser um número positivo.",
+    }).max(120, {
+      message: "Idade deve ser menor que 120 anos.",
     }),
     responsible: z.string().min(2, {
       message: "Nome do responsável deve ter pelo menos 2 caracteres.",
@@ -294,7 +226,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     resolver: zodResolver(EditFormSchema),
     defaultValues: {
       name: patient.name,
-      birth_date: patient.birth_date ? new Date(patient.birth_date) : new Date(),
+      age: patient.age || 0,
       responsible: patient.responsible || "",
       contact: patient.contact || "",
     },
@@ -304,17 +236,13 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     try {
       setIsSubmitting(true);
       
-      // Format the date string using our improved function
-      const formattedDate = getFormattedDateString(values.birth_date);
-      
-      console.log("Data selecionada para edição (local):", format(values.birth_date, 'dd/MM/yyyy'));
-      console.log("Data formatada para armazenamento (edição):", formattedDate);
+      console.log("Idade fornecida para edição:", values.age);
       
       const { error, data } = await supabase
         .from("patients")
         .update({
           name: values.name,
-          birth_date: formattedDate,
+          age: values.age,
           responsible: values.responsible,
           contact: values.contact,
           updated_at: new Date().toISOString(),
@@ -366,64 +294,19 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
         />
         <FormField
           control={form.control}
-          name="birth_date"
+          name="age"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Data de Nascimento</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "dd/MM/yyyy", { locale: ptBR })
-                      ) : (
-                        <span>Selecione a data</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    locale={ptBR}
-                    selected={field.value}
-                    onSelect={(date) => {
-                      if (date) {
-                        // When a date is selected, log it for debugging
-                        console.log("Data selecionada pelo usuário (edição):", date);
-                        
-                        // Set the time to noon to help avoid timezone issues
-                        const newDate = new Date(date);
-                        newDate.setHours(12, 0, 0, 0);
-                        console.log("Data ajustada para meio-dia (edição):", newDate);
-                        
-                        field.onChange(newDate);
-                      }
-                    }}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={1900}
-                    toYear={new Date().getFullYear()}
-                    classNames={{
-                      caption_label: "hidden",
-                      dropdown_month: "w-full",
-                      dropdown_year: "w-full",
-                      caption: "flex justify-center pt-1",
-                      dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+            <FormItem>
+              <FormLabel>Idade</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder="Idade do paciente" 
+                  min={0} 
+                  max={120} 
+                  {...field} 
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
