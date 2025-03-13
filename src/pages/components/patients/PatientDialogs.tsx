@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -152,7 +151,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PP", { locale: ptBR })
+                        format(field.value, "dd/MM/yyyy", { locale: ptBR })
                       ) : (
                         <span>Selecione a data</span>
                       )}
@@ -173,6 +172,13 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
                     captionLayout="dropdown-buttons"
                     fromYear={1900}
                     toYear={new Date().getFullYear()}
+                    classNames={{
+                      caption_label: "hidden",
+                      dropdown_month: "w-full",
+                      dropdown_year: "w-full",
+                      caption: "flex justify-center pt-1",
+                      dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -226,7 +232,6 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Create a form schema for editing
   const EditFormSchema = z.object({
     name: z.string().min(2, {
       message: "Nome deve ter pelo menos 2 caracteres.",
@@ -244,7 +249,6 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     }),
   });
 
-  // Set up the form with existing patient data
   const form = useForm<z.infer<typeof EditFormSchema>>({
     resolver: zodResolver(EditFormSchema),
     defaultValues: {
@@ -325,7 +329,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PP", { locale: ptBR })
+                        format(field.value, "dd/MM/yyyy", { locale: ptBR })
                       ) : (
                         <span>Selecione a data</span>
                       )}
@@ -346,6 +350,13 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
                     captionLayout="dropdown-buttons"
                     fromYear={1900}
                     toYear={new Date().getFullYear()}
+                    classNames={{
+                      caption_label: "hidden",
+                      dropdown_month: "w-full",
+                      dropdown_year: "w-full",
+                      caption: "flex justify-center pt-1",
+                      dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                    }}
                   />
                 </PopoverContent>
               </Popover>

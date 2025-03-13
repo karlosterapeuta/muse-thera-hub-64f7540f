@@ -35,7 +35,7 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP", { locale: ptBR }) : "Selecione uma data"}
+            {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -48,6 +48,13 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             captionLayout="dropdown-buttons"
             fromYear={1900}
             toYear={new Date().getFullYear()}
+            classNames={{
+              caption_label: "hidden", // Hide the default month/year text
+              dropdown_month: "w-full",
+              dropdown_year: "w-full",
+              caption: "flex justify-center pt-1",
+              dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+            }}
           />
         </PopoverContent>
       </Popover>
