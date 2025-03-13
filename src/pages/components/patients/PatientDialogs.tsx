@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -120,11 +121,15 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
     }
   }
 
+  // Fix the date formatting to ensure it preserves the exact selected date
   function formatDateForStorage(date: Date): string {
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-    const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+    // Get the date in YYYY-MM-DD format directly from the local date components
+    // This avoids timezone conversion issues completely
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    return adjustedDate.toISOString().split('T')[0];
+    return `${year}-${month}-${day}`;
   }
 
   return (
@@ -268,11 +273,15 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
+  // Fix the date formatting to ensure it preserves the exact selected date
   function formatDateForStorage(date: Date): string {
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-    const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+    // Get the date in YYYY-MM-DD format directly from the local date components
+    // This avoids timezone conversion issues completely
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    return adjustedDate.toISOString().split('T')[0];
+    return `${year}-${month}-${day}`;
   }
 
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
