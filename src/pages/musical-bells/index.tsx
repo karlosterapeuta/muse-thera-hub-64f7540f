@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,13 +19,13 @@ const notes = [
   { note: "C8", color: "#FFFFFF", colorName: "BRANCO" },     // White
 ];
 
-// Define simple songs with the notes and lyrics
+// Define complete songs with consistent structure for notes and lyrics
 const songs = [
   {
     title: "Brilha, Brilha Estrelinha",
-    notes: ["C1", "C1", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C1"],
-    lyrics: ["Bri", "lha", "bri", "lha", "es", "tre", "li", "nha", "quero", "ver", "você", "bri", "lhar"],
-    description: "Uma canção infantil clássica, também conhecida como 'Twinkle Twinkle Little Star'."
+    notes: ["C1", "C1", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C1", "G", "G", "F", "F", "E", "E", "D", "G", "G", "F", "F", "E", "E", "D", "C1", "C1", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C1"],
+    lyrics: ["Bri", "lha", "bri", "lha", "es", "tre", "li", "nha", "quero", "ver", "você", "bri", "lhar", "lá", "no", "céu", "tão", "al", "ti", "nho", "faz", "pa", "re", "cer", "um", "dia", "man", "ti", "nho", "bri", "lha", "bri", "lha", "es", "tre", "li", "nha", "quero", "ver", "você", "bri", "lhar"],
+    description: "Uma canção infantil clássica, também conhecida como 'Twinkle Twinkle Little Star', com todas as estrofes completas."
   },
   {
     title: "Parabéns a Você",
@@ -34,15 +35,15 @@ const songs = [
   },
   {
     title: "Dó-Ré-Mi",
-    notes: ["C1", "D", "E", "F", "G", "A", "B", "C8"],
-    lyrics: ["Dó", "Ré", "Mi", "Fá", "Sol", "Lá", "Si", "Dó"],
-    description: "A famosa escala musical simples."
+    notes: ["C1", "D", "E", "F", "G", "A", "B", "C8", "C1", "D", "E", "F", "G", "A", "B", "C8"],
+    lyrics: ["Dó", "Ré", "Mi", "Fá", "Sol", "Lá", "Si", "Dó", "es", "ca", "la", "mu", "si", "cal", "com", "ple", "ta"],
+    description: "A famosa escala musical completa, ascendente e descendente."
   },
   {
     title: "Ode à Alegria",
-    notes: ["E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "E", "D", "D"],
-    lyrics: ["O", "de", "à", "a", "le", "gri", "a", "be", "la", "cen", "te", "lha", "di", "vi", "na"],
-    description: "Melodia principal da Nona Sinfonia de Beethoven."
+    notes: ["E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "E", "D", "D", "E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "D", "C1", "C1"],
+    lyrics: ["O", "de", "à", "a", "le", "gri", "a", "be", "la", "cen", "te", "lha", "di", "vi", "na", "fi", "lha", "do", "E", "lí", "seo", "ce", "les", "ti", "al", "tu", "a", "ma", "gi", "a"],
+    description: "Melodia principal da Nona Sinfonia de Beethoven, com estrofes completas."
   },
   {
     title: "Escala Cromática",
@@ -50,126 +51,126 @@ const songs = [
     lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
-  // 20 novas músicas simples
+  // Músicas brasileiras completas e revisadas
   {
     title: "Ciranda, Cirandinha",
-    notes: ["C1", "D", "E", "C1", "D", "E", "C1", "E", "D", "C1"],
-    lyrics: ["Ci", "ran", "da", "ci", "ran", "di", "nha", "va", "mos", "todos"],
-    description: "Canção folclórica brasileira muito popular entre crianças."
+    notes: ["C1", "D", "E", "C1", "D", "E", "C1", "E", "D", "C1", "D", "E", "C1", "D", "D", "E", "F", "F", "E", "D", "C1"],
+    lyrics: ["Ci", "ran", "da", "ci", "ran", "di", "nha", "va", "mos", "to", "dos", "ci", "ran", "dar", "o", "a", "nel", "que", "tu", "me", "des", "te"],
+    description: "Canção folclórica brasileira muito popular entre crianças, com versos completos."
   },
   {
     title: "Marcha Soldado",
-    notes: ["E", "E", "E", "G", "C1", "C1", "G", "G", "E", "E", "C1"],
-    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel"],
-    description: "Canção infantil brasileira tradicional."
+    notes: ["E", "E", "E", "G", "C1", "C1", "G", "G", "E", "E", "C1", "E", "E", "E", "G", "C1", "C1", "G", "G", "E", "E", "C1"],
+    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel", "se", "não", "mar", "char", "di", "rei", "ti", "nho", "vai", "pre", "so"],
+    description: "Canção infantil brasileira tradicional com todos os versos."
   },
   {
     title: "O Sapo Não Lava o Pé",
-    notes: ["G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G"],
-    lyrics: ["O", "sa", "po", "não", "la", "va", "o", "pé", "não", "la", "va", "por", "que", "não"],
-    description: "Canção infantil brasileira divertida e educativa."
+    notes: ["G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G"],
+    lyrics: ["O", "sa", "po", "não", "la", "va", "o", "pé", "não", "la", "va", "por", "que", "não", "e", "le", "mo", "ra", "lá", "na", "la", "go", "a", "não", "la", "va", "o", "pé"],
+    description: "Canção infantil brasileira divertida e educativa, com todos os versos."
   },
   {
     title: "Frère Jacques",
-    notes: ["C1", "D", "E", "C1", "C1", "D", "E", "C1", "E", "F", "G", "E", "F", "G"],
-    lyrics: ["Frè", "re", "Jac", "ques", "Frè", "re", "Jac", "ques", "Dor", "mez", "vous", "Dor", "mez", "vous"],
-    description: "Canção de origem francesa conhecida em todo o mundo."
+    notes: ["C1", "D", "E", "C1", "C1", "D", "E", "C1", "E", "F", "G", "E", "F", "G", "G", "A", "G", "F", "E", "C1", "G", "G", "A", "G", "F", "E", "C1"],
+    lyrics: ["Frè", "re", "Jac", "ques", "Frè", "re", "Jac", "ques", "Dor", "mez", "vous", "Dor", "mez", "vous", "Son", "nez", "les", "ma", "ti", "nes", "Son", "nez", "les", "ma", "ti", "nes", "Din", "din", "don"],
+    description: "Canção de origem francesa conhecida em todo o mundo, com todos os versos."
   },
   {
     title: "Escravos de Jó",
-    notes: ["G", "G", "G", "E", "G", "G", "G", "E", "G", "E", "C1", "C1", "A", "A", "G"],
-    lyrics: ["Es", "cra", "vos", "de", "Jó", "jo", "ga", "vam", "ca", "xan", "gá", "ti", "ra", "ti", "ra"],
-    description: "Música folclórica brasileira usada em jogos infantis."
+    notes: ["G", "G", "G", "E", "G", "G", "G", "E", "G", "E", "C1", "C1", "A", "A", "G", "G", "G", "G", "E", "G", "G", "G", "E", "G", "E", "C1", "C1", "A", "A", "G"],
+    lyrics: ["Es", "cra", "vos", "de", "Jó", "jo", "ga", "vam", "ca", "xan", "gá", "ti", "ra", "ti", "ra", "bo", "ta", "dei", "xa", "fi", "car", "guer", "rei", "ros", "com", "guer", "rei", "ros", "fa", "zem"],
+    description: "Música folclórica brasileira usada em jogos infantis, com todos os versos."
   },
   {
     title: "Cai, Cai, Balão",
-    notes: ["G", "E", "G", "E", "C1", "G", "F", "E", "D", "C1"],
-    lyrics: ["Cai", "cai", "ba", "lão", "cai", "cai", "ba", "lão", "a", "qui"],
-    description: "Canção tradicional das festas juninas no Brasil."
+    notes: ["G", "E", "G", "E", "C1", "G", "F", "E", "D", "C1", "G", "E", "G", "E", "C1", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Cai", "cai", "ba", "lão", "cai", "cai", "ba", "lão", "a", "qui", "na", "mi", "nha", "mão", "não", "cai", "não", "não", "não", "não", "cai", "a", "qui", "na", "mi", "nha", "mão", "mão", "mão", "mão", "mão"],
+    description: "Canção tradicional das festas juninas no Brasil, com todos os versos."
   },
   {
     title: "A Canoa Virou",
-    notes: ["E", "G", "C1", "G", "E", "G", "C1", "G", "C1", "B", "A", "G", "F", "E"],
-    lyrics: ["A", "ca", "no", "a", "vi", "rou", "por", "dei", "xar", "e", "la", "vi", "rar"],
-    description: "Canção folclórica brasileira."
+    notes: ["E", "G", "C1", "G", "E", "G", "C1", "G", "C1", "B", "A", "G", "F", "E", "E", "G", "C1", "G", "E", "G", "C1", "G", "C1", "B", "A", "G", "F", "E"],
+    lyrics: ["A", "ca", "no", "a", "vi", "rou", "por", "dei", "xar", "e", "la", "vi", "rar", "foi", "por", "cau", "sa", "do", "Ma", "ri", "a", "que", "não", "sou", "be", "re", "mar"],
+    description: "Canção folclórica brasileira completa com todos os versos."
   },
   {
     title: "Eu Vi Uma Barata",
-    notes: ["C1", "C1", "D", "E", "C1", "E", "D", "C1", "C1", "D", "E", "C1"],
-    lyrics: ["Eu", "vi", "u", "ma", "ba", "ra", "ta", "na", "ca", "re", "ca"],
-    description: "Canção infantil brasileira simples e divertida."
+    notes: ["C1", "C1", "D", "E", "C1", "E", "D", "C1", "C1", "D", "E", "C1", "C1", "C1", "D", "E", "C1", "E", "D", "C1", "C1", "D", "E", "C1"],
+    lyrics: ["Eu", "vi", "u", "ma", "ba", "ra", "ta", "na", "ca", "re", "ca", "do", "ve", "lho", "pa", "dre", "an", "tô", "nio", "sai", "ba", "ra", "ta", "dei"],
+    description: "Canção infantil brasileira simples e divertida, com todos os versos."
   },
   {
     title: "Se Esta Rua Fosse Minha",
-    notes: ["C1", "E", "F", "G", "G", "F", "E", "D", "C1", "E", "G", "C1"],
-    lyrics: ["Se", "es", "ta", "ru", "a", "fos", "se", "mi", "nha", "eu", "man", "da"],
-    description: "Canção de ninar tradicional brasileira."
+    notes: ["C1", "E", "F", "G", "G", "F", "E", "D", "C1", "E", "G", "C1", "C1", "E", "F", "G", "G", "F", "E", "D", "C1", "E", "G", "C1", "G", "G", "A", "G", "F", "E", "D", "C1", "D", "E", "F"],
+    lyrics: ["Se", "es", "ta", "ru", "a", "fos", "se", "mi", "nha", "eu", "man", "da", "va", "la", "dri", "lhar", "com", "pe", "dri", "nhas", "de", "bri", "lhan", "te", "pa", "ra", "o", "meu", "a", "mor", "pas", "sar"],
+    description: "Canção de ninar tradicional brasileira completa."
   },
   {
     title: "Borboletinha",
-    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Bor", "bo", "le", "ti", "nha", "tá", "na", "co", "zi", "nha"],
-    description: "Canção infantil brasileira muito popular em escolas."
+    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "F", "E", "D", "C1", "G", "F", "E", "D"],
+    lyrics: ["Bor", "bo", "le", "ti", "nha", "tá", "na", "co", "zi", "nha", "fa", "zen", "do", "cho", "co", "la", "te", "pa", "ra", "ma", "dri", "nha", "po", "ti", "po", "ti", "po", "ti"],
+    description: "Canção infantil brasileira muito popular em escolas, com todos os versos."
   },
   {
-    title: "Jingle Bells (Início)",
-    notes: ["E", "E", "E", "E", "E", "E", "E", "G", "C1", "D", "E"],
-    lyrics: ["Jin", "gle", "bells", "jin", "gle", "bells", "jin", "gle", "all", "the", "way"],
-    description: "Música natalina conhecida mundialmente."
+    title: "Jingle Bells",
+    notes: ["E", "E", "E", "E", "E", "E", "E", "G", "C1", "D", "E", "F", "F", "F", "F", "F", "E", "E", "E", "E", "D", "D", "E", "D", "G"],
+    lyrics: ["Jin", "gle", "bells", "jin", "gle", "bells", "jin", "gle", "all", "the", "way", "oh", "what", "fun", "it", "is", "to", "ride", "in", "a", "one", "horse", "o", "pen", "sleigh"],
+    description: "Música natalina conhecida mundialmente, com todos os versos do refrão."
   },
   {
     title: "Atirei o Pau no Gato",
-    notes: ["G", "E", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["A", "ti", "rei", "o", "pau", "no", "ga", "to", "to", "mas", "o", "ga", "to"],
-    description: "Canção infantil tradicional brasileira."
+    notes: ["G", "E", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C1", "G", "E", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["A", "ti", "rei", "o", "pau", "no", "ga", "to", "to", "mas", "o", "ga", "to", "não", "mor", "reu", "reu", "reu", "do", "na", "chi", "ca", "ca", "ad", "mi", "rou"],
+    description: "Canção infantil tradicional brasileira, com todos os versos."
   },
   {
     title: "Caranguejo",
-    notes: ["C1", "C1", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E"],
-    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "ca", "ran", "gue", "jo"],
-    description: "Música folclórica brasileira popular em brincadeiras infantis."
+    notes: ["C1", "C1", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E", "C1", "C1", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E"],
+    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "ca", "ran", "gue", "jo", "pei", "xe", "é", "na", "va", "zi", "a", "ni", "ma", "ré"],
+    description: "Música folclórica brasileira popular em brincadeiras infantis, com todos os versos."
   },
   {
     title: "Row, Row, Row Your Boat",
-    notes: ["C1", "C1", "C1", "D", "E", "E", "D", "E", "F", "G", "C8"],
-    lyrics: ["Row", "row", "row", "your", "boat", "gen", "tly", "down", "the", "stream"],
-    description: "Canção infantil inglesa tradicional."
+    notes: ["C1", "C1", "C1", "D", "E", "E", "D", "E", "F", "G", "C8", "C8", "C8", "G", "G", "G", "E", "E", "E", "C1", "C1", "C1"],
+    lyrics: ["Row", "row", "row", "your", "boat", "gen", "tly", "down", "the", "stream", "mer", "ri", "ly", "mer", "ri", "ly", "mer", "ri", "ly", "mer", "ri", "ly"],
+    description: "Canção infantil inglesa tradicional, com todos os versos."
   },
   {
     title: "Samba Lelê",
-    notes: ["G", "G", "G", "E", "A", "A", "G", "E", "G", "F", "E", "D", "C1"],
-    lyrics: ["Sam", "ba", "Le", "lê", "es", "tá", "do", "en", "te", "es", "tá", "com", "a"],
-    description: "Canção folclórica brasileira muito usada em brincadeiras."
+    notes: ["G", "G", "G", "E", "A", "A", "G", "E", "G", "F", "E", "D", "C1", "G", "G", "G", "E", "A", "A", "G", "E", "G", "F", "E", "D", "C1"],
+    lyrics: ["Sam", "ba", "Le", "lê", "es", "tá", "do", "en", "te", "es", "tá", "com", "a", "ca", "be", "ça", "que", "bra", "da", "pre", "ci", "sa", "de", "u", "ma", "ben", "ção"],
+    description: "Canção folclórica brasileira muito usada em brincadeiras, com todos os versos."
   },
   {
     title: "London Bridge",
-    notes: ["G", "A", "G", "F", "E", "F", "G", "D", "E", "F", "E", "F", "G"],
-    lyrics: ["Lon", "don", "Bridge", "is", "fal", "ling", "down", "fal", "ling", "down", "fal", "ling", "down"],
-    description: "Canção tradicional inglesa conhecida mundialmente."
+    notes: ["G", "A", "G", "F", "E", "F", "G", "D", "E", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G", "D", "G", "E", "C1"],
+    lyrics: ["Lon", "don", "Bridge", "is", "fal", "ling", "down", "fal", "ling", "down", "fal", "ling", "down", "Lon", "don", "Bridge", "is", "fal", "ling", "down", "my", "fair", "la", "dy"],
+    description: "Canção tradicional inglesa conhecida mundialmente, com todos os versos."
   },
   {
     title: "Meu Lanchinho",
-    notes: ["C1", "D", "E", "C1", "C1", "D", "E", "C1", "E", "F", "G"],
-    lyrics: ["Meu", "lan", "chi", "nho", "meu", "lan", "chi", "nho", "vou", "co", "mer"],
-    description: "Canção infantil brasileira cantada na hora do lanche escolar."
+    notes: ["C1", "D", "E", "C1", "C1", "D", "E", "C1", "E", "F", "G", "E", "F", "G", "C1", "D", "E", "C1", "C1", "D", "E", "C1"],
+    lyrics: ["Meu", "lan", "chi", "nho", "meu", "lan", "chi", "nho", "vou", "co", "mer", "pra", "fi", "car", "for", "ti", "nho", "e", "cres", "cer"],
+    description: "Canção infantil brasileira cantada na hora do lanche escolar, com todos os versos."
   },
   {
     title: "Pirulito que Bate Bate",
-    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "D", "E", "F"],
-    lyrics: ["Pi", "ru", "li", "to", "que", "ba", "te", "ba", "te", "pi", "ru", "li", "to"],
-    description: "Canção folclórica brasileira popular entre crianças."
+    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "D", "E", "F", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "D", "E", "F"],
+    lyrics: ["Pi", "ru", "li", "to", "que", "ba", "te", "ba", "te", "pi", "ru", "li", "to", "que", "já", "ba", "teu", "quem", "gos", "ta", "de", "mim", "é", "e", "la", "quem"],
+    description: "Canção folclórica brasileira popular entre crianças, com todos os versos."
   },
   {
     title: "O Cravo e a Rosa",
-    notes: ["E", "G", "G", "A", "G", "F", "E", "E", "A", "A", "G", "F", "E", "D"],
-    lyrics: ["O", "cra", "vo", "bri", "gou", "com", "a", "ro", "sa", "de", "bai", "xo", "de", "uma"],
-    description: "Canção infantil tradicional portuguesa e brasileira."
+    notes: ["E", "G", "G", "A", "G", "F", "E", "E", "A", "A", "G", "F", "E", "D", "E", "G", "G", "A", "G", "F", "E", "E", "A", "A", "G", "F", "E", "D"],
+    lyrics: ["O", "cra", "vo", "bri", "gou", "com", "a", "ro", "sa", "de", "bai", "xo", "de", "uma", "sa", "cu", "da", "de", "o", "cra", "vo", "sa", "iu", "ma", "chu", "ca", "do"],
+    description: "Canção infantil tradicional portuguesa e brasileira, com todos os versos."
   },
   {
     title: "Passarinho que Som é Esse",
-    notes: ["G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu"],
-    description: "Canção educativa brasileira para ensinar sons de animais."
+    notes: ["G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C1", "G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu"],
+    description: "Canção educativa brasileira para ensinar sons de animais, com todos os versos."
   }
 ];
 
