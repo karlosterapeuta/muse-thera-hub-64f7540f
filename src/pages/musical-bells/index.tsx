@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,9 +28,9 @@ const songs = [
   },
   {
     title: "Parabéns a Você",
-    notes: ["C1", "C1", "D", "C1", "F", "E", "C1", "C1", "D", "C1", "G", "F"],
-    lyrics: ["Pa", "ra", "béns", "a", "vo", "cê", "nes", "ta", "da", "ta", "que", "ri", "da"],
-    description: "A canção tradicional de aniversário."
+    notes: ["C1", "C1", "D", "C1", "F", "E", "C1", "C1", "D", "C1", "G", "F", "C1", "C1", "C8", "A", "F", "E", "D", "B", "B", "A", "F", "G", "F"],
+    lyrics: ["Pa", "ra", "béns", "a", "vo", "cê", "nes", "ta", "da", "ta", "que", "ri", "da", "mui", "tas", "fe", "li", "ci", "da", "des", "mui", "tos", "a", "nos", "de", "vi", "da"],
+    description: "A canção tradicional de aniversário completa, com todas as estrofes."
   },
   {
     title: "Dó-Ré-Mi",
