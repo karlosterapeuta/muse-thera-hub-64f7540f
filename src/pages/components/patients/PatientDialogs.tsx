@@ -82,13 +82,15 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
 
+      const formattedDate = formatDateForStorage(values.birth_date);
+
       const { data, error } = await supabase
         .from("patients")
         .insert([
           { 
             name: values.name,
             professional_id: user.id,
-            birth_date: values.birth_date.toISOString(),
+            birth_date: formattedDate,
             responsible: values.responsible,
             contact: values.contact
           },
@@ -116,6 +118,10 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       setIsSubmitting(false);
       closeModal();
     }
+  }
+
+  function formatDateForStorage(date: Date): string {
+    return format(date, 'yyyy-MM-dd');
   }
 
   return (
@@ -259,14 +265,21 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
+  function formatDateForStorage(date: Date): string {
+    return format(date, 'yyyy-MM-dd');
+  }
+
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
     try {
       setIsSubmitting(true);
+      
+      const formattedDate = formatDateForStorage(values.birth_date);
+      
       const { error } = await supabase
         .from("patients")
         .update({
           name: values.name,
-          birth_date: values.birth_date.toISOString(),
+          birth_date: formattedDate,
           responsible: values.responsible,
           contact: values.contact,
           updated_at: new Date().toISOString(),
