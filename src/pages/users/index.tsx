@@ -97,7 +97,8 @@ export default function Users() {
     try {
       const newStatus = user.status === 'active' ? 'inactive' : 'active';
       
-      const { data, error } = await supabase.rpc(
+      // Chamando a função RPC do Supabase para atualizar o status do usuário
+      const { error } = await supabase.rpc(
         'update_user_status',
         {
           target_user_id: user.id,
