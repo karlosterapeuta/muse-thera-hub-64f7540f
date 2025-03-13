@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -90,7 +91,13 @@ export default function PatientsPage() {
         throw error;
       }
 
-      setPatients(data || []);
+      // Transform data to include the age property
+      const patientsWithAge = data?.map(patient => ({
+        ...patient,
+        age: patient.age || null,  // Use the age column if it exists
+      })) || [];
+
+      setPatients(patientsWithAge);
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
       toast({
