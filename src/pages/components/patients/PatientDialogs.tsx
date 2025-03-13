@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -121,12 +122,13 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
   }
 
   function formatDateForStorage(date: Date): string {
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const year = localDate.getFullYear();
-    const month = String(localDate.getMonth() + 1).padStart(2, '0');
-    const day = String(localDate.getDate()).padStart(2, '0');
+    // Create a new date with the same year, month, and day, but forcing it to be interpreted in local time
+    // Then extract the date parts to create the string format
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
     
-    return `${year}-${month}-${day}`;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   return (
@@ -271,12 +273,13 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   });
 
   function formatDateForStorage(date: Date): string {
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const year = localDate.getFullYear();
-    const month = String(localDate.getMonth() + 1).padStart(2, '0');
-    const day = String(localDate.getDate()).padStart(2, '0');
+    // Create a new date with the same year, month, and day, but forcing it to be interpreted in local time
+    // Then extract the date parts to create the string format
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
     
-    return `${year}-${month}-${day}`;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
