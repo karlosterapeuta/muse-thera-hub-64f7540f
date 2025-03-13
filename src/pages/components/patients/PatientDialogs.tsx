@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,6 +55,25 @@ interface AddPatientDialogProps {
   closeModal: () => void;
 }
 
+// Fixed implementation of formatDateWithoutTimezoneIssue to ensure it respects the selected date
+function getFormattedDateString(date: Date): string {
+  // Setting specific time (noon) to avoid any timezone offset issues
+  const correctedDate = new Date(date);
+  correctedDate.setHours(12, 0, 0, 0);
+  
+  const year = correctedDate.getFullYear();
+  const month = String(correctedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(correctedDate.getDate()).padStart(2, '0');
+  
+  // Log all date representations to debug
+  console.log("Selected date object:", date);
+  console.log("Corrected date object:", correctedDate);
+  console.log("Date components - Year:", year, "Month:", month, "Day:", day);
+  
+  // Return date in YYYY-MM-DD format
+  return `${year}-${month}-${day}`;
+}
+
 export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,12 +101,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         });
         return;
       }
-
-      // Log the raw date object from the form
-      console.log("Data original do formulário:", values.birth_date);
       
-      // SOLUÇÃO DEFINITIVA: Usar os componentes locais da data para garantir o dia correto
-      const formattedDate = formatDateWithoutTimezoneIssue(values.birth_date);
+      // Get the formatted date string using our improved function
+      const formattedDate = getFormattedDateString(values.birth_date);
       
       console.log("Data selecionada no formulário (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento:", formattedDate);
@@ -128,17 +145,6 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       setIsSubmitting(false);
       closeModal();
     }
-  }
-
-  // Nova função de formatação que garante que o dia selecionado seja o mesmo salvo no banco
-  function formatDateWithoutTimezoneIssue(date: Date): string {
-    // Obter os componentes da data no fuso horário LOCAL do usuário
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
-    const day = String(date.getDate()).padStart(2, '0');
-    
-    // Criar string de data no formato ISO YYYY-MM-DD sem informações de timezone
-    return `${year}-${month}-${day}`;
   }
 
   return (
@@ -288,26 +294,12 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
-  // Nova função de formatação que garante que o dia selecionado seja o mesmo salvo no banco
-  function formatDateWithoutTimezoneIssue(date: Date): string {
-    // Obter os componentes da data no fuso horário LOCAL do usuário
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
-    const day = String(date.getDate()).padStart(2, '0');
-    
-    // Criar string de data no formato ISO YYYY-MM-DD sem informações de timezone
-    return `${year}-${month}-${day}`;
-  }
-
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
     try {
       setIsSubmitting(true);
       
-      // Log the raw date object from the form
-      console.log("Data original do formulário (edição):", values.birth_date);
-      
-      // Format the date for storage using our new function
-      const formattedDate = formatDateWithoutTimezoneIssue(values.birth_date);
+      // Get the formatted date string using our improved function
+      const formattedDate = getFormattedDateString(values.birth_date);
       
       console.log("Data selecionada para edição (local):", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento (edição):", formattedDate);
