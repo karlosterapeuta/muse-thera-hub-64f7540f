@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,6 +67,26 @@ export default function PatientsPage() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
+  const calculateAge = (birthDate: string | null): number | null => {
+    if (!birthDate) return null;
+    
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    
+    // Verificar se a data é válida
+    if (isNaN(birthDateObj.getTime())) return null;
+    
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+    
+    // Se ainda não chegou ao aniversário deste ano, subtrair 1 da idade
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
   const loadPatients = async () => {
     try {
       setIsLoading(true);
@@ -94,7 +113,7 @@ export default function PatientsPage() {
       // Transform data to include the age property
       const patientsWithAge = data?.map(patient => ({
         ...patient,
-        age: patient.age || null,  // Use the age column if it exists
+        age: patient.age || calculateAge(patient.birth_date)
       })) || [];
 
       setPatients(patientsWithAge);
