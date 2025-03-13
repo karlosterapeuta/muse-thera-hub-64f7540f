@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, UserCircle, AlertCircle } from "lucide-react";
+import { Trash2, UserCircle, AlertCircle, History } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +26,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
+import { useAdmin } from "@/hooks/use-admin";
 
 type UserRole = {
   role: 'admin' | 'professional'
@@ -36,11 +46,27 @@ type Profile = {
   name: string | null;
   avatar_url: string | null;
   created_at: string;
+  status: string;
   user_roles: UserRole[];
+}
+
+type StatusLog = {
+  id: string;
+  user_id: string;
+  changed_by: string;
+  previous_status: string;
+  new_status: string;
+  created_at: string;
+  changer_name?: string;
 }
 
 export default function Users() {
   const queryClient = useQueryClient();
+  const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [showStatusLogs, setShowStatusLogs] = useState(false);
+  const [statusLogs, setStatusLogs] = useState<StatusLog[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const { data: isAdmin } = useAdmin();
   
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
@@ -52,6 +78,7 @@ export default function Users() {
           name,
           avatar_url,
           created_at,
+          status,
           user_roles (
             role
           )
@@ -65,6 +92,112 @@ export default function Users() {
       return profiles as Profile[];
     },
   });
+
+  const handleToggleStatus = async (user: Profile) => {
+    try {
+      const newStatus = user.status === 'active' ? 'inactive' : 'active';
+      
+      const { data, error } = await supabase.rpc(
+        'update_user_status',
+        {
+          target_user_id: user.id,
+          new_status: newStatus
+        }
+      );
+
+      if (error) {
+        console.error('Error updating user status:', error);
+        throw error;
+      }
+
+      // Update the users list immediately on the client-side
+      queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
+        return oldData?.map(u => {
+          if (u.id === user.id) {
+            return { ...u, status: newStatus };
+          }
+          return u;
+        }) ?? [];
+      });
+
+      // Invalidate the query to fetch updated data from the server
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+
+      toast({
+        title: "Status atualizado",
+        description: `O usuário ${user.name} foi ${newStatus === 'active' ? 'ativado' : 'desativado'} com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error in update process:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar status",
+        description: "Ocorreu um erro ao tentar atualizar o status do usuário. Tente novamente.",
+      });
+    }
+  };
+
+  const handleViewStatusLogs = async (user: Profile) => {
+    try {
+      setSelectedUser(user);
+      setLoadingLogs(true);
+      setShowStatusLogs(true);
+
+      // Fetch user status logs
+      const { data: logs, error } = await supabase
+        .from('user_status_logs')
+        .select(`
+          id,
+          user_id,
+          changed_by,
+          previous_status,
+          new_status,
+          created_at
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching status logs:', error);
+        throw error;
+      }
+
+      // If we have logs, fetch the names of the users who made the changes
+      if (logs.length > 0) {
+        const changerIds = [...new Set(logs.map(log => log.changed_by))];
+        const { data: changers, error: changersError } = await supabase
+          .from('profiles')
+          .select('id, name')
+          .in('id', changerIds);
+
+        if (changersError) {
+          console.error('Error fetching changer names:', changersError);
+        } else {
+          // Add changer names to logs
+          const logsWithNames = logs.map(log => {
+            const changer = changers?.find(c => c.id === log.changed_by);
+            return {
+              ...log,
+              changer_name: changer?.name || 'Usuário desconhecido'
+            };
+          });
+          
+          setStatusLogs(logsWithNames);
+        }
+      } else {
+        setStatusLogs([]);
+      }
+    } catch (error) {
+      console.error('Error fetching status logs:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao buscar logs",
+        description: "Ocorreu um erro ao tentar buscar o histórico de status do usuário.",
+      });
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
 
   const handleDeleteUser = async (userId: string) => {
     try {
@@ -98,6 +231,17 @@ export default function Users() {
       if (userRolesError) {
         console.error('Error deleting user roles:', userRolesError);
         throw userRolesError;
+      }
+
+      // Then delete any status logs associated with the user
+      const { error: statusLogsError } = await supabase
+        .from('user_status_logs')
+        .delete()
+        .eq('user_id', userId);
+
+      if (statusLogsError) {
+        console.error('Error deleting status logs:', statusLogsError);
+        throw statusLogsError;
       }
 
       // Then delete the profile
@@ -144,6 +288,18 @@ export default function Users() {
     );
   }
 
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <Card className="p-6 flex flex-col items-center justify-center text-center">
+          <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+          <h2 className="text-xl font-bold">Acesso Restrito</h2>
+          <p className="mt-2">Você não tem permissão para acessar este recurso.</p>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-6 text-primary">Usuários do Sistema</h1>
@@ -181,7 +337,23 @@ export default function Users() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">Ativo</Badge>
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={user.status === 'active'}
+                      onCheckedChange={() => handleToggleStatus(user)}
+                    />
+                    <Badge variant={user.status === 'active' ? "secondary" : "outline"}>
+                      {user.status === 'active' ? 'Ativo' : 'Inativo'}
+                    </Badge>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleViewStatusLogs(user)}
+                      title="Ver histórico de status"
+                    >
+                      <History className="h-4 w-4 text-gray-500" />
+                    </Button>
+                  </div>
                 </TableCell>
                 <TableCell>
                   {new Date(user.created_at).toLocaleDateString('pt-BR')}
@@ -217,6 +389,66 @@ export default function Users() {
           </TableBody>
         </Table>
       </Card>
+
+      {/* Status Logs Dialog */}
+      <Dialog open={showStatusLogs} onOpenChange={setShowStatusLogs}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Histórico de Status - {selectedUser?.name}</DialogTitle>
+            <DialogDescription>
+              Registro de alterações de status do usuário.
+            </DialogDescription>
+          </DialogHeader>
+          {loadingLogs ? (
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : statusLogs.length === 0 ? (
+            <p className="text-center py-4 text-gray-500">Nenhum registro de alteração de status encontrado.</p>
+          ) : (
+            <div className="max-h-96 overflow-y-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>De</TableHead>
+                    <TableHead>Para</TableHead>
+                    <TableHead>Alterado por</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {statusLogs.map((log) => (
+                    <TableRow key={log.id}>
+                      <TableCell>
+                        {new Date(log.created_at).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={log.previous_status === 'active' ? "secondary" : "outline"}>
+                          {log.previous_status === 'active' ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={log.new_status === 'active' ? "secondary" : "outline"}>
+                          {log.new_status === 'active' ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{log.changer_name}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

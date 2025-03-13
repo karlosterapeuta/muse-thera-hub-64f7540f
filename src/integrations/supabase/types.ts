@@ -501,6 +501,7 @@ export type Database = {
           id: string
           name: string | null
           role: string
+          status: string
           updated_at: string
         }
         Insert: {
@@ -509,6 +510,7 @@ export type Database = {
           id: string
           name?: string | null
           role?: string
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -517,6 +519,7 @@ export type Database = {
           id?: string
           name?: string | null
           role?: string
+          status?: string
           updated_at?: string
         }
         Relationships: []
@@ -776,6 +779,48 @@ export type Database = {
           },
         ]
       }
+      user_status_logs: {
+        Row: {
+          changed_by: string
+          created_at: string
+          id: string
+          new_status: string
+          previous_status: string
+          user_id: string
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          id?: string
+          new_status: string
+          previous_status: string
+          user_id: string
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          id?: string
+          new_status?: string
+          previous_status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_status_logs_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_status_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       VerificationToken: {
         Row: {
           expires: string
@@ -808,6 +853,13 @@ export type Database = {
       has_role: {
         Args: {
           role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      update_user_status: {
+        Args: {
+          target_user_id: string
+          new_status: string
         }
         Returns: boolean
       }
