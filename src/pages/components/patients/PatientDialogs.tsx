@@ -126,19 +126,17 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
   }
 
   function formatDateForStorage(date: Date): string {
-    // Force the date to be treated as a local date without timezone conversion
-    // This is crucial to prevent the day from shifting due to timezone differences
-    const localISOString = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      12, // Set to noon to avoid any daylight saving time issues
-      0,
-      0,
-      0
-    ).toISOString().split('T')[0];
+    // Criamos uma string diretamente dos componentes da data no formato YYYY-MM-DD
+    // sem usar métodos que podem sofrer conversão de fuso horário
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    return localISOString;
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log("Componentes da data:", { year, month, day });
+    console.log("Data formatada (método manual):", formattedDate);
+    
+    return formattedDate;
   }
 
   return (
@@ -283,19 +281,17 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   });
 
   function formatDateForStorage(date: Date): string {
-    // Force the date to be treated as a local date without timezone conversion
-    // This is crucial to prevent the day from shifting due to timezone differences
-    const localISOString = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      12, // Set to noon to avoid any daylight saving time issues
-      0,
-      0,
-      0
-    ).toISOString().split('T')[0];
+    // Criamos uma string diretamente dos componentes da data no formato YYYY-MM-DD
+    // sem usar métodos que podem sofrer conversão de fuso horário
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    return localISOString;
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log("Componentes da data (edição):", { year, month, day });
+    console.log("Data formatada para edição (método manual):", formattedDate);
+    
+    return formattedDate;
   }
 
   async function onSubmit(values: z.infer<typeof EditFormSchema>) {
