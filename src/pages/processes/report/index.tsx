@@ -567,12 +567,12 @@ export default function ReportForm() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: ptBR })
+                              format(field.value, "dd/MM/yyyy", { locale: ptBR })
                             ) : (
                               <span>Selecione uma data</span>
                             )}
@@ -586,6 +586,17 @@ export default function ReportForm() {
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
+                          locale={ptBR}
+                          captionLayout="dropdown-buttons"
+                          fromYear={1900}
+                          toYear={new Date().getFullYear()}
+                          classNames={{
+                            caption_label: "hidden",
+                            dropdown_month: "w-full",
+                            dropdown_year: "w-full",
+                            caption: "flex justify-center pt-1",
+                            dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                          }}
                         />
                       </PopoverContent>
                     </Popover>
