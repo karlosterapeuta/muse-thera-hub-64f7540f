@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -97,7 +96,6 @@ export default function Users() {
     try {
       const newStatus = user.status === 'active' ? 'inactive' : 'active';
       
-      // Chamando a função RPC do Supabase para atualizar o status do usuário
       const { error } = await supabase.rpc(
         'update_user_status',
         {
@@ -111,7 +109,6 @@ export default function Users() {
         throw error;
       }
 
-      // Update the users list immediately on the client-side
       queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
         return oldData?.map(u => {
           if (u.id === user.id) {
@@ -121,7 +118,6 @@ export default function Users() {
         }) ?? [];
       });
 
-      // Invalidate the query to fetch updated data from the server
       await queryClient.invalidateQueries({ queryKey: ["users"] });
 
       toast({
@@ -144,7 +140,6 @@ export default function Users() {
       setLoadingLogs(true);
       setShowStatusLogs(true);
 
-      // Fetch user status logs
       const { data: logs, error } = await supabase
         .from('user_status_logs')
         .select(`
@@ -163,7 +158,6 @@ export default function Users() {
         throw error;
       }
 
-      // If we have logs, fetch the names of the users who made the changes
       if (logs.length > 0) {
         const changerIds = [...new Set(logs.map(log => log.changed_by))];
         const { data: changers, error: changersError } = await supabase
@@ -174,7 +168,6 @@ export default function Users() {
         if (changersError) {
           console.error('Error fetching changer names:', changersError);
         } else {
-          // Add changer names to logs
           const logsWithNames = logs.map(log => {
             const changer = changers?.find(c => c.id === log.changed_by);
             return {
@@ -202,7 +195,6 @@ export default function Users() {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      // First check if the user has any patients
       const { data: patients, error: patientsError } = await supabase
         .from('patients')
         .select('id')
@@ -222,8 +214,6 @@ export default function Users() {
         return;
       }
 
-      // Proceed with deletion if no patients are found
-      // First delete the user_roles associated
       const { error: userRolesError } = await supabase
         .from('user_roles')
         .delete()
@@ -234,7 +224,6 @@ export default function Users() {
         throw userRolesError;
       }
 
-      // Then delete any status logs associated with the user
       const { error: statusLogsError } = await supabase
         .from('user_status_logs')
         .delete()
@@ -245,7 +234,6 @@ export default function Users() {
         throw statusLogsError;
       }
 
-      // Then delete the profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -256,12 +244,10 @@ export default function Users() {
         throw profileError;
       }
 
-      // Update the users list immediately on the client-side
       queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
         return oldData?.filter(user => user.id !== userId) ?? [];
       });
 
-      // Invalidate the query to fetch updated data from the server
       await queryClient.invalidateQueries({ queryKey: ["users"] });
 
       toast({
@@ -391,7 +377,6 @@ export default function Users() {
         </Table>
       </Card>
 
-      {/* Status Logs Dialog */}
       <Dialog open={showStatusLogs} onOpenChange={setShowStatusLogs}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
