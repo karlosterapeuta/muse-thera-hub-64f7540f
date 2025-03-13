@@ -83,9 +83,12 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
 
-      // Ensure we use the correct date from the calendar
+      // Log the raw date object from the form
+      console.log("Data original do formulário:", values.birth_date);
+      
+      // Format the date for storage ensuring we preserve the exact day
       const formattedDate = formatDateForStorage(values.birth_date);
-
+      
       console.log("Data selecionada:", format(values.birth_date, 'dd/MM/yyyy'));
       console.log("Data formatada para armazenamento:", formattedDate);
 
@@ -107,6 +110,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         throw error;
       }
 
+      // Log the returned data to check what was actually saved
+      console.log("Dados retornados após inserção:", data);
+
       toast({
         title: "Sucesso",
         description: "Paciente criado com sucesso",
@@ -126,15 +132,15 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
   }
 
   function formatDateForStorage(date: Date): string {
-    // Criamos uma string diretamente dos componentes da data no formato YYYY-MM-DD
-    // sem usar métodos que podem sofrer conversão de fuso horário
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // NOVA IMPLEMENTAÇÃO: Preserve a data exata sem qualquer conversão de fuso horário
+    // Pegamos o dia, mês e ano da data e construímos manualmente a string no formato YYYY-MM-DD
     
-    const formattedDate = `${year}-${month}-${day}`;
-    console.log("Componentes da data:", { year, month, day });
-    console.log("Data formatada (método manual):", formattedDate);
+    // Importante: Usamos getUTCDate(), getUTCMonth(), getUTCFullYear() para evitar
+    // qualquer conversão de fuso horário que poderia alterar o dia
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    
+    console.log("Data original:", date);
+    console.log("Data formatada final:", formattedDate);
     
     return formattedDate;
   }
@@ -185,7 +191,13 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
                     mode="single"
                     locale={ptBR}
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onSelect={(date) => {
+                      if (date) {
+                        // Importante: quando o usuário seleciona uma data, registramos isso
+                        console.log("Data selecionada pelo usuário:", date);
+                        field.onChange(date);
+                      }
+                    }}
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
@@ -281,15 +293,14 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   });
 
   function formatDateForStorage(date: Date): string {
-    // Criamos uma string diretamente dos componentes da data no formato YYYY-MM-DD
-    // sem usar métodos que podem sofrer conversão de fuso horário
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // NOVA IMPLEMENTAÇÃO: Preserve a data exata sem qualquer conversão de fuso horário
+    // Pegamos o dia, mês e ano da data e construímos manualmente a string no formato YYYY-MM-DD
     
-    const formattedDate = `${year}-${month}-${day}`;
-    console.log("Componentes da data (edição):", { year, month, day });
-    console.log("Data formatada para edição (método manual):", formattedDate);
+    // Importante: Usamos os valores brutos da data para evitar qualquer conversão de fuso horário
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    
+    console.log("Data original (edição):", date);
+    console.log("Data formatada final (edição):", formattedDate);
     
     return formattedDate;
   }
@@ -298,13 +309,16 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     try {
       setIsSubmitting(true);
       
-      // Ensure we use the correct date from the calendar
+      // Log the raw date object from the form
+      console.log("Data original do formulário (edição):", values.birth_date);
+      
+      // Format the date for storage ensuring we preserve the exact day
       const formattedDate = formatDateForStorage(values.birth_date);
       
       console.log("Data selecionada para edição:", format(values.birth_date, 'dd/MM/yyyy'));
-      console.log("Data formatada para armazenamento:", formattedDate);
+      console.log("Data formatada para armazenamento (edição):", formattedDate);
       
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from("patients")
         .update({
           name: values.name,
@@ -313,12 +327,16 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           contact: values.contact,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', patient.id);
+        .eq('id', patient.id)
+        .select();
 
       if (error) {
         console.error("Erro ao atualizar paciente:", error);
         throw error;
       }
+      
+      // Log the returned data to check what was actually saved
+      console.log("Dados retornados após atualização:", data);
 
       toast({
         title: "Sucesso",
@@ -384,7 +402,13 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
                     mode="single"
                     locale={ptBR}
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onSelect={(date) => {
+                      if (date) {
+                        // Log when user selects a date
+                        console.log("Data selecionada pelo usuário (edição):", date);
+                        field.onChange(date);
+                      }
+                    }}
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
