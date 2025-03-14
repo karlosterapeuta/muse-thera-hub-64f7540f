@@ -1,14 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Music2, Download, FileText, Volume2, VolumeX } from "lucide-react";
+import { Music2, Download, FileText, Volume2, VolumeX, Square } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 
-// Define the notes and their corresponding colors
 const notes = [
   { note: "C1", color: "#EA384C", colorName: "VERMELHO" },   // Red
   { note: "D", color: "#F97316", colorName: "LARANJA" },     // Orange
@@ -20,7 +18,6 @@ const notes = [
   { note: "C8", color: "#FFFFFF", colorName: "BRANCO" },     // White
 ];
 
-// Define complete songs with consistent structure for notes and lyrics
 const songs = [
   {
     title: "Brilha, Brilha Estrelinha",
@@ -318,33 +315,44 @@ export default function MusicalBells() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedSong, setSelectedSong] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [currentTimeoutId, setCurrentTimeoutId] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Cleanup audio context when component unmounts
   useEffect(() => {
     return () => {
       stopAllAudio();
+      if (currentTimeoutId !== null) {
+        clearTimeout(currentTimeoutId);
+      }
     };
-  }, []);
+  }, [currentTimeoutId]);
 
-  // Play a single note
   const playNote = (note: string) => {
-    // Find the index of the note in our notes array
     const noteIndex = notes.findIndex(n => n.note === note);
     if (noteIndex >= 0) {
       setCurrentNoteIndex(noteIndex);
-      
-      // Play the note sound if audio is enabled
       if (audioEnabled) {
         playNoteSound(note);
       }
-      
-      // Reset the highlight after a short delay
       setTimeout(() => setCurrentNoteIndex(null), 500);
     }
   };
 
-  // Play a song
+  const stopCurrentSong = () => {
+    if (currentTimeoutId !== null) {
+      clearTimeout(currentTimeoutId);
+      setCurrentTimeoutId(null);
+    }
+    stopAllAudio();
+    setCurrentSong(null);
+    setIsPlaying(false);
+    setCurrentNoteIndex(null);
+    toast({
+      title: "Música interrompida",
+      description: "A reprodução da música foi interrompida.",
+    });
+  };
+
   const playSong = (songIndex: number) => {
     if (isPlaying) {
       toast({
@@ -365,11 +373,12 @@ export default function MusicalBells() {
       if (noteIndex < songNotes.length) {
         playNote(songNotes[noteIndex]);
         noteIndex++;
-        setTimeout(playNextNote, 800); // Play each note with a delay
+        const timeoutId = window.setTimeout(playNextNote, 800);
+        setCurrentTimeoutId(timeoutId);
       } else {
         setCurrentSong(null);
         setIsPlaying(false);
-        
+        setCurrentTimeoutId(null);
         toast({
           title: "Música concluída",
           description: `A música "${songs[songIndex].title}" foi reproduzida com sucesso.`,
@@ -377,32 +386,24 @@ export default function MusicalBells() {
       }
     };
 
-    // Start playing the song
     playNextNote();
   };
 
-  // Toggle audio on/off
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
-    
-    // Show toast to inform the user
     toast({
       title: audioEnabled ? "Áudio desativado" : "Áudio ativado",
       description: audioEnabled 
         ? "O som das notas foi desativado." 
         : "Agora você ouvirá o som das notas musicais.",
     });
-    
-    // Stop any ongoing audio if turning off
     if (audioEnabled) {
       stopAllAudio();
     }
   };
 
-  // Function to generate and download PDF
   const downloadSongPDF = (songIndex: number) => {
     setSelectedSong(songIndex);
-    
     setTimeout(() => {
       const pdfContent = document.getElementById('song-pdf-content');
       
@@ -433,7 +434,18 @@ export default function MusicalBells() {
         Sinos Musicais
       </h1>
       
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-2 mb-4">
+        {isPlaying && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={stopCurrentSong}
+            className="flex items-center gap-2"
+          >
+            <Square className="h-4 w-4" />
+            Parar Música
+          </Button>
+        )}
         <Button
           variant="outline"
           size="sm"
@@ -446,7 +458,6 @@ export default function MusicalBells() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Musical Bells Display */}
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -492,7 +503,6 @@ export default function MusicalBells() {
           </CardContent>
         </Card>
 
-        {/* Songs List */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -514,72 +524,5 @@ export default function MusicalBells() {
                     <div className="font-semibold text-lg mb-2">{song.title}</div>
                     <p className="text-sm text-gray-600 mb-3">{song.description}</p>
                     
-                    {/* Notes with lyrics - Modified to display all notes properly */}
-                    <div className="mb-4 flex flex-wrap">
-                      {song.notes.map((note, noteIndex) => {
-                        const noteData = notes.find(n => n.note === note);
-                        return (
-                          <div key={`${note}-${noteIndex}`} className="inline-block text-center mr-2 mb-2">
-                            <div
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto"
-                              style={{ 
-                                backgroundColor: noteData?.color,
-                                color: ["C8", "E"].includes(note) ? "#333" : "white"
-                              }}
-                            >
-                              {note}
-                            </div>
-                            <div className="text-xs mt-1 font-medium">
-                              {song.lyrics[noteIndex] || ""}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex justify-end gap-2 mt-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          downloadSongPDF(index);
-                        }}
-                      >
-                        <FileText className="mr-1 h-4 w-4" />
-                        PDF
-                      </Button>
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          playSong(index);
-                        }}
-                        disabled={isPlaying}
-                      >
-                        <Music2 className="mr-1 h-4 w-4" />
-                        Tocar
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                    <
 
-      {/* Hidden PDF content for generation */}
-      <div className="hidden">
-        {selectedSong !== null && (
-          <div id="song-pdf-content">
-            <SongPDF 
-              song={songs[selectedSong]} 
-              notes={notes} 
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
