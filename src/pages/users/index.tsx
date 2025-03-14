@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, UserCircle, AlertCircle, History } from "lucide-react";
+import { Trash2, UserCircle, AlertCircle, History, LogOut } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useAdmin } from "@/hooks/use-admin";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type UserRole = {
   role: 'admin' | 'professional'
@@ -264,6 +265,31 @@ export default function Users() {
     }
   };
 
+  const handleForceLogout = async (userId: string, userName: string | null) => {
+    try {
+      const { error } = await supabase.rpc('force_user_logout', {
+        target_user_id: userId
+      });
+
+      if (error) {
+        console.error('Erro ao forçar logout do usuário:', error);
+        throw error;
+      }
+
+      toast({
+        title: "Logout forçado",
+        description: `O usuário ${userName || 'selecionado'} foi desconectado com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Erro ao forçar logout:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao forçar logout",
+        description: "Ocorreu um erro ao tentar forçar o logout do usuário. Tente novamente.",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -290,6 +316,15 @@ export default function Users() {
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-6 text-primary">Usuários do Sistema</h1>
+      
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Importante</AlertTitle>
+        <AlertDescription>
+          Usuários inativos não podem fazer login. Usuários com sessão ativa serão desconectados automaticamente quando desativados.
+        </AlertDescription>
+      </Alert>
+      
       <Card>
         <Table>
           <TableHeader>
@@ -345,7 +380,7 @@ export default function Users() {
                 <TableCell>
                   {new Date(user.created_at).toLocaleDateString('pt-BR')}
                 </TableCell>
-                <TableCell>
+                <TableCell className="space-x-1">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" size="icon">
@@ -370,6 +405,33 @@ export default function Users() {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  
+                  {user.status !== 'active' && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" title="Forçar logout">
+                          <LogOut className="h-4 w-4 text-orange-500" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Forçar logout</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Isso invalidará todas as sessões ativas deste usuário, forçando seu logout imediato. Deseja continuar?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleForceLogout(user.id, user.name)}
+                            className="bg-orange-500 text-white hover:bg-orange-600"
+                          >
+                            Forçar Logout
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

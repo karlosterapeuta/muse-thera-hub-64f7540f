@@ -26,6 +26,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
     setIsLoading(true);
 
     try {
+      // 1. Primeiro tenta fazer o login normalmente
       const result = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -33,6 +34,29 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
       
       if (result.error) throw result.error;
       
+      // 2. Se o login for bem-sucedido, verifica o status do usuário
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('status')
+        .eq('id', result.data.user.id)
+        .single();
+      
+      if (profileError) throw profileError;
+      
+      // 3. Se o usuário estiver inativo, faz logout e mostra uma mensagem
+      if (profile.status !== 'active') {
+        // Faz logout imediatamente
+        await supabase.auth.signOut();
+        
+        toast({
+          title: "Acesso negado",
+          description: "Sua conta está desativada. Entre em contato com o administrador do sistema.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // 4. Se tudo estiver ok, continua o login normalmente
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao MuseTera!",

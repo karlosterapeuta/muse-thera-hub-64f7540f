@@ -23,6 +23,7 @@ import Users from "./pages/users";
 import HawkinsScale from "./pages/hawkins";
 import SongsPage from "./pages/songs";
 import MusicalBells from "./pages/musical-bells";
+import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -37,7 +38,12 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    element: <Layout />,
+    element: (
+      <>
+        <Layout />
+        <AuthStatusChecker />
+      </>
+    ),
     children: [
       {
         path: "/dashboard",
