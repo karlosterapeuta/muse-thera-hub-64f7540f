@@ -50,7 +50,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
         
         toast({
           title: "Acesso negado",
-          description: "Sua conta está desativada. Entre em contato com o administrador do sistema.",
+          description: "Sua conta está desativa. Atualize seu pagamento.",
           variant: "destructive",
         });
         return;

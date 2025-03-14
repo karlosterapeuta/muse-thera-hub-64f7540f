@@ -43,7 +43,7 @@ export default function AuthStatusChecker() {
         // Exibe uma mensagem
         toast({
           title: "Sessão encerrada",
-          description: "Sua conta foi desativada. Entre em contato com o administrador do sistema.",
+          description: "Sua conta está desativa. Atualize seu pagamento.",
           variant: "destructive",
         });
       }
