@@ -26,7 +26,7 @@ export default function AuthStatusChecker() {
         return;
       }
       
-      // Se o usuário não estiver ativo, faz logout
+      // Se o usuário não estiver ativo, faz logout imediatamente
       if (profile && profile.status !== 'active') {
         // Limpa o intervalo
         if (checkIntervalRef.current) {
@@ -34,7 +34,7 @@ export default function AuthStatusChecker() {
           checkIntervalRef.current = null;
         }
         
-        // Faz logout
+        // Faz logout imediatamente
         await supabase.auth.signOut();
         
         // Navega para a página de login
