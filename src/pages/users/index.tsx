@@ -60,6 +60,16 @@ type StatusLog = {
   changer_name?: string;
 }
 
+declare module '@supabase/supabase-js' {
+  interface SupabaseClient {
+    rpc<T = any>(
+      fn: 'force_user_logout' | 'generate_invite_code' | 'has_role' | 'update_user_status' | 'validate_and_use_invite_code',
+      params?: object,
+      options?: object
+    ): { data: T; error: Error | null };
+  }
+}
+
 export default function Users() {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);

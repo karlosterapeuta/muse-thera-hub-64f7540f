@@ -844,6 +844,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      force_user_logout: {
+        Args: {
+          target_user_id: string
+        }
+        Returns: boolean
+      }
       generate_invite_code: {
         Args: {
           expiration_days?: number
