@@ -42,10 +42,12 @@ export default function Dashboard() {
         // Buscar sessões do profissional logado
         const { data: sessions, error: sessionsError } = await supabase
           .from('sessions')
-          .select('id, date, patient_id, notes')
-          .order('date', { ascending: false });
+          .select('id, date, patient_id, notes');
 
-        if (sessionsError) throw sessionsError;
+        if (sessionsError) {
+          console.error('Erro ao buscar sessões:', sessionsError);
+          throw sessionsError;
+        }
 
         // Calcular total de sessões
         setTotalSessions(sessions ? sessions.length : 0);
@@ -70,8 +72,12 @@ export default function Dashboard() {
 
         recentSessions.forEach(session => {
           const sessionDate = new Date(session.date);
-          const monthName = recentMonths[3 - (currentDate.getMonth() - sessionDate.getMonth() + 12) % 12];
-          if (sessionsByMonth[monthName] !== undefined) {
+          const monthIndex = sessionDate.getMonth();
+          const monthName = recentMonths.find((_, i) => 
+            (currentDate.getMonth() - i + 12) % 12 === monthIndex
+          );
+          
+          if (monthName && sessionsByMonth[monthName] !== undefined) {
             sessionsByMonth[monthName]++;
           }
         });
@@ -101,22 +107,35 @@ export default function Dashboard() {
         setCompletionRateChange(3); // Placeholder, poderia ser calculado com dados históricos
 
         // Buscar pacientes para as próximas sessões
-        const patientIds = sessions
-          ? sessions.slice(0, 5).map(session => session.patient_id).filter(Boolean)
+        // Primeiro, separar as futuras sessões
+        const futureSessions = sessions
+          ? sessions
+              .filter(session => new Date(session.date) >= new Date())
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .slice(0, 5)
           : [];
 
+        // Extrair IDs dos pacientes das próximas sessões
+        const patientIds = futureSessions.map(session => session.patient_id).filter(Boolean);
+
+        console.log("IDs de pacientes encontrados:", patientIds);
+        
         if (patientIds.length > 0) {
+          // Buscar dados dos pacientes
           const { data: patients, error: patientsError } = await supabase
             .from('patients')
             .select('id, name')
             .in('id', patientIds);
 
-          if (patientsError) throw patientsError;
+          if (patientsError) {
+            console.error('Erro ao buscar pacientes:', patientsError);
+            throw patientsError;
+          }
+
+          console.log("Pacientes encontrados:", patients);
 
           // Combinar informações de sessões e pacientes
-          const upcomingSessionsWithNames = sessions
-            .filter(session => new Date(session.date) >= new Date())
-            .slice(0, 2)
+          const upcomingSessionsWithNames = futureSessions
             .map(session => {
               const patient = patients.find(p => p.id === session.patient_id);
               const sessionDate = new Date(session.date);
@@ -130,7 +149,9 @@ export default function Dashboard() {
             });
 
           setUpcomingSessions(upcomingSessionsWithNames);
+          console.log("Sessões processadas:", upcomingSessionsWithNames);
         } else {
+          console.log("Nenhum paciente encontrado para as próximas sessões");
           setUpcomingSessions([]);
         }
       } catch (error) {
@@ -226,7 +247,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center">
-                    {session.name[0]}
+                    {session.name ? session.name[0] : '?'}
                   </div>
                   <div>
                     <h4 className="font-semibold">{session.name}</h4>
