@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -524,5 +525,87 @@ export default function MusicalBells() {
                     <div className="font-semibold text-lg mb-2">{song.title}</div>
                     <p className="text-sm text-gray-600 mb-3">{song.description}</p>
                     
-                    <
-
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => playSong(index)}
+                        className="flex items-center gap-1"
+                        disabled={isPlaying}
+                      >
+                        <Music2 className="h-3 w-3" />
+                        Tocar
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => downloadSongPDF(index)}
+                        className="flex items-center gap-1"
+                      >
+                        <Download className="h-3 w-3" />
+                        PDF
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setSelectedSong(selectedSong === index ? null : index)}
+                        className="flex items-center gap-1"
+                      >
+                        <FileText className="h-3 w-3" />
+                        {selectedSong === index ? "Fechar" : "Ver"}
+                      </Button>
+                    </div>
+                    
+                    {selectedSong === index && (
+                      <div className="mt-4 border-t pt-3">
+                        <div className="text-sm text-gray-700">
+                          <div className="font-medium mb-2">Notas:</div>
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {song.notes.map((note, i) => {
+                              const noteData = notes.find(n => n.note === note);
+                              return (
+                                <span
+                                  key={`${note}-${i}`}
+                                  className="inline-block px-2 py-1 rounded-full text-xs font-medium"
+                                  style={{ 
+                                    backgroundColor: noteData?.color || "#ccc",
+                                    color: ["C8", "E"].includes(note) ? "#333" : "white"
+                                  }}
+                                >
+                                  {note}
+                                </span>
+                              );
+                            })}
+                          </div>
+                          
+                          <div className="font-medium mb-2">Letra:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {song.lyrics.map((lyric, i) => (
+                              <span
+                                key={`lyric-${i}`}
+                                className="inline-block px-2 py-1 bg-gray-100 rounded text-xs"
+                              >
+                                {lyric}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {selectedSong !== null && (
+        <div id="song-pdf-content" className="hidden">
+          <SongPDF song={songs[selectedSong]} notes={notes} />
+        </div>
+      )}
+    </div>
+  );
+}
