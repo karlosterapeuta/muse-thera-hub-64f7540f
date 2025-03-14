@@ -1,10 +1,12 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Music2, Download, FileText } from "lucide-react";
+import { Music2, Download, FileText, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
+import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 
 // Define the notes and their corresponding colors
 const notes = [
@@ -315,7 +317,15 @@ export default function MusicalBells() {
   const [currentSong, setCurrentSong] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedSong, setSelectedSong] = useState<number | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(true);
   const { toast } = useToast();
+
+  // Cleanup audio context when component unmounts
+  useEffect(() => {
+    return () => {
+      stopAllAudio();
+    };
+  }, []);
 
   // Play a single note
   const playNote = (note: string) => {
@@ -323,6 +333,12 @@ export default function MusicalBells() {
     const noteIndex = notes.findIndex(n => n.note === note);
     if (noteIndex >= 0) {
       setCurrentNoteIndex(noteIndex);
+      
+      // Play the note sound if audio is enabled
+      if (audioEnabled) {
+        playNoteSound(note);
+      }
+      
       // Reset the highlight after a short delay
       setTimeout(() => setCurrentNoteIndex(null), 500);
     }
@@ -353,10 +369,34 @@ export default function MusicalBells() {
       } else {
         setCurrentSong(null);
         setIsPlaying(false);
+        
+        toast({
+          title: "Música concluída",
+          description: `A música "${songs[songIndex].title}" foi reproduzida com sucesso.`,
+        });
       }
     };
 
+    // Start playing the song
     playNextNote();
+  };
+
+  // Toggle audio on/off
+  const toggleAudio = () => {
+    setAudioEnabled(!audioEnabled);
+    
+    // Show toast to inform the user
+    toast({
+      title: audioEnabled ? "Áudio desativado" : "Áudio ativado",
+      description: audioEnabled 
+        ? "O som das notas foi desativado." 
+        : "Agora você ouvirá o som das notas musicais.",
+    });
+    
+    // Stop any ongoing audio if turning off
+    if (audioEnabled) {
+      stopAllAudio();
+    }
   };
 
   // Function to generate and download PDF
@@ -392,6 +432,18 @@ export default function MusicalBells() {
       <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-primary">
         Sinos Musicais
       </h1>
+      
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleAudio}
+          className="flex items-center gap-2"
+        >
+          {audioEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          {audioEnabled ? "Desativar Som" : "Ativar Som"}
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Musical Bells Display */}
@@ -503,6 +555,7 @@ export default function MusicalBells() {
                           e.stopPropagation();
                           playSong(index);
                         }}
+                        disabled={isPlaying}
                       >
                         <Music2 className="mr-1 h-4 w-4" />
                         Tocar
