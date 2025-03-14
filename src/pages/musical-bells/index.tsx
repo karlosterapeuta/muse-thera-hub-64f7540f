@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,7 +50,6 @@ const songs = [
     lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
-  // Músicas brasileiras completas e revisadas
   {
     title: "Ciranda, Cirandinha",
     notes: ["C1", "D", "E", "C1", "D", "E", "C1", "E", "D", "C1", "D", "E", "C1", "D", "D", "E", "F", "F", "E", "D", "C1"],
@@ -171,6 +169,144 @@ const songs = [
     notes: ["G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C1", "G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C1"],
     lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu"],
     description: "Canção educativa brasileira para ensinar sons de animais, com todos os versos."
+  },
+  {
+    title: "Sapo Cururu",
+    notes: ["C1", "D", "E", "G", "C1", "D", "E", "G", "E", "F", "G", "A", "G", "F", "E", "D", "C1", "D", "E", "G", "C1", "D", "E", "G"],
+    lyrics: ["Sa", "po", "cu", "ru", "ru", "na", "bei", "ra", "do", "ri", "o", "quan", "do", "o", "sa", "po", "can", "ta", "ó", "ma", "na", "é", "por", "que"],
+    description: "Canção folclórica brasileira sobre um sapo à beira do rio. Popular entre crianças."
+  },
+  {
+    title: "O Sítio do Seu Lobato",
+    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C1", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C1"],
+    lyrics: ["Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio", "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha", "um", "ca", "chor", "ro", "au"],
+    description: "Canção infantil educativa que apresenta os sons dos animais da fazenda."
+  },
+  {
+    title: "A Barata Diz Que Tem",
+    notes: ["E", "E", "F", "G", "G", "F", "E", "D", "E", "E", "F", "G", "G", "F", "E", "D", "D", "D", "E", "F", "E", "D", "C1", "D", "E", "C1"],
+    lyrics: ["A", "ba", "ra", "ta", "diz", "que", "tem", "se", "te", "sai", "as", "de", "fi", "ló", "é", "men", "ti", "ra", "da", "ba", "ra", "ta", "e", "la", "tem", "é"],
+    description: "Canção folclórica divertida que retrata as mentiras de uma barata sobre suas posses."
+  },
+  {
+    title: "Boi da Cara Preta",
+    notes: ["G", "G", "E", "C1", "G", "G", "E", "C1", "C1", "C1", "D", "E", "D", "C1", "B", "A", "G"],
+    lyrics: ["Boi", "boi", "boi", "boi", "da", "ca", "ra", "pre", "ta", "pe", "ga", "es", "sa", "cri", "an", "ça", "que"],
+    description: "Cantiga de ninar tradicional brasileira, usada para acalmar crianças pequenas."
+  },
+  {
+    title: "Peixe Vivo",
+    notes: ["C1", "E", "G", "C1", "E", "G", "A", "G", "F", "E", "D", "C1", "C1", "E", "G", "C1", "E", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Co", "mo", "po", "de", "um", "pei", "xe", "vi", "vo", "vi", "ver", "fo", "ra", "da", "á", "gua", "cla", "ra", "co", "mo", "po", "de", "eu"],
+    description: "Canção folclórica brasileira que expressa sentimentos de saudade e pertencimento."
+  },
+  {
+    title: "Indiozinhos",
+    notes: ["E", "G", "C1", "E", "G", "C1", "E", "D", "C1", "B", "A", "G", "E", "G", "C1", "E", "G", "C1", "E", "D", "C1", "B", "A", "G"],
+    lyrics: ["Um", "dois", "três", "ín", "dios", "zi", "nhos", "qua", "tro", "cin", "co", "seis", "ín", "dios", "zi", "nhos", "se", "te", "oi", "to", "no", "ve", "ín", "dios"],
+    description: "Cantiga infantil que ensina os números de forma divertida, contando índios."
+  },
+  {
+    title: "A Linda Rosa Juvenil",
+    notes: ["C1", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["A", "lin", "da", "ro", "sa", "ju", "ve", "nil", "ju", "ve", "nil", "ju", "ve", "nil", "a", "lin", "da", "ro", "sa", "ju", "ve", "nil", "ju", "ve", "nil"],
+    description: "Cantiga infantil tradicional que conta a história de uma linda rosa que adormeceu."
+  },
+  {
+    title: "Capelinha de Melão",
+    notes: ["G", "A", "B", "G", "A", "B", "C1", "B", "A", "G", "F", "E", "G", "A", "B", "G", "A", "B", "C1", "B", "A", "G", "F", "E"],
+    lyrics: ["Ca", "pe", "li", "nha", "de", "me", "lão", "é", "de", "São", "Jo", "ão", "é", "de", "cra", "vo", "é", "de", "ro", "sa", "é", "de", "man", "je"],
+    description: "Canção junina tradicional, cantada durante as festas de São João no Brasil."
+  },
+  {
+    title: "Nesta Rua",
+    notes: ["C1", "E", "G", "C1", "B", "A", "G", "E", "G", "F", "E", "D", "C1", "C1", "E", "G", "C1", "B", "A", "G", "E", "G", "F", "E", "D", "C1"],
+    lyrics: ["Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", "tem", "um", "bos", "que", "que", "se", "cha", "ma", "se", "cha", "ma", "so", "li", "dão", "den", "tro", "de", "le"],
+    description: "Modinha tradicional brasileira que fala sobre sentimentos de amor e solidão."
+  },
+  {
+    title: "O Pintinho Amarelinho",
+    notes: ["G", "G", "A", "G", "F", "E", "G", "G", "A", "G", "F", "E", "E", "F", "G", "A", "B", "B", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["O", "pin", "ti", "nho", "a", "ma", "re", "li", "nho", "ca", "be", "ci", "nha", "de", "pa", "pel", "o", "lha", "só", "pra", "ci", "ma", "o", "lha"],
+    description: "Canção infantil brasileira que descreve um pintinho amarelinho de forma divertida."
+  },
+  {
+    title: "A Galinha do Vizinho",
+    notes: ["E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1", "E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["A", "ga", "li", "nha", "do", "vi", "zi", "nho", "bo", "ta", "o", "vo", "a", "ma", "re", "li", "nho", "bo", "ta", "a", "qui", "bo", "ta", "a", "co", "lá"],
+    description: "Canção infantil brasileira divertida que fala sobre uma galinha e seus ovos."
+  },
+  {
+    title: "O Elefante",
+    notes: ["C1", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["O", "e", "le", "fan", "te", "é", "pe", "sa", "do", "co", "mo", "um", "gran", "de", "a", "ni", "mal", "mas", "e", "le", "é", "mui", "to", "bo"],
+    description: "Canção infantil da Xuxa que ensina sobre o elefante de forma lúdica e educativa."
+  },
+  {
+    title: "A Casa",
+    notes: ["G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E", "G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E"],
+    lyrics: ["E", "ra", "u", "ma", "ca", "sa", "mui", "to", "en", "gra", "ça", "da", "não", "ti", "nha", "te", "to", "não", "ti", "nha", "na", "da", "nin", "guém", "po", "di", "a"],
+    description: "Poema musicalizado de Vinicius de Moraes que descreve uma casa muito engraçada."
+  },
+  {
+    title: "O Pato",
+    notes: ["C1", "D", "E", "G", "C1", "D", "E", "G", "E", "F", "G", "A", "G", "F", "E", "D", "C1", "D", "E", "G", "C1", "D", "E", "G"],
+    lyrics: ["O", "pa", "to", "vin", "ha", "can", "tan", "do", "al", "e", "gre", "quac", "quac", "quan", "do", "um", "ho", "mem", "mau", "a", "per", "tou", "seu"],
+    description: "Canção de Vinicius de Moraes que conta a história de um pato e suas aventuras."
+  },
+  {
+    title: "Aquarela",
+    notes: ["G", "A", "B", "C1", "D", "E", "F", "G", "G", "F", "E", "D", "C1", "B", "A", "G", "G", "A", "B", "C1", "D", "E", "F", "G"],
+    lyrics: ["Nu", "ma", "fo", "lha", "qual", "quer", "eu", "de", "se", "nho", "um", "sol", "a", "ma", "re", "lo", "e", "com", "cin", "co", "ou", "seis", "re", "tas"],
+    description: "Canção de Toquinho que compara a vida a uma pintura em aquarela."
+  },
+  {
+    title: "A Dona Aranha",
+    notes: ["C1", "D", "E", "F", "G", "G", "G", "C1", "B", "A", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "G", "G", "C1", "B", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["A", "do", "na", "a", "ra", "nha", "su", "biu", "pe", "la", "pa", "re", "de", "veio", "a", "chu", "va", "for", "te", "e", "a", "der", "ru", "bou", "já", "pas", "sou", "a"],
+    description: "Adaptação brasileira da canção infantil 'Itsy Bitsy Spider', sobre uma aranha e a chuva."
+  },
+  {
+    title: "A Roda do Ônibus",
+    notes: ["G", "C1", "G", "C1", "D", "E", "F", "G", "G", "C1", "G", "C1", "D", "E", "D", "C1", "G", "C1", "G", "C1", "D", "E", "F", "G"],
+    lyrics: ["A", "ro", "da", "do", "ô", "ni", "bus", "ro", "da", "ro", "da", "ro", "da", "ro", "da", "a", "ro", "da", "do", "ô", "ni", "bus", "ro", "da"],
+    description: "Adaptação da canção 'The Wheels on the Bus', sobre as partes de um ônibus em movimento."
+  },
+  {
+    title: "Borboletinha",
+    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C1", "F", "E", "D", "C1", "G", "F", "E", "D"],
+    lyrics: ["Bor", "bo", "le", "ti", "nha", "tá", "na", "co", "zi", "nha", "fa", "zen", "do", "cho", "co", "la", "te", "pa", "ra", "ma", "dri", "nha", "po", "ti", "po", "ti", "po", "ti"],
+    description: "Canção infantil brasileira muito popular em escolas, com todos os versos."
+  },
+  {
+    title: "Cachorrinho está latindo",
+    notes: ["C1", "C1", "D", "E", "E", "D", "C1", "C1", "D", "E", "E", "D", "C1", "C1", "D", "C1", "B", "A", "G", "C1", "C1", "D", "C1", "B", "A", "G"],
+    lyrics: ["Ca", "chor", "ri", "nho", "es", "tá", "la", "tin", "do", "lá", "no", "ter", "rei", "ro", "ca", "la", "a", "bo", "ca", "ca", "chor", "ri", "nho", "va", "dio"],
+    description: "Canção folclórica infantil brasileira que imita os sons de um cachorro latindo."
+  },
+  {
+    title: "Dona Árvore",
+    notes: ["G", "A", "B", "C1", "G", "A", "B", "C1", "D", "C1", "B", "A", "G", "F", "E", "D", "G", "A", "B", "C1", "G", "A", "B", "C1"],
+    lyrics: ["Do", "na", "ár", "vo", "re", "do", "na", "ár", "vo", "re", "on", "de", "es", "tá", "su", "as", "fo", "lhas", "do", "na", "ár", "vo", "re", "não"],
+    description: "Canção da Palavra Cantada sobre a importância das árvores e da natureza."
+  },
+  {
+    title: "Gato Xadrez",
+    notes: ["C1", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["O", "ga", "to", "xa", "drez", "faz", "miau", "miau", "faz", "miau", "miau", "o", "ga", "to", "xa", "drez", "faz", "miau", "miau", "faz", "miau", "miau"],
+    description: "Música da Palavra Cantada sobre um gato com pelo xadrez e seus miados."
+  },
+  {
+    title: "O Jacaré",
+    notes: ["E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1", "E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Lá", "vem", "o", "ja", "ca", "ré", "Na", "bei", "ra", "do", "ri", "o", "dor", "min", "do", "na", "la", "ma", "so", "zi", "nho", "sem", "nin", "guém", "pra"],
+    description: "Canção infantil da Xuxa que retrata as aventuras de um jacaré na beira do rio."
+  },
+  {
+    title: "O Leãozinho",
+    notes: ["G", "A", "B", "C1", "D", "E", "C1", "A", "G", "F", "E", "D", "C1", "G", "A", "B", "C1", "D", "E", "C1", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Go", "to", "mui", "to", "de", "te", "ver", "leão", "zi", "nho", "ca", "mi", "nhar", "sem", "ne", "nhu", "ma", "pre", "o", "cu", "pa", "ção", "pe", "la", "sa", "va"],
+    description: "Canção de Toquinho que fala sobre a admiração por um pequeno leão."
   }
 ];
 
