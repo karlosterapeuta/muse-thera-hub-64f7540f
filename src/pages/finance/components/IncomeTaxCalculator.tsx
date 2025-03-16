@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Tabs, TabsContent, TabsList, TabsTrigger 
@@ -809,4 +810,22 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             </span>
                           </span>
                         </div>
-                        <p className="text-xs text
+                        <p className="text-xs text-muted-foreground">
+                          O sistema utiliza automaticamente a dedução mais vantajosa para o cálculo do imposto
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os detalhes do cálculo</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
