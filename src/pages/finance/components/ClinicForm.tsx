@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nome é obrigatório" }),
@@ -263,7 +263,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
             />
           </CardContent>
           
-          <CardFooter className={`${isMobile ? "flex-col space-y-2" : "flex justify-end space-x-2"} ${isMobile ? "p-4 pt-0" : "p-6 pt-0"}`}>
+          <CardFooter className={`${isMobile ? "flex-col space-y-2" : "flex justify-end space-x-2"} ${isMobile ? "p-4 pt-0" : "p-6 pt-0"} sticky bottom-0 bg-background`}>
             <Button
               type="button"
               variant="outline"

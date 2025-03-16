@@ -30,6 +30,7 @@ import { Clinic } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WEEKDAY_LABELS = {
   domingo: "Domingo",
@@ -251,19 +252,21 @@ export default function ClinicsManagement() {
       {/* Responsive Form Dialog/Sheet */}
       {isMobile ? (
         <Sheet open={formOpen} onOpenChange={handleFormClose}>
-          <SheetContent className="w-full sm:max-w-md p-0 overflow-y-auto">
-            <SheetHeader className="px-4 py-4">
+          <SheetContent className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col h-full">
+            <SheetHeader className="px-4 py-4 shrink-0">
               <SheetTitle>{selectedClinic ? "Editar Clínica" : "Nova Clínica"}</SheetTitle>
             </SheetHeader>
-            <div className="px-0 pb-0">
-              <ClinicForm 
-                clinic={selectedClinic}
-                onSuccess={() => {
-                  setFormOpen(false);
-                  refetch();
-                }}
-              />
-            </div>
+            <ScrollArea className="flex-1 overflow-y-auto">
+              <div className="px-0 pb-0">
+                <ClinicForm 
+                  clinic={selectedClinic}
+                  onSuccess={() => {
+                    setFormOpen(false);
+                    refetch();
+                  }}
+                />
+              </div>
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       ) : (
