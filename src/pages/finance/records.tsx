@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -40,6 +41,7 @@ export default function FinancialRecords() {
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "agenda">("agenda");
   
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const deleteRecord = useDeleteFinancialRecord();
@@ -56,6 +58,23 @@ export default function FinancialRecords() {
       quarta: "Quarta-feira",
       quinta: "Quinta-feira",
       sexta: "Sexta-feira"
+    };
+    
+    return weekdayMap[weekdayMatch[1]] || "";
+  };
+  
+  const getWeekdayShort = (description?: string) => {
+    if (!description) return "";
+    
+    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta)/);
+    if (!weekdayMatch) return "";
+    
+    const weekdayMap: Record<string, string> = {
+      segunda: "SEG",
+      terca: "TER",
+      quarta: "QUA",
+      quinta: "QUI",
+      sexta: "SEX"
     };
     
     return weekdayMap[weekdayMatch[1]] || "";
@@ -108,6 +127,25 @@ export default function FinancialRecords() {
     return timeA.localeCompare(timeB);
   });
   
+  // Group records by weekday
+  const recordsByWeekday = {
+    "SEG": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
+    "TER": sortedRecords.filter(record => getWeekdayShort(record.description) === "TER"),
+    "QUA": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
+    "QUI": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
+    "SEX": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
+    "OUTROS": sortedRecords.filter(record => !getWeekdayShort(record.description))
+  };
+  
+  // Sort records within each day by time
+  Object.keys(recordsByWeekday).forEach(day => {
+    recordsByWeekday[day as keyof typeof recordsByWeekday].sort((a, b) => {
+      const timeA = getAppointmentTime(a.description) || "00:00";
+      const timeB = getAppointmentTime(b.description) || "00:00";
+      return timeA.localeCompare(timeB);
+    });
+  });
+  
   useEffect(() => {
     if (location.state?.openForm) {
       setFormOpen(true);
@@ -156,6 +194,71 @@ export default function FinancialRecords() {
     }).format(value);
   };
   
+  const weekdays = ["SEG", "TER", "QUA", "QUI", "SEX"];
+  
+  // Function to render appointment card
+  const renderAppointmentCard = (record: FinancialRecord) => {
+    const time = getAppointmentTime(record.description);
+    const duration = getAppointmentDuration(record.description);
+    
+    return (
+      <div 
+        key={record.id} 
+        className="bg-white border border-primary/10 rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-primary/30 relative group"
+      >
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="flex items-center cursor-pointer"
+                onClick={() => handleEditRecord(record)}
+              >
+                <PencilIcon className="mr-2 h-4 w-4 text-primary" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                onClick={() => handleDeleteClick(record.id)}
+              >
+                <TrashIcon className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        <div className="flex items-center mb-2">
+          <div className="flex items-center bg-primary/10 px-2 py-1 rounded-md text-primary font-medium">
+            <ClockIcon className="h-3.5 w-3.5 mr-1" />
+            {time}
+          </div>
+          {duration && (
+            <div className="text-xs text-muted-foreground ml-2 px-2 py-1 bg-muted rounded-md">
+              {duration}
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-1">
+          <div className="font-medium line-clamp-1">{record.patient_name || 'Sem paciente'}</div>
+          <div className="text-xs text-muted-foreground line-clamp-1">{record.clinic_name}</div>
+        </div>
+        
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-primary/10">
+          <div className="text-xs text-muted-foreground line-clamp-1">{getCleanDescription(record.description) || 'Sem descrição'}</div>
+          <div className="font-bold text-primary">{formatCurrency(record.amount)}</div>
+        </div>
+      </div>
+    );
+  };
+  
   return (
     <div className="container py-6 space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
@@ -176,14 +279,36 @@ export default function FinancialRecords() {
         <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-3 shadow-sm border border-gray-100">
           <DateRangeFilter onFilter={handleDateFilter} />
         </div>
-        <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Pesquisar registros..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex flex-col space-y-2">
+          <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Pesquisar registros..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5 flex justify-center">
+            <Button 
+              variant={viewMode === "agenda" ? "default" : "outline"} 
+              size="sm" 
+              className="rounded-r-none"
+              onClick={() => setViewMode("agenda")}
+            >
+              <LayoutGridIcon className="h-4 w-4 mr-1" />
+              Agenda
+            </Button>
+            <Button 
+              variant={viewMode === "list" ? "default" : "outline"} 
+              size="sm" 
+              className="rounded-l-none"
+              onClick={() => setViewMode("list")}
+            >
+              <ListIcon className="h-4 w-4 mr-1" />
+              Lista
+            </Button>
+          </div>
         </div>
       </div>
       
@@ -191,7 +316,7 @@ export default function FinancialRecords() {
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
           <CardTitle className="flex items-center">
             <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
-            Registros
+            {viewMode === "agenda" ? "Agenda Semanal" : "Registros"} 
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -201,107 +326,132 @@ export default function FinancialRecords() {
               <p className="mt-2 text-muted-foreground">Carregando registros...</p>
             </div>
           ) : sortedRecords.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/30">
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Data
+            <>
+              {viewMode === "agenda" ? (
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  {weekdays.map((day) => (
+                    <div key={day} className="animate-fade-in">
+                      <div className="bg-primary rounded-t-md py-2 text-center text-white font-bold">
+                        {day}
                       </div>
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Horário
+                      <div className="bg-muted/20 p-2 rounded-b-md min-h-64 max-h-[500px] overflow-y-auto">
+                        {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
+                          recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
+                            renderAppointmentCard(record)
+                          )
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground text-sm">
+                            Nenhum registro para este dia
+                          </div>
+                        )}
                       </div>
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">Duração</TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Clínica
-                      </div>
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Paciente
-                      </div>
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Valor
-                      </div>
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      <div className="flex items-center">
-                        <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                        Descrição
-                      </div>
-                    </TableHead>
-                    <TableHead className="w-[80px]">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedRecords.map((record) => (
-                    <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
-                      <TableCell className="whitespace-nowrap font-medium">
-                        {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {getWeekdayLabel(record.description) || "-"}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-medium text-primary">
-                        {getAppointmentTime(record.description) || "-"}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {getAppointmentDuration(record.description) || "-"}
-                      </TableCell>
-                      <TableCell className="font-medium">{record.clinic_name}</TableCell>
-                      <TableCell>{record.patient_name || '-'}</TableCell>
-                      <TableCell className="font-bold text-primary">
-                        {formatCurrency(record.amount)}
-                      </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {getCleanDescription(record.description) || '-'}
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors">
-                              <MoreHorizontalIcon className="h-4 w-4" />
-                              <span className="sr-only">Abrir menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-[160px]">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              className="flex items-center cursor-pointer"
-                              onClick={() => handleEditRecord(record)}
-                            >
-                              <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                              onClick={() => handleDeleteClick(record.id)}
-                            >
-                              <TrashIcon className="mr-2 h-4 w-4" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
-            </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/30">
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Data
+                          </div>
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Horário
+                          </div>
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">Duração</TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Clínica
+                          </div>
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Paciente
+                          </div>
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Valor
+                          </div>
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Descrição
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[80px]">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sortedRecords.map((record) => (
+                        <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
+                          <TableCell className="whitespace-nowrap font-medium">
+                            {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {getWeekdayLabel(record.description) || "-"}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap font-medium text-primary">
+                            {getAppointmentTime(record.description) || "-"}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {getAppointmentDuration(record.description) || "-"}
+                          </TableCell>
+                          <TableCell className="font-medium">{record.clinic_name}</TableCell>
+                          <TableCell>{record.patient_name || '-'}</TableCell>
+                          <TableCell className="font-bold text-primary">
+                            {formatCurrency(record.amount)}
+                          </TableCell>
+                          <TableCell className="max-w-[200px] truncate">
+                            {getCleanDescription(record.description) || '-'}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors">
+                                  <MoreHorizontalIcon className="h-4 w-4" />
+                                  <span className="sr-only">Abrir menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-[160px]">
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  className="flex items-center cursor-pointer"
+                                  onClick={() => handleEditRecord(record)}
+                                >
+                                  <PencilIcon className="mr-2 h-4 w-4 text-primary" />
+                                  Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                  onClick={() => handleDeleteClick(record.id)}
+                                >
+                                  <TrashIcon className="mr-2 h-4 w-4" />
+                                  Excluir
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </>
           ) : (
             <div className="py-20 text-center">
               <div className="rounded-full bg-primary/10 p-4 inline-block mb-3">
