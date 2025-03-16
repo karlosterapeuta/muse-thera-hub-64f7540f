@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,8 @@ import {
   DownloadIcon,
   CalendarIcon,
   PieChartIcon,
-  BarChart2Icon
+  BarChart2Icon,
+  CalculatorIcon
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -26,6 +28,7 @@ import {
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useFinancialRecords } from "./hooks/useFinancialData";
+import { IncomeTaxCalculator } from "./components/IncomeTaxCalculator";
 
 export default function FinancialReports() {
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
@@ -124,6 +127,10 @@ export default function FinancialReports() {
                 <FileTextIcon className="mr-2 h-4 w-4" />
                 Todos os Registros
               </TabsTrigger>
+              <TabsTrigger value="income-tax">
+                <CalculatorIcon className="mr-2 h-4 w-4" />
+                Imposto de Renda
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="charts" className="mt-4">
               {dashboardData?.totalSessions > 0 ? (
@@ -217,6 +224,9 @@ export default function FinancialReports() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+            <TabsContent value="income-tax" className="mt-4">
+              <IncomeTaxCalculator records={records} />
             </TabsContent>
           </Tabs>
           
