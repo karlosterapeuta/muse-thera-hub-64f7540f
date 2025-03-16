@@ -1,101 +1,141 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangeFilter } from "./components/DateRangeFilter";
 import { FinancialStatCards } from "./components/FinancialStatCards";
 import { FinanceCharts } from "./components/FinanceCharts";
 import { useFinanceDashboard } from "./hooks/useFinanceDashboard";
 import { PeriodFilter } from "./types";
-import { PlusIcon, TableIcon, BarChart2Icon, BuildingIcon } from "lucide-react";
+import {
+  FileTextIcon,
+  PrinterIcon,
+  DownloadIcon,
+  CalendarIcon,
+  PieChartIcon,
+  BarChart2Icon,
+  CalculatorIcon
+} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFinancialRecords } from "./hooks/useFinancialData";
+import { IncomeTaxCalculator } from "./components/IncomeTaxCalculator";
 
 export default function FinanceDashboard() {
-  const navigate = useNavigate();
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
-  const { data, isLoading, error } = useFinanceDashboard(dateFilter);
+  const { data: dashboardData, isLoading: isDashboardLoading } = useFinanceDashboard(dateFilter);
+  const { data: records = [], isLoading: isRecordsLoading } = useFinancialRecords(dateFilter);
   
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
   };
   
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+  
+  const getDateRangeText = () => {
+    if (!dateFilter) {
+      return "Todos os períodos";
+    }
+    
+    return `${dateFilter.start_date.split('T')[0].split('-').reverse().join('/')} até ${dateFilter.end_date.split('T')[0].split('-').reverse().join('/')}`;
+  };
+  
   return (
     <div className="container py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Gestão Financeira</h1>
+        <h1 className="text-3xl font-bold">Dashboard Financeiro</h1>
         <div className="flex space-x-2">
           <Button
-            onClick={() => navigate("/finance/records")}
             variant="outline"
+            onClick={() => window.print()}
           >
-            <TableIcon className="mr-2 h-4 w-4" />
-            Registros
-          </Button>
-          <Button
-            onClick={() => navigate("/finance/clinics")}
-            variant="outline"
-          >
-            <BuildingIcon className="mr-2 h-4 w-4" />
-            Clínicas
-          </Button>
-          <Button
-            onClick={() => navigate("/finance/records", { state: { openForm: true } })}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Novo Registro
+            <PrinterIcon className="mr-2 h-4 w-4" />
+            Imprimir
           </Button>
         </div>
       </div>
       
       <DateRangeFilter onFilter={handleDateFilter} />
       
-      {isLoading ? (
+      <div className="print:hidden">
+        <h2 className="text-xl font-bold mb-4">
+          <CalendarIcon className="inline-block mr-2 h-5 w-5 align-text-bottom" />
+          Período: {getDateRangeText()}
+        </h2>
+      </div>
+      
+      {(isDashboardLoading || isRecordsLoading) ? (
         <div className="py-20 text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
           <p className="mt-2 text-muted-foreground">Carregando dados financeiros...</p>
         </div>
-      ) : error ? (
-        <div className="py-20 text-center">
-          <p className="text-destructive">Erro ao carregar dados financeiros</p>
-          <Button 
-            variant="link" 
-            onClick={() => window.location.reload()}
-            className="mt-2"
-          >
-            Tentar novamente
-          </Button>
-        </div>
       ) : (
         <>
           <FinancialStatCards
-            totalEarnings={data?.totalEarnings || 0}
-            totalSessions={data?.totalSessions || 0}
-            averagePerSession={data?.averagePerSession || 0}
+            totalEarnings={dashboardData?.totalEarnings || 0}
+            totalSessions={dashboardData?.totalSessions || 0}
+            averagePerSession={dashboardData?.averagePerSession || 0}
           />
           
-          {data?.totalSessions > 0 ? (
-            <FinanceCharts
-              dailyData={data?.dailyEarnings || []}
-              weeklyData={data?.weeklyEarnings || []}
-              monthlyData={data?.monthlyEarnings || []}
-              yearlyData={data?.yearlyEarnings || []}
-              clinicData={data?.clinicDistribution || []}
-            />
-          ) : (
-            <div className="py-20 text-center">
-              <BarChart2Icon className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-medium">Nenhum registro financeiro</h3>
-              <p className="mt-2 text-muted-foreground">
-                Adicione registros financeiros para visualizar estatísticas e gráficos.
-              </p>
-              <Button 
-                className="mt-4"
-                onClick={() => navigate("/finance/records", { state: { openForm: true } })}
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Adicionar Registro
-              </Button>
+          <Tabs defaultValue="charts" className="print:hidden">
+            <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+              <TabsTrigger value="charts" className="px-4">
+                <BarChart2Icon className="mr-2 h-4 w-4" />
+                Gráficos
+              </TabsTrigger>
+              <TabsTrigger value="tax-calculator" className="px-4 bg-[#8B5CF6] text-white data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white animate-pulse">
+                <CalculatorIcon className="mr-2 h-4 w-4" />
+                Calculadora IR
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="charts" className="mt-4">
+              {dashboardData?.totalSessions > 0 ? (
+                <FinanceCharts
+                  dailyData={dashboardData?.dailyEarnings || []}
+                  weeklyData={dashboardData?.weeklyEarnings || []}
+                  monthlyData={dashboardData?.monthlyEarnings || []}
+                  yearlyData={dashboardData?.yearlyEarnings || []}
+                  clinicData={dashboardData?.clinicDistribution || []}
+                />
+              ) : (
+                <div className="py-20 text-center">
+                  <p className="text-muted-foreground">Nenhum dado disponível para o período selecionado.</p>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="tax-calculator" className="mt-4">
+              <IncomeTaxCalculator records={records} />
+            </TabsContent>
+          </Tabs>
+          
+          <div className="hidden print:block space-y-6">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold">Relatório Financeiro</h1>
+              <p className="text-muted-foreground">Período: {getDateRangeText()}</p>
+              <p className="text-muted-foreground">Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
             </div>
-          )}
+            
+            <div className="grid gap-4 grid-cols-3 mb-6">
+              <div className="border rounded p-4 text-center">
+                <h3 className="font-medium">Receita Total</h3>
+                <p className="text-xl font-bold">{formatCurrency(dashboardData?.totalEarnings || 0)}</p>
+              </div>
+              <div className="border rounded p-4 text-center">
+                <h3 className="font-medium">Total de Atendimentos</h3>
+                <p className="text-xl font-bold">{dashboardData?.totalSessions || 0}</p>
+              </div>
+              <div className="border rounded p-4 text-center">
+                <h3 className="font-medium">Média por Atendimento</h3>
+                <p className="text-xl font-bold">{formatCurrency(dashboardData?.averagePerSession || 0)}</p>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>
