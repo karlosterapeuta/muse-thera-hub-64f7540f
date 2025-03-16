@@ -46,13 +46,24 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   
+  // Form setup with default values
+  const form = useForm<ClinicFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: clinic?.name || "",
+      address: clinic?.address || "",
+      service_days: clinic?.service_days || [],
+      patient_ids: clinic?.patient_ids || [],
+    },
+  });
+  
   useEffect(() => {
-    // Buscar lista de pacientes apenas do usuário atual
+    // Fetch patients list only for current user
     const fetchPatients = async () => {
       setIsLoading(true);
       
       try {
-        // Primeiro buscar o usuário atual
+        // First get the current user
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
@@ -61,7 +72,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
           return;
         }
         
-        // Buscar pacientes do usuário atual
+        // Fetch patients for current user
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
@@ -82,16 +93,6 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
     
     fetchPatients();
   }, []);
-  
-  const form = useForm<ClinicFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: clinic?.name || "",
-      address: clinic?.address || "",
-      service_days: clinic?.service_days || [],
-      patient_ids: clinic?.patient_ids || [],
-    },
-  });
   
   function onSubmit(values: ClinicFormValues) {
     if (isUpdating) {
@@ -114,8 +115,8 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
         { 
           name: values.name,
           address: values.address,
-          service_days: values.service_days,
-          patient_ids: values.patient_ids
+          service_days: values.service_days || [],
+          patient_ids: values.patient_ids || []
         },
         {
           onSuccess: () => {
