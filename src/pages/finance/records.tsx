@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -130,6 +131,11 @@ export default function FinancialRecords() {
         onSuccess: () => {
           setConfirmDialogOpen(false);
           setRecordToDelete(null);
+          toast({
+            title: "Registro excluído",
+            description: "O registro financeiro foi excluído com sucesso.",
+            variant: "default",
+          });
         }
       });
     }
@@ -151,14 +157,15 @@ export default function FinancialRecords() {
   };
   
   return (
-    <div className="container py-6 space-y-6">
+    <div className="container py-6 space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Registros Financeiros</h1>
+        <h1 className="text-3xl font-bold text-primary">Registros Financeiros</h1>
         <Button
           onClick={() => {
             setSelectedRecord(undefined);
             setFormOpen(true);
           }}
+          className="shadow-sm hover:shadow-md transition-all"
         >
           <PlusIcon className="mr-2 h-4 w-4" />
           Novo Registro
@@ -166,10 +173,10 @@ export default function FinancialRecords() {
       </div>
       
       <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
-        <div className="md:col-span-3">
+        <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-3 shadow-sm border border-gray-100">
           <DateRangeFilter onFilter={handleDateFilter} />
         </div>
-        <div className="relative">
+        <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             className="pl-9"
@@ -180,9 +187,12 @@ export default function FinancialRecords() {
         </div>
       </div>
       
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>Registros</CardTitle>
+      <Card className="shadow-md border-gray-100 overflow-hidden">
+        <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
+          <CardTitle className="flex items-center">
+            <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
+            Registros
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -194,56 +204,91 @@ export default function FinancialRecords() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Dia da Semana</TableHead>
-                    <TableHead>Horário</TableHead>
-                    <TableHead>Duração</TableHead>
-                    <TableHead>Clínica</TableHead>
-                    <TableHead>Paciente</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Descrição</TableHead>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Data
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Horário
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">Duração</TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Clínica
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Paciente
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Valor
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Descrição
+                      </div>
+                    </TableHead>
                     <TableHead className="w-[80px]">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {sortedRecords.map((record) => (
-                    <TableRow key={record.id}>
-                      <TableCell>
+                    <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
+                      <TableCell className="whitespace-nowrap font-medium">
                         {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         {getWeekdayLabel(record.description) || "-"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap font-medium text-primary">
                         {getAppointmentTime(record.description) || "-"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         {getAppointmentDuration(record.description) || "-"}
                       </TableCell>
-                      <TableCell>{record.clinic_name}</TableCell>
+                      <TableCell className="font-medium">{record.clinic_name}</TableCell>
                       <TableCell>{record.patient_name || '-'}</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(record.amount)}</TableCell>
+                      <TableCell className="font-bold text-primary">
+                        {formatCurrency(record.amount)}
+                      </TableCell>
                       <TableCell className="max-w-[200px] truncate">
                         {getCleanDescription(record.description) || '-'}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors">
                               <MoreHorizontalIcon className="h-4 w-4" />
                               <span className="sr-only">Abrir menu</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="w-[160px]">
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleEditRecord(record)}>
-                              <PencilIcon className="mr-2 h-4 w-4" />
+                            <DropdownMenuItem 
+                              className="flex items-center cursor-pointer"
+                              onClick={() => handleEditRecord(record)}
+                            >
+                              <PencilIcon className="mr-2 h-4 w-4 text-primary" />
                               Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              className="text-destructive focus:text-destructive"
+                              className="flex items-center text-destructive focus:text-destructive cursor-pointer"
                               onClick={() => handleDeleteClick(record.id)}
                             >
                               <TrashIcon className="mr-2 h-4 w-4" />
@@ -259,10 +304,13 @@ export default function FinancialRecords() {
             </div>
           ) : (
             <div className="py-20 text-center">
+              <div className="rounded-full bg-primary/10 p-4 inline-block mb-3">
+                <DollarSignIcon className="h-6 w-6 text-primary" />
+              </div>
               <p className="text-muted-foreground">Nenhum registro encontrado.</p>
               <Button 
                 variant="link" 
-                className="mt-2"
+                className="mt-2 text-primary"
                 onClick={() => {
                   setSelectedRecord(undefined);
                   setFormOpen(true);
@@ -282,6 +330,13 @@ export default function FinancialRecords() {
             onSuccess={() => {
               setFormOpen(false);
               refetch();
+              toast({
+                title: selectedRecord ? "Registro atualizado" : "Registro criado",
+                description: selectedRecord 
+                  ? "O registro financeiro foi atualizado com sucesso." 
+                  : "O registro financeiro foi criado com sucesso.",
+                variant: "default",
+              });
             }}
             onCancel={handleCloseForm}
           />
@@ -291,7 +346,12 @@ export default function FinancialRecords() {
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <div className="space-y-4">
-            <h2 className="text-xl font-bold">Confirmar exclusão</h2>
+            <div className="flex items-center space-x-3">
+              <div className="bg-destructive/10 p-2 rounded-full">
+                <TrashIcon className="h-5 w-5 text-destructive" />
+              </div>
+              <h2 className="text-xl font-bold">Confirmar exclusão</h2>
+            </div>
             <p>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-2">
               <Button
@@ -304,8 +364,16 @@ export default function FinancialRecords() {
                 variant="destructive"
                 onClick={confirmDelete}
                 disabled={deleteRecord.isPending}
+                className="shadow-sm hover:shadow-md transition-colors"
               >
-                {deleteRecord.isPending ? "Excluindo..." : "Excluir"}
+                {deleteRecord.isPending ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Excluindo...
+                  </>
+                ) : (
+                  "Excluir"
+                )}
               </Button>
             </div>
           </div>
