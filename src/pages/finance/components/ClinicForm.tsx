@@ -43,17 +43,39 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   const addClinic = useAddClinic();
   const updateClinic = useUpdateClinic();
   const [patients, setPatients] = useState<{ id: string, name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Buscar lista de pacientes
+    // Buscar lista de pacientes apenas do usuário atual
     const fetchPatients = async () => {
-      const { data, error } = await supabase
-        .from("patients")
-        .select("id, name")
-        .order("name");
+      setIsLoading(true);
+      
+      try {
+        // Primeiro buscar o usuário atual
+        const { data: { user } } = await supabase.auth.getUser();
         
-      if (!error && data) {
-        setPatients(data);
+        if (!user) {
+          console.error("Usuário não autenticado");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Buscar pacientes do usuário atual
+        const { data, error } = await supabase
+          .from("patients")
+          .select("id, name")
+          .eq("professional_id", user.id)
+          .order("name");
+          
+        if (error) {
+          console.error("Erro ao buscar pacientes:", error);
+        } else {
+          setPatients(data || []);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar pacientes:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -196,34 +218,39 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                 <FormItem>
                   <FormLabel>Pacientes</FormLabel>
                   <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
-                    {patients.map((patient) => (
-                      <div key={patient.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`patient-${patient.id}`}
-                          checked={form.watch("patient_ids")?.includes(patient.id)}
-                          onCheckedChange={(checked) => {
-                            const currentPatients = form.watch("patient_ids") || [];
-                            if (checked) {
-                              form.setValue("patient_ids", [...currentPatients, patient.id]);
-                            } else {
-                              form.setValue(
-                                "patient_ids",
-                                currentPatients.filter((p) => p !== patient.id)
-                              );
-                            }
-                          }}
-                        />
-                        <label
-                          htmlFor={`patient-${patient.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {patient.name}
-                        </label>
-                      </div>
-                    ))}
-                    {patients.length === 0 && (
+                    {isLoading ? (
                       <div className="text-sm text-muted-foreground py-2 text-center">
-                        Nenhum paciente cadastrado
+                        Carregando pacientes...
+                      </div>
+                    ) : patients.length > 0 ? (
+                      patients.map((patient) => (
+                        <div key={patient.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`patient-${patient.id}`}
+                            checked={form.watch("patient_ids")?.includes(patient.id)}
+                            onCheckedChange={(checked) => {
+                              const currentPatients = form.watch("patient_ids") || [];
+                              if (checked) {
+                                form.setValue("patient_ids", [...currentPatients, patient.id]);
+                              } else {
+                                form.setValue(
+                                  "patient_ids",
+                                  currentPatients.filter((p) => p !== patient.id)
+                                );
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`patient-${patient.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {patient.name}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-muted-foreground py-2 text-center">
+                        Nenhum paciente cadastrado no seu perfil
                       </div>
                     )}
                   </div>
