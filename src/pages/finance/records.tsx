@@ -313,29 +313,4 @@ export default function FinancialRecords() {
       </Dialog>
     </div>
   );
-  
-  function handleEditRecord(record: FinancialRecord) {
-    setSelectedRecord(record);
-    setFormOpen(true);
-  }
-  
-  function handleDeleteClick(id: string) {
-    setRecordToDelete(id);
-    setConfirmDialogOpen(true);
-  }
-  
-  function confirmDelete() {
-    if (recordToDelete) {
-      deleteRecord.mutate(recordToDelete, {
-        onSuccess: () => {
-          setConfirmDialogOpen(false);
-          setRecordToDelete(null);
-        }
-      });
-    }
-  }
-  
-  function handleDateFilter(start_date: string, end_date: string) {
-    setDateFilter({ start_date, end_date });
-  }
 }
