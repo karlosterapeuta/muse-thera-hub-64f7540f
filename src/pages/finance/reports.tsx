@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +43,6 @@ export default function FinancialReports() {
     }).format(value);
   };
   
-  // Group records by clinic
   const recordsByClinic = records.reduce((acc, record) => {
     const clinic = record.clinic_name || "Sem clínica";
     if (!acc[clinic]) {
@@ -60,7 +58,6 @@ export default function FinancialReports() {
     return acc;
   }, {} as Record<string, { count: number, total: number, records: typeof records }>);
   
-  // Format date range for the report title
   const getDateRangeText = () => {
     if (!dateFilter) {
       return "Todos os períodos";
@@ -134,6 +131,7 @@ export default function FinancialReports() {
                   dailyData={dashboardData?.dailyEarnings || []}
                   weeklyData={dashboardData?.weeklyEarnings || []}
                   monthlyData={dashboardData?.monthlyEarnings || []}
+                  yearlyData={dashboardData?.yearlyEarnings || []}
                   clinicData={dashboardData?.clinicDistribution || []}
                 />
               ) : (
@@ -222,7 +220,6 @@ export default function FinancialReports() {
             </TabsContent>
           </Tabs>
           
-          {/* Print version - simplified version that shows when printing */}
           <div className="hidden print:block space-y-6">
             <div className="text-center mb-6">
               <h1 className="text-2xl font-bold">Relatório Financeiro</h1>
