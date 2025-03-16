@@ -39,6 +39,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { FinancialRecord } from "../types";
+
+interface IncomeTaxCalculatorProps {
+  records: FinancialRecord[];
+}
 
 // Schema para validação do formulário
 const formSchema = z.object({
@@ -65,7 +70,7 @@ const incomeTaxRates = [
 // Cores para o gráfico
 const COLORS = ['#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#F59E0B'];
 
-export function IncomeTaxCalculator() {
+export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   const isMobile = useIsMobile();
   const [calculatedValues, setCalculatedValues] = useState<{
     grossIncome: number;
