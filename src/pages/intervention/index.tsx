@@ -48,10 +48,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { DateField } from "@/pages/processes/report/components/DateField";
+import { PatientSelect } from "../anamnesis/components/PatientSelect";
+import { DateField } from "../processes/report/components/DateField";
 
 const formSchema = z.object({
   patient_id: z.string({
