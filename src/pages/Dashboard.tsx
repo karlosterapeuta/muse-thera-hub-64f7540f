@@ -6,6 +6,7 @@ import { CalendarDays, Users } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { WeeklySchedule } from "@/components/WeeklySchedule";
 
 export default function Dashboard() {
   const [upcomingSessions, setUpcomingSessions] = useState([]);
@@ -231,6 +232,9 @@ export default function Dashboard() {
           </div>
         )}
       </Card>
+      
+      {/* Weekly Schedule Card */}
+      <WeeklySchedule isLoading={isLoading} />
 
       <Card className="p-4 md:p-6">
         <h3 className="text-lg font-semibold mb-4">Próximas Sessões</h3>
