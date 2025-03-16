@@ -623,24 +623,28 @@ export default function FinancialRecords() {
       
       {isMobile ? (
         <Sheet open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
-          <SheetContent className="w-full sm:max-w-md p-0 overflow-y-auto">
-            <SheetHeader className="px-4 py-4">
+          <SheetContent className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col h-full">
+            <SheetHeader className="px-4 py-4 shrink-0">
               <SheetTitle>Nova Clínica</SheetTitle>
             </SheetHeader>
-            <div className="px-0 pb-0">
-              <ClinicForm 
-                onSuccess={handleClinicFormSuccess}
-              />
-            </div>
+            <ScrollArea className="flex-1 overflow-y-auto">
+              <div className="px-0 pb-0">
+                <ClinicForm 
+                  onSuccess={handleClinicFormSuccess}
+                />
+              </div>
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       ) : (
         <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
-          <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+          <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
             <DialogTitle className="px-6 py-4">Nova Clínica</DialogTitle>
-            <ClinicForm 
-              onSuccess={handleClinicFormSuccess}
-            />
+            <ScrollArea className="flex-1 overflow-y-auto">
+              <ClinicForm 
+                onSuccess={handleClinicFormSuccess}
+              />
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       )}
@@ -721,3 +725,4 @@ export default function FinancialRecords() {
     </div>
   );
 }
+
