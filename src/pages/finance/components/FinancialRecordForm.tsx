@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -52,7 +53,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     resolver: zodResolver(formSchema),
     defaultValues: {
       clinic_id: record?.clinic_id || "",
-      patient_id: record?.patient_id || "",
+      patient_id: record?.patient_id || undefined,
       amount: record?.amount || 0,
       session_date: record?.session_date ? format(new Date(record.session_date), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
       description: record?.description || "",
@@ -89,7 +90,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
           onSuccess: () => {
             form.reset({
               clinic_id: "",
-              patient_id: "",
+              patient_id: undefined,
               amount: 0,
               session_date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
               description: "",
@@ -153,7 +154,9 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">Nenhum paciente</SelectItem>
+                      <SelectItem key="no-patient" value="no-patient">
+                        Nenhum paciente
+                      </SelectItem>
                       {patients.map((patient) => (
                         <SelectItem key={patient.id} value={patient.id}>
                           {patient.name}
