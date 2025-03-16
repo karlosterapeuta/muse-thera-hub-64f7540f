@@ -7,7 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Tooltip, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid,
+  TooltipProps
+} from "recharts";
 import {
   Form,
   FormControl,
@@ -233,11 +245,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     return 0;
   };
 
-  const formatTooltipValue = (value: any, name?: string, entry?: any, index?: number): [string, string] => {
-    return [formatBRL(parseNumberSafely(value)), ''];
+  const formatTooltipValue = (value: number, name?: string) => {
+    return formatBRL(parseNumberSafely(value));
   };
 
-  const formatYAxis = (value: any): string => {
+  const formatYAxis = (value: number) => {
     return formatBRL(parseNumberSafely(value)).split(',')[0];
   };
 
@@ -661,15 +673,13 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               outerRadius={100}
                               paddingAngle={5}
                               dataKey="value"
-                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                              label={({name, percent}) => `${name}: ${(percent * 100).toFixed(1)}%`}
                             >
                               {generatePieChartData().map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip 
-                              formatter={(value, name, entry, index) => formatTooltipValue(value, name, entry, index)}
-                            />
+                            <Tooltip formatter={(value) => [formatBRL(parseNumberSafely(value)), '']} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -682,12 +692,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           <BarChart data={calculatedValues.monthlyBreakdown}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
-                            <YAxis 
-                              tickFormatter={(value) => formatYAxis(value)}
-                            />
-                            <Tooltip 
-                              formatter={(value, name, entry, index) => formatTooltipValue(value, name, entry, index)}
-                            />
+                            <YAxis tickFormatter={(value) => formatYAxis(value)} />
+                            <Tooltip formatter={(value) => [formatBRL(parseNumberSafely(value)), '']} />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
                           </BarChart>
@@ -806,4 +812,3 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </div>
   );
 }
-
