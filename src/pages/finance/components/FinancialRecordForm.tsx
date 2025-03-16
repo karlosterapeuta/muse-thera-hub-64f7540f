@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -67,10 +68,11 @@ type FinancialRecordFormValues = z.infer<typeof formSchema>;
 
 interface FinancialRecordFormProps {
   onSuccess?: () => void;
+  onCancel?: () => void;
   record?: FinancialRecord;
 }
 
-export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormProps) {
+export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRecordFormProps) {
   const isUpdating = !!record;
   const isMobile = useIsMobile();
   const { data: clinics = [] } = useClinics();
@@ -195,6 +197,11 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       );
     }
   }
+
+  const handleCancel = () => {
+    form.reset();
+    onCancel?.();
+  };
   
   return (
     <Card className="w-full">
@@ -392,7 +399,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
             <Button
               type="button"
               variant="outline"
-              onClick={() => form.reset()}
+              onClick={handleCancel}
               className={isMobile ? 'w-full' : ''}
             >
               Cancelar

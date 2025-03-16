@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -78,7 +77,6 @@ export default function FinancialRecords() {
   const getCleanDescription = (description?: string) => {
     if (!description) return "";
     
-    // Remove weekday, time and duration information from description
     return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "");
   };
   
@@ -88,12 +86,11 @@ export default function FinancialRecords() {
     record.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  // Sort records by weekday and time
   const sortedRecords = [...filteredRecords].sort((a, b) => {
     const weekdayA = getWeekdayLabel(a.description);
     const weekdayB = getWeekdayLabel(b.description);
     
-    const weekdayOrder = {
+    const weekdayOrder: Record<string, number> = {
       "Segunda-feira": 1,
       "Terça-feira": 2, 
       "Quarta-feira": 3,
@@ -101,12 +98,10 @@ export default function FinancialRecords() {
       "Sexta-feira": 5
     };
     
-    // First sort by weekday
     if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
       return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
     }
     
-    // Then sort by time
     const timeA = getAppointmentTime(a.description);
     const timeB = getAppointmentTime(b.description);
     return timeA.localeCompare(timeB);
@@ -142,6 +137,10 @@ export default function FinancialRecords() {
   
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
+  };
+  
+  const handleCloseForm = () => {
+    setFormOpen(false);
   };
   
   const formatCurrency = (value: number) => {
@@ -284,6 +283,7 @@ export default function FinancialRecords() {
               setFormOpen(false);
               refetch();
             }}
+            onCancel={handleCloseForm}
           />
         </DialogContent>
       </Dialog>
