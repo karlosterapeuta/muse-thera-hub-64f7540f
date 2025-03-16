@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,8 @@ import {
   PieChartIcon, 
   InfoIcon,
   CalculatorIcon,
-  DollarSignIcon
+  DollarSignIcon,
+  CheckCircleIcon
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -71,10 +73,25 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
 
   const [activeSection, setActiveSection] = useState<"calculator" | "report" | "chart" | "details">("calculator");
 
+  const currentYear = new Date().getFullYear().toString();
+  
+  // Generate available years from the records
+  const generateAvailableYears = () => {
+    const years = new Set<string>();
+    records.forEach(record => {
+      const year = new Date(record.session_date).getFullYear().toString();
+      years.add(year);
+    });
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
+  };
+  
+  const availableYears = generateAvailableYears();
+  const defaultYear = availableYears.length > 0 ? availableYears[0] : currentYear;
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      taxYear: new Date().getFullYear().toString(),
+      taxYear: defaultYear,
       deductibleExpensesPercentage: 32,
       dependents: 0,
       otherDeductions: 0,
@@ -89,6 +106,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
 
   const watchProfessionalType = form.watch("professionalType");
   const watchTaxRegime = form.watch("taxRegime");
+  const watchTaxYear = form.watch("taxYear");
 
   const updateDeductiblePercentage = (value: string) => {
     switch (value) {
@@ -107,6 +125,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   const handleProfessionalTypeChange = (value: string) => {
     updateDeductiblePercentage(value);
   };
+
+  // Automatically calculate tax when records change or form values change
+  useEffect(() => {
+    if (records.length > 0) {
+      const values = form.getValues();
+      calculateIncomeTax(values);
+    }
+  }, [records, watchTaxYear, watchProfessionalType, watchTaxRegime]);
 
   const calculateIncomeTax = (values: FormValues) => {
     const yearRecords = records.filter(record => 
@@ -184,16 +210,9 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       monthlyBreakdown
     });
     
-    setActiveSection("report");
-  };
-
-  const generateAvailableYears = () => {
-    const years = new Set<string>();
-    records.forEach(record => {
-      const year = new Date(record.session_date).getFullYear().toString();
-      years.add(year);
-    });
-    return Array.from(years).sort((a, b) => b.localeCompare(a));
+    if (grossIncome > 0) {
+      setActiveSection("report");
+    }
   };
   
   const formatCurrency = (value: number) => {
@@ -202,8 +221,6 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       currency: 'BRL'
     }).format(value);
   };
-  
-  const availableYears = generateAvailableYears();
   
   const getTaxRegimeLabel = (regime: string) => {
     switch (regime) {
@@ -291,10 +308,17 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       <CardHeader className="bg-gradient-to-r from-[#8B5CF6]/20 to-transparent border-b border-[#8B5CF6]/20">
         <CardTitle className="text-[#8B5CF6] flex items-center">
           <DollarSignIcon className="mr-2 h-5 w-5" />
-          Cálculo de Imposto de Renda Profissional
+          Cálculo Automático do Imposto de Renda
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
+        <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6 flex items-center">
+          <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+          <p className="text-green-700 text-sm">
+            Os cálculos são realizados automaticamente com base nos registros financeiros do período selecionado.
+          </p>
+        </div>
+        
         <Tabs value={activeSection} onValueChange={(v) => setActiveSection(v as any)} className="w-full">
           <TabsList className="mb-6 grid grid-cols-4 gap-4 bg-[#8B5CF6]/10 p-1">
             <TabsTrigger 
@@ -302,7 +326,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
               className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
             >
               <CalculatorIcon className="mr-2 h-4 w-4" />
-              Calculadora
+              Parâmetros
             </TabsTrigger>
             {calculationResult && (
               <>
@@ -342,7 +366,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       <FormItem>
                         <FormLabel className="text-[#8B5CF6] font-medium">Ano Fiscal</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                          }}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -358,12 +385,17 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem value={new Date().getFullYear().toString()}>
-                                {new Date().getFullYear()}
+                              <SelectItem value={currentYear}>
+                                {currentYear}
                               </SelectItem>
                             )}
                           </SelectContent>
                         </Select>
+                        {records.filter(r => new Date(r.session_date).getFullYear().toString() === field.value).length === 0 && (
+                          <p className="text-amber-600 text-xs mt-1">
+                            Nenhum registro para este ano.
+                          </p>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -379,6 +411,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           onValueChange={(value) => {
                             field.onChange(value);
                             handleProfessionalTypeChange(value);
+                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
                           }}
                           defaultValue={field.value}
                         >
@@ -405,7 +438,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       <FormItem>
                         <FormLabel className="text-[#8B5CF6] font-medium">Regime Tributário</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                          }}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -434,7 +470,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           <Input 
                             type="number" 
                             {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -452,7 +492,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           <Input 
                             type="number" 
                             {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                            }} 
                           />
                         </FormControl>
                         <FormMessage />
@@ -471,7 +515,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             type="number" 
                             step="0.01" 
                             {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -498,7 +546,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               type="number" 
                               step="0.01" 
                               {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -517,7 +569,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               type="number" 
                               step="0.01" 
                               {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -536,7 +592,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               type="number" 
                               step="0.01" 
                               {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -557,7 +617,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           type="number" 
                           step="0.01" 
                           {...field} 
-                          className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                          className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -570,7 +634,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                   className="w-full bg-[#8B5CF6] hover:bg-[#9b87f5]"
                 >
                   <CalculatorIcon className="mr-2 h-4 w-4" />
-                  Calcular Imposto
+                  Atualizar Cálculos
                 </Button>
               </form>
             </Form>
@@ -763,4 +827,3 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </Card>
   );
 }
-

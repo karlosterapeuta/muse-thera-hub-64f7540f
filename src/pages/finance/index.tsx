@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -87,7 +87,7 @@ export default function FinanceDashboard() {
                 <BarChart2Icon className="mr-2 h-4 w-4" />
                 Gráficos
               </TabsTrigger>
-              <TabsTrigger value="tax-calculator" className="px-4 bg-[#8B5CF6] text-white data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white animate-pulse">
+              <TabsTrigger value="tax-calculator" className="px-4 bg-[#8B5CF6] text-white data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
                 <CalculatorIcon className="mr-2 h-4 w-4" />
                 Calculadora IR
               </TabsTrigger>
