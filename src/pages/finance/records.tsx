@@ -594,15 +594,32 @@ export default function FinancialRecords() {
         </CardContent>
       </Card>
       
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className={isMobile ? "w-[95vw] max-w-lg rounded-lg" : "sm:max-w-lg"}>
-          <FinancialRecordForm 
-            record={selectedRecord}
-            onSuccess={handleFormSuccess}
-            onCancel={handleCloseForm}
-          />
-        </DialogContent>
-      </Dialog>
+      {isMobile ? (
+        <Sheet open={formOpen} onOpenChange={setFormOpen}>
+          <SheetContent className="w-full p-0 pt-6 overflow-y-auto">
+            <SheetHeader className="px-4 mb-2">
+              <SheetTitle>{selectedRecord ? "Editar Registro" : "Novo Registro"}</SheetTitle>
+            </SheetHeader>
+            <div className="px-0 pb-0">
+              <FinancialRecordForm 
+                record={selectedRecord}
+                onSuccess={handleFormSuccess}
+                onCancel={handleCloseForm}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={formOpen} onOpenChange={setFormOpen}>
+          <DialogContent className={isTablet ? "sm:max-w-md" : "sm:max-w-lg"}>
+            <FinancialRecordForm 
+              record={selectedRecord}
+              onSuccess={handleFormSuccess}
+              onCancel={handleCloseForm}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
       
       {isMobile ? (
         <Sheet open={clinicFormOpen} onOpenChange={setClinicFormOpen}>

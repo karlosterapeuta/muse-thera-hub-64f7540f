@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 
 const weekdayOptions = [
@@ -75,6 +76,7 @@ interface FinancialRecordFormProps {
 export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRecordFormProps) {
   const isUpdating = !!record;
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const { data: clinics = [] } = useClinics();
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
@@ -241,13 +243,13 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none' : ''}`}>
+      <CardHeader className={isMobile ? 'px-4 py-3' : ''}>
         <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className={`space-y-4 ${isMobile ? 'px-4' : ''}`}>
             <FormField
               control={form.control}
               name="clinic_id"
@@ -342,7 +344,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               )}
             />
             
-            <div className={`${isMobile ? 'space-y-4' : 'grid grid-cols-3 gap-4'}`}>
+            <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-2 gap-4' : 'grid grid-cols-3 gap-4'}`}>
               <FormField
                 control={form.control}
                 name="weekday"
@@ -438,6 +440,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                     <Textarea
                       placeholder="Detalhes sobre o atendimento"
                       {...field}
+                      className={isMobile ? 'min-h-[80px]' : 'min-h-[100px]'}
                     />
                   </FormControl>
                   <FormMessage />
@@ -446,7 +449,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
             />
           </CardContent>
           
-          <CardFooter className={`${isMobile ? 'flex flex-col space-y-2' : 'flex justify-end space-x-2'}`}>
+          <CardFooter className={`${isMobile ? 'flex flex-col gap-2 px-4 pb-6' : isTablet ? 'flex justify-end gap-2' : 'flex justify-end space-x-2'}`}>
             <Button
               type="button"
               variant="outline"
@@ -475,4 +478,3 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     </Card>
   );
 }
-
