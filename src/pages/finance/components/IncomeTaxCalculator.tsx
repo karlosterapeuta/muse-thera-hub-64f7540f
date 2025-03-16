@@ -813,30 +813,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       
                       <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
                         <div className="flex justify-between mb-2">
-                          <span className="text-sm font-medium">Dedução Utilizada:</span>
-                          <span className="font-semibold">
-                            {formatBRL(calculatedValues.chosenDeduction)}
-                            <span className="text-xs ml-2 text-muted-foreground">
-                              ({calculatedValues.chosenDeduction === calculatedValues.simplifiedDeduction ? 'Simplificada' : 'Detalhada'})
-                            </span>
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          O sistema utiliza automaticamente a dedução mais vantajosa para o cálculo do imposto
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-8 text-center">
-                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os detalhes do cálculo</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-}
+                          <span className="text-sm font-medium">
