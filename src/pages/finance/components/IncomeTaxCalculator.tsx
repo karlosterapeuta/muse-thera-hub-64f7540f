@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { FinancialRecord } from "../types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +58,12 @@ const formSchema = z.object({
   }, {
     message: "Previdência privada deve ser um número válido e não negativo.",
   }),
+  privateRetirement: z.string().refine((value) => {
+    const parsedValue = parseCurrencyInput(value);
+    return !isNaN(parsedValue) && parsedValue >= 0;
+  }, {
+    message: "Aposentadoria privada deve ser um número válido e não negativo.",
+  }),
 });
 
 interface IncomeTaxResult {
@@ -64,7 +72,11 @@ interface IncomeTaxResult {
   effectiveTaxRate: number;
 }
 
-export function IncomeTaxCalculator() {
+interface IncomeTaxCalculatorProps {
+  records?: FinancialRecord[];
+}
+
+export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   const [incomeTaxResult, setIncomeTaxResult] = useState<IncomeTaxResult | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -75,8 +87,20 @@ export function IncomeTaxCalculator() {
       healthInsurance: "R$ 0,00",
       educationExpenses: "R$ 0,00",
       pensionPayments: "R$ 0,00",
+      privateRetirement: "R$ 0,00",
     },
   });
+
+  // If records are provided, pre-fill the grossIncome field
+  useEffect(() => {
+    if (records && records.length > 0) {
+      // Calculate total gross income (monthly average)
+      const totalIncome = records.reduce((sum, record) => sum + record.amount, 0);
+      const monthlyAverage = totalIncome / 12; // Assuming records are for a year
+      
+      form.setValue("grossIncome", formatCurrencyInput(monthlyAverage.toFixed(2)));
+    }
+  }, [records, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const grossIncome = parseCurrencyInput(values.grossIncome);
@@ -84,13 +108,15 @@ export function IncomeTaxCalculator() {
     const healthInsurance = parseCurrencyInput(values.healthInsurance);
     const educationExpenses = parseCurrencyInput(values.educationExpenses);
     const pensionPayments = parseCurrencyInput(values.pensionPayments);
+    const privateRetirement = parseCurrencyInput(values.privateRetirement);
 
     if (
       isNaN(grossIncome) ||
       isNaN(socialSecurity) ||
       isNaN(healthInsurance) ||
       isNaN(educationExpenses) ||
-      isNaN(pensionPayments)
+      isNaN(pensionPayments) ||
+      isNaN(privateRetirement)
     ) {
       alert("Por favor, insira valores numéricos válidos.");
       return;
@@ -101,7 +127,8 @@ export function IncomeTaxCalculator() {
       socialSecurity,
       healthInsurance,
       educationExpenses,
-      pensionPayments
+      pensionPayments,
+      privateRetirement
     );
 
     setIncomeTaxResult({
@@ -215,27 +242,51 @@ export function IncomeTaxCalculator() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="pensionPayments"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pagamentos Mensais para Previdência Privada</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="R$ 0,00"
-                        value={field.value}
-                        onChange={(e) => {
-                          const formattedValue = formatCurrencyInput(e.target.value);
-                          field.onChange(formattedValue);
-                        }}
-                        type="text"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="pensionPayments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pagamentos Mensais para Previdência Privada</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="R$ 0,00"
+                          value={field.value}
+                          onChange={(e) => {
+                            const formattedValue = formatCurrencyInput(e.target.value);
+                            field.onChange(formattedValue);
+                          }}
+                          type="text"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              
+                <FormField
+                  control={form.control}
+                  name="privateRetirement"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Aposentadoria Privada Mensal</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="R$ 0,00"
+                          value={field.value}
+                          onChange={(e) => {
+                            const formattedValue = formatCurrencyInput(e.target.value);
+                            field.onChange(formattedValue);
+                          }}
+                          type="text"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <Button type="submit" className="w-full">
                 Calcular Imposto de Renda
