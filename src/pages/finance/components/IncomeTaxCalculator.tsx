@@ -312,10 +312,18 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       <div className="print:hidden">
         <Tabs value={activeSection} onValueChange={(value) => setActiveSection(value as any)}>
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="calculator">Calculadora</TabsTrigger>
-            <TabsTrigger value="report">Relatório</TabsTrigger>
-            <TabsTrigger value="chart">Gráficos</TabsTrigger>
-            <TabsTrigger value="details">Detalhes</TabsTrigger>
+            <TabsTrigger value="calculator" className={isMobile ? "text-xs px-1 py-1.5" : ""}>
+              {isMobile ? "Calculadora" : "Calculadora"}
+            </TabsTrigger>
+            <TabsTrigger value="report" className={isMobile ? "text-xs px-1 py-1.5" : ""}>
+              {isMobile ? "Relatório" : "Relatório"}
+            </TabsTrigger>
+            <TabsTrigger value="chart" className={isMobile ? "text-xs px-1 py-1.5" : ""}>
+              {isMobile ? "Gráficos" : "Gráficos"}
+            </TabsTrigger>
+            <TabsTrigger value="details" className={isMobile ? "text-xs px-1 py-1.5" : ""}>
+              {isMobile ? "Detalhes" : "Detalhes"}
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="calculator" className="space-y-4 mt-4">
