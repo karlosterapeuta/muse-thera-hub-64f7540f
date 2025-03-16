@@ -12,7 +12,7 @@ import { Clinic } from "../types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nome é obrigatório" }),
@@ -44,6 +44,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   const updateClinic = useUpdateClinic();
   const [patients, setPatients] = useState<{ id: string, name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     // Buscar lista de pacientes apenas do usuário atual
@@ -132,13 +133,13 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   }
   
   return (
-    <Card className="w-full max-w-lg">
-      <CardHeader>
-        <CardTitle>{isUpdating ? "Editar Clínica" : "Nova Clínica"}</CardTitle>
+    <Card className="w-full max-w-full md:max-w-lg mx-auto">
+      <CardHeader className={isMobile ? "p-4" : "p-6"}>
+        <CardTitle className="text-xl md:text-2xl">{isUpdating ? "Editar Clínica" : "Nova Clínica"}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className={`space-y-4 ${isMobile ? "p-4 pt-0" : "p-6 pt-0"}`}>
             <FormField
               control={form.control}
               name="name"
@@ -179,7 +180,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               render={() => (
                 <FormItem>
                   <FormLabel>Dias de Atendimento</FormLabel>
-                  <div className="space-y-2">
+                  <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-2"} gap-2`}>
                     {WEEKDAYS.map((day) => (
                       <div key={day.value} className="flex items-center space-x-2">
                         <Checkbox
@@ -260,17 +261,19 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
             />
           </CardContent>
           
-          <CardFooter className="flex justify-end space-x-2">
+          <CardFooter className={`flex ${isMobile ? "flex-col space-y-2" : "justify-end space-x-2"} ${isMobile ? "p-4 pt-0" : "p-6 pt-0"}`}>
             <Button
               type="button"
               variant="outline"
               onClick={() => form.reset()}
+              className={isMobile ? "w-full" : ""}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={addClinic.isPending || updateClinic.isPending}
+              className={isMobile ? "w-full" : ""}
             >
               {isUpdating ? "Atualizar" : "Salvar"}
             </Button>

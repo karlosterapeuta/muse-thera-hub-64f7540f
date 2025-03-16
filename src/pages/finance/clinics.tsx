@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -28,6 +29,7 @@ import { ClinicForm } from "./components/ClinicForm";
 import { Clinic } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WEEKDAY_LABELS = {
   domingo: "Domingo",
@@ -46,6 +48,7 @@ export default function ClinicsManagement() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [clinicToDelete, setClinicToDelete] = useState<string | null>(null);
   const [patientsMap, setPatientsMap] = useState<Record<string, string>>({});
+  const isMobile = useIsMobile();
   
   const { data: clinics = [], isLoading, refetch } = useClinics();
   const deleteClinic = useDeleteClinic();
@@ -119,6 +122,11 @@ export default function ClinicsManagement() {
     if (!patientIds?.length) return 0;
     return patientIds.length;
   };
+
+  const handleFormClose = () => {
+    setFormOpen(false);
+    setSelectedClinic(undefined);
+  };
   
   return (
     <div className="container py-6 space-y-6">
@@ -156,70 +164,72 @@ export default function ClinicsManagement() {
               <p className="mt-2 text-muted-foreground">Carregando clínicas...</p>
             </div>
           ) : filteredClinics.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Endereço</TableHead>
-                  <TableHead>Dias de Atendimento</TableHead>
-                  <TableHead>Pacientes</TableHead>
-                  <TableHead>Data de Cadastro</TableHead>
-                  <TableHead className="w-[80px]">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredClinics.map((clinic) => (
-                  <TableRow key={clinic.id}>
-                    <TableCell className="font-medium">{clinic.name}</TableCell>
-                    <TableCell>{clinic.address || '-'}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{formatServiceDays(clinic.service_days)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <UsersIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <Badge variant="outline">
-                          {getPatientCount(clinic.patient_ids)} paciente(s)
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {clinic.created_at ? 
-                        format(new Date(clinic.created_at), "dd/MM/yyyy", { locale: ptBR }) : 
-                        '-'}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontalIcon className="h-4 w-4" />
-                            <span className="sr-only">Abrir menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleEditClinic(clinic)}>
-                            <PencilIcon className="mr-2 h-4 w-4" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => handleDeleteClick(clinic.id)}
-                          >
-                            <TrashIcon className="mr-2 h-4 w-4" />
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead className="hidden md:table-cell">Endereço</TableHead>
+                    <TableHead className="hidden md:table-cell">Dias de Atendimento</TableHead>
+                    <TableHead>Pacientes</TableHead>
+                    <TableHead className="hidden md:table-cell">Data de Cadastro</TableHead>
+                    <TableHead className="w-[80px]">Ações</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredClinics.map((clinic) => (
+                    <TableRow key={clinic.id}>
+                      <TableCell className="font-medium">{clinic.name}</TableCell>
+                      <TableCell className="hidden md:table-cell">{clinic.address || '-'}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex items-center">
+                          <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <span>{formatServiceDays(clinic.service_days)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <UsersIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <Badge variant="outline">
+                            {getPatientCount(clinic.patient_ids)} paciente(s)
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {clinic.created_at ? 
+                          format(new Date(clinic.created_at), "dd/MM/yyyy", { locale: ptBR }) : 
+                          '-'}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontalIcon className="h-4 w-4" />
+                              <span className="sr-only">Abrir menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handleEditClinic(clinic)}>
+                              <PencilIcon className="mr-2 h-4 w-4" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDeleteClick(clinic.id)}
+                            >
+                              <TrashIcon className="mr-2 h-4 w-4" />
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="py-20 text-center">
               <p className="text-muted-foreground">Nenhuma clínica encontrada.</p>
@@ -238,29 +248,50 @@ export default function ClinicsManagement() {
         </CardContent>
       </Card>
       
-      {/* Form dialog */}
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <ClinicForm 
-            clinic={selectedClinic}
-            onSuccess={() => {
-              setFormOpen(false);
-              refetch();
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Responsive Form Dialog/Sheet */}
+      {isMobile ? (
+        <Sheet open={formOpen} onOpenChange={handleFormClose}>
+          <SheetContent className="w-full sm:max-w-md p-0 overflow-y-auto">
+            <SheetHeader className="px-4 py-4">
+              <SheetTitle>{selectedClinic ? "Editar Clínica" : "Nova Clínica"}</SheetTitle>
+            </SheetHeader>
+            <div className="px-0 pb-0">
+              <ClinicForm 
+                clinic={selectedClinic}
+                onSuccess={() => {
+                  setFormOpen(false);
+                  refetch();
+                }}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={formOpen} onOpenChange={handleFormClose}>
+          <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+            <DialogTitle className="sr-only">{selectedClinic ? "Editar Clínica" : "Nova Clínica"}</DialogTitle>
+            <ClinicForm 
+              clinic={selectedClinic}
+              onSuccess={() => {
+                setFormOpen(false);
+                refetch();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
       
       {/* Confirm delete dialog */}
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className={`${isMobile ? 'w-[95%]' : 'sm:max-w-md'}`}>
+          <DialogTitle>Confirmar exclusão</DialogTitle>
           <div className="space-y-4">
-            <h2 className="text-xl font-bold">Confirmar exclusão</h2>
             <p>Você tem certeza que deseja excluir esta clínica? Esta ação não pode ser desfeita e pode afetar registros financeiros associados.</p>
-            <div className="flex justify-end space-x-2">
+            <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'justify-end space-x-2'}`}>
               <Button
                 variant="outline"
                 onClick={() => setConfirmDialogOpen(false)}
+                className={isMobile ? "w-full" : ""}
               >
                 Cancelar
               </Button>
@@ -268,6 +299,7 @@ export default function ClinicsManagement() {
                 variant="destructive"
                 onClick={confirmDelete}
                 disabled={deleteClinic.isPending}
+                className={isMobile ? "w-full" : ""}
               >
                 {deleteClinic.isPending ? "Excluindo..." : "Excluir"}
               </Button>
