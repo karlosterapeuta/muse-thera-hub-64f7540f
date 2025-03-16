@@ -16,6 +16,7 @@ import Songs from "./pages/songs";
 import MusicalBells from "./pages/musical-bells";
 import Finance from "./pages/finance";
 import Activities from "./pages/activities";
+import InterventionForm from "./pages/intervention";
 
 const router = createBrowserRouter([
   {
@@ -147,6 +148,17 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <Activities />,
+      },
+    ],
+  },
+  {
+    path: "/intervention",
+    element: <Layout />,
+    errorElement: <NotFound />,
+    children: [
+      {
+        path: "",
+        element: <InterventionForm />,
       },
     ],
   },
