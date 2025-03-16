@@ -72,6 +72,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   } | null>(null);
 
   const [activeSection, setActiveSection] = useState<"calculator" | "report" | "chart" | "details">("calculator");
+  const [shouldAutoSwitchTab, setShouldAutoSwitchTab] = useState<boolean>(true);
 
   const currentYear = new Date().getFullYear().toString();
   
@@ -210,7 +211,9 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       monthlyBreakdown
     });
     
-    if (grossIncome > 0) {
+    // Só muda para a aba de relatório se não estiver editando o campo de percentual
+    // e se houver receita e a opção de auto-mudança estiver habilitada
+    if (grossIncome > 0 && shouldAutoSwitchTab) {
       setActiveSection("report");
     }
   };
@@ -473,7 +476,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
                             onChange={(e) => {
                               field.onChange(e);
+                              // Desabilita a troca automática de aba ao editar o percentual
+                              setShouldAutoSwitchTab(false);
                               setTimeout(() => calculateIncomeTax(form.getValues()), 100);
+                              // Reabilita após o cálculo
+                              setTimeout(() => setShouldAutoSwitchTab(true), 500);
                             }}
                           />
                         </FormControl>
