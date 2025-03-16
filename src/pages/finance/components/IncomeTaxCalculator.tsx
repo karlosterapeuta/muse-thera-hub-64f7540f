@@ -44,7 +44,6 @@ interface IncomeTaxCalculatorProps {
   records: FinancialRecord[];
 }
 
-// Schema para validação do formulário
 const formSchema = z.object({
   grossIncome: z.string().min(1, "Campo obrigatório"),
   dependents: z.string().min(0),
@@ -57,7 +56,6 @@ const formSchema = z.object({
   privateRetirement: z.string().min(0),
 });
 
-// Tabela do IRPF 2024
 const incomeTaxRates = [
   { base: 0, limit: 2259.20, rate: 0, deduction: 0 },
   { base: 2259.21, limit: 2826.65, rate: 0.075, deduction: 169.44 },
@@ -66,7 +64,6 @@ const incomeTaxRates = [
   { base: 4664.69, limit: Infinity, rate: 0.275, deduction: 896.00 },
 ];
 
-// Cores para o gráfico
 const COLORS = ['#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#F59E0B'];
 
 export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
@@ -108,7 +105,6 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     },
   });
 
-  // Função para calcular o imposto de renda
   const calculateIncomeTax = (values: z.infer<typeof formSchema>) => {
     const grossIncome = parseFloat(values.grossIncome.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
     const dependents = parseInt(values.dependents) || 0;
@@ -120,14 +116,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     const pensionPayments = parseFloat(values.pensionPayments.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
     const privateRetirement = parseFloat(values.privateRetirement.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
     
-    // Deduções por dependente (limite de 2023)
     const dependentDeduction = dependents * 2275.08;
     
-    // Dedução simplificada (20% limitado a um valor conforme a legislação)
     const simplifiedDeductionLimit = 16754.34;
     const simplifiedDeduction = Math.min(grossIncome * 0.2, simplifiedDeductionLimit);
     
-    // Dedução detalhada (somando todas as deduções legais)
     const itemizedDeduction = 
       socialSecurity + 
       healthInsurance + 
@@ -136,38 +129,28 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       privateRetirement + 
       dependentDeduction;
     
-    // Escolhe a dedução mais vantajosa (maior valor)
     const chosenDeduction = Math.max(simplifiedDeduction, itemizedDeduction);
     
-    // Base de cálculo (renda bruta - despesas dedutíveis)
     const deductibleExpenses = grossIncome * (expensesPercentage / 100);
     const taxableIncome = grossIncome - deductibleExpenses - chosenDeduction;
     
-    // Cálculo do imposto conforme as faixas
     const annualTaxableIncome = taxableIncome * 12;
     const monthlyTaxableIncome = taxableIncome;
     
-    // Encontrar a faixa de imposto
     const taxBracket = incomeTaxRates.find(bracket => 
       monthlyTaxableIncome > bracket.base && monthlyTaxableIncome <= bracket.limit
     ) || incomeTaxRates[0];
     
-    // Cálculo do imposto mensal
     const monthlyIncomeTax = (monthlyTaxableIncome * taxBracket.rate) - taxBracket.deduction;
     
-    // Ajuste para não ter imposto negativo
     const adjustedMonthlyIncomeTax = Math.max(0, monthlyIncomeTax);
     
-    // Imposto anual
     const annualIncomeTax = adjustedMonthlyIncomeTax * 12;
     
-    // Taxa efetiva
     const effectiveTaxRate = grossIncome > 0 ? (adjustedMonthlyIncomeTax / grossIncome) * 100 : 0;
     
-    // Renda líquida
     const netIncome = grossIncome - adjustedMonthlyIncomeTax;
     
-    // Breakdown das deduções para o gráfico
     const deductionBreakdown = {
       "Imposto de Renda": adjustedMonthlyIncomeTax,
       "Previdência": socialSecurity,
@@ -178,7 +161,6 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       "Renda Líquida": netIncome
     };
     
-    // Breakdown mensal para o gráfico de barras
     const monthNames = [
       "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
       "Jul", "Ago", "Set", "Out", "Nov", "Dez"
@@ -203,27 +185,22 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       monthlyBreakdown
     });
     
-    // Só muda para a aba de relatório se não estiver editando o campo de percentual
-    // e se houver receita
     if (grossIncome > 0 && !isDeductiblePercentageBeingEdited) {
       setActiveSection("report");
     }
   };
-  
-  // Formatar números como moeda
+
   const formatBRL = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     });
   };
-  
-  // Formatar como porcentagem
+
   const formatPercent = (value: number) => {
     return value.toFixed(2) + '%';
   };
-  
-  // Dados para o gráfico de pizza
+
   const generatePieChartData = () => {
     if (!calculatedValues) return [];
     
@@ -232,52 +209,42 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       { name: 'Renda Líquida', value: calculatedValues.netIncome }
     ];
   };
-  
-  // Formatar input de moeda
+
   const formatCurrencyInput = (value: string) => {
-    // Remove todos os caracteres não numéricos
     let numericValue = value.replace(/[^\d]/g, '');
-    
-    // Converte para número
     const numeric = parseInt(numericValue, 10);
-    
-    // Se não for um número válido, retorna string vazia
     if (isNaN(numeric)) {
       return '';
     }
-    
-    // Formata como moeda
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
       minimumFractionDigits: 2
     }).format(numeric / 100);
   };
-  
-  // Safe parsing function for chart values - fixed to handle types properly
-  const parseNumberSafely = (value: string | number | undefined): number => {
-    if (typeof value === 'undefined') return 0;
+
+  const parseNumberSafely = (value: any): number => {
+    if (value === undefined || value === null) return 0;
     if (typeof value === 'number') return value;
-    const parsed = parseFloat(value);
-    return isNaN(parsed) ? 0 : parsed;
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
   };
-  
-  // Handles formatting values for the chart tooltip
-  const formatTooltipValue = (value: any): [string, string] => {
+
+  const formatTooltipValue = (value: any, name?: string, entry?: any, index?: number): [string, string] => {
     return [formatBRL(parseNumberSafely(value)), ''];
   };
 
-  // Formats Y-axis values
   const formatYAxis = (value: any): string => {
     return formatBRL(parseNumberSafely(value)).split(',')[0];
   };
-  
-  // Impressão
+
   const handlePrint = () => {
     window.print();
   };
-  
-  // Exportar para CSV
+
   const exportToCSV = () => {
     if (!calculatedValues) return;
     
@@ -294,13 +261,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       ['Renda Líquida', formatBRL(calculatedValues.netIncome)]
     ];
     
-    // Combina headers e linhas
     const csvContent = [
       headers.join(','),
       ...data.map(row => row.join(','))
     ].join('\n');
     
-    // Cria blob e link para download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -311,11 +276,9 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     link.click();
     document.body.removeChild(link);
   };
-  
-  // Atualizar cálculos quando os valores do formulário mudarem
+
   useEffect(() => {
     const subscription = form.watch((values) => {
-      // Verifica se há um valor de receita bruta para fazer o cálculo
       if (values.grossIncome && parseFloat(values.grossIncome.replace(/[^\d,.]/g, '').replace(',', '.')) > 0) {
         calculateIncomeTax(values as z.infer<typeof formSchema>);
       }
@@ -323,7 +286,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     
     return () => subscription.unsubscribe();
   }, [form.watch]);
-  
+
   return (
     <div className="space-y-8 print:p-8">
       <div className="print:hidden">
@@ -403,17 +366,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                   className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    // Marca que o campo de percentual está sendo editado
                                     setIsDeductiblePercentageBeingEdited(true);
                                     setTimeout(() => {
                                       calculateIncomeTax(form.getValues());
-                                      // Após um tempo, marca que o campo não está mais sendo editado
                                       setTimeout(() => setIsDeductiblePercentageBeingEdited(false), 500);
                                     }, 100);
                                   }}
                                   onFocus={() => setIsDeductiblePercentageBeingEdited(true)}
                                   onBlur={() => {
-                                    // Dá um tempo para o cálculo ser feito antes de permitir mudança de aba
                                     setTimeout(() => setIsDeductiblePercentageBeingEdited(false), 500);
                                   }}
                                 />
@@ -708,7 +668,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={formatTooltipValue}
+                              formatter={(value, name, entry, index) => formatTooltipValue(value, name, entry, index)}
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -723,10 +683,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis 
-                              tickFormatter={formatYAxis}
+                              tickFormatter={(value) => formatYAxis(value)}
                             />
                             <Tooltip 
-                              formatter={formatTooltipValue}
+                              formatter={(value, name, entry, index) => formatTooltipValue(value, name, entry, index)}
                             />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
