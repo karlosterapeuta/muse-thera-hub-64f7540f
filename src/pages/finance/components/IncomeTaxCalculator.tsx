@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +54,22 @@ interface TaxResult {
   effectiveTaxRate: number;
 }
 
-export function IncomeTaxCalculator() {
+// Add the interface for the records prop
+interface FinancialRecord {
+  id: string;
+  amount: number;
+  session_date: string;
+  clinic_id?: string;
+  clinic_name?: string;
+  patient_name?: string;
+  description?: string;
+}
+
+interface IncomeTaxCalculatorProps {
+  records?: FinancialRecord[];
+}
+
+export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   const [taxResult, setTaxResult] = useState<TaxResult | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,6 +83,20 @@ export function IncomeTaxCalculator() {
       privateRetirement: "R$ 0,00",
     },
   });
+
+  // If records are provided, calculate total income and prefill the form
+  useEffect(() => {
+    if (records && records.length > 0) {
+      const totalIncome = records.reduce((sum, record) => sum + record.amount, 0);
+      
+      // Only update if this is not already set to a custom value
+      if (form.getValues().grossIncome === "R$ 0,00") {
+        form.setValue("grossIncome", formatCurrencyInput(totalIncome.toString()), { 
+          shouldValidate: true 
+        });
+      }
+    }
+  }, [records, form]);
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -117,6 +147,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field} 
+                      type="text"
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -134,6 +165,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field}
+                      type="text"
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -151,6 +183,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field}
+                      type="text"
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -168,6 +201,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field}
+                      type="text"
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -185,6 +219,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field}
+                      type="text"
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -202,6 +237,7 @@ export function IncomeTaxCalculator() {
                   <FormControl>
                     <Input 
                       {...field}
+                      type="text"
                       value={field.value || ""}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
