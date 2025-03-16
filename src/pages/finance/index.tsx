@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -14,7 +15,10 @@ import {
   CalendarIcon,
   PieChartIcon,
   BarChart2Icon,
-  CalculatorIcon
+  CalculatorIcon,
+  PlusIcon,
+  ListIcon,
+  LayoutGridIcon
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFinancialRecords } from "./hooks/useFinancialData";
@@ -26,6 +30,7 @@ export default function FinanceDashboard() {
   const { data: dashboardData, isLoading: isDashboardLoading } = useFinanceDashboard(dateFilter);
   const { data: records = [], isLoading: isRecordsLoading } = useFinancialRecords(dateFilter);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
@@ -50,14 +55,45 @@ export default function FinanceDashboard() {
     <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
         <h1 className="text-2xl sm:text-3xl font-bold">Dashboard Financeiro</h1>
-        <div className="flex space-x-2 self-end sm:self-auto">
+        <div className="flex flex-wrap gap-2 self-end sm:self-auto">
           <Button
             variant="outline"
             size={isMobile ? "sm" : "default"}
             onClick={() => window.print()}
+            className="h-9 sm:h-10"
           >
             <PrinterIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
             {!isMobile && "Imprimir"}
+          </Button>
+          
+          <Button
+            variant="default"
+            size={isMobile ? "sm" : "default"}
+            onClick={() => navigate("/finance/records")}
+            className="h-9 sm:h-10 bg-primary/90 hover:bg-primary"
+          >
+            <PlusIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            {!isMobile ? "Novo Registro" : "Novo"}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            onClick={() => navigate("/finance/records", { state: { viewMode: "agenda" } })}
+            className="h-9 sm:h-10"
+          >
+            <LayoutGridIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            {!isMobile && "Agenda"}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            onClick={() => navigate("/finance/records", { state: { viewMode: "list" } })}
+            className="h-9 sm:h-10"
+          >
+            <ListIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            {!isMobile && "Lista"}
           </Button>
         </div>
       </div>
