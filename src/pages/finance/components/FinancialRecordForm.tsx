@@ -79,12 +79,21 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
   
-  const { data: patients = [] } = useQuery({
+  const { data: patients = [], isLoading: patientsLoading } = useQuery({
     queryKey: ["patients"],
     queryFn: async () => {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
+      // Fetch patients only for the current user
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
+        .eq("professional_id", user.id)
         .order("name");
         
       if (error) throw error;
@@ -258,11 +267,21 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                       <SelectItem key="no-patient" value="no-patient">
                         Nenhum paciente
                       </SelectItem>
-                      {patients.map((patient) => (
-                        <SelectItem key={patient.id} value={patient.id}>
-                          {patient.name}
+                      {patientsLoading ? (
+                        <SelectItem key="loading" value="loading" disabled>
+                          Carregando pacientes...
                         </SelectItem>
-                      ))}
+                      ) : patients.length > 0 ? (
+                        patients.map((patient) => (
+                          <SelectItem key={patient.id} value={patient.id}>
+                            {patient.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem key="no-patients" value="no-patients" disabled>
+                          Nenhum paciente encontrado
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
