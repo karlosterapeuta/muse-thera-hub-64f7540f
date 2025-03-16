@@ -1,836 +1,956 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { 
+  Tabs, TabsContent, TabsList, TabsTrigger 
+} from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { 
+  Table, 
+  TableBody, 
+  TableCaption, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FinancialRecord } from "../types";
-import { 
-  BarChart3Icon, 
-  TableIcon, 
-  FileTextIcon, 
-  PieChartIcon, 
-  InfoIcon,
-  CalculatorIcon,
-  DollarSignIcon,
-  CheckCircleIcon
-} from "lucide-react";
+import * as z from "zod";
+import { formatCurrency } from "@/lib/utils";
+import { Printer, FileSpreadsheet, Info, PieChart as PieChartIcon } from "lucide-react";
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell
-} from "recharts";
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
+// Schema para validação do formulário
 const formSchema = z.object({
-  taxYear: z.string(),
-  deductibleExpensesPercentage: z.coerce.number().min(0).max(100),
-  dependents: z.coerce.number().min(0).max(10),
-  otherDeductions: z.coerce.number().min(0),
-  taxRegime: z.enum(["simplesNacional", "mei", "lucroPesumido"]),
-  professionalType: z.enum(["healthProfessional", "musicalTherapist", "other"]),
-  previdenciaContribution: z.coerce.number().min(0),
-  courses: z.coerce.number().min(0),
-  equipment: z.coerce.number().min(0),
-  transportation: z.coerce.number().min(0),
+  grossIncome: z.string().min(1, "Campo obrigatório"),
+  dependents: z.string().min(0),
+  year: z.string().min(1, "Campo obrigatório"),
+  expensesPercentage: z.string().min(0),
+  socialSecurity: z.string().min(0),
+  healthInsurance: z.string().min(0),
+  educationExpenses: z.string().min(0),
+  pensionPayments: z.string().min(0),
+  privateRetirement: z.string().min(0),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+// Tabela do IRPF 2024
+const incomeTaxRates = [
+  { base: 0, limit: 2259.20, rate: 0, deduction: 0 },
+  { base: 2259.21, limit: 2826.65, rate: 0.075, deduction: 169.44 },
+  { base: 2826.66, limit: 3751.05, rate: 0.15, deduction: 381.44 },
+  { base: 3751.06, limit: 4664.68, rate: 0.225, deduction: 662.77 },
+  { base: 4664.69, limit: Infinity, rate: 0.275, deduction: 896.00 },
+];
 
-interface IncomeTaxCalculatorProps {
-  records: FinancialRecord[];
-}
+// Cores para o gráfico
+const COLORS = ['#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#F59E0B'];
 
-export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
-  const [calculationResult, setCalculationResult] = useState<{
+export function IncomeTaxCalculator() {
+  const isMobile = useIsMobile();
+  const [calculatedValues, setCalculatedValues] = useState<{
     grossIncome: number;
-    deductibleExpenses: number;
-    dependentsDeduction: number;
-    otherDeductions: number;
-    specificDeductions: {
-      courses: number;
-      equipment: number;
-      transportation: number;
-      previdencia: number;
-    };
     taxableIncome: number;
-    calculatedTax: number;
+    simplifiedDeduction: number;
+    itemizedDeduction: number;
+    chosenDeduction: number;
+    incomeTax: number;
     effectiveTaxRate: number;
-    monthlyBreakdown: { month: string; income: number; tax: number }[];
+    netIncome: number;
+    deductionBreakdown: Record<string, number>;
+    monthlyBreakdown: {
+      month: string;
+      netIncome: number;
+      incomeTax: number;
+    }[];
   } | null>(null);
 
   const [activeSection, setActiveSection] = useState<"calculator" | "report" | "chart" | "details">("calculator");
-  const [shouldAutoSwitchTab, setShouldAutoSwitchTab] = useState<boolean>(true);
+  const [isDeductiblePercentageBeingEdited, setIsDeductiblePercentageBeingEdited] = useState(false);
 
   const currentYear = new Date().getFullYear().toString();
   
-  // Generate available years from the records
-  const generateAvailableYears = () => {
-    const years = new Set<string>();
-    records.forEach(record => {
-      const year = new Date(record.session_date).getFullYear().toString();
-      years.add(year);
-    });
-    return Array.from(years).sort((a, b) => b.localeCompare(a));
-  };
-  
-  const availableYears = generateAvailableYears();
-  const defaultYear = availableYears.length > 0 ? availableYears[0] : currentYear;
-
-  const form = useForm<FormValues>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      taxYear: defaultYear,
-      deductibleExpensesPercentage: 32,
-      dependents: 0,
-      otherDeductions: 0,
-      taxRegime: "simplesNacional",
-      professionalType: "musicalTherapist",
-      previdenciaContribution: 0,
-      courses: 0,
-      equipment: 0,
-      transportation: 0,
+      grossIncome: "",
+      dependents: "0",
+      year: currentYear,
+      expensesPercentage: "32",
+      socialSecurity: "0",
+      healthInsurance: "0",
+      educationExpenses: "0",
+      pensionPayments: "0",
+      privateRetirement: "0",
     },
   });
 
-  const watchProfessionalType = form.watch("professionalType");
-  const watchTaxRegime = form.watch("taxRegime");
-  const watchTaxYear = form.watch("taxYear");
-
-  const updateDeductiblePercentage = (value: string) => {
-    switch (value) {
-      case "healthProfessional":
-        form.setValue("deductibleExpensesPercentage", 32);
-        break;
-      case "musicalTherapist":
-        form.setValue("deductibleExpensesPercentage", 32);
-        break;
-      case "other":
-        form.setValue("deductibleExpensesPercentage", 25);
-        break;
-    }
-  };
-
-  const handleProfessionalTypeChange = (value: string) => {
-    updateDeductiblePercentage(value);
-  };
-
-  // Automatically calculate tax when records change or form values change
-  useEffect(() => {
-    if (records.length > 0) {
-      const values = form.getValues();
-      calculateIncomeTax(values);
-    }
-  }, [records, watchTaxYear, watchProfessionalType, watchTaxRegime]);
-
-  const calculateIncomeTax = (values: FormValues) => {
-    const yearRecords = records.filter(record => 
-      new Date(record.session_date).getFullYear().toString() === values.taxYear
-    );
-
-    const grossIncome = yearRecords.reduce((sum, record) => sum + record.amount, 0);
+  // Função para calcular o imposto de renda
+  const calculateIncomeTax = (values: z.infer<typeof formSchema>) => {
+    const grossIncome = parseFloat(values.grossIncome.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    const dependents = parseInt(values.dependents) || 0;
+    const expensesPercentage = parseFloat(values.expensesPercentage) || 0;
     
-    const specificDeductions = {
-      courses: values.courses,
-      equipment: values.equipment,
-      transportation: values.transportation,
-      previdencia: values.previdenciaContribution
+    const socialSecurity = parseFloat(values.socialSecurity.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    const healthInsurance = parseFloat(values.healthInsurance.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    const educationExpenses = parseFloat(values.educationExpenses.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    const pensionPayments = parseFloat(values.pensionPayments.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    const privateRetirement = parseFloat(values.privateRetirement.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+    
+    // Deduções por dependente (limite de 2023)
+    const dependentDeduction = dependents * 2275.08;
+    
+    // Dedução simplificada (20% limitado a um valor conforme a legislação)
+    const simplifiedDeductionLimit = 16754.34;
+    const simplifiedDeduction = Math.min(grossIncome * 0.2, simplifiedDeductionLimit);
+    
+    // Dedução detalhada (somando todas as deduções legais)
+    const itemizedDeduction = 
+      socialSecurity + 
+      healthInsurance + 
+      educationExpenses + 
+      pensionPayments + 
+      privateRetirement + 
+      dependentDeduction;
+    
+    // Escolhe a dedução mais vantajosa (maior valor)
+    const chosenDeduction = Math.max(simplifiedDeduction, itemizedDeduction);
+    
+    // Base de cálculo (renda bruta - despesas dedutíveis)
+    const deductibleExpenses = grossIncome * (expensesPercentage / 100);
+    const taxableIncome = grossIncome - deductibleExpenses - chosenDeduction;
+    
+    // Cálculo do imposto conforme as faixas
+    const annualTaxableIncome = taxableIncome * 12;
+    const monthlyTaxableIncome = taxableIncome;
+    
+    // Encontrar a faixa de imposto
+    const taxBracket = incomeTaxRates.find(bracket => 
+      monthlyTaxableIncome > bracket.base && monthlyTaxableIncome <= bracket.limit
+    ) || incomeTaxRates[0];
+    
+    // Cálculo do imposto mensal
+    const monthlyIncomeTax = (monthlyTaxableIncome * taxBracket.rate) - taxBracket.deduction;
+    
+    // Ajuste para não ter imposto negativo
+    const adjustedMonthlyIncomeTax = Math.max(0, monthlyIncomeTax);
+    
+    // Imposto anual
+    const annualIncomeTax = adjustedMonthlyIncomeTax * 12;
+    
+    // Taxa efetiva
+    const effectiveTaxRate = grossIncome > 0 ? (adjustedMonthlyIncomeTax / grossIncome) * 100 : 0;
+    
+    // Renda líquida
+    const netIncome = grossIncome - adjustedMonthlyIncomeTax;
+    
+    // Breakdown das deduções para o gráfico
+    const deductionBreakdown = {
+      "Imposto de Renda": adjustedMonthlyIncomeTax,
+      "Previdência": socialSecurity,
+      "Saúde": healthInsurance,
+      "Educação": educationExpenses,
+      "Pensões": pensionPayments,
+      "Previdência Privada": privateRetirement,
+      "Renda Líquida": netIncome
     };
     
-    const totalSpecificDeductions = Object.values(specificDeductions).reduce((sum, val) => sum + val, 0);
+    // Breakdown mensal para o gráfico de barras
+    const monthNames = [
+      "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+      "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+    ];
     
-    const deductibleExpensesAmount = (grossIncome * values.deductibleExpensesPercentage) / 100;
-    
-    const dependentsDeduction = values.dependents * 2275.08;
-    
-    const taxableIncome = Math.max(0, grossIncome - deductibleExpensesAmount - dependentsDeduction - values.otherDeductions - totalSpecificDeductions);
-    
-    let calculatedTax = 0;
-    
-    if (taxableIncome <= 22847.76) {
-      calculatedTax = 0;
-    } else if (taxableIncome <= 33919.80) {
-      calculatedTax = (taxableIncome - 22847.76) * 0.075 - 1713.58;
-    } else if (taxableIncome <= 45012.60) {
-      calculatedTax = (taxableIncome - 33919.80) * 0.15 - 4257.57;
-    } else if (taxableIncome <= 55976.16) {
-      calculatedTax = (taxableIncome - 45012.60) * 0.225 - 7633.51;
-    } else {
-      calculatedTax = (taxableIncome - 55976.16) * 0.275 - 10432.32;
-    }
-    
-    calculatedTax = Math.max(0, calculatedTax);
-    
-    const effectiveTaxRate = grossIncome > 0 ? (calculatedTax / grossIncome) * 100 : 0;
-    
-    const monthlyData: Record<string, { income: number; tax: number }> = {};
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    
-    months.forEach(month => {
-      monthlyData[month] = { income: 0, tax: 0 };
-    });
-    
-    yearRecords.forEach(record => {
-      const recordDate = new Date(record.session_date);
-      const month = months[recordDate.getMonth()];
-      monthlyData[month].income += record.amount;
-    });
-    
-    Object.keys(monthlyData).forEach(month => {
-      const proportion = grossIncome > 0 ? monthlyData[month].income / grossIncome : 0;
-      monthlyData[month].tax = calculatedTax * proportion;
-    });
-    
-    const monthlyBreakdown = months.map(month => ({
+    const monthlyBreakdown = monthNames.map(month => ({
       month,
-      income: monthlyData[month].income,
-      tax: monthlyData[month].tax
+      netIncome: netIncome,
+      incomeTax: adjustedMonthlyIncomeTax
     }));
     
-    setCalculationResult({
+    setCalculatedValues({
       grossIncome,
-      deductibleExpenses: deductibleExpensesAmount,
-      dependentsDeduction,
-      otherDeductions: values.otherDeductions,
-      specificDeductions,
-      taxableIncome,
-      calculatedTax,
+      taxableIncome: monthlyTaxableIncome,
+      simplifiedDeduction,
+      itemizedDeduction,
+      chosenDeduction,
+      incomeTax: adjustedMonthlyIncomeTax,
       effectiveTaxRate,
+      netIncome,
+      deductionBreakdown,
       monthlyBreakdown
     });
     
     // Só muda para a aba de relatório se não estiver editando o campo de percentual
-    // e se houver receita e a opção de auto-mudança estiver habilitada
-    if (grossIncome > 0 && shouldAutoSwitchTab) {
+    // e se houver receita
+    if (grossIncome > 0 && !isDeductiblePercentageBeingEdited) {
       setActiveSection("report");
     }
   };
   
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
+  // Formatar números como moeda
+  const formatBRL = (value: number) => {
+    return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(value);
+    });
   };
   
-  const getTaxRegimeLabel = (regime: string) => {
-    switch (regime) {
-      case "simplesNacional": return "Simples Nacional";
-      case "mei": return "MEI";
-      case "lucroPesumido": return "Lucro Presumido";
-      default: return regime;
+  // Formatar como porcentagem
+  const formatPercent = (value: number) => {
+    return value.toFixed(2) + '%';
+  };
+  
+  // Dados para o gráfico de pizza
+  const generatePieChartData = () => {
+    if (!calculatedValues) return [];
+    
+    return [
+      { name: 'Imposto', value: calculatedValues.incomeTax },
+      { name: 'Renda Líquida', value: calculatedValues.netIncome }
+    ];
+  };
+  
+  // Formatar input de moeda
+  const formatCurrencyInput = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    let numericValue = value.replace(/[^\d]/g, '');
+    
+    // Converte para número
+    const numeric = parseInt(numericValue, 10);
+    
+    // Se não for um número válido, retorna string vazia
+    if (isNaN(numeric)) {
+      return '';
     }
+    
+    // Formata como moeda
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2
+    }).format(numeric / 100);
   };
   
-  const getProfessionalTypeLabel = (type: string) => {
-    switch (type) {
-      case "healthProfessional": return "Profissional de Saúde";
-      case "musicalTherapist": return "Musicoterapeuta";
-      case "other": return "Outro";
-      default: return type;
-    }
+  // Impressão
+  const handlePrint = () => {
+    window.print();
   };
   
-  const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#1EAEDB', '#33C3F0'];
-  
-  const renderDeductionsPieChart = () => {
-    if (!calculationResult) return null;
+  // Exportar para CSV
+  const exportToCSV = () => {
+    if (!calculatedValues) return;
+    
+    const headers = [
+      'Descrição',
+      'Valor'
+    ];
     
     const data = [
-      { name: 'Desp. Dedutíveis', value: calculationResult.deductibleExpenses },
-      { name: 'Dependentes', value: calculationResult.dependentsDeduction },
-      { name: 'Cursos', value: calculationResult.specificDeductions.courses },
-      { name: 'Equipamentos', value: calculationResult.specificDeductions.equipment },
-      { name: 'Transporte', value: calculationResult.specificDeductions.transportation },
-      { name: 'Previdência', value: calculationResult.specificDeductions.previdencia },
-      { name: 'Outras Deduções', value: calculationResult.otherDeductions }
-    ].filter(item => item.value > 0);
+      ['Receita Bruta Mensal', formatBRL(calculatedValues.grossIncome)],
+      ['Base de Cálculo', formatBRL(calculatedValues.taxableIncome)],
+      ['Imposto Devido', formatBRL(calculatedValues.incomeTax)],
+      ['Alíquota Efetiva', formatPercent(calculatedValues.effectiveTaxRate)],
+      ['Renda Líquida', formatBRL(calculatedValues.netIncome)]
+    ];
     
-    return (
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={true}
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    );
+    // Combina headers e linhas
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => row.join(','))
+    ].join('\n');
+    
+    // Cria blob e link para download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'relatorio_imposto_renda.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
-  const renderIncomeVsTaxChart = () => {
-    if (!calculationResult) return null;
+  // Atualizar cálculos quando os valores do formulário mudarem
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      // Verifica se há um valor de receita bruta para fazer o cálculo
+      if (values.grossIncome && parseFloat(values.grossIncome.replace(/[^\d,.]/g, '').replace(',', '.')) > 0) {
+        calculateIncomeTax(values as z.infer<typeof formSchema>);
+      }
+    });
     
-    const data = calculationResult.monthlyBreakdown.map(item => ({
-      month: item.month,
-      Receita: item.income,
-      Imposto: item.tax
-    }));
-    
-    return (
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-          <Legend />
-          <Bar dataKey="Receita" fill="#4ade80" />
-          <Bar dataKey="Imposto" fill="#f43f5e" />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-  };
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
   
   return (
-    <Card className="w-full border-[#8B5CF6]/30 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-[#8B5CF6]/20 to-transparent border-b border-[#8B5CF6]/20">
-        <CardTitle className="text-[#8B5CF6] flex items-center">
-          <DollarSignIcon className="mr-2 h-5 w-5" />
-          Cálculo Automático do Imposto de Renda
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6 flex items-center">
-          <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-          <p className="text-green-700 text-sm">
-            Os cálculos são realizados automaticamente com base nos registros financeiros do período selecionado.
-          </p>
-        </div>
-        
-        <Tabs value={activeSection} onValueChange={(v) => setActiveSection(v as any)} className="w-full">
-          <TabsList className="mb-6 grid grid-cols-4 gap-4 bg-[#8B5CF6]/10 p-1">
-            <TabsTrigger 
-              value="calculator" 
-              className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
-            >
-              <CalculatorIcon className="mr-2 h-4 w-4" />
-              Parâmetros
-            </TabsTrigger>
-            {calculationResult && (
-              <>
-                <TabsTrigger 
-                  value="report"
-                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
-                >
-                  <FileTextIcon className="mr-2 h-4 w-4" />
-                  Relatório
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="chart"
-                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
-                >
-                  <PieChartIcon className="mr-2 h-4 w-4" />
-                  Gráficos
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="details"
-                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
-                >
-                  <TableIcon className="mr-2 h-4 w-4" />
-                  Detalhamento
-                </TabsTrigger>
-              </>
-            )}
+    <div className="space-y-8 print:p-8">
+      <div className="print:hidden">
+        <Tabs value={activeSection} onValueChange={(value) => setActiveSection(value as any)}>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="calculator">Calculadora</TabsTrigger>
+            <TabsTrigger value="report">Relatório</TabsTrigger>
+            <TabsTrigger value="chart">Gráficos</TabsTrigger>
+            <TabsTrigger value="details">Detalhes</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="calculator" className="space-y-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(calculateIncomeTax)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="taxYear"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Ano Fiscal</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
-                              <SelectValue placeholder="Selecione o ano" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {availableYears.length > 0 ? (
-                              availableYears.map(year => (
-                                <SelectItem key={year} value={year}>
-                                  {year}
-                                </SelectItem>
-                              ))
-                            ) : (
-                              <SelectItem value={currentYear}>
-                                {currentYear}
-                              </SelectItem>
-                            )}
-                          </SelectContent>
-                        </Select>
-                        {records.filter(r => new Date(r.session_date).getFullYear().toString() === field.value).length === 0 && (
-                          <p className="text-amber-600 text-xs mt-1">
-                            Nenhum registro para este ano.
-                          </p>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="professionalType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Categoria Profissional</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            handleProfessionalTypeChange(value);
-                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
-                              <SelectValue placeholder="Selecione sua categoria profissional" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="healthProfessional">Profissional de Saúde</SelectItem>
-                            <SelectItem value="musicalTherapist">Musicoterapeuta</SelectItem>
-                            <SelectItem value="other">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="taxRegime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Regime Tributário</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
-                              <SelectValue placeholder="Selecione o regime tributário" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="simplesNacional">Simples Nacional</SelectItem>
-                            <SelectItem value="mei">MEI</SelectItem>
-                            <SelectItem value="lucroPesumido">Lucro Presumido</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="deductibleExpensesPercentage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Percentual de Despesas Dedutíveis (%)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                            onChange={(e) => {
-                              field.onChange(e);
-                              // Desabilita a troca automática de aba ao editar o percentual
-                              setShouldAutoSwitchTab(false);
-                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                              // Reabilita após o cálculo
-                              setTimeout(() => setShouldAutoSwitchTab(true), 500);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="dependents"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Número de Dependentes</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                            }} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="previdenciaContribution"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B5CF6] font-medium">Contribuição Previdenciária (R$)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01" 
-                            {...field} 
-                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="p-5 border rounded-lg bg-[#8B5CF6]/5 border-[#8B5CF6]/20 space-y-4">
-                  <h3 className="font-medium flex items-center text-[#8B5CF6]">
-                    <InfoIcon className="h-4 w-4 mr-2" />
-                    Deduções Específicas para Musicoterapeutas
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="courses"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#8B5CF6] font-medium">Cursos e Capacitações (R$)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              step="0.01" 
-                              {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="equipment"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#8B5CF6] font-medium">Equipamentos e Instrumentos (R$)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              step="0.01" 
-                              {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="transportation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#8B5CF6] font-medium">Transporte e Locomoção (R$)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              step="0.01" 
-                              {...field} 
-                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                
-                <FormField
-                  control={form.control}
-                  name="otherDeductions"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[#8B5CF6] font-medium">Outras Deduções (R$)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          step="0.01" 
-                          {...field} 
-                          className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setTimeout(() => calculateIncomeTax(form.getValues()), 100);
-                          }}
+          <TabsContent value="calculator" className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="pt-6">
+                <Form {...form}>
+                  <form className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="grossIncome"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-medium">Receita Bruta Mensal</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="R$ 0,00"
+                                  {...field}
+                                  className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                                  onChange={(e) => {
+                                    const formattedValue = formatCurrencyInput(e.target.value);
+                                    field.onChange(formattedValue);
+                                  }}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Valor total recebido mensalmente pelos seus serviços
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-[#8B5CF6] hover:bg-[#9b87f5]"
-                >
-                  <CalculatorIcon className="mr-2 h-4 w-4" />
-                  Atualizar Cálculos
-                </Button>
-              </form>
-            </Form>
+                        
+                        <FormField
+                          control={form.control}
+                          name="expensesPercentage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center justify-between">
+                                <FormLabel className="font-medium">Percentual de Despesas Dedutíveis</FormLabel>
+                                <TooltipProvider>
+                                  <UITooltip>
+                                    <TooltipTrigger>
+                                      <Info size={18} className="text-muted-foreground" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="max-w-xs">
+                                        No Simples Nacional, podem ser deduzidos até 32% da receita bruta como despesas.
+                                      </p>
+                                    </TooltipContent>
+                                  </UITooltip>
+                                </TooltipProvider>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder="32"
+                                  {...field}
+                                  className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    // Marca que o campo de percentual está sendo editado
+                                    setIsDeductiblePercentageBeingEdited(true);
+                                    setTimeout(() => {
+                                      calculateIncomeTax(form.getValues());
+                                      // Após um tempo, marca que o campo não está mais sendo editado
+                                      setTimeout(() => setIsDeductiblePercentageBeingEdited(false), 500);
+                                    }, 100);
+                                  }}
+                                  onFocus={() => setIsDeductiblePercentageBeingEdited(true)}
+                                  onBlur={() => {
+                                    // Dá um tempo para o cálculo ser feito antes de permitir mudança de aba
+                                    setTimeout(() => setIsDeductiblePercentageBeingEdited(false), 500);
+                                  }}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Percentual de dedução de despesas do seu modelo fiscal
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="dependents"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-medium">Número de Dependentes</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder="0"
+                                  {...field}
+                                  className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Dependentes declarados no Imposto de Renda
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="year"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-medium">Ano de Referência</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder={currentYear}
+                                  {...field}
+                                  className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30"
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Ano para cálculo do imposto
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="rounded-lg bg-muted/50 p-4">
+                          <h3 className="text-sm font-medium text-foreground mb-3">Deduções Detalhadas</h3>
+                          <div className="space-y-3">
+                            <FormField
+                              control={form.control}
+                              name="socialSecurity"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs font-medium">INSS</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="R$ 0,00"
+                                      size="sm"
+                                      {...field}
+                                      className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30 h-8 text-sm"
+                                      onChange={(e) => {
+                                        const formattedValue = formatCurrencyInput(e.target.value);
+                                        field.onChange(formattedValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="healthInsurance"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs font-medium">Plano de Saúde</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="R$ 0,00"
+                                      size="sm"
+                                      {...field}
+                                      className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30 h-8 text-sm"
+                                      onChange={(e) => {
+                                        const formattedValue = formatCurrencyInput(e.target.value);
+                                        field.onChange(formattedValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="educationExpenses"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs font-medium">Despesas com Educação</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="R$ 0,00"
+                                      size="sm"
+                                      {...field}
+                                      className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30 h-8 text-sm"
+                                      onChange={(e) => {
+                                        const formattedValue = formatCurrencyInput(e.target.value);
+                                        field.onChange(formattedValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="pensionPayments"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs font-medium">Pensão Alimentícia</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="R$ 0,00"
+                                      size="sm"
+                                      {...field}
+                                      className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30 h-8 text-sm"
+                                      onChange={(e) => {
+                                        const formattedValue = formatCurrencyInput(e.target.value);
+                                        field.onChange(formattedValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="privateRetirement"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs font-medium">Previdência Privada</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="R$ 0,00"
+                                      size="sm"
+                                      {...field}
+                                      className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30 h-8 text-sm"
+                                      onChange={(e) => {
+                                        const formattedValue = formatCurrencyInput(e.target.value);
+                                        field.onChange(formattedValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </TabsContent>
           
-          {calculationResult && (
-            <>
-              <TabsContent value="report" className="space-y-6">
-                <div className="p-4 border rounded-md bg-muted/30">
-                  <h3 className="text-lg font-semibold mb-4">Resumo da Declaração de Imposto de Renda</h3>
-                  
-                  <div className="grid grid-cols-2 gap-4">
+          <TabsContent value="report" className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Relatório de Imposto de Renda</h3>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handlePrint}
+                    >
+                      <Printer className="h-4 w-4 mr-2" />
+                      <span className={isMobile ? "sr-only" : ""}>Imprimir</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={exportToCSV}
+                    >
+                      <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      <span className={isMobile ? "sr-only" : ""}>CSV</span>
+                    </Button>
+                  </div>
+                </div>
+                
+                {calculatedValues ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Receita Bruta Mensal:</span>
+                          <span className="font-medium">{formatBRL(calculatedValues.grossIncome)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Base de Cálculo:</span>
+                          <span className="font-medium">{formatBRL(calculatedValues.taxableIncome)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Dedução Escolhida:</span>
+                          <span className="font-medium">{formatBRL(calculatedValues.chosenDeduction)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Imposto Devido Mensal:</span>
+                          <span className="font-semibold text-red-600">{formatBRL(calculatedValues.incomeTax)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Alíquota Efetiva:</span>
+                          <span className="font-medium">{formatPercent(calculatedValues.effectiveTaxRate)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Renda Líquida Mensal:</span>
+                          <span className="font-semibold text-green-600">{formatBRL(calculatedValues.netIncome)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
                     <div>
-                      <p className="text-sm text-muted-foreground">Ano Fiscal:</p>
-                      <p className="text-lg font-semibold">{form.getValues().taxYear}</p>
+                      <h4 className="text-sm font-medium mb-2">Resumo Anual</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-muted/30 p-3 rounded-lg">
+                          <span className="text-xs text-muted-foreground block">Receita Bruta Anual</span>
+                          <span className="text-base font-medium">{formatBRL(calculatedValues.grossIncome * 12)}</span>
+                        </div>
+                        <div className="bg-muted/30 p-3 rounded-lg">
+                          <span className="text-xs text-muted-foreground block">Imposto Anual</span>
+                          <span className="text-base font-medium text-red-600">{formatBRL(calculatedValues.incomeTax * 12)}</span>
+                        </div>
+                        <div className="bg-muted/30 p-3 rounded-lg">
+                          <span className="text-xs text-muted-foreground block">Renda Líquida Anual</span>
+                          <span className="text-base font-medium text-green-600">{formatBRL(calculatedValues.netIncome * 12)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver o relatório</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="chart" className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold mb-4">Visualização Gráfica</h3>
+                
+                {calculatedValues ? (
+                  <div className="space-y-8">
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Distribuição da Renda</h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={generatePieChartData()}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={100}
+                              paddingAngle={5}
+                              dataKey="value"
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                            >
+                              {generatePieChartData().map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => formatBRL(Number(value))} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-muted-foreground">Regime Tributário:</p>
-                      <p className="text-lg font-semibold">{getTaxRegimeLabel(form.getValues().taxRegime)}</p>
+                      <h4 className="text-sm font-medium mb-3">Projeção Mensal</h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={calculatedValues.monthlyBreakdown}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis tickFormatter={(value) => formatBRL(value).split(',')[0]} />
+                            <Tooltip formatter={(value) => formatBRL(Number(value))} />
+                            <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
+                            <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os gráficos</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="details" className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold mb-4">Detalhamento do Cálculo</h3>
+                
+                {calculatedValues ? (
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Tabela de Alíquotas (2024)</h4>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Base de Cálculo Mensal</TableHead>
+                              <TableHead>Alíquota</TableHead>
+                              <TableHead>Dedução</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell>Até R$ 2.259,20</TableCell>
+                              <TableCell>Isento</TableCell>
+                              <TableCell>R$ 0,00</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>De R$ 2.259,21 até R$ 2.826,65</TableCell>
+                              <TableCell>7,5%</TableCell>
+                              <TableCell>R$ 169,44</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>De R$ 2.826,66 até R$ 3.751,05</TableCell>
+                              <TableCell>15%</TableCell>
+                              <TableCell>R$ 381,44</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>De R$ 3.751,06 até R$ 4.664,68</TableCell>
+                              <TableCell>22,5%</TableCell>
+                              <TableCell>R$ 662,77</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>Acima de R$ 4.664,68</TableCell>
+                              <TableCell>27,5%</TableCell>
+                              <TableCell>R$ 896,00</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-muted-foreground">Categoria Profissional:</p>
-                      <p className="text-lg font-semibold">{getProfessionalTypeLabel(form.getValues().professionalType)}</p>
+                      <h4 className="text-sm font-medium mb-3">Comparativo Deduções</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-muted/30 p-4 rounded-lg">
+                          <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium">Dedução Simplificada:</span>
+                            <span>{formatBRL(calculatedValues.simplifiedDeduction)}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            20% da receita, limitado a R$ 16.754,34 por ano
+                          </p>
+                        </div>
+                        
+                        <div className="bg-muted/30 p-4 rounded-lg">
+                          <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium">Dedução Detalhada:</span>
+                            <span>{formatBRL(calculatedValues.itemizedDeduction)}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Soma das deduções legais específicas
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium">Dedução Utilizada:</span>
+                          <span className="font-semibold">
+                            {formatBRL(calculatedValues.chosenDeduction)}
+                            <span className="text-xs ml-2 text-muted-foreground">
+                              ({calculatedValues.chosenDeduction === calculatedValues.simplifiedDeduction ? 'Simplificada' : 'Detalhada'})
+                            </span>
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          É utilizada automaticamente a dedução mais vantajosa para o contribuinte.
+                        </p>
+                      </div>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-muted-foreground">Percentual de Despesas Dedutíveis:</p>
-                      <p className="text-lg font-semibold">{form.getValues().deductibleExpensesPercentage}%</p>
+                      <h4 className="text-sm font-medium mb-3">Memorial de Cálculo</h4>
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <span className="font-medium">1. Receita Bruta Mensal:</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.grossIncome)}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">2. Despesas Dedutíveis ({form.getValues().expensesPercentage}%):</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.grossIncome * (parseInt(form.getValues().expensesPercentage) / 100))}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">3. Dedução Escolhida:</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.chosenDeduction)}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">4. Base de Cálculo:</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.taxableIncome)}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">5. Imposto Devido:</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.incomeTax)}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">6. Renda Líquida Final:</span>
+                          <span className="ml-2">{formatBRL(calculatedValues.netIncome)}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Receita Bruta:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(calculationResult.grossIncome)}</p>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os detalhes</p>
                   </div>
-                  
-                  <div>
-                    <p className="text-sm text-muted-foreground">Despesas Dedutíveis:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(calculationResult.deductibleExpenses)}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-muted-foreground">Dedução por Dependentes:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(calculationResult.dependentsDeduction)}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-muted-foreground">Outras Deduções:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(calculationResult.otherDeductions)}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-muted-foreground">Base de Cálculo:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(calculationResult.taxableIncome)}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-muted-foreground">Alíquota Efetiva:</p>
-                    <p className="text-lg font-semibold">{calculationResult.effectiveTaxRate.toFixed(2)}%</p>
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-primary/10 rounded-md">
-                  <p className="text-sm text-muted-foreground">Imposto Devido:</p>
-                  <p className="text-xl font-bold">{formatCurrency(calculationResult.calculatedTax)}</p>
-                </div>
-                
-                <div className="p-4 border rounded-md">
-                  <h4 className="font-medium mb-2">Deduções Específicas de Musicoterapia</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Cursos e Capacitações:</p>
-                      <p className="font-medium">{formatCurrency(calculationResult.specificDeductions.courses)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Equipamentos e Instrumentos:</p>
-                      <p className="font-medium">{formatCurrency(calculationResult.specificDeductions.equipment)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Transporte e Locomoção:</p>
-                      <p className="font-medium">{formatCurrency(calculationResult.specificDeductions.transportation)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Contribuição Previdenciária:</p>
-                      <p className="font-medium">{formatCurrency(calculationResult.specificDeductions.previdencia)}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  * Este cálculo é uma estimativa baseada nas regras do Imposto de Renda Pessoa Física do Brasil 
-                  para o ano-calendário 2023. Consulte um contador para a declaração oficial.
-                </p>
-                
-                <div className="flex justify-end">
-                  <Button onClick={() => window.print()} variant="outline" className="gap-2">
-                    <FileTextIcon className="h-4 w-4" />
-                    Imprimir Relatório
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="chart" className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Receita vs. Imposto (Mensal)</h3>
-                  {renderIncomeVsTaxChart()}
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Distribuição de Deduções</h3>
-                  {renderDeductionsPieChart()}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="details" className="space-y-4">
-                <h3 className="text-lg font-medium">Detalhamento Mensal</h3>
-                <div className="rounded-md border overflow-hidden">
-                  <table className="min-w-full divide-y divide-border">
-                    <thead className="bg-muted">
-                      <tr>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">Mês</th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">Receita</th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">Imposto Proporcional</th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">Alíquota Efetiva</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-card divide-y divide-border">
-                      {calculationResult.monthlyBreakdown.map((item) => {
-                        const monthlyRate = item.income > 0 ? (item.tax / item.income) * 100 : 0;
-                        return (
-                          <tr key={item.month}>
-                            <td className="px-4 py-2 text-sm">{item.month}</td>
-                            <td className="px-4 py-2 text-sm">{formatCurrency(item.income)}</td>
-                            <td className="px-4 py-2 text-sm">{formatCurrency(item.tax)}</td>
-                            <td className="px-4 py-2 text-sm">{monthlyRate.toFixed(2)}%</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                    <tfoot className="bg-muted">
-                      <tr>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">Total</th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">
-                          {formatCurrency(calculationResult.grossIncome)}
-                        </th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">
-                          {formatCurrency(calculationResult.calculatedTax)}
-                        </th>
-                        <th scope="col" className="px-4 py-3 text-left text-sm font-medium">
-                          {calculationResult.effectiveTaxRate.toFixed(2)}%
-                        </th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                
-                <h3 className="text-lg font-medium mt-6">Informações para a Declaração</h3>
-                <div className="space-y-2">
-                  <div className="p-3 bg-muted rounded-md">
-                    <p className="text-sm font-medium">Rendimentos Tributáveis:</p>
-                    <p>{formatCurrency(calculationResult.taxableIncome)}</p>
-                  </div>
-                  
-                  <div className="p-3 bg-muted rounded-md">
-                    <p className="text-sm font-medium">Deduções Permitidas:</p>
-                    <p>{formatCurrency(calculationResult.deductibleExpenses + calculationResult.dependentsDeduction + calculationResult.otherDeductions + 
-                      calculationResult.specificDeductions.courses + calculationResult.specificDeductions.equipment + 
-                      calculationResult.specificDeductions.transportation + calculationResult.specificDeductions.previdencia)}</p>
-                  </div>
-                  
-                  <div className="p-3 bg-muted rounded-md">
-                    <p className="text-sm font-medium">Imposto Retido na Fonte (se houver):</p>
-                    <p>R$ 0,00</p>
-                  </div>
-                  
-                  <div className="p-3 bg-muted rounded-md">
-                    <p className="text-sm font-medium">Imposto a Pagar:</p>
-                    <p>{formatCurrency(calculationResult.calculatedTax)}</p>
-                  </div>
-                </div>
-              </TabsContent>
-            </>
-          )}
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+      </div>
+      
+      {/* Versão impressa */}
+      <div className="hidden print:block space-y-8">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold mb-2">Relatório de Imposto de Renda</h1>
+          <p className="text-muted-foreground">Ano de Referência: {form.getValues().year}</p>
+        </div>
+        
+        {calculatedValues && (
+          <>
+            <div className="space-y-6">
+              <div className="border p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">Resumo</h2>
+                <div className="grid grid-cols-2 gap-y-3">
+                  <div className="col-span-1">
+                    <span className="font-medium">Receita Bruta Mensal:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.grossIncome)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Base de Cálculo:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.taxableIncome)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Imposto Devido Mensal:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span className="font-semibold">{formatBRL(calculatedValues.incomeTax)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Alíquota Efetiva:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatPercent(calculatedValues.effectiveTaxRate)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Renda Líquida Mensal:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span className="font-semibold">{formatBRL(calculatedValues.netIncome)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">Projeção Anual</h2>
+                <div className="grid grid-cols-2 gap-y-3">
+                  <div className="col-span-1">
+                    <span className="font-medium">Receita Bruta Anual:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.grossIncome * 12)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Imposto Anual:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.incomeTax * 12)}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Renda Líquida Anual:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.netIncome * 12)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">Detalhamento</h2>
+                <div className="grid grid-cols-2 gap-y-3">
+                  <div className="col-span-1">
+                    <span className="font-medium">Percentual de Despesas:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{form.getValues().expensesPercentage}%</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Despesas Dedutíveis:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.grossIncome * (parseInt(form.getValues().expensesPercentage) / 100))}</span>
+                  </div>
+                  
+                  <div className="col-span-1">
+                    <span className="font-medium">Dedução Escolhida:</span>
+                  </div>
+                  <div className="col-span-1">
+                    <span>{formatBRL(calculatedValues.chosenDeduction)}</span>
+                    <span className="text-xs ml-2">
+                      ({calculatedValues.chosenDeduction === calculatedValues.simplifiedDeduction ? 'Simplificada' : 'Detalhada'})
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center text-xs text-muted-foreground mt-12">
+              <p>Relatório gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}</p>
+              <p className="mt-1">Este relatório é apenas uma simulação e não substitui o cálculo oficial da Receita Federal.</p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
