@@ -29,6 +29,7 @@ import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
 import { PeriodFilter, FinancialRecord } from "./types";
 import { useToast } from "@/hooks/use-toast";
+import { ClinicForm } from "./components/ClinicForm";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function FinancialRecords() {
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
   const [searchTerm, setSearchTerm] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
@@ -288,6 +290,14 @@ export default function FinancialRecords() {
             Dashboard
           </Button>
           <Button
+            onClick={() => setClinicFormOpen(true)}
+            variant="outline"
+            className="shadow-sm hover:shadow-md transition-all"
+          >
+            <BuildingIcon className="mr-2 h-4 w-4" />
+            Nova Clínica
+          </Button>
+          <Button
             onClick={() => {
               setSelectedRecord(undefined);
               setFormOpen(true);
@@ -524,6 +534,21 @@ export default function FinancialRecords() {
               });
             }}
             onCancel={handleCloseForm}
+          />
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <ClinicForm 
+            onSuccess={() => {
+              setClinicFormOpen(false);
+              toast({
+                title: "Clínica adicionada",
+                description: "A clínica foi adicionada com sucesso.",
+                variant: "default",
+              });
+            }}
           />
         </DialogContent>
       </Dialog>
