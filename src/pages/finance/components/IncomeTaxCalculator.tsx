@@ -254,20 +254,21 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     }).format(numeric / 100);
   };
   
-  // Safe parsing function for chart values
-  const parseNumberSafely = (value: string | number): number => {
+  // Safe parsing function for chart values - fixed to handle types properly
+  const parseNumberSafely = (value: string | number | undefined): number => {
+    if (typeof value === 'undefined') return 0;
     if (typeof value === 'number') return value;
     const parsed = parseFloat(value);
     return isNaN(parsed) ? 0 : parsed;
   };
   
-  // Tooltip formatter for charts with proper typing
-  const formatChartValue = (value: string | number): string => {
-    return formatBRL(parseNumberSafely(value));
+  // Handles formatting values for the chart tooltip
+  const formatTooltipValue = (value: any): [string, string] => {
+    return [formatBRL(parseNumberSafely(value)), ''];
   };
-  
-  // YAxis formatter for the bar chart with proper typing
-  const formatYAxisValue = (value: string | number): string => {
+
+  // Formats Y-axis values
+  const formatYAxis = (value: any): string => {
     return formatBRL(parseNumberSafely(value)).split(',')[0];
   };
   
@@ -707,9 +708,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={(value) => {
-                                return [formatChartValue(value), ''];
-                              }}
+                              formatter={formatTooltipValue}
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -724,12 +723,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis 
-                              tickFormatter={(value) => formatYAxisValue(value)}
+                              tickFormatter={formatYAxis}
                             />
                             <Tooltip 
-                              formatter={(value) => {
-                                return [formatChartValue(value), ''];
-                              }}
+                              formatter={formatTooltipValue}
                             />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
@@ -849,3 +846,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </div>
   );
 }
+
