@@ -14,9 +14,25 @@ export function useIsMobile() {
     }
     
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    mql.addEventListener("change", checkMobile)
+    
+    // Use the correct event listener method based on browser support
+    if (mql.addEventListener) {
+      mql.addEventListener("change", checkMobile)
+    } else {
+      // @ts-ignore - For older browsers
+      mql.addListener(checkMobile)
+    }
+    
     checkMobile()
-    return () => mql.removeEventListener("change", checkMobile)
+    
+    return () => {
+      if (mql.removeEventListener) {
+        mql.removeEventListener("change", checkMobile)
+      } else {
+        // @ts-ignore - For older browsers
+        mql.removeListener(checkMobile)
+      }
+    }
   }, [])
 
   return !!isMobile
@@ -37,6 +53,7 @@ export function useIsTablet() {
     
     window.addEventListener("resize", handleResize)
     checkTablet()
+    
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 

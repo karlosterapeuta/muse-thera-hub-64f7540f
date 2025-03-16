@@ -62,7 +62,8 @@ export default function FinanceDashboard() {
             onClick={() => window.print()}
             className="h-9 sm:h-10"
           >
-            <PrinterIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            <PrinterIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#F97316]" />
+            {isMobile && <span className="ml-1 text-xs">Imprimir</span>}
             {!isMobile && "Imprimir"}
           </Button>
           
@@ -72,8 +73,9 @@ export default function FinanceDashboard() {
             onClick={() => navigate("/finance/records")}
             className="h-9 sm:h-10 bg-primary/90 hover:bg-primary"
           >
-            <PlusIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-            {!isMobile ? "Novo Registro" : "Novo"}
+            <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            {isMobile && <span className="ml-1 text-xs">Novo</span>}
+            {!isMobile && "Novo Registro"}
           </Button>
           
           <Button
@@ -82,7 +84,8 @@ export default function FinanceDashboard() {
             onClick={() => navigate("/finance/records", { state: { viewMode: "agenda" } })}
             className="h-9 sm:h-10"
           >
-            <LayoutGridIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            <LayoutGridIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#0EA5E9]" />
+            {isMobile && <span className="ml-1 text-xs">Agenda</span>}
             {!isMobile && "Agenda"}
           </Button>
           
@@ -92,7 +95,8 @@ export default function FinanceDashboard() {
             onClick={() => navigate("/finance/records", { state: { viewMode: "list" } })}
             className="h-9 sm:h-10"
           >
-            <ListIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            <ListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#8B5CF6]" />
+            {isMobile && <span className="ml-1 text-xs">Lista</span>}
             {!isMobile && "Lista"}
           </Button>
         </div>

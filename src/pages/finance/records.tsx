@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -313,8 +313,9 @@ export default function FinancialRecords() {
             size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
-            <BarChart2Icon className="mr-2 h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Dashboard</span>
+            <BarChart2Icon className="h-4 w-4 sm:h-5 sm:w-5 text-[#8B5CF6]" />
+            {isMobile && <span className="ml-1 text-xs">Dashboard</span>}
+            {!isMobile && <span className="inline">Dashboard</span>}
           </Button>
           <Button
             onClick={() => setClinicFormOpen(true)}
@@ -322,8 +323,9 @@ export default function FinancialRecords() {
             size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
-            <BuildingIcon className="mr-2 h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Nova Clínica</span>
+            <BuildingIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#D946EF]" />
+            {isMobile && <span className="ml-1 text-xs">Clínica</span>}
+            {!isMobile && <span className="inline">Nova Clínica</span>}
           </Button>
           <Button
             onClick={() => {
@@ -333,8 +335,9 @@ export default function FinancialRecords() {
             size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Novo Registro</span>
+            <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            {isMobile && <span className="ml-1 text-xs">Novo</span>}
+            {!isMobile && <span className="inline">Novo Registro</span>}
           </Button>
           {records.length > 0 && (
             <Button
@@ -343,49 +346,50 @@ export default function FinancialRecords() {
               size={isMobile ? "sm" : "default"}
               className="shadow-sm hover:shadow-md transition-all"
             >
-              <Trash2Icon className="mr-2 h-4 w-4" />
-              <span className={isMobile ? "hidden" : "inline"}>Limpar Tudo</span>
+              <Trash2Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {isMobile && <span className="ml-1 text-xs">Limpar</span>}
+              {!isMobile && <span className="inline">Limpar Tudo</span>}
             </Button>
           )}
         </div>
       </div>
       
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
-        <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-gray-100">
-          <DateRangeFilter onFilter={handleDateFilter} />
+      
+      <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-gray-100">
+        <DateRangeFilter onFilter={handleDateFilter} />
+      </div>
+      <div className="flex flex-col space-y-2">
+        <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            className="pl-9"
+            placeholder="Pesquisar registros..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        <div className="flex flex-col space-y-2">
-          <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-9"
-              placeholder="Pesquisar registros..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5 flex justify-center">
-            <Button 
-              variant={viewMode === "agenda" ? "default" : "outline"} 
-              size="sm" 
-              className="rounded-r-none"
-              onClick={() => setViewMode("agenda")}
-            >
-              <LayoutGridIcon className="h-4 w-4 mr-1" />
-              <span className={isMobile ? "hidden" : "inline"}>Agenda</span>
-            </Button>
-            <Button 
-              variant={viewMode === "list" ? "default" : "outline"} 
-              size="sm" 
-              className="rounded-l-none"
-              onClick={() => setViewMode("list")}
-            >
-              <ListIcon className="h-4 w-4 mr-1" />
-              <span className={isMobile ? "hidden" : "inline"}>Lista</span>
-            </Button>
-          </div>
+        <div className="bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5 flex justify-center">
+          <Button 
+            variant={viewMode === "agenda" ? "default" : "outline"} 
+            size="sm" 
+            className="rounded-r-none"
+            onClick={() => setViewMode("agenda")}
+          >
+            <LayoutGridIcon className="h-4 w-4 mr-1 text-[#0EA5E9]" />
+            <span className={isMobile ? "text-xs" : "inline"}>Agenda</span>
+          </Button>
+          <Button 
+            variant={viewMode === "list" ? "default" : "outline"} 
+            size="sm" 
+            className="rounded-l-none"
+            onClick={() => setViewMode("list")}
+          >
+            <ListIcon className="h-4 w-4 mr-1 text-[#8B5CF6]" />
+            <span className={isMobile ? "text-xs" : "inline"}>Lista</span>
+          </Button>
         </div>
       </div>
+      
       
       <Card className="shadow-md border-gray-100 overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
