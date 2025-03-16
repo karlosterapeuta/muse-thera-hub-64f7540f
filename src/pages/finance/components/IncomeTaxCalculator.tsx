@@ -340,6 +340,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                     const formattedValue = formatCurrencyInput(e.target.value);
                                     field.onChange(formattedValue);
                                   }}
+                                  type="text"
                                 />
                               </FormControl>
                               <FormDescription>
@@ -817,4 +818,3 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </div>
   );
 }
-
