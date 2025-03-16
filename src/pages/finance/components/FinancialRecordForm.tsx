@@ -24,11 +24,20 @@ const weekdayOptions = [
   { label: "Sexta-feira", value: "sexta" },
 ];
 
+// Define time options from 8:00 to 20:00 with 30 minute intervals
+const timeOptions = Array.from({ length: 25 }, (_, i) => {
+  const hour = Math.floor(i / 2) + 8;
+  const minutes = (i % 2) * 30;
+  const time = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  return { label: time, value: time };
+});
+
 const formSchema = z.object({
   clinic_id: z.string().min(1, { message: "Clínica é obrigatória" }),
   patient_id: z.string().optional(),
   amount: z.number().min(0.01, { message: "Valor deve ser maior que zero" }),
   weekday: z.string().min(1, { message: "Dia da semana é obrigatório" }),
+  time: z.string().min(1, { message: "Horário é obrigatório" }),
   description: z.string().optional(),
 });
 
@@ -76,10 +85,23 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     }
   };
 
+  // Extract time from description if available
+  const getTimeFromDescription = (description?: string): string => {
+    if (!description) return "08:00";
+    
+    const timeMatch = description.match(/Horário: (\d{2}:\d{2})/);
+    return timeMatch ? timeMatch[1] : "08:00";
+  };
+
   // Convert session_date to weekday if record exists
   const defaultWeekday = record?.session_date 
     ? getWeekdayFromDate(record.session_date) 
     : "segunda";
+  
+  // Get default time from description if record exists
+  const defaultTime = record?.description 
+    ? getTimeFromDescription(record.description) 
+    : "08:00";
   
   const form = useForm<FinancialRecordFormValues>({
     resolver: zodResolver(formSchema),
@@ -88,7 +110,10 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       patient_id: record?.patient_id || undefined,
       amount: record?.amount || 0,
       weekday: defaultWeekday,
-      description: record?.description || "",
+      time: defaultTime,
+      description: record?.description 
+        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*/, "")
+        : "",
     },
   });
   
@@ -97,8 +122,8 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     
-    // Store weekday in the description field and use current date for session_date
-    const enhancedDescription = `Dia da semana: ${values.weekday}${values.description ? ` | ${values.description}` : ''}`;
+    // Store weekday and time in the description field and use current date for session_date
+    const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time}${values.description ? ` | ${values.description}` : ''}`;
     
     if (isUpdating) {
       updateRecord.mutate(
@@ -132,6 +157,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               patient_id: undefined,
               amount: 0,
               weekday: "segunda",
+              time: "08:00",
               description: "",
             });
             onSuccess?.();
@@ -229,33 +255,63 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="weekday"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dia da Semana</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o dia da semana" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {weekdayOptions.map((day) => (
-                        <SelectItem key={day.value} value={day.value}>
-                          {day.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="weekday"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dia da Semana</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o dia da semana" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {weekdayOptions.map((day) => (
+                          <SelectItem key={day.value} value={day.value}>
+                            {day.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Horário</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o horário" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {timeOptions.map((time) => (
+                          <SelectItem key={time.value} value={time.value}>
+                            {time.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             
             <FormField
               control={form.control}

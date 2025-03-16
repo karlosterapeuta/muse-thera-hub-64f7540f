@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -60,11 +61,18 @@ export default function FinancialRecords() {
     return weekdayMap[weekdayMatch[1]] || "";
   };
   
+  const getAppointmentTime = (description?: string) => {
+    if (!description) return "";
+    
+    const timeMatch = description.match(/Horário: (\d{2}:\d{2})/);
+    return timeMatch ? timeMatch[1] : "";
+  };
+  
   const getCleanDescription = (description?: string) => {
     if (!description) return "";
     
-    const parts = description.split(" | ");
-    return parts.length > 1 ? parts.slice(1).join(" | ") : "";
+    // Remove both weekday and time information from description
+    return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*/, "");
   };
   
   const filteredRecords = records.filter(record => 
@@ -72,6 +80,30 @@ export default function FinancialRecords() {
     record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  // Sort records by weekday and time
+  const sortedRecords = [...filteredRecords].sort((a, b) => {
+    const weekdayA = getWeekdayLabel(a.description);
+    const weekdayB = getWeekdayLabel(b.description);
+    
+    const weekdayOrder = {
+      "Segunda-feira": 1,
+      "Terça-feira": 2, 
+      "Quarta-feira": 3,
+      "Quinta-feira": 4,
+      "Sexta-feira": 5
+    };
+    
+    // First sort by weekday
+    if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
+      return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
+    }
+    
+    // Then sort by time
+    const timeA = getAppointmentTime(a.description);
+    const timeB = getAppointmentTime(b.description);
+    return timeA.localeCompare(timeB);
+  });
   
   useEffect(() => {
     if (location.state?.openForm) {
@@ -152,13 +184,14 @@ export default function FinancialRecords() {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
               <p className="mt-2 text-muted-foreground">Carregando registros...</p>
             </div>
-          ) : filteredRecords.length > 0 ? (
+          ) : sortedRecords.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
                     <TableHead>Dia da Semana</TableHead>
+                    <TableHead>Horário</TableHead>
                     <TableHead>Clínica</TableHead>
                     <TableHead>Paciente</TableHead>
                     <TableHead>Valor</TableHead>
@@ -167,13 +200,16 @@ export default function FinancialRecords() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredRecords.map((record) => (
+                  {sortedRecords.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell>
                         {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
                       </TableCell>
                       <TableCell>
                         {getWeekdayLabel(record.description) || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {getAppointmentTime(record.description) || "-"}
                       </TableCell>
                       <TableCell>{record.clinic_name}</TableCell>
                       <TableCell>{record.patient_name || '-'}</TableCell>
