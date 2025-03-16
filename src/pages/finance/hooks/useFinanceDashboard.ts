@@ -37,6 +37,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
             dailyEarnings: [],
             weeklyEarnings: [],
             monthlyEarnings: [],
+            yearlyEarnings: [],
             clinicDistribution: [],
             totalEarnings: 0,
             totalSessions: 0,
@@ -66,14 +67,16 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           count: data.count,
         }));
         
-        // Weekly and monthly calculations
+        // Weekly, monthly, and yearly calculations
         const weeklyMap = new Map();
         const monthlyMap = new Map();
+        const yearlyMap = new Map();
         
         records.forEach(record => {
           const date = parseISO(record.session_date);
           const weekKey = `${format(date, 'w', { locale: ptBR })}-${format(date, 'yyyy')}`;
           const monthKey = format(date, 'MMM/yyyy', { locale: ptBR });
+          const yearKey = format(date, 'yyyy', { locale: ptBR });
           
           const weekCurrent = weeklyMap.get(weekKey) || { total: 0, count: 0 };
           weeklyMap.set(weekKey, {
@@ -85,6 +88,12 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           monthlyMap.set(monthKey, {
             total: monthCurrent.total + parseFloat(String(record.amount)),
             count: monthCurrent.count + 1,
+          });
+          
+          const yearCurrent = yearlyMap.get(yearKey) || { total: 0, count: 0 };
+          yearlyMap.set(yearKey, {
+            total: yearCurrent.total + parseFloat(String(record.amount)),
+            count: yearCurrent.count + 1,
           });
         });
         
@@ -99,6 +108,12 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           total: data.total,
           count: data.count,
         }));
+        
+        const yearlyEarnings = Array.from(yearlyMap.entries()).map(([year, data]) => ({
+          period: year,
+          total: data.total,
+          count: data.count,
+        })).sort((a, b) => a.period.localeCompare(b.period));
         
         // Clinic distribution
         const clinicMap = new Map();
@@ -125,6 +140,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           dailyEarnings,
           weeklyEarnings,
           monthlyEarnings,
+          yearlyEarnings,
           clinicDistribution,
           totalEarnings: total,
           totalSessions: count,

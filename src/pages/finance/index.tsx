@@ -77,6 +77,7 @@ export default function FinanceDashboard() {
               dailyData={data?.dailyEarnings || []}
               weeklyData={data?.weeklyEarnings || []}
               monthlyData={data?.monthlyEarnings || []}
+              yearlyData={data?.yearlyEarnings || []}
               clinicData={data?.clinicDistribution || []}
             />
           ) : (

@@ -47,6 +47,7 @@ export interface FinanceData {
   dailyEarnings: FinancialSummary[];
   weeklyEarnings: FinancialSummary[];
   monthlyEarnings: FinancialSummary[];
+  yearlyEarnings: FinancialSummary[];
   clinicDistribution: ClinicSummary[];
   totalEarnings: number;
   totalSessions: number;
