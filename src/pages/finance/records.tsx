@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -159,7 +158,7 @@ export default function FinancialRecords() {
   }, [location, navigate]);
   
   const handleEditRecord = (record: FinancialRecord) => {
-    setSelectedRecord(record);
+    setSelectedRecord({...record});
     setFormOpen(true);
   };
   
@@ -205,8 +204,20 @@ export default function FinancialRecords() {
     setDateFilter({ start_date, end_date });
   };
   
+  const handleFormSuccess = () => {
+    setFormOpen(false);
+    setSelectedRecord(undefined);
+    refetch();
+    toast({
+      title: "Registro salvo",
+      description: "O registro financeiro foi salvo com sucesso.",
+      variant: "default",
+    });
+  };
+  
   const handleCloseForm = () => {
     setFormOpen(false);
+    setSelectedRecord(undefined);
   };
   
   const formatCurrency = (value: number) => {
@@ -535,17 +546,7 @@ export default function FinancialRecords() {
         <DialogContent className="sm:max-w-lg">
           <FinancialRecordForm 
             record={selectedRecord}
-            onSuccess={() => {
-              setFormOpen(false);
-              refetch();
-              toast({
-                title: selectedRecord ? "Registro atualizado" : "Registro criado",
-                description: selectedRecord 
-                  ? "O registro financeiro foi atualizado com sucesso." 
-                  : "O registro financeiro foi criado com sucesso.",
-                variant: "default",
-              });
-            }}
+            onSuccess={handleFormSuccess}
             onCancel={handleCloseForm}
           />
         </DialogContent>

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect } from "react";
 
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
@@ -158,13 +158,41 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     },
   });
   
+  useEffect(() => {
+    if (record) {
+      const cleanDescription = record.description 
+        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "")
+        : "";
+        
+      form.reset({
+        clinic_id: record.clinic_id || "",
+        patient_id: record.patient_id || undefined,
+        amount: record.amount || 0,
+        weekday: getWeekdayFromDate(record.session_date),
+        time: getTimeFromDescription(record.description),
+        duration: getDurationFromDescription(record.description),
+        description: cleanDescription,
+      });
+    } else {
+      form.reset({
+        clinic_id: "",
+        patient_id: undefined,
+        amount: 0,
+        weekday: "segunda",
+        time: "08:00",
+        duration: "45",
+        description: "",
+      });
+    }
+  }, [record, form]);
+  
   function onSubmit(values: FinancialRecordFormValues) {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
-    if (isUpdating) {
+    if (isUpdating && record) {
       updateRecord.mutate(
         { 
           id: record.id,
@@ -228,7 +256,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                   <FormLabel>Clínica</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -256,7 +284,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                   <FormLabel>Paciente (opcional)</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -302,7 +330,11 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                       min="0"
                       placeholder="100.00"
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value === '' ? 0 : parseFloat(value));
+                      }}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -319,7 +351,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                     <FormLabel>Dia da Semana</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -347,7 +379,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                     <FormLabel>Horário</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -375,7 +407,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                     <FormLabel>Duração</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -428,7 +460,14 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               disabled={addRecord.isPending || updateRecord.isPending}
               className={isMobile ? 'w-full' : ''}
             >
-              {isUpdating ? "Atualizar" : "Salvar"}
+              {addRecord.isPending || updateRecord.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                  {isUpdating ? "Atualizando..." : "Salvando..."}
+                </>
+              ) : (
+                isUpdating ? "Atualizar" : "Salvar"
+              )}
             </Button>
           </CardFooter>
         </form>
@@ -436,3 +475,4 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     </Card>
   );
 }
+
