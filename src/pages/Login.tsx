@@ -92,6 +92,21 @@ export default function Login() {
             // Reset to login form on error
             setIsSettingNewPassword(false);
           }
+        } else if (hashParams.type === 'signup') {
+          // This is a signup confirmation
+          console.log("This is a signup confirmation flow");
+          
+          try {
+            // If we have the access token, the user has confirmed their email
+            if (hashParams.access_token) {
+              toast({
+                title: "Cadastro confirmado!",
+                description: "Seu email foi confirmado com sucesso. Você já pode fazer login.",
+              });
+            }
+          } catch (error: any) {
+            console.error("Erro ao processar confirmação de cadastro:", error);
+          }
         }
       }
       
