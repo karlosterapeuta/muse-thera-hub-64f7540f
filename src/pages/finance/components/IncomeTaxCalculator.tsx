@@ -239,17 +239,17 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     if (value === undefined || value === null) return 0;
     if (typeof value === 'number') return value;
     if (typeof value === 'string') {
-      const parsed = parseFloat(value);
+      const parsed = parseFloat(value.replace(/[^\d.-]/g, '').replace(',', '.'));
       return isNaN(parsed) ? 0 : parsed;
     }
     return 0;
   };
 
-  const formatTooltipValue = (value: number, name?: string) => {
-    return formatBRL(parseNumberSafely(value));
+  const formatTooltipValue = (value: any): [string, string] => {
+    return [formatBRL(parseNumberSafely(value)), ''];
   };
 
-  const formatYAxis = (value: number) => {
+  const formatYAxis = (value: any): string => {
     return formatBRL(parseNumberSafely(value)).split(',')[0];
   };
 
@@ -462,6 +462,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         const formattedValue = formatCurrencyInput(e.target.value);
                                         field.onChange(formattedValue);
                                       }}
+                                      type="text"
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -484,6 +485,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         const formattedValue = formatCurrencyInput(e.target.value);
                                         field.onChange(formattedValue);
                                       }}
+                                      type="text"
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -506,6 +508,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         const formattedValue = formatCurrencyInput(e.target.value);
                                         field.onChange(formattedValue);
                                       }}
+                                      type="text"
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -528,6 +531,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         const formattedValue = formatCurrencyInput(e.target.value);
                                         field.onChange(formattedValue);
                                       }}
+                                      type="text"
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -550,6 +554,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         const formattedValue = formatCurrencyInput(e.target.value);
                                         field.onChange(formattedValue);
                                       }}
+                                      type="text"
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -679,7 +684,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => [formatBRL(parseNumberSafely(value)), '']} />
+                            <Tooltip formatter={formatTooltipValue} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -692,8 +697,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           <BarChart data={calculatedValues.monthlyBreakdown}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
-                            <YAxis tickFormatter={(value) => formatYAxis(value)} />
-                            <Tooltip formatter={(value) => [formatBRL(parseNumberSafely(value)), '']} />
+                            <YAxis tickFormatter={formatYAxis} />
+                            <Tooltip formatter={formatTooltipValue} />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
                           </BarChart>
@@ -812,3 +817,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </div>
   );
 }
+
