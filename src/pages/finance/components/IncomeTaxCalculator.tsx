@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +14,9 @@ import {
   TableIcon, 
   FileTextIcon, 
   PieChartIcon, 
-  InfoIcon
+  InfoIcon,
+  CalculatorIcon,
+  DollarSignIcon
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -31,7 +32,6 @@ import {
   Cell
 } from "recharts";
 
-// Define the schema for the tax calculation form
 const formSchema = z.object({
   taxYear: z.string(),
   deductibleExpensesPercentage: z.coerce.number().min(0).max(100),
@@ -75,7 +75,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       taxYear: new Date().getFullYear().toString(),
-      deductibleExpensesPercentage: 32, // Default for healthcare professionals in Brazil
+      deductibleExpensesPercentage: 32,
       dependents: 0,
       otherDeductions: 0,
       taxRegime: "simplesNacional",
@@ -90,7 +90,6 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   const watchProfessionalType = form.watch("professionalType");
   const watchTaxRegime = form.watch("taxRegime");
 
-  // Set appropriate deductible percentage based on professional type
   const updateDeductiblePercentage = (value: string) => {
     switch (value) {
       case "healthProfessional":
@@ -105,21 +104,17 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     }
   };
 
-  // Listen for changes in professional type
   const handleProfessionalTypeChange = (value: string) => {
     updateDeductiblePercentage(value);
   };
 
   const calculateIncomeTax = (values: FormValues) => {
-    // Filter records by the selected year
     const yearRecords = records.filter(record => 
       new Date(record.session_date).getFullYear().toString() === values.taxYear
     );
 
-    // Calculate gross income from records
     const grossIncome = yearRecords.reduce((sum, record) => sum + record.amount, 0);
     
-    // Calculate specific deductions
     const specificDeductions = {
       courses: values.courses,
       equipment: values.equipment,
@@ -129,16 +124,12 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     
     const totalSpecificDeductions = Object.values(specificDeductions).reduce((sum, val) => sum + val, 0);
     
-    // Calculate deductible expenses (simplified taxation)
     const deductibleExpensesAmount = (grossIncome * values.deductibleExpensesPercentage) / 100;
     
-    // Calculate dependents deduction (BR tax rules 2023)
-    const dependentsDeduction = values.dependents * 2275.08; // 2023 value per dependent
+    const dependentsDeduction = values.dependents * 2275.08;
     
-    // Calculate taxable income
     const taxableIncome = Math.max(0, grossIncome - deductibleExpensesAmount - dependentsDeduction - values.otherDeductions - totalSpecificDeductions);
     
-    // Apply progressive tax rates (2023 Brazil rates)
     let calculatedTax = 0;
     
     if (taxableIncome <= 22847.76) {
@@ -153,13 +144,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       calculatedTax = (taxableIncome - 55976.16) * 0.275 - 10432.32;
     }
     
-    // Ensure tax is not negative
     calculatedTax = Math.max(0, calculatedTax);
     
-    // Calculate effective tax rate
     const effectiveTaxRate = grossIncome > 0 ? (calculatedTax / grossIncome) * 100 : 0;
     
-    // Create monthly breakdown
     const monthlyData: Record<string, { income: number; tax: number }> = {};
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     
@@ -173,7 +161,6 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       monthlyData[month].income += record.amount;
     });
     
-    // Calculate proportional tax for each month
     Object.keys(monthlyData).forEach(month => {
       const proportion = grossIncome > 0 ? monthlyData[month].income / grossIncome : 0;
       monthlyData[month].tax = calculatedTax * proportion;
@@ -206,7 +193,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       const year = new Date(record.session_date).getFullYear().toString();
       years.add(year);
     });
-    return Array.from(years).sort((a, b) => b.localeCompare(a)); // Sort years descending
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
   };
   
   const formatCurrency = (value: number) => {
@@ -236,7 +223,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     }
   };
   
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#8dd1e1'];
+  const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#1EAEDB', '#33C3F0'];
   
   const renderDeductionsPieChart = () => {
     if (!calculationResult) return null;
@@ -300,28 +287,43 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Cálculo de Imposto de Renda Profissional</CardTitle>
+    <Card className="w-full border-[#8B5CF6]/30 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-[#8B5CF6]/20 to-transparent border-b border-[#8B5CF6]/20">
+        <CardTitle className="text-[#8B5CF6] flex items-center">
+          <DollarSignIcon className="mr-2 h-5 w-5" />
+          Cálculo de Imposto de Renda Profissional
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Tabs value={activeSection} onValueChange={(v) => setActiveSection(v as any)}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="calculator">
-              <BarChart3Icon className="mr-2 h-4 w-4" />
+      <CardContent className="p-6">
+        <Tabs value={activeSection} onValueChange={(v) => setActiveSection(v as any)} className="w-full">
+          <TabsList className="mb-6 grid grid-cols-4 gap-4 bg-[#8B5CF6]/10 p-1">
+            <TabsTrigger 
+              value="calculator" 
+              className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+            >
+              <CalculatorIcon className="mr-2 h-4 w-4" />
               Calculadora
             </TabsTrigger>
             {calculationResult && (
               <>
-                <TabsTrigger value="report">
+                <TabsTrigger 
+                  value="report"
+                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                >
                   <FileTextIcon className="mr-2 h-4 w-4" />
                   Relatório
                 </TabsTrigger>
-                <TabsTrigger value="chart">
+                <TabsTrigger 
+                  value="chart"
+                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                >
                   <PieChartIcon className="mr-2 h-4 w-4" />
                   Gráficos
                 </TabsTrigger>
-                <TabsTrigger value="details">
+                <TabsTrigger 
+                  value="details"
+                  className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                >
                   <TableIcon className="mr-2 h-4 w-4" />
                   Detalhamento
                 </TabsTrigger>
@@ -329,22 +331,22 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
             )}
           </TabsList>
           
-          <TabsContent value="calculator" className="space-y-4">
+          <TabsContent value="calculator" className="space-y-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(calculateIncomeTax)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={form.handleSubmit(calculateIncomeTax)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="taxYear"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Ano Fiscal</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Ano Fiscal</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
                               <SelectValue placeholder="Selecione o ano" />
                             </SelectTrigger>
                           </FormControl>
@@ -372,7 +374,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                     name="professionalType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Categoria Profissional</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Categoria Profissional</FormLabel>
                         <Select
                           onValueChange={(value) => {
                             field.onChange(value);
@@ -381,7 +383,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
                               <SelectValue placeholder="Selecione sua categoria profissional" />
                             </SelectTrigger>
                           </FormControl>
@@ -401,13 +403,13 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                     name="taxRegime"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Regime Tributário</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Regime Tributário</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30">
                               <SelectValue placeholder="Selecione o regime tributário" />
                             </SelectTrigger>
                           </FormControl>
@@ -427,9 +429,13 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                     name="deductibleExpensesPercentage"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Percentual de Despesas Dedutíveis (%)</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Percentual de Despesas Dedutíveis (%)</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -441,9 +447,13 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                     name="dependents"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Número de Dependentes</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Número de Dependentes</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -455,9 +465,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                     name="previdenciaContribution"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Contribuição Previdenciária (R$)</FormLabel>
+                        <FormLabel className="text-[#8B5CF6] font-medium">Contribuição Previdenciária (R$)</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" {...field} />
+                          <Input 
+                            type="number" 
+                            step="0.01" 
+                            {...field} 
+                            className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -465,8 +480,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                   />
                 </div>
                 
-                <div className="p-4 border rounded-lg bg-muted/30 space-y-4">
-                  <h3 className="font-medium flex items-center">
+                <div className="p-5 border rounded-lg bg-[#8B5CF6]/5 border-[#8B5CF6]/20 space-y-4">
+                  <h3 className="font-medium flex items-center text-[#8B5CF6]">
                     <InfoIcon className="h-4 w-4 mr-2" />
                     Deduções Específicas para Musicoterapeutas
                   </h3>
@@ -477,9 +492,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       name="courses"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Cursos e Capacitações (R$)</FormLabel>
+                          <FormLabel className="text-[#8B5CF6] font-medium">Cursos e Capacitações (R$)</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              {...field} 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -491,9 +511,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       name="equipment"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Equipamentos e Instrumentos (R$)</FormLabel>
+                          <FormLabel className="text-[#8B5CF6] font-medium">Equipamentos e Instrumentos (R$)</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              {...field} 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -505,9 +530,14 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       name="transportation"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Transporte e Locomoção (R$)</FormLabel>
+                          <FormLabel className="text-[#8B5CF6] font-medium">Transporte e Locomoção (R$)</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              {...field} 
+                              className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -521,16 +551,27 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                   name="otherDeductions"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Outras Deduções (R$)</FormLabel>
+                      <FormLabel className="text-[#8B5CF6] font-medium">Outras Deduções (R$)</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} />
+                        <Input 
+                          type="number" 
+                          step="0.01" 
+                          {...field} 
+                          className="border-[#8B5CF6]/30 focus:ring-[#8B5CF6]/30" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
-                <Button type="submit" className="w-full">Calcular Imposto</Button>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#8B5CF6] hover:bg-[#9b87f5]"
+                >
+                  <CalculatorIcon className="mr-2 h-4 w-4" />
+                  Calcular Imposto
+                </Button>
               </form>
             </Form>
           </TabsContent>
@@ -722,3 +763,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </Card>
   );
 }
+

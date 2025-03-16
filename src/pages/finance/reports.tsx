@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -114,24 +113,25 @@ export default function FinancialReports() {
           />
           
           <Tabs defaultValue="charts" className="print:hidden">
-            <TabsList>
-              <TabsTrigger value="charts">
+            <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+              <TabsTrigger value="charts" className="px-4">
                 <BarChart2Icon className="mr-2 h-4 w-4" />
                 Gráficos
               </TabsTrigger>
-              <TabsTrigger value="by-clinic">
+              <TabsTrigger value="by-clinic" className="px-4">
                 <PieChartIcon className="mr-2 h-4 w-4" />
                 Por Clínica
               </TabsTrigger>
-              <TabsTrigger value="all-records">
+              <TabsTrigger value="all-records" className="px-4">
                 <FileTextIcon className="mr-2 h-4 w-4" />
                 Todos os Registros
               </TabsTrigger>
-              <TabsTrigger value="income-tax">
+              <TabsTrigger value="income-tax" className="px-4 bg-[#8B5CF6] text-white data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white animate-pulse-gentle">
                 <CalculatorIcon className="mr-2 h-4 w-4" />
                 Imposto de Renda
               </TabsTrigger>
             </TabsList>
+            
             <TabsContent value="charts" className="mt-4">
               {dashboardData?.totalSessions > 0 ? (
                 <FinanceCharts
@@ -147,6 +147,7 @@ export default function FinancialReports() {
                 </div>
               )}
             </TabsContent>
+            
             <TabsContent value="by-clinic" className="mt-4">
               <Card>
                 <CardHeader>
@@ -182,6 +183,7 @@ export default function FinancialReports() {
                 </CardContent>
               </Card>
             </TabsContent>
+            
             <TabsContent value="all-records" className="mt-4">
               <Card>
                 <CardHeader>
@@ -225,7 +227,17 @@ export default function FinancialReports() {
                 </CardContent>
               </Card>
             </TabsContent>
+            
             <TabsContent value="income-tax" className="mt-4">
+              <div className="p-4 bg-gradient-to-r from-[#9b87f5]/10 to-[#8B5CF6]/5 rounded-xl border border-[#8B5CF6]/20 mb-4">
+                <h3 className="text-xl font-bold text-[#8B5CF6] flex items-center mb-2">
+                  <CalculatorIcon className="mr-2 h-5 w-5" />
+                  Cálculo de Imposto de Renda
+                </h3>
+                <p className="text-muted-foreground">
+                  Utilize esta ferramenta para calcular seu imposto de renda com base nos seus rendimentos e deduções específicas para musicoterapeutas.
+                </p>
+              </div>
               <IncomeTaxCalculator records={records} />
             </TabsContent>
           </Tabs>
