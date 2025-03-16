@@ -1,172 +1,151 @@
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import Layout from "./components/Layout";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Patients from "./pages/patients";
 import Professional from "./pages/Professional";
 import Processes from "./pages/processes";
-import Hawkins from "./pages/hawkins";
-import Users from "./pages/users";
-import InviteCodes from "./pages/InviteCodes";
-import NotFound from "./pages/NotFound";
-import Songs from "./pages/songs";
-import MusicalBells from "./pages/musical-bells";
-import Finance from "./pages/finance";
-import Activities from "./pages/activities";
+import Evaluation from "./pages/evaluation";
+import AnamnesisForm from "./pages/anamnesis";
+import Patients from "./pages/patients";
+import TreatmentPlanForm from "./pages/treatment-plan";
 import InterventionForm from "./pages/intervention";
+import ReevaluationForm from "./pages/reevaluation";
+import ReportPage from "./pages/processes/report";
+import ReportsPage from "./pages/processes/reports";
+import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
+import InviteCodes from "./pages/InviteCodes";
+import Users from "./pages/users";
+import HawkinsScale from "./pages/hawkins";
+import SongsPage from "./pages/songs";
+import MusicalBells from "./pages/musical-bells";
+import FinanceDashboard from "./pages/finance";
+import FinancialRecords from "./pages/finance/records";
+import ClinicsManagement from "./pages/finance/clinics";
+import FinancialReports from "./pages/finance/reports";
+import AuthStatusChecker from "./components/auth/AuthStatusChecker";
+import "./App.css";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
-        element: <Dashboard />,
-      },
-    ],
+    element: <Navigate to="/login" replace />,
   },
   {
-    path: "/dashboard",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
-        element: <Dashboard />,
-      },
-    ],
+    path: "/login",
+    element: <Login />,
   },
   {
-    path: "/professional",
-    element: <Layout />,
-    errorElement: <NotFound />,
+    element: (
+      <>
+        <Layout />
+        <AuthStatusChecker />
+      </>
+    ),
     children: [
       {
-        path: "",
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/professional",
         element: <Professional />,
       },
-    ],
-  },
-  {
-    path: "/patients",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
+        path: "/patients",
         element: <Patients />,
       },
-    ],
-  },
-  {
-    path: "/processes",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
+        path: "/processes",
         element: <Processes />,
       },
-    ],
-  },
-  {
-    path: "/hawkins",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
-        element: <Hawkins />,
+        path: "/processos/avaliacao",
+        element: <Evaluation />,
       },
-    ],
-  },
-  {
-    path: "/users",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
-        element: <Users />,
+        path: "/anamnesis",
+        element: <AnamnesisForm />,
       },
-    ],
-  },
-  {
-    path: "/invite-codes",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
-        element: <InviteCodes />,
+        path: "/processos/plano",
+        element: <TreatmentPlanForm />,
       },
-    ],
-  },
-  {
-    path: "/songs",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
       {
-        path: "",
-        element: <Songs />,
-      },
-    ],
-  },
-  {
-    path: "/musical-bells",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
-        element: <MusicalBells />,
-      },
-    ],
-  },
-  {
-    path: "/finance",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
-        element: <Finance />,
-      },
-    ],
-  },
-  {
-    path: "/activities",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
-        element: <Activities />,
-      },
-    ],
-  },
-  {
-    path: "/intervention",
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "",
+        path: "/intervention",
         element: <InterventionForm />,
       },
+      {
+        path: "/processos/reavaliacao",
+        element: <ReevaluationForm />,
+      },
+      {
+        path: "/processos/relatorios",
+        element: <ReportsPage />,
+      },
+      {
+        path: "/processos/relatorio",
+        element: <ReportPage />,
+      },
+      {
+        path: "/invite-codes",
+        element: <InviteCodes />,
+      },
+      {
+        path: "/users",
+        element: <Users />,
+      },
+      {
+        path: "/hawkins",
+        element: <HawkinsScale />,
+      },
+      {
+        path: "/songs",
+        element: <SongsPage />,
+      },
+      {
+        path: "/musical-bells",
+        element: <MusicalBells />,
+      },
+      {
+        path: "/finance",
+        element: <FinanceDashboard />,
+      },
+      {
+        path: "/finance/records",
+        element: <FinancialRecords />,
+      },
+      {
+        path: "/finance/clinics",
+        element: <ClinicsManagement />,
+      },
+      {
+        path: "/finance/reports",
+        element: <FinancialReports />,
+      },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
 function App() {
   return (
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

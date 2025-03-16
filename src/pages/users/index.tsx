@@ -8,7 +8,6 @@ import { StatusLogsDialog } from "./components/StatusLogsDialog";
 import { UsersTable } from "./components/UsersTable";
 import { useUsers } from "./hooks/useUsers";
 import { useUserActions } from "./hooks/useUserActions";
-import { formatCurrency } from "@/lib/utils";
 
 export default function Users() {
   const { data: users, isLoading } = useUsers();
@@ -49,17 +48,9 @@ export default function Users() {
     );
   }
 
-  const totalUsers = users?.length || 0;
-
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-primary">Usuários do Sistema</h1>
-        <div className="bg-primary/10 text-primary font-medium px-4 py-2 rounded-md flex items-center">
-          <span className="mr-2">Total de Usuários:</span>
-          <span className="text-xl font-bold">{totalUsers}</span>
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold mb-6 text-primary">Usuários do Sistema</h1>
       
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
