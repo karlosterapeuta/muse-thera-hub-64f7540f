@@ -31,7 +31,7 @@ import { DateRangeFilter } from "./components/DateRangeFilter";
 import { PeriodFilter, FinancialRecord } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
@@ -47,6 +47,7 @@ export default function FinancialRecords() {
   const [viewMode, setViewMode] = useState<"list" | "agenda">("agenda");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const deleteRecord = useDeleteFinancialRecord();
@@ -301,51 +302,55 @@ export default function FinancialRecords() {
   };
   
   return (
-    <div className="container py-6 space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-primary">Registros Financeiros</h1>
-        <div className="flex space-x-2">
+    <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">Registros Financeiros</h1>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
           <Button
             onClick={() => navigate("/finance")}
             variant="outline"
+            size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
             <BarChart2Icon className="mr-2 h-4 w-4" />
-            Dashboard
+            <span className={isMobile ? "hidden" : "inline"}>Dashboard</span>
           </Button>
           <Button
             onClick={() => setClinicFormOpen(true)}
             variant="outline"
+            size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
             <BuildingIcon className="mr-2 h-4 w-4" />
-            Nova Clínica
+            <span className={isMobile ? "hidden" : "inline"}>Nova Clínica</span>
           </Button>
           <Button
             onClick={() => {
               setSelectedRecord(undefined);
               setFormOpen(true);
             }}
+            size={isMobile ? "sm" : "default"}
             className="shadow-sm hover:shadow-md transition-all"
           >
             <PlusIcon className="mr-2 h-4 w-4" />
-            Novo Registro
+            <span className={isMobile ? "hidden" : "inline"}>Novo Registro</span>
           </Button>
           {records.length > 0 && (
             <Button
               onClick={handleClearAll}
               variant="destructive"
+              size={isMobile ? "sm" : "default"}
               className="shadow-sm hover:shadow-md transition-all"
             >
               <Trash2Icon className="mr-2 h-4 w-4" />
-              Limpar Tudo
+              <span className={isMobile ? "hidden" : "inline"}>Limpar Tudo</span>
             </Button>
           )}
         </div>
       </div>
       
       <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
-        <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-3 shadow-sm border border-gray-100">
+        <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-gray-100">
           <DateRangeFilter onFilter={handleDateFilter} />
         </div>
         <div className="flex flex-col space-y-2">
@@ -366,7 +371,7 @@ export default function FinancialRecords() {
               onClick={() => setViewMode("agenda")}
             >
               <LayoutGridIcon className="h-4 w-4 mr-1" />
-              Agenda
+              <span className={isMobile ? "hidden" : "inline"}>Agenda</span>
             </Button>
             <Button 
               variant={viewMode === "list" ? "default" : "outline"} 
@@ -375,7 +380,7 @@ export default function FinancialRecords() {
               onClick={() => setViewMode("list")}
             >
               <ListIcon className="h-4 w-4 mr-1" />
-              Lista
+              <span className={isMobile ? "hidden" : "inline"}>Lista</span>
             </Button>
           </div>
         </div>
@@ -388,7 +393,7 @@ export default function FinancialRecords() {
             {viewMode === "agenda" ? "Agenda Semanal" : "Registros"} 
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 md:p-4">
           {isLoading ? (
             <div className="py-20 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
@@ -397,28 +402,55 @@ export default function FinancialRecords() {
           ) : sortedRecords.length > 0 ? (
             <>
               {viewMode === "agenda" ? (
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  {weekdays.map((day) => (
-                    <div key={day} className="animate-fade-in">
-                      <div className="bg-primary rounded-t-md py-2 text-center text-white font-bold">
-                        {day}
-                      </div>
-                      <div className="bg-muted/20 p-2 rounded-b-md min-h-64 max-h-[500px] overflow-y-auto">
-                        {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
-                          recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
-                            renderAppointmentCard(record)
-                          )
-                        ) : (
-                          <div className="text-center py-8 text-muted-foreground text-sm">
-                            Nenhum registro para este dia
+                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-5 gap-4'}`}>
+                  {isMobile ? (
+                    <Tabs defaultValue="SEG" className="w-full">
+                      <TabsList className="w-full grid grid-cols-5">
+                        {weekdays.map(day => (
+                          <TabsTrigger key={day} value={day} className="text-xs">
+                            {day}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                      {weekdays.map(day => (
+                        <TabsContent key={day} value={day} className="animate-fade-in">
+                          <div className="bg-muted/20 p-2 rounded-md min-h-64 max-h-[500px] overflow-y-auto">
+                            {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
+                              recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
+                                renderAppointmentCard(record)
+                              )
+                            ) : (
+                              <div className="text-center py-8 text-muted-foreground text-sm">
+                                Nenhum registro para este dia
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  ) : (
+                    weekdays.map((day) => (
+                      <div key={day} className="animate-fade-in">
+                        <div className="bg-primary rounded-t-md py-2 text-center text-white font-bold">
+                          {day}
+                        </div>
+                        <div className="bg-muted/20 p-2 rounded-b-md min-h-64 max-h-[500px] overflow-y-auto">
+                          {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
+                            recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
+                              renderAppointmentCard(record)
+                            )
+                          ) : (
+                            <div className="text-center py-8 text-muted-foreground text-sm">
+                              Nenhum registro para este dia
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto -mx-2 md:mx-0">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/30">
@@ -428,14 +460,18 @@ export default function FinancialRecords() {
                             Data
                           </div>
                         </TableHead>
-                        <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                        {!isMobile && (
+                          <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                        )}
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
                             Horário
                           </div>
                         </TableHead>
-                        <TableHead className="whitespace-nowrap">Duração</TableHead>
+                        {!isMobile && (
+                          <TableHead className="whitespace-nowrap">Duração</TableHead>
+                        )}
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
@@ -454,42 +490,58 @@ export default function FinancialRecords() {
                             Valor
                           </div>
                         </TableHead>
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Descrição
-                          </div>
-                        </TableHead>
+                        {!isMobile && (
+                          <TableHead className="whitespace-nowrap">
+                            <div className="flex items-center">
+                              <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                              Descrição
+                            </div>
+                          </TableHead>
+                        )}
                         <TableHead className="w-[80px]">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sortedRecords.map((record) => (
                         <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
-                          <TableCell className="whitespace-nowrap font-medium">
+                          <TableCell className="whitespace-nowrap font-medium text-xs md:text-sm">
                             {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
                           </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {getWeekdayLabel(record.description) || "-"}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap font-medium text-primary">
+                          {!isMobile && (
+                            <TableCell className="whitespace-nowrap text-xs md:text-sm">
+                              {getWeekdayLabel(record.description) || "-"}
+                            </TableCell>
+                          )}
+                          <TableCell className="whitespace-nowrap font-medium text-primary text-xs md:text-sm">
                             {getAppointmentTime(record.description) || "-"}
                           </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {getAppointmentDuration(record.description) || "-"}
+                          {!isMobile && (
+                            <TableCell className="whitespace-nowrap text-xs md:text-sm">
+                              {getAppointmentDuration(record.description) || "-"}
+                            </TableCell>
+                          )}
+                          <TableCell className="font-medium text-xs md:text-sm">
+                            <div className="max-w-[100px] md:max-w-full truncate">
+                              {record.clinic_name}
+                            </div>
                           </TableCell>
-                          <TableCell className="font-medium">{record.clinic_name}</TableCell>
-                          <TableCell>{record.patient_name || '-'}</TableCell>
-                          <TableCell className="font-bold text-primary">
+                          <TableCell className="text-xs md:text-sm">
+                            <div className="max-w-[100px] md:max-w-full truncate">
+                              {record.patient_name || '-'}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-bold text-primary text-xs md:text-sm">
                             {formatCurrency(record.amount)}
                           </TableCell>
-                          <TableCell className="max-w-[200px] truncate">
-                            {getCleanDescription(record.description) || '-'}
-                          </TableCell>
+                          {!isMobile && (
+                            <TableCell className="max-w-[150px] md:max-w-[200px] truncate text-xs md:text-sm">
+                              {getCleanDescription(record.description) || '-'}
+                            </TableCell>
+                          )}
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors">
+                                <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
                                   <MoreHorizontalIcon className="h-4 w-4" />
                                   <span className="sr-only">Abrir menu</span>
                                 </Button>
@@ -543,7 +595,7 @@ export default function FinancialRecords() {
       </Card>
       
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className={isMobile ? "w-[95vw] max-w-lg rounded-lg" : "sm:max-w-lg"}>
           <FinancialRecordForm 
             record={selectedRecord}
             onSuccess={handleFormSuccess}
@@ -568,7 +620,7 @@ export default function FinancialRecords() {
       ) : (
         <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
           <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
-            <DialogTitle className="sr-only">Nova Clínica</DialogTitle>
+            <DialogTitle className="px-6 py-4">Nova Clínica</DialogTitle>
             <ClinicForm 
               onSuccess={handleClinicFormSuccess}
             />
@@ -577,7 +629,7 @@ export default function FinancialRecords() {
       )}
       
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
@@ -614,7 +666,7 @@ export default function FinancialRecords() {
       </Dialog>
       
       <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
