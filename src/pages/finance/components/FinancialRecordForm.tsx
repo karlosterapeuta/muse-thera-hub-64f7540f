@@ -38,10 +38,11 @@ const baseTimeOptions = Array.from({ length: 13 }, (_, i) => {
 const timeOptions = baseTimeOptions.flatMap(baseTime => {
   const { hour } = baseTime;
   
-  // Create options for 00, 15, 30, 40, 45 minute intervals
+  // Create options for 00, 15, 20, 30, 40, 45 minute intervals
   return [
     { label: `${hour}:00`, value: `${hour.toString().padStart(2, '0')}:00` },
     { label: `${hour}:15`, value: `${hour.toString().padStart(2, '0')}:15` },
+    { label: `${hour}:20`, value: `${hour.toString().padStart(2, '0')}:20` },
     { label: `${hour}:30`, value: `${hour.toString().padStart(2, '0')}:30` },
     { label: `${hour}:40`, value: `${hour.toString().padStart(2, '0')}:40` },
     { label: `${hour}:45`, value: `${hour.toString().padStart(2, '0')}:45` }
