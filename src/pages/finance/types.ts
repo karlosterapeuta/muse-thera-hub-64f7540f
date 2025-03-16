@@ -3,6 +3,8 @@ export interface Clinic {
   id: string;
   name: string;
   address?: string;
+  service_days?: string[];
+  patient_ids?: string[];
   created_at?: string;
   updated_at?: string;
 }

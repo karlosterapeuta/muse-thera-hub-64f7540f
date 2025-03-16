@@ -34,7 +34,7 @@ export const useAddClinic = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (clinic: Pick<Clinic, "name" | "address">) => {
+    mutationFn: async (clinic: Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">) => {
       const { data, error } = await supabase
         .from("clinics")
         .insert(clinic)
@@ -75,6 +75,8 @@ export const useUpdateClinic = () => {
         .update({
           name: clinic.name,
           address: clinic.address,
+          service_days: clinic.service_days,
+          patient_ids: clinic.patient_ids
         })
         .eq("id", clinic.id)
         .select()

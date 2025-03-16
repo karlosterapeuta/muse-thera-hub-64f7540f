@@ -22,10 +22,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, CalendarIcon, UsersIcon } from "lucide-react";
 import { useClinics, useDeleteClinic } from "./hooks/useClinics";
 import { ClinicForm } from "./components/ClinicForm";
 import { Clinic } from "./types";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+
+const WEEKDAY_LABELS = {
+  domingo: "Domingo",
+  segunda: "Segunda",
+  terca: "Terça",
+  quarta: "Quarta",
+  quinta: "Quinta",
+  sexta: "Sexta",
+  sabado: "Sábado"
+};
 
 export default function ClinicsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,9 +45,43 @@ export default function ClinicsManagement() {
   const [selectedClinic, setSelectedClinic] = useState<Clinic | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [clinicToDelete, setClinicToDelete] = useState<string | null>(null);
+  const [patientsMap, setPatientsMap] = useState<Record<string, string>>({});
   
   const { data: clinics = [], isLoading, refetch } = useClinics();
   const deleteClinic = useDeleteClinic();
+  
+  // Buscar dados dos pacientes quando necessário
+  const fetchPatientNames = async (patientIds: string[]) => {
+    if (!patientIds?.length) return;
+    
+    // Filtrar apenas IDs que ainda não temos no mapa
+    const missingIds = patientIds.filter(id => !patientsMap[id]);
+    if (!missingIds.length) return;
+    
+    const { data } = await supabase
+      .from("patients")
+      .select("id, name")
+      .in("id", missingIds);
+      
+    if (data?.length) {
+      const newMap = { ...patientsMap };
+      data.forEach(patient => {
+        newMap[patient.id] = patient.name;
+      });
+      setPatientsMap(newMap);
+    }
+  };
+  
+  // Carregar nomes de pacientes para todas as clínicas
+  React.useEffect(() => {
+    const allPatientIds = clinics
+      .flatMap(clinic => clinic.patient_ids || [])
+      .filter(Boolean);
+      
+    if (allPatientIds.length) {
+      fetchPatientNames(allPatientIds);
+    }
+  }, [clinics]);
   
   // Filter clinics based on search term
   const filteredClinics = clinics.filter(clinic => 
@@ -62,6 +108,16 @@ export default function ClinicsManagement() {
         }
       });
     }
+  };
+  
+  const formatServiceDays = (days?: string[]) => {
+    if (!days?.length) return "Não definido";
+    return days.map(day => WEEKDAY_LABELS[day as keyof typeof WEEKDAY_LABELS]).join(", ");
+  };
+  
+  const getPatientCount = (patientIds?: string[]) => {
+    if (!patientIds?.length) return 0;
+    return patientIds.length;
   };
   
   return (
@@ -105,6 +161,8 @@ export default function ClinicsManagement() {
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>Endereço</TableHead>
+                  <TableHead>Dias de Atendimento</TableHead>
+                  <TableHead>Pacientes</TableHead>
                   <TableHead>Data de Cadastro</TableHead>
                   <TableHead className="w-[80px]">Ações</TableHead>
                 </TableRow>
@@ -114,6 +172,20 @@ export default function ClinicsManagement() {
                   <TableRow key={clinic.id}>
                     <TableCell className="font-medium">{clinic.name}</TableCell>
                     <TableCell>{clinic.address || '-'}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span>{formatServiceDays(clinic.service_days)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <UsersIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <Badge variant="outline">
+                          {getPatientCount(clinic.patient_ids)} paciente(s)
+                        </Badge>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       {clinic.created_at ? 
                         format(new Date(clinic.created_at), "dd/MM/yyyy", { locale: ptBR }) : 
