@@ -24,13 +24,37 @@ const weekdayOptions = [
   { label: "Sexta-feira", value: "sexta" },
 ];
 
-// Define time options from 8:00 to 20:00 with 30 minute intervals
-const timeOptions = Array.from({ length: 25 }, (_, i) => {
-  const hour = Math.floor(i / 2) + 8;
-  const minutes = (i % 2) * 30;
-  const time = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  return { label: time, value: time };
+// Define base time options from 8:00 to 20:00 with better formatting
+const baseTimeOptions = Array.from({ length: 13 }, (_, i) => {
+  const hour = i + 8;
+  return {
+    hour,
+    label: `${hour}:00`,
+    value: `${hour.toString().padStart(2, '0')}:00`
+  };
 });
+
+// Generate all time options with different minute intervals
+const timeOptions = baseTimeOptions.flatMap(baseTime => {
+  const { hour } = baseTime;
+  
+  // Create options for 00, 15, 30, 40, 45 minute intervals
+  return [
+    { label: `${hour}:00`, value: `${hour.toString().padStart(2, '0')}:00` },
+    { label: `${hour}:15`, value: `${hour.toString().padStart(2, '0')}:15` },
+    { label: `${hour}:30`, value: `${hour.toString().padStart(2, '0')}:30` },
+    { label: `${hour}:40`, value: `${hour.toString().padStart(2, '0')}:40` },
+    { label: `${hour}:45`, value: `${hour.toString().padStart(2, '0')}:45` }
+  ];
+});
+
+// Define session duration options
+const durationOptions = [
+  { label: "30 minutos", value: "30" },
+  { label: "40 minutos", value: "40" },
+  { label: "45 minutos", value: "45" },
+  { label: "60 minutos", value: "60" },
+];
 
 const formSchema = z.object({
   clinic_id: z.string().min(1, { message: "Clínica é obrigatória" }),
@@ -38,6 +62,7 @@ const formSchema = z.object({
   amount: z.number().min(0.01, { message: "Valor deve ser maior que zero" }),
   weekday: z.string().min(1, { message: "Dia da semana é obrigatório" }),
   time: z.string().min(1, { message: "Horário é obrigatório" }),
+  duration: z.string().min(1, { message: "Duração é obrigatória" }),
   description: z.string().optional(),
 });
 
@@ -93,6 +118,14 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     return timeMatch ? timeMatch[1] : "08:00";
   };
 
+  // Extract duration from description if available
+  const getDurationFromDescription = (description?: string): string => {
+    if (!description) return "45";
+    
+    const durationMatch = description.match(/Duração: (\d+) minutos/);
+    return durationMatch ? durationMatch[1] : "45";
+  };
+
   // Convert session_date to weekday if record exists
   const defaultWeekday = record?.session_date 
     ? getWeekdayFromDate(record.session_date) 
@@ -102,6 +135,11 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
   const defaultTime = record?.description 
     ? getTimeFromDescription(record.description) 
     : "08:00";
+    
+  // Get default duration from description if record exists
+  const defaultDuration = record?.description
+    ? getDurationFromDescription(record.description)
+    : "45";
   
   const form = useForm<FinancialRecordFormValues>({
     resolver: zodResolver(formSchema),
@@ -111,8 +149,9 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       amount: record?.amount || 0,
       weekday: defaultWeekday,
       time: defaultTime,
+      duration: defaultDuration,
       description: record?.description 
-        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*/, "")
+        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "")
         : "",
     },
   });
@@ -122,8 +161,8 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     
-    // Store weekday and time in the description field and use current date for session_date
-    const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time}${values.description ? ` | ${values.description}` : ''}`;
+    // Store weekday, time and duration in the description field and use current date for session_date
+    const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
     if (isUpdating) {
       updateRecord.mutate(
@@ -158,6 +197,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               amount: 0,
               weekday: "segunda",
               time: "08:00",
+              duration: "45",
               description: "",
             });
             onSuccess?.();
@@ -255,7 +295,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               )}
             />
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="weekday"
@@ -268,7 +308,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o dia da semana" />
+                          <SelectValue placeholder="Dia" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -296,13 +336,41 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o horário" />
+                          <SelectValue placeholder="Horário" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="h-80">
                         {timeOptions.map((time) => (
                           <SelectItem key={time.value} value={time.value}>
                             {time.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Duração</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Duração" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {durationOptions.map((duration) => (
+                          <SelectItem key={duration.value} value={duration.value}>
+                            {duration.label}
                           </SelectItem>
                         ))}
                       </SelectContent>

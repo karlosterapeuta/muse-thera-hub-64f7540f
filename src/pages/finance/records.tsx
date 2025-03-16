@@ -68,11 +68,18 @@ export default function FinancialRecords() {
     return timeMatch ? timeMatch[1] : "";
   };
   
+  const getAppointmentDuration = (description?: string) => {
+    if (!description) return "";
+    
+    const durationMatch = description.match(/Duração: (\d+) minutos/);
+    return durationMatch ? `${durationMatch[1]} min` : "";
+  };
+  
   const getCleanDescription = (description?: string) => {
     if (!description) return "";
     
-    // Remove both weekday and time information from description
-    return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*/, "");
+    // Remove weekday, time and duration information from description
+    return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "");
   };
   
   const filteredRecords = records.filter(record => 
@@ -192,6 +199,7 @@ export default function FinancialRecords() {
                     <TableHead>Data</TableHead>
                     <TableHead>Dia da Semana</TableHead>
                     <TableHead>Horário</TableHead>
+                    <TableHead>Duração</TableHead>
                     <TableHead>Clínica</TableHead>
                     <TableHead>Paciente</TableHead>
                     <TableHead>Valor</TableHead>
@@ -210,6 +218,9 @@ export default function FinancialRecords() {
                       </TableCell>
                       <TableCell>
                         {getAppointmentTime(record.description) || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {getAppointmentDuration(record.description) || "-"}
                       </TableCell>
                       <TableCell>{record.clinic_name}</TableCell>
                       <TableCell>{record.patient_name || '-'}</TableCell>
@@ -302,4 +313,29 @@ export default function FinancialRecords() {
       </Dialog>
     </div>
   );
+  
+  function handleEditRecord(record: FinancialRecord) {
+    setSelectedRecord(record);
+    setFormOpen(true);
+  }
+  
+  function handleDeleteClick(id: string) {
+    setRecordToDelete(id);
+    setConfirmDialogOpen(true);
+  }
+  
+  function confirmDelete() {
+    if (recordToDelete) {
+      deleteRecord.mutate(recordToDelete, {
+        onSuccess: () => {
+          setConfirmDialogOpen(false);
+          setRecordToDelete(null);
+        }
+      });
+    }
+  }
+  
+  function handleDateFilter(start_date: string, end_date: string) {
+    setDateFilter({ start_date, end_date });
+  }
 }
