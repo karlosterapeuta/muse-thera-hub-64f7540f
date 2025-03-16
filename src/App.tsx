@@ -1,16 +1,17 @@
+
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import Layout from "./components/Layout";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/patients";
-import Professional from "./pages/professional";
+import Professional from "./pages/Professional";
 import Processes from "./pages/processes";
 import Hawkins from "./pages/hawkins";
 import Users from "./pages/users";
-import InviteCodes from "./pages/invite-codes";
-import NotFound from "./pages/not-found";
+import InviteCodes from "./pages/InviteCodes";
+import NotFound from "./pages/NotFound";
 import Songs from "./pages/songs";
 import MusicalBells from "./pages/musical-bells";
 import Finance from "./pages/finance";
