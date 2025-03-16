@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -63,7 +62,14 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
   function onSubmit(values: FinancialRecordFormValues) {
     if (isUpdating) {
       updateRecord.mutate(
-        { ...values, id: record.id },
+        { 
+          id: record.id,
+          clinic_id: values.clinic_id,
+          patient_id: values.patient_id,
+          amount: values.amount,
+          session_date: values.session_date,
+          description: values.description 
+        },
         {
           onSuccess: () => {
             onSuccess?.();
@@ -72,7 +78,13 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       );
     } else {
       addRecord.mutate(
-        values,
+        { 
+          clinic_id: values.clinic_id,
+          patient_id: values.patient_id,
+          amount: values.amount,
+          session_date: values.session_date,
+          description: values.description
+        },
         {
           onSuccess: () => {
             form.reset({

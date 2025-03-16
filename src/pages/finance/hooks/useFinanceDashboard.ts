@@ -45,7 +45,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
         }
         
         // Process data for charts
-        const total = records.reduce((sum, record) => sum + parseFloat(record.amount), 0);
+        const total = records.reduce((sum, record) => sum + parseFloat(String(record.amount)), 0);
         const count = records.length;
         const average = count > 0 ? total / count : 0;
         
@@ -55,7 +55,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           const day = record.session_date.substring(0, 10);
           const current = dailyMap.get(day) || { total: 0, count: 0 };
           dailyMap.set(day, {
-            total: current.total + parseFloat(record.amount),
+            total: current.total + parseFloat(String(record.amount)),
             count: current.count + 1,
           });
         });
@@ -77,13 +77,13 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           
           const weekCurrent = weeklyMap.get(weekKey) || { total: 0, count: 0 };
           weeklyMap.set(weekKey, {
-            total: weekCurrent.total + parseFloat(record.amount),
+            total: weekCurrent.total + parseFloat(String(record.amount)),
             count: weekCurrent.count + 1,
           });
           
           const monthCurrent = monthlyMap.get(monthKey) || { total: 0, count: 0 };
           monthlyMap.set(monthKey, {
-            total: monthCurrent.total + parseFloat(record.amount),
+            total: monthCurrent.total + parseFloat(String(record.amount)),
             count: monthCurrent.count + 1,
           });
         });
@@ -107,7 +107,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
           const clinicName = record.clinics?.name || "Desconhecido";
           const current = clinicMap.get(clinicId) || { total: 0, count: 0, name: clinicName };
           clinicMap.set(clinicId, {
-            total: current.total + parseFloat(record.amount),
+            total: current.total + parseFloat(String(record.amount)),
             count: current.count + 1,
             name: clinicName,
           });

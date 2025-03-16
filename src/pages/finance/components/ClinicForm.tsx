@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,7 +37,11 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   function onSubmit(values: ClinicFormValues) {
     if (isUpdating) {
       updateClinic.mutate(
-        { ...values, id: clinic.id },
+        { 
+          id: clinic.id,
+          name: values.name,
+          address: values.address 
+        },
         {
           onSuccess: () => {
             onSuccess?.();
@@ -47,7 +50,10 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
       );
     } else {
       addClinic.mutate(
-        values,
+        { 
+          name: values.name,
+          address: values.address 
+        },
         {
           onSuccess: () => {
             form.reset({
