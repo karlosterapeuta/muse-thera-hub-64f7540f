@@ -165,3 +165,46 @@ export const useDeleteFinancialRecord = () => {
     },
   });
 };
+
+export const useClearAllFinancialRecords = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      
+      if (!userData.user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
+      // Delete only records where professional_id matches the current user's ID
+      const { error } = await supabase
+        .from("financial_records")
+        .delete()
+        .eq("professional_id", userData.user.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      return true;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Registros excluídos",
+        description: "Todos os registros financeiros foram excluídos com sucesso.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao excluir registros",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+};
+

@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon } from "lucide-react";
-import { useFinancialRecords, useDeleteFinancialRecord } from "./hooks/useFinancialData";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon } from "lucide-react";
+import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
 import { PeriodFilter, FinancialRecord } from "./types";
@@ -41,9 +41,11 @@ export default function FinancialRecords() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "agenda">("agenda");
+  const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const deleteRecord = useDeleteFinancialRecord();
+  const clearAllRecords = useClearAllFinancialRecords();
   
   const getWeekdayLabel = (description?: string) => {
     if (!description) return "";
@@ -176,6 +178,23 @@ export default function FinancialRecords() {
     }
   };
   
+  const handleClearAll = () => {
+    setClearAllDialogOpen(true);
+  };
+  
+  const confirmClearAll = () => {
+    clearAllRecords.mutate(undefined, {
+      onSuccess: () => {
+        setClearAllDialogOpen(false);
+        toast({
+          title: "Registros excluídos",
+          description: "Todos os registros financeiros foram excluídos com sucesso.",
+          variant: "default",
+        });
+      }
+    });
+  };
+  
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
   };
@@ -278,6 +297,16 @@ export default function FinancialRecords() {
             <PlusIcon className="mr-2 h-4 w-4" />
             Novo Registro
           </Button>
+          {records.length > 0 && (
+            <Button
+              onClick={handleClearAll}
+              variant="destructive"
+              className="shadow-sm hover:shadow-md transition-all"
+            >
+              <Trash2Icon className="mr-2 h-4 w-4" />
+              Limpar Tudo
+            </Button>
+          )}
         </div>
       </div>
       
@@ -529,6 +558,43 @@ export default function FinancialRecords() {
                   </>
                 ) : (
                   "Excluir"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-destructive/10 p-2 rounded-full">
+                <Trash2Icon className="h-5 w-5 text-destructive" />
+              </div>
+              <h2 className="text-xl font-bold">Confirmar exclusão total</h2>
+            </div>
+            <p>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</p>
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setClearAllDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmClearAll}
+                disabled={clearAllRecords.isPending}
+                className="shadow-sm hover:shadow-md transition-colors"
+              >
+                {clearAllRecords.isPending ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Excluindo...
+                  </>
+                ) : (
+                  "Excluir Todos"
                 )}
               </Button>
             </div>
