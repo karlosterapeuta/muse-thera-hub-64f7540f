@@ -50,6 +50,7 @@ const timeOptions = baseTimeOptions.flatMap(baseTime => {
 
 // Define session duration options
 const durationOptions = [
+  { label: "20 minutos", value: "20" },
   { label: "30 minutos", value: "30" },
   { label: "40 minutos", value: "40" },
   { label: "45 minutos", value: "45" },
