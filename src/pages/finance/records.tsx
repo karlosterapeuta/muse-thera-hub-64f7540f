@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -30,6 +30,7 @@ import { DateRangeFilter } from "./components/DateRangeFilter";
 import { PeriodFilter, FinancialRecord } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export default function FinancialRecords() {
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "agenda">("agenda");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const deleteRecord = useDeleteFinancialRecord();
@@ -274,6 +276,15 @@ export default function FinancialRecords() {
         </div>
       </div>
     );
+  };
+  
+  const handleClinicFormSuccess = () => {
+    setClinicFormOpen(false);
+    toast({
+      title: "Clínica adicionada",
+      description: "A clínica foi adicionada com sucesso.",
+      variant: "default",
+    });
   };
   
   return (
@@ -538,20 +549,29 @@ export default function FinancialRecords() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <ClinicForm 
-            onSuccess={() => {
-              setClinicFormOpen(false);
-              toast({
-                title: "Clínica adicionada",
-                description: "A clínica foi adicionada com sucesso.",
-                variant: "default",
-              });
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      {isMobile ? (
+        <Sheet open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
+          <SheetContent className="w-full sm:max-w-md p-0 overflow-y-auto">
+            <SheetHeader className="px-4 py-4">
+              <SheetTitle>Nova Clínica</SheetTitle>
+            </SheetHeader>
+            <div className="px-0 pb-0">
+              <ClinicForm 
+                onSuccess={handleClinicFormSuccess}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
+          <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+            <DialogTitle className="sr-only">Nova Clínica</DialogTitle>
+            <ClinicForm 
+              onSuccess={handleClinicFormSuccess}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
       
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className="sm:max-w-md">

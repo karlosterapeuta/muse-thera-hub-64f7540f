@@ -105,7 +105,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
         },
         {
           onSuccess: () => {
-            onSuccess?.();
+            if (onSuccess) onSuccess();
           },
         }
       );
@@ -125,7 +125,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               service_days: [],
               patient_ids: [],
             });
-            onSuccess?.();
+            if (onSuccess) onSuccess();
           },
         }
       );
@@ -133,7 +133,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   }
   
   return (
-    <Card className="w-full max-w-full md:max-w-lg mx-auto">
+    <div className="w-full">
       <CardHeader className={isMobile ? "p-4" : "p-6"}>
         <CardTitle className="text-xl md:text-2xl">{isUpdating ? "Editar Clínica" : "Nova Clínica"}</CardTitle>
       </CardHeader>
@@ -167,6 +167,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                     <Textarea
                       placeholder="Endereço da clínica"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -261,11 +262,11 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
             />
           </CardContent>
           
-          <CardFooter className={`flex ${isMobile ? "flex-col space-y-2" : "justify-end space-x-2"} ${isMobile ? "p-4 pt-0" : "p-6 pt-0"}`}>
+          <CardFooter className={`${isMobile ? "flex-col space-y-2" : "flex justify-end space-x-2"} ${isMobile ? "p-4 pt-0" : "p-6 pt-0"}`}>
             <Button
               type="button"
               variant="outline"
-              onClick={() => form.reset()}
+              onClick={() => onSuccess?.()}
               className={isMobile ? "w-full" : ""}
             >
               Cancelar
@@ -280,6 +281,6 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
           </CardFooter>
         </form>
       </Form>
-    </Card>
+    </div>
   );
 }
