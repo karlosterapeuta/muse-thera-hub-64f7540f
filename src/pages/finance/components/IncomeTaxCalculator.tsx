@@ -690,7 +690,9 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => formatBRL(Number(value))} />
+                            <Tooltip 
+                              formatter={(value) => [formatBRL(Number(value)), '']} 
+                            />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -703,8 +705,12 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                           <BarChart data={calculatedValues.monthlyBreakdown}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
-                            <YAxis tickFormatter={(value) => formatBRL(Number(value)).split(',')[0]} />
-                            <Tooltip formatter={(value) => formatBRL(Number(value))} />
+                            <YAxis 
+                              tickFormatter={(value) => formatBRL(Number(value)).split(',')[0]} 
+                            />
+                            <Tooltip 
+                              formatter={(value) => [formatBRL(Number(value)), '']} 
+                            />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
                           </BarChart>
@@ -915,3 +921,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     </div>
   );
 }
+
