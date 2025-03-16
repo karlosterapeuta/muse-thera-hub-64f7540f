@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -127,7 +126,6 @@ export default function FinancialRecords() {
     return timeA.localeCompare(timeB);
   });
   
-  // Group records by weekday
   const recordsByWeekday = {
     "SEG": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
     "TER": sortedRecords.filter(record => getWeekdayShort(record.description) === "TER"),
@@ -137,7 +135,6 @@ export default function FinancialRecords() {
     "OUTROS": sortedRecords.filter(record => !getWeekdayShort(record.description))
   };
   
-  // Sort records within each day by time
   Object.keys(recordsByWeekday).forEach(day => {
     recordsByWeekday[day as keyof typeof recordsByWeekday].sort((a, b) => {
       const timeA = getAppointmentTime(a.description) || "00:00";
@@ -196,7 +193,6 @@ export default function FinancialRecords() {
   
   const weekdays = ["SEG", "TER", "QUA", "QUI", "SEX"];
   
-  // Function to render appointment card
   const renderAppointmentCard = (record: FinancialRecord) => {
     const time = getAppointmentTime(record.description);
     const duration = getAppointmentDuration(record.description);
@@ -263,16 +259,26 @@ export default function FinancialRecords() {
     <div className="container py-6 space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primary">Registros Financeiros</h1>
-        <Button
-          onClick={() => {
-            setSelectedRecord(undefined);
-            setFormOpen(true);
-          }}
-          className="shadow-sm hover:shadow-md transition-all"
-        >
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Novo Registro
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={() => navigate("/finance")}
+            variant="outline"
+            className="shadow-sm hover:shadow-md transition-all"
+          >
+            <BarChart2Icon className="mr-2 h-4 w-4" />
+            Dashboard
+          </Button>
+          <Button
+            onClick={() => {
+              setSelectedRecord(undefined);
+              setFormOpen(true);
+            }}
+            className="shadow-sm hover:shadow-md transition-all"
+          >
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Novo Registro
+          </Button>
+        </div>
       </div>
       
       <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
