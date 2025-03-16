@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Tabs, TabsContent, TabsList, TabsTrigger 
@@ -254,13 +255,13 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     }).format(numeric / 100);
   };
   
-  // Tooltip formatter for charts - now it properly handles type conversion
+  // Tooltip formatter for charts - fixing TypeScript type issues
   const chartValueFormatter = (value: string | number) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     return [formatBRL(numValue), ''];
   };
   
-  // YAxis formatter for the bar chart
+  // YAxis formatter for the bar chart - fixing TypeScript type issues
   const yAxisFormatter = (value: string | number) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     return formatBRL(numValue).split(',')[0];
@@ -813,4 +814,30 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                       
                       <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
                         <div className="flex justify-between mb-2">
-                          <span className="text-sm font-medium">
+                          <span className="text-sm font-medium">Dedução Utilizada:</span>
+                          <span className="font-semibold">
+                            {formatBRL(calculatedValues.chosenDeduction)}
+                            <span className="text-xs ml-2 text-muted-foreground">
+                              ({calculatedValues.chosenDeduction === calculatedValues.simplifiedDeduction ? 'Simplificada' : 'Detalhada'})
+                            </span>
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          O sistema utiliza automaticamente a dedução mais vantajosa para o cálculo do imposto
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os detalhes do cálculo</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
