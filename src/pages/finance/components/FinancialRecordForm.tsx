@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,8 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-// Define the weekday options for the select field
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
   { label: "Terça-feira", value: "terca" },
@@ -24,7 +23,6 @@ const weekdayOptions = [
   { label: "Sexta-feira", value: "sexta" },
 ];
 
-// Define base time options from 8:00 to 20:00 with better formatting
 const baseTimeOptions = Array.from({ length: 13 }, (_, i) => {
   const hour = i + 8;
   return {
@@ -34,11 +32,9 @@ const baseTimeOptions = Array.from({ length: 13 }, (_, i) => {
   };
 });
 
-// Generate all time options with different minute intervals
 const timeOptions = baseTimeOptions.flatMap(baseTime => {
   const { hour } = baseTime;
   
-  // Create options for 00, 15, 20, 30, 40, 45 minute intervals
   return [
     { label: `${hour}:00`, value: `${hour.toString().padStart(2, '0')}:00` },
     { label: `${hour}:15`, value: `${hour.toString().padStart(2, '0')}:15` },
@@ -49,7 +45,6 @@ const timeOptions = baseTimeOptions.flatMap(baseTime => {
   ];
 });
 
-// Define session duration options
 const durationOptions = [
   { label: "20 minutos", value: "20" },
   { label: "30 minutos", value: "30" },
@@ -77,6 +72,7 @@ interface FinancialRecordFormProps {
 
 export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormProps) {
   const isUpdating = !!record;
+  const isMobile = useIsMobile();
   const { data: clinics = [] } = useClinics();
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
@@ -94,25 +90,22 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     },
   });
 
-  // Helper function to get weekday from date
   const getWeekdayFromDate = (dateString?: string) => {
     if (!dateString) return "segunda";
     
     const date = new Date(dateString);
     const day = date.getDay();
     
-    // Map day number to our weekday values (0 = Sunday, 1 = Monday, etc.)
     switch (day) {
       case 1: return "segunda";
       case 2: return "terca";
       case 3: return "quarta";
       case 4: return "quinta";
       case 5: return "sexta";
-      default: return "segunda"; // Default to Monday for weekend days
+      default: return "segunda";
     }
   };
 
-  // Extract time from description if available
   const getTimeFromDescription = (description?: string): string => {
     if (!description) return "08:00";
     
@@ -120,7 +113,6 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     return timeMatch ? timeMatch[1] : "08:00";
   };
 
-  // Extract duration from description if available
   const getDurationFromDescription = (description?: string): string => {
     if (!description) return "45";
     
@@ -128,17 +120,14 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
     return durationMatch ? durationMatch[1] : "45";
   };
 
-  // Convert session_date to weekday if record exists
   const defaultWeekday = record?.session_date 
     ? getWeekdayFromDate(record.session_date) 
     : "segunda";
   
-  // Get default time from description if record exists
   const defaultTime = record?.description 
     ? getTimeFromDescription(record.description) 
     : "08:00";
     
-  // Get default duration from description if record exists
   const defaultDuration = record?.description
     ? getDurationFromDescription(record.description)
     : "45";
@@ -159,11 +148,9 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
   });
   
   function onSubmit(values: FinancialRecordFormValues) {
-    // Generate a current date with the time set to start of day
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     
-    // Store weekday, time and duration in the description field and use current date for session_date
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
     if (isUpdating) {
@@ -210,7 +197,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
   }
   
   return (
-    <Card className="w-full max-w-lg">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
       </CardHeader>
@@ -297,7 +284,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               )}
             />
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className={`${isMobile ? 'space-y-4' : 'grid grid-cols-3 gap-4'}`}>
               <FormField
                 control={form.control}
                 name="weekday"
@@ -341,7 +328,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
                           <SelectValue placeholder="Horário" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="h-80">
+                      <SelectContent className="max-h-[40vh] overflow-auto">
                         {timeOptions.map((time) => (
                           <SelectItem key={time.value} value={time.value}>
                             {time.label}
@@ -401,17 +388,19 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
             />
           </CardContent>
           
-          <CardFooter className="flex justify-end space-x-2">
+          <CardFooter className={`${isMobile ? 'flex flex-col space-y-2' : 'flex justify-end space-x-2'}`}>
             <Button
               type="button"
               variant="outline"
               onClick={() => form.reset()}
+              className={isMobile ? 'w-full' : ''}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={addRecord.isPending || updateRecord.isPending}
+              className={isMobile ? 'w-full' : ''}
             >
               {isUpdating ? "Atualizar" : "Salvar"}
             </Button>
