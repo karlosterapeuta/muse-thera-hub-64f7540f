@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -44,7 +43,30 @@ export default function FinancialRecords() {
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const deleteRecord = useDeleteFinancialRecord();
   
-  // Filter records based on search term
+  const getWeekdayLabel = (description?: string) => {
+    if (!description) return "";
+    
+    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta)/);
+    if (!weekdayMatch) return "";
+    
+    const weekdayMap: Record<string, string> = {
+      segunda: "Segunda-feira",
+      terca: "Terça-feira",
+      quarta: "Quarta-feira",
+      quinta: "Quinta-feira",
+      sexta: "Sexta-feira"
+    };
+    
+    return weekdayMap[weekdayMatch[1]] || "";
+  };
+  
+  const getCleanDescription = (description?: string) => {
+    if (!description) return "";
+    
+    const parts = description.split(" | ");
+    return parts.length > 1 ? parts.slice(1).join(" | ") : "";
+  };
+  
   const filteredRecords = records.filter(record => 
     record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,10 +74,8 @@ export default function FinancialRecords() {
   );
   
   useEffect(() => {
-    // Check if we should open the form on navigation
     if (location.state?.openForm) {
       setFormOpen(true);
-      // Clear the state to prevent reopening on refresh
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -138,6 +158,7 @@ export default function FinancialRecords() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
+                    <TableHead>Dia da Semana</TableHead>
                     <TableHead>Clínica</TableHead>
                     <TableHead>Paciente</TableHead>
                     <TableHead>Valor</TableHead>
@@ -149,13 +170,16 @@ export default function FinancialRecords() {
                   {filteredRecords.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell>
-                        {format(parseISO(record.session_date), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                        {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
+                      </TableCell>
+                      <TableCell>
+                        {getWeekdayLabel(record.description) || "-"}
                       </TableCell>
                       <TableCell>{record.clinic_name}</TableCell>
                       <TableCell>{record.patient_name || '-'}</TableCell>
                       <TableCell className="font-medium">{formatCurrency(record.amount)}</TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {record.description || '-'}
+                        {getCleanDescription(record.description) || '-'}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -205,7 +229,6 @@ export default function FinancialRecords() {
         </CardContent>
       </Card>
       
-      {/* Form dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="sm:max-w-lg">
           <FinancialRecordForm 
@@ -218,7 +241,6 @@ export default function FinancialRecords() {
         </DialogContent>
       </Dialog>
       
-      {/* Confirm delete dialog */}
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <div className="space-y-4">

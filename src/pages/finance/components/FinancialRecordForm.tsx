@@ -15,11 +15,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
 
+// Define the weekday options for the select field
+const weekdayOptions = [
+  { label: "Segunda-feira", value: "segunda" },
+  { label: "Terça-feira", value: "terca" },
+  { label: "Quarta-feira", value: "quarta" },
+  { label: "Quinta-feira", value: "quinta" },
+  { label: "Sexta-feira", value: "sexta" },
+];
+
 const formSchema = z.object({
   clinic_id: z.string().min(1, { message: "Clínica é obrigatória" }),
   patient_id: z.string().optional(),
   amount: z.number().min(0.01, { message: "Valor deve ser maior que zero" }),
-  session_date: z.string().min(1, { message: "Data é obrigatória" }),
+  weekday: z.string().min(1, { message: "Dia da semana é obrigatório" }),
   description: z.string().optional(),
 });
 
@@ -48,6 +57,29 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       return data;
     },
   });
+
+  // Helper function to get weekday from date
+  const getWeekdayFromDate = (dateString?: string) => {
+    if (!dateString) return "segunda";
+    
+    const date = new Date(dateString);
+    const day = date.getDay();
+    
+    // Map day number to our weekday values (0 = Sunday, 1 = Monday, etc.)
+    switch (day) {
+      case 1: return "segunda";
+      case 2: return "terca";
+      case 3: return "quarta";
+      case 4: return "quinta";
+      case 5: return "sexta";
+      default: return "segunda"; // Default to Monday for weekend days
+    }
+  };
+
+  // Convert session_date to weekday if record exists
+  const defaultWeekday = record?.session_date 
+    ? getWeekdayFromDate(record.session_date) 
+    : "segunda";
   
   const form = useForm<FinancialRecordFormValues>({
     resolver: zodResolver(formSchema),
@@ -55,21 +87,28 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       clinic_id: record?.clinic_id || "",
       patient_id: record?.patient_id || undefined,
       amount: record?.amount || 0,
-      session_date: record?.session_date ? format(new Date(record.session_date), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      weekday: defaultWeekday,
       description: record?.description || "",
     },
   });
   
   function onSubmit(values: FinancialRecordFormValues) {
+    // Generate a current date with the time set to start of day
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    // Store weekday in the description field and use current date for session_date
+    const enhancedDescription = `Dia da semana: ${values.weekday}${values.description ? ` | ${values.description}` : ''}`;
+    
     if (isUpdating) {
       updateRecord.mutate(
         { 
           id: record.id,
           clinic_id: values.clinic_id,
-          patient_id: values.patient_id,
+          patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: values.session_date,
-          description: values.description 
+          session_date: format(now, "yyyy-MM-dd'T'HH:mm"),
+          description: enhancedDescription
         },
         {
           onSuccess: () => {
@@ -81,10 +120,10 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
       addRecord.mutate(
         { 
           clinic_id: values.clinic_id,
-          patient_id: values.patient_id,
+          patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: values.session_date,
-          description: values.description
+          session_date: format(now, "yyyy-MM-dd'T'HH:mm"),
+          description: enhancedDescription
         },
         {
           onSuccess: () => {
@@ -92,7 +131,7 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
               clinic_id: "",
               patient_id: undefined,
               amount: 0,
-              session_date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+              weekday: "segunda",
               description: "",
             });
             onSuccess?.();
@@ -192,16 +231,27 @@ export function FinancialRecordForm({ onSuccess, record }: FinancialRecordFormPr
             
             <FormField
               control={form.control}
-              name="session_date"
+              name="weekday"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Data e Hora</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="datetime-local"
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>Dia da Semana</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o dia da semana" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {weekdayOptions.map((day) => (
+                        <SelectItem key={day.value} value={day.value}>
+                          {day.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
