@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Tabs, TabsContent, TabsList, TabsTrigger 
@@ -691,7 +690,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={(value) => [formatBRL(Number(value)), '']} 
+                              formatter={(value: any) => [formatBRL(Number(value)), '']} 
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -706,10 +705,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis 
-                              tickFormatter={(value) => formatBRL(Number(value)).split(',')[0]} 
+                              tickFormatter={(value: any) => formatBRL(Number(value)).split(',')[0]} 
                             />
                             <Tooltip 
-                              formatter={(value) => [formatBRL(Number(value)), '']} 
+                              formatter={(value: any) => [formatBRL(Number(value)), '']} 
                             />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
@@ -810,115 +809,4 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             </span>
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          É utilizada automaticamente a dedução mais vantajosa para o contribuinte.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-8 text-center">
-                    <p className="text-muted-foreground">Preencha os valores na aba Calculadora para ver os detalhes</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      {/* Versão para impressão - só é mostrada quando a impressão é acionada */}
-      <div className="hidden print:block">
-        {calculatedValues && (
-          <div className="space-y-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold">Relatório de Imposto de Renda</h2>
-              <p className="text-muted-foreground">Ano de referência: {form.getValues().year}</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Dados Mensais</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Receita Bruta:</span>
-                    <span className="font-medium">{formatBRL(calculatedValues.grossIncome)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Base de Cálculo:</span>
-                    <span className="font-medium">{formatBRL(calculatedValues.taxableIncome)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Alíquota Efetiva:</span>
-                    <span className="font-medium">{formatPercent(calculatedValues.effectiveTaxRate)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Imposto Devido:</span>
-                    <span className="font-semibold text-red-600">{formatBRL(calculatedValues.incomeTax)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Renda Líquida:</span>
-                    <span className="font-semibold text-green-600">{formatBRL(calculatedValues.netIncome)}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Dados Anuais</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Receita Bruta:</span>
-                    <span className="font-medium">{formatBRL(calculatedValues.grossIncome * 12)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Base de Cálculo:</span>
-                    <span className="font-medium">{formatBRL(calculatedValues.taxableIncome * 12)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Imposto Devido:</span>
-                    <span className="font-semibold text-red-600">{formatBRL(calculatedValues.incomeTax * 12)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Renda Líquida:</span>
-                    <span className="font-semibold text-green-600">{formatBRL(calculatedValues.netIncome * 12)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Detalhes da Dedução</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dedução Simplificada:</span>
-                    <span>{formatBRL(calculatedValues.simplifiedDeduction)}</span>
-                  </div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dedução Detalhada:</span>
-                    <span>{formatBRL(calculatedValues.itemizedDeduction)}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold mt-2">
-                    <span>Dedução Utilizada:</span>
-                    <span>
-                      {formatBRL(calculatedValues.chosenDeduction)}
-                      <span className="text-xs ml-2 text-muted-foreground">
-                        ({calculatedValues.chosenDeduction === calculatedValues.simplifiedDeduction ? 'Simplificada' : 'Detalhada'})
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-12 text-center text-xs text-muted-foreground">
-              <p>Este relatório é apenas uma simulação e não substitui o cálculo oficial da Receita Federal.</p>
-              <p>Data de emissão: {new Date().toLocaleDateString('pt-BR')}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+                        <p className="text-xs text
