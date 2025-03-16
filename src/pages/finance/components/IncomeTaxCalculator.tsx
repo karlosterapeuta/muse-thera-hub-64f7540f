@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Tabs, TabsContent, TabsList, TabsTrigger 
@@ -253,6 +252,18 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
       currency: 'BRL',
       minimumFractionDigits: 2
     }).format(numeric / 100);
+  };
+  
+  // Tooltip formatter for charts - now it properly handles type conversion
+  const chartValueFormatter = (value: string | number) => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    return [formatBRL(numValue), ''];
+  };
+  
+  // YAxis formatter for the bar chart
+  const yAxisFormatter = (value: string | number) => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    return formatBRL(numValue).split(',')[0];
   };
   
   // Impressão
@@ -691,7 +702,7 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={(value: any) => [formatBRL(Number(value)), '']} 
+                              formatter={chartValueFormatter} 
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -706,10 +717,10 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis 
-                              tickFormatter={(value: any) => formatBRL(Number(value)).split(',')[0]} 
+                              tickFormatter={yAxisFormatter} 
                             />
                             <Tooltip 
-                              formatter={(value: any) => [formatBRL(Number(value)), '']} 
+                              formatter={chartValueFormatter} 
                             />
                             <Bar name="Renda Líquida" dataKey="netIncome" fill="#10B981" />
                             <Bar name="Imposto" dataKey="incomeTax" fill="#EF4444" />
