@@ -428,10 +428,14 @@ export default function AnamnesisForm() {
       return;
     }
 
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
+
     try {
       setIsSubmitting(true);
       
-      // Create the data object with the necessary fields
+      // Ensure we have valid data before proceeding
       const anamnesisData = {
         ...formData,
         patient_id: selectedPatient,
@@ -461,11 +465,13 @@ export default function AnamnesisForm() {
         throw result.error;
       }
 
+      // Find patient data
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (!selectedPatientData) {
         throw new Error("Dados do paciente não encontrados");
       }
       
+      // Generate PDF
       const pdfGenerated = await generatePDF(selectedPatientData.name);
       
       if (pdfGenerated) {
@@ -481,11 +487,18 @@ export default function AnamnesisForm() {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
+      
+      // More detailed error message
+      let errorMessage = "Não foi possível salvar a anamnese.";
+      if (error?.message) {
+        errorMessage += ` Detalhe: ${error.message}`;
+      }
+      
       toast({
         title: "Erro",
-        description: "Não foi possível salvar a anamnese.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -551,4 +564,3 @@ export default function AnamnesisForm() {
     </div>
   );
 }
-
