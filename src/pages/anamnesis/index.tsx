@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,7 +118,8 @@ export default function AnamnesisForm() {
         .from("anamnesis")
         .select("*")
         .eq("patient_id", selectedPatient)
-        .maybeSingle();
+        .order('created_at', { ascending: false })
+        .limit(1);
 
       if (error) {
         console.error("Erro ao carregar anamnese:", error);
@@ -129,9 +131,10 @@ export default function AnamnesisForm() {
         return;
       }
 
-      if (anamnesisData) {
-        setFormData(anamnesisData);
-        setExistingAnamnesisId(anamnesisData.id);
+      if (anamnesisData && anamnesisData.length > 0) {
+        // Use the most recent anamnesis record
+        setFormData(anamnesisData[0]);
+        setExistingAnamnesisId(anamnesisData[0].id);
       } else {
         // Reset form data if no anamnesis exists for this patient
         setFormData({});
