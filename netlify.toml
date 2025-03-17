@@ -1,0 +1,11 @@
+
+# Netlify configuration for single-page application
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Handle client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
