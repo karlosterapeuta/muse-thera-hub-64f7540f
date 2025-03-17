@@ -23,6 +23,7 @@ import Users from "./pages/users";
 import HawkinsScale from "./pages/hawkins";
 import SongsPage from "./pages/songs";
 import MusicalBells from "./pages/musical-bells";
+import Activities from "./pages/activities";
 import FinanceDashboard from "./pages/finance";
 import FinancialRecords from "./pages/finance/records";
 import ClinicsManagement from "./pages/finance/clinics";
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
       {
         path: "/musical-bells",
         element: <MusicalBells />,
+      },
+      {
+        path: "/activities",
+        element: <Activities />,
       },
       {
         path: "/finance",
