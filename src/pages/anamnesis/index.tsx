@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -353,11 +354,14 @@ export default function AnamnesisForm() {
         }).join('');
       };
 
+      // Make sure to use absolute URL for logo image
+      const logoUrl = new URL('/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png', window.location.origin).href;
+
       element.innerHTML = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
             <div style="margin-bottom: 24px;">
-              <img src="${window.location.origin}/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
+              <img src="${logoUrl}" style="width: 200px; height: auto; margin: 0 auto;">
             </div>
             <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
               Anamnese Musicoterapêutica
@@ -403,23 +407,29 @@ export default function AnamnesisForm() {
         html2canvas: {
           scale: 2,
           useCORS: true,
+          logging: true, // Enable logging for troubleshooting
           letterRendering: true,
           backgroundColor: '#ffffff',
         },
       };
 
-      await html2pdf().from(element).set(opt).save();
-      
-      toast({
-        title: "Sucesso",
-        description: "PDF gerado com sucesso!",
-      });
+      // Use promise-based approach for better error handling
+      try {
+        await html2pdf().set(opt).from(element).save();
+        toast({
+          title: "Sucesso",
+          description: "PDF gerado com sucesso!",
+        });
+      } catch (pdfError) {
+        console.error("Erro específico ao gerar PDF:", pdfError);
+        throw pdfError;
+      }
       
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível gerar o PDF.",
+        description: "Não foi possível gerar o PDF. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -447,6 +457,7 @@ export default function AnamnesisForm() {
     }
 
     try {
+      setIsLoading(true);
       let result;
       
       // Create the data object with the necessary fields
@@ -476,7 +487,7 @@ export default function AnamnesisForm() {
         throw result.error;
       }
 
-      // Call the standalone generatePDF function instead of passing patient name
+      // Generate PDF after successful save
       await generatePDF();
 
       toast({
@@ -484,7 +495,11 @@ export default function AnamnesisForm() {
         description: "Anamnese registrada com sucesso.",
       });
 
-      navigate("/processes");
+      // Only navigate after PDF generation is complete
+      setTimeout(() => {
+        navigate("/processes");
+      }, 1000);
+      
     } catch (error) {
       console.error("Erro ao salvar anamnese:", error);
       toast({
@@ -492,6 +507,8 @@ export default function AnamnesisForm() {
         description: "Não foi possível salvar a anamnese.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
