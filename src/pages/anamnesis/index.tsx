@@ -9,6 +9,7 @@ import { PatientSelect } from "./components/PatientSelect";
 import { Download } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type Patient = {
   id: string;
@@ -435,9 +436,17 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
+      // Clean the form data to avoid schema mismatch issues
+      const cleanedFormData = Object.fromEntries(
+        Object.entries(formData).filter(([key, value]) => {
+          // Remove null or undefined values
+          return value !== null && value !== undefined;
+        })
+      );
+      
       // Ensure we have valid data before proceeding
       const anamnesisData = {
-        ...formData,
+        ...cleanedFormData,
         patient_id: selectedPatient,
         professional_id: professionalId,
       };
