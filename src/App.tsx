@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -55,14 +56,14 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
-    // Optional: You can add any global initialization logic here
+    console.log("App mounted, current theme:", document.documentElement.classList.contains('dark') ? 'dark' : 'light');
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="museterapia-theme">
         <BrowserRouter>
-          <div className="min-h-screen bg-background text-foreground overflow-hidden">
+          <div className="min-h-screen bg-background text-foreground antialiased overflow-hidden">
             <Routes>
               <Route index element={<IndexPage />} />
               <Route path="/login" element={<LoginPage />} />

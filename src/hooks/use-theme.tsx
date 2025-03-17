@@ -13,25 +13,39 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({
   children,
   defaultTheme = 'light',
-  storageKey = 'theme',
+  storageKey = 'museterapia-theme',
 }: {
   children: React.ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
 }) {
   const [theme, setTheme] = useState<Theme>(() => {
+    // First check localStorage
     if (typeof window !== 'undefined') {
       const storedTheme = localStorage.getItem(storageKey);
-      return (storedTheme as Theme) || defaultTheme;
+      if (storedTheme === 'light' || storedTheme === 'dark') {
+        return storedTheme;
+      }
+      
+      // If no stored theme, check system preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
     }
     return defaultTheme;
   });
 
   useEffect(() => {
     const root = window.document.documentElement;
+    
+    // Remove both classes first to prevent conflicts
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
+    
+    // Store theme preference
     localStorage.setItem(storageKey, theme);
+    
+    console.log('Theme set to:', theme);
   }, [theme, storageKey]);
 
   const toggleTheme = () => {
