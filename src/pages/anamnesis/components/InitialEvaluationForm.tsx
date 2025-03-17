@@ -20,40 +20,6 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
 
   return (
     <div className="space-y-8">
-      <FormSection
-        title="Dados Pessoais e Familiares"
-        fields={[
-          {
-            key: "legal_guardian",
-            label: "Responsável Legal",
-            placeholder: "Nome do responsável legal",
-            value: content.legal_guardian || "",
-            onChange: (value) => updateField("legal_guardian", value),
-          },
-          {
-            key: "family_relationship",
-            label: "Parentesco",
-            placeholder: "Grau de parentesco com o paciente",
-            value: content.family_relationship || "",
-            onChange: (value) => updateField("family_relationship", value),
-          },
-          {
-            key: "referral_professional",
-            label: "Profissional que Encaminhou",
-            placeholder: "Nome do profissional",
-            value: content.referral_professional || "",
-            onChange: (value) => updateField("referral_professional", value),
-          },
-          {
-            key: "main_clinical_demand",
-            label: "Demanda Clínica Principal",
-            placeholder: "Descreva a demanda clínica principal",
-            value: content.main_clinical_demand || "",
-            onChange: (value) => updateField("main_clinical_demand", value),
-          },
-        ]}
-      />
-
       <CheckboxSection
         title="Histórico Musical"
         fields={[
@@ -672,4 +638,3 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     </div>
   );
 }
-
