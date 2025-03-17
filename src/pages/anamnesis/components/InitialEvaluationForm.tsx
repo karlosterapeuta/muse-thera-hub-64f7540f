@@ -1,4 +1,3 @@
-
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -467,6 +466,12 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange: (value) => updateField("adhd_hyperactive", value),
           },
           {
+            id: "oppositional_defiant_disorder",
+            label: "Transtorno Opositor Desafiador (TOD)",
+            checked: content.oppositional_defiant_disorder || false,
+            onChange: (value) => updateField("oppositional_defiant_disorder", value),
+          },
+          {
             id: "anxiety_disorders",
             label: "Transtornos de Ansiedade",
             checked: content.anxiety_disorders || false,
@@ -667,3 +672,4 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     </div>
   );
 }
+
