@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,8 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { formatCurrency } from '@/lib/utils';
-import { FinancialRecord } from '../types';
+import { formatCurrency } from '@/utils/formatters';
 
 // Parse currency string to number
 const parseCurrencyValue = (value: string): number => {
@@ -16,11 +14,7 @@ const parseCurrencyValue = (value: string): number => {
   return parseFloat(value.replace(/[^\d.-]/g, '')) || 0;
 };
 
-interface IncomeTaxCalculatorProps {
-  records?: FinancialRecord[];
-}
-
-export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ records = [] }) => {
+export const IncomeTaxCalculator = () => {
   const [simpleIndexValue, setSimpleIndexValue] = useState('');
   const [presumptionValue, setPresumptionValue] = useState('');
   const [realProfitValue, setRealProfitValue] = useState('');
@@ -34,17 +28,6 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
   const [simplesTax, setSimplesTax] = useState(0);
 
   const [selectedActivity, setSelectedActivity] = useState('commerce');
-
-  useEffect(() => {
-    if (records && records.length > 0) {
-      // Optional: You could pre-fill the calculator with the total amount from records
-      const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
-      if (totalAmount > 0) {
-        setSimpleIndexValue(formatCurrency(totalAmount));
-        calculateSimpleIndex(totalAmount);
-      }
-    }
-  }, [records]);
 
   const calculateSimpleIndex = (value: number) => {
     const taxRate = 0.08;
