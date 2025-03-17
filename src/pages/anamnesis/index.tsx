@@ -486,18 +486,6 @@ export default function AnamnesisForm() {
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
         'therapeutic_goals', 'treatment_approach',
-        
-        // TEA levels that might be used in the form
-        'autism_level_1', 'autism_level_2', 'autism_level_3', 'high_functioning_autism', 
-        'asperger_syndrome', 'pdd_nos', 'regressive_autism',
-        
-        // Additional mental conditions
-        'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
-        'specific_phobia', 'separation_anxiety', 'social_anxiety', 'ocd',
-        'depression', 'bipolar_disorder',
-        
-        // Additional health conditions
-        'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome', 'rett_syndrome'
       ];
       
       // Filtrar os dados para incluir apenas colunas conhecidas

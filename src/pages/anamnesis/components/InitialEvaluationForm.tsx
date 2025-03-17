@@ -1,4 +1,3 @@
-
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -398,60 +397,6 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title="Atividades"
-        fields={[
-          {
-            id: "aba_therapy",
-            label: "Terapia ABA",
-            checked: content.aba_therapy || false,
-            onChange: (value) => updateField("aba_therapy", value),
-          },
-          {
-            id: "sensory_integration",
-            label: "Integração Sensorial",
-            checked: content.sensory_integration || false,
-            onChange: (value) => updateField("sensory_integration", value),
-          },
-          {
-            id: "speech_therapy",
-            label: "Fonoaudiologia",
-            checked: content.speech_therapy || false,
-            onChange: (value) => updateField("speech_therapy", value),
-          },
-          {
-            id: "psychological_support",
-            label: "Acompanhamento Psicológico",
-            checked: content.psychological_support || false,
-            onChange: (value) => updateField("psychological_support", value),
-          },
-          {
-            id: "psychopedagogical",
-            label: "Psicopedagogia",
-            checked: content.psychopedagogical || false,
-            onChange: (value) => updateField("psychopedagogical", value),
-          },
-          {
-            id: "occupational_therapy",
-            label: "Terapia Ocupacional",
-            checked: content.occupational_therapy || false,
-            onChange: (value) => updateField("occupational_therapy", value),
-          },
-          {
-            id: "physiotherapy",
-            label: "Fisioterapia",
-            checked: content.physiotherapy || false,
-            onChange: (value) => updateField("physiotherapy", value),
-          },
-          {
-            id: "equine_therapy",
-            label: "Equoterapia",
-            checked: content.equine_therapy || false,
-            onChange: (value) => updateField("equine_therapy", value),
-          },
-        ]}
-      />
-
-      <CheckboxSection
         title="Transtorno do Espectro Autista (TEA)"
         fields={[
           {
@@ -631,6 +576,60 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
+      <CheckboxSection
+        title="Medicação e Terapias"
+        fields={[
+          {
+            id: "speech_therapy",
+            label: "Fonoaudiologia",
+            checked: content.speech_therapy || false,
+            onChange: (value) => updateField("speech_therapy", value),
+          },
+          {
+            id: "psychological_support",
+            label: "Acompanhamento Psicológico",
+            checked: content.psychological_support || false,
+            onChange: (value) => updateField("psychological_support", value),
+          },
+          {
+            id: "psychopedagogical",
+            label: "Psicopedagogia",
+            checked: content.psychopedagogical || false,
+            onChange: (value) => updateField("psychopedagogical", value),
+          },
+          {
+            id: "occupational_therapy",
+            label: "Terapia Ocupacional",
+            checked: content.occupational_therapy || false,
+            onChange: (value) => updateField("occupational_therapy", value),
+          },
+          {
+            id: "physiotherapy",
+            label: "Fisioterapia",
+            checked: content.physiotherapy || false,
+            onChange: (value) => updateField("physiotherapy", value),
+          },
+          {
+            id: "equine_therapy",
+            label: "Equoterapia",
+            checked: content.equine_therapy || false,
+            onChange: (value) => updateField("equine_therapy", value),
+          },
+          {
+            id: "aba_therapy",
+            label: "Terapia ABA",
+            checked: content.aba_therapy || false,
+            onChange: (value) => updateField("aba_therapy", value),
+          },
+          {
+            id: "sensory_integration",
+            label: "Integração Sensorial",
+            checked: content.sensory_integration || false,
+            onChange: (value) => updateField("sensory_integration", value),
+          },
+        ]}
+      />
+
       <FormSection
         title="Medicação"
         fields={[
@@ -673,3 +672,4 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     </div>
   );
 }
+
