@@ -28,6 +28,7 @@ export default function AnamnesisForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -68,7 +69,6 @@ export default function AnamnesisForm() {
       setUserName(formatNameFromEmail(user.email || ""));
 
       // Usando o user.id diretamente como professional_id
-      // Isso garante que usaremos o ID da tabela users que está conectado à tabela auth.users
       setProfessionalId(user.id);
 
       console.log('Buscando pacientes para usuário:', user.id);
@@ -398,7 +398,13 @@ export default function AnamnesisForm() {
       },
     };
 
-    await html2pdf().from(element).set(opt).save();
+    try {
+      await html2pdf().from(element).set(opt).save();
+      return true;
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -423,7 +429,7 @@ export default function AnamnesisForm() {
     }
 
     try {
-      let result;
+      setIsSubmitting(true);
       
       // Create the data object with the necessary fields
       const anamnesisData = {
@@ -434,6 +440,8 @@ export default function AnamnesisForm() {
 
       console.log("Saving anamnesis with professional_id:", professionalId);
 
+      let result;
+      
       // Determine whether to insert or update
       if (existingAnamnesisId) {
         // Update existing record
@@ -449,20 +457,30 @@ export default function AnamnesisForm() {
       }
 
       if (result.error) {
+        console.error("Erro ao salvar anamnese:", result.error);
         throw result.error;
       }
 
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
-      if (selectedPatientData) {
-        await generatePDF(selectedPatientData.name);
+      if (!selectedPatientData) {
+        throw new Error("Dados do paciente não encontrados");
       }
-
-      toast({
-        title: "Sucesso!",
-        description: "Anamnese registrada e PDF gerado com sucesso.",
-      });
-
-      navigate("/processes");
+      
+      const pdfGenerated = await generatePDF(selectedPatientData.name);
+      
+      if (pdfGenerated) {
+        toast({
+          title: "Sucesso!",
+          description: "Anamnese registrada e PDF gerado com sucesso.",
+        });
+        navigate("/processes");
+      } else {
+        toast({
+          title: "Atenção",
+          description: "Anamnese salva, mas houve um problema ao gerar o PDF.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Erro ao salvar anamnese:", error);
       toast({
@@ -470,6 +488,8 @@ export default function AnamnesisForm() {
         description: "Não foi possível salvar a anamnese.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -508,9 +528,21 @@ export default function AnamnesisForm() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">
-                <Download className="mr-2" />
-                Salvar e Baixar PDF
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2" />
+                    Salvar e Baixar PDF
+                  </>
+                )}
               </Button>
             </div>
           </form>
@@ -519,3 +551,4 @@ export default function AnamnesisForm() {
     </div>
   );
 }
+
