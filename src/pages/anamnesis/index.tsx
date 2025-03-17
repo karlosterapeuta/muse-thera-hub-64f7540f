@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,10 +108,13 @@ export default function AnamnesisForm() {
 
     try {
       setIsLoading(true);
+      // Modified query to order by created_at desc and limit to 1 record
       const { data: anamnesisData, error } = await supabase
         .from("anamnesis")
         .select("*")
         .eq("patient_id", selectedPatient)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
