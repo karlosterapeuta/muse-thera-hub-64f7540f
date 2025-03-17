@@ -210,6 +210,11 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
     ];
   };
 
+  const parseCurrencyValue = (value: string): number => {
+    if (!value) return 0;
+    return parseFloat(value.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+  };
+
   const formatCurrencyInput = (value: string) => {
     let numericValue = value.replace(/[^\d]/g, '');
     const numeric = parseInt(numericValue, 10);
@@ -433,7 +438,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         field.onChange(formattedValue);
                                       }}
                                       onBlur={() => {
-                                        field.onChange(field.value || "0");
+                                        const numericValue = parseCurrencyValue(field.value);
+                                        field.onChange(numericValue === 0 ? "0" : field.value || "0");
                                       }}
                                     />
                                   </FormControl>
@@ -458,7 +464,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         field.onChange(formattedValue);
                                       }}
                                       onBlur={() => {
-                                        field.onChange(field.value || "0");
+                                        const numericValue = parseCurrencyValue(field.value);
+                                        field.onChange(numericValue === 0 ? "0" : field.value || "0");
                                       }}
                                     />
                                   </FormControl>
@@ -483,7 +490,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         field.onChange(formattedValue);
                                       }}
                                       onBlur={() => {
-                                        field.onChange(field.value || "0");
+                                        const numericValue = parseCurrencyValue(field.value);
+                                        field.onChange(numericValue === 0 ? "0" : field.value || "0");
                                       }}
                                     />
                                   </FormControl>
@@ -508,7 +516,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         field.onChange(formattedValue);
                                       }}
                                       onBlur={() => {
-                                        field.onChange(field.value || "0");
+                                        const numericValue = parseCurrencyValue(field.value);
+                                        field.onChange(numericValue === 0 ? "0" : field.value || "0");
                                       }}
                                     />
                                   </FormControl>
@@ -533,7 +542,8 @@ export function IncomeTaxCalculator({ records }: IncomeTaxCalculatorProps) {
                                         field.onChange(formattedValue);
                                       }}
                                       onBlur={() => {
-                                        field.onChange(field.value || "0");
+                                        const numericValue = parseCurrencyValue(field.value);
+                                        field.onChange(numericValue === 0 ? "0" : field.value || "0");
                                       }}
                                     />
                                   </FormControl>
