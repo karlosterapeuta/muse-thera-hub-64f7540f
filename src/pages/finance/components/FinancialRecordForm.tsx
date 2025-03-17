@@ -25,8 +25,8 @@ const weekdayOptions = [
   { label: "Sexta-feira", value: "sexta" },
 ];
 
-const baseTimeOptions = Array.from({ length: 13 }, (_, i) => {
-  const hour = i + 8;
+const baseTimeOptions = Array.from({ length: 14 }, (_, i) => {
+  const hour = i + 7;
   return {
     hour,
     label: `${hour}:00`,
