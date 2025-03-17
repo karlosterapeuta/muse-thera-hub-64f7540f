@@ -62,7 +62,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="museterapia-theme">
         <BrowserRouter>
-          <div className="min-h-screen overflow-hidden">
+          <div className="min-h-screen bg-background text-foreground overflow-hidden">
             <Routes>
               <Route index element={<IndexPage />} />
               <Route path="/login" element={<LoginPage />} />

@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Set initial theme
-const theme = localStorage.getItem('theme') || 'light';
+// Ensure proper theme class is applied to the root element
+const theme = localStorage.getItem('museterapia-theme') || 'light';
 document.documentElement.classList.add(theme);
 
 createRoot(document.getElementById("root")!).render(<App />);
