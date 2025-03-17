@@ -1,150 +1,114 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Professional from "./pages/Professional";
-import Processes from "./pages/processes";
-import Evaluation from "./pages/evaluation";
-import AnamnesisForm from "./pages/anamnesis";
-import Patients from "./pages/patients";
-import TreatmentPlanForm from "./pages/treatment-plan";
-import InterventionForm from "./pages/intervention";
-import ReevaluationForm from "./pages/reevaluation";
-import ReportPage from "./pages/processes/report";
-import ReportsPage from "./pages/processes/reports";
-import NotFound from "./pages/NotFound";
-import Layout from "./components/Layout";
-import InviteCodes from "./pages/InviteCodes";
-import Users from "./pages/users";
-import HawkinsScale from "./pages/hawkins";
-import SongsPage from "./pages/songs";
-import MusicalBells from "./pages/musical-bells";
-import FinanceDashboard from "./pages/finance";
-import FinancialRecords from "./pages/finance/records";
-import ClinicsManagement from "./pages/finance/clinics";
-import FinancialReports from "./pages/finance/reports";
-import AuthStatusChecker from "./components/auth/AuthStatusChecker";
+import { ThemeProvider } from "@/hooks/use-theme";
+import { Toaster } from "@/components/ui/sonner";
+
+// Pages
+import IndexPage from "@/pages/Index";
+import LoginPage from "@/pages/Login";
+import RegisterPage from "@/pages/Login";
+import PasswordResetPage from "@/pages/Login";
+import NewPasswordPage from "@/pages/Login";
+import DashboardPage from "@/pages/Dashboard";
+import ProfessionalPage from "@/pages/Professional";
+import PatientsPage from "@/pages/patients";
+import ProcessesPage from "@/pages/processes";
+import HawkinsPage from "@/pages/hawkins";
+import AnamnesisPage from "@/pages/anamnesis";
+import SongsPage from "@/pages/songs";
+import MusicalBellsPage from "@/pages/musical-bells";
+import ActivitiesPage from "@/pages/activities";
+
+// Finance Pages
+import FinancePage from "@/pages/finance";
+import FinancialRecordsPage from "@/pages/finance/records";
+import FinancialReportsPage from "@/pages/finance/reports";
+import ClinicsPage from "@/pages/finance/clinics";
+
+// Process Pages
+import EvaluationPage from "@/pages/evaluation";
+import TreatmentPlanPage from "@/pages/treatment-plan";
+import InterventionPage from "@/pages/intervention";
+import ReevaluationPage from "@/pages/reevaluation";
+import ReportPage from "@/pages/processes/report";
+
+// User Management Pages
+import UsersPage from "@/pages/users";
+import InviteCodesPage from "@/pages/InviteCodes";
+
+// Components
+import Layout from "@/components/Layout";
+import AuthStatusChecker from "@/components/auth/AuthStatusChecker";
+import NotFoundPage from "@/pages/NotFound";
+
 import "./App.css";
 
-const queryClient = new QueryClient();
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Navigate to="/login" replace />,
+// Initialize QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
   },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    element: (
-      <>
-        <Layout />
-        <AuthStatusChecker />
-      </>
-    ),
-    children: [
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "/professional",
-        element: <Professional />,
-      },
-      {
-        path: "/patients",
-        element: <Patients />,
-      },
-      {
-        path: "/processes",
-        element: <Processes />,
-      },
-      {
-        path: "/processos/avaliacao",
-        element: <Evaluation />,
-      },
-      {
-        path: "/anamnesis",
-        element: <AnamnesisForm />,
-      },
-      {
-        path: "/processos/plano",
-        element: <TreatmentPlanForm />,
-      },
-      {
-        path: "/intervention",
-        element: <InterventionForm />,
-      },
-      {
-        path: "/processos/reavaliacao",
-        element: <ReevaluationForm />,
-      },
-      {
-        path: "/processos/relatorios",
-        element: <ReportsPage />,
-      },
-      {
-        path: "/processos/relatorio",
-        element: <ReportPage />,
-      },
-      {
-        path: "/invite-codes",
-        element: <InviteCodes />,
-      },
-      {
-        path: "/users",
-        element: <Users />,
-      },
-      {
-        path: "/hawkins",
-        element: <HawkinsScale />,
-      },
-      {
-        path: "/songs",
-        element: <SongsPage />,
-      },
-      {
-        path: "/musical-bells",
-        element: <MusicalBells />,
-      },
-      {
-        path: "/finance",
-        element: <FinanceDashboard />,
-      },
-      {
-        path: "/finance/records",
-        element: <FinancialRecords />,
-      },
-      {
-        path: "/finance/clinics",
-        element: <ClinicsManagement />,
-      },
-      {
-        path: "/finance/reports",
-        element: <FinancialReports />,
-      },
-    ],
-  },
-  {
-    path: "*",
-    element: <NotFound />,
-  },
-]);
+});
 
 function App() {
+  useEffect(() => {
+    // Optional: You can add any global initialization logic here
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light" storageKey="museterapia-theme">
+        <BrowserRouter>
+          <div className="min-h-screen overflow-hidden">
+            <Routes>
+              <Route index element={<IndexPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/reset-password" element={<PasswordResetPage />} />
+              <Route path="/new-password" element={<NewPasswordPage />} />
+              <Route element={<AuthStatusChecker />}>
+                <Route element={<Layout />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/professional" element={<ProfessionalPage />} />
+                  <Route path="/patients" element={<PatientsPage />} />
+                  <Route path="/processes" element={<ProcessesPage />} />
+                  <Route path="/activities" element={<ActivitiesPage />} />
+                  <Route path="/hawkins" element={<HawkinsPage />} />
+                  <Route path="/songs" element={<SongsPage />} />
+                  <Route path="/musical-bells" element={<MusicalBellsPage />} />
+                  
+                  {/* Finance Routes */}
+                  <Route path="/finance" element={<FinancePage />} />
+                  <Route path="/finance/records" element={<FinancialRecordsPage />} />
+                  <Route path="/finance/reports" element={<FinancialReportsPage />} />
+                  <Route path="/finance/clinics" element={<ClinicsPage />} />
+                  
+                  {/* Anamnesis Route */}
+                  <Route path="/anamnesis" element={<AnamnesisPage />} />
+                  
+                  {/* Intervention Route */}
+                  <Route path="/intervention" element={<InterventionPage />} />
+                  
+                  {/* User Management */}
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/invite-codes" element={<InviteCodesPage />} />
+                  
+                  {/* Process Routes */}
+                  <Route path="/processos/avaliacao" element={<EvaluationPage />} />
+                  <Route path="/processos/plano" element={<TreatmentPlanPage />} />
+                  <Route path="/processos/reavaliacao" element={<ReevaluationPage />} />
+                  <Route path="/processos/relatorio" element={<ReportPage />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </div>
+          <Toaster />
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
