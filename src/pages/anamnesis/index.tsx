@@ -436,7 +436,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Define known columns in the anamnesis table to prevent schema mismatches
+      // Lista atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -474,46 +474,50 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
-        // Conditions
+        // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         
         // Therapy
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
+        'therapeutic_goals', 'treatment_approach',
       ];
       
-      // Clean the form data to include only known columns
+      // Filtrar os dados para incluir apenas colunas conhecidas
       const cleanedFormData = Object.fromEntries(
         Object.entries(formData).filter(([key, value]) => {
-          // Include only known columns and non-null values
+          // Incluir apenas colunas conhecidas e valores não nulos
           return knownColumns.includes(key) && value !== null && value !== undefined;
         })
       );
       
-      // Ensure we have valid data before proceeding
+      console.log("Dados filtrados para salvar:", cleanedFormData);
+      
+      // Garantir que temos dados válidos antes de prosseguir
       const anamnesisData = {
         ...cleanedFormData,
         patient_id: selectedPatient,
         professional_id: professionalId,
       };
 
-      console.log("Saving anamnesis with professional_id:", professionalId);
+      console.log("Salvando anamnese com professional_id:", professionalId);
 
       let result;
       
-      // Determine whether to insert or update
+      // Determinar se deve inserir ou atualizar
       if (existingAnamnesisId) {
-        // Update existing record
+        // Atualizar registro existente
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData)
           .eq("id", existingAnamnesisId);
       } else {
-        // Insert new record
+        // Inserir novo registro
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData);
@@ -524,13 +528,13 @@ export default function AnamnesisForm() {
         throw result.error;
       }
 
-      // Find patient data
+      // Encontrar dados do paciente
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (!selectedPatientData) {
         throw new Error("Dados do paciente não encontrados");
       }
       
-      // Generate PDF
+      // Gerar PDF
       const pdfGenerated = await generatePDF(selectedPatientData.name);
       
       if (pdfGenerated) {
@@ -549,7 +553,7 @@ export default function AnamnesisForm() {
     } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
       
-      // More detailed error message
+      // Mensagem de erro mais detalhada
       let errorMessage = "Não foi possível salvar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
