@@ -481,7 +481,6 @@ export default function AnamnesisForm() {
         // Therapy
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
