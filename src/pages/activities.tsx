@@ -41,6 +41,24 @@ export default function Activities() {
         target: ["TEA", "Alexitimia", "Transtornos de processamento sensorial"],
         materials: "Reprodutor de áudio, cartões com imagens ou emoticons",
       },
+      {
+        title: "Música e Palavras",
+        description: "Criar músicas simples que incentivam a repetição de palavras ou frases específicas relacionadas a necessidades do paciente.",
+        target: ["TEA", "Apraxia de fala", "Deficiência intelectual"],
+        materials: "Instrumentos harmônicos, cartões com palavras alvo",
+      },
+      {
+        title: "Narrativa Musical",
+        description: "Criar uma sequência musical que segue uma história, incentivando o paciente a narrar ou contribuir com partes da história.",
+        target: ["TEA", "Disfluência", "Transtornos de ansiedade"],
+        materials: "Instrumentos variados, livros de histórias ilustrados",
+      },
+      {
+        title: "Canto Dirigido com Técnicas Respiratórias",
+        description: "Canções específicas com foco em padrões respiratórios que apoiam a vocalização e articulação.",
+        target: ["Gagueira", "Disfonia", "Ansiedade"],
+        materials: "Guia visual de respiração, instrumento harmônico para acompanhamento",
+      },
     ],
     "Interação Social": [
       {
@@ -72,6 +90,24 @@ export default function Activities() {
         description: "Um participante cria um padrão rítmico ou movimento que deve ser imitado pelo grupo.",
         target: ["TEA", "Esquizofrenia", "Dificuldades de integração sensorial"],
         materials: "Instrumentos simples e idênticos para todos os participantes",
+      },
+      {
+        title: "Orquestra de Sucata",
+        description: "Construção coletiva de instrumentos com materiais reciclados, seguida de performance em grupo.",
+        target: ["Fobia social", "Baixa autoestima", "TEA"],
+        materials: "Materiais recicláveis diversos, ferramentas básicas, decorações",
+      },
+      {
+        title: "Coral Terapêutico",
+        description: "Grupo de canto com arranjos simplificados e adaptados para diferentes habilidades vocais.",
+        target: ["Depressão", "Isolamento social", "TEA", "Trauma"],
+        materials: "Partituras adaptadas, instrumentos de acompanhamento, sistema de som",
+      },
+      {
+        title: "Karaokê Adaptado",
+        description: "Versão modificada do karaokê com suporte visual, opções de duetos e ajuste de complexidade.",
+        target: ["Ansiedade social", "TEA", "Mutismo seletivo"],
+        materials: "Sistema audiovisual, microfones, letras impressas em grande formato",
       },
     ],
     "Regulação Sensorial e Emocional": [
@@ -105,6 +141,24 @@ export default function Activities() {
         target: ["TEA", "Transtornos de humor", "Alexitimia"],
         materials: "Reprodutor de áudio, cartões com expressões emocionais",
       },
+      {
+        title: "Jornada Sonora",
+        description: "Criar uma experiência imersiva com diferentes paisagens sonoras para estimular ou acalmar o sistema sensorial.",
+        target: ["Transtornos sensoriais", "TEPT", "TEA"],
+        materials: "Sistema de som com boa qualidade, colchonetes, vendas para os olhos",
+      },
+      {
+        title: "Tambor Cardíaco",
+        description: "Acompanhar o ritmo cardíaco do paciente com um tambor e gradualmente modificá-lo para mais lento ou mais rápido.",
+        target: ["Ansiedade", "Ataques de pânico", "Hipertensão"],
+        materials: "Tambor de mão, metrônomo visual",
+      },
+      {
+        title: "Banho Sonoro",
+        description: "Envolver o paciente com sons harmônicos contínuos produzidos por instrumentos como tigelas tibetanas ou gongos.",
+        target: ["Insônia", "Ansiedade crônica", "Dor crônica", "TEA"],
+        materials: "Tigelas tibetanas, gongos, diapasões terapêuticos",
+      },
     ],
     "Desenvolvimento Motor": [
       {
@@ -136,6 +190,24 @@ export default function Activities() {
         description: "Caminhar ao ritmo de diferentes padrões musicais, variando velocidade e intensidade.",
         target: ["TEA", "Parkinson", "Dificuldades de coordenação"],
         materials: "Tambor, reprodutor de áudio, marcadores de solo",
+      },
+      {
+        title: "Percussão Bilateral Sincronizada",
+        description: "Praticar padrões rítmicos que exigem o uso simultâneo e coordenado de ambos os lados do corpo.",
+        target: ["Hemiparesia", "Deficiências motoras", "Coordenação bilateral"],
+        materials: "Pares de baquetas, tambores posicionados estrategicamente",
+      },
+      {
+        title: "Dança das Articulações",
+        description: "Sequência de movimentos musicais focados em mobilizar especificamente cada articulação do corpo.",
+        target: ["Artrite", "Rigidez muscular", "Limitação de amplitude de movimento"],
+        materials: "Ilustrações de movimentos articulares, música com ritmo adaptável",
+      },
+      {
+        title: "Circuito Sonoro Motor",
+        description: "Percurso com estações que combinam desafios motores com diferentes experiências sonoras.",
+        target: ["Ataxia", "Problemas de planejamento motor", "Atraso global do desenvolvimento"],
+        materials: "Instrumentos variados, obstáculos seguros, marcadores de solo",
       },
     ],
     "Flexibilidade Cognitiva": [
@@ -169,6 +241,24 @@ export default function Activities() {
         target: ["TEA", "Transtornos de aprendizagem", "Demência"],
         materials: "Instrumentos variados, cartões com categorias",
       },
+      {
+        title: "Música com Múltiplos Finais",
+        description: "Tocar músicas que permitem diferentes finalizações, incentivando o paciente a escolher ou criar alternativas.",
+        target: ["TEA", "Transtorno obsessivo-compulsivo", "Ansiedade generalizada"],
+        materials: "Partituras com finais alternativos, instrumentos variados",
+      },
+      {
+        title: "Desafio de Adaptação Musical",
+        description: "Introduzir mudanças inesperadas durante a execução musical (tempo, volume, tom) às quais o paciente precisa se adaptar.",
+        target: ["TEA", "Transtorno de personalidade", "Inflexibilidade cognitiva"],
+        materials: "Instrumentos musicais, cartões de mudança, timer",
+      },
+      {
+        title: "Música de Perspectivas Múltiplas",
+        description: "Interpretar a mesma música de diferentes pontos de vista emocionais ou contextuais.",
+        target: ["TEA", "Transtorno bipolar", "Dificuldades de empatia"],
+        materials: "Instrumento harmônico, cartões com contextos emocionais",
+      },
     ],
     "Autonomia e Autoestima": [
       {
@@ -201,6 +291,24 @@ export default function Activities() {
         target: ["Depressão", "Baixa autoestima", "TEA"],
         materials: "Instrumentos de fácil manuseio, cartões com características positivas",
       },
+      {
+        title: "Solos Progressivos",
+        description: "Desenvolver pequenos solos musicais de complexidade crescente, celebrando cada avanço.",
+        target: ["Baixa autoestima", "Perfeccionismo", "Transtorno de personalidade evitativa"],
+        materials: "Instrumento preferido do paciente, gravador para documentar o progresso",
+      },
+      {
+        title: "Projeto de Instrumento Personalizado",
+        description: "Criar e personalizar um instrumento musical simples que reflita a identidade do paciente.",
+        target: ["Problemas de identidade", "TEA", "Transtornos de personalidade"],
+        materials: "Materiais para construção de instrumentos, ferramentas seguras, materiais decorativos",
+      },
+      {
+        title: "Songwritting Terapêutico",
+        description: "Escrever canções com foco em temas de autossuperação, forças pessoais e resiliência.",
+        target: ["Depressão", "Transtorno de estresse pós-traumático", "Recuperação de vícios"],
+        materials: "Instrumentos harmônicos, caderno de composição, exemplos de estruturas de canções",
+      },
     ],
     "Vinculação Afetiva": [
       {
@@ -232,6 +340,24 @@ export default function Activities() {
         description: "O terapeuta espelha musicalmente as expressões do paciente, criando uma experiência de sintonia afetiva.",
         target: ["TEA", "Trauma", "Transtornos de personalidade"],
         materials: "Instrumentos idênticos ou similares aos que o paciente utiliza",
+      },
+      {
+        title: "Criação de Canção Identitária Familiar",
+        description: "Compor colaborativamente uma canção que representa a identidade e valores da família.",
+        target: ["Conflitos familiares", "Adoção", "Famílias reconstruídas"],
+        materials: "Instrumentos harmônicos, quadro para anotações, gravador",
+      },
+      {
+        title: "Canto Sincronizado",
+        description: "Técnica de canto onde pais/cuidadores e pacientes cantam juntos com foco na respiração e sintonia.",
+        target: ["Dificuldades de vinculação", "TEA", "Transtorno de ansiedade de separação"],
+        materials: "Canções simples e significativas, instrumento de acompanhamento suave",
+      },
+      {
+        title: "Balanço Musical",
+        description: "Movimentos de balanço sincronizados com música, especialmente eficaz para crianças pequenas e pacientes com regressão.",
+        target: ["Trauma precoce", "Transtornos de apego", "Autismo severo"],
+        materials: "Rede, balanço adaptado ou simplesmente posição de balanço nos braços, música calma",
       },
     ],
   };
