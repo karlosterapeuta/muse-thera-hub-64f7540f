@@ -16,7 +16,6 @@ import {
   Music,
   Bell,
   DollarSign,
-  Clipboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -47,7 +46,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
-    { icon: Clipboard, text: "Atividades", path: "/activities" },
     { icon: Music, text: "Músicas", path: "/songs" },
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },

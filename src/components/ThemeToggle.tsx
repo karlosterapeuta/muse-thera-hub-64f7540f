@@ -6,17 +6,12 @@ import { useTheme } from "@/hooks/use-theme";
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
-  const handleToggle = () => {
-    console.log("Toggling theme from", theme);
-    toggleTheme();
-  };
-
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={handleToggle}
-      className="rounded-full w-10 h-10 bg-background text-foreground hover:bg-accent"
+      onClick={toggleTheme}
+      className="rounded-full w-10 h-10"
     >
       {theme === 'dark' ? (
         <Sun className="h-5 w-5" />
