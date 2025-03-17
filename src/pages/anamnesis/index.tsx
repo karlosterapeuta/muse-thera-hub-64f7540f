@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,11 +43,7 @@ export default function AnamnesisForm() {
     loadInitialData();
   }, []);
 
-  useEffect(() => {
-    if (selectedPatient) {
-      loadPatientAnamnesis();
-    }
-  }, [selectedPatient]);
+  // Removed the automatic loading effect that was here
 
   const loadInitialData = async () => {
     try {
@@ -490,6 +487,17 @@ export default function AnamnesisForm() {
               selectedPatient={selectedPatient}
               onSelect={setSelectedPatient}
             />
+            
+            <div className="flex justify-start mt-4 mb-6">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={loadPatientAnamnesis} 
+                disabled={!selectedPatient}
+              >
+                Carregar Dados do Paciente
+              </Button>
+            </div>
             
             <InitialEvaluationForm
               content={formData}
