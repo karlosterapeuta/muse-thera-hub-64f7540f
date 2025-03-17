@@ -436,11 +436,61 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Clean the form data to avoid schema mismatch issues
+      // Define known columns in the anamnesis table to prevent schema mismatches
+      const knownColumns = [
+        // Core fields
+        'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
+        'referral_professional', 'main_clinical_demand',
+        
+        // Musical history
+        'musical_education', 'instrumental_practice', 'body_musical_expression',
+        'vocal_expression', 'choral_activities', 'no_musical_experience',
+        
+        // Behavior
+        'active_musical_listening', 'body_expression', 'sound_responsiveness',
+        'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity',
+        
+        // Sound processing
+        'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response',
+        'active_sound_search', 'specific_sound_aversion', 'sound_source_location',
+        
+        // Musical preferences
+        'children_repertoire', 'rock_genre', 'sacred_gospel', 'brazilian_popular',
+        'country_music', 'classical_music', 'other_musical_genres',
+        
+        // Development
+        'cervical_control', 'crawling_pattern', 'fine_motor_dev',
+        'independent_sitting', 'autonomous_walking', 'broad_motor_dev',
+        
+        // Language
+        'babbling', 'simple_phrases', 'echolalia', 'first_words',
+        'nonverbal_communication', 'verbal_language_absence',
+        
+        // Behavior
+        'visual_contact', 'shared_play', 'stereotyped_behavior',
+        'peer_interaction', 'social_isolation', 'restricted_interests',
+        
+        // Emotional regulation
+        'irritability', 'heteroaggressive', 'emotional_ability',
+        'anxiety', 'frequent_crying', 'low_frustration_tolerance',
+        
+        // Conditions
+        'autism_spectrum', 'down_syndrome', 'intellectual_disability',
+        'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        
+        // Therapy
+        'speech_therapy', 'psychological_support', 'psychopedagogical',
+        'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        
+        // Additional fields
+        'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
+      ];
+      
+      // Clean the form data to include only known columns
       const cleanedFormData = Object.fromEntries(
         Object.entries(formData).filter(([key, value]) => {
-          // Remove null or undefined values
-          return value !== null && value !== undefined;
+          // Include only known columns and non-null values
+          return knownColumns.includes(key) && value !== null && value !== undefined;
         })
       );
       
