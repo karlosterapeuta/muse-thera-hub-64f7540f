@@ -18,6 +18,8 @@ export function TeaScaleForm({ content, onChange }: FormProps) {
     social_interaction: "1. Engajamento Social:\n- Capacidade de participação em atividades musicais em grupo\n- Iniciativa nas interações musicais\n- Resposta a estímulos sociais-musicais\n\n2. Comunicação Social:\n- Uso da música como forma de comunicação\n- Reciprocidade musical\n- Atenção compartilhada durante atividades musicais",
     communication: "1. Comunicação Não-Verbal:\n- Expressão através de elementos musicais\n- Uso de gestos e movimentos na música\n- Compreensão de sinais musicais\n\n2. Comunicação Verbal:\n- Uso de vocalizações musicais\n- Participação em canções\n- Integração entre fala e música",
     behavior_patterns: "1. Respostas aos Estímulos Musicais:\n- Padrões de resposta a diferentes elementos musicais\n- Preferências musicais observadas\n- Reações a mudanças na música\n\n2. Comportamentos Durante as Atividades:\n- Nível de envolvimento nas experiências musicais\n- Flexibilidade nas propostas musicais\n- Padrões de autorregulação através da música",
+    spectrum_diversity: "1. Perfil Neurodiverso:\n- Características sensoriais específicas (hiper/hipossensibilidade auditiva)\n- Padrão de processamento musical (analítico/gestalt)\n- Interesses específicos relacionados à música\n\n2. Diversidade de Apresentação:\n- Nível de suporte necessário (1, 2 ou 3)\n- Padrões de processamento cognitivo-musical\n- Aspectos culturais e individuais da expressão autística",
+    mental_health: "1. Comorbidades:\n- Ansiedade (sintomas e estratégias de manejo através da música)\n- Depressão (resposta emocional aos estímulos musicais)\n- TDAH (concentração e foco durante atividades musicais)\n- TOC (rigidez/flexibilidade em atividades musicais estruturadas)\n\n2. Aspectos Emocionais:\n- Regulação emocional através da música\n- Expressão de emoções durante as atividades\n- Mudanças de humor relacionadas às experiências musicais",
     conclusions: "Com base nas observações realizadas através da escala TEA, conclui-se:\n\n1. Potencialidades:\n- Áreas de maior resposta musical\n- Recursos internos identificados\n- Canais de comunicação estabelecidos\n\n2. Aspectos a Desenvolver:\n- Áreas que necessitam maior atenção\n- Desafios identificados\n- Pontos de intervenção prioritários",
     recommendations: "1. Intervenções Sugeridas:\n- Abordagens musicoterapêuticas específicas\n- Estratégias de intervenção personalizadas\n- Adaptações necessárias nas atividades\n\n2. Orientações:\n- Frequência recomendada de atendimento\n- Modalidades de intervenção indicadas\n- Sugestões para equipe multidisciplinar"
   };
@@ -63,6 +65,20 @@ export function TeaScaleForm({ content, onChange }: FormProps) {
             placeholder: "Avaliação dos padrões de comportamento",
             value: mergedContent.behavior_patterns,
             onChange: (value) => handleFieldChange("behavior_patterns", value),
+          },
+          {
+            key: "spectrum_diversity",
+            label: "Diversidade do Espectro",
+            placeholder: "Avaliação da diversidade do espectro autista",
+            value: mergedContent.spectrum_diversity,
+            onChange: (value) => handleFieldChange("spectrum_diversity", value),
+          },
+          {
+            key: "mental_health",
+            label: "Saúde Mental",
+            placeholder: "Avaliação dos aspectos de saúde mental",
+            value: mergedContent.mental_health,
+            onChange: (value) => handleFieldChange("mental_health", value),
           },
         ]}
       />
