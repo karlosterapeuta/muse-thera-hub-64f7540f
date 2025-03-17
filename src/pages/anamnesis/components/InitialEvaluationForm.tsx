@@ -1,6 +1,13 @@
 
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FormProps = {
   content: Record<string, any>;
@@ -391,14 +398,122 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title="Saúde"
+        title="Transtorno do Espectro Autista (TEA)"
         fields={[
           {
-            id: "autism_spectrum",
-            label: "Transtorno do Espectro Autista",
-            checked: content.autism_spectrum || false,
-            onChange: (value) => updateField("autism_spectrum", value),
+            id: "autism_level_1",
+            label: "TEA Nível 1 (Suporte Leve)",
+            checked: content.autism_level_1 || false,
+            onChange: (value) => updateField("autism_level_1", value),
           },
+          {
+            id: "autism_level_2",
+            label: "TEA Nível 2 (Suporte Substancial)",
+            checked: content.autism_level_2 || false,
+            onChange: (value) => updateField("autism_level_2", value),
+          },
+          {
+            id: "autism_level_3",
+            label: "TEA Nível 3 (Suporte Muito Substancial)",
+            checked: content.autism_level_3 || false,
+            onChange: (value) => updateField("autism_level_3", value),
+          },
+          {
+            id: "high_functioning_autism",
+            label: "Autismo de Alto Funcionamento",
+            checked: content.high_functioning_autism || false,
+            onChange: (value) => updateField("high_functioning_autism", value),
+          },
+          {
+            id: "asperger_syndrome",
+            label: "Síndrome de Asperger",
+            checked: content.asperger_syndrome || false,
+            onChange: (value) => updateField("asperger_syndrome", value),
+          },
+          {
+            id: "pdd_nos",
+            label: "Transtorno Global do Desenvolvimento SOE",
+            checked: content.pdd_nos || false,
+            onChange: (value) => updateField("pdd_nos", value),
+          },
+          {
+            id: "regressive_autism",
+            label: "Autismo Regressivo",
+            checked: content.regressive_autism || false,
+            onChange: (value) => updateField("regressive_autism", value),
+          },
+        ]}
+      />
+
+      <CheckboxSection
+        title="Transtornos Mentais"
+        fields={[
+          {
+            id: "adhd",
+            label: "TDAH",
+            checked: content.adhd || false,
+            onChange: (value) => updateField("adhd", value),
+          },
+          {
+            id: "adhd_inattentive",
+            label: "TDAH Predominantemente Desatento",
+            checked: content.adhd_inattentive || false,
+            onChange: (value) => updateField("adhd_inattentive", value),
+          },
+          {
+            id: "adhd_hyperactive",
+            label: "TDAH Predominantemente Hiperativo/Impulsivo",
+            checked: content.adhd_hyperactive || false,
+            onChange: (value) => updateField("adhd_hyperactive", value),
+          },
+          {
+            id: "anxiety_disorders",
+            label: "Transtornos de Ansiedade",
+            checked: content.anxiety_disorders || false,
+            onChange: (value) => updateField("anxiety_disorders", value),
+          },
+          {
+            id: "specific_phobia",
+            label: "Fobia Específica",
+            checked: content.specific_phobia || false,
+            onChange: (value) => updateField("specific_phobia", value),
+          },
+          {
+            id: "separation_anxiety",
+            label: "Ansiedade de Separação",
+            checked: content.separation_anxiety || false,
+            onChange: (value) => updateField("separation_anxiety", value),
+          },
+          {
+            id: "social_anxiety",
+            label: "Ansiedade Social",
+            checked: content.social_anxiety || false,
+            onChange: (value) => updateField("social_anxiety", value),
+          },
+          {
+            id: "ocd",
+            label: "Transtorno Obsessivo-Compulsivo (TOC)",
+            checked: content.ocd || false,
+            onChange: (value) => updateField("ocd", value),
+          },
+          {
+            id: "depression",
+            label: "Depressão",
+            checked: content.depression || false,
+            onChange: (value) => updateField("depression", value),
+          },
+          {
+            id: "bipolar_disorder",
+            label: "Transtorno Bipolar",
+            checked: content.bipolar_disorder || false,
+            onChange: (value) => updateField("bipolar_disorder", value),
+          },
+        ]}
+      />
+
+      <CheckboxSection
+        title="Outras Condições"
+        fields={[
           {
             id: "down_syndrome",
             label: "Síndrome de Down",
@@ -412,22 +527,40 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange: (value) => updateField("intellectual_disability", value),
           },
           {
-            id: "adhd",
-            label: "TDAH",
-            checked: content.adhd || false,
-            onChange: (value) => updateField("adhd", value),
-          },
-          {
             id: "chronic_encephalopathy",
             label: "Encefalopatia Crônica",
             checked: content.chronic_encephalopathy || false,
             onChange: (value) => updateField("chronic_encephalopathy", value),
           },
           {
-            id: "anxiety_disorders",
-            label: "Transtornos de Ansiedade",
-            checked: content.anxiety_disorders || false,
-            onChange: (value) => updateField("anxiety_disorders", value),
+            id: "cerebral_palsy",
+            label: "Paralisia Cerebral",
+            checked: content.cerebral_palsy || false,
+            onChange: (value) => updateField("cerebral_palsy", value),
+          },
+          {
+            id: "epilepsy",
+            label: "Epilepsia",
+            checked: content.epilepsy || false,
+            onChange: (value) => updateField("epilepsy", value),
+          },
+          {
+            id: "williams_syndrome",
+            label: "Síndrome de Williams",
+            checked: content.williams_syndrome || false,
+            onChange: (value) => updateField("williams_syndrome", value),
+          },
+          {
+            id: "fragile_x_syndrome",
+            label: "Síndrome do X Frágil",
+            checked: content.fragile_x_syndrome || false,
+            onChange: (value) => updateField("fragile_x_syndrome", value),
+          },
+          {
+            id: "rett_syndrome",
+            label: "Síndrome de Rett",
+            checked: content.rett_syndrome || false,
+            onChange: (value) => updateField("rett_syndrome", value),
           },
           {
             id: "other_diagnoses",
@@ -476,6 +609,18 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             label: "Equoterapia",
             checked: content.equine_therapy || false,
             onChange: (value) => updateField("equine_therapy", value),
+          },
+          {
+            id: "aba_therapy",
+            label: "Terapia ABA",
+            checked: content.aba_therapy || false,
+            onChange: (value) => updateField("aba_therapy", value),
+          },
+          {
+            id: "sensory_integration",
+            label: "Integração Sensorial",
+            checked: content.sensory_integration || false,
+            onChange: (value) => updateField("sensory_integration", value),
           },
         ]}
       />
