@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatCurrency } from '@/lib/utils';
+import { FinancialRecord } from '../types';
 
 // Parse currency string to number
 const parseCurrencyValue = (value: string): number => {
@@ -15,7 +16,11 @@ const parseCurrencyValue = (value: string): number => {
   return parseFloat(value.replace(/[^\d.-]/g, '')) || 0;
 };
 
-export const IncomeTaxCalculator = () => {
+interface IncomeTaxCalculatorProps {
+  records?: FinancialRecord[];
+}
+
+export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ records = [] }) => {
   const [simpleIndexValue, setSimpleIndexValue] = useState('');
   const [presumptionValue, setPresumptionValue] = useState('');
   const [realProfitValue, setRealProfitValue] = useState('');
