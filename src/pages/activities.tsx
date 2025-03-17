@@ -3,8 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 
 export default function Activities() {
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+
   const activities = {
     "Comunicação e Expressão Verbal/Não Verbal": [
       {
@@ -234,111 +238,145 @@ export default function Activities() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-primary">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-primary">
         Atividades Musicoterapêuticas
       </h1>
-      <p className="text-gray-700 mb-8">
+      <p className="text-gray-700 mb-6 sm:mb-8 text-sm sm:text-base">
         Atividades musicoterapêuticas adaptáveis a necessidades específicas, incluindo TEA e diversos 
         transtornos mentais, conforme a demanda do paciente.
       </p>
 
       <Tabs defaultValue="comunicacao" className="w-full">
-        <TabsList className="mb-6 flex flex-wrap h-auto gap-2">
-          <TabsTrigger value="comunicacao">Comunicação</TabsTrigger>
-          <TabsTrigger value="interacao">Interação Social</TabsTrigger>
-          <TabsTrigger value="regulacao">Regulação Sensorial</TabsTrigger>
-          <TabsTrigger value="motor">Desenvolvimento Motor</TabsTrigger>
-          <TabsTrigger value="flexibilidade">Flexibilidade Cognitiva</TabsTrigger>
-          <TabsTrigger value="autonomia">Autonomia</TabsTrigger>
-          <TabsTrigger value="vinculacao">Vinculação Afetiva</TabsTrigger>
+        <TabsList className="mb-4 sm:mb-6 flex flex-wrap h-auto gap-1 sm:gap-2 justify-start">
+          {isMobile ? (
+            // Mobile tabs layout - smaller font and padding
+            <>
+              <TabsTrigger value="comunicacao" className="px-2 py-1 text-xs">Comunicação</TabsTrigger>
+              <TabsTrigger value="interacao" className="px-2 py-1 text-xs">Interação</TabsTrigger>
+              <TabsTrigger value="regulacao" className="px-2 py-1 text-xs">Regulação</TabsTrigger>
+              <TabsTrigger value="motor" className="px-2 py-1 text-xs">Des. Motor</TabsTrigger>
+              <TabsTrigger value="flexibilidade" className="px-2 py-1 text-xs">Flex. Cognitiva</TabsTrigger>
+              <TabsTrigger value="autonomia" className="px-2 py-1 text-xs">Autonomia</TabsTrigger>
+              <TabsTrigger value="vinculacao" className="px-2 py-1 text-xs">Vinculação</TabsTrigger>
+            </>
+          ) : isTablet ? (
+            // Tablet tabs layout
+            <>
+              <TabsTrigger value="comunicacao" className="text-sm">Comunicação</TabsTrigger>
+              <TabsTrigger value="interacao" className="text-sm">Interação Social</TabsTrigger>
+              <TabsTrigger value="regulacao" className="text-sm">Regulação Sensorial</TabsTrigger>
+              <TabsTrigger value="motor" className="text-sm">Desenvolvimento Motor</TabsTrigger>
+              <TabsTrigger value="flexibilidade" className="text-sm">Flexibilidade Cognitiva</TabsTrigger>
+              <TabsTrigger value="autonomia" className="text-sm">Autonomia</TabsTrigger>
+              <TabsTrigger value="vinculacao" className="text-sm">Vinculação Afetiva</TabsTrigger>
+            </>
+          ) : (
+            // Desktop tabs layout
+            <>
+              <TabsTrigger value="comunicacao">Comunicação</TabsTrigger>
+              <TabsTrigger value="interacao">Interação Social</TabsTrigger>
+              <TabsTrigger value="regulacao">Regulação Sensorial</TabsTrigger>
+              <TabsTrigger value="motor">Desenvolvimento Motor</TabsTrigger>
+              <TabsTrigger value="flexibilidade">Flexibilidade Cognitiva</TabsTrigger>
+              <TabsTrigger value="autonomia">Autonomia</TabsTrigger>
+              <TabsTrigger value="vinculacao">Vinculação Afetiva</TabsTrigger>
+            </>
+          )}
         </TabsList>
 
-        <TabsContent value="comunicacao" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Comunicação e Expressão Verbal/Não Verbal</h2>
+        <TabsContent value="comunicacao" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Comunicação e Expressão Verbal/Não Verbal</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Comunicação e Expressão Verbal/Não Verbal"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index}
                 activity={activity} 
                 itemId={`item-comunicacao-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="interacao" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Interação Social</h2>
+        <TabsContent value="interacao" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Interação Social</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Interação Social"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-interacao-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="regulacao" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Regulação Sensorial e Emocional</h2>
+        <TabsContent value="regulacao" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Regulação Sensorial e Emocional</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Regulação Sensorial e Emocional"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-regulacao-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="motor" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Desenvolvimento Motor</h2>
+        <TabsContent value="motor" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Desenvolvimento Motor</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Desenvolvimento Motor"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-motor-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="flexibilidade" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Flexibilidade Cognitiva</h2>
+        <TabsContent value="flexibilidade" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Flexibilidade Cognitiva</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Flexibilidade Cognitiva"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-flexibilidade-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="autonomia" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Autonomia e Autoestima</h2>
+        <TabsContent value="autonomia" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Autonomia e Autoestima</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Autonomia e Autoestima"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-autonomia-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="vinculacao" className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Vinculação Afetiva</h2>
+        <TabsContent value="vinculacao" className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">Vinculação Afetiva</h2>
           <Accordion type="single" collapsible className="w-full">
             {activities["Vinculação Afetiva"].map((activity, index) => (
               <ActivityAccordionItem 
                 key={index} 
                 activity={activity} 
                 itemId={`item-vinculacao-${index}`} 
+                isMobile={isMobile}
               />
             ))}
           </Accordion>
@@ -355,31 +393,39 @@ interface Activity {
   materials: string;
 }
 
-function ActivityAccordionItem({ activity, itemId }: { activity: Activity; itemId: string }) {
+interface ActivityAccordionItemProps {
+  activity: Activity;
+  itemId: string;
+  isMobile?: boolean;
+}
+
+function ActivityAccordionItem({ activity, itemId, isMobile }: ActivityAccordionItemProps) {
   return (
     <AccordionItem value={itemId}>
       <AccordionTrigger className="text-left">
         <div className="flex flex-col items-start">
-          <span className="font-medium text-lg">{activity.title}</span>
+          <span className={`font-medium ${isMobile ? 'text-base' : 'text-lg'}`}>{activity.title}</span>
         </div>
       </AccordionTrigger>
       <AccordionContent>
-        <Card className="p-4">
-          <div className="space-y-3">
-            <p className="text-gray-700">{activity.description}</p>
+        <Card className="p-3 sm:p-4">
+          <div className="space-y-2 sm:space-y-3">
+            <p className="text-gray-700 text-sm sm:text-base">{activity.description}</p>
             
             <div>
-              <h4 className="text-sm font-semibold mb-1 text-gray-600">Indicações:</h4>
-              <div className="flex flex-wrap gap-2">
+              <h4 className="text-xs sm:text-sm font-semibold mb-1 text-gray-600">Indicações:</h4>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {activity.target.map((target, idx) => (
-                  <Badge key={idx} variant="secondary">{target}</Badge>
+                  <Badge key={idx} variant="secondary" className={isMobile ? "text-xs py-0" : ""}>
+                    {target}
+                  </Badge>
                 ))}
               </div>
             </div>
             
             <div>
-              <h4 className="text-sm font-semibold mb-1 text-gray-600">Materiais:</h4>
-              <p className="text-gray-700">{activity.materials}</p>
+              <h4 className="text-xs sm:text-sm font-semibold mb-1 text-gray-600">Materiais:</h4>
+              <p className="text-gray-700 text-sm sm:text-base">{activity.materials}</p>
             </div>
           </div>
         </Card>
