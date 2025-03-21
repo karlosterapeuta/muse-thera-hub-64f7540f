@@ -604,6 +604,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const spiritualActivities = [
+    {
+      id: 1,
+      title: "Meditação Musical Guiada",
+      description: "Utilizar música suave como base para uma meditação guiada que explora conceitos como conexão universal, propósito existencial e transcendência. A música facilita o estado meditativo e aprofunda a experiência contemplativa."
+    },
+    {
+      id: 2,
+      title: "Círculo de Canto Sagrado",
+      description: "Introduzir cantos de diversas tradições espirituais (mantras, cantos gregorianos, cânticos indígenas) e praticá-los em grupo, explorando seus significados e a sensação de unidade que promovem através da voz coletiva."
+    },
+    {
+      id: 3,
+      title: "Composição de Música Pessoal Sagrada",
+      description: "Guiar os participantes a comporem uma peça musical que represente sua própria jornada espiritual ou conceitos que consideram sagrados em suas vidas. Desenvolve expressão espiritual personalizada e autorreflexão existencial."
+    },
+    {
+      id: 4,
+      title: "Improviso de Gratidão",
+      description: "Criar uma improvisação musical focada na expressão de gratidão. Os participantes são convidados a pensar em algo pelo qual são profundamente gratos enquanto expressam esse sentimento através da música, sem palavras."
+    },
+    {
+      id: 5,
+      title: "Jornada Musical Interior",
+      description: "Utilizar uma sequência musical cuidadosamente construída para guiar uma jornada imaginativa de autoconhecimento, com foco em questões como propósito de vida, valores profundos e conexão com algo maior que si mesmo."
+    },
+    {
+      id: 6,
+      title: "Diálogo com o Silêncio",
+      description: "Alternar entre momentos de expressão musical e pausas de silêncio completo, desenvolvendo consciência da relação entre som e silêncio como metáfora para a existência e o vazio, conceitos fundamentais em muitas tradições espirituais."
+    },
+    {
+      id: 7,
+      title: "Criação de Música Ritual",
+      description: "Desenvolver coletivamente um pequeno ritual sonoro-musical que marque transições importantes ou celebre momentos significativos. Explora a função do ritual na construção de significado e na experiência de transcendência."
+    },
+    {
+      id: 8,
+      title: "Soundscape da Natureza",
+      description: "Criar paisagens sonoras que evoquem elementos naturais (água, vento, fogo, terra), explorando a conexão espiritual com a natureza e o sentimento de pertencimento ao mundo natural, tão presente em diversas tradições espirituais."
+    },
+    {
+      id: 9,
+      title: "Música da Compaixão",
+      description: "Guiar os participantes na criação de música que expresse compaixão universal, expandindo gradualmente o círculo de empatia: de si mesmos para entes queridos, desconhecidos, pessoas difíceis e, eventualmente, todos os seres."
+    },
+    {
+      id: 10,
+      title: "Concerto de Diversidade Espiritual",
+      description: "Organizar uma exploração musical de diferentes tradições espirituais, com discussão respeitosa sobre suas similaridades e diferenças. Desenvolve apreciação pela diversidade de caminhos espirituais humanos."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -984,6 +1037,28 @@ export default function ActivitiesPage() {
           </DialogHeader>
           <Accordion type="single" collapsible className="w-full">
             {adaptiveActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "spiritual"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Globe className="h-5 w-5" /> 
+              Desenvolvimento Espiritual
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento espiritual
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {spiritualActivities.map((activity) => (
               <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                 <AccordionTrigger>{activity.title}</AccordionTrigger>
                 <AccordionContent>{activity.description}</AccordionContent>
