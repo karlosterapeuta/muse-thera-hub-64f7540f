@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 import { 
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
@@ -16,13 +17,10 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function ActivitiesPage() {
   const isMobile = useIsMobile();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const navigate = useNavigate();
   const [categoriesDialogOpen, setCategoriesDialogOpen] = useState(false);
   
   const cognitiveActivities = [
@@ -776,27 +774,17 @@ export default function ActivitiesPage() {
     { name: "Moral", label: "Morais", icon: <Shield className="h-5 w-5" />, activities: moralActivities },
     { name: "Creative", label: "Criativas", icon: <Lightbulb className="h-5 w-5" />, activities: creativeActivities },
     { name: "Psychosexual", label: "Psicossexuais", icon: <User className="h-5 w-5" />, activities: psychosexualActivities },
-    { name: "Psychosocial", label: "Psicossociais", icon: <HelpingHand className="h-5 w-5" />, activities: psychosocialActivities },
-    { name: "Intellectual", label: "Intelectuais", icon: <BookOpen className="h-5 w-5" />, activities: intellectualActivities },
-    { name: "Adaptive", label: "Adaptativas", icon: <Zap className="h-5 w-5" />, activities: adaptiveActivities },
+    { name: "Psychosocial", label: "Psicossociais", icon: <Users className="h-5 w-5" />, activities: psychosocialActivities },
+    { name: "Intellectual", label: "Intelectuais", icon: <GraduationCap className="h-5 w-5" />, activities: intellectualActivities },
+    { name: "Adaptive", label: "Adaptativas", icon: <Puzzle className="h-5 w-5" />, activities: adaptiveActivities },
     { name: "Spiritual", label: "Espirituais", icon: <Church className="h-5 w-5" />, activities: spiritualActivities },
     { name: "Identity", label: "Identidade", icon: <Puzzle className="h-5 w-5" />, activities: identityActivities },
     { name: "Neurological", label: "Desenvolvimento Neurológico", icon: <Network className="h-5 w-5" />, activities: neurologicalActivities }
   ];
 
-  const getActivitiesByCategory = (categoryName: string) => {
-    const category = categories.find(cat => cat.name === categoryName);
-    return category ? category.activities : [];
-  };
-
   const handleCategoryClick = (categoryName: string) => {
-    setSelectedCategory(categoryName);
+    navigate(`/activities/${categoryName.toLowerCase()}`);
     setCategoriesDialogOpen(false);
-  };
-
-  const handleActivityClick = (activity: any) => {
-    setSelectedActivity(activity);
-    setDialogOpen(true);
   };
 
   return (
@@ -811,59 +799,41 @@ export default function ActivitiesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {categories.map((category) => (
           <Card 
-            key={category.name}
-            className={`hover:shadow-md transition-shadow cursor-pointer ${
-              selectedCategory === category.name ? 'border-primary ring-2 ring-primary' : ''
-            }`}
+            key={category.name} 
+            className="hover:border-primary/50 cursor-pointer transition-colors"
             onClick={() => handleCategoryClick(category.name)}
           >
-            <CardHeader className="flex flex-row items-center gap-2 pb-2">
-              {category.icon}
-              <CardTitle>{category.label}</CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-full bg-primary/10 text-primary">
+                  {category.icon}
+                </div>
+                <CardTitle className="text-xl">{category.label}</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <CardDescription>
+              <CardDescription className="mb-2">
                 {category.activities.length} atividades disponíveis
               </CardDescription>
+              <div className="text-sm text-muted-foreground line-clamp-3">
+                {category.name === "Cognitive" && "Atividades focadas em memória, atenção e processamento cognitivo."}
+                {category.name === "Social" && "Atividades para desenvolvimento de habilidades interpessoais e comunicação em grupo."}
+                {category.name === "Emotional" && "Atividades para expressão, identificação e regulação emocional."}
+                {category.name === "Motor" && "Atividades para coordenação, ritmo e expressão corporal."}
+                {category.name === "Language" && "Atividades para estimulação da linguagem expressiva e receptiva."}
+                {category.name === "Moral" && "Atividades para exploração de valores, ética e desenvolvimento moral."}
+                {category.name === "Creative" && "Atividades para estimular criatividade e expressão artística."}
+                {category.name === "Psychosexual" && "Atividades para desenvolvimento saudável da identidade e limites."}
+                {category.name === "Psychosocial" && "Atividades para integração social e fases de desenvolvimento."}
+                {category.name === "Intellectual" && "Atividades para estimulação do raciocínio, análise e funções cognitivas superiores."}
+                {category.name === "Adaptive" && "Atividades para promoção de resiliência e adaptabilidade."}
+                {category.name === "Spiritual" && "Atividades para conexão com valores espirituais e transcendentes."}
+                {category.name === "Neurological" && "Atividades para estimulação e desenvolvimento cerebral."}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {selectedCategory && (
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">
-              Atividades {categories.find(cat => cat.name === selectedCategory)?.label}
-            </h2>
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedCategory(null)}
-            >
-              Voltar para Categorias
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {getActivitiesByCategory(selectedCategory).map((activity) => (
-              <Card 
-                key={activity.id}
-                className="hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => handleActivityClick(activity)}
-              >
-                <CardHeader>
-                  <CardTitle>{activity.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="line-clamp-2">
-                    {activity.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
 
       <Dialog open={categoriesDialogOpen} onOpenChange={setCategoriesDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -902,7 +872,6 @@ export default function ActivitiesPage() {
                     {category.name === "Intellectual" && "Estimulação do raciocínio e análise"}
                     {category.name === "Adaptive" && "Promoção de resiliência e adaptabilidade"}
                     {category.name === "Spiritual" && "Conexão com valores transcendentes"}
-                    {category.name === "Identity" && "Fortalecimento do autoconceito"}
                     {category.name === "Neurological" && "Estímulo ao desenvolvimento cerebral"}
                   </p>
                 </div>
@@ -917,48 +886,6 @@ export default function ActivitiesPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          {selectedActivity && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedActivity.title}</DialogTitle>
-              </DialogHeader>
-              <DialogDescription className="text-base text-foreground">
-                {selectedActivity.description}
-              </DialogDescription>
-              <div className="mt-4">
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="notes">
-                    <AccordionTrigger>Notas para o Terapeuta</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="list-disc pl-5 space-y-2">
-                        <li>Adapte esta atividade às necessidades específicas e habilidades dos participantes.</li>
-                        <li>Considere simplificar ou aumentar a complexidade dependendo do grupo.</li>
-                        <li>Observe as respostas dos participantes e registre seus insights.</li>
-                        <li>Esta atividade pode ser combinada com outras para sessões mais longas.</li>
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="materials">
-                    <AccordionTrigger>Materiais Sugeridos</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="list-disc pl-5 space-y-2">
-                        <li>Instrumentos musicais diversos (percussão, melódicos, harmônicos)</li>
-                        <li>Equipamento de gravação e reprodução</li>
-                        <li>Materiais para anotações e reflexão</li>
-                        <li>Recursos visuais complementares (quando aplicável)</li>
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
-

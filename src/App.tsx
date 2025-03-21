@@ -28,6 +28,7 @@ import FinancialRecords from "./pages/finance/records";
 import ClinicsManagement from "./pages/finance/clinics";
 import FinancialReports from "./pages/finance/reports";
 import ActivitiesPage from "./pages/activities";
+import ActivityCategoryPage from "./pages/activities/category";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import "./App.css";
 
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: "/activities",
         element: <ActivitiesPage />,
+      },
+      {
+        path: "/activities/:categoryId",
+        element: <ActivityCategoryPage />,
       },
       {
         path: "/songs",
