@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ListChecks, Brain, Users, Heart, Move, MessageSquare, BookOpen } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
