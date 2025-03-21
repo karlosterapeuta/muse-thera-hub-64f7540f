@@ -283,7 +283,7 @@ export const activitiesData = {
     {
       id: 5,
       title: "Canções de Perdão",
-      description: "Cantar músicas que falam sobre o perdão e a reconciliação. Ajuda a lidar com o ressentimento e a promover a paz."
+      description: "Cantar músicas que falam sobre o perdão e a reconciliação. Ajuda a lidar com o ressentimento e a transformá-la em algo criativo."
     },
     {
       id: 6,
@@ -674,5 +674,34 @@ export const activitiesData = {
       title: "Música e Potencial Cerebral",
       description: "Usar a música para expressar a crença no potencial do cérebro e a busca pelo conhecimento. Fortalece o senso de responsabilidade e a liberdade."
     }
-  ]
-};
+  ],
+  identity: [
+    {
+      id: 1,
+      title: "Autobiografia Musical",
+      description: "O paciente seleciona músicas que representam diferentes fases e momentos importantes de sua vida, criando uma linha do tempo musical. Esta atividade promove a reflexão sobre sua história pessoal e como ela moldou sua identidade atual."
+    },
+    {
+      id: 2,
+      title: "Composição do Nome",
+      description: "Criar uma melodia ou canção baseada nas letras do próprio nome. Cada letra pode representar uma nota ou um ritmo específico. Fortalece o sentido de identidade pessoal e unicidade."
+    },
+    {
+      id: 3,
+      title: "Espelho Sonoro",
+      description: "O terapeuta imita e reflete musicalmente as expressões sonoras do paciente, ajudando-o a reconhecer seus padrões únicos de expressão. Desenvolve autoconsciência e valorização da forma individual de se expressar."
+    },
+    {
+      id: 4,
+      title: "Mapa Musical Cultural",
+      description: "Explorar músicas de diferentes culturas com as quais o paciente se identifica ou tem conexão através de sua história familiar. Ajuda a integrar aspectos da identidade cultural ao autoconceito."
+    },
+    {
+      id: 5,
+      title: "Canção Identitária",
+      description: "Compor uma canção que expresse 'Quem sou eu', abordando características, valores, sonhos e crenças pessoais. Fortalece a autoexpressão e a consolidação da identidade."
+    },
+    {
+      id: 6,
+      title: "Improvisação de Papéis",
+      description: "Através da improvisação musical, o paciente expressa diferentes aspectos de sua identidade (profissional, familiar, social). Ajuda a integrar

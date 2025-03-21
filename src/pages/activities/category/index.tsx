@@ -5,7 +5,7 @@ import {
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
   Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck,
-  Sparkles, Church, Cross, Network, ArrowLeft
+  Sparkles, Church, Cross, Network, ArrowLeft, Fingerprint
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,8 @@ export default function CategoryPage() {
     { name: "intellectual", label: "Intelectuais", icon: <GraduationCap className="h-5 w-5" /> },
     { name: "adaptive", label: "Adaptativas", icon: <Puzzle className="h-5 w-5" /> },
     { name: "spiritual", label: "Espirituais", icon: <Church className="h-5 w-5" /> },
-    { name: "neurological", label: "Desenvolvimento Neurológico", icon: <Network className="h-5 w-5" /> }
+    { name: "neurological", label: "Desenvolvimento Neurológico", icon: <Network className="h-5 w-5" /> },
+    { name: "identity", label: "Identidade", icon: <Fingerprint className="h-5 w-5" /> }
   ];
 
   useEffect(() => {
@@ -105,6 +106,7 @@ export default function CategoryPage() {
             {categoryId === "adaptive" && "Atividades que desenvolvem resiliência, flexibilidade e capacidade de adaptação a mudanças e desafios, fortalecendo recursos internos através da expressão musical."}
             {categoryId === "spiritual" && "Atividades que exploram a dimensão espiritual e transcendente da experiência humana, utilizando música como meio de conexão com valores e princípios cristãos."}
             {categoryId === "neurological" && "Atividades especificamente desenhadas para estimular diferentes regiões e funções cerebrais, promovendo neuroplasticidade e desenvolvimento neurológico saudável."}
+            {categoryId === "identity" && "Atividades focadas no fortalecimento da identidade pessoal, autoconhecimento e expressão autêntica do eu. Estas atividades ajudam o paciente a explorar, reconhecer e consolidar aspectos de sua identidade através da expressão musical."}
           </p>
         </CardContent>
       </Card>
