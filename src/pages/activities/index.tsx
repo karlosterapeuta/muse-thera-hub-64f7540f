@@ -1,7 +1,5 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ListChecks, Music, Tag, BookOpen, PanelTopOpen, Brain, Users, Heart, Hand, Globe, Puzzle, Eye, Target, Dna, User, Cog, MessageSquare, Move, Flower, Zap } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 
@@ -190,45 +188,6 @@ export default function ActivitiesPage() {
     }
   ];
 
-  // Music therapy activities for mental health disorders
-  const mentalHealthActivities = [
-    {
-      title: "Escrita de Canções",
-      description: "Composição colaborativa de letras e melodias expressando sentimentos e experiências.",
-      focus: "Expressão emocional, Processamento de traumas, Autoconhecimento",
-      materials: "Instrumento harmônico (violão/teclado), papel, caneta, gravador",
-      instructions: "Inicie com um tema ou sentimento a explorar. Ajude o paciente a transformar suas palavras em versos e encontrar uma melodia que ressoe com o conteúdo emocional."
-    },
-    {
-      title: "Improvisação com Enfoque Emocional",
-      description: "Exploração musical livre focada em emoções específicas.",
-      focus: "Regulação emocional, Catarse, Mindfulness",
-      materials: "Variedade de instrumentos expressivos (tambores, piano, metalofones)",
-      instructions: "Proponha uma emoção como ponto de partida. Explore como essa emoção soa musicalmente e permita que o paciente expresse livremente através dos instrumentos."
-    },
-    {
-      title: "Análise de Letras",
-      description: "Discussão do conteúdo lírico de canções significativas para o paciente.",
-      focus: "Insight, Normalização de experiências, Identificação de padrões de pensamento",
-      materials: "Dispositivo para reprodução musical, letras impressas, material para anotações",
-      instructions: "Peça que o paciente escolha canções significativas. Explore juntos as letras, identificando conexões com a vida do paciente e explorando perspectivas alternativas."
-    },
-    {
-      title: "Relaxamento Musical Guiado",
-      description: "Indução de estados de relaxamento através de música e visualização.",
-      focus: "Redução de ansiedade, Manejo do estresse, Autocuidado",
-      materials: "Música calma gravada ou instrumento suave como kalimba ou flauta, ambiente confortável",
-      instructions: "Crie um ambiente tranquilo. Guie o paciente através de respiração e relaxamento muscular enquanto a música toca. Incorpore visualizações positivas se apropriado."
-    },
-    {
-      title: "Drumming em Grupo",
-      description: "Percussão coletiva com foco no ritmo compartilhado e expressão.",
-      focus: "Conexão social, Controle de impulsos, Redução de isolamento",
-      materials: "Diferentes instrumentos de percussão, cadeiras em círculo",
-      instructions: "Comece com um ritmo simples e peça que os participantes se juntem. Explore variações de intensidade, velocidade e complexidade. Reserve momentos para improvisação individual."
-    },
-  ];
-
   // Filter activities based on selected category
   const filteredActivities = selectedCategory === "all" 
     ? teaActivities 
@@ -241,129 +200,79 @@ export default function ActivitiesPage() {
         <h1 className="text-2xl md:text-3xl font-bold">Atividades</h1>
       </div>
 
-      <Tabs defaultValue="tea" className="mb-6 md:mb-8">
-        <TabsList className="w-full mb-4 flex justify-start overflow-x-auto">
-          <TabsTrigger value="tea" className="text-sm md:text-base py-1.5 md:py-2">Atividades para TEA</TabsTrigger>
-          <TabsTrigger value="mental" className="text-sm md:text-base py-1.5 md:py-2">Atividades para Saúde Mental</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="tea">
-          <div className="mb-6 overflow-x-auto">
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs md:text-sm transition-colors ${
-                    selectedCategory === category.id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {category.icon}
-                  <span>{category.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="mb-6 overflow-x-auto">
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs md:text-sm transition-colors ${
+                selectedCategory === category.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {category.icon}
+              <span>{category.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-          <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredActivities.map((activity, index) => (
-              <Card key={index} className="h-full">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <Music className="h-5 w-5 text-primary flex-shrink-0" />
-                    <CardTitle className="text-lg md:text-xl">{activity.title}</CardTitle>
+      <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredActivities.map((activity, index) => (
+          <Card key={index} className="h-full">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <Music className="h-5 w-5 text-primary flex-shrink-0" />
+                <CardTitle className="text-lg md:text-xl">{activity.title}</CardTitle>
+              </div>
+              <CardDescription className="text-sm md:text-base">{activity.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 md:space-y-3">
+                {activity.categories && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {activity.categories.map(catId => {
+                      const category = categories.find(c => c.id === catId);
+                      return category ? (
+                        <span 
+                          key={catId} 
+                          className="inline-flex items-center gap-1 bg-secondary/50 px-2 py-0.5 rounded text-xs"
+                        >
+                          {category.icon}
+                          <span>{category.name.replace('Desenvolvimento ', '')}</span>
+                        </span>
+                      ) : null;
+                    })}
                   </div>
-                  <CardDescription className="text-sm md:text-base">{activity.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 md:space-y-3">
-                    {activity.categories && (
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {activity.categories.map(catId => {
-                          const category = categories.find(c => c.id === catId);
-                          return category ? (
-                            <span 
-                              key={catId} 
-                              className="inline-flex items-center gap-1 bg-secondary/50 px-2 py-0.5 rounded text-xs"
-                            >
-                              {category.icon}
-                              <span>{category.name.replace('Desenvolvimento ', '')}</span>
-                            </span>
-                          ) : null;
-                        })}
-                      </div>
-                    )}
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Tag className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Foco:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.focus}</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Materiais:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.materials}</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <PanelTopOpen className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Instruções:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.instructions}</p>
-                    </div>
+                )}
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Tag className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span className="font-medium text-sm md:text-base">Foco:</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="mental">
-          <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {mentalHealthActivities.map((activity, index) => (
-              <Card key={index} className="h-full">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <Music className="h-5 w-5 text-primary flex-shrink-0" />
-                    <CardTitle className="text-lg md:text-xl">{activity.title}</CardTitle>
+                  <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.focus}</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span className="font-medium text-sm md:text-base">Materiais:</span>
                   </div>
-                  <CardDescription className="text-sm md:text-base">{activity.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 md:space-y-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Tag className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Foco:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.focus}</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Materiais:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.materials}</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <PanelTopOpen className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base">Instruções:</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.instructions}</p>
-                    </div>
+                  <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.materials}</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <PanelTopOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span className="font-medium text-sm md:text-base">Instruções:</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+                  <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.instructions}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
