@@ -618,4 +618,4 @@ export default function ActivitiesPage() {
     {
       id: 3,
       title: "Composição de Salmos Pessoais",
-      description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã
+      description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã."
