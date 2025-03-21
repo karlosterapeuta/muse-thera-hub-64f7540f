@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -21,7 +20,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function ActivitiesPage() {
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   
   const cognitiveActivities = [
     {
@@ -152,7 +150,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
-      title: "Canção das Forças Internas",
+ title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -620,154 +618,4 @@ export default function ActivitiesPage() {
     {
       id: 3,
       title: "Composição de Salmos Pessoais",
-      description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã."
-    },
-    {
-      id: 4,
-      title: "Canções de Identidade Espiritual",
-      description: "Criar canções que expressam a identidade espiritual pessoal, utilizando metáforas, símbolos e linguagem que ressoam com a compreensão espiritual de cada um. Fortalece o senso de propósito e pertencimento espiritual."
-    },
-    {
-      id: 5,
-      title: "Música de Adoração Terapêutica",
-      description: "Utilizar canções de adoração em contexto terapêutico, focando na experiência de transcendência, conexão e entrega. Desenvolve capacidade de soltar o controle e experimentar confiança em algo maior."
-    },
-    {
-      id: 6,
-      title: "Histórias Bíblicas Musicadas",
-      description: "Transformar narrativas bíblicas significativas em pequenas peças musicais, onde os participantes podem incorporar personagens ou emoções presentes nas histórias. Facilita a internalização de valores e ensinamentos bíblicos."
-    },
-    {
-      id: 7,
-      title: "Círculo de Comunhão Musical",
-      description: "Criar experiências musicais que promovam senso de comunidade e pertencimento espiritual, onde cada participante contribui para um todo harmonioso. Trabalha conceitos de corpo espiritual e comunhão."
-    },
-    {
-      id: 8,
-      title: "Improvisação Contemplativa",
-      description: "Guiar improvisações musicais suaves que facilitam estados contemplativos e meditativos. A música serve como âncora para a atenção plena e abertura à experiência espiritual."
-    },
-    {
-      id: 9,
-      title: "Canções de Celebração e Ritual",
-      description: "Criar música para marcar momentos de transição, celebração ou ritual dentro da jornada espiritual. Oferece estrutura e expressão para momentos significativos da vida de fé."
-    },
-    {
-      id: 10,
-      title: "Harmonização da Palavra",
-      description: "Escolher versículos ou passagens bíblicas significativas e criar melodias que ajudem na memorização e internalização da Palavra. A música funciona como veículo que aprofunda o impacto do texto sagrado."
-    }
-  ];
-
-  // Category mapping for icon display and data access
-  const categories = [
-    { id: "cognitive", name: "Cognitivas", icon: <Brain className="h-6 w-6 mr-2" />, data: cognitiveActivities },
-    { id: "social", name: "Sociais", icon: <Users className="h-6 w-6 mr-2" />, data: socialActivities },
-    { id: "emotional", name: "Emocionais", icon: <Heart className="h-6 w-6 mr-2" />, data: emotionalActivities },
-    { id: "motor", name: "Motoras", icon: <Move className="h-6 w-6 mr-2" />, data: motorActivities },
-    { id: "language", name: "Linguagem", icon: <MessageSquare className="h-6 w-6 mr-2" />, data: languageActivities },
-    { id: "moral", name: "Morais", icon: <Shield className="h-6 w-6 mr-2" />, data: moralActivities },
-    { id: "creative", name: "Criativas", icon: <Lightbulb className="h-6 w-6 mr-2" />, data: creativeActivities },
-    { id: "psychosexual", name: "Psicossexuais", icon: <HelpingHand className="h-6 w-6 mr-2" />, data: psychosexualActivities },
-    { id: "psychosocial", name: "Psicossociais", icon: <User className="h-6 w-6 mr-2" />, data: psychosocialActivities },
-    { id: "intellectual", name: "Intelectuais", icon: <GraduationCap className="h-6 w-6 mr-2" />, data: intellectualActivities },
-    { id: "adaptive", name: "Adaptativas", icon: <Puzzle className="h-6 w-6 mr-2" />, data: adaptiveActivities },
-    { id: "spiritual", name: "Espirituais", icon: <Church className="h-6 w-6 mr-2" />, data: spiritualActivities },
-  ];
-
-  const handleActivityClick = (activity: any) => {
-    setSelectedActivity(activity);
-  };
-
-  const closeDialog = () => {
-    setSelectedActivity(null);
-  };
-
-  const getActivitiesForCategory = (categoryId: string) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.data : [];
-  };
-
-  const selectedCategoryData = selectedCategory 
-    ? categories.find(cat => cat.id === selectedCategory) 
-    : null;
-
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Atividades de Musicoterapia</h1>
-      
-      {!selectedCategory ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((category) => (
-            <Card 
-              key={category.id}
-              className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => setSelectedCategory(category.id)}
-            >
-              <CardHeader className="flex flex-row items-center">
-                {category.icon}
-                <CardTitle>{category.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  {category.data.length} atividades disponíveis
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div>
-          <div className="mb-6 flex justify-between items-center">
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedCategory(null)}
-            >
-              Voltar para categorias
-            </Button>
-            {selectedCategoryData && (
-              <h2 className="text-2xl font-semibold flex items-center">
-                {selectedCategoryData.icon}
-                Atividades {selectedCategoryData.name}
-              </h2>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {getActivitiesForCategory(selectedCategory).map((activity) => (
-              <Card 
-                key={activity.id}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleActivityClick(activity)}
-              >
-                <CardHeader>
-                  <CardTitle>{activity.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="line-clamp-2">
-                    {activity.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {selectedActivity && (
-        <Dialog open={!!selectedActivity} onOpenChange={closeDialog}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{selectedActivity.title}</DialogTitle>
-            </DialogHeader>
-            <DialogDescription className="text-foreground">
-              <p className="mt-2 text-base">
-                {selectedActivity.description}
-              </p>
-            </DialogDescription>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
+      description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã
