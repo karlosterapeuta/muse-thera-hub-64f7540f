@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ListChecks, Brain, Users, Heart, Hand, Globe, BookOpen, Music, Eye, Zap, Cog, User, MessageSquare, Move } from "lucide-react";
+import { ListChecks, Brain, Users, Heart, Move, MessageSquare, BookOpen } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 
@@ -8,7 +8,7 @@ export default function ActivitiesPage() {
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState("all");
   
-  // Development categories with icons
+  // Development categories with icons - removed the requested categories
   const categories = [
     { id: "all", name: "Todas as Atividades", icon: <ListChecks className="h-4 w-4" /> },
     { id: "cognitive", name: "Desenvolvimento Cognitivo", icon: <Brain className="h-4 w-4" /> },
@@ -17,12 +17,6 @@ export default function ActivitiesPage() {
     { id: "motor", name: "Desenvolvimento Motor", icon: <Move className="h-4 w-4" /> },
     { id: "language", name: "Desenvolvimento da Linguagem", icon: <MessageSquare className="h-4 w-4" /> },
     { id: "moral", name: "Desenvolvimento Moral", icon: <BookOpen className="h-4 w-4" /> },
-    { id: "creative", name: "Desenvolvimento Criativo", icon: <Music className="h-4 w-4" /> },
-    { id: "sensory", name: "Desenvolvimento Sensorial", icon: <Eye className="h-4 w-4" /> },
-    { id: "self-regulation", name: "Desenvolvimento da Autorregulação", icon: <Zap className="h-4 w-4" /> },
-    { id: "executive", name: "Desenvolvimento Executivo", icon: <Cog className="h-4 w-4" /> },
-    { id: "identity", name: "Desenvolvimento da Identidade", icon: <User className="h-4 w-4" /> },
-    { id: "adaptive", name: "Desenvolvimento Adaptativo", icon: <Hand className="h-4 w-4" /> },
   ];
 
   return (
@@ -75,7 +69,7 @@ export default function ActivitiesPage() {
   );
 }
 
-// Helper function to get category descriptions
+// Helper function to get category descriptions - removed descriptions for removed categories
 function getCategoryDescription(categoryId: string): string {
   switch (categoryId) {
     case "cognitive":
@@ -90,18 +84,6 @@ function getCategoryDescription(categoryId: string): string {
       return "Aquisição de comunicação verbal e não verbal, vocabulário e gramática.";
     case "moral":
       return "Evolução da compreensão de certo/errado e valores éticos.";
-    case "creative":
-      return "Habilidades para expressar ideias de forma inovadora (arte, música, escrita).";
-    case "sensory":
-      return "Processamento e integração de estímulos sensoriais (visão, audição, tato).";
-    case "self-regulation":
-      return "Capacidade de controlar impulsos, emoções e comportamentos.";
-    case "executive":
-      return "Funções como planejamento, organização e tomada de decisões.";
-    case "identity":
-      return "Formação do autoconceito, autoestima e senso de pertencimento.";
-    case "adaptive":
-      return "Habilidades práticas para a vida diária (autocuidado, gestão do tempo).";
     default:
       return "";
   }
