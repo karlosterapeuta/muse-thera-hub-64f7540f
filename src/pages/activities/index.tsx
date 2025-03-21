@@ -74,6 +74,59 @@ export default function ActivitiesPage() {
     }
   ];
   
+  const socialActivities = [
+    {
+      id: 1,
+      title: "Improvisação em Grupo",
+      description: "Os participantes criam uma música juntos, improvisando melodias e ritmos. Promove a colaboração, a escuta ativa e a expressão em conjunto."
+    },
+    {
+      id: 2,
+      title: "Círculo de Canções",
+      description: "Cantar músicas conhecidas em grupo, passando a vez para cada participante escolher a próxima canção. Estimula o senso de pertencimento, a participação e o respeito às preferências dos outros."
+    },
+    {
+      id: 3,
+      title: "Espelho Musical",
+      description: "Em pares, um participante faz movimentos com a música enquanto o outro imita como um espelho. Desenvolve a sintonia social, a atenção ao outro e a coordenação interpessoal."
+    },
+    {
+      id: 4,
+      title: "Composição Colaborativa",
+      description: "Em pequenos grupos, criar uma música sobre experiências compartilhadas. Trabalha a comunicação, a negociação e a construção de consenso."
+    },
+    {
+      id: 5,
+      title: "Bateria Humana",
+      description: "Cada participante representa um elemento de bateria e toca apenas quando recebe o sinal. Desenvolve trabalho em equipe, sincronização e compreensão de papéis individuais dentro do grupo."
+    },
+    {
+      id: 6,
+      title: "Orquestra de Emoções",
+      description: "O grupo expressa coletivamente diferentes emoções através da música, sem usar palavras. Fortalece a inteligência emocional coletiva e a empatia."
+    },
+    {
+      id: 7,
+      title: "Canção de Boas-Vindas",
+      description: "Criar e cantar uma canção personalizada para receber novos membros ao grupo. Estimula a inclusão, o acolhimento e o sentimento de pertença."
+    },
+    {
+      id: 8,
+      title: "Roda de Percussão",
+      description: "Os participantes tocam instrumentos de percussão em círculo, seguindo um líder que vai mudando. Desenvolve liderança, seguimento e adaptação social."
+    },
+    {
+      id: 9,
+      title: "Canção do Conflito",
+      description: "Transformar um desentendimento real ou hipotético em uma canção, explorando diferentes perspectivas. Trabalha resolução de conflitos e empatia."
+    },
+    {
+      id: 10,
+      title: "Coral de Identidade",
+      description: "Criar um coral onde cada voz representa uma característica do grupo, criando harmonia a partir da diversidade. Valoriza diferenças individuais dentro do contexto social."
+    }
+  ];
+  
   const developmentTopics = [
     {
       id: "cognitive",
@@ -246,6 +299,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {cognitiveActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Social Development Activities */}
+      <Dialog open={selectedCategory === 'social'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Users className="h-5 w-5" />
+              Desenvolvimento Social
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para promover o desenvolvimento social
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {socialActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
