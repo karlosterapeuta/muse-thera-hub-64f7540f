@@ -4,7 +4,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
-  Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck
+  Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck,
+  Sparkles
 } from "lucide-react";
 import { 
   Dialog,
@@ -338,6 +339,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const creativeActivities = [
+    {
+      id: 1,
+      title: "Diálogo Instrumental Aberto",
+      description: "Oferecer diversos instrumentos musicais e propor um 'diálogo' onde não há regras fixas, apenas a sugestão de que os participantes 'conversem' através dos sons. Estimula a expressão espontânea e a criatividade sem julgamentos."
+    },
+    {
+      id: 2,
+      title: "Reinterpretação Musical",
+      description: "Apresentar uma música conhecida e pedir aos participantes que a reinterpretem completamente, mudando ritmo, andamento, estilo ou instrumentação. Desenvolve a capacidade de transformar o familiar em algo novo."
+    },
+    {
+      id: 3,
+      title: "Sonorização de Imagens",
+      description: "Mostrar imagens abstratas ou paisagens e convidar os participantes a criarem uma 'trilha sonora' que represente o que veem ou sentem. Trabalha a tradução entre linguagens artísticas e a expressão multissensorial."
+    },
+    {
+      id: 4,
+      title: "Construção de Instrumentos Não-Convencionais",
+      description: "Usando materiais recicláveis e objetos do cotidiano, criar instrumentos musicais inusitados. Explora a inventividade, a resolução criativa de problemas e a expansão do conceito de 'musical'."
+    },
+    {
+      id: 5,
+      title: "Improvisação com Restrições Criativas",
+      description: "Propor improvisações com limitações intencionais (usar apenas três notas, tocar sem usar as mãos, criar música apenas com sons vocais não-verbais). As restrições paradoxalmente expandem a criatividade ao forçar novos caminhos."
+    },
+    {
+      id: 6,
+      title: "Musicalizando o Improvável",
+      description: "Desafiar os participantes a encontrar musicalidade em objetos ou situações geralmente não considerados musicais (sons de uma cozinha, de uma construção, do trânsito). Expande a percepção do potencial musical do ambiente."
+    },
+    {
+      id: 7,
+      title: "Composição por Acaso",
+      description: "Usar métodos aleatórios (dados, cartas, sorteios) para determinar elementos musicais como notas, ritmos ou dinâmicas, e criar uma composição a partir desses elementos. Introduz o conceito de serendipidade criativa."
+    },
+    {
+      id: 8,
+      title: "Remix Terapêutico",
+      description: "Fornecer gravações de sons diversos e permitir que os participantes as combinem, editem e transformem digitalmente. Integra tecnologia à expressão criativa e desenvolve pensamento não-linear."
+    },
+    {
+      id: 9,
+      title: "Criação de Linguagem Musical",
+      description: "Convidar o grupo a inventar um sistema musical próprio com símbolos, regras e notações criados por eles. Estimula o pensamento divergente e a criação de sistemas simbólicos."
+    },
+    {
+      id: 10,
+      title: "Improvisação com Feedback de Loop",
+      description: "Usar equipamentos de loop ou gravação para que os participantes criem camadas sonoras sobrepostas, construindo gradualmente uma peça complexa. Desenvolve pensamento arquitetônico musical e criatividade estruturada."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -379,7 +433,7 @@ export default function ActivitiesPage() {
       id: "creative",
       title: "7. Desenvolvimento Criativo",
       description: "",
-      icon: <Music className="h-5 w-5" />
+      icon: <Sparkles className="h-5 w-5" />
     },
     {
       id: "psychosexual",
@@ -690,6 +744,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {moralActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Creative Development Activities */}
+      <Dialog open={selectedCategory === 'creative'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Sparkles className="h-5 w-5" />
+              Desenvolvimento Criativo
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para estimular o desenvolvimento criativo
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {creativeActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
