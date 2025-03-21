@@ -100,7 +100,7 @@ export default function ActivitiesPage() {
     {
       id: "identity",
       title: "15. Desenvolvimento da Identidade",
-      description: "Formação do autoconceito, autoestima e senso de pertencimento.",
+      description: "",
       icon: <Shield className="h-5 w-5" />
     },
     {
