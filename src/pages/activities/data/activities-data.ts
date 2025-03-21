@@ -1,3 +1,4 @@
+
 export const activitiesData = {
   cognitive: [
     {
@@ -704,4 +705,27 @@ export const activitiesData = {
     {
       id: 6,
       title: "Improvisação de Papéis",
-      description: "Através da improvisação musical, o paciente expressa diferentes aspectos de sua identidade (profissional, familiar, social). Ajuda a integrar
+      description: "Através da improvisação musical, o paciente expressa diferentes aspectos de sua identidade (profissional, familiar, social). Ajuda a integrar diferentes facetas do eu em um todo coerente."
+    },
+    {
+      id: 7,
+      title: "Musicalização de Memórias",
+      description: "Transformar memórias significativas em expressões musicais. Esta atividade ajuda o paciente a reconhecer e valorizar suas experiências como parte formadora de sua identidade."
+    },
+    {
+      id: 8,
+      title: "Coro de Afirmações",
+      description: "Criar e cantar afirmações positivas sobre si mesmo em forma de refrão ou mantra musical. Fortalece a autoestima e consolida uma autoimagem positiva como parte da identidade."
+    },
+    {
+      id: 9,
+      title: "Colagem Sonora do Eu",
+      description: "Selecionar e combinar trechos de diferentes músicas que representam aspectos da personalidade do paciente. Promove a integração de diferentes características em uma identidade coesa."
+    },
+    {
+      id: 10,
+      title: "Diálogo Musical Interno",
+      description: "Usar instrumentos diferentes para representar vozes internas ou aspectos contraditórios da personalidade, criando um diálogo musical. Facilita a aceitação e integração de aspectos diversos do eu."
+    }
+  ]
+};
