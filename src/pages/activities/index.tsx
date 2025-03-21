@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -701,7 +702,7 @@ export default function ActivitiesPage() {
     {
       id: 9,
       title: "Diálogo Sensorial",
-      description: "Em pares, um participante cria um estímulo sensorial (sonoro, tátil) e o outro responde musicalmente, criando um "diálogo" entre sentidos. Promove responsividade sensorial e comunicação não-verbal através de múltiplos canais sensoriais."
+      description: "Em pares, um participante cria um estímulo sensorial (sonoro, tátil) e o outro responde musicalmente, criando um \"diálogo\" entre sentidos. Promove responsividade sensorial e comunicação não-verbal através de múltiplos canais sensoriais."
     },
     {
       id: 10,
