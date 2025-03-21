@@ -44,7 +44,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
- title: "Completar Letras",
+      title: "Completar Letras",
       description: "Cantar músicas conhecidas pausando em certos momentos para que os participantes completem. Fortalece a memória de trabalho e atenção sustentada."
     },
     {
@@ -498,6 +498,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const intellectualActivities = [
+    {
+      id: 1,
+      title: "Análise Musical Comparativa",
+      description: "Apresentar duas peças musicais de estilos diferentes e pedir que os participantes identifiquem diferenças estruturais, instrumentação, e elementos teóricos. Desenvolve pensamento analítico, categorização e memória de trabalho."
+    },
+    {
+      id: 2,
+      title: "Composição com Padrões Matemáticos",
+      description: "Criar composições utilizando sequências matemáticas como Fibonacci ou progressões geométricas como base para ritmos ou melodias. Estabelece conexões entre música e matemática, fortalecendo o pensamento lógico-matemático."
+    },
+    {
+      id: 3,
+      title: "Debates Musicais Estruturados",
+      description: "Organizar debates sobre temas musicais (como 'Qual o impacto psicológico de determinadas escalas musicais?') seguindo regras de argumentação e contra-argumentação. Estimula raciocínio dedutivo, pensamento crítico e expressão verbal sofisticada."
+    },
+    {
+      id: 4,
+      title: "Decodificação Musical",
+      description: "Converter mensagens ou conceitos em códigos musicais (usando notas, ritmos ou dinâmicas) e desafiar os outros a decodificá-los. Trabalha raciocínio simbólico e pensamento abstrato."
+    },
+    {
+      id: 5,
+      title: "Improvisação com Restrições Lógicas",
+      description: "Criar improvisações que devem seguir regras lógicas específicas (ex: 'Se tocar uma nota aguda, deve seguir com duas graves', 'Se usar percussão, não pode usar voz'). Desenvolve raciocínio condicional e flexibilidade cognitiva."
+    },
+    {
+      id: 6,
+      title: "Tradução Multimodal",
+      description: "Transformar informações de um formato para outro através da música: criar representações sonoras de gráficos, tabelas ou textos científicos. Desenvolve pensamento interdisciplinar e capacidade de transcodificação."
+    },
+    {
+      id: 7,
+      title: "Música e História das Ideias",
+      description: "Explorar como diferentes períodos musicais refletem correntes filosóficas e intelectuais de suas épocas. Participantes criam peças que representam conceitos filosóficos específicos. Promove compreensão contextual e pensamento integrado."
+    },
+    {
+      id: 8,
+      title: "Laboratório Sonoro",
+      description: "Conduzir 'experimentos sonoros' com controle de variáveis: testar como diferentes elementos musicais afetam respostas emocionais ou físicas, formulando e testando hipóteses. Desenvolve método científico aplicado à experiência musical."
+    },
+    {
+      id: 9,
+      title: "Mapeamento Conceitual Sonoro",
+      description: "Criar mapas conceituais interativos onde conceitos são representados por sons ou trechos musicais, e as relações entre eles são exploradas através de transições sonoras. Estimula organização hierárquica de conhecimento."
+    },
+    {
+      id: 10,
+      title: "Seminários Musicais",
+      description: "Participantes pesquisam aspectos específicos da teoria musical, neurociência da música ou musicoterapia e apresentam seminários interativos combinando explicação verbal com demonstrações práticas. Desenvolve habilidades metacognitivas e de comunicação acadêmica."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -625,359 +678,4 @@ export default function ActivitiesPage() {
     <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Atividades Musicoterapeuta</h1>
-        <p className="text-muted-foreground">Selecione uma área para explorar atividades e recursos relacionados</p>
-      </div>
-
-      <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {developmentTopics.map((topic) => (
-          <Card 
-            key={topic.id} 
-            className="transition-all hover:shadow-md cursor-pointer animate-fade-in"
-            onClick={() => setSelectedCategory(topic.id)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  {topic.icon}
-                </div>
-                <CardTitle className="text-lg">{topic.title}</CardTitle>
-              </div>
-            </CardHeader>
-            {topic.description && (
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {topic.description}
-                </CardDescription>
-              </CardContent>
-            )}
-          </Card>
-        ))}
-      </div>
-
-      {/* Dialog for Cognitive Development Activities */}
-      <Dialog open={selectedCategory === 'cognitive'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Brain className="h-5 w-5" />
-              Desenvolvimento Cognitivo
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para estimular o desenvolvimento cognitivo
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {cognitiveActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Social Development Activities */}
-      <Dialog open={selectedCategory === 'social'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Users className="h-5 w-5" />
-              Desenvolvimento Social
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para promover o desenvolvimento social
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {socialActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Emotional Development Activities */}
-      <Dialog open={selectedCategory === 'emotional'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Heart className="h-5 w-5" />
-              Desenvolvimento Emocional
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para desenvolver a inteligência emocional
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {emotionalActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Motor Development Activities */}
-      <Dialog open={selectedCategory === 'motor'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Move className="h-5 w-5" />
-              Desenvolvimento Motor
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para estimular o desenvolvimento motor
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {motorActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Language Development Activities */}
-      <Dialog open={selectedCategory === 'language'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <MessageSquare className="h-5 w-5" />
-              Desenvolvimento da Linguagem
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para desenvolver habilidades linguísticas
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {languageActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Moral Development Activities */}
-      <Dialog open={selectedCategory === 'moral'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <ShieldCheck className="h-5 w-5" />
-              Desenvolvimento Moral
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para promover o desenvolvimento de valores morais
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {moralActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Creative Development Activities */}
-      <Dialog open={selectedCategory === 'creative'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Sparkles className="h-5 w-5" />
-              Desenvolvimento Criativo
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para estimular o desenvolvimento criativo
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {creativeActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Psychosexual Development Activities */}
-      <Dialog open={selectedCategory === 'psychosexual'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Zap className="h-5 w-5" />
-              Desenvolvimento Psicossexual
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para promover o desenvolvimento psicossexual saudável
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {psychosexualActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for Psychosocial Development Activities */}
-      <Dialog open={selectedCategory === 'psychosocial'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <User className="h-5 w-5" />
-              Desenvolvimento Psicossocial
-            </DialogTitle>
-            <DialogDescription>
-              Atividades de musicoterapia para promover o desenvolvimento psicossocial
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <Accordion type="single" collapsible className="w-full">
-              {psychosocialActivities.map((activity) => (
-                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
-                  <AccordionTrigger className="text-md font-medium">
-                    {activity.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
+        <p className="text-muted-foreground">Selecione uma área para explorar
