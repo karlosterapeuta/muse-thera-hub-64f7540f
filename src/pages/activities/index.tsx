@@ -150,7 +150,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
-      title: "Canção das Forças Internas",
+ title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -678,4 +678,246 @@ export default function ActivitiesPage() {
     <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Atividades Musicoterapeuta</h1>
-        <p className="text-muted-foreground">Selecione uma área para explorar
+        <p className="text-muted-foreground">Selecione uma área para explorar atividades musicoterápicas.</p>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {developmentTopics.map((topic) => (
+          <Card 
+            key={topic.id} 
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setSelectedCategory(topic.id)}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                {topic.icon}
+                <CardTitle className="text-lg">{topic.title}</CardTitle>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+
+      <Dialog open={selectedCategory === "cognitive"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Brain className="h-5 w-5" /> 
+              Desenvolvimento Cognitivo
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento cognitivo
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {cognitiveActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "social"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Users className="h-5 w-5" /> 
+              Desenvolvimento Social
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento social
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {socialActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "emotional"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Heart className="h-5 w-5" /> 
+              Desenvolvimento Emocional
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento emocional
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {emotionalActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "motor"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Move className="h-5 w-5" /> 
+              Desenvolvimento Motor
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento motor
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {motorActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "language"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" /> 
+              Desenvolvimento da Linguagem
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento da linguagem
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {languageActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "moral"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5" /> 
+              Desenvolvimento Moral
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento moral
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {moralActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "creative"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Sparkles className="h-5 w-5" /> 
+              Desenvolvimento Criativo
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento criativo
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {creativeActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "psychosexual"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Zap className="h-5 w-5" /> 
+              Desenvolvimento Psicossexual
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para apoiar o desenvolvimento psicossexual saudável
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {psychosexualActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "psychosocial"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <User className="h-5 w-5" /> 
+              Desenvolvimento Psicossocial
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para apoiar o desenvolvimento psicossocial
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {psychosocialActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "intellectual"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Lightbulb className="h-5 w-5" /> 
+              Desenvolvimento Intelectual
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento intelectual
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {intellectualActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
