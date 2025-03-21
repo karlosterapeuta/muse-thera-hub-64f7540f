@@ -20,6 +20,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function ActivitiesPage() {
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   const cognitiveActivities = [
     {
@@ -619,3 +621,228 @@ export default function ActivitiesPage() {
       id: 3,
       title: "Composição de Salmos Pessoais",
       description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã."
+    },
+    {
+      id: 4,
+      title: "Canções de Confissão e Perdão",
+      description: "Criar ou adaptar músicas que expressem reconhecimento de falhas e busca de perdão. A música oferece uma forma segura e estruturada para explorar temas de arrependimento e graça."
+    },
+    {
+      id: 5,
+      title: "Coro de Afirmações Espirituais",
+      description: "Em grupo, criar canções que afirmem verdades espirituais importantes para os participantes. O formato coral reforça a dimensão comunitária da espiritualidade."
+    },
+    {
+      id: 6,
+      title: "Improvisação Contemplativa",
+      description: "Propor momentos de improvisação musical livre após leituras de textos sagrados ou meditação. Permite expressão não-verbal de insights espirituais."
+    },
+    {
+      id: 7,
+      title: "Musicoterapia de Devoção",
+      description: "Criar estruturas musicais regulares que possam ser incorporadas em práticas devocionais diárias. Desenvolve disciplina espiritual e constância."
+    },
+    {
+      id: 8,
+      title: "Canções de Peregrinação",
+      description: "Compor músicas que representem a jornada espiritual, com suas etapas, desafios e momentos de crescimento. Contextualiza a espiritualidade como processo contínuo."
+    },
+    {
+      id: 9,
+      title: "Círculo de Louvor Intergeracional",
+      description: "Reunir pessoas de diferentes idades para compartilhar canções de louvor de suas gerações. Valoriza a tradição espiritual e sua transmissão entre gerações."
+    },
+    {
+      id: 10,
+      title: "Escrita de Hinos Contemporâneos",
+      description: "Guiar os participantes a comporem hinos que expressem sua fé em linguagem e estilo musical contemporâneos. Conecta tradição espiritual com expressão atual."
+    }
+  ];
+
+  const identityActivities = [
+    {
+      id: 1,
+      title: "Sonorização da História Pessoal",
+      description: "Criar uma trilha sonora para momentos significativos da história de vida. Instrumentos, ritmos e melodias são escolhidos para representar eventos formadores da identidade."
+    },
+    {
+      id: 2,
+      title: "Composição de Canção de Nome",
+      description: "Compor uma canção baseada no nome do participante, explorando seu significado, história e como se relaciona com sua identidade."
+    },
+    {
+      id: 3,
+      title: "Improvisação de Múltiplos Papéis",
+      description: "Através da música, expressar os diferentes papéis sociais que a pessoa desempenha (profissional, familiar, comunitário), ajudando a integrar essas facetas na identidade."
+    },
+    {
+      id: 4,
+      title: "Diálogo Musical de Culturas",
+      description: "Para pessoas com identidades multiculturais, criar peças que integrem elementos musicais das diferentes culturas que compõem sua experiência."
+    },
+    {
+      id: 5,
+      title: "Tema Musical de Autodefinição",
+      description: "Criar um 'tema musical pessoal' que represente como a pessoa se vê atualmente, revisitando e modificando essa composição ao longo do tempo, refletindo a evolução da identidade."
+    },
+    {
+      id: 6,
+      title: "Canção das Origens",
+      description: "Explorar musicalmente as raízes familiares, culturais e geográficas, compondo canções que honrem as origens enquanto afirmam a identidade atual."
+    },
+    {
+      id: 7,
+      title: "Coro das Vozes Internas",
+      description: "Identificar e expressar musicalmente as diferentes 'vozes internas' (o crítico, o motivador, o cuidador), ajudando a reconhecer a multidimensionalidade da identidade."
+    },
+    {
+      id: 8,
+      title: "Musicalizando Valores Centrais",
+      description: "Criar expressões musicais dos valores mais importantes para a pessoa, reforçando como esses valores fundamentam sua identidade."
+    },
+    {
+      id: 9,
+      title: "Ponte Musical Temporal",
+      description: "Compor uma peça que conecte 'quem eu era' com 'quem sou agora' e 'quem desejo me tornar', promovendo continuidade e coerência na narrativa identitária."
+    },
+    {
+      id: 10,
+      title: "Grupo Coral de Afirmação",
+      description: "Em contexto grupal, cada participante cria uma afirmação de identidade que é transformada em uma linha melódica, criando um coro onde as identidades individuais formam uma harmonia coletiva."
+    }
+  ];
+
+  const categories = [
+    { name: "Cognitive", label: "Cognitivas", icon: <Brain className="h-5 w-5" />, activities: cognitiveActivities },
+    { name: "Social", label: "Sociais", icon: <Users className="h-5 w-5" />, activities: socialActivities },
+    { name: "Emotional", label: "Emocionais", icon: <Heart className="h-5 w-5" />, activities: emotionalActivities },
+    { name: "Motor", label: "Motoras", icon: <Move className="h-5 w-5" />, activities: motorActivities },
+    { name: "Language", label: "Linguagem", icon: <MessageSquare className="h-5 w-5" />, activities: languageActivities },
+    { name: "Moral", label: "Morais", icon: <Shield className="h-5 w-5" />, activities: moralActivities },
+    { name: "Creative", label: "Criativas", icon: <Lightbulb className="h-5 w-5" />, activities: creativeActivities },
+    { name: "Psychosexual", label: "Psicossexuais", icon: <User className="h-5 w-5" />, activities: psychosexualActivities },
+    { name: "Psychosocial", label: "Psicossociais", icon: <HelpingHand className="h-5 w-5" />, activities: psychosocialActivities },
+    { name: "Intellectual", label: "Intelectuais", icon: <BookOpen className="h-5 w-5" />, activities: intellectualActivities },
+    { name: "Adaptive", label: "Adaptativas", icon: <Zap className="h-5 w-5" />, activities: adaptiveActivities },
+    { name: "Spiritual", label: "Espirituais", icon: <Church className="h-5 w-5" />, activities: spiritualActivities },
+    { name: "Identity", label: "Identidade", icon: <Puzzle className="h-5 w-5" />, activities: identityActivities }
+  ];
+
+  const getActivitiesByCategory = (categoryName: string) => {
+    const category = categories.find(cat => cat.name === categoryName);
+    return category ? category.activities : [];
+  };
+
+  const handleCategoryClick = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const handleActivityClick = (activity: any) => {
+    setSelectedActivity(activity);
+    setDialogOpen(true);
+  };
+
+  return (
+    <div className="container mx-auto py-6">
+      <h1 className="text-3xl font-bold mb-6">Atividades Musicoterapêuticas</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {categories.map((category) => (
+          <Card 
+            key={category.name}
+            className={`hover:shadow-md transition-shadow cursor-pointer ${
+              selectedCategory === category.name ? 'border-primary ring-2 ring-primary' : ''
+            }`}
+            onClick={() => handleCategoryClick(category.name)}
+          >
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
+              {category.icon}
+              <CardTitle>{category.label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                {category.activities.length} atividades disponíveis
+              </CardDescription>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {selectedCategory && (
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">
+              Atividades {categories.find(cat => cat.name === selectedCategory)?.label}
+            </h2>
+            <Button 
+              variant="outline" 
+              onClick={() => setSelectedCategory(null)}
+            >
+              Voltar para Categorias
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {getActivitiesByCategory(selectedCategory).map((activity) => (
+              <Card 
+                key={activity.id}
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handleActivityClick(activity)}
+              >
+                <CardHeader>
+                  <CardTitle>{activity.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="line-clamp-2">
+                    {activity.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          {selectedActivity && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedActivity.title}</DialogTitle>
+              </DialogHeader>
+              <DialogDescription className="text-base text-foreground">
+                {selectedActivity.description}
+              </DialogDescription>
+              <div className="mt-4">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="notes">
+                    <AccordionTrigger>Notas para o Terapeuta</AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="list-disc pl-5 space-y-2">
+                        <li>Adapte esta atividade às necessidades específicas e habilidades dos participantes.</li>
+                        <li>Considere simplificar ou aumentar a complexidade dependendo do grupo.</li>
+                        <li>Observe as respostas dos participantes e registre seus insights.</li>
+                        <li>Esta atividade pode ser combinada com outras para sessões mais longas.</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="materials">
+                    <AccordionTrigger>Materiais Sugeridos</AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="list-disc pl-5 space-y-2">
+                        <li>Instrumentos musicais diversos (percussão, melódicos, harmônicos)</li>
+                        <li>Equipamento de gravação e reprodução</li>
+                        <li>Materiais para anotações e reflexão</li>
+                        <li>Recursos visuais complementares (quando aplicável)</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
