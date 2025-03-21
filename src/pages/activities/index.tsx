@@ -7,10 +7,72 @@ import {
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
   Eye, Flame, Shield, GraduationCap, FlaskConical
 } from "lucide-react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function ActivitiesPage() {
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  const cognitiveActivities = [
+    {
+      id: 1,
+      title: "Sequência Musical",
+      description: "Os participantes devem repetir uma sequência de notas tocadas pelo terapeuta, aumentando gradualmente a complexidade. Trabalha memória, atenção e processamento sequencial."
+    },
+    {
+      id: 2,
+      title: "Classificação Sonora",
+      description: "Apresentar diferentes sons (instrumentos, natureza, cotidiano) e pedir para os participantes classificarem em categorias (alto/baixo, agradável/desagradável, natural/artificial). Estimula categorização e discriminação auditiva."
+    },
+    {
+      id: 3,
+      title: "Composição Temática",
+      description: "Criar uma música simples sobre um tema específico (estações do ano, emoções). Desenvolve planejamento, organização de ideias e criatividade estruturada."
+    },
+    {
+      id: 4,
+      title: "Jogo de Perguntas Musicais",
+      description: "Fazer perguntas sobre músicas familiares (quem canta, letra seguinte, etc). Trabalha memória de longo prazo e recuperação de informações."
+    },
+    {
+      id: 5,
+      title: "Completar Letras",
+      description: "Cantar músicas conhecidas pausando em certos momentos para que os participantes completem. Fortalece a memória de trabalho e atenção sustentada."
+    },
+    {
+      id: 6,
+      title: "Histórias Sonorizadas",
+      description: "Contar uma história adicionando efeitos sonoros nos momentos apropriados. Melhora a compreensão narrativa e o processamento auditivo."
+    },
+    {
+      id: 7,
+      title: "Criação de Mapas Rítmicos",
+      description: "Criar representações visuais (desenhos, símbolos) de padrões rítmicos e depois executá-los. Trabalha codificação, decodificação e representação simbólica."
+    },
+    {
+      id: 8,
+      title: "Orquestra de Imitação",
+      description: "Um participante cria um movimento com som, e os outros devem imitar exatamente. Desenvolve observação detalhada e memória de procedimentos."
+    },
+    {
+      id: 9,
+      title: "Resolução Musical de Problemas",
+      description: "Apresentar um desafio musical (criar uma melodia com certas notas, expressar uma emoção específica com instrumentos) e trabalhar colaborativamente para resolvê-lo."
+    },
+    {
+      id: 10,
+      title: "Músicas com Movimentos Cognitivos",
+      description: "Cantar músicas que incorporam comandos cognitivos (troca de direções, contagem regressiva, nomeação de categorias). Fortalece funções executivas e flexibilidade cognitiva."
+    }
+  ];
   
   const developmentTopics = [
     {
@@ -167,6 +229,42 @@ export default function ActivitiesPage() {
           </Card>
         ))}
       </div>
+
+      {/* Dialog for Cognitive Development Activities */}
+      <Dialog open={selectedCategory === 'cognitive'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Brain className="h-5 w-5" />
+              Desenvolvimento Cognitivo
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para estimular o desenvolvimento cognitivo
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {cognitiveActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
