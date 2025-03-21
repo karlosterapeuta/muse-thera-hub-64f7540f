@@ -392,6 +392,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const psychosexualActivities = [
+    {
+      id: 1,
+      title: "Expressão de Identidade",
+      description: "Criar canções que permitam a expressão segura da identidade pessoal, incluindo temas como autoconhecimento corporal e autocuidado. Utiliza o espaço protegido da música para explorar o desenvolvimento saudável da identidade."
+    },
+    {
+      id: 2,
+      title: "Limites e Consentimento Musical",
+      description: "Atividades rítmicas em pares onde um participante propõe um ritmo e o outro escolhe acompanhar, modificar ou recusar. Trabalha concretamente conceitos de consentimento, respeito e limites nas interações."
+    },
+    {
+      id: 3,
+      title: "Diálogo sobre Mudanças Corporais",
+      description: "Utilizar canções que abordam positivamente as mudanças corporais nas diferentes fases do desenvolvimento. A música funciona como facilitadora para conversas sobre puberdade, adolescência e autoestima corporal."
+    },
+    {
+      id: 4,
+      title: "Exploração de Emoções Relacionais",
+      description: "Criar improvisações musicais que expressem diferentes emoções relacionadas a relacionamentos (amizade, admiração, interesse). Desenvolve vocabulário emocional saudável e diferenciação de sentimentos."
+    },
+    {
+      id: 5,
+      title: "Contos Musicais de Desenvolvimento",
+      description: "Criar histórias musicadas sobre as diferentes fases do desenvolvimento humano, desde a infância até a vida adulta. Contextualiza o desenvolvimento como processo natural e contínuo."
+    },
+    {
+      id: 6,
+      title: "Comunicação Através da Música",
+      description: "Exercícios de comunicação não-verbal através da música, onde os participantes expressam necessidades, desejos e limites sem palavras. Desenvolve habilidades de expressão assertiva e respeito mútuo."
+    },
+    {
+      id: 7,
+      title: "Ritmos e Papéis Sociais",
+      description: "Explorar musicalmente diferentes papéis sociais e como eles se relacionam com expectativas sobre comportamento. Usa a flexibilidade da expressão musical para questionar estereótipos rígidos."
+    },
+    {
+      id: 8,
+      title: "Canções de Respeito e Dignidade",
+      description: "Compor canções sobre respeito pelo próprio corpo e pelo corpo dos outros. Desenvolve conceitos como dignidade pessoal, privacidade e autoestima de forma adequada à idade."
+    },
+    {
+      id: 9,
+      title: "Improvisação de Narrativas Saudáveis",
+      description: "Criar improvisações musicais que contam histórias de relações saudáveis, baseadas em reciprocidade e respeito. Oferece modelos positivos de interação através da expressão musical."
+    },
+    {
+      id: 10,
+      title: "Afirmação de Autonomia",
+      description: "Exercícios musicais onde cada participante tem oportunidade de liderar, fazer escolhas e ser respeitado em suas decisões. Fortalece a autonomia sobre o próprio corpo e escolhas pessoais."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -780,6 +833,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {creativeActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Psychosexual Development Activities */}
+      <Dialog open={selectedCategory === 'psychosexual'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Zap className="h-5 w-5" />
+              Desenvolvimento Psicossexual
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para promover o desenvolvimento psicossexual saudável
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {psychosexualActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
