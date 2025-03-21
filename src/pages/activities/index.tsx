@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -126,7 +125,60 @@ export default function ActivitiesPage() {
       description: "Criar um coral onde cada voz representa uma característica do grupo, criando harmonia a partir da diversidade. Valoriza diferenças individuais dentro do contexto social."
     }
   ];
-  
+
+  const emotionalActivities = [
+    {
+      id: 1,
+      title: "Mapa Musical das Emoções",
+      description: "Criar uma 'paleta' de sons ou músicas que representem diferentes emoções. Os participantes escolhem instrumentos ou canções para expressar como estão se sentindo, desenvolvendo autoconsciência emocional."
+    },
+    {
+      id: 2,
+      title: "Composição de Histórias Emocionais",
+      description: "Compor uma pequena peça musical que conte a história de uma experiência emocional significativa. Ajuda na expressão saudável e processamento de emoções complexas."
+    },
+    {
+      id: 3,
+      title: "Improviso de Transição Emocional",
+      description: "Improvisar uma sequência musical que demonstre a transição entre emoções (ex: da tristeza para a calma). Desenvolve a compreensão da natureza transitória das emoções."
+    },
+    {
+      id: 4,
+      title: "Espelhamento Emocional",
+      description: "O terapeuta reflete musicalmente o estado emocional do participante, validando seus sentimentos. Desenvolve aceitação emocional e senso de ser compreendido."
+    },
+    {
+      id: 5,
+      title: "Canção das Forças Internas",
+      description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
+    },
+    {
+      id: 6,
+      title: "Dueto de Emoções Contraditórias",
+      description: "Explorar musicalmente duas emoções aparentemente opostas que podem ser sentidas simultaneamente. Desenvolve compreensão da complexidade emocional."
+    },
+    {
+      id: 7,
+      title: "Ritual de Liberação",
+      description: "Criar um breve ritual musical para expressar e liberar emoções "presas" ou difíceis de expressar verbalmente. Promove catarse emocional saudável."
+    },
+    {
+      id: 8,
+      title: "Reescrever Canções Emocionais",
+      description: "Modificar letras de canções conhecidas para refletir experiências emocionais pessoais. Desenvolve apropriação e elaboração emocional."
+    },
+    {
+      id: 9,
+      title: "Trilha Sonora da Vida",
+      description: "Selecionar ou criar músicas que representem momentos emocionalmente significativos. Desenvolve narrativa emocional e integração de experiências."
+    },
+    {
+      id: 10,
+      title: "Canção de Acolhimento",
+      description: "Compor uma canção de auto-compaixão, acolhendo partes emocionalmente vulneráveis de si. Desenvolve autocuidado emocional e auto-compaixão."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -335,6 +387,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {socialActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Emotional Development Activities */}
+      <Dialog open={selectedCategory === 'emotional'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Heart className="h-5 w-5" />
+              Desenvolvimento Emocional
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para desenvolver a inteligência emocional
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {emotionalActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
