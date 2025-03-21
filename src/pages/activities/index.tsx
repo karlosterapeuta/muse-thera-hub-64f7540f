@@ -657,6 +657,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const sensorialActivities = [
+    {
+      id: 1,
+      title: "Exploração Tátil Musical",
+      description: "Oferecer instrumentos com diferentes texturas (cordas, tecidos, madeiras) para exploração tátil enquanto músicas são tocadas. Os participantes alternam entre tocar e sentir os instrumentos com os olhos fechados, desenvolvendo discriminação tátil e integração sensorial."
+    },
+    {
+      id: 2,
+      title: "Concerto Multissensorial",
+      description: "Criar uma experiência onde cada música é acompanhada por estímulos sensoriais específicos (luzes coloridas, aromas, texturas). Os participantes são convidados a descrever as sensações experimentadas, fortalecendo a integração sensorial e consciência perceptiva."
+    },
+    {
+      id: 3,
+      title: "Viagem Musical dos Sentidos",
+      description: "Durante uma peça musical, fazer um roteiro guiado focando em um sentido de cada vez (primeiro só ouvir, depois sentir vibrações, depois visualizar cores/imagens). Desenvolve atenção sensorial seletiva e capacidade de discriminação entre inputs sensoriais."
+    },
+    {
+      id: 4,
+      title: "Propriocepção Rítmica",
+      description: "Criar exercícios onde os movimentos corporais devem acompanhar padrões rítmicos específicos, com ênfase na consciência da posição do corpo no espaço. Utilizar contrastes entre movimentos amplos/restritos, rápidos/lentos para desenvolver propriocepção."
+    },
+    {
+      id: 5,
+      title: "Paisagens Sonoras Vestibulares",
+      description: "Combinar músicas com diferentes movimentos vestibulares (balançar, girar suavemente, inclinar) de forma sincronizada e controlada. Desenvolve integração entre sistema vestibular e auditivo, fundamental para equilíbrio e orientação espacial."
+    },
+    {
+      id: 6,
+      title: "Sinestesia Musical",
+      description: "Explorar conexões entre sons e outras modalidades sensoriais, convidando os participantes a representar musicalmente cores, sabores ou temperaturas, e vice-versa. Desenvolve capacidade de tradução entre sistemas sensoriais e plasticidade perceptual."
+    },
+    {
+      id: 7,
+      title: "Regulação Sensorial com Música",
+      description: "Criar uma sequência musical que alterna entre estimulação e acalmamento, ensinando estratégias de autorregulação sensorial. Os participantes identificam quais elementos musicais são alertantes ou calmantes para seu sistema nervoso."
+    },
+    {
+      id: 8,
+      title: "Contraste Sensorial Musical",
+      description: "Apresentar contrastes sensoriais evidentes através da música (alto/baixo, rápido/lento, agudo/grave) e gradualmente refinar para contrastes mais sutis. Desenvolve discriminação sensorial refinada e limiar de percepção."
+    },
+    {
+      id: 9,
+      title: "Diálogo Sensorial",
+      description: "Em pares, um participante cria um estímulo sensorial (sonoro, tátil) e o outro responde musicalmente, criando um "diálogo" entre sentidos. Promove responsividade sensorial e comunicação não-verbal através de múltiplos canais sensoriais."
+    },
+    {
+      id: 10,
+      title: "Instrumento Sensorial Adaptativo",
+      description: "Criar ou adaptar instrumentos musicais para fornecer feedback sensorial intensificado (visual, tátil, proprioceptivo). Especialmente útil para pessoas com processamento sensorial atípico, proporcionando experiências sensoriais adequadas às necessidades individuais."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -1059,6 +1112,28 @@ export default function ActivitiesPage() {
           </DialogHeader>
           <Accordion type="single" collapsible className="w-full">
             {spiritualActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedCategory === "sensorial"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Eye className="h-5 w-5" /> 
+              Desenvolvimento Sensorial
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento sensorial
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {sensorialActivities.map((activity) => (
               <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                 <AccordionTrigger>{activity.title}</AccordionTrigger>
                 <AccordionContent>{activity.description}</AccordionContent>
