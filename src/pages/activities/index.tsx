@@ -445,6 +445,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const psychosocialActivities = [
+    {
+      id: 1,
+      title: "Trilha Sonora das Fases da Vida",
+      description: "Explorar músicas que representam diferentes fases do desenvolvimento psicossocial (infância, adolescência, idade adulta). Os participantes discutem as características, desafios e conquistas de cada fase, criando conexões entre as transições de vida e expressões musicais."
+    },
+    {
+      id: 2,
+      title: "Círculo da Confiança Musical",
+      description: "Em círculo, cada participante fecha os olhos enquanto os outros criam um ambiente sonoro seguro ao seu redor. Desenvolve confiança básica e senso de segurança em relação ao ambiente social, trabalhando o primeiro estágio psicossocial."
+    },
+    {
+      id: 3,
+      title: "Improvisação de Autonomia",
+      description: "Oferecer oportunidades para improvisar musicalmente com escolhas progressivamente mais independentes. Começa com opções limitadas e expande gradualmente, fortalecendo o desenvolvimento da autonomia versus vergonha/dúvida."
+    },
+    {
+      id: 4,
+      title: "Projeto Musical Coletivo",
+      description: "Planejar, criar e apresentar um projeto musical em grupo com etapas definidas. Cada participante assume responsabilidades específicas, promovendo iniciativa e propósito, enquanto evita sentimentos de culpa por desejos ambiciosos."
+    },
+    {
+      id: 5,
+      title: "Competência Musical Colaborativa",
+      description: "Atividades em que cada participante desenvolve uma habilidade específica (percussão, voz, composição) e depois todos colaboram usando essas habilidades. Aborda o conflito entre competência e inferioridade através da valorização das contribuições únicas."
+    },
+    {
+      id: 6,
+      title: "Exploração de Identidade Musical",
+      description: "Criar um 'perfil musical' pessoal que represente a identidade atual. Explorar diferentes estilos musicais que ressoam com aspectos da personalidade, ajudando na formação de identidade versus confusão de papéis."
+    },
+    {
+      id: 7,
+      title: "Composição de Conexões",
+      description: "Em pares ou pequenos grupos, criar músicas que expressem diferentes tipos de conexões interpessoais. Trabalha o estágio de intimidade versus isolamento, promovendo vinculação emocional saudável."
+    },
+    {
+      id: 8,
+      title: "Melodias de Mentoria",
+      description: "Participantes mais experientes ensinam habilidades musicais aos menos experientes, criando relações de mentoria. Desenvolve o senso de generatividade versus estagnação através da transmissão de conhecimento e cuidado."
+    },
+    {
+      id: 9,
+      title: "Narrativas Sonoras de Vida",
+      description: "Criar uma 'autobiografia musical' que integre elementos significativos da história pessoal. Promove a integridade versus desespero através da reflexão e aceitação do caminho de vida."
+    },
+    {
+      id: 10,
+      title: "Concerto de Gerações",
+      description: "Atividade intergeracional onde participantes de diferentes faixas etárias compartilham músicas significativas de suas gerações e criam algo novo juntos. Integra todos os estágios psicossociais em uma única experiência."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -888,6 +941,43 @@ export default function ActivitiesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog for Psychosocial Development Activities */}
+      <Dialog open={selectedCategory === 'psychosocial'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <User className="h-5 w-5" />
+              Desenvolvimento Psicossocial
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para promover o desenvolvimento psicossocial
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {psychosocialActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
