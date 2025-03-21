@@ -34,7 +34,7 @@ export default function ActivitiesPage() {
     {
       id: "motor",
       title: "4. Desenvolvimento Motor",
-      description: "Dividido em: Motor grosso: Coordenação de grandes músculos (correr, pular). Motor fino: Movimentos precisos (escrever, usar tesoura).",
+      description: "",
       icon: <Move className="h-5 w-5" />
     },
     {
