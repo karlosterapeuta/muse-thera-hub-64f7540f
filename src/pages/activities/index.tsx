@@ -150,7 +150,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
- title: "Canção das Forças Internas",
+      title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -619,3 +619,41 @@ export default function ActivitiesPage() {
       id: 3,
       title: "Composição de Salmos Pessoais",
       description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã."
+    },
+    {
+      id: 4,
+      title: "Canções de Identidade Espiritual",
+      description: "Criar canções que expressam a identidade espiritual pessoal, utilizando metáforas, símbolos e linguagem que ressoam com a compreensão espiritual de cada um. Fortalece o senso de propósito e pertencimento espiritual."
+    },
+    {
+      id: 5,
+      title: "Música de Adoração Terapêutica",
+      description: "Utilizar canções de adoração em contexto terapêutico, focando na experiência de transcendência, conexão e entrega. Desenvolve capacidade de soltar o controle e experimentar confiança em algo maior."
+    },
+    {
+      id: 6,
+      title: "Histórias Bíblicas Musicadas",
+      description: "Transformar narrativas bíblicas significativas em pequenas peças musicais, onde os participantes podem incorporar personagens ou emoções presentes nas histórias. Facilita a internalização de valores e ensinamentos bíblicos."
+    },
+    {
+      id: 7,
+      title: "Círculo de Comunhão Musical",
+      description: "Criar experiências musicais que promovam senso de comunidade e pertencimento espiritual, onde cada participante contribui para um todo harmonioso. Trabalha conceitos de corpo espiritual e comunhão."
+    },
+    {
+      id: 8,
+      title: "Improvisação Contemplativa",
+      description: "Guiar improvisações musicais suaves que facilitam estados contemplativos e meditativos. A música serve como âncora para a atenção plena e abertura à experiência espiritual."
+    },
+    {
+      id: 9,
+      title: "Canções de Celebração e Ritual",
+      description: "Criar música para marcar momentos de transição, celebração ou ritual dentro da jornada espiritual. Oferece estrutura e expressão para momentos significativos da vida de fé."
+    },
+    {
+      id: 10,
+      title: "Harmonização da Palavra",
+      description: "Escolher versículos ou passagens bíblicas significativas e criar melodias que ajudem na memorização e internalização da Palavra. A música funciona como veículo que aprofunda o impacto do texto sagrado."
+    }
+  ];
+}
