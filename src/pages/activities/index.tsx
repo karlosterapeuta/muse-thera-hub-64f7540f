@@ -160,7 +160,7 @@ export default function ActivitiesPage() {
     {
       id: 7,
       title: "Ritual de Liberação",
-      description: "Criar um breve ritual musical para expressar e liberar emoções "presas" ou difíceis de expressar verbalmente. Promove catarse emocional saudável."
+      description: "Criar um breve ritual musical para expressar e liberar emoções \"presas\" ou difíceis de expressar verbalmente. Promove catarse emocional saudável."
     },
     {
       id: 8,
