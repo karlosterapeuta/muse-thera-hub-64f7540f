@@ -5,7 +5,7 @@ import {
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
   Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck,
-  Sparkles
+  Sparkles, Church, Cross
 } from "lucide-react";
 import { 
   Dialog,
@@ -607,53 +607,53 @@ export default function ActivitiesPage() {
   const spiritualActivities = [
     {
       id: 1,
-      title: "Meditação Musical Guiada",
-      description: "Utilizar música suave como base para uma meditação guiada que explora conceitos como conexão universal, propósito existencial e transcendência. A música facilita o estado meditativo e aprofunda a experiência contemplativa."
+      title: "Meditação Bíblica com Música",
+      description: "Utilizar música cristã instrumental suave como base para uma meditação guiada em versículos bíblicos selecionados. A música facilita a conexão com o texto sagrado e ajuda a aprofundar a experiência contemplativa da Palavra."
     },
     {
       id: 2,
-      title: "Círculo de Canto Sagrado",
-      description: "Introduzir cantos de diversas tradições espirituais (mantras, cantos gregorianos, cânticos indígenas) e praticá-los em grupo, explorando seus significados e a sensação de unidade que promovem através da voz coletiva."
+      title: "Sugestões de Músicas Evangélicas",
+      description: "Explorar canções como 'Deus é Deus' (Delino Marçal), 'Nada Além do Sangue' (Fernandinho), 'Oceanos' (Hillsong), 'Grandes Coisas' (Fernandinho) e 'Eu Navegarei' (Ministério Ipiranga). Analisar suas letras, mensagens bíblicas e como podem ser utilizadas terapeuticamente."
     },
     {
       id: 3,
-      title: "Composição de Música Pessoal Sagrada",
-      description: "Guiar os participantes a comporem uma peça musical que represente sua própria jornada espiritual ou conceitos que consideram sagrados em suas vidas. Desenvolve expressão espiritual personalizada e autorreflexão existencial."
+      title: "Composição de Salmos Pessoais",
+      description: "Guiar os participantes a comporem seus próprios salmos musicados, inspirados no formato dos Salmos bíblicos, expressando louvor, gratidão, súplica ou lamento. Desenvolve expressão espiritual personalizada dentro da tradição cristã."
     },
     {
       id: 4,
-      title: "Improviso de Gratidão",
-      description: "Criar uma improvisação musical focada na expressão de gratidão. Os participantes são convidados a pensar em algo pelo qual são profundamente gratos enquanto expressam esse sentimento através da música, sem palavras."
+      title: "Improvisação de Gratidão e Louvor",
+      description: "Criar uma improvisação musical focada na expressão de gratidão a Deus. Os participantes são convidados a pensar nas bênçãos recebidas enquanto expressam esse sentimento através da música, com ou sem palavras."
     },
     {
       id: 5,
-      title: "Jornada Musical Interior",
-      description: "Utilizar uma sequência musical cuidadosamente construída para guiar uma jornada imaginativa de autoconhecimento, com foco em questões como propósito de vida, valores profundos e conexão com algo maior que si mesmo."
+      title: "Jornada Musical através da História da Salvação",
+      description: "Utilizar uma sequência musical que representa diferentes momentos da história bíblica da salvação (Criação, Queda, Redenção, Restauração). Cada segmento musical evoca o caráter desses momentos, ajudando a internalizar a narrativa cristã."
     },
     {
       id: 6,
-      title: "Diálogo com o Silêncio",
-      description: "Alternar entre momentos de expressão musical e pausas de silêncio completo, desenvolvendo consciência da relação entre som e silêncio como metáfora para a existência e o vazio, conceitos fundamentais em muitas tradições espirituais."
+      title: "Reflexão Musical sobre Parábolas",
+      description: "Escolher uma parábola de Jesus e criar expressões musicais que representem seus personagens, ações e lições. Utilizar a música para aprofundar a compreensão dos ensinamentos e aplicá-los à vida cotidiana."
     },
     {
       id: 7,
-      title: "Criação de Música Ritual",
-      description: "Desenvolver coletivamente um pequeno ritual sonoro-musical que marque transições importantes ou celebre momentos significativos. Explora a função do ritual na construção de significado e na experiência de transcendência."
+      title: "Criação de Música para Momentos Devocionais",
+      description: "Desenvolver coletivamente pequenas canções ou refrões que possam ser utilizados em momentos devocionais pessoais ou familiares. Fortalecer a prática de devocionais regulares através da música."
     },
     {
       id: 8,
-      title: "Soundscape da Natureza",
-      description: "Criar paisagens sonoras que evoquem elementos naturais (água, vento, fogo, terra), explorando a conexão espiritual com a natureza e o sentimento de pertencimento ao mundo natural, tão presente em diversas tradições espirituais."
+      title: "Paisagens Sonoras da Criação",
+      description: "Criar paisagens sonoras que evoquem elementos da criação divina descritos em Gênesis ou nos Salmos. Explorar a conexão espiritual com a natureza como obra de Deus e o sentimento de mordomia cristã sobre a criação."
     },
     {
       id: 9,
-      title: "Música da Compaixão",
-      description: "Guiar os participantes na criação de música que expresse compaixão universal, expandindo gradualmente o círculo de empatia: de si mesmos para entes queridos, desconhecidos, pessoas difíceis e, eventualmente, todos os seres."
+      title: "Música da Compaixão Cristã",
+      description: "Guiar os participantes na criação de música que expresse o amor ao próximo, inspirada em passagens como 1 Coríntios 13 e o mandamento de amar ao próximo. Desenvolver musicalmente a aplicação prática da compaixão cristã."
     },
     {
       id: 10,
-      title: "Concerto de Diversidade Espiritual",
-      description: "Organizar uma exploração musical de diferentes tradições espirituais, com discussão respeitosa sobre suas similaridades e diferenças. Desenvolve apreciação pela diversidade de caminhos espirituais humanos."
+      title: "Coro de Adoração Terapêutico",
+      description: "Formar um pequeno coro onde os participantes cantam conhecidos hinos e cânticos de adoração como 'Santo, Santo, Santo', 'Grandioso És Tu', 'Quão Grande é o Meu Deus' e 'Ao Único'. Focar nos benefícios terapêuticos do canto congregacional e na conexão espiritual através do louvor coletivo."
     }
   ];
 
@@ -728,7 +728,7 @@ export default function ActivitiesPage() {
       id: "spiritual",
       title: "12. Desenvolvimento Espiritual",
       description: "",
-      icon: <Globe className="h-5 w-5" />
+      icon: <BookOpen className="h-5 w-5" />
     },
     {
       id: "sensorial",
@@ -1050,11 +1050,11 @@ export default function ActivitiesPage() {
         <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-2">
-              <Globe className="h-5 w-5" /> 
-              Desenvolvimento Espiritual
+              <BookOpen className="h-5 w-5" /> 
+              Desenvolvimento Espiritual Evangélico
             </DialogTitle>
             <DialogDescription>
-              Atividades musicoterápicas para estimular o desenvolvimento espiritual
+              Atividades musicoterápicas para estimular o desenvolvimento espiritual na perspectiva evangélica
             </DialogDescription>
           </DialogHeader>
           <Accordion type="single" collapsible className="w-full">
