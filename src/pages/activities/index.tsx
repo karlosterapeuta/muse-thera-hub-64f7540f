@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,122 +15,122 @@ export default function ActivitiesPage() {
   const developmentTopics = [
     {
       id: "cognitive",
-      title: "Desenvolvimento Cognitivo",
-      description: "Foco na aquisição de habilidades de pensamento, memória, resolução de problemas e raciocínio lógico (ex.: teoria de Piaget).",
+      title: "1. Desenvolvimento Cognitivo",
+      description: "",
       icon: <Brain className="h-5 w-5" />
     },
     {
       id: "social",
-      title: "Desenvolvimento Social",
-      description: "Habilidades para interagir com outros, construir relacionamentos e compreender normas sociais.",
+      title: "2. Desenvolvimento Social",
+      description: "",
       icon: <Users className="h-5 w-5" />
     },
     {
       id: "emotional",
-      title: "Desenvolvimento Emocional",
-      description: "Capacidade de reconhecer, expressar e regular emoções (ex.: inteligência emocional).",
+      title: "3. Desenvolvimento Emocional",
+      description: "",
       icon: <Heart className="h-5 w-5" />
     },
     {
       id: "motor",
-      title: "Desenvolvimento Motor",
+      title: "4. Desenvolvimento Motor",
       description: "Dividido em: Motor grosso: Coordenação de grandes músculos (correr, pular). Motor fino: Movimentos precisos (escrever, usar tesoura).",
       icon: <Move className="h-5 w-5" />
     },
     {
       id: "language",
-      title: "Desenvolvimento da Linguagem",
-      description: "Aquisição de comunicação verbal e não verbal, vocabulário e gramática.",
+      title: "5. Desenvolvimento da Linguagem",
+      description: "",
       icon: <MessageSquare className="h-5 w-5" />
     },
     {
       id: "moral",
-      title: "Desenvolvimento Moral",
-      description: "Evolução da compreensão de certo/errado e valores éticos (ex.: teoria de Kohlberg).",
+      title: "6. Desenvolvimento Moral",
+      description: "",
       icon: <BookOpen className="h-5 w-5" />
     },
     {
       id: "creative",
-      title: "Desenvolvimento Criativo",
-      description: "Habilidades para expressar ideias de forma inovadora (arte, música, escrita).",
+      title: "7. Desenvolvimento Criativo",
+      description: "",
       icon: <Music className="h-5 w-5" />
     },
     {
       id: "psychosexual",
-      title: "Desenvolvimento Psicossexual",
-      description: "Estágios relacionados à sexualidade e identidade de gênero (ex.: teoria de Freud).",
+      title: "8. Desenvolvimento Psicossexual",
+      description: "",
       icon: <Zap className="h-5 w-5" />
     },
     {
       id: "psychosocial",
-      title: "Desenvolvimento Psicossocial",
-      description: "Integração de fatores psicológicos e sociais ao longo da vida (ex.: estágios de Erikson).",
+      title: "9. Desenvolvimento Psicossocial",
+      description: "",
       icon: <User className="h-5 w-5" />
     },
     {
       id: "intellectual",
-      title: "Desenvolvimento Intelectual",
-      description: "Capacidade de aprender, processar informações e aplicar conhecimento (ex.: QI, habilidades acadêmicas).",
+      title: "10. Desenvolvimento Intelectual",
+      description: "",
       icon: <Lightbulb className="h-5 w-5" />
     },
     {
       id: "adaptive",
-      title: "Desenvolvimento Adaptativo",
-      description: "Habilidades práticas para a vida diária (autocuidado, gestão do tempo).",
+      title: "11. Desenvolvimento Adaptativo",
+      description: "",
       icon: <HelpingHand className="h-5 w-5" />
     },
     {
       id: "spiritual",
-      title: "Desenvolvimento Espiritual",
-      description: "Exploração de significado, propósito e conexão com algo maior (valores, crenças).",
+      title: "12. Desenvolvimento Espiritual",
+      description: "",
       icon: <Globe className="h-5 w-5" />
     },
     {
       id: "sensorial",
-      title: "Desenvolvimento Sensorial",
-      description: "Processamento e integração de estímulos sensoriais (visão, audição, tato).",
+      title: "13. Desenvolvimento Sensorial",
+      description: "",
       icon: <Eye className="h-5 w-5" />
     },
     {
       id: "self-regulation",
-      title: "Desenvolvimento da Autorregulação",
-      description: "Capacidade de controlar impulsos, emoções e comportamentos.",
+      title: "14. Desenvolvimento da Autorregulação",
+      description: "",
       icon: <Flame className="h-5 w-5" />
     },
     {
       id: "identity",
-      title: "Desenvolvimento da Identidade",
+      title: "15. Desenvolvimento da Identidade",
       description: "Formação do autoconceito, autoestima e senso de pertencimento.",
       icon: <Shield className="h-5 w-5" />
     },
     {
       id: "interpersonal",
-      title: "Desenvolvimento Interpessoal",
-      description: "Habilidades para construir e manter relacionamentos saudáveis.",
+      title: "16. Desenvolvimento Interpessoal",
+      description: "",
       icon: <Users className="h-5 w-5" />
     },
     {
       id: "executive",
-      title: "Desenvolvimento Executivo",
-      description: "Funções como planejamento, organização e tomada de decisões (ex.: lobo frontal).",
+      title: "17. Desenvolvimento Executivo",
+      description: "",
       icon: <Puzzle className="h-5 w-5" />
     },
     {
       id: "cultural",
-      title: "Desenvolvimento Cultural",
-      description: "Compreensão e adaptação a normas, tradições e valores de um grupo social.",
+      title: "18. Desenvolvimento Cultural",
+      description: "",
       icon: <Globe className="h-5 w-5" />
     },
     {
       id: "neurological",
-      title: "Desenvolvimento Neurológico",
-      description: "Maturação do sistema nervoso e conexões cerebrais.",
+      title: "19. Desenvolvimento Neurológico",
+      description: "",
       icon: <FlaskConical className="h-5 w-5" />
     },
     {
       id: "vocational",
-      title: "Desenvolvimento Vocacional",
-      description: "Preparação para escolhas profissionais e desenvolvimento de habilidades laborais.",
+      title: "20. Desenvolvimento Vocacional",
+      description: "",
       icon: <Target className="h-5 w-5" />
     },
   ];
@@ -156,11 +157,13 @@ export default function ActivitiesPage() {
                 <CardTitle className="text-lg">{topic.title}</CardTitle>
               </div>
             </CardHeader>
-            <CardContent>
-              <CardDescription className="text-sm">
-                {topic.description}
-              </CardDescription>
-            </CardContent>
+            {topic.description && (
+              <CardContent>
+                <CardDescription className="text-sm">
+                  {topic.description}
+                </CardDescription>
+              </CardContent>
+            )}
           </Card>
         ))}
       </div>
