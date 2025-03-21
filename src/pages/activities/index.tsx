@@ -4,7 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
-  Eye, Flame, Shield, GraduationCap, FlaskConical
+  Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck
 } from "lucide-react";
 import { 
   Dialog,
@@ -43,7 +43,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
-      title: "Completar Letras",
+ title: "Completar Letras",
       description: "Cantar músicas conhecidas pausando em certos momentos para que os participantes completem. Fortalece a memória de trabalho e atenção sustentada."
     },
     {
@@ -285,6 +285,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const moralActivities = [
+    {
+      id: 1,
+      title: "Canções de Valores",
+      description: "Criar ou adaptar canções que abordem valores morais específicos (honestidade, respeito, responsabilidade). O formato musical facilita a internalização desses conceitos abstratos."
+    },
+    {
+      id: 2,
+      title: "Dilemas Musicais",
+      description: "Apresentar situações de dilema moral através de pequenas peças musicais e discutir diferentes resoluções possíveis. Desenvolve raciocínio ético e tomada de decisão moral."
+    },
+    {
+      id: 3,
+      title: "Orquestra da Justiça",
+      description: "Criar uma experiência musical onde todos tenham papéis equitativos e importantes, ilustrando o conceito de justiça e a valorização das contribuições individuais."
+    },
+    {
+      id: 4,
+      title: "Histórias Sonoras de Empatia",
+      description: "Contar histórias com trilha sonora sobre situações que requerem empatia, onde os participantes devem criar sons que representem os sentimentos dos personagens."
+    },
+    {
+      id: 5,
+      title: "Música da Gratidão",
+      description: "Compor canções expressando gratidão a pessoas ou elementos importantes na vida dos participantes. Desenvolve reconhecimento do valor do outro e humildade."
+    },
+    {
+      id: 6,
+      title: "Improvisação das Consequências",
+      description: "Criar uma improvisação musical que ilustre como pequenas ações podem ter grandes consequências, explorando o conceito de responsabilidade pelas próprias escolhas."
+    },
+    {
+      id: 7,
+      title: "Círculo de Confiança Musical",
+      description: "Exercícios musicais em que os participantes precisam confiar uns nos outros (como criar música de olhos fechados seguindo apenas pistas sonoras). Desenvolve confiança e integridade."
+    },
+    {
+      id: 8,
+      title: "Canção do Compromisso",
+      description: "Criar uma música que represente um compromisso moral que o grupo deseja assumir. Desenvolve senso de responsabilidade coletiva e individual."
+    },
+    {
+      id: 9,
+      title: "Debate Musical de Perspectivas",
+      description: "Usar diferentes estilos musicais para representar diferentes perspectivas sobre uma questão moral. Desenvolve compreensão da relatividade cultural e respeito pela diversidade de valores."
+    },
+    {
+      id: 10,
+      title: "Legado Musical",
+      description: "Compor uma peça que represente o legado que cada um gostaria de deixar no mundo. Desenvolve pensamento sobre consequências de longo prazo e propósito moral nas ações."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -320,7 +373,7 @@ export default function ActivitiesPage() {
       id: "moral",
       title: "6. Desenvolvimento Moral",
       description: "",
-      icon: <BookOpen className="h-5 w-5" />
+      icon: <ShieldCheck className="h-5 w-5" />
     },
     {
       id: "creative",
@@ -601,6 +654,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {languageActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Moral Development Activities */}
+      <Dialog open={selectedCategory === 'moral'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <ShieldCheck className="h-5 w-5" />
+              Desenvolvimento Moral
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para promover o desenvolvimento de valores morais
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {moralActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
