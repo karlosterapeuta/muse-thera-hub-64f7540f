@@ -551,6 +551,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const adaptiveActivities = [
+    {
+      id: 1,
+      title: "Mudança Musical Fluida",
+      description: "Iniciar com um padrão musical estabelecido e gradualmente introduzir mudanças (tempo, ritmo, estilo) que os participantes devem acompanhar sem pausar. Desenvolve flexibilidade cognitiva e capacidade de adaptação a mudanças inesperadas."
+    },
+    {
+      id: 2,
+      title: "Solução Musical Criativa",
+      description: "Apresentar 'problemas musicais' (como criar música com instrumentos limitados ou adaptar-se a restrições de som) e incentivar soluções criativas. Fortalece resolução de problemas e pensamento alternativo."
+    },
+    {
+      id: 3,
+      title: "Improvisação com Obstáculos",
+      description: "Durante uma improvisação em grupo, introduzir obstáculos musicais (mudanças de tom, pausas obrigatórias) que exigem que os participantes se adaptem rapidamente. Trabalha adaptabilidade emocional e tolerância à frustração."
+    },
+    {
+      id: 4,
+      title: "Transição de Papéis Musicais",
+      description: "Em uma atividade musical contínua, os participantes alternam entre diferentes papéis (líder, acompanhante, solista, ouvinte) com base em sinais predefinidos. Desenvolve adaptabilidade social e flexibilidade de papéis."
+    },
+    {
+      id: 5,
+      title: "Resiliência Sonora",
+      description: "Criar uma composição que representa superação de dificuldades, começando com sons dissonantes ou desafiadores que gradualmente se transformam em harmonia. Trabalha processamento de adversidades e perseverança."
+    },
+    {
+      id: 6,
+      title: "Adaptação Ambiental Sonora",
+      description: "Os participantes criam música que se adapta a diferentes ambientes imaginados (floresta, cidade, praia, espaço). A cada mudança de cenário, a música deve se transformar adequadamente. Desenvolve consciência contextual e adaptação ambiental."
+    },
+    {
+      id: 7,
+      title: "Orquestra de Recursos",
+      description: "Cada participante representa um 'recurso adaptativo' (persistência, pensamento positivo, busca de ajuda) através de um instrumento. Juntos, criam uma 'sinfonia de enfrentamento'. Fortalece identificação e integração de recursos adaptativos."
+    },
+    {
+      id: 8,
+      title: "Transformação de Emoções",
+      description: "Expressar musicalmente uma emoção difícil e gradualmente transformá-la em outra mais positiva ou manejável. Desenvolve regulação emocional e capacidade de transformar experiências internas."
+    },
+    {
+      id: 9,
+      title: "Colaboração Adaptativa",
+      description: "Atividade em que os recursos musicais (instrumentos, espaço) são intencionalmente limitados, exigindo que o grupo encontre formas criativas de colaborar e compartilhar. Trabalha adaptação social e resolução colaborativa de problemas."
+    },
+    {
+      id: 10,
+      title: "Narrativa de Superação",
+      description: "Criar coletivamente uma história musical que represente o processo de enfrentar um desafio e adaptar-se a ele. A sequência musical demonstra as fases: problema, tentativas, adaptação e novo equilíbrio. Integra compreensão narrativa da adaptação."
+    }
+  ];
+
   const developmentTopics = [
     {
       id: "cognitive",
@@ -917,7 +970,28 @@ export default function ActivitiesPage() {
           </Accordion>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={selectedCategory === "adaptive"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <HelpingHand className="h-5 w-5" /> 
+              Desenvolvimento Adaptativo
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento adaptativo
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {adaptiveActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
