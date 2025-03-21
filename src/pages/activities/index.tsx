@@ -2,8 +2,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ListChecks, Music, Tag, BookOpen, PanelTopOpen } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ActivitiesPage() {
+  const isMobile = useIsMobile();
+  
   // Music therapy activities for autism spectrum disorder
   const teaActivities = [
     {
@@ -132,51 +135,51 @@ export default function ActivitiesPage() {
   ];
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center gap-2 mb-6">
-        <ListChecks className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold">Atividades</h1>
+    <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6">
+      <div className="flex items-center gap-2 mb-4 md:mb-6">
+        <ListChecks className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+        <h1 className="text-2xl md:text-3xl font-bold">Atividades</h1>
       </div>
 
-      <Tabs defaultValue="tea" className="mb-8">
-        <TabsList className="mb-4">
-          <TabsTrigger value="tea">Atividades para TEA</TabsTrigger>
-          <TabsTrigger value="mental">Atividades para Saúde Mental</TabsTrigger>
+      <Tabs defaultValue="tea" className="mb-6 md:mb-8">
+        <TabsList className="w-full mb-4 flex justify-start overflow-x-auto">
+          <TabsTrigger value="tea" className="text-sm md:text-base py-1.5 md:py-2">Atividades para TEA</TabsTrigger>
+          <TabsTrigger value="mental" className="text-sm md:text-base py-1.5 md:py-2">Atividades para Saúde Mental</TabsTrigger>
         </TabsList>
         
         <TabsContent value="tea">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {teaActivities.map((activity, index) => (
-              <Card key={index}>
+              <Card key={index} className="h-full">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
-                    <Music className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-xl">{activity.title}</CardTitle>
+                    <Music className="h-5 w-5 text-primary flex-shrink-0" />
+                    <CardTitle className="text-lg md:text-xl">{activity.title}</CardTitle>
                   </div>
-                  <CardDescription>{activity.description}</CardDescription>
+                  <CardDescription className="text-sm md:text-base">{activity.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Tag className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Foco:</span>
+                        <Tag className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Foco:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.focus}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.focus}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <BookOpen className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Materiais:</span>
+                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Materiais:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.materials}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.materials}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <PanelTopOpen className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Instruções:</span>
+                        <PanelTopOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Instruções:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.instructions}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.instructions}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -186,38 +189,38 @@ export default function ActivitiesPage() {
         </TabsContent>
         
         <TabsContent value="mental">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {mentalHealthActivities.map((activity, index) => (
-              <Card key={index}>
+              <Card key={index} className="h-full">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
-                    <Music className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-xl">{activity.title}</CardTitle>
+                    <Music className="h-5 w-5 text-primary flex-shrink-0" />
+                    <CardTitle className="text-lg md:text-xl">{activity.title}</CardTitle>
                   </div>
-                  <CardDescription>{activity.description}</CardDescription>
+                  <CardDescription className="text-sm md:text-base">{activity.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Tag className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Foco:</span>
+                        <Tag className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Foco:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.focus}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.focus}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <BookOpen className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Materiais:</span>
+                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Materiais:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.materials}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.materials}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <PanelTopOpen className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Instruções:</span>
+                        <PanelTopOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-sm md:text-base">Instruções:</span>
                       </div>
-                      <p className="text-sm text-gray-600 ml-6">{activity.instructions}</p>
+                      <p className="text-xs md:text-sm text-gray-600 ml-6">{activity.instructions}</p>
                     </div>
                   </div>
                 </CardContent>
