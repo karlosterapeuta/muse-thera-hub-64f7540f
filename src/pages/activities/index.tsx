@@ -149,7 +149,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
- title: "Canção das Forças Internas",
+      title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -229,6 +229,59 @@ export default function ActivitiesPage() {
       id: 10,
       title: "Condução Musical",
       description: "Um participante com os olhos vendados é guiado pelo espaço através de sinais sonoros (diferentes instrumentos indicam diferentes direções). Trabalha equilíbrio, orientação espacial e confiança motora."
+    }
+  ];
+
+  const languageActivities = [
+    {
+      id: 1,
+      title: "Canções de Vocabulário",
+      description: "Criar ou adaptar canções que introduzam palavras novas relacionadas a um tema específico (animais, cores, emoções). A repetição musical facilita a memorização do vocabulário."
+    },
+    {
+      id: 2,
+      title: "Completar Frases Musicais",
+      description: "Cantar músicas com pausas estratégicas para que os participantes completem com as palavras adequadas. Desenvolve capacidade de antecipação linguística e reforça estruturas frasais."
+    },
+    {
+      id: 3,
+      title: "História Musical Coletiva",
+      description: "Cada participante adiciona uma frase à história enquanto um ritmo contínuo é mantido. O suporte musical ajuda na fluidez da expressão verbal e na organização do pensamento."
+    },
+    {
+      id: 4,
+      title: "Canções com Movimentos Articulatórios",
+      description: "Músicas que enfatizam sons específicos com movimentos labiais, linguais ou palatais exagerados. Ajuda na consciência fonológica e na precisão articulatória."
+    },
+    {
+      id: 5,
+      title: "Diálogo Rítmico",
+      description: "Criar conversas onde cada frase deve ser falada seguindo um padrão rítmico específico. Trabalha prosódia, ritmo da fala e habilidades pragmáticas da linguagem."
+    },
+    {
+      id: 6,
+      title: "Rap Terapêutico",
+      description: "Compor raps sobre temas cotidianos ou terapêuticos, enfatizando rimas e ritmo. Desenvolve consciência fonológica, segmentação silábica e fluência verbal."
+    },
+    {
+      id: 7,
+      title: "Canção das Instruções",
+      description: "Transformar comandos e instruções em canções. Facilita a compreensão e processamento de linguagem receptiva, especialmente para sequências de múltiplos passos."
+    },
+    {
+      id: 8,
+      title: "Canto com Sinais",
+      description: "Cantar incorporando gestos ou sinais que representem conceitos-chave da música. Integra comunicação não-verbal e reforça o significado semântico das palavras."
+    },
+    {
+      id: 9,
+      title: "Improvisação Verbal-Musical",
+      description: "Criar improvisações onde a melodia segue o contorno natural da fala. Desenvolve consciência da musicalidade inerente à linguagem e expressividade vocal."
+    },
+    {
+      id: 10,
+      title: "Teatro Musical de Conversação",
+      description: "Pequenas dramatizações musicais que representam situações sociais comuns. Trabalha habilidades pragmáticas, turnos de fala e compreensão de contextos comunicativos."
     }
   ];
 
@@ -512,6 +565,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {motorActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Language Development Activities */}
+      <Dialog open={selectedCategory === 'language'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <MessageSquare className="h-5 w-5" />
+              Desenvolvimento da Linguagem
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para desenvolver habilidades linguísticas
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {languageActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
