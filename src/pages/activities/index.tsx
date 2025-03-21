@@ -5,7 +5,7 @@ import {
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
   Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
   Eye, Flame, Shield, GraduationCap, FlaskConical, ShieldCheck,
-  Sparkles, Church, Cross
+  Sparkles, Church, Cross, Network
 } from "lucide-react";
 import { 
   Dialog,
@@ -712,6 +712,59 @@ export default function ActivitiesPage() {
     }
   ];
 
+  const neurologicalActivities = [
+    {
+      id: 1,
+      title: "Estimulação Sensorial Rítmica",
+      description: "Utilizar estímulos musicais rítmicos para ativar múltiplas áreas cerebrais simultaneamente. Os diferentes ritmos e frequências estimulam conexões neurais e promovem a integração sensorial."
+    },
+    {
+      id: 2,
+      title: "Mapeamento Sonoro Cerebral",
+      description: "Associar diferentes regiões do cérebro a instrumentos específicos, criando uma 'orquestra cerebral' onde os participantes exploram as funções de cada área através da música."
+    },
+    {
+      id: 3,
+      title: "Sequências de Padrões Neurológicos",
+      description: "Criar sequências musicais que seguem os padrões de desenvolvimento neurológico típico. Trabalha a maturação de circuitos cerebrais e a integração de reflexos primitivos."
+    },
+    {
+      id: 4,
+      title: "Sincronização de Hemisférios",
+      description: "Atividades musicais que exigem o uso coordenado dos dois hemisférios cerebrais, como tocar um instrumento com a mão esquerda enquanto segue um ritmo com a direita. Promove a integração inter-hemisférica."
+    },
+    {
+      id: 5,
+      title: "Música e Neuroplasticidade",
+      description: "Práticas musicais repetitivas e progressivas que exploram o princípio da neuroplasticidade. A repetição estruturada de elementos musicais específicos ajuda a formar novas conexões neurais."
+    },
+    {
+      id: 6,
+      title: "Estímulo de Funções Executivas",
+      description: "Jogos musicais que trabalham memória operacional, controle inibitório e flexibilidade cognitiva. A improvisação dentro de regras definidas exercita o córtex pré-frontal."
+    },
+    {
+      id: 7,
+      title: "Reorganização Neural Sonora",
+      description: "Após lesões cerebrais, utilizar música para estimular vias neurais alternativas. A estrutura previsível da música facilita a reorganização de circuitos neurais danificados."
+    },
+    {
+      id: 8,
+      title: "Integração Sensório-Motora",
+      description: "Atividades que combinam estímulos sonoros com respostas motoras específicas, fortalecendo as conexões entre sistemas sensoriais e motores no cérebro."
+    },
+    {
+      id: 9,
+      title: "Fortalecimento de Redes Neurais",
+      description: "Introduzir gradualmente complexidade rítmica e melódica nas atividades musicais, promovendo o desenvolvimento e fortalecimento de redes neurais mais sofisticadas."
+    },
+    {
+      id: 10,
+      title: "Reabilitação Cognitiva Musical",
+      description: "Utilizar elementos musicais para trabalhar aspectos específicos da cognição afetados por condições neurológicas. A música serve como andaime para reconstruir funções cognitivas comprometidas."
+    }
+  ];
+
   const categories = [
     { name: "Cognitive", label: "Cognitivas", icon: <Brain className="h-5 w-5" />, activities: cognitiveActivities },
     { name: "Social", label: "Sociais", icon: <Users className="h-5 w-5" />, activities: socialActivities },
@@ -725,7 +778,8 @@ export default function ActivitiesPage() {
     { name: "Intellectual", label: "Intelectuais", icon: <BookOpen className="h-5 w-5" />, activities: intellectualActivities },
     { name: "Adaptive", label: "Adaptativas", icon: <Zap className="h-5 w-5" />, activities: adaptiveActivities },
     { name: "Spiritual", label: "Espirituais", icon: <Church className="h-5 w-5" />, activities: spiritualActivities },
-    { name: "Identity", label: "Identidade", icon: <Puzzle className="h-5 w-5" />, activities: identityActivities }
+    { name: "Identity", label: "Identidade", icon: <Puzzle className="h-5 w-5" />, activities: identityActivities },
+    { name: "Neurological", label: "Desenvolvimento Neurológico", icon: <Network className="h-5 w-5" />, activities: neurologicalActivities }
   ];
 
   const getActivitiesByCategory = (categoryName: string) => {
