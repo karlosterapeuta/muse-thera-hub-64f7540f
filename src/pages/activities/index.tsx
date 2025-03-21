@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Brain, Users, Heart, Move, MessageSquare, BookOpen, Music, 
-  Zap, User, Lightbulb, HandHelp, Globe, Puzzle, Target, 
+  Zap, User, Lightbulb, HelpingHand, Globe, Puzzle, Target, 
   Eye, Flame, Shield, GraduationCap, FlaskConical
 } from "lucide-react";
 
@@ -77,7 +76,7 @@ export default function ActivitiesPage() {
       id: "adaptive",
       title: "Desenvolvimento Adaptativo",
       description: "Habilidades práticas para a vida diária (autocuidado, gestão do tempo).",
-      icon: <HandHelp className="h-5 w-5" />
+      icon: <HelpingHand className="h-5 w-5" />
     },
     {
       id: "spiritual",
