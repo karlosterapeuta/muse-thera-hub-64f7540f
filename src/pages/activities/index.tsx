@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -321,7 +320,7 @@ export default function ActivitiesPage() {
     {
       id: 7,
       title: "Círculo de Confiança Musical",
-      description: "Exercícios musicais em que os participantes precisam confiar uns nos outros (como criar música de olhos fechados seguindo apenas pistas sonoras). Desenvolve confiança e integridade."
+      description: "Exercícios musicais em que os participantes precisam confiar uns nos outros (como criar m��sica de olhos fechados seguindo apenas pistas sonoras). Desenvolve confiança e integridade."
     },
     {
       id: 8,
@@ -527,7 +526,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 6,
-      title: "Tradução Multimodal",
+      title: "Tradu��ão Multimodal",
       description: "Transformar informações de um formato para outro através da música: criar representações sonoras de gráficos, tabelas ou textos científicos. Desenvolve pensamento interdisciplinar e capacidade de transcodificação."
     },
     {
@@ -708,6 +707,59 @@ export default function ActivitiesPage() {
       id: 10,
       title: "Instrumento Sensorial Adaptativo",
       description: "Criar ou adaptar instrumentos musicais para fornecer feedback sensorial intensificado (visual, tátil, proprioceptivo). Especialmente útil para pessoas com processamento sensorial atípico, proporcionando experiências sensoriais adequadas às necessidades individuais."
+    }
+  ];
+
+  const selfRegulationActivities = [
+    {
+      id: 1,
+      title: "Respiração Rítmica Sincronizada",
+      description: "Criar um padrão rítmico simples que os participantes acompanham com sua respiração (inspirando por 4 tempos, segurando por 2, expirando por 6). Gradualmente, modificar o ritmo para desafiar e desenvolver o controle respiratório. Desenvolve autorregulação fisiológica básica e atenção consciente à respiração."
+    },
+    {
+      id: 2,
+      title: "Barômetro Musical de Emoções",
+      description: "Estabelecer uma escala musical de 1 a 10 para representar níveis de intensidade emocional. Os participantes identificam onde estão em sua 'escala emocional' e usam instrumentos para expressar musicalmente esse nível, depois praticam movimentos musicais para cima ou para baixo na escala. Desenvolve consciência emocional e capacidade de modular sentimentos."
+    },
+    {
+      id: 3,
+      title: "Desafio de Controle de Impulso Musical",
+      description: "Tocar um ritmo constante com regras específicas (ex: todos param quando ouvem um sino, mudam de instrumento ao ouvir um tambor). Gradualmente aumentar a complexidade e a velocidade. Reforça controle inibitório e capacidade de seguir regras mesmo com impulsos contrários."
+    },
+    {
+      id: 4,
+      title: "Música de Transição Comportamental",
+      description: "Criar sinais musicais específicos para momentos de transição, estabelecendo um 'ritual sonoro' que sinaliza mudança de uma atividade para outra. Os participantes aprendem a associar determinados sons com a necessidade de reorganizar seu comportamento. Desenvolve flexibilidade comportamental e preparação para mudanças."
+    },
+    {
+      id: 5,
+      title: "Composição do Plano de Regulação",
+      description: "Cada participante cria uma pequena composição com 3 partes: identificando sinais de desregulação, estratégias para acalmar-se, e como se sentirá quando regulado. A peça serve como um 'mapa sonoro' personalizado para autorregulação. Desenvolve metacognição e planejamento de estratégias autorregulativas."
+    },
+    {
+      id: 6,
+      title: "Coreografia de Autocontrole",
+      description: "Associar estratégias de autorregulação (parar, respirar, pensar, agir) a movimentos corporais específicos com acompanhamento musical. O grupo pratica a sequência até que se torne automática, podendo ser acessada em momentos de estresse. Desenvolve memória muscular para rotinas de regulação emocional."
+    },
+    {
+      id: 7,
+      title: "Graduação de Intensidade Expressiva",
+      description: "Praticar expressão musical em diferentes níveis de intensidade (pianíssimo a fortíssimo) com controle consciente. Os participantes devem ser capazes de mudar rapidamente entre diferentes intensidades mediante sinalização. Desenvolve modulação expressiva e controle sobre a força/intensidade das respostas."
+    },
+    {
+      id: 8,
+      title: "Improvisação com Limites",
+      description: "Oferecer liberdade criativa dentro de estruturas claras, estabelecendo regras para improvisações (como limite de tempo, uso de certas notas, turnos de expressão). Desenvolve a capacidade de expressar-se livremente enquanto respeita limites e mantém consciência das necessidades do grupo."
+    },
+    {
+      id: 9,
+      title: "Radar Atencional Sonoro",
+      description: "Em um ambiente com múltiplos estímulos sonoros, os participantes praticam focar a atenção em um som específico e alternar conscientemente entre diferentes focos auditivos. Desenvolve controle atencional, filtragem de estímulos e concentração sustentada."
+    },
+    {
+      id: 10,
+      title: "Narrativa Musical de Resiliência",
+      description: "Criar uma peça musical em grupo que represente o processo de enfrentar um desafio: desequilíbrio inicial, estratégias de enfrentamento, recuperação da calma e adaptação. Integra compreensão narrativa do processo de autorregulação e normaliza a experiência de desregulação seguida de recuperação."
     }
   ];
 
@@ -1143,6 +1195,29 @@ export default function ActivitiesPage() {
           </Accordion>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={selectedCategory === "self-regulation"} onOpenChange={() => setSelectedCategory(null)}>
+        <DialogContent className={isMobile ? "max-w-full h-[90vh] overflow-y-auto" : "max-w-4xl h-[80vh] overflow-y-auto"}>
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Flame className="h-5 w-5" /> 
+              Desenvolvimento da Autorregulação
+            </DialogTitle>
+            <DialogDescription>
+              Atividades musicoterápicas para estimular o desenvolvimento da autorregulação
+            </DialogDescription>
+          </DialogHeader>
+          <Accordion type="single" collapsible className="w-full">
+            {selfRegulationActivities.map((activity) => (
+              <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                <AccordionTrigger>{activity.title}</AccordionTrigger>
+                <AccordionContent>{activity.description}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
