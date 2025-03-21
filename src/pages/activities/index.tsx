@@ -12,7 +12,8 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -22,6 +23,7 @@ export default function ActivitiesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [categoriesDialogOpen, setCategoriesDialogOpen] = useState(false);
   
   const cognitiveActivities = [
     {
@@ -789,6 +791,7 @@ export default function ActivitiesPage() {
 
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategory(categoryName);
+    setCategoriesDialogOpen(false);
   };
 
   const handleActivityClick = (activity: any) => {
@@ -798,7 +801,12 @@ export default function ActivitiesPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold mb-6">Atividades Musicoterapêuticas</h1>
+      <h1 
+        className="text-3xl font-bold mb-6 cursor-pointer hover:text-primary transition-colors"
+        onClick={() => setCategoriesDialogOpen(true)}
+      >
+        Atividades Musicoterapêuticas
+      </h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {categories.map((category) => (
@@ -857,6 +865,59 @@ export default function ActivitiesPage() {
         </div>
       )}
 
+      <Dialog open={categoriesDialogOpen} onOpenChange={setCategoriesDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Categorias de Atividades Musicoterapêuticas</DialogTitle>
+            <DialogDescription>
+              Explore as diferentes categorias de atividades disponíveis para a prática musicoterapêutica
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {categories.map((category) => (
+              <div 
+                key={category.name} 
+                className="flex items-start space-x-3 p-3 rounded-lg border border-muted hover:bg-muted/50 cursor-pointer transition-colors"
+                onClick={() => handleCategoryClick(category.name)}
+              >
+                <div className="p-2 rounded-full bg-primary/10 text-primary">
+                  {category.icon}
+                </div>
+                <div>
+                  <h3 className="font-medium">{category.label}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {category.activities.length} atividades
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {category.name === "Cognitive" && "Foco em memória, atenção e processamento"}
+                    {category.name === "Social" && "Desenvolvimento de habilidades interpessoais"}
+                    {category.name === "Emotional" && "Expressão e regulação emocional"}
+                    {category.name === "Motor" && "Coordenação e expressão corporal"}
+                    {category.name === "Language" && "Desenvolvimento de comunicação verbal"}
+                    {category.name === "Moral" && "Exploração de valores e ética"}
+                    {category.name === "Creative" && "Estímulo à criatividade e expressão"}
+                    {category.name === "Psychosexual" && "Desenvolvimento de identidade e limites"}
+                    {category.name === "Psychosocial" && "Integração social e fases de desenvolvimento"}
+                    {category.name === "Intellectual" && "Estimulação do raciocínio e análise"}
+                    {category.name === "Adaptive" && "Promoção de resiliência e adaptabilidade"}
+                    {category.name === "Spiritual" && "Conexão com valores transcendentes"}
+                    {category.name === "Identity" && "Fortalecimento do autoconceito"}
+                    {category.name === "Neurological" && "Estímulo ao desenvolvimento cerebral"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-end mt-4">
+            <DialogClose asChild>
+              <Button variant="outline">Fechar</Button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl">
           {selectedActivity && (
@@ -900,3 +961,4 @@ export default function ActivitiesPage() {
     </div>
   );
 }
+
