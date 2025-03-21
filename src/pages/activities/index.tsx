@@ -149,7 +149,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
-      title: "Canção das Forças Internas",
+ title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -176,6 +176,59 @@ export default function ActivitiesPage() {
       id: 10,
       title: "Canção de Acolhimento",
       description: "Compor uma canção de auto-compaixão, acolhendo partes emocionalmente vulneráveis de si. Desenvolve autocuidado emocional e auto-compaixão."
+    }
+  ];
+
+  const motorActivities = [
+    {
+      id: 1,
+      title: "Dança Espelhada",
+      description: "Em pares ou em grupo, um participante realiza movimentos ao som da música enquanto os outros imitam como espelhos. Trabalha coordenação motora, lateralidade e percepção corporal."
+    },
+    {
+      id: 2,
+      title: "Circuito Musical",
+      description: "Criar um circuito com diferentes estações onde cada uma requer um movimento específico (pular, rastejar, girar) que deve ser realizado enquanto a música toca e parar quando ela pausa. Desenvolve controle motor e resposta a estímulos auditivos."
+    },
+    {
+      id: 3,
+      title: "Regência Corporal",
+      description: "Os participantes utilizam todo o corpo para 'reger' uma peça musical, com movimentos amplos que acompanham a dinâmica, velocidade e intensidade da música. Estimula amplitude de movimentos e expressão motora."
+    },
+    {
+      id: 4,
+      title: "Percussão Corporal",
+      description: "Criar sequências rítmicas utilizando diferentes partes do corpo (palmas, batidas no peito, estalos de dedos, batidas nos joelhos). Melhora a coordenação motora fina e grossa e a consciência corporal."
+    },
+    {
+      id: 5,
+      title: "Canções com Movimentos Sequenciais",
+      description: "Cantar músicas que incorporam sequências de movimentos cada vez mais complexos, exigindo memória motora e coordenação sequencial."
+    },
+    {
+      id: 6,
+      title: "Instrumento Viajante",
+      description: "Em círculo, cada participante toca um instrumento de percussão de forma diferente antes de passá-lo ao próximo. Trabalha coordenação óculo-manual, preensão e controle motor ao manipular objetos."
+    },
+    {
+      id: 7,
+      title: "Dança das Articulações",
+      description: "Com música tocando, focar em mover apenas uma articulação específica por vez (só os pulsos, só os ombros, só os tornozelos), criando consciência articular e controle motor seletivo."
+    },
+    {
+      id: 8,
+      title: "Estátua Musical Progressiva",
+      description: "Versão do jogo da estátua onde, a cada rodada, os participantes devem manter uma posição mais desafiadora (em um pé só, braços estendidos, agachado). Desenvolve equilíbrio, controle postural e resistência muscular."
+    },
+    {
+      id: 9,
+      title: "Banda Elastique",
+      description: "Usando elásticos grandes ou faixas elásticas, o grupo cria movimentos coordenados ao som da música, esticando e relaxando o elástico. Desenvolve coordenação grupal, força e consciência de resistência."
+    },
+    {
+      id: 10,
+      title: "Condução Musical",
+      description: "Um participante com os olhos vendados é guiado pelo espaço através de sinais sonoros (diferentes instrumentos indicam diferentes direções). Trabalha equilíbrio, orientação espacial e confiança motora."
     }
   ];
 
@@ -423,6 +476,42 @@ export default function ActivitiesPage() {
           <div className="mt-4">
             <Accordion type="single" collapsible className="w-full">
               {emotionalActivities.map((activity) => (
+                <AccordionItem key={activity.id} value={`item-${activity.id}`}>
+                  <AccordionTrigger className="text-md font-medium">
+                    {activity.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Motor Development Activities */}
+      <Dialog open={selectedCategory === 'motor'} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Move className="h-5 w-5" />
+              Desenvolvimento Motor
+            </DialogTitle>
+            <DialogDescription>
+              Atividades de musicoterapia para estimular o desenvolvimento motor
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Accordion type="single" collapsible className="w-full">
+              {motorActivities.map((activity) => (
                 <AccordionItem key={activity.id} value={`item-${activity.id}`}>
                   <AccordionTrigger className="text-md font-medium">
                     {activity.title}
