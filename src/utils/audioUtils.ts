@@ -1,4 +1,3 @@
-
 // Map of notes to their frequencies in Hz
 const noteFrequencies: Record<string, number> = {
   "C1": 261.63, // C4 (middle C)
@@ -28,6 +27,30 @@ export const therapeuticFrequencies = {
 
 // Background sound types
 export type BackgroundSoundType = 'rain' | 'whitenoise' | 'ocean' | 'forest' | 'none';
+
+// Background sound file sources with multiple formats for better compatibility
+const backgroundSoundSources = {
+  rain: {
+    mp3: '/lovable-uploads/rain-sound.mp3',
+    ogg: '/lovable-uploads/rain-sound.ogg',
+    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3'
+  },
+  whitenoise: {
+    mp3: '/lovable-uploads/white-noise.mp3',
+    ogg: '/lovable-uploads/white-noise.ogg',
+    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-white-noise-ambience-loop-1236.mp3'
+  },
+  ocean: {
+    mp3: '/lovable-uploads/ocean-waves.mp3',
+    ogg: '/lovable-uploads/ocean-waves.ogg',
+    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-ambience-1188.mp3'
+  },
+  forest: {
+    mp3: '/lovable-uploads/forest-ambience.mp3',
+    ogg: '/lovable-uploads/forest-ambience.ogg',
+    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3'
+  }
+};
 
 // AudioContext singleton to prevent multiple instances
 let audioContext: AudioContext | null = null;
@@ -187,35 +210,52 @@ export const playBinauralBeat = (
  * Loads and plays a background sound
  */
 const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: number = 0.3) => {
-  if (!audioContext) return;
+  if (!audioContext || soundType === 'none') return;
   
-  let soundUrl = '';
-  
-  // Map sound type to URL
-  switch (soundType) {
-    case 'rain':
-      soundUrl = '/lovable-uploads/rain-sound.mp3';
-      break;
-    case 'whitenoise':
-      soundUrl = '/lovable-uploads/white-noise.mp3';
-      break;
-    case 'ocean':
-      soundUrl = '/lovable-uploads/ocean-waves.mp3';
-      break;
-    case 'forest':
-      soundUrl = '/lovable-uploads/forest-ambience.mp3';
-      break;
-    default:
-      return; // No sound to load
-  }
+  // Get the sound sources from our mapping
+  const soundSources = backgroundSoundSources[soundType as keyof typeof backgroundSoundSources];
+  if (!soundSources) return;
   
   try {
-    // Fetch the audio file
-    const response = await fetch(soundUrl);
-    const arrayBuffer = await response.arrayBuffer();
+    // Try to load the sound in order of preference: MP3, OGG, then fallback
+    const soundUrls = [soundSources.mp3, soundSources.ogg, soundSources.fallback];
+    let arrayBuffer: ArrayBuffer | null = null;
+    let error: Error | null = null;
+    
+    // Try each URL until one works
+    for (const url of soundUrls) {
+      try {
+        console.log(`Attempting to load sound from: ${url}`);
+        const response = await fetch(url);
+        if (!response.ok) {
+          console.warn(`Failed to load sound from ${url}: ${response.status} ${response.statusText}`);
+          continue;
+        }
+        arrayBuffer = await response.arrayBuffer();
+        break; // If we got the buffer, we can stop trying other URLs
+      } catch (e) {
+        console.warn(`Error fetching from ${url}:`, e);
+        error = e;
+      }
+    }
+    
+    // If we couldn't load any of the sounds, throw the last error
+    if (!arrayBuffer) {
+      throw error || new Error("Could not load any sound file");
+    }
     
     // Decode the audio data
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    
+    // Stop any currently playing background sound
+    if (backgroundSoundNode) {
+      try {
+        backgroundSoundNode.stop();
+        backgroundSoundNode.disconnect();
+      } catch (e) {
+        // Ignore errors from already stopped sources
+      }
+    }
     
     // Create source and gain nodes
     backgroundSoundNode = audioContext.createBufferSource();
@@ -232,9 +272,53 @@ const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: numbe
     
     // Start playback
     backgroundSoundNode.start();
+    console.log(`Background sound started: ${soundType}`);
   } catch (error) {
     console.error("Error loading background sound:", error);
+    
+    // Fallback to creating a simple noise if all else fails
+    if (soundType === 'whitenoise') {
+      try {
+        createNoiseGenerator(volume);
+      } catch (e) {
+        console.error("Error creating noise generator:", e);
+      }
+    }
   }
+};
+
+/**
+ * Creates a simple noise generator as a fallback for white noise
+ */
+const createNoiseGenerator = (volume: number = 0.3) => {
+  if (!audioContext) return;
+  
+  // Create a noise source with an audio buffer
+  const bufferSize = 2 * audioContext.sampleRate;
+  const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+  const output = noiseBuffer.getChannelData(0);
+  
+  // Fill the buffer with noise
+  for (let i = 0; i < bufferSize; i++) {
+    output[i] = Math.random() * 2 - 1;
+  }
+  
+  // Create the source and gain nodes
+  backgroundSoundNode = audioContext.createBufferSource();
+  backgroundGainNode = audioContext.createGain();
+  
+  // Configure the nodes
+  backgroundSoundNode.buffer = noiseBuffer;
+  backgroundSoundNode.loop = true;
+  backgroundGainNode.gain.value = volume;
+  
+  // Connect the nodes
+  backgroundSoundNode.connect(backgroundGainNode);
+  backgroundGainNode.connect(audioContext.destination);
+  
+  // Start playback
+  backgroundSoundNode.start();
+  console.log("Fallback noise generator started");
 };
 
 /**
