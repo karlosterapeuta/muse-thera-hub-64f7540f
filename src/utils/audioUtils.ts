@@ -43,7 +43,7 @@ const backgroundSoundSources = {
   ocean: {
     mp3: '/lovable-uploads/ocean-waves.mp3',
     ogg: '/lovable-uploads/ocean-waves.ogg',
-    fallback: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1b0cd1027c.mp3?filename=ocean-waves-113997.mp3'
+    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-1189.mp3'
   },
   forest: {
     mp3: '/lovable-uploads/forest-ambience.mp3',
@@ -90,9 +90,9 @@ const highQualityFallbacks = {
     'https://cdn.pixabay.com/download/audio/2021/08/09/audio_88447e769a.mp3?filename=rain-and-thunder-16705.mp3'
   ],
   ocean: [
-    'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1b0cd1027c.mp3?filename=ocean-waves-113997.mp3',
-    'https://cdn.pixabay.com/download/audio/2022/01/18/audio_00fc72b4d0.mp3?filename=ocean-waves-112762.mp3',
-    'https://cdn.pixabay.com/download/audio/2022/01/19/audio_eb0991bcb7.mp3?filename=beach-waves-02-111598.mp3'
+    'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-1189.mp3',
+    'https://assets.mixkit.co/sfx/preview/mixkit-sea-wave-loop-1196.mp3',
+    'https://assets.mixkit.co/sfx/preview/mixkit-forest-stream-running-loop-1231.mp3'
   ],
   forest: [
     'https://cdn.pixabay.com/download/audio/2021/10/11/audio_fd69c1e9ef.mp3?filename=forest-0-7049.mp3',
