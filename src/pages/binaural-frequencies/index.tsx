@@ -3,22 +3,16 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SelectField } from "@/pages/anamnesis/components/SelectField";
+import { SelectField } from "@/pages/treatment-plan/components/SelectField";
 import {
   Play,
   Square,
-  Waves,
-  CloudRain,
-  Trees,
-  Music,
   VolumeX,
   Volume,
   Volume1,
   Volume2,
   Info,
-  Headphones,
-  Ear
+  Headphones
 } from "lucide-react";
 import {
   Tooltip,
@@ -37,14 +31,14 @@ import {
 
 // Convert the therapeutic frequencies object to an array for easier use in the UI
 const therapeuticFrequenciesArray = [
-  ...Object.entries(therapeuticFrequencies.autism).map(([key, item]) => ({
+  ...Object.entries(therapeuticFrequencies.autism || {}).map(([key, item]) => ({
     value: `autism_${key}`,
     name: `TEA - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
     description: item.description,
     baseFrequency: item.left,
     binauralBeat: item.right - item.left
   })),
-  ...Object.entries(therapeuticFrequencies.mentalHealth).map(([key, item]) => ({
+  ...Object.entries(therapeuticFrequencies.mentalHealth || {}).map(([key, item]) => ({
     value: `mental_${key}`,
     name: `Saúde Mental - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
     description: item.description,
@@ -76,11 +70,8 @@ export default function BinauralFrequencies() {
   const [selectedBackground, setSelectedBackground] = useState<BackgroundSoundType>("white-noise");
 
   // Therapeutic tab state
-  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequenciesArray[0].value);
-  const [isTherapeuticPlaying, setIsTherapeuticPlaying] = useState(false);
-  const [therapeuticVolume, setTherapeuticVolume] = useState(50);
-  const [therapeuticBackgroundVolume, setTherapeuticBackgroundVolume] = useState(30);
-  const [therapeuticSelectedBackground, setTherapeuticSelectedBackground] = useState<BackgroundSoundType>("white-noise");
+  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequenciesArray.length > 0 ? therapeuticFrequenciesArray[0].value : "");
+  const [useTherapeuticFrequency, setUseTherapeuticFrequency] = useState(false);
 
   // Calculate binaural beat frequency
   const binauralBeatFrequency = rightFrequency - leftFrequency;
@@ -108,7 +99,12 @@ export default function BinauralFrequencies() {
     };
   }, []);
 
-  // Basic tab handlers
+  // Get selected therapeutic frequency details
+  const getSelectedTherapeuticFrequency = () => {
+    return therapeuticFrequenciesArray.find(f => f.value === selectedTherapeuticFrequency);
+  };
+
+  // Handle play button click
   const handlePlay = async () => {
     if (isPlaying) {
       stopAllAudio();
@@ -116,18 +112,31 @@ export default function BinauralFrequencies() {
       return;
     }
 
+    let leftFreq = leftFrequency;
+    let rightFreq = rightFrequency;
+
+    // If using therapeutic frequency, override left and right frequencies
+    if (useTherapeuticFrequency) {
+      const selectedFreq = getSelectedTherapeuticFrequency();
+      if (selectedFreq) {
+        leftFreq = selectedFreq.baseFrequency;
+        rightFreq = selectedFreq.baseFrequency + selectedFreq.binauralBeat;
+      }
+    }
+
     console.log("Playing binaural beat with parameters:", {
-      leftFrequency,
-      rightFrequency,
-      binauralBeat: rightFrequency - leftFrequency,
+      leftFrequency: leftFreq,
+      rightFrequency: rightFreq,
+      binauralBeat: rightFreq - leftFreq,
       volume: volume / 100,
       backgroundType: selectedBackground,
-      backgroundVolume: backgroundVolume / 100
+      backgroundVolume: backgroundVolume / 100,
+      usingTherapeuticFrequency: useTherapeuticFrequency
     });
 
     const success = await playBinauralBeat(
-      leftFrequency,
-      rightFrequency,
+      leftFreq,
+      rightFreq,
       900000, // Default duration
       volume / 100,
       selectedBackground,
@@ -135,40 +144,6 @@ export default function BinauralFrequencies() {
     );
 
     setIsPlaying(success);
-  };
-
-  // Therapeutic tab handlers
-  const handleTherapeuticPlay = async () => {
-    if (isTherapeuticPlaying) {
-      stopAllAudio();
-      setIsTherapeuticPlaying(false);
-      return;
-    }
-
-    const selectedFrequency = therapeuticFrequenciesArray.find(
-      f => f.value === selectedTherapeuticFrequency
-    );
-
-    if (!selectedFrequency) return;
-
-    console.log("Playing therapeutic frequency:", {
-      baseFrequency: selectedFrequency.baseFrequency,
-      binauralBeat: selectedFrequency.binauralBeat,
-      volume: therapeuticVolume / 100,
-      backgroundType: therapeuticSelectedBackground,
-      backgroundVolume: therapeuticBackgroundVolume / 100
-    });
-
-    const success = await playBinauralBeat(
-      selectedFrequency.baseFrequency,
-      selectedFrequency.baseFrequency + selectedFrequency.binauralBeat,
-      900000, // Default duration
-      therapeuticVolume / 100,
-      therapeuticSelectedBackground,
-      therapeuticBackgroundVolume / 100
-    );
-
-    setIsTherapeuticPlaying(success);
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -181,18 +156,6 @@ export default function BinauralFrequencies() {
   const handleBackgroundVolumeChange = (value: number[]) => {
     const newVolume = value[0];
     setBackgroundVolume(newVolume);
-    updateBackgroundVolume(newVolume / 100);
-  };
-
-  const handleTherapeuticVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setTherapeuticVolume(newVolume);
-    updateBinauralVolume(newVolume / 100);
-  };
-
-  const handleTherapeuticBackgroundVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setTherapeuticBackgroundVolume(newVolume);
     updateBackgroundVolume(newVolume / 100);
   };
 
@@ -215,8 +178,19 @@ export default function BinauralFrequencies() {
     setSelectedBackground(value as BackgroundSoundType);
   };
 
-  const handleTherapeuticBackgroundChange = (value: string) => {
-    setTherapeuticSelectedBackground(value as BackgroundSoundType);
+  const handleTherapeuticFrequencyChange = (value: string) => {
+    setSelectedTherapeuticFrequency(value);
+    setUseTherapeuticFrequency(true);
+  };
+
+  const handleCustomFrequencyClick = () => {
+    setUseTherapeuticFrequency(false);
+  };
+
+  // Get therapeutic frequency description
+  const getTherapeuticFrequencyDescription = () => {
+    const selectedFreq = getSelectedTherapeuticFrequency();
+    return selectedFreq?.description || "";
   };
 
   return (
@@ -230,27 +204,41 @@ export default function BinauralFrequencies() {
         </p>
       </div>
 
-      <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
-          <TabsTrigger value="basic">Básico</TabsTrigger>
-          <TabsTrigger value="therapeutic">Terapêutico</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-card/95 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Headphones className="mr-2 h-5 w-5" />
+              Configurações da Frequência
+            </CardTitle>
+            <CardDescription>
+              Ajuste as frequências ou escolha um padrão terapêutico
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              {/* Frequency Selection Mode */}
+              <div className="flex space-x-2 mb-4">
+                <Button 
+                  variant={!useTherapeuticFrequency ? "default" : "outline"} 
+                  size="sm"
+                  onClick={handleCustomFrequencyClick}
+                  className="flex-1"
+                >
+                  Personalizada
+                </Button>
+                <Button 
+                  variant={useTherapeuticFrequency ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setUseTherapeuticFrequency(true)}
+                  className="flex-1"
+                >
+                  Terapêutica
+                </Button>
+              </div>
 
-        {/* Basic Tab */}
-        <TabsContent value="basic">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-card/95 backdrop-blur">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Headphones className="mr-2 h-5 w-5" />
-                  Configurações da Frequência
-                </CardTitle>
-                <CardDescription>
-                  Ajuste as frequências para cada ouvido
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
+              {!useTherapeuticFrequency ? (
+                <>
                   {/* Left Ear Frequency */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -308,249 +296,187 @@ export default function BinauralFrequencies() {
                       onValueChange={(value) => setRightFrequency(value[0])}
                     />
                   </div>
-
-                  {/* Binaural Beat Info Card */}
-                  <div className="mt-6 p-4 rounded-lg bg-purple-600 text-white">
-                    <h3 className="text-lg font-medium mb-1">Batida binaural</h3>
-                    <div className="text-3xl font-bold mb-1">{binauralBeatFrequency.toFixed(1)} Hz</div>
-                    <div className="text-lg">{currentCategory}</div>
-                    <div className="text-sm opacity-90">
-                      {categoryInfo?.description || ""}
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-white hover:bg-white/20">
-                            <Info className="h-5 w-5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">A batida binaural é a diferença entre as frequências apresentadas em cada ouvido.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium flex items-center">
-                        {getVolumeIcon(volume)}
-                        <span className="ml-2">Volume: {volume}%</span>
-                      </label>
-                    </div>
-                    <Slider
-                      value={[volume]}
-                      min={0}
-                      max={100}
-                      step={1}
-                      onValueChange={handleVolumeChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <SelectField 
-                      label="Som de Fundo"
-                      value={selectedBackground}
-                      onChange={handleBackgroundChange}
-                      options={backgroundSoundOptions}
-                    />
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium flex items-center">
-                          {getVolumeIcon(backgroundVolume)}
-                          <span className="ml-2">Volume de Fundo: {backgroundVolume}%</span>
-                        </label>
-                      </div>
-                      <Slider
-                        value={[backgroundVolume]}
-                        min={0}
-                        max={100}
-                        step={1}
-                        onValueChange={handleBackgroundVolumeChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button
-                  onClick={handlePlay}
-                  className="w-32"
-                  variant={isPlaying ? "destructive" : "default"}
-                >
-                  {isPlaying ? (
-                    <>
-                      <Square className="mr-2 h-4 w-4" /> Parar
-                    </>
-                  ) : (
-                    <>
-                      <Play className="mr-2 h-4 w-4" /> Iniciar
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-
-            <Card className="bg-card/95 backdrop-blur">
-              <CardHeader>
-                <CardTitle>Guia de Faixa de Frequência</CardTitle>
-                <CardDescription>
-                  Diferentes faixas de frequência têm diferentes efeitos no cérebro
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {frequencyRanges.map((range, index) => (
-                    <div key={index} className="flex items-start">
-                      <div 
-                        className="w-4 h-4 rounded-full mt-1 mr-3 flex-shrink-0"
-                        style={{backgroundColor: range.color}}
-                      ></div>
-                      <div>
-                        <div className="font-medium">{range.name}:</div>
-                        <div className="text-sm text-gray-600">{range.description}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Therapeutic Tab */}
-        <TabsContent value="therapeutic">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Music className="mr-2 h-5 w-5" />
-                  Frequências Terapêuticas
-                </CardTitle>
-                <CardDescription>
-                  Frequências pré-configuradas com fins terapêuticos específicos
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
+                </>
+              ) : (
+                <>
+                  {/* Therapeutic Frequency Selector */}
                   <SelectField 
                     label="Selecione o objetivo terapêutico"
                     value={selectedTherapeuticFrequency}
-                    onChange={setSelectedTherapeuticFrequency}
+                    onChange={handleTherapeuticFrequencyChange}
                     options={therapeuticFrequenciesArray.map(f => ({ value: f.value, label: f.name }))}
                   />
                   
                   <div className="bg-secondary/20 p-3 rounded-md">
                     <p className="text-sm">
-                      {therapeuticFrequenciesArray.find(f => f.value === selectedTherapeuticFrequency)?.description}
+                      {getTherapeuticFrequencyDescription()}
                     </p>
                   </div>
+                </>
+              )}
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium flex items-center">
-                        {getVolumeIcon(therapeuticVolume)}
-                        <span className="ml-2">Volume: {therapeuticVolume}%</span>
-                      </label>
-                    </div>
-                    <Slider
-                      value={[therapeuticVolume]}
-                      min={0}
-                      max={100}
-                      step={1}
-                      onValueChange={handleTherapeuticVolumeChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <SelectField 
-                      label="Som de Fundo"
-                      value={therapeuticSelectedBackground}
-                      onChange={handleTherapeuticBackgroundChange}
-                      options={backgroundSoundOptions}
-                    />
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium flex items-center">
-                          {getVolumeIcon(therapeuticBackgroundVolume)}
-                          <span className="ml-2">Volume de Fundo: {therapeuticBackgroundVolume}%</span>
-                        </label>
-                      </div>
-                      <Slider
-                        value={[therapeuticBackgroundVolume]}
-                        min={0}
-                        max={100}
-                        step={1}
-                        onValueChange={handleTherapeuticBackgroundVolumeChange}
-                      />
-                    </div>
-                  </div>
+              {/* Binaural Beat Info Card */}
+              <div className="mt-6 p-4 rounded-lg bg-purple-600 text-white relative">
+                <h3 className="text-lg font-medium mb-1">Batida binaural</h3>
+                <div className="text-3xl font-bold mb-1">
+                  {useTherapeuticFrequency 
+                    ? (getSelectedTherapeuticFrequency()?.binauralBeat || 0).toFixed(1)
+                    : binauralBeatFrequency.toFixed(1)} Hz
                 </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button
-                  onClick={handleTherapeuticPlay}
-                  className="w-32"
-                  variant={isTherapeuticPlaying ? "destructive" : "default"}
-                >
-                  {isTherapeuticPlaying ? (
-                    <>
-                      <Square className="mr-2 h-4 w-4" /> Parar
-                    </>
-                  ) : (
-                    <>
-                      <Play className="mr-2 h-4 w-4" /> Iniciar
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
+                <div className="text-lg">
+                  {useTherapeuticFrequency 
+                    ? getBrainwaveCategory(getSelectedTherapeuticFrequency()?.binauralBeat || 0)
+                    : currentCategory}
+                </div>
+                <div className="text-sm opacity-90">
+                  {useTherapeuticFrequency 
+                    ? frequencyRanges.find(range => 
+                        range.name.startsWith(getBrainwaveCategory(getSelectedTherapeuticFrequency()?.binauralBeat || 0)))?.description || ""
+                    : categoryInfo?.description || ""}
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-white hover:bg-white/20">
+                        <Info className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">A batida binaural é a diferença entre as frequências apresentadas em cada ouvido.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Recomendações de Uso</CardTitle>
-                <CardDescription>
-                  Orientações para maximizar os benefícios das frequências binaurais
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium">Use fones de ouvido</h3>
-                  <p className="text-sm text-gray-600">
-                    Fones de ouvido são essenciais para que cada ouvido receba uma frequência distinta, criando o efeito binaural.
-                  </p>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium flex items-center">
+                    {getVolumeIcon(volume)}
+                    <span className="ml-2">Volume: {volume}%</span>
+                  </label>
                 </div>
+                <Slider
+                  value={[volume]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  onValueChange={handleVolumeChange}
+                />
+              </div>
+              
+              <div className="space-y-3">
+                <SelectField 
+                  label="Som de Fundo"
+                  value={selectedBackground}
+                  onChange={handleBackgroundChange}
+                  options={backgroundSoundOptions}
+                />
+                
                 <div className="space-y-2">
-                  <h3 className="font-medium">Ambiente tranquilo</h3>
-                  <p className="text-sm text-gray-600">
-                    Escolha um local calmo e confortável, livre de distrações, para melhor experiência.
-                  </p>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium flex items-center">
+                      {getVolumeIcon(backgroundVolume)}
+                      <span className="ml-2">Volume de Fundo: {backgroundVolume}%</span>
+                    </label>
+                  </div>
+                  <Slider
+                    value={[backgroundVolume]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onValueChange={handleBackgroundVolumeChange}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Duração das sessões</h3>
-                  <p className="text-sm text-gray-600">
-                    Sessões de 15-30 minutos são geralmente suficientes. Comece com sessões mais curtas e aumente gradualmente.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Regularidade</h3>
-                  <p className="text-sm text-gray-600">
-                    Use regularmente para melhores resultados. Os efeitos podem ser cumulativos com o uso consistente.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Atenção</h3>
-                  <p className="text-sm text-gray-600">
-                    Não use enquanto dirige ou opera máquinas. Pessoas com epilepsia devem consultar um médico antes do uso.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button
+              onClick={handlePlay}
+              className="w-32"
+              variant={isPlaying ? "destructive" : "default"}
+            >
+              {isPlaying ? (
+                <>
+                  <Square className="mr-2 h-4 w-4" /> Parar
+                </>
+              ) : (
+                <>
+                  <Play className="mr-2 h-4 w-4" /> Iniciar
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <div className="space-y-6">
+          <Card className="bg-card/95 backdrop-blur">
+            <CardHeader>
+              <CardTitle>Guia de Faixa de Frequência</CardTitle>
+              <CardDescription>
+                Diferentes faixas de frequência têm diferentes efeitos no cérebro
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {frequencyRanges.map((range, index) => (
+                  <div key={index} className="flex items-start">
+                    <div 
+                      className="w-4 h-4 rounded-full mt-1 mr-3 flex-shrink-0"
+                      style={{backgroundColor: range.color}}
+                    ></div>
+                    <div>
+                      <div className="font-medium">{range.name}:</div>
+                      <div className="text-sm text-gray-600">{range.description}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Recomendações de Uso</CardTitle>
+              <CardDescription>
+                Orientações para maximizar os benefícios das frequências binaurais
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="font-medium">Use fones de ouvido</h3>
+                <p className="text-sm text-gray-600">
+                  Fones de ouvido são essenciais para que cada ouvido receba uma frequência distinta, criando o efeito binaural.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-medium">Ambiente tranquilo</h3>
+                <p className="text-sm text-gray-600">
+                  Escolha um local calmo e confortável, livre de distrações, para melhor experiência.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-medium">Duração das sessões</h3>
+                <p className="text-sm text-gray-600">
+                  Sessões de 15-30 minutos são geralmente suficientes. Comece com sessões mais curtas e aumente gradualmente.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-medium">Regularidade</h3>
+                <p className="text-sm text-gray-600">
+                  Use regularmente para melhores resultados. Os efeitos podem ser cumulativos com o uso consistente.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-medium">Atenção</h3>
+                <p className="text-sm text-gray-600">
+                  Não use enquanto dirige ou opera máquinas. Pessoas com epilepsia devem consultar um médico antes do uso.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
