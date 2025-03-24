@@ -1,3 +1,4 @@
+
 // Map of notes to their frequencies in Hz
 const noteFrequencies: Record<string, number> = {
   "C1": 261.63, // C4 (middle C)
@@ -10,10 +11,30 @@ const noteFrequencies: Record<string, number> = {
   "C8": 523.25  // C5
 };
 
+// TEA and mental health optimized frequencies
+export const therapeuticFrequencies = {
+  autism: {
+    alpha: { left: 200, right: 205, description: "Auxilia na redução da ansiedade e melhora o foco em indivíduos com TEA." },
+    theta: { left: 180, right: 187, description: "Promove relaxamento e pode ajudar com hipersensibilidade sensorial." },
+    delta: { left: 130, right: 133, description: "Pode auxiliar na melhoria do sono e redução da agitação em casos de TEA." }
+  },
+  mentalHealth: {
+    anxiety: { left: 300, right: 310, description: "Frequência que ajuda a reduzir a ansiedade e acalmar a mente." },
+    depression: { left: 220, right: 228, description: "Promove sensação de bem-estar e pode auxiliar em quadros depressivos." },
+    adhd: { left: 250, right: 258, description: "Auxilia na melhoria do foco e concentração em casos de TDAH." },
+    stress: { left: 150, right: 158, description: "Redução do estresse e tensão, promovendo relaxamento profundo." }
+  }
+};
+
+// Background sound types
+export type BackgroundSoundType = 'rain' | 'whitenoise' | 'ocean' | 'forest' | 'none';
+
 // AudioContext singleton to prevent multiple instances
 let audioContext: AudioContext | null = null;
 let currentOscillators: OscillatorNode[] = [];
 let currentGainNodes: GainNode[] = [];
+let backgroundSoundNode: AudioBufferSourceNode | null = null;
+let backgroundGainNode: GainNode | null = null;
 
 /**
  * Plays a musical note with the given frequency
@@ -70,12 +91,21 @@ export const playNoteSound = (note: string, duration: number = 500) => {
 
 /**
  * Plays a binaural beat with the specified carrier frequency and beat frequency
- * @param carrierFreq The base frequency in Hz (typically 100-500 Hz)
- * @param beatFreq The difference between the two tones to create the binaural beat (desired brainwave Hz)
- * @param duration Duration in milliseconds
+ * @param leftFreq The frequency for the left ear in Hz
+ * @param rightFreq The frequency for the right ear in Hz
+ * @param duration Duration in milliseconds (default 15min)
  * @param volume Volume from 0 to 1
+ * @param backgroundSound Optional background sound to play
+ * @param backgroundVolume Volume of the background sound (0 to 1)
  */
-export const playBinauralBeat = (carrierFreq: number = 200, beatFreq: number = 10, duration: number = 60000, volume: number = 0.5) => {
+export const playBinauralBeat = (
+  leftFreq: number = 200, 
+  rightFreq: number = 205, 
+  duration: number = 900000, // 15 minutes default
+  volume: number = 0.5,
+  backgroundSound: BackgroundSoundType = 'none',
+  backgroundVolume: number = 0.3
+) => {
   try {
     // Stop any currently playing audio
     stopAllAudio();
@@ -97,9 +127,9 @@ export const playBinauralBeat = (carrierFreq: number = 200, beatFreq: number = 1
     const leftGain = audioContext.createGain();
     const rightGain = audioContext.createGain();
     
-    // Set frequencies - one oscillator is at carrier frequency, the other is at carrier + beat
-    leftOscillator.frequency.value = carrierFreq;
-    rightOscillator.frequency.value = carrierFreq + beatFreq;
+    // Set frequencies - each ear gets its specific frequency
+    leftOscillator.frequency.value = leftFreq;
+    rightOscillator.frequency.value = rightFreq;
     
     // Set oscillator type
     leftOscillator.type = 'sine';
@@ -131,6 +161,11 @@ export const playBinauralBeat = (carrierFreq: number = 200, beatFreq: number = 1
     currentOscillators.push(leftOscillator, rightOscillator);
     currentGainNodes.push(leftGain, rightGain);
     
+    // Add background sound if selected
+    if (backgroundSound !== 'none') {
+      loadBackgroundSound(backgroundSound, backgroundVolume);
+    }
+    
     // Start the oscillators
     leftOscillator.start();
     rightOscillator.start();
@@ -146,6 +181,78 @@ export const playBinauralBeat = (carrierFreq: number = 200, beatFreq: number = 1
     console.error("Error playing binaural beat:", error);
     return false;
   }
+};
+
+/**
+ * Loads and plays a background sound
+ */
+const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: number = 0.3) => {
+  if (!audioContext) return;
+  
+  let soundUrl = '';
+  
+  // Map sound type to URL
+  switch (soundType) {
+    case 'rain':
+      soundUrl = '/lovable-uploads/rain-sound.mp3';
+      break;
+    case 'whitenoise':
+      soundUrl = '/lovable-uploads/white-noise.mp3';
+      break;
+    case 'ocean':
+      soundUrl = '/lovable-uploads/ocean-waves.mp3';
+      break;
+    case 'forest':
+      soundUrl = '/lovable-uploads/forest-ambience.mp3';
+      break;
+    default:
+      return; // No sound to load
+  }
+  
+  try {
+    // Fetch the audio file
+    const response = await fetch(soundUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    
+    // Decode the audio data
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    
+    // Create source and gain nodes
+    backgroundSoundNode = audioContext.createBufferSource();
+    backgroundGainNode = audioContext.createGain();
+    
+    // Configure nodes
+    backgroundSoundNode.buffer = audioBuffer;
+    backgroundSoundNode.loop = true;
+    backgroundGainNode.gain.value = volume;
+    
+    // Connect nodes
+    backgroundSoundNode.connect(backgroundGainNode);
+    backgroundGainNode.connect(audioContext.destination);
+    
+    // Start playback
+    backgroundSoundNode.start();
+  } catch (error) {
+    console.error("Error loading background sound:", error);
+  }
+};
+
+/**
+ * Update the background sound volume
+ */
+export const updateBackgroundVolume = (volume: number) => {
+  if (backgroundGainNode) {
+    backgroundGainNode.gain.value = volume;
+  }
+};
+
+/**
+ * Update the binaural beat volume
+ */
+export const updateBinauralVolume = (volume: number) => {
+  currentGainNodes.forEach(gain => {
+    gain.gain.value = volume;
+  });
 };
 
 /**
@@ -172,6 +279,26 @@ export const stopAllAudio = () => {
       // Ignore errors
     }
   });
+  
+  // Stop and disconnect background sound if playing
+  if (backgroundSoundNode) {
+    try {
+      backgroundSoundNode.stop();
+      backgroundSoundNode.disconnect();
+      backgroundSoundNode = null;
+    } catch (e) {
+      // Ignore errors
+    }
+  }
+  
+  if (backgroundGainNode) {
+    try {
+      backgroundGainNode.disconnect();
+      backgroundGainNode = null;
+    } catch (e) {
+      // Ignore errors
+    }
+  }
   
   // Clear the arrays
   currentOscillators = [];
