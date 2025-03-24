@@ -650,4 +650,657 @@ const createRealisticForestSound = (leftChannel: Float32Array, rightChannel: Flo
   const bufferLength = leftChannel.length;
   
   // Create gentle background ambience (wind through leaves)
-  for (let i = 0; i < buffer
+  for (let i = 0; i < bufferLength; i++) {
+    // Gentle wind noise - low amplitude, slightly random
+    const windNoise = Math.random() * 0.05 - 0.025;
+    
+    // Slow ambient variations
+    const slowVariation = Math.sin(i / sampleRate * 0.1) * 0.02;
+    
+    leftChannel[i] = windNoise + slowVariation;
+    // Create slightly different right channel for stereo effect
+    rightChannel[i] = Math.random() * 0.05 - 0.025 + slowVariation * 0.8;
+  }
+  
+  // Add rustling leaves sounds at random intervals
+  for (let second = 0; second < bufferLength / sampleRate; second += 2) {
+    if (Math.random() > 0.4) { // 60% chance of rustling leaves 
+      const rustleStart = Math.floor((second + Math.random()) * sampleRate);
+      const rustleDuration = Math.floor(sampleRate * (0.2 + Math.random() * 0.5));
+      
+      if (rustleStart + rustleDuration >= bufferLength) continue;
+      
+      // Create rustling sound
+      for (let i = 0; i < rustleDuration; i++) {
+        const envelope = Math.sin((i / rustleDuration) * Math.PI) * 0.15;
+        
+        // Rustling is mid-high frequency noise with an envelope
+        const rustleNoise = (Math.random() * 2 - 1) * envelope;
+        
+        // Pan the sound to a random position
+        const pan = Math.random() * 2 - 1; // -1 to 1
+        
+        if (rustleStart + i < bufferLength) {
+          leftChannel[rustleStart + i] += rustleNoise * (1 - Math.max(0, pan));
+          rightChannel[rustleStart + i] += rustleNoise * (1 - Math.max(0, -pan));
+        }
+      }
+    }
+  }
+  
+  // Add distant bird calls
+  for (let second = 0; second < bufferLength / sampleRate; second += 3) {
+    if (Math.random() > 0.7) { // 30% chance of bird call
+      const birdType = Math.floor(Math.random() * 4); // 4 different bird types
+      const birdStart = Math.floor((second + Math.random() * 2) * sampleRate);
+      
+      if (birdStart + 2 * sampleRate >= bufferLength) continue;
+      
+      // Create a bird call based on type
+      createBirdCall(leftChannel, rightChannel, birdStart, birdType, sampleRate);
+    }
+  }
+  
+  // Normalize to prevent clipping
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates bird call sounds for the forest soundscape
+ */
+const createBirdCall = (leftChannel: Float32Array, rightChannel: Float32Array, startPos: number, birdType: number, sampleRate: number) => {
+  // Bird call parameters
+  let duration, chirpCount, chirpInterval, baseFreq, freqRange;
+  
+  // Different types of bird calls
+  switch (birdType) {
+    case 0: // Short repeated chirps
+      duration = 0.1;
+      chirpCount = 3 + Math.floor(Math.random() * 4);
+      chirpInterval = 0.15;
+      baseFreq = 3000 + Math.random() * 1000;
+      freqRange = 500;
+      break;
+    case 1: // Long melodic call
+      duration = 0.3 + Math.random() * 0.3;
+      chirpCount = 1;
+      chirpInterval = 0;
+      baseFreq = 2000 + Math.random() * 1000;
+      freqRange = 1000;
+      break;
+    case 2: // Short high pitched call
+      duration = 0.05 + Math.random() * 0.05;
+      chirpCount = 1 + Math.floor(Math.random() * 2);
+      chirpInterval = 0.1;
+      baseFreq = 4000 + Math.random() * 2000;
+      freqRange = 300;
+      break;
+    default: // Low cooing sound
+      duration = 0.4 + Math.random() * 0.4;
+      chirpCount = 1;
+      chirpInterval = 0;
+      baseFreq = 1000 + Math.random() * 500;
+      freqRange = 200;
+  }
+  
+  // Bird position (panning)
+  const pan = Math.random() * 2 - 1; // -1 (left) to 1 (right)
+  const leftGain = 1 - Math.max(0, pan);
+  const rightGain = 1 - Math.max(0, -pan);
+  
+  // Small distance effect (delay and volume)
+  const distance = Math.random();
+  const volume = 0.15 * (1 - distance * 0.7);
+  const delay = Math.floor(distance * 0.05 * sampleRate);
+  
+  // Generate chirp sounds
+  for (let i = 0; i < chirpCount; i++) {
+    const chirpStart = startPos + Math.floor(i * chirpInterval * sampleRate);
+    const chirpDuration = Math.floor(duration * sampleRate);
+    
+    if (chirpStart + chirpDuration >= leftChannel.length) break;
+    
+    // Create frequency modulation for the chirp
+    for (let j = 0; j < chirpDuration; j++) {
+      const position = j / chirpDuration;
+      
+      // Frequency and amplitude envelopes
+      let freq = 0;
+      let amp = 0;
+      
+      // Different frequency patterns for different bird types
+      if (birdType === 0) {
+        // Short rising tone
+        freq = baseFreq + position * freqRange;
+        amp = Math.sin(position * Math.PI) * volume;
+      } else if (birdType === 1) {
+        // Rising then falling tone
+        freq = baseFreq + Math.sin(position * Math.PI) * freqRange;
+        amp = Math.sin(position * Math.PI) * volume;
+      } else if (birdType === 2) {
+        // Rapid frequency modulation
+        freq = baseFreq + Math.sin(position * Math.PI * 8) * freqRange;
+        amp = Math.sin(position * Math.PI) * volume;
+      } else {
+        // Slow warbling
+        freq = baseFreq + Math.sin(position * Math.PI * 3) * freqRange;
+        amp = (0.2 + 0.8 * Math.sin(position * Math.PI)) * volume;
+      }
+      
+      // Convert frequency to phase increment
+      const phaseIncrement = 2 * Math.PI * freq / sampleRate;
+      
+      // Generate sine wave at the current frequency
+      const sample = Math.sin(j * phaseIncrement) * amp;
+      
+      // Apply to both channels with panning
+      if (chirpStart + j < leftChannel.length) {
+        leftChannel[chirpStart + j] += sample * leftGain;
+        rightChannel[chirpStart + j + delay] += sample * rightGain;
+      }
+    }
+  }
+};
+
+/**
+ * Creates a bird-filled soundscape
+ */
+const createBirdsSoundscape = (leftChannel: Float32Array, rightChannel: Float32Array, sampleRate: number) => {
+  console.log("Creating birds soundscape");
+  const bufferLength = leftChannel.length;
+  
+  // Create very subtle background ambience
+  for (let i = 0; i < bufferLength; i++) {
+    // Extremely quiet background noise
+    leftChannel[i] = (Math.random() * 0.01 - 0.005);
+    rightChannel[i] = (Math.random() * 0.01 - 0.005);
+  }
+  
+  // Create many varied bird calls throughout the soundscape
+  const totalSeconds = bufferLength / sampleRate;
+  const totalBirds = Math.floor(totalSeconds * 2); // About 2 bird calls per second average
+  
+  for (let i = 0; i < totalBirds; i++) {
+    const birdType = Math.floor(Math.random() * 5); // Now 5 types
+    const callTime = Math.random() * totalSeconds;
+    const callPos = Math.floor(callTime * sampleRate);
+    
+    createBirdCall(leftChannel, rightChannel, callPos, birdType, sampleRate);
+  }
+  
+  // Add some distant forest rustling sounds occasionally
+  for (let second = 0; second < bufferLength / sampleRate; second += 3) {
+    if (Math.random() > 0.7) {
+      const rustleStart = Math.floor(second * sampleRate);
+      const rustleDuration = Math.floor(sampleRate * 2);
+      
+      if (rustleStart + rustleDuration >= bufferLength) continue;
+      
+      for (let i = 0; i < rustleDuration; i++) {
+        const envelope = Math.sin((i / rustleDuration) * Math.PI) * 0.04;
+        const rustleNoise = (Math.random() * 2 - 1) * envelope;
+        
+        // Pan the rustling for stereo effect
+        const pan = Math.random() * 2 - 1;
+        
+        leftChannel[rustleStart + i] += rustleNoise * (1 - Math.max(0, pan));
+        rightChannel[rustleStart + i] += rustleNoise * (1 - Math.max(0, -pan));
+      }
+    }
+  }
+  
+  // Normalize the audio
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates a fireplace/crackling fire sound effect
+ */
+const createFireplaceSound = (leftChannel: Float32Array, rightChannel: Float32Array, sampleRate: number) => {
+  console.log("Creating fireplace sound");
+  const bufferLength = leftChannel.length;
+  
+  // Base continuous fire sound (low rumble + hiss)
+  for (let i = 0; i < bufferLength; i++) {
+    // Low frequency rumble component
+    const rumble = Math.random() * 0.08 - 0.04;
+    
+    // Higher frequency hiss component
+    const hiss = Math.random() * 0.03 - 0.015;
+    
+    // Combine with slight variation between channels
+    leftChannel[i] = rumble * 1.0 + hiss * 0.7;
+    rightChannel[i] = rumble * 0.7 + hiss * 1.0;
+  }
+  
+  // Add individual crackling sounds
+  for (let second = 0; second < bufferLength / sampleRate; second += 0.2) {
+    // Variable density of crackles over time
+    const cracklesThisSegment = Math.floor(Math.random() * 4) + 1;
+    
+    for (let c = 0; c < cracklesThisSegment; c++) {
+      // Random position within this segment
+      const crackleStart = Math.floor((second + Math.random() * 0.2) * sampleRate);
+      if (crackleStart >= bufferLength - 100) continue;
+      
+      // Crackle intensity - occasionally make a louder pop
+      const isLoudPop = Math.random() > 0.9;
+      const volume = isLoudPop ? 0.8 : 0.3;
+      const duration = isLoudPop ? 80 : 30;
+      
+      // Create the crackle sound
+      for (let i = 0; i < duration; i++) {
+        if (crackleStart + i >= bufferLength) break;
+        
+        // Envelope for the crackle (quick attack, slower decay)
+        let env = 0;
+        if (i < duration * 0.1) {
+          env = i / (duration * 0.1); // attack
+        } else {
+          env = 1 - ((i - duration * 0.1) / (duration * 0.9)); // decay
+        }
+        
+        // Sharp noise for the crackle
+        const noise = (Math.random() * 2 - 1) * volume * env;
+        
+        // Random stereo position
+        const pan = Math.random() * 1.4 - 0.7; // -0.7 to 0.7 for somewhat centered sound
+        
+        // Add to both channels with panning
+        leftChannel[crackleStart + i] += noise * (1 - Math.max(0, pan));
+        rightChannel[crackleStart + i] += noise * (1 - Math.max(0, -pan));
+      }
+    }
+    
+    // Occasional water splash
+    if (Math.random() > 0.9) { // 10% chance per segment
+      const splashStart = Math.floor((second + Math.random() * 0.1) * sampleRate);
+      if (splashStart >= bufferLength - 200) continue;
+      
+      const splashVolume = Math.random() * 0.4 + 0.2;
+      const splashDuration = Math.floor(sampleRate * 0.15); // 150ms
+      
+      for (let i = 0; i < splashDuration; i++) {
+        if (splashStart + i >= bufferLength) break;
+        
+        const position = i / splashDuration;
+        
+        // Splash envelope (very quick attack, slower decay)
+        let env = 0;
+        if (position < 0.03) {
+          env = position / 0.03; // Fast attack
+        } else {
+          env = 1 - ((position - 0.03) / 0.97); // Decay
+        }
+        
+        // Create splash sound (filtered noise)
+        const splash = (Math.random() * 2 - 1) * env * splashVolume;
+        
+        // Add to audio buffer with random panning
+        const pan = Math.random() * 1.8 - 0.9; // Wide stereo image
+        
+        leftChannel[splashStart + i] += splash * (1 - Math.max(0, pan));
+        rightChannel[splashStart + i] += splash * (1 - Math.max(0, -pan));
+      }
+    }
+  }
+  
+  // Normalize the audio
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates a flowing stream/river sound
+ */
+const createStreamSound = (leftChannel: Float32Array, rightChannel: Float32Array, sampleRate: number) => {
+  console.log("Creating stream sound");
+  const bufferLength = leftChannel.length;
+  
+  // Base water flow noise
+  for (let i = 0; i < bufferLength; i++) {
+    // White noise base for water sound
+    const waterBase = Math.random() * 0.1 - 0.05;
+    
+    // Slow variations to simulate changing water flow
+    const slowVar = Math.sin(i / sampleRate * 0.2) * 0.02;
+    
+    leftChannel[i] = waterBase + slowVar;
+    rightChannel[i] = Math.random() * 0.1 - 0.05 + slowVar * 0.7; // Slightly different for right
+  }
+  
+  // Add bubbling and splashing effects
+  for (let second = 0; second < bufferLength / sampleRate; second += 0.1) {
+    // Random number of bubbling sounds in this segment
+    const bubbleCount = Math.floor(Math.random() * 3);
+    
+    for (let b = 0; b < bubbleCount; b++) {
+      const bubbleStart = Math.floor((second + Math.random() * 0.1) * sampleRate);
+      if (bubbleStart >= bufferLength - 50) continue;
+      
+      // Random bubble parameters
+      const bubbleSize = Math.random() * 0.3 + 0.1; // Affects volume and duration
+      const bubbleDuration = Math.floor(20 + bubbleSize * 60);
+      
+      // Create bubble sound (rapid attack, slower decay)
+      for (let i = 0; i < bubbleDuration; i++) {
+        if (bubbleStart + i >= bufferLength) break;
+        
+        // Bubble envelope
+        const position = i / bubbleDuration;
+        let env = 0;
+        
+        if (position < 0.1) {
+          env = position / 0.1; // Attack
+        } else {
+          env = (1 - position) * (1 - position); // Curved decay
+        }
+        
+        // Bubble frequency changes (starts higher, then lower)
+        const freqFactor = 1 - position * 0.5;
+        const frequency = 500 + 1000 * freqFactor * bubbleSize;
+        
+        // Create bubble tone with some noise
+        const phaseIncrement = 2 * Math.PI * frequency / sampleRate;
+        const tone = Math.sin(i * phaseIncrement);
+        const noise = Math.random() * 0.5;
+        const bubble = (tone * 0.7 + noise * 0.3) * env * bubbleSize;
+        
+        // Pan the bubble
+        const pan = Math.random() * 1.6 - 0.8; // -0.8 to 0.8
+        
+        // Add to audio buffer
+        leftChannel[bubbleStart + i] += bubble * (1 - Math.max(0, pan));
+        rightChannel[bubbleStart + i] += bubble * (1 - Math.max(0, -pan));
+      }
+    }
+    
+    // Occasional water splash
+    if (Math.random() > 0.9) { // 10% chance per segment
+      const splashStart = Math.floor((second + Math.random() * 0.1) * sampleRate);
+      if (splashStart >= bufferLength - 200) continue;
+      
+      const splashVolume = Math.random() * 0.4 + 0.2;
+      const splashDuration = Math.floor(sampleRate * 0.15); // 150ms
+      
+      for (let i = 0; i < splashDuration; i++) {
+        if (splashStart + i >= bufferLength) break;
+        
+        const position = i / splashDuration;
+        
+        // Splash envelope (very quick attack, slower decay)
+        let env = 0;
+        if (position < 0.03) {
+          env = position / 0.03; // Fast attack
+        } else {
+          env = 1 - ((position - 0.03) / 0.97); // Decay
+        }
+        
+        // Create splash sound (filtered noise)
+        const splash = (Math.random() * 2 - 1) * env * splashVolume;
+        
+        // Add to audio buffer with random panning
+        const pan = Math.random() * 1.8 - 0.9; // Wide stereo image
+        
+        leftChannel[splashStart + i] += splash * (1 - Math.max(0, pan));
+        rightChannel[splashStart + i] += splash * (1 - Math.max(0, -pan));
+      }
+    }
+  }
+  
+  // Normalize the audio
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates meditation ambient music
+ */
+const createMeditationSound = (leftChannel: Float32Array, rightChannel: Float32Array, sampleRate: number) => {
+  console.log("Creating meditation sound");
+  const bufferLength = leftChannel.length;
+  
+  // Base parameters
+  const baseFrequency = 220; // A3
+  const overtones = [1, 1.5, 2, 2.5, 3, 4]; // Harmonic series
+  
+  // Fill buffer with silence first
+  for (let i = 0; i < bufferLength; i++) {
+    leftChannel[i] = 0;
+    rightChannel[i] = 0;
+  }
+  
+  // Create several overlapping tones with different durations
+  for (let o = 0; o < overtones.length; o++) {
+    const frequency = baseFrequency * overtones[o];
+    const amplitude = 0.15 / (o + 1); // Decrease amplitude for higher overtones
+    
+    // Create tone that spans the entire buffer with slow variations
+    for (let i = 0; i < bufferLength; i++) {
+      // Phase for this sample
+      const phase = i * 2 * Math.PI * frequency / sampleRate;
+      
+      // Create slow amplitude variations for each overtone
+      const slowVar = 0.5 + 0.5 * Math.sin(i / sampleRate * (0.05 + o * 0.02));
+      
+      // Generate tone
+      const sample = Math.sin(phase) * amplitude * slowVar;
+      
+      // Add to buffer with different phase for left/right channels
+      leftChannel[i] += sample * Math.sin(i / sampleRate * 0.1);
+      rightChannel[i] += sample * Math.sin((i / sampleRate * 0.1) + 0.2);
+    }
+  }
+  
+  // Add occasional gentle bell sounds
+  for (let second = 0; second < bufferLength / sampleRate; second += 8) {
+    if (Math.random() > 0.5) { // 50% chance
+      const bellStart = Math.floor((second + Math.random() * 6) * sampleRate);
+      if (bellStart >= bufferLength - 5 * sampleRate) continue;
+      
+      // Bell parameters
+      const bellFreq = baseFrequency * (2 + Math.floor(Math.random() * 4));
+      const bellDuration = Math.floor(sampleRate * 5); // 5 seconds
+      
+      // Create bell sound with long decay
+      for (let i = 0; i < bellDuration; i++) {
+        if (bellStart + i >= bufferLength) break;
+        
+        // Bell envelope (quick attack, very long decay)
+        const position = i / bellDuration;
+        let env = 0;
+        
+        if (position < 0.01) {
+          env = position / 0.01; // Fast attack
+        } else {
+          env = Math.pow(1 - position, 1.5); // Long decay with exponential curve
+        }
+        
+        // Add slight frequency modulation for realism
+        const vibrato = 1 + Math.sin(i / sampleRate * 6) * 0.001;
+        const phase = i * 2 * Math.PI * bellFreq * vibrato / sampleRate;
+        
+        // Generate bell tone - using sine wave with harmonics
+        const mainTone = Math.sin(phase);
+        const harmonic1 = Math.sin(phase * 2.1) * 0.3; // Slightly detuned for richness
+        const harmonic2 = Math.sin(phase * 3.2) * 0.15;
+        
+        const bellTone = (mainTone + harmonic1 + harmonic2) * env * 0.15;
+        
+        // Add to buffer
+        leftChannel[bellStart + i] += bellTone;
+        rightChannel[bellStart + i] += bellTone * 0.95; // Slightly lower volume in right channel
+      }
+    }
+  }
+  
+  // Normalize the audio
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates brown noise (deeper than white noise)
+ */
+const createBrownNoise = (leftChannel: Float32Array, rightChannel: Float32Array) => {
+  console.log("Creating brown noise");
+  
+  // Brown noise uses random walk algorithm
+  let leftLastValue = 0;
+  let rightLastValue = 0;
+  
+  for (let i = 0; i < leftChannel.length; i++) {
+    // Generate brown noise by adding a small random number to the last value
+    const leftRandom = (Math.random() * 2 - 1) * 0.04;
+    const rightRandom = (Math.random() * 2 - 1) * 0.04;
+    
+    // Integrate random values (random walk)
+    leftLastValue = 0.992 * leftLastValue + leftRandom;
+    rightLastValue = 0.992 * rightLastValue + rightRandom;
+    
+    // Apply a low-pass filter by limiting the maximum change
+    leftChannel[i] = leftLastValue * 0.2;
+    rightChannel[i] = rightLastValue * 0.2;
+  }
+  
+  // Normalize to avoid DC offset and clipping
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Creates pink noise (1/f noise)
+ */
+const createPinkNoise = (leftChannel: Float32Array, rightChannel: Float32Array) => {
+  console.log("Creating pink noise");
+  
+  // Pink noise generation variables - using Voss algorithm
+  const numSources = 8;
+  const leftSources = Array(numSources).fill(0);
+  const rightSources = Array(numSources).fill(0);
+  
+  for (let i = 0; i < leftChannel.length; i++) {
+    let leftSum = 0;
+    let rightSum = 0;
+    
+    // Update white noise sources when needed and add to sum
+    for (let j = 0; j < numSources; j++) {
+      // Determine whether to update this source at this sample
+      if ((i % Math.pow(2, j)) === 0) {
+        leftSources[j] = Math.random() * 2 - 1;
+        rightSources[j] = Math.random() * 2 - 1;
+      }
+      
+      leftSum += leftSources[j];
+      rightSum += rightSources[j];
+    }
+    
+    // Scale and store the result
+    leftChannel[i] = (leftSum / numSources) * 0.15;
+    rightChannel[i] = (rightSum / numSources) * 0.15;
+  }
+  
+  // Normalize to avoid DC offset and clipping
+  normalizeAudio(leftChannel, rightChannel);
+};
+
+/**
+ * Normalizes audio to prevent clipping and remove DC offset
+ */
+const normalizeAudio = (leftChannel: Float32Array, rightChannel: Float32Array) => {
+  // Find the maximum absolute value in both channels
+  let maxValue = 0;
+  for (let i = 0; i < leftChannel.length; i++) {
+    maxValue = Math.max(maxValue, Math.abs(leftChannel[i]), Math.abs(rightChannel[i]));
+  }
+  
+  // Calculate the normalization factor (aim for ~90% of max amplitude)
+  const target = 0.9;
+  const normalizationFactor = maxValue > 0 ? target / maxValue : 1;
+  
+  // Find average for DC offset removal
+  let leftSum = 0;
+  let rightSum = 0;
+  for (let i = 0; i < leftChannel.length; i++) {
+    leftSum += leftChannel[i];
+    rightSum += rightChannel[i];
+  }
+  const leftAvg = leftSum / leftChannel.length;
+  const rightAvg = rightSum / rightChannel.length;
+  
+  // Apply normalization and remove DC offset
+  for (let i = 0; i < leftChannel.length; i++) {
+    leftChannel[i] = (leftChannel[i] - leftAvg) * normalizationFactor;
+    rightChannel[i] = (rightChannel[i] - rightAvg) * normalizationFactor;
+  }
+};
+
+/**
+ * Updates the volume of the binaural beat
+ */
+export const updateBinauralVolume = (volume: number) => {
+  try {
+    if (!audioContext) return;
+    
+    // Update the volume for all gain nodes used by binaural oscillators
+    for (const gainNode of currentGainNodes) {
+      gainNode.gain.value = volume;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Error updating binaural volume:", error);
+    return false;
+  }
+};
+
+/**
+ * Updates the volume of the background sound
+ */
+export const updateBackgroundVolume = (volume: number) => {
+  try {
+    if (!audioContext || !backgroundGainNode) return;
+    
+    // Update the volume for the background sound
+    backgroundGainNode.gain.value = volume;
+    
+    return true;
+  } catch (error) {
+    console.error("Error updating background volume:", error);
+    return false;
+  }
+};
+
+/**
+ * Stops all audio playback
+ */
+export const stopAllAudio = () => {
+  try {
+    // Stop oscillators
+    for (const osc of currentOscillators) {
+      try {
+        osc.stop();
+        osc.disconnect();
+      } catch (e) {
+        // Ignore errors from already stopped oscillators
+      }
+    }
+    
+    // Stop background sound
+    if (backgroundSoundNode) {
+      try {
+        backgroundSoundNode.stop();
+        backgroundSoundNode.disconnect();
+      } catch (e) {
+        // Ignore errors from already stopped source
+      }
+    }
+    
+    // Clear all arrays
+    currentOscillators = [];
+    currentGainNodes = [];
+    backgroundSoundNode = null;
+    backgroundGainNode = null;
+    
+    return true;
+  } catch (error) {
+    console.error("Error stopping audio:", error);
+    return false;
+  }
+};
