@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ import {
   playBinauralBeat, 
   stopAllAudio, 
   updateBackgroundVolume, 
+  updateBinauralVolume,
   therapeuticFrequencies, 
   BackgroundSoundType 
 } from "@/utils/audioUtils";
@@ -120,6 +120,13 @@ export default function BinauralFrequencies() {
     }
     
     setIsPlaying(success);
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    const newVolume = value[0];
+    setVolume(newVolume);
+    // Atualiza o volume em tempo real mesmo durante a reprodução
+    updateBinauralVolume(newVolume / 100);
   };
 
   const handleBackgroundVolumeChange = (value: number[]) => {
@@ -227,7 +234,7 @@ export default function BinauralFrequencies() {
                       min={0}
                       max={100}
                       step={1}
-                      onValueChange={(value) => setVolume(value[0])}
+                      onValueChange={handleVolumeChange}
                     />
                   </div>
                   
@@ -434,7 +441,7 @@ export default function BinauralFrequencies() {
                       min={0}
                       max={100}
                       step={1}
-                      onValueChange={(value) => setVolume(value[0])}
+                      onValueChange={handleVolumeChange}
                     />
                   </div>
                   
@@ -646,7 +653,7 @@ export default function BinauralFrequencies() {
                       min={0}
                       max={100}
                       step={1}
-                      onValueChange={(value) => setVolume(value[0])}
+                      onValueChange={handleVolumeChange}
                     />
                   </div>
                   
