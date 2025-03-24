@@ -9,7 +9,7 @@ import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { supabase } from "@/integrations/supabase/client";
 
-// Define interface for hash parameters to avoid TypeScript errors
+// Interface para parâmetros de hash para evitar erros de TypeScript
 interface HashParams {
   [key: string]: string;
   access_token?: string;
@@ -28,16 +28,16 @@ export default function Login() {
 
   useEffect(() => {
     const handlePasswordReset = async () => {
-      // Debug: Log the full URL for troubleshooting
-      console.log("Current URL:", window.location.href);
+      // Debug: Registrar URL completa para solução de problemas
+      console.log("URL atual:", window.location.href);
       console.log("Hash:", window.location.hash);
-      console.log("Search params:", window.location.search);
+      console.log("Parâmetros de pesquisa:", window.location.search);
       
-      // First check if we have a hash with an access token or error
+      // Verificar se temos um hash com um token de acesso ou erro
       if (window.location.hash) {
-        console.log("Found hash in URL");
+        console.log("Hash encontrado na URL");
         
-        // Parse hash parameters
+        // Analisar parâmetros de hash
         const hashParams: HashParams = {};
         const hash = window.location.hash.substring(1);
         
@@ -48,21 +48,21 @@ export default function Login() {
           }
         });
         
-        console.log("Parsed hash params:", hashParams);
+        console.log("Parâmetros de hash analisados:", hashParams);
         
-        // Check if this is a recovery type
+        // Verificar se é um tipo de recuperação
         if (hashParams.type === 'recovery') {
-          console.log("This is a password recovery flow");
+          console.log("Este é um fluxo de recuperação de senha");
           
           try {
-            // Set the form to new password mode
+            // Definir o formulário para o modo de nova senha
             setIsSettingNewPassword(true);
             
-            // Check if we have the access token
+            // Verificar se temos o token de acesso
             if (hashParams.access_token) {
-              console.log("Found access token, setting session");
+              console.log("Token de acesso encontrado, configurando sessão");
               
-              // Set the session with the parameters
+              // Configurar a sessão com os parâmetros
               await supabase.auth.setSession({
                 access_token: hashParams.access_token,
                 refresh_token: hashParams.refresh_token || '',
@@ -73,7 +73,7 @@ export default function Login() {
                 description: "Agora você pode definir uma nova senha."
               });
             } else {
-              console.error("Access token not found in URL hash parameters");
+              console.error("Token de acesso não encontrado nos parâmetros de hash da URL");
               toast({
                 title: "Erro na redefinição de senha",
                 description: "Link inválido ou expirado. Por favor, solicite um novo link.",
@@ -89,15 +89,15 @@ export default function Login() {
               variant: "destructive",
             });
             
-            // Reset to login form on error
+            // Redefinir para o formulário de login em caso de erro
             setIsSettingNewPassword(false);
           }
         } else if (hashParams.type === 'signup') {
-          // This is a signup confirmation
-          console.log("This is a signup confirmation flow");
+          // Esta é uma confirmação de inscrição
+          console.log("Este é um fluxo de confirmação de inscrição");
           
           try {
-            // If we have the access token, the user has confirmed their email
+            // Se tivermos o token de acesso, o usuário confirmou seu email
             if (hashParams.access_token) {
               toast({
                 title: "Cadastro confirmado!",
@@ -110,13 +110,20 @@ export default function Login() {
         }
       }
       
-      // Handle expired or invalid token error from query parameters
+      // Verificar parâmetros de consulta para 'type=recovery'
       const searchParams = new URLSearchParams(window.location.search);
+      const resetType = searchParams.get('type');
+      
+      if (resetType === 'recovery') {
+        setIsResettingPassword(true);
+      }
+      
+      // Tratar erro de token expirado ou inválido dos parâmetros de consulta
       const errorCode = searchParams.get('error');
       const errorDescription = searchParams.get('error_description');
       
       if (errorCode) {
-        console.error("Error in query params:", errorCode, errorDescription);
+        console.error("Erro nos parâmetros de consulta:", errorCode, errorDescription);
         toast({
           title: "Link expirado ou inválido",
           description: errorDescription || "O link de redefinição de senha expirou ou é inválido. Por favor, solicite um novo link.",

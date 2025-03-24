@@ -30,13 +30,13 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
     setIsLoading(true);
 
     try {
-      // Get the current origin for redirects
+      // Obter a URL atual para redirecionar corretamente
       const siteUrl = window.location.origin;
-      console.log("Using site URL for password reset:", siteUrl);
+      console.log("URL base para redirecionamento:", siteUrl);
       
-      // Explicitly set the redirect path to /login to ensure correct redirection
-      const redirectUrl = `${siteUrl}/login`;
-      console.log("Setting redirect URL to:", redirectUrl);
+      // Definir o caminho de redirecionamento para a página de login
+      const redirectUrl = `${siteUrl}/login?type=recovery`;
+      console.log("URL de redirecionamento:", redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
@@ -51,9 +51,19 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
       });
     } catch (error: any) {
       console.error("Erro ao enviar email de recuperação:", error);
+      
+      // Mensagem de erro mais específica
+      let errorMsg = "Não foi possível enviar o email de recuperação.";
+      
+      if (error.message.includes("User not found")) {
+        errorMsg = "Não foi encontrado nenhum usuário com este email.";
+      } else if (error.message.includes("rate limit")) {
+        errorMsg = "Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.";
+      }
+      
       toast({
         title: "Erro ao enviar email",
-        description: error.message || "Não foi possível enviar o email de recuperação.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -68,6 +78,9 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
           <h3 className="font-medium text-green-800">Email enviado!</h3>
           <p className="mt-2 text-sm text-green-700">
             Verifique sua caixa de entrada para o link de recuperação de senha.
+          </p>
+          <p className="mt-2 text-sm text-green-700">
+            Não se esqueça de verificar também sua pasta de spam ou lixo eletrônico.
           </p>
         </div>
         
