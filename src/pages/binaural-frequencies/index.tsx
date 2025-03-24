@@ -330,6 +330,31 @@ export default function BinauralFrequencies() {
                   <p className="text-sm">A exposição regular a frequências específicas pode ajudar a desenvolver melhores capacidades de autorregulação, potencialmente reduzindo comportamentos repetitivos ou estereotipados.</p>
                 </div>
                 
+                <div>
+                  <h3 className="font-semibold">Transições e Mudanças de Rotina</h3>
+                  <p className="text-sm">Certos ritmos binaurais podem facilitar transições entre atividades, reduzindo o estresse associado a mudanças na rotina, uma dificuldade comum em pessoas com TEA.</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold">Comunicação Social</h3>
+                  <p className="text-sm">Frequências específicas podem potencializar sessões de terapia focadas na comunicação social, facilitando a abertura para interações e o processamento de pistas sociais.</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold">Integração Sensorial</h3>
+                  <p className="text-sm">Batidas binaurais podem complementar terapias de integração sensorial, ajudando o cérebro a processar e integrar informações sensoriais de forma mais eficiente.</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold">Processamento Emocional</h3>
+                  <p className="text-sm">Determinadas frequências podem facilitar o processamento e a expressão emocional, área frequentemente desafiadora para pessoas com TEA.</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold">Redução de Comportamentos Repetitivos</h3>
+                  <p className="text-sm">A combinação de frequências específicas pode ajudar a diminuir a intensidade de comportamentos repetitivos ou estereotipados, especialmente quando usada regularmente.</p>
+                </div>
+                
                 <div className="pt-4 mt-4 border-t">
                   <p className="text-xs text-muted-foreground italic">Nota: Os efeitos das frequências binaurais variam de pessoa para pessoa. Sempre consulte um profissional de saúde qualificado antes de iniciar qualquer intervenção terapêutica para TEA.</p>
                 </div>
