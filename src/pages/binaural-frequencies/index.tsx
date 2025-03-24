@@ -12,7 +12,8 @@ import {
   Volume1,
   Volume2,
   Info,
-  Headphones
+  Headphones,
+  Brain
 } from "lucide-react";
 import {
   Tooltip,
@@ -61,36 +62,12 @@ const frequencyRanges = [
 ];
 
 export default function BinauralFrequencies() {
-  // Basic tab state
-  const [leftFrequency, setLeftFrequency] = useState(200);
-  const [rightFrequency, setRightFrequency] = useState(205);
+  // State for therapeutic frequencies
+  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequenciesArray.length > 0 ? therapeuticFrequenciesArray[0].value : "");
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [backgroundVolume, setBackgroundVolume] = useState(30);
   const [selectedBackground, setSelectedBackground] = useState<BackgroundSoundType>("white-noise");
-
-  // Therapeutic tab state
-  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequenciesArray.length > 0 ? therapeuticFrequenciesArray[0].value : "");
-  const [useTherapeuticFrequency, setUseTherapeuticFrequency] = useState(false);
-
-  // Calculate binaural beat frequency
-  const binauralBeatFrequency = rightFrequency - leftFrequency;
-  
-  // Determine the frequency range category
-  const getBrainwaveCategory = (beatFrequency: number) => {
-    if (beatFrequency < 1) return "Sub-delta";
-    if (beatFrequency <= 4) return "Delta";
-    if (beatFrequency <= 8) return "Teta";
-    if (beatFrequency <= 12) return "Alfa";
-    if (beatFrequency <= 16) return "Beta baixo";
-    if (beatFrequency <= 24) return "Beta médio";
-    if (beatFrequency <= 30) return "Beta alto";
-    if (beatFrequency <= 40) return "Gama baixo";
-    return "Gama alta";
-  };
-
-  const currentCategory = getBrainwaveCategory(binauralBeatFrequency);
-  const categoryInfo = frequencyRanges.find(range => range.name.startsWith(currentCategory));
 
   // Effect to stop audio when component unmounts
   useEffect(() => {
@@ -112,32 +89,25 @@ export default function BinauralFrequencies() {
       return;
     }
 
-    let leftFreq = leftFrequency;
-    let rightFreq = rightFrequency;
+    const selectedFreq = getSelectedTherapeuticFrequency();
+    if (!selectedFreq) return;
 
-    // If using therapeutic frequency, override left and right frequencies
-    if (useTherapeuticFrequency) {
-      const selectedFreq = getSelectedTherapeuticFrequency();
-      if (selectedFreq) {
-        leftFreq = selectedFreq.baseFrequency;
-        rightFreq = selectedFreq.baseFrequency + selectedFreq.binauralBeat;
-      }
-    }
+    const leftFreq = selectedFreq.baseFrequency;
+    const rightFreq = selectedFreq.baseFrequency + selectedFreq.binauralBeat;
 
-    console.log("Playing binaural beat with parameters:", {
+    console.log("Playing therapeutic binaural beat with parameters:", {
       leftFrequency: leftFreq,
       rightFrequency: rightFreq,
-      binauralBeat: rightFreq - leftFreq,
+      binauralBeat: selectedFreq.binauralBeat,
       volume: volume / 100,
       backgroundType: selectedBackground,
-      backgroundVolume: backgroundVolume / 100,
-      usingTherapeuticFrequency: useTherapeuticFrequency
+      backgroundVolume: backgroundVolume / 100
     });
 
     const success = await playBinauralBeat(
       leftFreq,
       rightFreq,
-      900000, // Default duration
+      900000, // Default duration (15 minutes)
       volume / 100,
       selectedBackground,
       backgroundVolume / 100
@@ -180,27 +150,36 @@ export default function BinauralFrequencies() {
 
   const handleTherapeuticFrequencyChange = (value: string) => {
     setSelectedTherapeuticFrequency(value);
-    setUseTherapeuticFrequency(true);
   };
 
-  const handleCustomFrequencyClick = () => {
-    setUseTherapeuticFrequency(false);
-  };
+  // Get current frequency info
+  const currentFreq = getSelectedTherapeuticFrequency();
+  const binauralBeatFrequency = currentFreq?.binauralBeat || 0;
+  const currentCategory = currentFreq ? getBrainwaveCategory(binauralBeatFrequency) : "";
+  const categoryInfo = frequencyRanges.find(range => range.name.startsWith(currentCategory));
 
-  // Get therapeutic frequency description
-  const getTherapeuticFrequencyDescription = () => {
-    const selectedFreq = getSelectedTherapeuticFrequency();
-    return selectedFreq?.description || "";
-  };
+  // Determine the frequency range category
+  function getBrainwaveCategory(beatFrequency: number) {
+    if (beatFrequency < 1) return "Sub-delta";
+    if (beatFrequency <= 4) return "Delta";
+    if (beatFrequency <= 8) return "Teta";
+    if (beatFrequency <= 12) return "Alfa";
+    if (beatFrequency <= 16) return "Beta baixo";
+    if (beatFrequency <= 24) return "Beta médio";
+    if (beatFrequency <= 30) return "Beta alto";
+    if (beatFrequency <= 40) return "Gama baixo";
+    return "Gama alta";
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-          Frequências Binaurais
+          Frequências Binaurais Terapêuticas
         </h1>
         <p className="text-gray-600 max-w-3xl">
-          As frequências binaurais são uma forma de estimulação cerebral que ocorre quando dois tons ligeiramente diferentes são apresentados separadamente a cada ouvido, criando uma terceira frequência percebida pelo cérebro.
+          As frequências binaurais podem beneficiar pessoas com TEA (Transtorno do Espectro Autista) 
+          e diversos transtornos mentais através da estimulação cerebral específica.
         </p>
       </div>
 
@@ -208,131 +187,40 @@ export default function BinauralFrequencies() {
         <Card className="bg-card/95 backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Headphones className="mr-2 h-5 w-5" />
-              Configurações da Frequência
+              <Brain className="mr-2 h-5 w-5" />
+              Terapia com Frequências Binaurais
             </CardTitle>
             <CardDescription>
-              Ajuste as frequências ou escolha um padrão terapêutico
+              Frequências especificamente calibradas para TEA e saúde mental
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
-              {/* Frequency Selection Mode */}
-              <div className="flex space-x-2 mb-4">
-                <Button 
-                  variant={!useTherapeuticFrequency ? "default" : "outline"} 
-                  size="sm"
-                  onClick={handleCustomFrequencyClick}
-                  className="flex-1"
-                >
-                  Personalizada
-                </Button>
-                <Button 
-                  variant={useTherapeuticFrequency ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setUseTherapeuticFrequency(true)}
-                  className="flex-1"
-                >
-                  Terapêutica
-                </Button>
+              {/* Therapeutic Frequency Selector */}
+              <SelectField 
+                label="Selecione o objetivo terapêutico"
+                value={selectedTherapeuticFrequency}
+                onChange={handleTherapeuticFrequencyChange}
+                options={therapeuticFrequenciesArray.map(f => ({ value: f.value, label: f.name }))}
+              />
+              
+              <div className="bg-secondary/20 p-3 rounded-md">
+                <p className="text-sm">
+                  {currentFreq?.description || ""}
+                </p>
               </div>
-
-              {!useTherapeuticFrequency ? (
-                <>
-                  {/* Left Ear Frequency */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium flex items-center">
-                        <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
-                        <span>Frequência do ouvido esquerdo: {leftFrequency.toFixed(1)} Hz</span>
-                      </label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              <Info className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Frequência apresentada ao ouvido esquerdo.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <Slider
-                      value={[leftFrequency]}
-                      min={100}
-                      max={500}
-                      step={0.1}
-                      onValueChange={(value) => setLeftFrequency(value[0])}
-                    />
-                  </div>
-
-                  {/* Right Ear Frequency */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium flex items-center">
-                        <div className="w-4 h-4 rounded-full bg-pink-500 mr-2"></div>
-                        <span>Frequência do ouvido direito: {rightFrequency.toFixed(1)} Hz</span>
-                      </label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              <Info className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Frequência apresentada ao ouvido direito.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <Slider
-                      value={[rightFrequency]}
-                      min={100}
-                      max={500}
-                      step={0.1}
-                      onValueChange={(value) => setRightFrequency(value[0])}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Therapeutic Frequency Selector */}
-                  <SelectField 
-                    label="Selecione o objetivo terapêutico"
-                    value={selectedTherapeuticFrequency}
-                    onChange={handleTherapeuticFrequencyChange}
-                    options={therapeuticFrequenciesArray.map(f => ({ value: f.value, label: f.name }))}
-                  />
-                  
-                  <div className="bg-secondary/20 p-3 rounded-md">
-                    <p className="text-sm">
-                      {getTherapeuticFrequencyDescription()}
-                    </p>
-                  </div>
-                </>
-              )}
 
               {/* Binaural Beat Info Card */}
               <div className="mt-6 p-4 rounded-lg bg-purple-600 text-white relative">
                 <h3 className="text-lg font-medium mb-1">Batida binaural</h3>
                 <div className="text-3xl font-bold mb-1">
-                  {useTherapeuticFrequency 
-                    ? (getSelectedTherapeuticFrequency()?.binauralBeat || 0).toFixed(1)
-                    : binauralBeatFrequency.toFixed(1)} Hz
+                  {binauralBeatFrequency.toFixed(1)} Hz
                 </div>
                 <div className="text-lg">
-                  {useTherapeuticFrequency 
-                    ? getBrainwaveCategory(getSelectedTherapeuticFrequency()?.binauralBeat || 0)
-                    : currentCategory}
+                  {currentCategory}
                 </div>
                 <div className="text-sm opacity-90">
-                  {useTherapeuticFrequency 
-                    ? frequencyRanges.find(range => 
-                        range.name.startsWith(getBrainwaveCategory(getSelectedTherapeuticFrequency()?.binauralBeat || 0)))?.description || ""
-                    : categoryInfo?.description || ""}
+                  {categoryInfo?.description || ""}
                 </div>
                 <TooltipProvider>
                   <Tooltip>
@@ -412,9 +300,9 @@ export default function BinauralFrequencies() {
         <div className="space-y-6">
           <Card className="bg-card/95 backdrop-blur">
             <CardHeader>
-              <CardTitle>Guia de Faixa de Frequência</CardTitle>
+              <CardTitle>Guia de Frequências para Neuroplasticidade</CardTitle>
               <CardDescription>
-                Diferentes faixas de frequência têm diferentes efeitos no cérebro
+                Diferentes faixas de frequência têm efeitos terapêuticos específicos no cérebro
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -437,41 +325,41 @@ export default function BinauralFrequencies() {
           
           <Card>
             <CardHeader>
-              <CardTitle>Recomendações de Uso</CardTitle>
+              <CardTitle>Benefícios Terapêuticos</CardTitle>
               <CardDescription>
-                Orientações para maximizar os benefícios das frequências binaurais
+                Potenciais benefícios para pessoas com TEA e transtornos mentais
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <h3 className="font-medium">Use fones de ouvido</h3>
-                <p className="text-sm text-gray-600">
-                  Fones de ouvido são essenciais para que cada ouvido receba uma frequência distinta, criando o efeito binaural.
-                </p>
+                <h3 className="font-medium">TEA (Transtorno do Espectro Autista)</h3>
+                <ul className="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                  <li>Redução da hipersensibilidade sensorial</li>
+                  <li>Melhoria na capacidade de concentração</li>
+                  <li>Auxílio na regulação emocional</li>
+                  <li>Redução da ansiedade e agitação</li>
+                  <li>Melhoria na qualidade do sono</li>
+                </ul>
               </div>
               <div className="space-y-2">
-                <h3 className="font-medium">Ambiente tranquilo</h3>
-                <p className="text-sm text-gray-600">
-                  Escolha um local calmo e confortável, livre de distrações, para melhor experiência.
-                </p>
+                <h3 className="font-medium">Saúde Mental</h3>
+                <ul className="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                  <li>Redução de sintomas de ansiedade</li>
+                  <li>Alívio de quadros depressivos</li>
+                  <li>Melhoria na concentração para TDAH</li>
+                  <li>Redução do stress e tensão</li>
+                  <li>Promoção de estados de relaxamento profundo</li>
+                </ul>
               </div>
               <div className="space-y-2">
-                <h3 className="font-medium">Duração das sessões</h3>
-                <p className="text-sm text-gray-600">
-                  Sessões de 15-30 minutos são geralmente suficientes. Comece com sessões mais curtas e aumente gradualmente.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">Regularidade</h3>
-                <p className="text-sm text-gray-600">
-                  Use regularmente para melhores resultados. Os efeitos podem ser cumulativos com o uso consistente.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">Atenção</h3>
-                <p className="text-sm text-gray-600">
-                  Não use enquanto dirige ou opera máquinas. Pessoas com epilepsia devem consultar um médico antes do uso.
-                </p>
+                <h3 className="font-medium">Recomendações de Uso</h3>
+                <ul className="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                  <li>Use fones de ouvido estéreo de boa qualidade</li>
+                  <li>Escolha um ambiente tranquilo e confortável</li>
+                  <li>Inicie com sessões curtas (5-10 minutos) e aumente gradualmente</li>
+                  <li>Use regularmente para melhores resultados</li>
+                  <li>Não utilize durante atividades que exigem atenção plena</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
