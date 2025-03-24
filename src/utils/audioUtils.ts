@@ -28,7 +28,7 @@ export const therapeuticFrequencies = {
 // Background sound types
 export type BackgroundSoundType = 'rain' | 'whitenoise' | 'ocean' | 'forest' | 'none';
 
-// Background sound file sources with multiple formats for better compatibility
+// Background sound file sources with multiple formats for better compatibility and guaranteed fallbacks
 const backgroundSoundSources = {
   rain: {
     mp3: '/lovable-uploads/rain-sound.mp3',
@@ -43,12 +43,12 @@ const backgroundSoundSources = {
   ocean: {
     mp3: '/lovable-uploads/ocean-waves.mp3',
     ogg: '/lovable-uploads/ocean-waves.ogg',
-    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-ambience-1188.mp3'
+    fallback: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1b0cd1027c.mp3?filename=ocean-waves-113997.mp3'
   },
   forest: {
     mp3: '/lovable-uploads/forest-ambience.mp3',
     ogg: '/lovable-uploads/forest-ambience.ogg',
-    fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3'
+    fallback: 'https://cdn.pixabay.com/download/audio/2021/10/11/audio_fd69c1e9ef.mp3?filename=forest-0-7049.mp3'
   }
 };
 
@@ -221,6 +221,7 @@ const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: numbe
     const soundUrls = [soundSources.mp3, soundSources.ogg, soundSources.fallback];
     let arrayBuffer: ArrayBuffer | null = null;
     let error: Error | null = null;
+    let loadedUrl: string = '';
     
     // Try each URL until one works
     for (const url of soundUrls) {
@@ -232,16 +233,41 @@ const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: numbe
           continue;
         }
         arrayBuffer = await response.arrayBuffer();
+        loadedUrl = url;
+        console.log(`Successfully loaded sound from: ${url}`);
         break; // If we got the buffer, we can stop trying other URLs
       } catch (e) {
         console.warn(`Error fetching from ${url}:`, e);
-        error = e;
+        error = e instanceof Error ? e : new Error(String(e));
       }
     }
     
-    // If we couldn't load any of the sounds, throw the last error
+    // If we couldn't load any of the sounds, try a special handling for each type
     if (!arrayBuffer) {
-      throw error || new Error("Could not load any sound file");
+      console.warn(`Could not load any sound file for ${soundType}, trying special handling`);
+      
+      // Special handling for different sound types
+      if (soundType === 'whitenoise') {
+        createNoiseGenerator(volume);
+        return;
+      } else if (soundType === 'rain') {
+        // Try a different rain sound
+        const alternateRainUrl = 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_628dbb0733.mp3?filename=light-rain-ambient-114354.mp3';
+        await tryAlternateSound(alternateRainUrl, volume);
+        return;
+      } else if (soundType === 'ocean') {
+        // Try a different ocean sound
+        const alternateOceanUrl = 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1b0cd1027c.mp3?filename=ocean-waves-113997.mp3';
+        await tryAlternateSound(alternateOceanUrl, volume);
+        return;
+      } else if (soundType === 'forest') {
+        // Try a different forest sound
+        const alternateForestUrl = 'https://cdn.pixabay.com/download/audio/2021/10/11/audio_fd69c1e9ef.mp3?filename=forest-0-7049.mp3';
+        await tryAlternateSound(alternateForestUrl, volume);
+        return;
+      }
+      
+      throw error || new Error(`Could not load any sound file for ${soundType}`);
     }
     
     // Decode the audio data
@@ -272,7 +298,7 @@ const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: numbe
     
     // Start playback
     backgroundSoundNode.start();
-    console.log(`Background sound started: ${soundType}`);
+    console.log(`Background sound started: ${soundType} (from ${loadedUrl})`);
   } catch (error) {
     console.error("Error loading background sound:", error);
     
@@ -283,8 +309,133 @@ const loadBackgroundSound = async (soundType: BackgroundSoundType, volume: numbe
       } catch (e) {
         console.error("Error creating noise generator:", e);
       }
+    } else {
+      // For non-whitenoise types, create a more appropriate fallback
+      createFallbackSound(soundType, volume);
     }
   }
+};
+
+/**
+ * Tries to load and play an alternate sound URL
+ */
+const tryAlternateSound = async (url: string, volume: number) => {
+  if (!audioContext) return false;
+  
+  try {
+    console.log(`Trying alternate sound URL: ${url}`);
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`Failed to load alternate sound: ${response.status} ${response.statusText}`);
+      return false;
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    
+    // Stop any currently playing background sound
+    if (backgroundSoundNode) {
+      try {
+        backgroundSoundNode.stop();
+        backgroundSoundNode.disconnect();
+      } catch (e) {
+        // Ignore errors from already stopped sources
+      }
+    }
+    
+    // Create source and gain nodes
+    backgroundSoundNode = audioContext.createBufferSource();
+    backgroundGainNode = audioContext.createGain();
+    
+    // Configure nodes
+    backgroundSoundNode.buffer = audioBuffer;
+    backgroundSoundNode.loop = true;
+    backgroundGainNode.gain.value = volume;
+    
+    // Connect nodes
+    backgroundSoundNode.connect(backgroundGainNode);
+    backgroundGainNode.connect(audioContext.destination);
+    
+    // Start playback
+    backgroundSoundNode.start();
+    console.log(`Alternate background sound started from: ${url}`);
+    return true;
+  } catch (e) {
+    console.error("Error loading alternate sound:", e);
+    return false;
+  }
+};
+
+/**
+ * Creates a fallback sound appropriate for the selected sound type
+ */
+const createFallbackSound = (soundType: BackgroundSoundType, volume: number) => {
+  if (!audioContext) return;
+  
+  console.log(`Creating fallback sound for: ${soundType}`);
+  
+  // Create appropriate noise type based on the requested sound
+  const bufferSize = 2 * audioContext.sampleRate;
+  const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+  const output = noiseBuffer.getChannelData(0);
+  
+  // Fill the buffer with appropriate noise pattern
+  if (soundType === 'rain') {
+    // Rain-like pattern: random with some patterns
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 0.5 - 0.25; // Quieter than white noise
+      // Add occasional louder drops
+      if (Math.random() > 0.995) {
+        output[i] = Math.random() * 0.8 - 0.4;
+      }
+    }
+  } 
+  else if (soundType === 'ocean') {
+    // Ocean-like pattern: lower frequency variations
+    let value = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      // Add slow-varying component to simulate waves
+      const waveComponent = Math.sin(i * 0.0001) * 0.15;
+      value += (Math.random() * 0.14 - 0.07);
+      value = Math.min(0.8, Math.max(-0.8, value)); // Limit the amplitude
+      output[i] = value + waveComponent;
+    }
+  } 
+  else if (soundType === 'forest') {
+    // Forest-like pattern: mostly quiet with occasional sounds
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 0.1 - 0.05; // Very quiet base
+      // Add occasional bird chirps or rustling
+      if (Math.random() > 0.997) {
+        for (let j = 0; j < 1000 && i + j < bufferSize; j++) {
+          output[i+j] = Math.sin(j * 0.1) * 0.3 * Math.exp(-j * 0.01);
+        }
+      }
+    }
+  } 
+  else {
+    // Default white noise for other types
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+  }
+  
+  // Create the source and gain nodes
+  backgroundSoundNode = audioContext.createBufferSource();
+  backgroundGainNode = audioContext.createGain();
+  
+  // Configure the nodes
+  backgroundSoundNode.buffer = noiseBuffer;
+  backgroundSoundNode.loop = true;
+  backgroundGainNode.gain.value = volume;
+  
+  // Connect the nodes
+  backgroundSoundNode.connect(backgroundGainNode);
+  backgroundGainNode.connect(audioContext.destination);
+  
+  // Start playback
+  backgroundSoundNode.start();
+  console.log(`Fallback ${soundType} generator started`);
 };
 
 /**
@@ -318,7 +469,7 @@ const createNoiseGenerator = (volume: number = 0.3) => {
   
   // Start playback
   backgroundSoundNode.start();
-  console.log("Fallback noise generator started");
+  console.log("Fallback white noise generator started");
 };
 
 /**
