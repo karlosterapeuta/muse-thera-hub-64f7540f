@@ -190,14 +190,53 @@ export default function Evaluation() {
   };
 
   const calculateTotalProgress = () => {
-    const totalSelections = Object.keys(selections).length;
+    // Calculate total number of parameters to evaluate
     const totalParameters = evaluationSections.reduce(
       (acc, section) => acc + section.parameters.length, 0
     );
-    const progress = (totalSelections / totalParameters) * 100;
+    
+    // Calculate total points actually acquired based on the scoring system
+    const totalAcquired = evaluationSections.reduce((sectionAcc, section) => {
+      return sectionAcc + section.parameters.reduce((paramAcc, param) => {
+        const paramKey = `${section.title}-${param}`;
+        if (!selections[paramKey]) return paramAcc; // Skip if not selected
+        
+        // Calculate score based on the section's scoring system
+        let score = 0;
+        if (section.inverseScoring) {
+          // For inverse scoring (No=2, Little=1, A lot=0)
+          score = selections[paramKey] === "nao" ? 2 : 
+                 selections[paramKey] === "pouco" ? 1 : 0;
+        } else {
+          // For regular scoring (No=0, Little=1, A lot=2)
+          score = selections[paramKey] === "muito" ? 2 : 
+                 selections[paramKey] === "pouco" ? 1 : 0;
+        }
+        
+        // Apply double weight if applicable
+        const isDoubleWeight = section.doubleWeight === true || 
+          (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(param));
+          
+        return paramAcc + (isDoubleWeight ? score * 2 : score);
+      }, 0);
+    }, 0);
+    
+    // Calculate maximum possible score
+    const maxPossibleScore = evaluationSections.reduce((sectionAcc, section) => {
+      return sectionAcc + section.parameters.reduce((paramAcc, param) => {
+        const isDoubleWeight = section.doubleWeight === true || 
+          (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(param));
+        const maxScore = isDoubleWeight ? 4 : 2; // Max score is 2 or 4 for double weighted
+        return paramAcc + maxScore;
+      }, 0);
+    }, 0);
+    
+    // Calculate percentage of skills acquired
+    const percentAcquired = maxPossibleScore > 0 ? Math.round((totalAcquired / maxPossibleScore) * 100) : 0;
+    
     return {
-      adquirido: Math.round(progress),
-      naoAdquirido: Math.round(100 - progress)
+      adquirido: percentAcquired,
+      naoAdquirido: 100 - percentAcquired
     };
   };
 
