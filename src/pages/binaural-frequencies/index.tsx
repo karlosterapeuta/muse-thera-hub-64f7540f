@@ -16,7 +16,9 @@ import {
   Volume,
   Volume1,
   Volume2,
-  Info
+  Info,
+  Headphones,
+  Ear
 } from "lucide-react";
 import {
   Tooltip,
@@ -51,10 +53,23 @@ const therapeuticFrequenciesArray = [
   }))
 ];
 
+// Frequency ranges and their descriptions
+const frequencyRanges = [
+  { name: "Sub-delta (<1 Hz)", color: "#4338ca", description: "Transe profundo, sono sem sonhos" },
+  { name: "Delta (1-4 Hz)", color: "#4f46e5", description: "Sono profundo, cura" },
+  { name: "Teta (4-8 Hz)", color: "#8b5cf6", description: "Meditação, criatividade" },
+  { name: "Alfa (8-12 Hz)", color: "#3b82f6", description: "Relaxamento, meditação leve" },
+  { name: "Beta baixo (12-16 Hz)", color: "#06b6d4", description: "Foco relaxado, aprendizagem melhorada" },
+  { name: "Beta médio (16-24 Hz)", color: "#10b981", description: "Pensamento ativo, estado de alerta" },
+  { name: "Beta alto (24-30 Hz)", color: "#eab308", description: "Pensamento complexo, ansiedade" },
+  { name: "Gama baixo (30-40 Hz)", color: "#f97316", description: "Melhoria cognitiva" },
+  { name: "Gama alta (40+ Hz)", color: "#ef4444", description: "Desempenho cognitivo máximo" },
+];
+
 export default function BinauralFrequencies() {
   // Basic tab state
-  const [baseFrequency, setBaseFrequency] = useState(200);
-  const [binauralBeat, setBinauralBeat] = useState(7);
+  const [leftFrequency, setLeftFrequency] = useState(200);
+  const [rightFrequency, setRightFrequency] = useState(205);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [backgroundVolume, setBackgroundVolume] = useState(30);
@@ -66,6 +81,25 @@ export default function BinauralFrequencies() {
   const [therapeuticVolume, setTherapeuticVolume] = useState(50);
   const [therapeuticBackgroundVolume, setTherapeuticBackgroundVolume] = useState(30);
   const [therapeuticSelectedBackground, setTherapeuticSelectedBackground] = useState<BackgroundSoundType>("white-noise");
+
+  // Calculate binaural beat frequency
+  const binauralBeatFrequency = rightFrequency - leftFrequency;
+  
+  // Determine the frequency range category
+  const getBrainwaveCategory = (beatFrequency: number) => {
+    if (beatFrequency < 1) return "Sub-delta";
+    if (beatFrequency <= 4) return "Delta";
+    if (beatFrequency <= 8) return "Teta";
+    if (beatFrequency <= 12) return "Alfa";
+    if (beatFrequency <= 16) return "Beta baixo";
+    if (beatFrequency <= 24) return "Beta médio";
+    if (beatFrequency <= 30) return "Beta alto";
+    if (beatFrequency <= 40) return "Gama baixo";
+    return "Gama alta";
+  };
+
+  const currentCategory = getBrainwaveCategory(binauralBeatFrequency);
+  const categoryInfo = frequencyRanges.find(range => range.name.startsWith(currentCategory));
 
   // Effect to stop audio when component unmounts
   useEffect(() => {
@@ -83,16 +117,17 @@ export default function BinauralFrequencies() {
     }
 
     console.log("Playing binaural beat with parameters:", {
-      baseFrequency,
-      binauralBeat,
+      leftFrequency,
+      rightFrequency,
+      binauralBeat: rightFrequency - leftFrequency,
       volume: volume / 100,
       backgroundType: selectedBackground,
       backgroundVolume: backgroundVolume / 100
     });
 
     const success = await playBinauralBeat(
-      baseFrequency,
-      baseFrequency + binauralBeat,
+      leftFrequency,
+      rightFrequency,
       900000, // Default duration
       volume / 100,
       selectedBackground,
@@ -204,22 +239,24 @@ export default function BinauralFrequencies() {
         {/* Basic Tab */}
         <TabsContent value="basic">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
+            <Card className="bg-card/95 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Waves className="mr-2 h-5 w-5" />
-                  Configuração Básica
+                  <Headphones className="mr-2 h-5 w-5" />
+                  Configurações da Frequência
                 </CardTitle>
                 <CardDescription>
-                  Ajuste manualmente os parâmetros da frequência binaural
+                  Ajuste as frequências para cada ouvido
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
+                  {/* Left Ear Frequency */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium">
-                        Frequência Base (Hz): {baseFrequency}Hz
+                      <label className="text-sm font-medium flex items-center">
+                        <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                        <span>Frequência do ouvido esquerdo: {leftFrequency.toFixed(1)} Hz</span>
                       </label>
                       <TooltipProvider>
                         <Tooltip>
@@ -229,24 +266,26 @@ export default function BinauralFrequencies() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-xs">A frequência base é o tom principal que você ouve.</p>
+                            <p className="max-w-xs">Frequência apresentada ao ouvido esquerdo.</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                     <Slider
-                      value={[baseFrequency]}
+                      value={[leftFrequency]}
                       min={100}
                       max={500}
-                      step={1}
-                      onValueChange={(value) => setBaseFrequency(value[0])}
+                      step={0.1}
+                      onValueChange={(value) => setLeftFrequency(value[0])}
                     />
                   </div>
 
+                  {/* Right Ear Frequency */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium">
-                        Batimento Binaural (Hz): {binauralBeat}Hz
+                      <label className="text-sm font-medium flex items-center">
+                        <div className="w-4 h-4 rounded-full bg-pink-500 mr-2"></div>
+                        <span>Frequência do ouvido direito: {rightFrequency.toFixed(1)} Hz</span>
                       </label>
                       <TooltipProvider>
                         <Tooltip>
@@ -256,18 +295,40 @@ export default function BinauralFrequencies() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-xs">A diferença entre as frequências apresentadas a cada ouvido, que cria o efeito binaural.</p>
+                            <p className="max-w-xs">Frequência apresentada ao ouvido direito.</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                     <Slider
-                      value={[binauralBeat]}
-                      min={1}
-                      max={30}
-                      step={0.5}
-                      onValueChange={(value) => setBinauralBeat(value[0])}
+                      value={[rightFrequency]}
+                      min={100}
+                      max={500}
+                      step={0.1}
+                      onValueChange={(value) => setRightFrequency(value[0])}
                     />
+                  </div>
+
+                  {/* Binaural Beat Info Card */}
+                  <div className="mt-6 p-4 rounded-lg bg-purple-600 text-white">
+                    <h3 className="text-lg font-medium mb-1">Batida binaural</h3>
+                    <div className="text-3xl font-bold mb-1">{binauralBeatFrequency.toFixed(1)} Hz</div>
+                    <div className="text-lg">{currentCategory}</div>
+                    <div className="text-sm opacity-90">
+                      {categoryInfo?.description || ""}
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-white hover:bg-white/20">
+                            <Info className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">A batida binaural é a diferença entre as frequências apresentadas em cada ouvido.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
 
                   <div className="space-y-2">
@@ -331,43 +392,27 @@ export default function BinauralFrequencies() {
               </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="bg-card/95 backdrop-blur">
               <CardHeader>
-                <CardTitle>Efeitos das Frequências Binaurais</CardTitle>
+                <CardTitle>Guia de Faixa de Frequência</CardTitle>
                 <CardDescription>
                   Diferentes faixas de frequência têm diferentes efeitos no cérebro
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium">Ondas Delta (0.5-4Hz)</h3>
-                  <p className="text-sm text-gray-600">
-                    Associadas ao sono profundo e recuperação. Úteis para melhorar o sono e reduzir dores.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Ondas Theta (4-8Hz)</h3>
-                  <p className="text-sm text-gray-600">
-                    Relacionadas à meditação profunda, criatividade e sonhos REM. Podem melhorar a criatividade e relaxamento.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Ondas Alpha (8-13Hz)</h3>
-                  <p className="text-sm text-gray-600">
-                    Estado de relaxamento alerta. Podem reduzir ansiedade e promover bem-estar.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Ondas Beta (13-30Hz)</h3>
-                  <p className="text-sm text-gray-600">
-                    Estado de alerta e concentração. Úteis para melhorar o foco e desempenho cognitivo.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-medium">Ondas Gamma (acima de 30Hz)</h3>
-                  <p className="text-sm text-gray-600">
-                    Associadas à percepção e consciência elevadas. Podem melhorar o processamento cognitivo.
-                  </p>
+              <CardContent>
+                <div className="space-y-3">
+                  {frequencyRanges.map((range, index) => (
+                    <div key={index} className="flex items-start">
+                      <div 
+                        className="w-4 h-4 rounded-full mt-1 mr-3 flex-shrink-0"
+                        style={{backgroundColor: range.color}}
+                      ></div>
+                      <div>
+                        <div className="font-medium">{range.name}:</div>
+                        <div className="text-sm text-gray-600">{range.description}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

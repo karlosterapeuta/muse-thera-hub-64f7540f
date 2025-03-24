@@ -1,4 +1,3 @@
-
 // Map of notes to their frequencies in Hz
 const noteFrequencies: Record<string, number> = {
   "C1": 261.63, // C4 (middle C)
@@ -347,7 +346,7 @@ const createEnhancedSynthesizedSound = (soundType: BackgroundSoundType, volume: 
   else if (soundType === 'forest') {
     createRealisticForestSound(leftChannel, rightChannel, sampleRate);
   } 
-  else if (soundType === 'whitenoise') {
+  else if (soundType === 'white-noise') {
     createImprovedWhiteNoise(leftChannel, rightChannel);
   }
   
