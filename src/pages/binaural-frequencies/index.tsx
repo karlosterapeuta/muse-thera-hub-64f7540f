@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Info, Play, Square } from "lucide-react";
+import { Info, Play, Square, Volume2, VolumeX } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -46,8 +46,17 @@ const frequencyRanges = [
   { name: "Beta baixo (12-16 Hz)", color: "#06b6d4", description: "Foco relaxado, aprendizagem melhorada" },
   { name: "Beta médio (16-24 Hz)", color: "#10b981", description: "Pensamento ativo, estado de alerta" },
   { name: "Beta alto (24-30 Hz)", color: "#eab308", description: "Pensamento complexo, ansiedade" },
-  { name: "Gama baixo (30-40 Hz)", color: "#f97316", description: "Melhoria cognitiva" },
+  { name: "Gama baixo (30-40 Hz)", color: "#ef4444", description: "Melhoria cognitiva" },
   { name: "Gama alta (40+ Hz)", color: "#ef4444", description: "Desempenho cognitivo máximo" },
+];
+
+// Background sound options
+const backgroundSounds = [
+  { value: "none", label: "Nenhum" },
+  { value: "white-noise", label: "Ruído Branco" },
+  { value: "rain", label: "Chuva" },
+  { value: "ocean", label: "Oceano" },
+  { value: "forest", label: "Floresta" },
 ];
 
 export default function BinauralFrequencies() {
@@ -166,6 +175,7 @@ export default function BinauralFrequencies() {
       </div>
       
       <div className="space-y-6">
+        {/* Main control card */}
         <div className="dark:bg-slate-900 bg-slate-100 rounded-lg px-4 py-6">
           {/* Left ear frequency control */}
           <div className="mb-8">
@@ -233,6 +243,69 @@ export default function BinauralFrequencies() {
             </div>
           </div>
           
+          {/* Volume and background sound controls */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Binaural volume control */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <Volume2 className="mr-2 h-5 w-5 text-primary" />
+                  <span className="font-medium">Volume da Frequência</span>
+                </div>
+                <span>{volume}%</span>
+              </div>
+              <Slider
+                value={[volume]}
+                min={0}
+                max={100}
+                step={1}
+                onValueChange={handleVolumeChange}
+                className="dark:bg-slate-800 bg-slate-200"
+              />
+            </div>
+            
+            {/* Background sound control */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <Volume2 className="mr-2 h-5 w-5 text-primary" />
+                  <span className="font-medium">Volume do Som de Fundo</span>
+                </div>
+                <span>{backgroundVolume}%</span>
+              </div>
+              <Slider
+                value={[backgroundVolume]}
+                min={0}
+                max={100}
+                step={1}
+                onValueChange={handleBackgroundVolumeChange}
+                className="dark:bg-slate-800 bg-slate-200"
+              />
+            </div>
+          </div>
+          
+          {/* Background sound selection */}
+          <div className="mb-8">
+            <h3 className="text-lg font-medium mb-3">Som de Fundo</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              {backgroundSounds.map((sound) => (
+                <Button
+                  key={sound.value}
+                  variant={selectedBackground === sound.value ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => setSelectedBackground(sound.value as BackgroundSoundType)}
+                >
+                  {sound.value === "none" ? (
+                    <VolumeX className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Volume2 className="mr-2 h-4 w-4" />
+                  )}
+                  {sound.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
           {/* Play/Stop button */}
           <div className="flex justify-center mb-6">
             <Button
@@ -252,6 +325,31 @@ export default function BinauralFrequencies() {
             </Button>
           </div>
         </div>
+        
+        {/* Therapeutic Frequencies selection */}
+        <Card className="dark:bg-slate-900 bg-slate-100">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold mb-4">Frequências Terapêuticas</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {therapeuticFrequenciesArray.map((freq) => (
+                <button
+                  key={freq.value}
+                  onClick={() => setSelectedTherapeuticFrequency(freq.value)}
+                  className={`p-3 rounded-lg text-left transition-colors ${
+                    selectedTherapeuticFrequency === freq.value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary hover:bg-secondary/80'
+                  }`}
+                >
+                  <div className="font-medium">{freq.name}</div>
+                  <div className="text-sm opacity-90 mt-1">
+                    {freq.baseFrequency} Hz + {freq.binauralBeat} Hz
+                  </div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
         
         {/* Frequency Guide Card */}
         <Card className="dark:bg-slate-900 bg-slate-100">
