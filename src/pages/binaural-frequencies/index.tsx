@@ -33,6 +33,24 @@ import {
   BackgroundSoundType 
 } from "@/utils/audioUtils";
 
+// Convert the therapeutic frequencies object to an array for easier use in the UI
+const therapeuticFrequenciesArray = [
+  ...Object.entries(therapeuticFrequencies.autism).map(([key, item]) => ({
+    value: `autism_${key}`,
+    name: `TEA - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+    description: item.description,
+    baseFrequency: item.left,
+    binauralBeat: item.right - item.left
+  })),
+  ...Object.entries(therapeuticFrequencies.mentalHealth).map(([key, item]) => ({
+    value: `mental_${key}`,
+    name: `Saúde Mental - ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+    description: item.description,
+    baseFrequency: item.left,
+    binauralBeat: item.right - item.left
+  }))
+];
+
 export default function BinauralFrequencies() {
   // Basic tab state
   const [baseFrequency, setBaseFrequency] = useState(200);
@@ -43,7 +61,7 @@ export default function BinauralFrequencies() {
   const [selectedBackground, setSelectedBackground] = useState<BackgroundSoundType>("white-noise");
 
   // Therapeutic tab state
-  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequencies[0].value);
+  const [selectedTherapeuticFrequency, setSelectedTherapeuticFrequency] = useState(therapeuticFrequenciesArray[0].value);
   const [isTherapeuticPlaying, setIsTherapeuticPlaying] = useState(false);
   const [therapeuticVolume, setTherapeuticVolume] = useState(50);
   const [therapeuticBackgroundVolume, setTherapeuticBackgroundVolume] = useState(30);
@@ -72,13 +90,14 @@ export default function BinauralFrequencies() {
       backgroundVolume: backgroundVolume / 100
     });
 
-    const success = await playBinauralBeat({
+    const success = await playBinauralBeat(
       baseFrequency,
-      binauralBeat,
-      volume: volume / 100,
-      backgroundType: selectedBackground,
-      backgroundVolume: backgroundVolume / 100
-    });
+      baseFrequency + binauralBeat,
+      900000, // Default duration
+      volume / 100,
+      selectedBackground,
+      backgroundVolume / 100
+    );
 
     setIsPlaying(success);
   };
@@ -91,7 +110,7 @@ export default function BinauralFrequencies() {
       return;
     }
 
-    const selectedFrequency = therapeuticFrequencies.find(
+    const selectedFrequency = therapeuticFrequenciesArray.find(
       f => f.value === selectedTherapeuticFrequency
     );
 
@@ -105,13 +124,14 @@ export default function BinauralFrequencies() {
       backgroundVolume: therapeuticBackgroundVolume / 100
     });
 
-    const success = await playBinauralBeat({
-      baseFrequency: selectedFrequency.baseFrequency,
-      binauralBeat: selectedFrequency.binauralBeat,
-      volume: therapeuticVolume / 100,
-      backgroundType: therapeuticSelectedBackground,
-      backgroundVolume: therapeuticBackgroundVolume / 100
-    });
+    const success = await playBinauralBeat(
+      selectedFrequency.baseFrequency,
+      selectedFrequency.baseFrequency + selectedFrequency.binauralBeat,
+      900000, // Default duration
+      therapeuticVolume / 100,
+      therapeuticSelectedBackground,
+      therapeuticBackgroundVolume / 100
+    );
 
     setIsTherapeuticPlaying(success);
   };
@@ -154,6 +174,15 @@ export default function BinauralFrequencies() {
     { value: "ocean", label: "Ondas do Oceano" },
     { value: "forest", label: "Floresta" },
   ];
+
+  // Handle SelectField type mismatch
+  const handleBackgroundChange = (value: string) => {
+    setSelectedBackground(value as BackgroundSoundType);
+  };
+
+  const handleTherapeuticBackgroundChange = (value: string) => {
+    setTherapeuticSelectedBackground(value as BackgroundSoundType);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -261,7 +290,7 @@ export default function BinauralFrequencies() {
                     <SelectField 
                       label="Som de Fundo"
                       value={selectedBackground}
-                      onChange={setSelectedBackground}
+                      onChange={handleBackgroundChange}
                       options={backgroundSoundOptions}
                     />
                     
@@ -364,12 +393,12 @@ export default function BinauralFrequencies() {
                     label="Selecione o objetivo terapêutico"
                     value={selectedTherapeuticFrequency}
                     onChange={setSelectedTherapeuticFrequency}
-                    options={therapeuticFrequencies.map(f => ({ value: f.value, label: f.name }))}
+                    options={therapeuticFrequenciesArray.map(f => ({ value: f.value, label: f.name }))}
                   />
                   
                   <div className="bg-secondary/20 p-3 rounded-md">
                     <p className="text-sm">
-                      {therapeuticFrequencies.find(f => f.value === selectedTherapeuticFrequency)?.description}
+                      {therapeuticFrequenciesArray.find(f => f.value === selectedTherapeuticFrequency)?.description}
                     </p>
                   </div>
 
@@ -393,7 +422,7 @@ export default function BinauralFrequencies() {
                     <SelectField 
                       label="Som de Fundo"
                       value={therapeuticSelectedBackground}
-                      onChange={setTherapeuticSelectedBackground}
+                      onChange={handleTherapeuticBackgroundChange}
                       options={backgroundSoundOptions}
                     />
                     

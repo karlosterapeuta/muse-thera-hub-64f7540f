@@ -27,7 +27,7 @@ export const therapeuticFrequencies = {
 };
 
 // Background sound types
-export type BackgroundSoundType = 'rain' | 'whitenoise' | 'ocean' | 'forest' | 'none';
+export type BackgroundSoundType = 'rain' | 'white-noise' | 'ocean' | 'forest' | 'none';
 
 // Background sound file sources with multiple formats for better compatibility and guaranteed fallbacks
 const backgroundSoundSources = {
@@ -36,7 +36,7 @@ const backgroundSoundSources = {
     ogg: '/lovable-uploads/rain-sound.ogg',
     fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3'
   },
-  whitenoise: {
+  'white-noise': {
     mp3: '/lovable-uploads/white-noise.mp3',
     ogg: '/lovable-uploads/white-noise.ogg',
     fallback: 'https://assets.mixkit.co/sfx/preview/mixkit-white-noise-ambience-loop-1236.mp3'
@@ -70,7 +70,7 @@ const highQualityFallbacks = {
     'https://cdn.pixabay.com/download/audio/2021/09/06/audio_ef3896719b.mp3?filename=forest-with-small-river-birds-and-nature-field-recording-6735.mp3',
     'https://cdn.pixabay.com/download/audio/2021/08/09/audio_468a398e7a.mp3?filename=forest-birdsong-02-6791.mp3'
   ],
-  whitenoise: [
+  'white-noise': [
     'https://assets.mixkit.co/sfx/preview/mixkit-white-noise-ambience-loop-1236.mp3',
     'https://cdn.pixabay.com/download/audio/2022/01/25/audio_5c6b9a3d0d.mp3?filename=white-noise-10min-7112.mp3'
   ]
