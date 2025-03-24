@@ -30,20 +30,21 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
     setIsLoading(true);
 
     try {
-      // Obter a URL atual para redirecionar corretamente
-      const siteUrl = window.location.origin;
-      console.log("URL base para redirecionamento:", siteUrl);
+      // Obter a URL completa atual
+      const origin = window.location.origin;
+      console.log("URL base de origem:", origin);
       
-      // Definir o caminho de redirecionamento para a página de login
-      const redirectUrl = `${siteUrl}/login?type=recovery`;
-      console.log("URL de redirecionamento:", redirectUrl);
+      // Configurar URL de redirecionamento absoluta
+      const redirectTo = `${origin}/login?type=recovery`;
+      console.log("URL de redirecionamento completa:", redirectTo);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+        redirectTo: redirectTo,
       });
 
       if (error) throw error;
 
+      console.log("Email de recuperação enviado com sucesso");
       setResetSent(true);
       toast({
         title: "Email enviado",

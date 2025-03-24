@@ -42,7 +42,7 @@ export default function NewPasswordForm() {
     try {
       console.log("Attempting to update password");
       
-      // Get current session to verify we're authenticated for password reset
+      // Verificar se a sessão atual possui um token válido
       const { data: sessionData } = await supabase.auth.getSession();
       console.log("Current session:", sessionData?.session ? "Active" : "None");
       
@@ -50,6 +50,7 @@ export default function NewPasswordForm() {
         throw new Error("Sessão expirada. Por favor, solicite um novo link de recuperação de senha.");
       }
       
+      // Atualizar a senha do usuário
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -66,10 +67,10 @@ export default function NewPasswordForm() {
         description: "Você pode fazer login com sua nova senha agora.",
       });
       
-      // Clear hash from URL after successful password update
+      // Limpar hash da URL após a atualização bem-sucedida da senha
       window.history.replaceState(null, '', window.location.pathname);
 
-      // Redirect to login after successful password reset
+      // Redirecionar para a página de login após senha redefinida com sucesso
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
