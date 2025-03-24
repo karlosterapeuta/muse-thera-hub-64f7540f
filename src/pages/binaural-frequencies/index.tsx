@@ -39,7 +39,7 @@ const brainwaveFrequencies = {
 
 export default function BinauralFrequencies() {
   // General state
-  const [mainTab, setMainTab] = useState("general");
+  const [mainTab, setMainTab] = useState("tea");
   const [activeTab, setActiveTab] = useState("alpha");
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -62,14 +62,6 @@ export default function BinauralFrequencies() {
   // Mental health specific state
   const [mentalHealthProfile, setMentalHealthProfile] = useState("anxiety");
 
-  // Atualiza a frequência quando a aba muda
-  useEffect(() => {
-    if (mainTab === "general") {
-      const tab = activeTab as keyof typeof brainwaveFrequencies;
-      setFrequency(brainwaveFrequencies[tab].default);
-    }
-  }, [activeTab, mainTab]);
-
   // Limpa o áudio quando o componente é desmontado
   useEffect(() => {
     return () => {
@@ -91,20 +83,7 @@ export default function BinauralFrequencies() {
     const durationMs = duration * 60000; // Convert minutes to ms
     const bgVolumeNormalized = backgroundVolume / 100;
     
-    if (mainTab === "general") {
-      // For general tab, use the carrier frequency with a beat frequency
-      const beatFrequency = frequency;
-      const carrierFrequency = 200; // Base carrier
-      success = playBinauralBeat(
-        carrierFrequency, 
-        carrierFrequency + beatFrequency, 
-        durationMs, 
-        volumeNormalized,
-        backgroundSound,
-        bgVolumeNormalized
-      );
-    } 
-    else if (mainTab === "advanced") {
+    if (mainTab === "advanced") {
       // For advanced tab, use the explicitly set left/right frequencies
       success = playBinauralBeat(
         leftFrequency, 
@@ -163,11 +142,7 @@ export default function BinauralFrequencies() {
       </h1>
       
       <Tabs value={mainTab} onValueChange={setMainTab} className="w-full mb-6">
-        <TabsList className="grid grid-cols-4 w-full">
-          <TabsTrigger value="general">
-            <Waves className="mr-2 h-4 w-4" />
-            Geral
-          </TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full">
           <TabsTrigger value="tea">
             <Brain className="mr-2 h-4 w-4" />
             TEA
@@ -181,179 +156,6 @@ export default function BinauralFrequencies() {
             Avançado
           </TabsTrigger>
         </TabsList>
-        
-        {/* General Tab Content */}
-        <TabsContent value="general" className="mt-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Gerador de Frequências Binaurais</CardTitle>
-                <CardDescription>
-                  Selecione o tipo de ondas cerebrais e ajuste a frequência para suas necessidades específicas
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-                  <TabsList className="grid grid-cols-5 w-full">
-                    <TabsTrigger value="delta">Delta</TabsTrigger>
-                    <TabsTrigger value="theta">Theta</TabsTrigger>
-                    <TabsTrigger value="alpha">Alpha</TabsTrigger>
-                    <TabsTrigger value="beta">Beta</TabsTrigger>
-                    <TabsTrigger value="gamma">Gamma</TabsTrigger>
-                  </TabsList>
-                  
-                  {Object.entries(brainwaveFrequencies).map(([key, value]) => (
-                    <TabsContent key={key} value={key} className="mt-4">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-xl">{key.charAt(0).toUpperCase() + key.slice(1)} ({value.min}-{value.max} Hz)</CardTitle>
-                          <CardDescription>{value.description}</CardDescription>
-                        </CardHeader>
-                      </Card>
-                    </TabsContent>
-                  ))}
-                </Tabs>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Frequência: {frequency.toFixed(1)} Hz</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {brainwaveFrequencies[activeTab as keyof typeof brainwaveFrequencies].min} - 
-                        {brainwaveFrequencies[activeTab as keyof typeof brainwaveFrequencies].max} Hz
-                      </span>
-                    </div>
-                    <Slider
-                      value={[frequency]}
-                      min={brainwaveFrequencies[activeTab as keyof typeof brainwaveFrequencies].min}
-                      max={brainwaveFrequencies[activeTab as keyof typeof brainwaveFrequencies].max}
-                      step={0.1}
-                      onValueChange={(value) => setFrequency(value[0])}
-                    />
-                  </div>
-
-                  {/* Duration slider and controls - common to all tabs */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Duração: {duration} min</Label>
-                      <span className="text-sm text-muted-foreground">1 - 60 min</span>
-                    </div>
-                    <Slider
-                      value={[duration]}
-                      min={1}
-                      max={60}
-                      step={1}
-                      onValueChange={(value) => setDuration(value[0])}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Volume: {volume}%</Label>
-                      <span className="text-sm text-muted-foreground">
-                        <Volume2 className="h-4 w-4 inline-block mr-1" />
-                      </span>
-                    </div>
-                    <Slider
-                      value={[volume]}
-                      min={0}
-                      max={100}
-                      step={1}
-                      onValueChange={(value) => setVolume(value[0])}
-                    />
-                  </div>
-                  
-                  {/* Background Sound Controls */}
-                  <div className="space-y-2 pt-4 border-t">
-                    <Label>Som de Fundo</Label>
-                    <Select 
-                      value={backgroundSound} 
-                      onValueChange={(value) => setBackgroundSound(value as BackgroundSoundType)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um som de fundo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Sem som de fundo</SelectItem>
-                        <SelectItem value="rain">Chuva</SelectItem>
-                        <SelectItem value="whitenoise">Ruído Branco</SelectItem>
-                        <SelectItem value="ocean">Ondas do Oceano</SelectItem>
-                        <SelectItem value="forest">Floresta</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
-                    {backgroundSound !== 'none' && (
-                      <div className="space-y-2 mt-2">
-                        <div className="flex justify-between">
-                          <Label>Volume do Fundo: {backgroundVolume}%</Label>
-                          <CloudRain className="h-4 w-4" />
-                        </div>
-                        <Slider
-                          value={[backgroundVolume]}
-                          min={0}
-                          max={100}
-                          step={1}
-                          onValueChange={handleBackgroundVolumeChange}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <Button 
-                    className="w-full mt-4" 
-                    onClick={handlePlay}
-                    size="lg"
-                  >
-                    {isPlaying ? (
-                      <>
-                        <Square className="mr-2 h-5 w-5" /> Parar
-                      </>
-                    ) : (
-                      <>
-                        <Play className="mr-2 h-5 w-5" /> Iniciar
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Benefícios das Frequências Binaurais</CardTitle>
-                <CardDescription>
-                  Como as ondas cerebrais afetam o seu bem-estar e desempenho
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-semibold">Delta (0.5-4 Hz)</h3>
-                  <p className="text-sm">Promove sono profundo reparador, regeneração celular e cura. Ideal para sono profundo e recuperação física.</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold">Theta (4-8 Hz)</h3>
-                  <p className="text-sm">Facilita a meditação profunda, criatividade e memória. Útil para relaxamento profundo e trabalho criativo.</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold">Alpha (8-14 Hz)</h3>
-                  <p className="text-sm">Induz relaxamento, foco e aprendizado otimizado. Excelente para estudos, trabalho criativo e redução de estresse.</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold">Beta (14-30 Hz)</h3>
-                  <p className="text-sm">Aumenta concentração, atenção e alerta. Ideal para trabalho intelectual e atividades que exigem foco intenso.</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold">Gamma (30-100 Hz)</h3>
-                  <p className="text-sm">Estimula o processamento cognitivo de alto nível, percepção e consciência expandida. Associado a estados cognitivos superiores.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
         
         {/* TEA Tab Content */}
         <TabsContent value="tea" className="mt-4">
