@@ -3,13 +3,20 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Info, Play, Square, Volume2, VolumeX } from "lucide-react";
+import { Info, Play, Square, Volume2, VolumeX, Music } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   playBinauralBeat, 
   stopAllAudio, 
@@ -52,11 +59,17 @@ const frequencyRanges = [
 
 // Background sound options
 const backgroundSounds = [
-  { value: "none", label: "Nenhum" },
-  { value: "white-noise", label: "Ruído Branco" },
-  { value: "rain", label: "Chuva" },
-  { value: "ocean", label: "Oceano" },
-  { value: "forest", label: "Floresta" },
+  { value: "none", label: "Nenhum", icon: VolumeX },
+  { value: "white-noise", label: "Ruído Branco", icon: Volume2 },
+  { value: "rain", label: "Chuva", icon: Volume2 },
+  { value: "ocean", label: "Oceano", icon: Volume2 },
+  { value: "forest", label: "Floresta", icon: Volume2 },
+  { value: "fireplace", label: "Lareira", icon: Volume2 },
+  { value: "birds", label: "Pássaros", icon: Volume2 },
+  { value: "stream", label: "Riacho", icon: Volume2 },
+  { value: "meditation", label: "Meditação", icon: Music },
+  { value: "brown-noise", label: "Ruído Marrom", icon: Volume2 },
+  { value: "pink-noise", label: "Ruído Rosa", icon: Volume2 },
 ];
 
 export default function BinauralFrequencies() {
@@ -65,7 +78,7 @@ export default function BinauralFrequencies() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [backgroundVolume, setBackgroundVolume] = useState(30);
-  const [selectedBackground, setSelectedBackground] = useState<BackgroundSoundType>("white-noise");
+  const [selectedBackground, setSelectedBackground] = useState<BackgroundSoundType>("none");
   
   // New states for direct frequency control
   const [leftFrequency, setLeftFrequency] = useState(200);
@@ -284,26 +297,27 @@ export default function BinauralFrequencies() {
             </div>
           </div>
           
-          {/* Background sound selection */}
+          {/* Background sound selection - Converted to dropdown */}
           <div className="mb-8">
             <h3 className="text-lg font-medium mb-3">Som de Fundo</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-              {backgroundSounds.map((sound) => (
-                <Button
-                  key={sound.value}
-                  variant={selectedBackground === sound.value ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setSelectedBackground(sound.value as BackgroundSoundType)}
-                >
-                  {sound.value === "none" ? (
-                    <VolumeX className="mr-2 h-4 w-4" />
-                  ) : (
-                    <Volume2 className="mr-2 h-4 w-4" />
-                  )}
-                  {sound.label}
-                </Button>
-              ))}
-            </div>
+            <Select
+              value={selectedBackground}
+              onValueChange={(value) => setSelectedBackground(value as BackgroundSoundType)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione o som de fundo" />
+              </SelectTrigger>
+              <SelectContent>
+                {backgroundSounds.map((sound) => (
+                  <SelectItem key={sound.value} value={sound.value}>
+                    <div className="flex items-center">
+                      <sound.icon className="mr-2 h-4 w-4" />
+                      <span>{sound.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           {/* Play/Stop button */}
