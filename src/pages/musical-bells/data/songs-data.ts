@@ -5,7 +5,6 @@ export interface Song {
   description: string;
 }
 
-// Define complete songs with consistent structure for notes and lyrics
 export const songs: Song[] = [
   {
     title: "Brilha, Brilha Estrelinha",
@@ -232,10 +231,9 @@ export const songs: Song[] = [
   {
     title: "A Casa",
     notes: ["G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E", "G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E"],
-    lyrics: ["E", "ra", "u", "ma", "ca", "sa", "mui", "to", "en", "gra", "ça", "da", "não", "ti", "nha", "te", "to", "não", "ti", "nha", "na", "da", "nin", "guém", "po", "di", "a", "mo", "rar", "la"],
+    lyrics: ["E", "ra", "u", "ma", "ca", "sa", "mui", "to", "en", "gra", "ça", "da", "não", "ti", "nha", "te", "to", "não", "ti", "nha", "na", "da", "nin", "guém", "po", "di", "a", "mo", "rar", "la"]
     description: "Canção infantil de Vinícius de Moraes que descreve uma casa incomum de forma divertida."
   },
-  // Additional songs below
   {
     title: "Dona Aranha",
     notes: ["C1", "D", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "G", "F", "E", "D", "C1"],
@@ -245,4 +243,7 @@ export const songs: Song[] = [
   {
     title: "Formiguinha",
     notes: ["G", "G", "E", "G", "C1", "G", "G", "E", "G", "C1", "E", "E", "F", "G", "A", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["A", "for", "mi", "gui", "nha", "cor", "ta", "fo", "lha", "e", "car", "re", "ga", "pro", "for", "mi", "gue
+    lyrics: ["A", "for", "mi", "gui", "nha", "cor", "ta", "fo", "lha", "e", "car", "re", "ga", "pro", "for", "mi", "guei", "ro"],
+    description: "Canção infantil sobre uma formiguinha trabalhadora."
+  }
+];
