@@ -1,8 +1,8 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Music2, Download, FileText, Volume2, VolumeX } from "lucide-react";
+import { Music2, Download, FileText, Volume2, VolumeX, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
@@ -319,10 +319,15 @@ export default function MusicalBells() {
   const [selectedSong, setSelectedSong] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const { toast } = useToast();
+  // Add a ref to track the currently playing interval/timeout
+  const playbackRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cleanup audio context when component unmounts
   useEffect(() => {
     return () => {
+      if (playbackRef.current) {
+        clearTimeout(playbackRef.current);
+      }
       stopAllAudio();
     };
   }, []);
@@ -365,8 +370,13 @@ export default function MusicalBells() {
       if (noteIndex < songNotes.length) {
         playNote(songNotes[noteIndex]);
         noteIndex++;
-        setTimeout(playNextNote, 800); // Play each note with a delay
+        // Store the timeout reference so we can clear it when stopping
+        playbackRef.current = setTimeout(playNextNote, 800); // Play each note with a delay
       } else {
+        if (playbackRef.current) {
+          clearTimeout(playbackRef.current);
+          playbackRef.current = null;
+        }
         setCurrentSong(null);
         setIsPlaying(false);
         
@@ -379,6 +389,29 @@ export default function MusicalBells() {
 
     // Start playing the song
     playNextNote();
+  };
+
+  // Stop playing the current song
+  const stopPlaying = () => {
+    if (isPlaying) {
+      // Clear any pending timeouts to stop the playback sequence
+      if (playbackRef.current) {
+        clearTimeout(playbackRef.current);
+        playbackRef.current = null;
+      }
+      
+      // Stop all audio playing
+      stopAllAudio();
+      
+      // Reset state
+      setCurrentSong(null);
+      setIsPlaying(false);
+      
+      toast({
+        title: "Música interrompida",
+        description: "A reprodução da música foi interrompida.",
+      });
+    }
   };
 
   // Toggle audio on/off
@@ -433,7 +466,18 @@ export default function MusicalBells() {
         Sinos Musicais
       </h1>
       
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 gap-2">
+        {isPlaying && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={stopPlaying}
+            className="flex items-center gap-2"
+          >
+            <StopCircle className="h-4 w-4" />
+            Parar Música
+          </Button>
+        )}
         <Button
           variant="outline"
           size="sm"
