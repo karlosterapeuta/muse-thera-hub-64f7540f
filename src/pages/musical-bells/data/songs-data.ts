@@ -1,3 +1,4 @@
+
 export interface Song {
   title: string;
   notes: string[];
@@ -231,7 +232,7 @@ export const songs: Song[] = [
   {
     title: "A Casa",
     notes: ["G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E", "G", "A", "B", "C1", "C1", "B", "A", "G", "F", "G", "A", "A", "G", "F", "E"],
-    lyrics: ["E", "ra", "u", "ma", "ca", "sa", "mui", "to", "en", "gra", "ça", "da", "não", "ti", "nha", "te", "to", "não", "ti", "nha", "na", "da", "nin", "guém", "po", "di", "a", "mo", "rar", "la"]
+    lyrics: ["E", "ra", "u", "ma", "ca", "sa", "mui", "to", "en", "gra", "ça", "da", "não", "ti", "nha", "te", "to", "não", "ti", "nha", "na", "da", "nin", "guém", "po", "di", "a", "mo", "rar", "la"],
     description: "Canção infantil de Vinícius de Moraes que descreve uma casa incomum de forma divertida."
   },
   {
