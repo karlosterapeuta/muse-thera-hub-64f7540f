@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Music2, Download, FileText, Volume2, VolumeX, StopCircle } from "lucide-react";
@@ -319,10 +319,15 @@ export default function MusicalBells() {
   const [selectedSong, setSelectedSong] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const { toast } = useToast();
+  // Add a ref to track the currently playing interval/timeout
+  const playbackRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cleanup audio context when component unmounts
   useEffect(() => {
     return () => {
+      if (playbackRef.current) {
+        clearTimeout(playbackRef.current);
+      }
       stopAllAudio();
     };
   }, []);
@@ -365,8 +370,13 @@ export default function MusicalBells() {
       if (noteIndex < songNotes.length) {
         playNote(songNotes[noteIndex]);
         noteIndex++;
-        setTimeout(playNextNote, 800); // Play each note with a delay
+        // Store the timeout reference so we can clear it when stopping
+        playbackRef.current = setTimeout(playNextNote, 800); // Play each note with a delay
       } else {
+        if (playbackRef.current) {
+          clearTimeout(playbackRef.current);
+          playbackRef.current = null;
+        }
         setCurrentSong(null);
         setIsPlaying(false);
         
@@ -384,7 +394,16 @@ export default function MusicalBells() {
   // Stop playing the current song
   const stopPlaying = () => {
     if (isPlaying) {
+      // Clear any pending timeouts to stop the playback sequence
+      if (playbackRef.current) {
+        clearTimeout(playbackRef.current);
+        playbackRef.current = null;
+      }
+      
+      // Stop all audio playing
       stopAllAudio();
+      
+      // Reset state
       setCurrentSong(null);
       setIsPlaying(false);
       
