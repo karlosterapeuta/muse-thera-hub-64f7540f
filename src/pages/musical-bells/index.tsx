@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Music2, Download, FileText, Volume2, VolumeX } from "lucide-react";
+import { Music2, Download, FileText, Volume2, VolumeX, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
@@ -381,6 +381,20 @@ export default function MusicalBells() {
     playNextNote();
   };
 
+  // Stop playing the current song
+  const stopPlaying = () => {
+    if (isPlaying) {
+      stopAllAudio();
+      setCurrentSong(null);
+      setIsPlaying(false);
+      
+      toast({
+        title: "Música interrompida",
+        description: "A reprodução da música foi interrompida.",
+      });
+    }
+  };
+
   // Toggle audio on/off
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
@@ -433,7 +447,18 @@ export default function MusicalBells() {
         Sinos Musicais
       </h1>
       
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 gap-2">
+        {isPlaying && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={stopPlaying}
+            className="flex items-center gap-2"
+          >
+            <StopCircle className="h-4 w-4" />
+            Parar Música
+          </Button>
+        )}
         <Button
           variant="outline"
           size="sm"
