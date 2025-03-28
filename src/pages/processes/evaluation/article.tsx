@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, CheckCircle, Target, Brain, Music2, Users, Award } from "lucide-react";
@@ -20,7 +21,7 @@ export default function EvaluationArticle() {
               </p>
             </div>
             <Button variant="outline" asChild>
-              <Link href="/processes/evaluation">
+              <Link to="/processes/evaluation">
                 Ir para Avaliação
               </Link>
             </Button>
@@ -583,7 +584,7 @@ export default function EvaluationArticle() {
             </p>
             <div className="mt-6 flex justify-center">
               <Button asChild>
-                <Link href="/processes/evaluation">
+                <Link to="/processes/evaluation">
                   Experimente a Avaliação
                 </Link>
               </Button>
