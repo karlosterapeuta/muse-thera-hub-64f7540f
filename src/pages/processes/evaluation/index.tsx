@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -165,14 +164,13 @@ export default function Evaluation() {
 
   // Handle save
   const handleSave = () => {
-    // Implementation would connect to backend
     toast({
       title: "Avaliação salva",
       description: "Os dados da avaliação foram salvos com sucesso.",
     });
   };
 
-  // PDF generation function
+  // Revised PDF generation function
   const generatePDF = async () => {
     try {
       setIsGeneratingPdf(true);
@@ -329,7 +327,7 @@ export default function Evaluation() {
       let heightLeft = pdfHeight;
       let position = 0;
       
-      while (heightLeft > pdf.internal.pageSize.getHeight()) {
+      while (heightLeft >= pdf.internal.pageSize.getHeight()) {
         position = -pdf.internal.pageSize.getHeight();
         pdf.addPage();
         pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
