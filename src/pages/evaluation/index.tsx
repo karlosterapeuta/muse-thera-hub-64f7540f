@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -85,7 +84,6 @@ export default function Evaluation() {
 
   const selectedPatientData = patients.find(p => p.id === selectedPatient);
 
-  // New sophisticated evaluation structure with domains and subdomains
   const evaluationDomains = [
     {
       title: "Domínio Musical",
@@ -211,7 +209,6 @@ export default function Evaluation() {
     
     if (!value) return 0;
     
-    // Score mapping from 0-4
     return value === "ausente" ? 0 : 
            value === "emergente" ? 1 : 
            value === "inconsistente" ? 2 : 
@@ -219,7 +216,7 @@ export default function Evaluation() {
   };
 
   const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
-    const maxPossible = parameters.length * 4; // Maximum 4 points per parameter
+    const maxPossible = parameters.length * 4;
     
     const totalScore = parameters.reduce((acc, param) => {
       return acc + calculateScore(domain, subdomain, param);
@@ -256,7 +253,7 @@ export default function Evaluation() {
         subdomain.parameters.forEach(param => {
           const score = calculateScore(domain.title, subdomain.title, param);
           totalScore += score;
-          maxPossible += 4; // Maximum 4 points per parameter
+          maxPossible += 4;
         });
       });
     });
@@ -268,24 +265,31 @@ export default function Evaluation() {
     };
   };
 
-  // Chart data preparation
-  const domainScores = evaluationDomains.map(domain => {
-    const score = calculateDomainScore(domain);
-    return {
-      name: domain.title.replace("Domínio ", ""),
-      value: score.percentage,
-      fullMark: 100
-    };
-  });
+  const getDomainAverages = () => {
+    const averages = evaluationDomains.map(domain => {
+      const score = calculateDomainScore(domain);
+      return {
+        name: domain.title.replace("Domínio ", ""),
+        value: score.percentage,
+        fullMark: 100
+      };
+    });
+    return averages;
+  };
 
-  const subdomainScores = evaluationDomains.flatMap(domain => 
-    domain.subdomains.map(subdomain => ({
-      name: subdomain.title,
-      value: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage,
-      domain: domain.title.replace("Domínio ", "")
-    }))
-  );
+  const getSubdomainData = () => {
+    const subdomainScores = evaluationDomains.flatMap(domain => 
+      domain.subdomains.map(subdomain => ({
+        name: subdomain.title,
+        value: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage,
+        domain: domain.title.replace("Domínio ", "")
+      }))
+    );
+    return subdomainScores;
+  };
 
+  const domainScores = getDomainAverages();
+  const subdomainScores = getSubdomainData();
   const overallScore = calculateOverallScore();
   const pieData = [
     { name: "Desenvolvido", value: overallScore.percentage },
@@ -322,7 +326,11 @@ export default function Evaluation() {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <TeaScalePDF
-            evaluationSections={evaluationDomains}
+            evaluationSections={evaluationDomains.map(domain => ({
+              title: domain.title,
+              description: domain.description,
+              parameters: domain.subdomains.flatMap(subdomain => subdomain.parameters)
+            }))}
             selections={selections}
             categoryData={subdomainScores}
             pieData={pieData}
@@ -349,7 +357,7 @@ export default function Evaluation() {
 
       const opt = {
         margin: [10, 10],
-        filename: `avaliacao-musicoterapeutica-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,

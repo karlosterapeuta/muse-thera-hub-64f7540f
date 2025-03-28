@@ -5,7 +5,11 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface TeaScalePDFProps {
-  evaluationSections: any[];
+  evaluationSections: {
+    title: string;
+    description: string;
+    parameters: string[];
+  }[];
   selections: Record<string, string>;
   categoryData: any[];
   pieData: any[];
@@ -52,24 +56,22 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[120px]">Parâmetros</TableHead>
-                <TableHead className="w-24 text-center">Não</TableHead>
-                <TableHead className="w-24 text-center">Pouco</TableHead>
-                <TableHead className="w-24 text-center">Muito</TableHead>
+                <TableHead className="w-24 text-center">Ausente</TableHead>
+                <TableHead className="w-24 text-center">Emergente</TableHead>
+                <TableHead className="w-24 text-center">Inconsistente</TableHead>
+                <TableHead className="w-24 text-center">Consistente</TableHead>
+                <TableHead className="w-24 text-center">Independente</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {section.parameters.map((parameter: string, index: number) => (
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
-                  <TableCell className="text-center">
-                    {selections[`${section.title}-${parameter}`] === "nao" ? "●" : "○"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {selections[`${section.title}-${parameter}`] === "pouco" ? "●" : "○"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {selections[`${section.title}-${parameter}`] === "muito" ? "●" : "○"}
-                  </TableCell>
+                  {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
+                    <TableCell key={level} className="text-center">
+                      {selections[`${section.title}-${parameter}`] === level ? "●" : "○"}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
@@ -160,4 +162,3 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
-
