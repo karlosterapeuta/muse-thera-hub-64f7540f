@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -170,7 +171,7 @@ export default function Evaluation() {
     });
   };
 
-  // Revised PDF generation function
+  // Completely revised PDF generation function that doesn't rely on TeaScalePDF
   const generatePDF = async () => {
     try {
       setIsGeneratingPdf(true);
@@ -179,151 +180,122 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Create a container where we'll render the PDF content
-      const pdfContainer = document.createElement('div');
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
-      pdfContainer.style.width = '800px'; // Fixed width for PDF
-      pdfContainer.style.backgroundColor = 'white';
-      pdfContainer.style.padding = '40px';
-      pdfContainer.style.fontFamily = 'Arial, sans-serif';
-      document.body.appendChild(pdfContainer);
+      // Create a hidden temporary container
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.width = '800px';
+      tempContainer.style.backgroundColor = 'white';
+      tempContainer.style.padding = '40px';
+      tempContainer.style.fontFamily = 'Arial, sans-serif';
+      document.body.appendChild(tempContainer);
 
-      // Create PDF header
+      // Build header
       const header = document.createElement('div');
-      header.style.textAlign = 'center';
-      header.style.marginBottom = '30px';
       header.innerHTML = `
-        <h1 style="color: #6D28D9; font-size: 24px; margin-bottom: 12px;">Avaliação Musicoterapêutica</h1>
-        <p style="color: #64748b; font-size: 14px;">Data: ${new Date().toLocaleDateString()}</p>
+        <div style="text-align: center; margin-bottom: 30px;">
+          <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 180px; margin: 0 auto 20px;" />
+          <h1 style="color: #6D28D9; font-size: 28px; margin-bottom: 8px;">Avaliação Musicoterapêutica</h1>
+          <p style="color: #64748b; font-size: 16px;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
       `;
-      pdfContainer.appendChild(header);
+      tempContainer.appendChild(header);
 
-      // Add domain scores section
-      const scoreSection = document.createElement('div');
-      scoreSection.style.marginBottom = '30px';
-      scoreSection.innerHTML = `
-        <h2 style="color: #334155; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
-          Pontuação por Domínios
-        </h2>
-      `;
-
-      // Add a table for domain scores
-      const domainTable = document.createElement('table');
-      domainTable.style.width = '100%';
-      domainTable.style.borderCollapse = 'collapse';
-      domainTable.style.marginBottom = '30px';
-      
-      // Add table header
-      domainTable.innerHTML = `
-        <thead>
-          <tr style="background-color: #f1f5f9;">
-            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0;">Domínio</th>
-            <th style="padding: 10px; text-align: center; border-bottom: 1px solid #e2e8f0;">Pontuação Média</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${domains.map(domain => {
-            const domainAvg = getDomainAverages().find(d => d.name === domain.name);
-            return `
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${domain.name}</td>
-                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: bold;">
-                  ${domainAvg?.score || 0} / 5
-                </td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      `;
-      
-      scoreSection.appendChild(domainTable);
-      pdfContainer.appendChild(scoreSection);
-
-      // Add detailed scores for each domain
-      domains.forEach(domain => {
-        const domainSection = document.createElement('div');
-        domainSection.style.marginBottom = '30px';
-        domainSection.innerHTML = `
-          <h2 style="color: #334155; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
-            ${domain.name}
+      // Summary section
+      const summary = document.createElement('div');
+      summary.innerHTML = `
+        <div style="margin-bottom: 30px;">
+          <h2 style="color: #334155; font-size: 22px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            Resumo da Avaliação
           </h2>
-        `;
-
-        // Add a table for subdomain scores
-        const subdomainTable = document.createElement('table');
-        subdomainTable.style.width = '100%';
-        subdomainTable.style.borderCollapse = 'collapse';
-        subdomainTable.style.marginBottom = '15px';
-        
-        // Add table header
-        subdomainTable.innerHTML = `
-          <thead>
-            <tr style="background-color: #f1f5f9;">
-              <th style="padding: 8px; text-align: left; border-bottom: 1px solid #e2e8f0;">Subdomínio</th>
-              <th style="padding: 8px; text-align: center; border-bottom: 1px solid #e2e8f0;">Pontuação</th>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr style="background-color: #f8fafc;">
+              <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left;">Domínio</th>
+              <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Pontuação Média</th>
             </tr>
-          </thead>
-          <tbody>
-            ${domain.subdomains.map(subdomain => `
+            ${getDomainAverages().map(domain => `
               <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
-                  <div>${subdomain.name}</div>
-                  <div style="font-size: 12px; color: #64748b;">${subdomain.description}</div>
-                </td>
-                <td style="padding: 8px; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: bold;">
-                  ${subdomain.score || 0} / 5
-                  ${subdomain.score > 0 ? `<div style="font-size: 12px; color: #64748b;">
-                    ${scoreLevels.find(l => l.value === subdomain.score)?.label.split(' - ')[1] || ''}
-                  </div>` : ''}
-                </td>
+                <td style="padding: 10px; border: 1px solid #e2e8f0;">${domain.name}</td>
+                <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">${domain.score} / 5</td>
               </tr>
             `).join('')}
-          </tbody>
+          </table>
+        </div>
+      `;
+      tempContainer.appendChild(summary);
+
+      // Detailed domain sections
+      domains.forEach(domain => {
+        const domainSection = document.createElement('div');
+        domainSection.innerHTML = `
+          <div style="margin-bottom: 30px; page-break-inside: avoid;">
+            <h2 style="color: #334155; font-size: 22px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+              ${domain.name}
+            </h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+              <tr style="background-color: #f8fafc;">
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left; width: 60%;">Subdomínio</th>
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Pontuação</th>
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Nível</th>
+              </tr>
+              ${domain.subdomains.map(subdomain => {
+                const scoreLevel = scoreLevels.find(l => l.value === subdomain.score);
+                return `
+                  <tr>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0;">
+                      <div style="font-weight: bold;">${subdomain.name}</div>
+                      <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${subdomain.description}</div>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
+                      ${subdomain.score} / 5
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">
+                      ${subdomain.score > 0 ? (scoreLevel?.label.split(' - ')[1] || '') : 'Não avaliado'}
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </table>
+          </div>
         `;
-        
-        domainSection.appendChild(subdomainTable);
-        pdfContainer.appendChild(domainSection);
+        tempContainer.appendChild(domainSection);
       });
 
       // Add footer
       const footer = document.createElement('div');
-      footer.style.marginTop = '40px';
-      footer.style.borderTop = '1px solid #e2e8f0';
-      footer.style.paddingTop = '15px';
-      footer.style.fontSize = '12px';
-      footer.style.color = '#64748b';
-      footer.style.textAlign = 'center';
       footer.innerHTML = `
-        <p>Relatório gerado pelo Sistema MuseTera em ${new Date().toLocaleDateString()} às ${new Date().toLocaleTimeString()}</p>
-        <p>© 2025 MuseTera. Todos os direitos reservados.</p>
+        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; font-size: 12px; color: #64748b;">
+          <p>Relatório gerado pelo Sistema MuseTera em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+          <p style="margin-top: 5px;">© 2025 MuseTera. Todos os direitos reservados.</p>
+        </div>
       `;
-      pdfContainer.appendChild(footer);
+      tempContainer.appendChild(footer);
 
-      // Use html2canvas to convert the container to an image
-      const canvas = await html2canvas(pdfContainer, {
-        scale: 2, // Increase quality
-        useCORS: true,
+      // Convert to image with html2canvas
+      const canvas = await html2canvas(tempContainer, {
+        scale: 2,
         logging: false,
+        useCORS: true,
+        allowTaint: false,
         backgroundColor: '#ffffff'
       });
 
-      // Create PDF document
+      // Create PDF
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       });
 
-      // Add the captured content to PDF
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      // Calculate dimensions
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      // Add the image to the PDF
+
+      // Add the captured content to PDF
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-      
-      // If the content is longer than one page, add additional pages
+
+      // If content is longer than one page, add more pages
       let heightLeft = pdfHeight;
       let position = 0;
       
@@ -334,18 +306,17 @@ export default function Evaluation() {
         heightLeft -= pdf.internal.pageSize.getHeight();
         position -= pdf.internal.pageSize.getHeight();
       }
+
+      // Clean up
+      document.body.removeChild(tempContainer);
       
-      // Remove the temporary container
-      document.body.removeChild(pdfContainer);
-      
-      // Save the PDF file
+      // Save the PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
       toast({
         title: "PDF Gerado",
         description: "O PDF foi gerado com sucesso.",
       });
-
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast({
