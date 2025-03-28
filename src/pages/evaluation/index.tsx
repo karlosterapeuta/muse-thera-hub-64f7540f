@@ -9,17 +9,28 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ResponsiveContainer } from 'recharts';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown } from "lucide-react";
+import { FileDown, Info, HelpCircle } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
+import {
+  Tooltip as TooltipComponent,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Patient {
   id: string;
@@ -33,6 +44,7 @@ export default function Evaluation() {
   const [selectedEvaluation, setSelectedEvaluation] = useState("1");
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("evaluation");
 
   useEffect(() => {
     async function fetchPatients() {
@@ -72,183 +84,211 @@ export default function Evaluation() {
 
   const selectedPatientData = patients.find(p => p.id === selectedPatient);
 
-  const [patient] = useState({
-    name: "ANA",
-    birthDate: "06/02/2025"
-  });
-
-  const evaluationSections = [
+  // New sophisticated evaluation structure with domains and subdomains
+  const evaluationDomains = [
     {
-      title: "Comportamentos restritivos",
-      description: "Não = 2, Pouco = 1, Muito = 0",
-      parameters: [
-        "Estereotipias",
-        "Agressividade",
-        "Desinteresse",
-        "Passividade",
-        "Resistência",
-        "Reclusão (isolamento)",
-        "Pirraça"
-      ],
-      inverseScoring: true
-    },
-    {
-      title: "Interação social / Cognição",
-      description: "Não = 0, Pouco = 1, Muito = 2",
-      parameters: [
-        "Contato visual",
-        "Comunicação verbal",
-        "Interação com instrumentos musicais",
-        "Interação com outros objetos",
-        "Interação com educador ou musicoterapeuta",
-        "Interação com pais (se aplicável)",
-        "Interação com pares (se aplicável)",
-        "Atenção",
-        "Imitação"
+      title: "Domínio Musical",
+      description: "Avaliação das habilidades e respostas musicais",
+      icon: "🎵",
+      subdomains: [
+        {
+          title: "Percepção Musical",
+          description: "Capacidade de perceber e discriminar elementos musicais",
+          parameters: [
+            "Discriminação de altura sonora",
+            "Reconhecimento de timbres",
+            "Percepção rítmica",
+            "Memória musical",
+            "Atenção aos estímulos sonoros"
+          ]
+        },
+        {
+          title: "Expressão Musical",
+          description: "Capacidade de se expressar através da música",
+          parameters: [
+            "Expressividade vocal/instrumental",
+            "Criatividade musical",
+            "Improvisação",
+            "Sincronização com o pulso",
+            "Qualidade da produção sonora"
+          ]
+        }
       ]
     },
     {
-      title: "Percepção / Exploração rítmica",
-      description: "Não = 0, Pouco = 1, Muito = 2",
-      parameters: [
-        "Pulso interno (x2)",
-        "Regulação temporal (x2)",
-        "Apoio (x2)",
-        "Ritmo real (x2)",
-        "Contrastes de andamento (x2)"
-      ],
-      doubleWeight: true
-    },
-    {
-      title: "Percepção / Exploração sonora",
-      description: "Não = 0, Pouco = 1, Muito = 2",
-      parameters: [
-        "Som/silêncio",
-        "Timbre",
-        "Planos de altura",
-        "Movimento sonoro",
-        "Contrastes de intensidade",
-        "Repetição de ideias rítmicas e/ou melódicas",
-        "Senso de conclusão"
+      title: "Domínio Psicossocial",
+      description: "Avaliação dos aspectos psicológicos e sociais",
+      icon: "👥",
+      subdomains: [
+        {
+          title: "Interação Social",
+          description: "Qualidade das interações sociais durante as atividades musicais",
+          parameters: [
+            "Engajamento com o terapeuta",
+            "Interação com pares",
+            "Compartilhamento de experiências",
+            "Iniciativa social",
+            "Reciprocidade"
+          ]
+        },
+        {
+          title: "Regulação Emocional",
+          description: "Capacidade de utilizar a música para regulação emocional",
+          parameters: [
+            "Expressão de emoções",
+            "Auto-regulação através da música",
+            "Resposta emocional apropriada",
+            "Modulação do humor",
+            "Tolerância à frustração"
+          ]
+        }
       ]
     },
     {
-      title: "Exploração vocal",
-      description: "Não = 0, Pouco = 1, Muito = 2",
-      parameters: [
-        "Vocalizações",
-        "Balbucios",
-        "Sílabas canônica",
-        "Imitação de canções (x2)",
-        "Criação vocal (x2)"
-      ],
-      doubleWeight: ["Imitação de canções", "Criação vocal"]
+      title: "Domínio Cognitivo",
+      description: "Avaliação das funções cognitivas",
+      icon: "🧠",
+      subdomains: [
+        {
+          title: "Funções Executivas",
+          description: "Capacidade de planejamento, organização e execução",
+          parameters: [
+            "Atenção sustentada",
+            "Planejamento musical",
+            "Flexibilidade cognitiva",
+            "Resolução de problemas musicais",
+            "Tomada de decisão"
+          ]
+        },
+        {
+          title: "Processamento da Informação",
+          description: "Capacidade de processar e responder a estímulos musicais",
+          parameters: [
+            "Velocidade de processamento",
+            "Capacidade de sequenciamento",
+            "Integração sensorial",
+            "Memória de trabalho",
+            "Capacidade de generalização"
+          ]
+        }
+      ]
     },
     {
-      title: "Movimentação corporal com a música",
-      description: "Não = 0, Pouco = 1, Muito = 2",
-      parameters: [
-        "Andar",
-        "Correr",
-        "Parar",
-        "Dançar",
-        "Pular",
-        "Gesticular",
-        "Movimentar-se no lugar"
+      title: "Domínio Sensório-Motor",
+      description: "Avaliação da integração sensorial e motora",
+      icon: "👐",
+      subdomains: [
+        {
+          title: "Coordenação Motora",
+          description: "Qualidade dos movimentos relacionados à música",
+          parameters: [
+            "Coordenação bimanual",
+            "Controle motor fino",
+            "Planejamento motor",
+            "Precisão rítmica motora",
+            "Integração de movimento e música"
+          ]
+        },
+        {
+          title: "Processamento Sensorial",
+          description: "Resposta aos estímulos sensoriais musicais",
+          parameters: [
+            "Resposta auditiva",
+            "Integração audiovisual",
+            "Resposta tátil a instrumentos",
+            "Propriocepção durante atividades",
+            "Tolerância a estímulos sonoros"
+          ]
+        }
       ]
     }
   ];
 
-  const calculateScore = (section: typeof evaluationSections[0], parameter: string) => {
-    const value = selections[`${section.title}-${parameter}`];
+  const calculateScore = (domain: string, subdomain: string, parameter: string) => {
+    const key = `${domain}-${subdomain}-${parameter}`;
+    const value = selections[key];
+    
     if (!value) return 0;
-
-    const isDoubleWeight = section.doubleWeight === true || 
-      (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(parameter));
-
-    let score = 0;
-    if (section.inverseScoring) {
-      score = value === "nao" ? 2 : value === "pouco" ? 1 : 0;
-    } else {
-      score = value === "muito" ? 2 : value === "pouco" ? 1 : 0;
-    }
-
-    return isDoubleWeight ? score * 2 : score;
+    
+    // Score mapping from 0-4
+    return value === "ausente" ? 0 : 
+           value === "emergente" ? 1 : 
+           value === "inconsistente" ? 2 : 
+           value === "consistente" ? 3 : 4;
   };
 
-  const calculateSectionScore = (section: typeof evaluationSections[0]) => {
-    const maxPossibleScore = section.parameters.reduce((acc, param) => {
-      const isDoubleWeight = section.doubleWeight === true || 
-        (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(param));
-      return acc + (isDoubleWeight ? 4 : 2);
-    }, 0);
-
-    const actualScore = section.parameters.reduce((acc, param) => 
-      acc + calculateScore(section, param), 0);
-
-    return Math.round((actualScore / maxPossibleScore) * 100);
-  };
-
-  const calculateTotalProgress = () => {
-    // Calculate total number of parameters to evaluate
-    const totalParameters = evaluationSections.reduce(
-      (acc, section) => acc + section.parameters.length, 0
-    );
+  const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
+    const maxPossible = parameters.length * 4; // Maximum 4 points per parameter
     
-    // Calculate total points actually acquired based on the scoring system
-    const totalAcquired = evaluationSections.reduce((sectionAcc, section) => {
-      return sectionAcc + section.parameters.reduce((paramAcc, param) => {
-        const paramKey = `${section.title}-${param}`;
-        if (!selections[paramKey]) return paramAcc; // Skip if not selected
-        
-        // Calculate score based on the section's scoring system
-        let score = 0;
-        if (section.inverseScoring) {
-          // For inverse scoring (No=2, Little=1, A lot=0)
-          score = selections[paramKey] === "nao" ? 2 : 
-                 selections[paramKey] === "pouco" ? 1 : 0;
-        } else {
-          // For regular scoring (No=0, Little=1, A lot=2)
-          score = selections[paramKey] === "muito" ? 2 : 
-                 selections[paramKey] === "pouco" ? 1 : 0;
-        }
-        
-        // Apply double weight if applicable
-        const isDoubleWeight = section.doubleWeight === true || 
-          (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(param));
-          
-        return paramAcc + (isDoubleWeight ? score * 2 : score);
-      }, 0);
+    const totalScore = parameters.reduce((acc, param) => {
+      return acc + calculateScore(domain, subdomain, param);
     }, 0);
-    
-    // Calculate maximum possible score
-    const maxPossibleScore = evaluationSections.reduce((sectionAcc, section) => {
-      return sectionAcc + section.parameters.reduce((paramAcc, param) => {
-        const isDoubleWeight = section.doubleWeight === true || 
-          (Array.isArray(section.doubleWeight) && section.doubleWeight.includes(param));
-        const maxScore = isDoubleWeight ? 4 : 2; // Max score is 2 or 4 for double weighted
-        return paramAcc + maxScore;
-      }, 0);
-    }, 0);
-    
-    // Calculate percentage of skills acquired
-    const percentAcquired = maxPossibleScore > 0 ? Math.round((totalAcquired / maxPossibleScore) * 100) : 0;
     
     return {
-      adquirido: percentAcquired,
-      naoAdquirido: 100 - percentAcquired
+      raw: totalScore,
+      percentage: Math.round((totalScore / maxPossible) * 100)
     };
   };
 
-  const categoryData = evaluationSections.map(section => ({
-    name: section.title.split('/')[0].trim(),
-    value: calculateSectionScore(section)
-  }));
+  const calculateDomainScore = (domain: any) => {
+    let totalScore = 0;
+    let maxPossible = 0;
+    
+    domain.subdomains.forEach((subdomain: any) => {
+      const score = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
+      totalScore += score.raw;
+      maxPossible += subdomain.parameters.length * 4;
+    });
+    
+    return {
+      raw: totalScore,
+      percentage: Math.round((totalScore / maxPossible) * 100)
+    };
+  };
 
-  const progress = calculateTotalProgress();
+  const calculateOverallScore = () => {
+    let totalScore = 0;
+    let maxPossible = 0;
+    
+    evaluationDomains.forEach(domain => {
+      domain.subdomains.forEach(subdomain => {
+        subdomain.parameters.forEach(param => {
+          const score = calculateScore(domain.title, subdomain.title, param);
+          totalScore += score;
+          maxPossible += 4; // Maximum 4 points per parameter
+        });
+      });
+    });
+    
+    return {
+      raw: totalScore,
+      max: maxPossible,
+      percentage: Math.round((totalScore / maxPossible) * 100)
+    };
+  };
+
+  // Chart data preparation
+  const domainScores = evaluationDomains.map(domain => {
+    const score = calculateDomainScore(domain);
+    return {
+      name: domain.title.replace("Domínio ", ""),
+      value: score.percentage,
+      fullMark: 100
+    };
+  });
+
+  const subdomainScores = evaluationDomains.flatMap(domain => 
+    domain.subdomains.map(subdomain => ({
+      name: subdomain.title,
+      value: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage,
+      domain: domain.title.replace("Domínio ", "")
+    }))
+  );
+
+  const overallScore = calculateOverallScore();
   const pieData = [
-    { name: "Adquirido", value: progress.adquirido },
-    { name: "Não adquirido", value: progress.naoAdquirido },
+    { name: "Desenvolvido", value: overallScore.percentage },
+    { name: "A desenvolver", value: 100 - overallScore.percentage },
   ];
 
   const COLORS = ['#4ade80', '#ffa1b5'];
@@ -281,9 +321,9 @@ export default function Evaluation() {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <TeaScalePDF
-            evaluationSections={evaluationSections}
+            evaluationSections={evaluationDomains}
             selections={selections}
-            categoryData={categoryData}
+            categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
             evaluatorName={userName}
@@ -308,7 +348,7 @@ export default function Evaluation() {
 
       const opt = {
         margin: [10, 10],
-        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `avaliacao-musicoterapeutica-${selectedPatientData?.name || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
@@ -337,7 +377,7 @@ export default function Evaluation() {
 
   return (
     <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
-      <Card className="p-4 sm:p-6">
+      <Card className="p-4 sm:p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <PatientSelect
@@ -364,11 +404,10 @@ export default function Evaluation() {
                 <SelectValue placeholder="Selecione a avaliação" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Avaliação 1</SelectItem>
-                <SelectItem value="2">Avaliação 2</SelectItem>
-                <SelectItem value="3">Avaliação 3</SelectItem>
-                <SelectItem value="4">Avaliação 4</SelectItem>
-                <SelectItem value="5">Avaliação 5</SelectItem>
+                <SelectItem value="1">Avaliação Inicial</SelectItem>
+                <SelectItem value="2">Avaliação de Progresso</SelectItem>
+                <SelectItem value="3">Avaliação Periódica</SelectItem>
+                <SelectItem value="4">Avaliação Final</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -382,196 +421,257 @@ export default function Evaluation() {
           </div>
         </div>
 
-        {evaluationSections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="mb-6 sm:mb-8">
-            <div className="mb-4">
-              <h2 className="text-lg sm:text-xl font-semibold">{section.title}</h2>
-              <p className="text-xs sm:text-sm text-gray-600">{section.description}</p>
-            </div>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[120px]">Parâmetros</TableHead>
-                    <TableHead className="w-16 sm:w-24 text-center">Não</TableHead>
-                    <TableHead className="w-16 sm:w-24 text-center">Pouco</TableHead>
-                    <TableHead className="w-16 sm:w-24 text-center">Muito</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {section.parameters.map((parameter, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-sm sm:text-base">{parameter}</TableCell>
-                      <TableCell className="text-center p-2 sm:p-4">
-                        <RadioGroup
-                          value={selections[`${section.title}-${parameter}`]}
-                          onValueChange={(value) => 
-                            setSelections(prev => ({
-                              ...prev,
-                              [`${section.title}-${parameter}`]: value
-                            }))
-                          }
-                          className="flex justify-center"
-                        >
-                          <div className="relative">
-                            <RadioGroupItem
-                              value="nao"
-                              id={`${section.title}-${parameter}-nao`}
-                              className="sr-only"
-                            />
-                            <label
-                              htmlFor={`${section.title}-${parameter}-nao`}
-                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-red-500 cursor-pointer ${
-                                selections[`${section.title}-${parameter}`] === "nao"
-                                  ? "bg-red-500"
-                                  : "bg-white"
-                              }`}
-                            />
-                          </div>
-                        </RadioGroup>
-                      </TableCell>
-                      <TableCell className="text-center p-2 sm:p-4">
-                        <RadioGroup
-                          value={selections[`${section.title}-${parameter}`]}
-                          onValueChange={(value) => 
-                            setSelections(prev => ({
-                              ...prev,
-                              [`${section.title}-${parameter}`]: value
-                            }))
-                          }
-                          className="flex justify-center"
-                        >
-                          <div className="relative">
-                            <RadioGroupItem
-                              value="pouco"
-                              id={`${section.title}-${parameter}-pouco`}
-                              className="sr-only"
-                            />
-                            <label
-                              htmlFor={`${section.title}-${parameter}-pouco`}
-                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-yellow-500 cursor-pointer ${
-                                selections[`${section.title}-${parameter}`] === "pouco"
-                                  ? "bg-yellow-500"
-                                  : "bg-white"
-                              }`}
-                            />
-                          </div>
-                        </RadioGroup>
-                      </TableCell>
-                      <TableCell className="text-center p-2 sm:p-4">
-                        <RadioGroup
-                          value={selections[`${section.title}-${parameter}`]}
-                          onValueChange={(value) => 
-                            setSelections(prev => ({
-                              ...prev,
-                              [`${section.title}-${parameter}`]: value
-                            }))
-                          }
-                          className="flex justify-center"
-                        >
-                          <div className="relative">
-                            <RadioGroupItem
-                              value="muito"
-                              id={`${section.title}-${parameter}-muito`}
-                              className="sr-only"
-                            />
-                            <label
-                              htmlFor={`${section.title}-${parameter}-muito`}
-                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-green-500 cursor-pointer ${
-                                selections[`${section.title}-${parameter}`] === "muito"
-                                  ? "bg-green-500"
-                                  : "bg-white"
-                              }`}
-                            />
-                          </div>
-                        </RadioGroup>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell className="font-semibold text-sm sm:text-base">Pontuação</TableCell>
-                    <TableCell className="text-center text-sm sm:text-base">
-                      {section.inverseScoring ? "2" : "0"}
-                    </TableCell>
-                    <TableCell className="text-center text-sm sm:text-base">1</TableCell>
-                    <TableCell className="text-center text-sm sm:text-base">
-                      {section.inverseScoring ? "0" : "2"}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        ))}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="evaluation">Avaliação</TabsTrigger>
+            <TabsTrigger value="results">Resultados</TabsTrigger>
+            <TabsTrigger value="comparison">Comparação</TabsTrigger>
+          </TabsList>
 
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
-          Resultados da Escala de Avaliação TEA
-        </h2>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-              Habilidades Adquiridas
-            </h3>
-            <div className="h-[250px] sm:h-[300px] w-full flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius="60%"
-                    outerRadius="80%"
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-4 mt-4">
-              {pieData.map((entry, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: COLORS[index] }}
-                  />
-                  <span className="text-xs sm:text-sm">{entry.name} ({entry.value}%)</span>
+          <TabsContent value="evaluation" className="space-y-8 mt-6">
+            {evaluationDomains.map((domain, domainIndex) => (
+              <div key={domainIndex} className="border rounded-md p-4 sm:p-6 bg-card">
+                <div className="flex items-center mb-4 gap-2">
+                  <div className="text-2xl">{domain.icon}</div>
+                  <h2 className="text-lg sm:text-xl font-semibold">{domain.title}</h2>
+                  <TooltipProvider>
+                    <TooltipComponent>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <HelpCircle className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs text-sm">{domain.description}</p>
+                      </TooltipContent>
+                    </TooltipComponent>
+                  </TooltipProvider>
                 </div>
-              ))}
-            </div>
-          </Card>
+                
+                {domain.subdomains.map((subdomain, subdomainIndex) => (
+                  <div key={subdomainIndex} className="mb-6 border-l-2 pl-4 ml-2">
+                    <div className="flex items-center mb-3">
+                      <h3 className="text-base sm:text-lg font-medium">{subdomain.title}</h3>
+                      <TooltipProvider>
+                        <TooltipComponent>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-1">
+                              <Info className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs text-sm">{subdomain.description}</p>
+                          </TooltipContent>
+                        </TooltipComponent>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="min-w-[150px]">Habilidades</TableHead>
+                            <TableHead className="w-20 text-center">
+                              <span className="block text-xs font-normal">Ausente</span>
+                              <span className="block text-xs font-normal">(0)</span>
+                            </TableHead>
+                            <TableHead className="w-20 text-center">
+                              <span className="block text-xs font-normal">Emergente</span>
+                              <span className="block text-xs font-normal">(1)</span>
+                            </TableHead>
+                            <TableHead className="w-20 text-center">
+                              <span className="block text-xs font-normal">Inconsistente</span>
+                              <span className="block text-xs font-normal">(2)</span>
+                            </TableHead>
+                            <TableHead className="w-20 text-center">
+                              <span className="block text-xs font-normal">Consistente</span>
+                              <span className="block text-xs font-normal">(3)</span>
+                            </TableHead>
+                            <TableHead className="w-20 text-center">
+                              <span className="block text-xs font-normal">Independente</span>
+                              <span className="block text-xs font-normal">(4)</span>
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {subdomain.parameters.map((parameter, paramIndex) => (
+                            <TableRow key={paramIndex}>
+                              <TableCell className="text-sm sm:text-base">{parameter}</TableCell>
+                              {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
+                                <TableCell key={level} className="text-center p-2 sm:p-4">
+                                  <RadioGroup
+                                    value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
+                                    onValueChange={(value) => 
+                                      setSelections(prev => ({
+                                        ...prev,
+                                        [`${domain.title}-${subdomain.title}-${parameter}`]: value
+                                      }))
+                                    }
+                                    className="flex justify-center"
+                                  >
+                                    <div className="relative">
+                                      <RadioGroupItem
+                                        value={level}
+                                        id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                        className="sr-only"
+                                      />
+                                      <label
+                                        htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                        className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${
+                                          level === "ausente" ? "border-red-500" :
+                                          level === "emergente" ? "border-orange-400" :
+                                          level === "inconsistente" ? "border-yellow-400" :
+                                          level === "consistente" ? "border-blue-500" : "border-green-500"
+                                        } ${
+                                          selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
+                                            ? level === "ausente" ? "bg-red-500" :
+                                              level === "emergente" ? "bg-orange-400" :
+                                              level === "inconsistente" ? "bg-yellow-400" :
+                                              level === "consistente" ? "bg-blue-500" : "bg-green-500"
+                                            : "bg-white"
+                                        }`}
+                                      />
+                                    </div>
+                                  </RadioGroup>
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </TabsContent>
 
-          <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-              Desempenho por Categoria
-            </h3>
-            <div className="h-[250px] sm:h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={categoryData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="name" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={100}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#6D28D9" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-        </div>
+          <TabsContent value="results" className="space-y-6 mt-6">
+            <Card className="p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
+                Resultados da Avaliação Musicoterapêutica
+              </h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <Card className="p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+                    Perfil de Habilidades
+                  </h3>
+                  <div className="h-[300px] sm:h-[350px] w-full flex items-center justify-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={domainScores}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="name" />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                        <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                        <Legend />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
+
+                <Card className="p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+                    Pontuação Global
+                  </h3>
+                  <div className="h-[300px] sm:h-[350px] w-full flex flex-col items-center justify-center">
+                    <div className="h-[200px] sm:h-[250px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius="60%"
+                            outerRadius="80%"
+                            paddingAngle={5}
+                            dataKey="value"
+                            label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          >
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="text-center mt-4">
+                      <p className="text-lg font-medium">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                      <p className="text-sm text-gray-600">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+              
+              <div className="mt-8">
+                <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+                  Desempenho por Subdomínios
+                </h3>
+                <div className="h-[400px] sm:h-[450px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={subdomainScores}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="name" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-white p-3 border rounded shadow-md">
+                              <p className="text-sm font-medium">{data.name}</p>
+                              <p className="text-sm">Domínio: {data.domain}</p>
+                              <p className="text-sm text-blue-600">Pontuação: {data.value}%</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }} />
+                      <Bar dataKey="value" fill="#6D28D9">
+                        {subdomainScores.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={
+                              entry.domain === "Musical" ? "#8884d8" :
+                              entry.domain === "Psicossocial" ? "#82ca9d" : 
+                              entry.domain === "Cognitivo" ? "#ffc658" : "#ff8042"
+                            } 
+                          />
+                        ))}
+                      </Bar>
+                      <Legend />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="comparison" className="mt-6">
+            <Card className="p-6">
+              <div className="flex justify-center items-center h-[300px]">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium mb-4">Comparação entre Avaliações</h3>
+                  <p className="text-gray-600">
+                    Selecione ao menos duas avaliações para visualizar a comparação de progresso ao longo do tempo.
+                  </p>
+                  <Button variant="outline" className="mt-4" disabled>
+                    Carregar Avaliações Anteriores
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </Card>
     </div>
   );
