@@ -36,6 +36,7 @@ interface Patient {
   id: string;
   name: string;
   birth_date: string | null;
+  age: number | null;
 }
 
 export default function Evaluation() {
@@ -58,7 +59,7 @@ export default function Evaluation() {
         
         const { data, error } = await supabase
           .from('patients')
-          .select('id, name, birth_date')
+          .select('id, name, birth_date, age')
           .eq('professional_id', user.id)
           .order('name');
         
@@ -390,7 +391,7 @@ export default function Evaluation() {
             {selectedPatientData && (
               <div>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Data de Nascimento: {selectedPatientData.birth_date ? new Date(selectedPatientData.birth_date).toLocaleDateString('pt-BR') : 'Não informada'}
+                  Idade: {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
                 </p>
               </div>
             )}
