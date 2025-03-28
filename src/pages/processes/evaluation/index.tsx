@@ -329,6 +329,14 @@ export default function Evaluation() {
       let heightLeft = pdfHeight;
       let position = 0;
       
+      while (heightLeft > pdf.internal.pageSize.getHeight()) {
+        position = -pdf.internal.pageSize.getHeight();
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight();
+        position -= pdf.internal.pageSize.getHeight();
+      }
+      
       // Remove the temporary container
       document.body.removeChild(pdfContainer);
       
