@@ -87,7 +87,7 @@ export default function Professional() {
         throw fetchError;
       }
 
-      let finalData: ProfessionalData | null = existingProfile;
+      let finalData: ProfessionalData | null = null;
 
       // Se não existir perfil, cria um novo
       if (!existingProfile) {
@@ -110,7 +110,13 @@ export default function Professional() {
           throw insertError;
         }
 
-        finalData = newProfile;
+        finalData = newProfile as ProfessionalData;
+      } else {
+        // Ensure association exists in the existing profile data
+        finalData = {
+          ...existingProfile,
+          association: existingProfile.association || ''
+        };
       }
 
       if (finalData) {
