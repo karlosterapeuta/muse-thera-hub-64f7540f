@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Pen, Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Professional() {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,9 +19,28 @@ export default function Professional() {
     register: "",
     phone: "",
     email: "",
-    specialty: ""
+    specialty: "",
+    association: ""
   });
   const { toast } = useToast();
+
+  // List of Brazilian music therapy associations
+  const associations = [
+    "Associação de Musicoterapia do Paraná (AMT-PR)",
+    "Associação de Musicoterapia do Rio Grande do Sul (AMT-RS)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado de São Paulo (APEMESP)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado de Minas Gerais (APEMEMG)",
+    "Associação de Musicoterapia do Estado do Rio de Janeiro (AMT-RJ)",
+    "Associação de Musicoterapia da Paraíba (AMT-PB)",
+    "Associação de Musicoterapia de Pernambuco (AMT-PE)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado do Pará (APEMTEPA)",
+    "Associação Baiana de Musicoterapia (ASBAMT)",
+    "Associação de Musicoterapeutas do Espírito Santo (AMTES)",
+    "Associação Goiana de Musicoterapia (AGMT)",
+    "Associação de Musicoterapia do Distrito Federal (AMT-DF)",
+    "Associação Catarinense de Musicoterapeutas (ACAMT)",
+    "Associação Brasileira de Musicoterapeutas (ABMT)",
+  ];
 
   useEffect(() => {
     loadProfessionalData();
@@ -64,7 +84,8 @@ export default function Professional() {
             register: '',
             phone: '',
             email: user.email || '',
-            specialty: ''
+            specialty: '',
+            association: ''
           })
           .select()
           .single();
@@ -83,7 +104,8 @@ export default function Professional() {
           register: finalData.register || '',
           phone: finalData.phone || '',
           email: finalData.email || '',
-          specialty: finalData.specialty || ''
+          specialty: finalData.specialty || '',
+          association: finalData.association || ''
         });
         setAvatarUrl(finalData.avatar_url);
       }
@@ -250,14 +272,37 @@ export default function Professional() {
           </div>
 
           <div className="space-y-2">
-            <Label>Nº de Registro (MT)</Label>
-            <Input
-              value={formData.register}
-              onChange={(e) =>
-                setFormData({ ...formData, register: e.target.value })
-              }
-              disabled={!isEditing}
-            />
+            <Label>Associações</Label>
+            <div className="space-y-4">
+              <Select
+                disabled={!isEditing}
+                value={formData.association}
+                onValueChange={(value) => setFormData({ ...formData, association: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma associação" />
+                </SelectTrigger>
+                <SelectContent>
+                  {associations.map((association) => (
+                    <SelectItem key={association} value={association}>
+                      {association}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <div>
+                <Label htmlFor="register">Nº de Registro</Label>
+                <Input
+                  id="register"
+                  value={formData.register}
+                  onChange={(e) => setFormData({ ...formData, register: e.target.value })}
+                  disabled={!isEditing}
+                  placeholder="Informe seu número de registro"
+                  className="mt-2"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
