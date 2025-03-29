@@ -112,9 +112,10 @@ export default function Professional() {
 
         finalData = newProfile as ProfessionalData;
       } else {
-        // Ensure association exists in the existing profile data
+        // Cast the existing profile to our ProfessionalData interface
+        // If association doesn't exist in the database result yet, initialize it with empty string
         finalData = {
-          ...existingProfile,
+          ...(existingProfile as any),
           association: existingProfile.association || ''
         };
       }
@@ -209,6 +210,8 @@ export default function Professional() {
         return;
       }
 
+      console.log("Saving data:", formData);
+
       const { error } = await supabase
         .from('professionals')
         .update({
@@ -217,7 +220,10 @@ export default function Professional() {
         })
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving data:', error);
+        throw error;
+      }
 
       toast({
         title: "Sucesso!",
