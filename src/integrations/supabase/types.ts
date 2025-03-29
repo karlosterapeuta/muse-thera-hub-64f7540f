@@ -538,6 +538,7 @@ export type Database = {
       }
       professionals: {
         Row: {
+          association: string | null
           avatar_url: string | null
           created_at: string
           email: string | null
@@ -550,6 +551,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          association?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
@@ -562,6 +564,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          association?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null

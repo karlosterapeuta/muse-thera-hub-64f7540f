@@ -111,10 +111,11 @@ export default function Professional() {
 
         finalData = newProfile as ProfessionalData;
       } else {
-        // Create a typed version with all fields we need
+        // Create a typed version with all fields we need and handle the case where association might not exist yet
+        const typedProfile = existingProfile as any;
         finalData = {
-          ...(existingProfile as any),
-          association: existingProfile.association || ''
+          ...typedProfile,
+          association: typedProfile.association || ''
         };
       }
 
