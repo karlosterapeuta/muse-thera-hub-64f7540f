@@ -10,11 +10,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Define a type for the professional data to ensure TypeScript recognizes all fields
+interface ProfessionalData {
+  id?: string;
+  user_id?: string;
+  name: string;
+  register: string;
+  phone: string;
+  email: string;
+  specialty: string;
+  association: string;
+  avatar_url?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export default function Professional() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProfessionalData>({
     name: "",
     register: "",
     phone: "",
@@ -72,7 +87,7 @@ export default function Professional() {
         throw fetchError;
       }
 
-      let finalData = existingProfile;
+      let finalData: ProfessionalData | null = existingProfile;
 
       // Se não existir perfil, cria um novo
       if (!existingProfile) {
