@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -112,8 +111,7 @@ export default function Professional() {
 
         finalData = newProfile as ProfessionalData;
       } else {
-        // Cast the existing profile to our ProfessionalData interface
-        // If association doesn't exist in the database result yet, initialize it with empty string
+        // Create a typed version with all fields we need
         finalData = {
           ...(existingProfile as any),
           association: existingProfile.association || ''
