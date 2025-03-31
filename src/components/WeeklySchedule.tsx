@@ -57,7 +57,7 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
           return;
         }
 
-        // Prepare data structure for the week
+        // Prepare data structure for the week (now including Saturday)
         const daysOfWeek: DaySessionsType[] = [];
         for (let i = 0; i < 7; i++) {
           const date = addDays(startDate, i);
@@ -117,7 +117,7 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
           </div>
         ) : (
           <ScrollArea className="h-[300px] md:h-[400px]">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
               {weekSessions.map((day) => (
                 <div 
                   key={day.formatted_date}

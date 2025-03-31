@@ -57,7 +57,7 @@ export default function FinancialRecords() {
   const getWeekdayLabel = (description?: string) => {
     if (!description) return "";
     
-    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta)/);
+    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta|sabado)/);
     if (!weekdayMatch) return "";
     
     const weekdayMap: Record<string, string> = {
@@ -65,7 +65,8 @@ export default function FinancialRecords() {
       terca: "Terça-feira",
       quarta: "Quarta-feira",
       quinta: "Quinta-feira",
-      sexta: "Sexta-feira"
+      sexta: "Sexta-feira",
+      sabado: "Sábado"
     };
     
     return weekdayMap[weekdayMatch[1]] || "";
@@ -74,7 +75,7 @@ export default function FinancialRecords() {
   const getWeekdayShort = (description?: string) => {
     if (!description) return "";
     
-    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta)/);
+    const weekdayMatch = description.match(/Dia da semana: (segunda|terca|quarta|quinta|sexta|sabado)/);
     if (!weekdayMatch) return "";
     
     const weekdayMap: Record<string, string> = {
@@ -82,7 +83,8 @@ export default function FinancialRecords() {
       terca: "TER",
       quarta: "QUA",
       quinta: "QUI",
-      sexta: "SEX"
+      sexta: "SEX",
+      sabado: "SAB"
     };
     
     return weekdayMap[weekdayMatch[1]] || "";
@@ -123,7 +125,8 @@ export default function FinancialRecords() {
       "Terça-feira": 2, 
       "Quarta-feira": 3,
       "Quinta-feira": 4,
-      "Sexta-feira": 5
+      "Sexta-feira": 5,
+      "Sábado": 6
     };
     
     if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
@@ -141,6 +144,7 @@ export default function FinancialRecords() {
     "QUA": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
     "QUI": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
     "SEX": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
+    "SAB": sortedRecords.filter(record => getWeekdayShort(record.description) === "SAB"),
     "OUTROS": sortedRecords.filter(record => !getWeekdayShort(record.description))
   };
   
@@ -229,7 +233,7 @@ export default function FinancialRecords() {
     }).format(value);
   };
   
-  const weekdays = ["SEG", "TER", "QUA", "QUI", "SEX"];
+  const weekdays = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
   
   const renderAppointmentCard = (record: FinancialRecord) => {
     const time = getAppointmentTime(record.description);
