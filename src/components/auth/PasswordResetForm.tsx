@@ -30,13 +30,13 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
     setIsLoading(true);
 
     try {
-      // Obter a URL completa atual
+      // Get the exact current domain
       const origin = window.location.origin;
-      console.log("URL base de origem:", origin);
+      console.log("Reset password origin URL:", origin);
       
-      // Configurar URL de redirecionamento absoluta
-      const redirectTo = `${origin}/login?type=recovery`;
-      console.log("URL de redirecionamento completa:", redirectTo);
+      // We want to redirect directly to the reset-password route
+      const redirectTo = `${origin}/reset-password`;
+      console.log("Reset password redirect URL:", redirectTo);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo,
@@ -44,16 +44,16 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
 
       if (error) throw error;
 
-      console.log("Email de recuperação enviado com sucesso");
+      console.log("Reset password email sent successfully");
       setResetSent(true);
       toast({
         title: "Email enviado",
         description: "Verifique sua caixa de entrada para redefinir sua senha.",
       });
     } catch (error: any) {
-      console.error("Erro ao enviar email de recuperação:", error);
+      console.error("Error sending reset password email:", error);
       
-      // Mensagem de erro mais específica
+      // More specific error message
       let errorMsg = "Não foi possível enviar o email de recuperação.";
       
       if (error.message.includes("User not found")) {
