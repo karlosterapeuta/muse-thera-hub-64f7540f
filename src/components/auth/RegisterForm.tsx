@@ -39,7 +39,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      // Validate invite code first without updating it
+      // Validate invite code first
       try {
         await validateInviteCode(inviteCode);
       } catch (error: any) {
@@ -52,7 +52,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         return;
       }
 
-      // Register user with Supabase
+      // Register user with Supabase without email confirmation
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -60,20 +60,27 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           data: {
             name: email.split('@')[0],
           },
-          emailRedirectTo: window.location.origin + '/login?type=signup',
+          // Skip email confirmation by not setting emailRedirectTo
         },
       });
       
       if (result.error) throw result.error;
 
-      // Only mark the invite code as used after successful registration
-      // We don't need to update the invite code if we're just sending a confirmation email
-      // The invite code will be updated when the user confirms their email
+      // Immediately update the invite code status after successful registration
+      const { error: updateError } = await supabase.rpc(
+        'validate_and_use_invite_code',
+        { 
+          invite_code: inviteCode,
+          user_id: result.data.user?.id
+        }
+      );
+
+      if (updateError) throw updateError;
       
-      console.log("Registration successful, email confirmation sent to:", email);
+      console.log("Registration successful");
       toast({
         title: "Registro realizado com sucesso!",
-        description: "Verifique seu email para confirmar sua conta. Verifique também a pasta de spam caso não encontre o email na caixa de entrada.",
+        description: "Você já pode fazer login com suas credenciais.",
       });
       
       // Switch to login after successful registration
