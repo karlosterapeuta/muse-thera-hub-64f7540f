@@ -39,7 +39,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      // Validate invite code
+      // Validate invite code first without updating it
       try {
         await validateInviteCode(inviteCode);
       } catch (error: any) {
@@ -60,23 +60,15 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           data: {
             name: email.split('@')[0],
           },
-          // Force email confirmation to be sent regardless of Supabase settings
           emailRedirectTo: window.location.origin + '/login?type=signup',
         },
       });
       
       if (result.error) throw result.error;
 
-      // Update invite code status
-      const { error: updateError } = await supabase.rpc(
-        'validate_and_use_invite_code',
-        { 
-          invite_code: inviteCode,
-          user_id: result.data.user?.id
-        }
-      );
-
-      if (updateError) throw updateError;
+      // Only mark the invite code as used after successful registration
+      // We don't need to update the invite code if we're just sending a confirmation email
+      // The invite code will be updated when the user confirms their email
       
       console.log("Registration successful, email confirmation sent to:", email);
       toast({
