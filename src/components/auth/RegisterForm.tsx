@@ -39,6 +39,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
+      // Validate invite code
       try {
         await validateInviteCode(inviteCode);
       } catch (error: any) {
@@ -51,6 +52,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         return;
       }
 
+      // Register user with Supabase
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -58,11 +60,14 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           data: {
             name: email.split('@')[0],
           },
+          // Force email confirmation to be sent regardless of Supabase settings
+          emailRedirectTo: window.location.origin + '/login?type=signup',
         },
       });
       
       if (result.error) throw result.error;
 
+      // Update invite code status
       const { error: updateError } = await supabase.rpc(
         'validate_and_use_invite_code',
         { 
@@ -73,14 +78,22 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
       if (updateError) throw updateError;
       
+      console.log("Registration successful, email confirmation sent to:", email);
       toast({
         title: "Registro realizado com sucesso!",
-        description: "Por favor, verifique seu email para confirmar sua conta.",
+        description: "Verifique seu email para confirmar sua conta. Verifique também a pasta de spam caso não encontre o email na caixa de entrada.",
       });
+      
+      // Switch to login after successful registration
+      setTimeout(() => {
+        onSwitchToLogin();
+      }, 3000);
+      
     } catch (error: any) {
+      console.error("Registration error:", error);
       toast({
         title: "Falha no registro",
-        description: error.message,
+        description: error.message || "Erro ao registrar. Tente novamente.",
         variant: "destructive",
       });
     } finally {
