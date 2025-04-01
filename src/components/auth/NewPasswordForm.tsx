@@ -6,7 +6,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-export default function NewPasswordForm() {
+type NewPasswordFormProps = {
+  onSuccessCallback?: () => void;
+};
+
+export default function NewPasswordForm({ onSuccessCallback }: NewPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,10 +74,17 @@ export default function NewPasswordForm() {
       // Limpar hash da URL após a atualização bem-sucedida da senha
       window.history.replaceState(null, '', window.location.pathname);
 
-      // Redirecionar para a página de login após senha redefinida com sucesso
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
+      // Call the success callback if provided
+      if (onSuccessCallback) {
+        setTimeout(() => {
+          onSuccessCallback();
+        }, 2000);
+      } else {
+        // Redirecionar para a página de login após senha redefinida com sucesso
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      }
     } catch (error: any) {
       console.error("Erro ao atualizar senha:", error);
       toast({
