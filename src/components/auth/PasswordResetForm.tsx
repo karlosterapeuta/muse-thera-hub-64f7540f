@@ -34,8 +34,9 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
       const origin = window.location.origin;
       console.log("Reset password origin URL:", origin);
       
-      // We want to redirect directly to the reset-password route
-      const redirectTo = `${origin}/reset-password`;
+      // We want to redirect to the login page with a special parameter
+      // This avoids issues with DOM manipulation when redirecting to a separate route
+      const redirectTo = `${origin}/login?type=recovery`;
       console.log("Reset password redirect URL:", redirectTo);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {

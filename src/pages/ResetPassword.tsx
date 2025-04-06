@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function ResetPassword() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasValidToken, setHasValidToken] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -42,6 +43,7 @@ export default function ResetPassword() {
               });
               
               console.log("Session set successfully with recovery tokens");
+              setHasValidToken(true);
               setLoading(false);
             } catch (error: any) {
               console.error("Error setting recovery session:", error);
@@ -86,6 +88,11 @@ export default function ResetPassword() {
     };
 
     handlePasswordReset();
+    
+    // Cleanup function to handle component unmounting gracefully
+    return () => {
+      // Any cleanup needed
+    };
   }, [navigate, toast]);
 
   if (loading) {
@@ -107,7 +114,7 @@ export default function ResetPassword() {
           description={error || "Digite sua nova senha abaixo:"}
         />
         
-        {!error ? (
+        {hasValidToken ? (
           <NewPasswordForm onSuccessCallback={() => {
             toast({
               title: "Sucesso!",
