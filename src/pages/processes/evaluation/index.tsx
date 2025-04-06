@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -165,6 +166,8 @@ export default function Evaluation() {
   };
 
   const generatePDF = async () => {
+    let tempContainer = null;
+    
     try {
       setIsGeneratingPdf(true);
       toast({
@@ -172,7 +175,7 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      const tempContainer = document.createElement('div');
+      tempContainer = document.createElement('div');
       tempContainer.style.position = 'absolute';
       tempContainer.style.left = '-9999px';
       tempContainer.style.width = '800px';
@@ -289,13 +292,13 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      if (document.body.contains(tempContainer)) {
+      // Clean up DOM before saving PDF
+      if (tempContainer && document.body.contains(tempContainer)) {
         document.body.removeChild(tempContainer);
+        tempContainer = null;
       }
       
       pdf.save('avaliacao-musicoterapeutica.pdf');
-      
-      setIsGeneratingPdf(false);
       
       toast({
         title: "PDF Gerado",
@@ -304,17 +307,21 @@ export default function Evaluation() {
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       
-      const tempContainer = document.querySelector('div[style*="position: absolute"][style*="left: -9999px"]');
-      if (tempContainer && document.body.contains(tempContainer)) {
-        document.body.removeChild(tempContainer);
-      }
-      
       toast({
         title: "Erro",
         description: "Houve um problema ao gerar o PDF. Tente novamente.",
         variant: "destructive",
       });
     } finally {
+      // Ensure cleanup happens even in case of errors
+      if (tempContainer && document.body.contains(tempContainer)) {
+        try {
+          document.body.removeChild(tempContainer);
+        } catch (e) {
+          console.error("Erro ao remover container temporário:", e);
+        }
+      }
+      
       setIsGeneratingPdf(false);
     }
   };
