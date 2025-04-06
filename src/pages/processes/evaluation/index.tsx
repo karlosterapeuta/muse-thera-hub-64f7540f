@@ -289,9 +289,13 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      document.body.removeChild(tempContainer);
+      if (document.body.contains(tempContainer)) {
+        document.body.removeChild(tempContainer);
+      }
       
       pdf.save('avaliacao-musicoterapeutica.pdf');
+      
+      setIsGeneratingPdf(false);
       
       toast({
         title: "PDF Gerado",
@@ -299,6 +303,12 @@ export default function Evaluation() {
       });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
+      
+      const tempContainer = document.querySelector('div[style*="position: absolute"][style*="left: -9999px"]');
+      if (tempContainer && document.body.contains(tempContainer)) {
+        document.body.removeChild(tempContainer);
+      }
+      
       toast({
         title: "Erro",
         description: "Houve um problema ao gerar o PDF. Tente novamente.",
