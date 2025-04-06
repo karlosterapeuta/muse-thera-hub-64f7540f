@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -58,7 +57,6 @@ export default function Evaluation() {
   const [selectedDomain, setSelectedDomain] = useState<string | undefined>("musical");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   
-  // Domain data with subdomains
   const [domains, setDomains] = useState<Domain[]>([
     {
       id: "musical",
@@ -106,7 +104,6 @@ export default function Evaluation() {
     },
   ]);
 
-  // Score levels descriptions
   const scoreLevels = [
     { value: 0, label: "0 - Não Avaliado", description: "Não foi possível avaliar este item" },
     { value: 1, label: "1 - Limitado", description: "Apresenta severa dificuldade nesta área" },
@@ -116,7 +113,6 @@ export default function Evaluation() {
     { value: 5, label: "5 - Independente", description: "Demonstra habilidade sem necessidade de suporte" },
   ];
 
-  // Handle score change for a specific subdomain
   const handleScoreChange = (domainId: string, subdomainId: string, score: number) => {
     setDomains(
       domains.map((domain) => {
@@ -136,7 +132,6 @@ export default function Evaluation() {
     );
   };
 
-  // Get the average score for each domain
   const getDomainAverages = () => {
     return domains.map((domain) => {
       const scores = domain.subdomains.map((s) => s.score).filter((s) => s > 0);
@@ -152,7 +147,6 @@ export default function Evaluation() {
     });
   };
 
-  // Get data for the subdomain bar chart
   const getSubdomainData = () => {
     const domain = domains.find((d) => d.id === selectedDomain);
     if (!domain) return [];
@@ -163,7 +157,6 @@ export default function Evaluation() {
     }));
   };
 
-  // Handle save
   const handleSave = () => {
     toast({
       title: "Avaliação salva",
@@ -171,16 +164,14 @@ export default function Evaluation() {
     });
   };
 
-  // Completely revised PDF generation function that doesn't rely on TeaScalePDF
   const generatePDF = async () => {
     try {
       setIsGeneratingPdf(true);
-      const toastId = toast({
+      toast({
         title: "Gerando PDF",
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Create a hidden temporary container
       const tempContainer = document.createElement('div');
       tempContainer.style.position = 'absolute';
       tempContainer.style.left = '-9999px';
@@ -190,7 +181,6 @@ export default function Evaluation() {
       tempContainer.style.fontFamily = 'Arial, sans-serif';
       document.body.appendChild(tempContainer);
 
-      // Build header
       const header = document.createElement('div');
       header.innerHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
@@ -201,7 +191,6 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(header);
 
-      // Summary section
       const summary = document.createElement('div');
       summary.innerHTML = `
         <div style="margin-bottom: 30px;">
@@ -224,7 +213,6 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(summary);
 
-      // Detailed domain sections
       domains.forEach(domain => {
         const domainSection = document.createElement('div');
         domainSection.innerHTML = `
@@ -261,7 +249,6 @@ export default function Evaluation() {
         tempContainer.appendChild(domainSection);
       });
 
-      // Add footer
       const footer = document.createElement('div');
       footer.innerHTML = `
         <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; font-size: 12px; color: #64748b;">
@@ -271,7 +258,6 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(footer);
 
-      // Convert to image with html2canvas
       const canvas = await html2canvas(tempContainer, {
         scale: 2,
         logging: false,
@@ -280,7 +266,6 @@ export default function Evaluation() {
         backgroundColor: '#ffffff'
       });
 
-      // Create PDF
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -288,14 +273,11 @@ export default function Evaluation() {
         format: 'a4',
       });
 
-      // Calculate dimensions
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // Add the captured content to PDF
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
-      // If content is longer than one page, add more pages
       let heightLeft = pdfHeight;
       let position = 0;
       
@@ -307,15 +289,11 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Clean up
       document.body.removeChild(tempContainer);
       
-      // Save the PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
-      // Update toast with success message
       toast({
-        id: toastId,
         title: "PDF Gerado",
         description: "O PDF foi gerado com sucesso.",
       });
