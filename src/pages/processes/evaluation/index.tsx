@@ -175,7 +175,7 @@ export default function Evaluation() {
   const generatePDF = async () => {
     try {
       setIsGeneratingPdf(true);
-      toast({
+      const toastId = toast({
         title: "Gerando PDF",
         description: "Aguarde enquanto seu PDF é criado...",
       });
@@ -313,7 +313,9 @@ export default function Evaluation() {
       // Save the PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
+      // Update toast with success message
       toast({
+        id: toastId,
         title: "PDF Gerado",
         description: "O PDF foi gerado com sucesso.",
       });
