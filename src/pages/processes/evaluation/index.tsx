@@ -175,6 +175,7 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
+      // Criar um container temporário que será convertido para o PDF
       tempContainer = document.createElement('div');
       tempContainer.style.position = 'absolute';
       tempContainer.style.left = '-9999px';
@@ -216,6 +217,7 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(summary);
 
+      // Renderizar cada domínio com seus subdomínios e pontuações
       domains.forEach(domain => {
         const domainSection = document.createElement('div');
         domainSection.innerHTML = `
@@ -231,6 +233,43 @@ export default function Evaluation() {
               </tr>
               ${domain.subdomains.map(subdomain => {
                 const scoreLabel = subdomain.score > 0 ? scoreLevels.find(l => l.value === subdomain.score)?.label.split(' - ')[1] : 'Não Avaliado';
+                
+                // Círculos de avaliação com preenchimento para o nível selecionado
+                const circleHtml = `
+                  <div style="display: flex; justify-content: space-between; max-width: 250px; margin: 0 auto;">
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                      <div style="width: 20px; height: 20px; border-radius: 50%; 
+                        background-color: ${subdomain.score === 1 ? '#ea384c' : 'white'}; 
+                        border: 2px solid #ea384c;"></div>
+                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Limitado</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                      <div style="width: 20px; height: 20px; border-radius: 50%; 
+                        background-color: ${subdomain.score === 2 ? '#f97316' : 'white'}; 
+                        border: 2px solid #f97316;"></div>
+                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Emergente</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                      <div style="width: 20px; height: 20px; border-radius: 50%; 
+                        background-color: ${subdomain.score === 3 ? '#eab308' : 'white'}; 
+                        border: 2px solid #eab308;"></div>
+                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Moderado</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                      <div style="width: 20px; height: 20px; border-radius: 50%; 
+                        background-color: ${subdomain.score === 4 ? '#0ea5e9' : 'white'}; 
+                        border: 2px solid #0ea5e9;"></div>
+                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Funcional</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                      <div style="width: 20px; height: 20px; border-radius: 50%; 
+                        background-color: ${subdomain.score === 5 ? '#22c55e' : 'white'}; 
+                        border: 2px solid #22c55e;"></div>
+                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Independente</div>
+                    </div>
+                  </div>
+                `;
+                
                 return `
                   <tr>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; vertical-align: top;">
@@ -238,28 +277,7 @@ export default function Evaluation() {
                       <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${subdomain.description}</div>
                     </td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">
-                      <div style="display: flex; justify-content: space-between; max-width: 250px; margin: 0 auto;">
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 1 ? '#ea384c' : 'transparent'}; border: 2px solid #ea384c;"></div>
-                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Limitado</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 2 ? '#f97316' : 'transparent'}; border: 2px solid #f97316;"></div>
-                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Emergente</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 3 ? '#eab308' : 'transparent'}; border: 2px solid #eab308;"></div>
-                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Moderado</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 4 ? '#0ea5e9' : 'transparent'}; border: 2px solid #0ea5e9;"></div>
-                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Funcional</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 5 ? '#22c55e' : 'transparent'}; border: 2px solid #22c55e;"></div>
-                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Independente</div>
-                        </div>
-                      </div>
+                      ${circleHtml}
                     </td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
                       ${subdomain.score > 0 ? `${subdomain.score} / 5 <div style="font-size: 11px; color: #64748b; margin-top: 3px;">${scoreLabel}</div>` : 'Não avaliado'}
@@ -282,15 +300,26 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(footer);
 
-      // Aguardar um pouco para garantir que os estilos sejam aplicados
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Aguardar para garantir que os estilos sejam aplicados
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const canvas = await html2canvas(tempContainer, {
         scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          // Garantir que os círculos estejam visíveis no clone
+          const circles = clonedDoc.querySelectorAll('[style*="border-radius: 50%"]');
+          circles.forEach(circle => {
+            // Força a renderização dos círculos
+            const style = circle.getAttribute('style');
+            if (style) {
+              circle.setAttribute('style', style + '; display: block !important;');
+            }
+          });
+        }
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -316,7 +345,7 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Certifique-se de que o tempContainer seja removido antes de gerar o PDF
+      // Garanta que o tempContainer seja removido antes de salvar o PDF
       if (tempContainer && document.body.contains(tempContainer)) {
         document.body.removeChild(tempContainer);
         tempContainer = null;
