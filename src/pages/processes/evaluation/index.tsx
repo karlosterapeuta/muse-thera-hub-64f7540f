@@ -230,7 +230,7 @@ export default function Evaluation() {
                 <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; width: 20%;">Pontuação</th>
               </tr>
               ${domain.subdomains.map(subdomain => {
-                const scoreLevel = scoreLevels.find(l => l.value === subdomain.score);
+                const scoreLabel = subdomain.score > 0 ? scoreLevels.find(l => l.value === subdomain.score)?.label.split(' - ')[1] : 'Não Avaliado';
                 return `
                   <tr>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; vertical-align: top;">
@@ -240,29 +240,29 @@ export default function Evaluation() {
                     <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">
                       <div style="display: flex; justify-content: space-between; max-width: 250px; margin: 0 auto;">
                         <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ea384c; ${subdomain.score === 1 ? 'background-color: #ea384c;' : 'background-color: transparent;'}"></div>
+                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 1 ? '#ea384c' : 'transparent'}; border: 2px solid #ea384c;"></div>
                           <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Limitado</div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #f97316; ${subdomain.score === 2 ? 'background-color: #f97316;' : 'background-color: transparent;'}"></div>
+                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 2 ? '#f97316' : 'transparent'}; border: 2px solid #f97316;"></div>
                           <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Emergente</div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #eab308; ${subdomain.score === 3 ? 'background-color: #eab308;' : 'background-color: transparent;'}"></div>
+                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 3 ? '#eab308' : 'transparent'}; border: 2px solid #eab308;"></div>
                           <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Moderado</div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #0ea5e9; ${subdomain.score === 4 ? 'background-color: #0ea5e9;' : 'background-color: transparent;'}"></div>
+                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 4 ? '#0ea5e9' : 'transparent'}; border: 2px solid #0ea5e9;"></div>
                           <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Funcional</div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #22c55e; ${subdomain.score === 5 ? 'background-color: #22c55e;' : 'background-color: transparent;'}"></div>
+                          <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${subdomain.score === 5 ? '#22c55e' : 'transparent'}; border: 2px solid #22c55e;"></div>
                           <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Independente</div>
                         </div>
                       </div>
                     </td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
-                      ${subdomain.score > 0 ? `${subdomain.score} / 5` : 'Não avaliado'}
+                      ${subdomain.score > 0 ? `${subdomain.score} / 5 <div style="font-size: 11px; color: #64748b; margin-top: 3px;">${scoreLabel}</div>` : 'Não avaliado'}
                     </td>
                   </tr>
                 `;
@@ -282,11 +282,14 @@ export default function Evaluation() {
       `;
       tempContainer.appendChild(footer);
 
+      // Aguardar um pouco para garantir que os estilos sejam aplicados
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(tempContainer, {
         scale: 2,
         logging: false,
         useCORS: true,
-        allowTaint: false,
+        allowTaint: true,
         backgroundColor: '#ffffff'
       });
 
@@ -313,7 +316,7 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Clean up DOM before saving PDF
+      // Certifique-se de que o tempContainer seja removido antes de gerar o PDF
       if (tempContainer && document.body.contains(tempContainer)) {
         document.body.removeChild(tempContainer);
         tempContainer = null;
@@ -334,7 +337,7 @@ export default function Evaluation() {
         variant: "destructive",
       });
     } finally {
-      // Ensure cleanup happens even in case of errors
+      // Garantir limpeza mesmo em caso de erros
       if (tempContainer && document.body.contains(tempContainer)) {
         try {
           document.body.removeChild(tempContainer);
