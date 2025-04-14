@@ -225,23 +225,44 @@ export default function Evaluation() {
             </h2>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
               <tr style="background-color: #f8fafc;">
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left; width: 60%;">Subdomínio</th>
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Pontuação</th>
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Nível</th>
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left; width: 40%;">Subdomínio</th>
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; width: 40%;">Avaliação</th>
+                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; width: 20%;">Pontuação</th>
               </tr>
               ${domain.subdomains.map(subdomain => {
                 const scoreLevel = scoreLevels.find(l => l.value === subdomain.score);
                 return `
                   <tr>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0;">
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; vertical-align: top;">
                       <div style="font-weight: bold;">${subdomain.name}</div>
                       <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${subdomain.description}</div>
                     </td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
-                      ${subdomain.score} / 5
-                    </td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">
-                      ${subdomain.score > 0 ? (scoreLevel?.label.split(' - ')[1] || '') : 'Não avaliado'}
+                      <div style="display: flex; justify-content: space-between; max-width: 250px; margin: 0 auto;">
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ea384c; ${subdomain.score === 1 ? 'background-color: #ea384c;' : 'background-color: transparent;'}"></div>
+                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Limitado</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #f97316; ${subdomain.score === 2 ? 'background-color: #f97316;' : 'background-color: transparent;'}"></div>
+                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Emergente</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #eab308; ${subdomain.score === 3 ? 'background-color: #eab308;' : 'background-color: transparent;'}"></div>
+                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Moderado</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #0ea5e9; ${subdomain.score === 4 ? 'background-color: #0ea5e9;' : 'background-color: transparent;'}"></div>
+                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Funcional</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #22c55e; ${subdomain.score === 5 ? 'background-color: #22c55e;' : 'background-color: transparent;'}"></div>
+                          <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Independente</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
+                      ${subdomain.score > 0 ? `${subdomain.score} / 5` : 'Não avaliado'}
                     </td>
                   </tr>
                 `;
