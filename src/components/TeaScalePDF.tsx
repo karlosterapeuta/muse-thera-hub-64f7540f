@@ -29,6 +29,18 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
+  // Função para obter a cor do nível de avaliação
+  const getLevelColor = (level: string) => {
+    switch(level) {
+      case "ausente": return "#ea384c"; // vermelho
+      case "emergente": return "#f97316"; // laranja
+      case "inconsistente": return "#eab308"; // amarelo
+      case "consistente": return "#0ea5e9"; // azul
+      case "independente": return "#22c55e"; // verde
+      default: return "#e5e7eb"; // cinza claro
+    }
+  };
+
   return (
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
@@ -67,11 +79,24 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
               {section.parameters.map((parameter: string, index: number) => (
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
-                  {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
-                    <TableCell key={level} className="text-center">
-                      {selections[`${section.title}-${parameter}`] === level ? "●" : "○"}
-                    </TableCell>
-                  ))}
+                  {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
+                    const isSelected = selections[`${section.title}-${parameter}`] === level;
+                    const circleColor = getLevelColor(level);
+                    
+                    return (
+                      <TableCell key={level} className="text-center">
+                        <div style={{ 
+                          width: '20px', 
+                          height: '20px', 
+                          borderRadius: '50%', 
+                          border: `2px solid ${circleColor}`,
+                          backgroundColor: isSelected ? circleColor : 'transparent',
+                          display: 'inline-block',
+                          boxShadow: isSelected ? '0 0 0 1px white inset' : 'none'
+                        }}></div>
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableBody>
