@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -29,15 +28,14 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
-  // Função para obter a cor do nível de avaliação
   const getLevelColor = (level: string) => {
     switch(level) {
-      case "ausente": return "#ea384c"; // vermelho
-      case "emergente": return "#f97316"; // laranja
-      case "inconsistente": return "#eab308"; // amarelo
-      case "consistente": return "#0ea5e9"; // azul
-      case "independente": return "#22c55e"; // verde
-      default: return "#e5e7eb"; // cinza claro
+      case "ausente": return "#ea384c";
+      case "emergente": return "#f97316";
+      case "inconsistente": return "#eab308";
+      case "consistente": return "#0ea5e9";
+      case "independente": return "#22c55e";
+      default: return "#e5e7eb";
     }
   };
 
