@@ -218,6 +218,8 @@ export default function Evaluation() {
         { name: "Não avaliado", value: 100 - percentComplete },
       ];
 
+      const radarData = getDomainAverages();
+
       const categoryData = domains.map(domain => {
         const scores = domain.subdomains
           .filter(s => s.score > 0)
@@ -256,6 +258,7 @@ export default function Evaluation() {
           patientName="Paciente de Avaliação"
           evaluatorName="Musicoterapeuta"
           evaluatorEmail=""
+          radarData={radarData}
         />
       );
 

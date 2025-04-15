@@ -1,8 +1,7 @@
-
 import React, { useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
 
 interface TeaScalePDFProps {
   evaluationSections: {
@@ -16,6 +15,7 @@ interface TeaScalePDFProps {
   patientName?: string;
   evaluatorName?: string;
   evaluatorEmail?: string;
+  radarData?: any[];
 }
 
 export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
@@ -25,7 +25,8 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   pieData,
   patientName,
   evaluatorName,
-  evaluatorEmail
+  evaluatorEmail,
+  radarData
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
@@ -142,10 +143,25 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
       <div className="grid grid-cols-2 gap-8">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-center">
+            Perfil de Habilidades
+          </h3>
+          <div style={{ width: '100%', height: '300px' }}>
+            {radarData && (
+              <RadarChart width={300} height={300} data={radarData} cy="50%" outerRadius="80%">
+                <PolarGrid />
+                <PolarAngleAxis dataKey="name" />
+                <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+              </RadarChart>
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-center">
             Habilidades Adquiridas
           </h3>
-          <div style={{ width: '100%', height: '200px' }}>
-            <PieChart width={300} height={200}>
+          <div style={{ width: '100%', height: '300px' }}>
+            <PieChart width={300} height={300}>
               <Pie
                 data={pieData}
                 cx="50%"
@@ -173,8 +189,9 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             ))}
           </div>
         </Card>
+      </div>
 
-        <Card className="p-6">
+      <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-center">
             Desempenho por Categoria
           </h3>
@@ -199,7 +216,6 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             </BarChart>
           </div>
         </Card>
-      </div>
 
       <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px solid #E5E7EB', textAlign: 'center' }}>
         <p style={{ color: '#6B7280', fontSize: '11px', marginBottom: '4px' }}>
