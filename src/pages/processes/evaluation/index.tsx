@@ -176,39 +176,6 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      const evaluationMapping: Record<string, string> = {};
-
-      console.log("Gerando mapeamento para PDF...");
-
-      domains.forEach(domain => {
-        domain.subdomains.forEach(subdomain => {
-          if (subdomain.score > 0) {
-            let level = "";
-            switch (subdomain.score) {
-              case 1: level = "ausente"; break;
-              case 2: level = "emergente"; break;
-              case 3: level = "inconsistente"; break;
-              case 4: level = "consistente"; break;
-              case 5: level = "independente"; break;
-              default: break;
-            }
-            
-            if (level) {
-              evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
-              evaluationMapping[`${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`] = level;
-              evaluationMapping[`${domain.name.replace(/[^a-zA-Z0-9]/g, '')}-${subdomain.name.replace(/[^a-zA-Z0-9]/g, '')}`] = level;
-              evaluationMapping[`${domain.id}-${subdomain.id}`] = level;
-              evaluationMapping[`${subdomain.name}`] = level;
-              evaluationMapping[`${domain.name}-${subdomain.name}-${level}`] = "true";
-              
-              console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
-            }
-          }
-        });
-      });
-
-      console.log("Todas as seleções para o PDF:", JSON.stringify(evaluationMapping, null, 2));
-
       const totalEvaluated = domains.flatMap(d => d.subdomains).filter(s => s.score > 0).length;
       const totalItems = domains.flatMap(d => d.subdomains).length;
       const percentComplete = totalEvaluated > 0 ? Math.round((totalEvaluated / totalItems) * 100) : 0;
@@ -235,12 +202,6 @@ export default function Evaluation() {
         };
       });
 
-      const evaluationSections = domains.map(domain => ({
-        title: domain.name,
-        description: domain.id,
-        parameters: domain.subdomains.map(s => s.name)
-      }));
-
       const tempDiv = document.createElement('div');
       tempDiv.style.position = 'fixed';
       tempDiv.style.left = '-9999px';
@@ -251,8 +212,6 @@ export default function Evaluation() {
       
       root.render(
         <TeaScalePDF
-          evaluationSections={evaluationSections}
-          selections={evaluationMapping}
           categoryData={categoryData}
           pieData={pieData}
           patientName="Paciente de Avaliação"
