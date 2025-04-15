@@ -30,7 +30,6 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   useEffect(() => {
-    // Log para verificar se as seleções estão sendo recebidas corretamente
     console.log("TeaScalePDF - Seleções recebidas:", JSON.stringify(selections, null, 2));
   }, [selections]);
 
@@ -46,44 +45,27 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   };
 
   const checkIsSelected = (sectionTitle: string, parameter: string, level: string) => {
-    // Criando diferentes formatos de chave para maior compatibilidade
-    const normalizedSection = sectionTitle.replace(/[^a-zA-Z0-9]/g, '');
-    const normalizedParam = parameter.replace(/[^a-zA-Z0-9]/g, '');
-    
-    // Formato 1: Título-Parâmetro
+    // Tentando diferentes formatos de chaves para encontrar a seleção correta
     const key1 = `${sectionTitle}-${parameter}`;
-    
-    // Formato 2: Sem espaços e caracteres especiais
-    const key2 = `${normalizedSection}-${normalizedParam}`;
-    
-    // Formato 3: Normalizado apenas com espaços removidos
-    const key3 = `${sectionTitle.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
-    
-    // Formato 4: Para os dados do módulo de avaliação
-    const key4 = `${sectionTitle}-${parameter}`;
-    
-    // Formato 5: Para a estrutura específica do componente de avaliação TEA
-    const key5 = `${sectionTitle}-${parameter}-${level}`;
-    
-    // Formato 6: Tenta encontrar com subdomain inforamado
+    const key2 = `${sectionTitle.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
+    const key3 = `${sectionTitle.replace(/[^a-zA-Z0-9]/g, '')}-${parameter.replace(/[^a-zA-Z0-9]/g, '')}`;
+    const key4 = `${sectionTitle}-${parameter}-${level}`;
+    const key5 = parameter;
     const key6 = `${sectionTitle.split(' ')[0]}-${parameter}`;
     
-    // Formato 7: Chave direta com nível
-    const key7 = level;
-    
-    // Verificando todos os formatos possíveis
+    // Verificando todas as possibilidades
     const isSelected = 
       selections[key1] === level || 
       selections[key2] === level || 
       selections[key3] === level ||
-      selections[key4] === level ||
-      selections[key5] === "true" ||
+      selections[key4] === "true" ||
+      selections[key5] === level ||
       selections[key6] === level ||
       (parameter in selections && selections[parameter] === level);
-      
-    // Log adicional para debug apenas quando encontramos uma correspondência
+    
+    // Log para debug
     if (isSelected) {
-      console.log(`Encontrada seleção para ${sectionTitle}-${parameter}: ${level}`);
+      console.log(`✅ Encontrada seleção para ${sectionTitle}-${parameter}: ${level}`);
     }
     
     return isSelected;

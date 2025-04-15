@@ -194,29 +194,14 @@ export default function Evaluation() {
             }
             
             if (level) {
-              const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
-              const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
-              
-              const key1 = `${domain.name}-${subdomain.name}`;
-              evaluationMapping[key1] = level;
-              
-              const key2 = `${normalizedDomainName}-${normalizedSubdomainName}`;
-              evaluationMapping[key2] = level;
-              
-              const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
-              evaluationMapping[key3] = level;
-              
-              const key4 = `${domain.id}-${subdomain.id}`;
-              evaluationMapping[key4] = level;
-              
-              const key5 = `${subdomain.name}`;
-              evaluationMapping[key5] = level;
-              
-              const key6 = `${domain.name}-${subdomain.name}-${level}`;
-              evaluationMapping[key6] = "true";
+              evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
+              evaluationMapping[`${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`] = level;
+              evaluationMapping[`${domain.name.replace(/[^a-zA-Z0-9]/g, '')}-${subdomain.name.replace(/[^a-zA-Z0-9]/g, '')}`] = level;
+              evaluationMapping[`${domain.id}-${subdomain.id}`] = level;
+              evaluationMapping[`${subdomain.name}`] = level;
+              evaluationMapping[`${domain.name}-${subdomain.name}-${level}`] = "true";
               
               console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
-              console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}], [${key5}], [${key6}]`);
             }
           }
         });
@@ -254,14 +239,14 @@ export default function Evaluation() {
         parameters: domain.subdomains.map(s => s.name)
       }));
 
-      const tempRoot = document.createElement('div');
-      tempRoot.style.position = 'fixed';
-      tempRoot.style.left = '-9999px';
-      tempRoot.style.top = '-9999px';
-      document.body.appendChild(tempRoot);
-      tempContainer = tempRoot;
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'fixed';
+      tempDiv.style.left = '-9999px';
+      document.body.appendChild(tempDiv);
+      tempContainer = tempDiv;
 
-      const root = createRoot(tempRoot);
+      const root = createRoot(tempDiv);
+      
       root.render(
         <TeaScalePDF
           evaluationSections={evaluationSections}
@@ -276,7 +261,7 @@ export default function Evaluation() {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const canvas = await html2canvas(tempRoot.firstChild as HTMLElement, {
+      const canvas = await html2canvas(tempDiv.firstChild as HTMLElement, {
         scale: 2,
         logging: true,
         useCORS: true,
