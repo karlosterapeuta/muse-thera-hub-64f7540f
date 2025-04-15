@@ -195,9 +195,10 @@ export default function Evaluation() {
               case 5: level = "independente"; break;
             }
             
-            // Usar o formato de chave que o TeaScalePDF espera
+            // Usar formato de chave simplificado sem espaços ou caracteres especiais
             if (subdomain.name) {
-              const key = `${domain.name}-${subdomain.name}`;
+              // Remover espaços e caracteres especiais para criar chave consistente
+              const key = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
               evaluationMapping[key] = level;
               console.log(`Adicionando seleção: ${key} = ${level}`);
             }
