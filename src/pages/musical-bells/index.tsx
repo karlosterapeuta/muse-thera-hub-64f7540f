@@ -42,8 +42,8 @@ const songs = [
   {
     title: "Ode à Alegria",
     notes: ["E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "E", "D", "D", "E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "D", "C1", "C1"],
-    lyrics: ["O", "de", "à", "a", "le", "gri", "a", "be", "la", "cen", "te", "lha", "di", "vi", "na", "fi", "lha", "do", "E", "lí", "seo", "ce", "les", "ti", "al", "tu", "a", "ma", "gi", "a"],
-    description: "Melodia principal da Nona Sinfonia de Beethoven, com estrofes completas."
+    lyrics: ["A", "le", "gri", "a", "lin", "da", "luz", "di", "vi", "na", "fi", "lha", "do", "se", "nhor", "can", "to", "de", "paz", "e", "har", "mo", "ni", "a", "nos", "tra", "ga", "mais", "a", "mor"],
+    description: "Melodia principal da Nona Sinfonia de Beethoven, adaptada para sinos musicais."
   },
   {
     title: "Escala Cromática",
@@ -234,7 +234,7 @@ const songs = [
   {
     title: "A Galinha do Vizinho",
     notes: ["E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1", "E", "G", "C1", "E", "G", "C1", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["A", "ga", "li", "nha", "do", "vi", "zi", "nho", "bo", "ta", "o", "vo", "a", "ma", "re", "li", "nho", "bo", "ta", "a", "qui", "bo", "ta", "a", "co", "lá"],
+    lyrics: ["A", "ga", "lin", "ha", "do", "vi", "zi", "nho", "bo", "ta", "o", "vo", "a", "ma", "re", "li", "nho", "bo", "ta", "a", "qui", "bo", "ta", "a", "co", "lá"],
     description: "Canção infantil brasileira divertida que fala sobre uma galinha e seus ovos."
   },
   {
