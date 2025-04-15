@@ -84,19 +84,27 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
-                    // Criando chave no formato correto conforme os dados recebidos
-                    const normalizedTitle = section.title.replace(/\s+/g, '');
-                    const normalizedParam = parameter.replace(/\s+/g, '');
-                    const key = `${normalizedTitle}-${normalizedParam}`;
+                    // Normalizando título e parâmetro para formar a chave
+                    const normalizedTitle = section.title.replace(/[^a-zA-Z0-9]/g, '');
+                    const normalizedParam = parameter.replace(/[^a-zA-Z0-9]/g, '');
                     
-                    // Verificar se este nível está selecionado para este parâmetro
-                    const isSelected = selections[key] === level;
+                    // Criando diferentes formatos de chave para maior compatibilidade
+                    const key1 = `${normalizedTitle}-${normalizedParam}`;
+                    const key2 = `${section.title}-${parameter}`;
+                    const key3 = `${section.title.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
                     
-                    // Obter a cor apropriada
+                    // Verificar se algum formato de chave está presente nas seleções
+                    const isSelected = 
+                      selections[key1] === level || 
+                      selections[key2] === level || 
+                      selections[key3] === level;
+                    
+                    // Logging para depuração
+                    console.log(`Verificando: Seção=${section.title}, Parâmetro=${parameter}, Nível=${level}`);
+                    console.log(`Chaves testadas: [${key1}], [${key2}], [${key3}]`);
+                    console.log(`Selecionado: ${isSelected ? "SIM" : "NÃO"}`);
+                    
                     const circleColor = getLevelColor(level);
-                    
-                    // Log para depuração de cada célula
-                    console.log(`Verificando célula - Seção: [${normalizedTitle}], Parâmetro: [${normalizedParam}], Key: [${key}], Nível: [${level}], Selecionado: [${isSelected ? "SIM" : "NÃO"}], Valor: ${selections[key]}`);
                     
                     return (
                       <TableCell key={level} className="text-center">

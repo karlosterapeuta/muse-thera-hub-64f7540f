@@ -177,12 +177,11 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Cria o mapeamento correto das seleções para o PDF
+      // Criar um mapeamento normalizado e simplificado para as seleções
       const evaluationMapping: Record<string, string> = {};
 
       console.log("Gerando mapeamento para PDF...");
 
-      // Criar um mapeamento normalizado para as seleções
       domains.forEach(domain => {
         domain.subdomains.forEach(subdomain => {
           if (subdomain.score > 0) {
@@ -196,20 +195,27 @@ export default function Evaluation() {
               default: break;
             }
             
-            // Remover todos os espaços e caracteres especiais dos nomes
-            const normalizedDomainName = domain.name.replace(/\s+/g, '');
-            const normalizedSubdomainName = subdomain.name.replace(/\s+/g, '');
+            // Tentar diferentes formatos de chave para garantir a compatibilidade
+            // 1. Sem espaços ou caracteres especiais
+            const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
+            const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
+            const key1 = `${normalizedDomainName}-${normalizedSubdomainName}`;
+            evaluationMapping[key1] = level;
             
-            // Criar a chave no formato normalizado
-            const key = `${normalizedDomainName}-${normalizedSubdomainName}`;
-            evaluationMapping[key] = level;
+            // 2. Chave com formato completo
+            const key2 = `${domain.name}-${subdomain.name}`;
+            evaluationMapping[key2] = level;
             
-            console.log(`Adicionando seleção: [${key}] = ${level} (Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score})`);
+            // 3. Chave apenas com espaços removidos
+            const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
+            evaluationMapping[key3] = level;
+            
+            console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
+            console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}]`);
           }
         });
       });
 
-      // Log completo do mapeamento para depuração
       console.log("Todas as seleções para o PDF:", JSON.stringify(evaluationMapping, null, 2));
 
       // Calcular dados para os gráficos
@@ -240,8 +246,7 @@ export default function Evaluation() {
       // Prepare os dados de seções para o PDF
       const evaluationSections = domains.map(domain => ({
         title: domain.name,
-        description: "",
-        // Para cada subdomínio, incluímos o nome como um parâmetro
+        description: domain.id,  // Incluindo o ID do domínio na descrição para facilitar debug
         parameters: domain.subdomains.map(s => s.name)
       }));
 
@@ -267,13 +272,13 @@ export default function Evaluation() {
         tempRoot
       );
 
-      // Dar tempo para renderizar completamente - aumentando o tempo para garantir
+      // Dar tempo suficiente para renderizar completamente
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Capturar como imagem
+      // Capturar como imagem com configurações de alta qualidade
       const canvas = await html2canvas(tempRoot.firstChild as HTMLElement, {
         scale: 2,
-        logging: true, // Ativar logging para debug
+        logging: true,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff'
@@ -304,11 +309,17 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Limpar o container temporário
-      if (tempContainer && document.body.contains(tempContainer)) {
-        ReactDOM.unmountComponentAtNode(tempContainer);
-        document.body.removeChild(tempContainer);
-        tempContainer = null;
+      // Limpar o container temporário de forma segura
+      if (tempContainer) {
+        try {
+          ReactDOM.unmountComponentAtNode(tempContainer);
+          if (document.body.contains(tempContainer)) {
+            document.body.removeChild(tempContainer);
+          }
+          tempContainer = null;
+        } catch (e) {
+          console.error("Erro ao limpar container temporário:", e);
+        }
       }
       
       // Salvar o PDF
@@ -328,10 +339,12 @@ export default function Evaluation() {
       });
     } finally {
       // Garantir que o container temporário seja sempre removido
-      if (tempContainer && document.body.contains(tempContainer)) {
+      if (tempContainer) {
         try {
           ReactDOM.unmountComponentAtNode(tempContainer);
-          document.body.removeChild(tempContainer);
+          if (document.body.contains(tempContainer)) {
+            document.body.removeChild(tempContainer);
+          }
         } catch (e) {
           console.error("Erro ao limpar container temporário:", e);
         }
