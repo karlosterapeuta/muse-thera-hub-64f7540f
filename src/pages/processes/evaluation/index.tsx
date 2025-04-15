@@ -180,9 +180,9 @@ export default function Evaluation() {
       // Cria o mapeamento correto das seleções para o PDF
       const evaluationMapping: Record<string, string> = {};
 
-      // Debug para identificar o problema
       console.log("Gerando mapeamento para PDF...");
 
+      // Criar um mapeamento normalizado para as seleções
       domains.forEach(domain => {
         domain.subdomains.forEach(subdomain => {
           if (subdomain.score > 0) {
@@ -195,18 +195,21 @@ export default function Evaluation() {
               case 5: level = "independente"; break;
             }
             
-            // Usar formato de chave simplificado sem espaços ou caracteres especiais
-            if (subdomain.name) {
-              // Remover espaços e caracteres especiais para criar chave consistente
-              const key = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
-              evaluationMapping[key] = level;
-              console.log(`Adicionando seleção: ${key} = ${level}`);
-            }
+            // Remover todos os espaços e caracteres especiais dos nomes
+            const normalizedDomainName = domain.name.replace(/\s+/g, '');
+            const normalizedSubdomainName = subdomain.name.replace(/\s+/g, '');
+            
+            // Criar a chave no formato normalizado
+            const key = `${normalizedDomainName}-${normalizedSubdomainName}`;
+            evaluationMapping[key] = level;
+            
+            console.log(`Adicionando seleção: [${key}] = ${level} (Domain: ${domain.name}, Subdomain: ${subdomain.name})`);
           }
         });
       });
 
-      console.log("Enviando para o PDF - Seleções:", evaluationMapping);
+      // Log completo para debug
+      console.log("Todas as seleções para o PDF:", JSON.stringify(evaluationMapping, null, 2));
 
       // Calcular dados para os gráficos
       const totalEvaluated = domains.flatMap(d => d.subdomains).filter(s => s.score > 0).length;
@@ -237,16 +240,19 @@ export default function Evaluation() {
       const evaluationSections = domains.map(domain => ({
         title: domain.name,
         description: "",
+        // Para cada subdomínio, incluímos o nome como um parâmetro
         parameters: domain.subdomains.map(s => s.name)
       }));
 
       // Criar container temporário para renderizar o PDF
-      const pdfContent = document.createElement('div');
-      pdfContent.style.position = 'absolute';
-      pdfContent.style.left = '-9999px';
-      document.body.appendChild(pdfContent);
+      const tempRoot = document.createElement('div');
+      tempRoot.style.position = 'fixed';
+      tempRoot.style.left = '-9999px';
+      tempRoot.style.top = '-9999px';
+      document.body.appendChild(tempRoot);
+      tempContainer = tempRoot;
 
-      // Renderizar o componente PDF
+      // Renderizar o componente PDF no container temporário
       ReactDOM.render(
         <TeaScalePDF
           evaluationSections={evaluationSections}
@@ -257,14 +263,14 @@ export default function Evaluation() {
           evaluatorName="Musicoterapeuta"
           evaluatorEmail=""
         />,
-        pdfContent
+        tempRoot
       );
 
-      // Dar tempo para renderizar
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Dar tempo para renderizar completamente
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Capturar como imagem
-      const canvas = await html2canvas(pdfContent, {
+      const canvas = await html2canvas(tempRoot.firstChild as HTMLElement, {
         scale: 2,
         logging: true, // Ativar logging para debug
         useCORS: true,
@@ -298,7 +304,10 @@ export default function Evaluation() {
       }
 
       // Limpar o container temporário
-      document.body.removeChild(pdfContent);
+      if (tempContainer && document.body.contains(tempContainer)) {
+        document.body.removeChild(tempContainer);
+        tempContainer = null;
+      }
       
       // Salvar o PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');

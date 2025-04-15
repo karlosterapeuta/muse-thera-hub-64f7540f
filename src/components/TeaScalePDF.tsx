@@ -40,8 +40,8 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     }
   };
 
-  // Para debug detalhado no console
-  console.log("TeaScalePDF - Todas as Seleções:", selections);
+  // Log detalhado para depuração
+  console.log("TeaScalePDF - Seleções recebidas:", JSON.stringify(selections, null, 2));
 
   return (
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
@@ -82,16 +82,18 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
-                    // Usar chave simples sem espaços ou caracteres especiais
-                    const key = `${section.title.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
+                    // Gerar a chave no formato do nome da seção sem espaços + nome do parâmetro sem espaços
+                    const normalizedTitle = section.title.replace(/\s+/g, '');
+                    const normalizedParam = parameter.replace(/\s+/g, '');
+                    const key = `${normalizedTitle}-${normalizedParam}`;
                     
-                    // Debug para cada célula
-                    console.log(`Verificando seleção para [${key}]: ${selections[key]}`);
+                    // Log para cada célula para verificação
+                    console.log(`Verificando seleção - Seção: [${normalizedTitle}], Parâmetro: [${normalizedParam}], Key: [${key}], Valor: ${selections[key]}`);
                     
-                    // Verificando se o nível está selecionado para este parâmetro
+                    // Verificar se este nível está selecionado para este parâmetro
                     const isSelected = selections[key] === level;
                     
-                    // Determinando a cor do círculo
+                    // Obter a cor apropriada
                     const circleColor = getLevelColor(level);
                     
                     return (
