@@ -82,25 +82,31 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
-                    // Formato correto da chave para verificar seleções
+                    // Aqui está a chave do problema - criando a chave no formato correto
                     const key = `${section.title}-${parameter}`;
                     
-                    // Verificando se o nível está selecionado
-                    const isSelected = selections[key] === level;
+                    // Debug para verificar se a seleção existe
+                    const selectionValue = selections[key];
+                    console.log(`Checking selection for ${key}: ${selectionValue}`);
+                    
+                    // Verificando se o nível está selecionado para este parâmetro
+                    const isSelected = selectionValue === level;
                     
                     // Determinando a cor do círculo
                     const circleColor = getLevelColor(level);
                     
                     return (
                       <TableCell key={level} className="text-center">
-                        <div style={{ 
-                          width: '20px', 
-                          height: '20px', 
-                          borderRadius: '50%', 
-                          backgroundColor: isSelected ? circleColor : 'transparent',
-                          border: `2px solid ${circleColor}`,
-                          display: 'inline-block'
-                        }} />
+                        <div 
+                          style={{ 
+                            width: '20px', 
+                            height: '20px', 
+                            borderRadius: '50%', 
+                            backgroundColor: isSelected ? circleColor : 'transparent',
+                            border: `2px solid ${circleColor}`,
+                            display: 'inline-block'
+                          }} 
+                        />
                       </TableCell>
                     );
                   })}

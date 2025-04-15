@@ -180,6 +180,9 @@ export default function Evaluation() {
       // Cria o mapeamento correto das seleções para o PDF
       const evaluationMapping: Record<string, string> = {};
 
+      // Debug para identificar o problema
+      console.log("Gerando mapeamento para PDF...");
+
       domains.forEach(domain => {
         domain.subdomains.forEach(subdomain => {
           if (subdomain.score > 0) {
@@ -194,7 +197,9 @@ export default function Evaluation() {
             
             // Usar o formato de chave que o TeaScalePDF espera
             if (subdomain.name) {
-              evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
+              const key = `${domain.name}-${subdomain.name}`;
+              evaluationMapping[key] = level;
+              console.log(`Adicionando seleção: ${key} = ${level}`);
             }
           }
         });
@@ -212,12 +217,20 @@ export default function Evaluation() {
         { name: "Não avaliado", value: 100 - percentComplete },
       ];
 
-      const categoryData = domains.flatMap(domain => 
-        domain.subdomains.map(subdomain => ({
-          name: subdomain.name,
-          value: subdomain.score > 0 ? (subdomain.score / 5) * 100 : 0
-        }))
-      );
+      const categoryData = domains.map(domain => {
+        const scores = domain.subdomains
+          .filter(s => s.score > 0)
+          .map(s => (s.score / 5) * 100);
+        
+        const average = scores.length > 0 
+          ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) 
+          : 0;
+        
+        return {
+          name: domain.name,
+          value: average
+        };
+      });
 
       // Prepare os dados de seções para o PDF
       const evaluationSections = domains.map(domain => ({
@@ -252,7 +265,7 @@ export default function Evaluation() {
       // Capturar como imagem
       const canvas = await html2canvas(pdfContent, {
         scale: 2,
-        logging: false,
+        logging: true, // Ativar logging para debug
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff'
