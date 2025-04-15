@@ -91,7 +91,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                           backgroundColor: isSelected ? circleColor : 'transparent',
                           border: `2px solid ${circleColor}`,
                           display: 'inline-block',
-                          opacity: isSelected ? '1 !important' : '1'
+                          opacity: '1'
                         }}></div>
                       </TableCell>
                     );
