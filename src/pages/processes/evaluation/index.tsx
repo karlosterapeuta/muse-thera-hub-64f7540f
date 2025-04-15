@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -39,7 +38,6 @@ import { useToast } from "@/hooks/use-toast";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
-import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
 interface Domain {
@@ -178,7 +176,6 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Criar um mapeamento para as seleções que será compatível com o componente TeaScalePDF
       const evaluationMapping: Record<string, string> = {};
 
       console.log("Gerando mapeamento para PDF...");
@@ -197,31 +194,29 @@ export default function Evaluation() {
             }
             
             if (level) {
-              // Criar múltiplos formatos de chave para garantir compatibilidade
               const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
               const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
               
-              // Formato 1: Nome completo
               const key1 = `${domain.name}-${subdomain.name}`;
               evaluationMapping[key1] = level;
               
-              // Formato 2: Sem caracteres especiais
               const key2 = `${normalizedDomainName}-${normalizedSubdomainName}`;
               evaluationMapping[key2] = level;
               
-              // Formato 3: Apenas espaços removidos
               const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
               evaluationMapping[key3] = level;
               
-              // Formato 4: Utilizando IDs
               const key4 = `${domain.id}-${subdomain.id}`;
               evaluationMapping[key4] = level;
               
-              // Formato 5: Nome do subdomínio direto
-              evaluationMapping[subdomain.name] = level;
+              const key5 = `${subdomain.name}`;
+              evaluationMapping[key5] = level;
+              
+              const key6 = `${domain.name}-${subdomain.name}-${level}`;
+              evaluationMapping[key6] = "true";
               
               console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
-              console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}], [${subdomain.name}]`);
+              console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}], [${key5}], [${key6}]`);
             }
           }
         });
@@ -229,7 +224,6 @@ export default function Evaluation() {
 
       console.log("Todas as seleções para o PDF:", JSON.stringify(evaluationMapping, null, 2));
 
-      // Calcular dados para os gráficos
       const totalEvaluated = domains.flatMap(d => d.subdomains).filter(s => s.score > 0).length;
       const totalItems = domains.flatMap(d => d.subdomains).length;
       const percentComplete = totalEvaluated > 0 ? Math.round((totalEvaluated / totalItems) * 100) : 0;
@@ -254,14 +248,12 @@ export default function Evaluation() {
         };
       });
 
-      // Prepare os dados de seções para o PDF
       const evaluationSections = domains.map(domain => ({
         title: domain.name,
         description: domain.id,
         parameters: domain.subdomains.map(s => s.name)
       }));
 
-      // Criar container temporário para renderizar o PDF
       const tempRoot = document.createElement('div');
       tempRoot.style.position = 'fixed';
       tempRoot.style.left = '-9999px';
@@ -269,7 +261,6 @@ export default function Evaluation() {
       document.body.appendChild(tempRoot);
       tempContainer = tempRoot;
 
-      // Renderizar o componente PDF no container temporário usando createRoot (React 18)
       const root = createRoot(tempRoot);
       root.render(
         <TeaScalePDF
@@ -283,10 +274,8 @@ export default function Evaluation() {
         />
       );
 
-      // Dar tempo suficiente para renderizar completamente
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Capturar como imagem com configurações de alta qualidade
       const canvas = await html2canvas(tempRoot.firstChild as HTMLElement, {
         scale: 2,
         logging: true,
@@ -295,7 +284,6 @@ export default function Evaluation() {
         backgroundColor: '#ffffff'
       });
 
-      // Converter para PDF
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -308,7 +296,6 @@ export default function Evaluation() {
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
-      // Lidar com páginas múltiplas se necessário
       let heightLeft = pdfHeight;
       let position = 0;
       
@@ -320,10 +307,8 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Limpar o container temporário de forma segura
       if (tempContainer) {
         try {
-          // Desmontar o componente React
           root.unmount();
           if (document.body.contains(tempContainer)) {
             document.body.removeChild(tempContainer);
@@ -334,7 +319,6 @@ export default function Evaluation() {
         }
       }
       
-      // Salvar o PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
       toast({
@@ -350,13 +334,8 @@ export default function Evaluation() {
         variant: "destructive",
       });
     } finally {
-      // Garantir que o container temporário seja sempre removido
       if (tempContainer) {
         try {
-          // Se estamos usando createRoot, precisamos desmontar dessa maneira
-          if (tempContainer._reactRootContainer) {
-            ReactDOM.unmountComponentAtNode(tempContainer);
-          }
           if (document.body.contains(tempContainer)) {
             document.body.removeChild(tempContainer);
           }

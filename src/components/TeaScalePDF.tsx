@@ -77,7 +77,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
       selections[key2] === level || 
       selections[key3] === level ||
       selections[key4] === level ||
-      selections[key5] === level ||
+      selections[key5] === "true" ||
       selections[key6] === level ||
       (parameter in selections && selections[parameter] === level);
       
