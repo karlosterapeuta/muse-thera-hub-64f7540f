@@ -40,6 +40,9 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     }
   };
 
+  // For debugging in console
+  console.log("TeaScalePDF - Selections:", selections);
+
   return (
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
@@ -75,11 +78,13 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {section.parameters.map((parameter: string, index: number) => (
+              {section.parameters.map((parameter, index) => (
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
+                    // Create a key that matches the format used when saving selections
                     const key = `${section.title}-${parameter}`;
+                    // Check if this level is selected for this parameter
                     const isSelected = selections[key] === level;
                     const circleColor = getLevelColor(level);
                     

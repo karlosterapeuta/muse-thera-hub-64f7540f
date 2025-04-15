@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -38,6 +37,8 @@ import { HelpCircle, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { TeaScalePDF } from "@/components/TeaScalePDF";
+import ReactDOM from 'react-dom';
 
 interface Domain {
   id: string;
@@ -175,151 +176,73 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Criar um container temporário que será convertido para o PDF
-      tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.width = '800px';
-      tempContainer.style.backgroundColor = 'white';
-      tempContainer.style.padding = '40px';
-      tempContainer.style.fontFamily = 'Arial, sans-serif';
-      document.body.appendChild(tempContainer);
+      const evaluationMapping: Record<string, string> = {};
 
-      const header = document.createElement('div');
-      header.innerHTML = `
-        <div style="text-align: center; margin-bottom: 30px;">
-          <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 180px; margin: 0 auto 20px;" />
-          <h1 style="color: #6D28D9; font-size: 28px; margin-bottom: 8px;">Avaliação Musicoterapêutica</h1>
-          <p style="color: #64748b; font-size: 16px;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-        </div>
-      `;
-      tempContainer.appendChild(header);
-
-      const summary = document.createElement('div');
-      summary.innerHTML = `
-        <div style="margin-bottom: 30px;">
-          <h2 style="color: #334155; font-size: 22px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
-            Resumo da Avaliação
-          </h2>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <tr style="background-color: #f8fafc;">
-              <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left;">Domínio</th>
-              <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">Pontuação Média</th>
-            </tr>
-            ${getDomainAverages().map(domain => `
-              <tr>
-                <td style="padding: 10px; border: 1px solid #e2e8f0;">${domain.name}</td>
-                <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">${domain.score} / 5</td>
-              </tr>
-            `).join('')}
-          </table>
-        </div>
-      `;
-      tempContainer.appendChild(summary);
-
-      // Renderizar cada domínio com seus subdomínios e pontuações
       domains.forEach(domain => {
-        const domainSection = document.createElement('div');
-        domainSection.innerHTML = `
-          <div style="margin-bottom: 30px; page-break-inside: avoid;">
-            <h2 style="color: #334155; font-size: 22px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
-              ${domain.name}
-            </h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-              <tr style="background-color: #f8fafc;">
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: left; width: 40%;">Subdomínio</th>
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; width: 40%;">Avaliação</th>
-                <th style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; width: 20%;">Pontuação</th>
-              </tr>
-              ${domain.subdomains.map(subdomain => {
-                const scoreLabel = subdomain.score > 0 ? scoreLevels.find(l => l.value === subdomain.score)?.label.split(' - ')[1] : 'Não Avaliado';
-                
-                // Círculos de avaliação com preenchimento para o nível selecionado
-                const circleHtml = `
-                  <div style="display: flex; justify-content: space-between; max-width: 250px; margin: 0 auto;">
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                      <div style="width: 20px; height: 20px; border-radius: 50%; 
-                        background-color: ${subdomain.score === 1 ? '#ea384c' : 'white'}; 
-                        border: 2px solid #ea384c;"></div>
-                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Limitado</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                      <div style="width: 20px; height: 20px; border-radius: 50%; 
-                        background-color: ${subdomain.score === 2 ? '#f97316' : 'white'}; 
-                        border: 2px solid #f97316;"></div>
-                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Emergente</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                      <div style="width: 20px; height: 20px; border-radius: 50%; 
-                        background-color: ${subdomain.score === 3 ? '#eab308' : 'white'}; 
-                        border: 2px solid #eab308;"></div>
-                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Moderado</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                      <div style="width: 20px; height: 20px; border-radius: 50%; 
-                        background-color: ${subdomain.score === 4 ? '#0ea5e9' : 'white'}; 
-                        border: 2px solid #0ea5e9;"></div>
-                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Funcional</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 40px;">
-                      <div style="width: 20px; height: 20px; border-radius: 50%; 
-                        background-color: ${subdomain.score === 5 ? '#22c55e' : 'white'}; 
-                        border: 2px solid #22c55e;"></div>
-                      <div style="font-size: 9px; margin-top: 2px; color: #64748b;">Independente</div>
-                    </div>
-                  </div>
-                `;
-                
-                return `
-                  <tr>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; vertical-align: top;">
-                      <div style="font-weight: bold;">${subdomain.name}</div>
-                      <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${subdomain.description}</div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center;">
-                      ${circleHtml}
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
-                      ${subdomain.score > 0 ? `${subdomain.score} / 5 <div style="font-size: 11px; color: #64748b; margin-top: 3px;">${scoreLabel}</div>` : 'Não avaliado'}
-                    </td>
-                  </tr>
-                `;
-              }).join('')}
-            </table>
-          </div>
-        `;
-        tempContainer.appendChild(domainSection);
+        domain.subdomains.forEach(subdomain => {
+          if (subdomain.score > 0) {
+            let level = "";
+            switch (subdomain.score) {
+              case 1: level = "ausente"; break;
+              case 2: level = "emergente"; break;
+              case 3: level = "inconsistente"; break;
+              case 4: level = "consistente"; break;
+              case 5: level = "independente"; break;
+            }
+            
+            evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
+          }
+        });
       });
 
-      const footer = document.createElement('div');
-      footer.innerHTML = `
-        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; font-size: 12px; color: #64748b;">
-          <p>Relatório gerado pelo Sistema MuseTera em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-          <p style="margin-top: 5px;">© 2025 MuseTera. Todos os direitos reservados.</p>
-        </div>
-      `;
-      tempContainer.appendChild(footer);
+      const totalEvaluated = domains.flatMap(d => d.subdomains).filter(s => s.score > 0).length;
+      const totalItems = domains.flatMap(d => d.subdomains).length;
+      const percentComplete = totalEvaluated > 0 ? Math.round((totalEvaluated / totalItems) * 100) : 0;
 
-      // Aguardar para garantir que os estilos sejam aplicados
+      const pieData = [
+        { name: "Avaliado", value: percentComplete },
+        { name: "Não avaliado", value: 100 - percentComplete },
+      ];
+
+      const categoryData = domains.flatMap(domain => 
+        domain.subdomains.map(subdomain => ({
+          name: subdomain.name,
+          value: subdomain.score > 0 ? (subdomain.score / 5) * 100 : 0
+        }))
+      );
+
+      const evaluationSections = domains.map(domain => ({
+        title: domain.name,
+        description: "",
+        parameters: domain.subdomains.map(s => s.name)
+      }));
+
+      const pdfContent = document.createElement('div');
+      pdfContent.style.position = 'absolute';
+      pdfContent.style.left = '-9999px';
+      document.body.appendChild(pdfContent);
+
+      ReactDOM.render(
+        <TeaScalePDF
+          evaluationSections={evaluationSections}
+          selections={evaluationMapping}
+          categoryData={categoryData}
+          pieData={pieData}
+          patientName="Paciente de Avaliação"
+          evaluatorName="Musicoterapeuta"
+          evaluatorEmail=""
+        />,
+        pdfContent
+      );
+
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const canvas = await html2canvas(tempContainer, {
+      const canvas = await html2canvas(pdfContent, {
         scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-          // Garantir que os círculos estejam visíveis no clone
-          const circles = clonedDoc.querySelectorAll('[style*="border-radius: 50%"]');
-          circles.forEach(circle => {
-            // Força a renderização dos círculos
-            const style = circle.getAttribute('style');
-            if (style) {
-              circle.setAttribute('style', style + '; display: block !important;');
-            }
-          });
-        }
+        backgroundColor: '#ffffff'
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -345,11 +268,7 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
-      // Garanta que o tempContainer seja removido antes de salvar o PDF
-      if (tempContainer && document.body.contains(tempContainer)) {
-        document.body.removeChild(tempContainer);
-        tempContainer = null;
-      }
+      document.body.removeChild(pdfContent);
       
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
@@ -366,13 +285,8 @@ export default function Evaluation() {
         variant: "destructive",
       });
     } finally {
-      // Garantir limpeza mesmo em caso de erros
       if (tempContainer && document.body.contains(tempContainer)) {
-        try {
-          document.body.removeChild(tempContainer);
-        } catch (e) {
-          console.error("Erro ao remover container temporário:", e);
-        }
+        document.body.removeChild(tempContainer);
       }
       
       setIsGeneratingPdf(false);
