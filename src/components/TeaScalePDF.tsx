@@ -84,8 +84,11 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
                     // Formato correto da chave para verificar seleções
                     const key = `${section.title}-${parameter}`;
-                    // Verifica se este nível está selecionado para este parâmetro
+                    
+                    // Verificando se o nível está selecionado
                     const isSelected = selections[key] === level;
+                    
+                    // Determinando a cor do círculo
                     const circleColor = getLevelColor(level);
                     
                     return (
@@ -97,7 +100,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                           backgroundColor: isSelected ? circleColor : 'transparent',
                           border: `2px solid ${circleColor}`,
                           display: 'inline-block'
-                        }}></div>
+                        }} />
                       </TableCell>
                     );
                   })}

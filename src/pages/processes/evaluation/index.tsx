@@ -193,7 +193,9 @@ export default function Evaluation() {
             }
             
             // Usar o formato de chave que o TeaScalePDF espera
-            subdomain.name && (evaluationMapping[`${domain.name}-${subdomain.name}`] = level);
+            if (subdomain.name) {
+              evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
+            }
           }
         });
       });
