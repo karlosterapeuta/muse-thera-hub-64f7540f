@@ -41,9 +41,9 @@ const songs = [
   },
   {
     title: "Ode à Alegria",
-    notes: ["E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "E", "D", "D", "E", "E", "F", "G", "G", "F", "E", "D", "C1", "C1", "D", "E", "D", "C1", "C1"],
-    lyrics: ["A", "le", "gri", "a", "lin", "da", "luz", "di", "vi", "na", "fi", "lha", "do", "se", "nhor", "can", "to", "de", "paz", "e", "har", "mo", "ni", "a", "nos", "tra", "ga", "mais", "a", "mor"],
-    description: "Melodia principal da Nona Sinfonia de Beethoven, adaptada para sinos musicais."
+    notes: ["D", "D", "E", "F", "F", "E", "D", "C1", "B", "B", "C1", "D", "D", "C1", "C1", "D", "D", "E", "F", "F", "E", "D", "C1", "B", "B", "C1", "D", "C1", "B", "B"],
+    lyrics: ["Ó", "a", "mi", "gos", "não", "mais", "es", "ses", "sons", "en", "to", "e", "mos", "sons", "mais", "a", "gra", "da", "veis", "e", "de", "mais", "a", "le", "gri", "a", "ó", "a", "mi", "gos"],
+    description: "Melodia principal da Nona Sinfonia de Beethoven, adaptada da famosa obra de Ludwig van Beethoven."
   },
   {
     title: "Escala Cromática",
