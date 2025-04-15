@@ -193,6 +193,7 @@ export default function Evaluation() {
               case 3: level = "inconsistente"; break;
               case 4: level = "consistente"; break;
               case 5: level = "independente"; break;
+              default: break;
             }
             
             // Remover todos os espaços e caracteres especiais dos nomes
@@ -203,12 +204,12 @@ export default function Evaluation() {
             const key = `${normalizedDomainName}-${normalizedSubdomainName}`;
             evaluationMapping[key] = level;
             
-            console.log(`Adicionando seleção: [${key}] = ${level} (Domain: ${domain.name}, Subdomain: ${subdomain.name})`);
+            console.log(`Adicionando seleção: [${key}] = ${level} (Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score})`);
           }
         });
       });
 
-      // Log completo para debug
+      // Log completo do mapeamento para depuração
       console.log("Todas as seleções para o PDF:", JSON.stringify(evaluationMapping, null, 2));
 
       // Calcular dados para os gráficos
@@ -266,8 +267,8 @@ export default function Evaluation() {
         tempRoot
       );
 
-      // Dar tempo para renderizar completamente
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Dar tempo para renderizar completamente - aumentando o tempo para garantir
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Capturar como imagem
       const canvas = await html2canvas(tempRoot.firstChild as HTMLElement, {
@@ -305,6 +306,7 @@ export default function Evaluation() {
 
       // Limpar o container temporário
       if (tempContainer && document.body.contains(tempContainer)) {
+        ReactDOM.unmountComponentAtNode(tempContainer);
         document.body.removeChild(tempContainer);
         tempContainer = null;
       }
@@ -325,8 +327,14 @@ export default function Evaluation() {
         variant: "destructive",
       });
     } finally {
+      // Garantir que o container temporário seja sempre removido
       if (tempContainer && document.body.contains(tempContainer)) {
-        document.body.removeChild(tempContainer);
+        try {
+          ReactDOM.unmountComponentAtNode(tempContainer);
+          document.body.removeChild(tempContainer);
+        } catch (e) {
+          console.error("Erro ao limpar container temporário:", e);
+        }
       }
       
       setIsGeneratingPdf(false);
