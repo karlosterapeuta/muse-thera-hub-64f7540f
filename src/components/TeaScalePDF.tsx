@@ -10,6 +10,12 @@ interface TeaScalePDFProps {
   evaluatorName?: string;
   evaluatorEmail?: string;
   radarData?: any[];
+  evaluationSections?: {
+    title: string;
+    description: string;
+    parameters: string[];
+  }[];
+  selections?: Record<string, string>;
 }
 
 export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
@@ -18,7 +24,9 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   patientName,
   evaluatorName,
   evaluatorEmail,
-  radarData
+  radarData,
+  evaluationSections,
+  selections
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
@@ -133,4 +141,3 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     </div>
   );
 };
-

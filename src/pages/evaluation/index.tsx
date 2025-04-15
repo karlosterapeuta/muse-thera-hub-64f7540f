@@ -326,17 +326,12 @@ export default function Evaluation() {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <TeaScalePDF
-            evaluationSections={evaluationDomains.map(domain => ({
-              title: domain.title,
-              description: domain.description,
-              parameters: domain.subdomains.flatMap(subdomain => subdomain.parameters)
-            }))}
-            selections={selections}
             categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
             evaluatorName={userName}
             evaluatorEmail={userEmail}
+            radarData={domainScores}
           />
         </div>
       );
