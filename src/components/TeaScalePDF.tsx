@@ -45,6 +45,34 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     }
   };
 
+  const checkIsSelected = (sectionTitle: string, parameter: string, level: string) => {
+    // Criando diferentes formatos de chave para maior compatibilidade
+    const normalizedSection = sectionTitle.replace(/[^a-zA-Z0-9]/g, '');
+    const normalizedParam = parameter.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Formato 1: Título-Parâmetro
+    const key1 = `${sectionTitle}-${parameter}`;
+    
+    // Formato 2: Sem espaços e caracteres especiais
+    const key2 = `${normalizedSection}-${normalizedParam}`;
+    
+    // Formato 3: Normalizado apenas com espaços removidos
+    const key3 = `${sectionTitle.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
+    
+    // Formato 4: Para os dados do módulo de avaliação
+    const key4 = `${sectionTitle}-${parameter}`;
+    
+    // Formato 5: Para a estrutura específica do componente de avaliação TEA
+    const key5 = `${sectionTitle}-${parameter}-${level}`;
+    
+    // Verificando todos os formatos possíveis
+    return selections[key1] === level || 
+           selections[key2] === level || 
+           selections[key3] === level ||
+           selections[key4] === level ||
+           selections[key5] === level;
+  };
+
   return (
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
@@ -84,26 +112,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 <TableRow key={index}>
                   <TableCell>{parameter}</TableCell>
                   {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => {
-                    // Normalizando título e parâmetro para formar a chave
-                    const normalizedTitle = section.title.replace(/[^a-zA-Z0-9]/g, '');
-                    const normalizedParam = parameter.replace(/[^a-zA-Z0-9]/g, '');
-                    
-                    // Criando diferentes formatos de chave para maior compatibilidade
-                    const key1 = `${normalizedTitle}-${normalizedParam}`;
-                    const key2 = `${section.title}-${parameter}`;
-                    const key3 = `${section.title.replace(/\s+/g, '')}-${parameter.replace(/\s+/g, '')}`;
-                    
-                    // Verificar se algum formato de chave está presente nas seleções
-                    const isSelected = 
-                      selections[key1] === level || 
-                      selections[key2] === level || 
-                      selections[key3] === level;
-                    
-                    // Logging para depuração
-                    console.log(`Verificando: Seção=${section.title}, Parâmetro=${parameter}, Nível=${level}`);
-                    console.log(`Chaves testadas: [${key1}], [${key2}], [${key3}]`);
-                    console.log(`Selecionado: ${isSelected ? "SIM" : "NÃO"}`);
-                    
+                    const isSelected = checkIsSelected(section.title, parameter, level);
                     const circleColor = getLevelColor(level);
                     
                     return (

@@ -177,7 +177,7 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
-      // Criar um mapeamento normalizado e simplificado para as seleções
+      // Criar um mapeamento para as seleções que será compatível com o componente TeaScalePDF
       const evaluationMapping: Record<string, string> = {};
 
       console.log("Gerando mapeamento para PDF...");
@@ -195,23 +195,28 @@ export default function Evaluation() {
               default: break;
             }
             
-            // Tentar diferentes formatos de chave para garantir a compatibilidade
-            // 1. Sem espaços ou caracteres especiais
+            // Criar múltiplos formatos de chave para garantir compatibilidade
             const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
             const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
-            const key1 = `${normalizedDomainName}-${normalizedSubdomainName}`;
+            
+            // Formato 1: Nome completo
+            const key1 = `${domain.name}-${subdomain.name}`;
             evaluationMapping[key1] = level;
             
-            // 2. Chave com formato completo
-            const key2 = `${domain.name}-${subdomain.name}`;
+            // Formato 2: Sem caracteres especiais
+            const key2 = `${normalizedDomainName}-${normalizedSubdomainName}`;
             evaluationMapping[key2] = level;
             
-            // 3. Chave apenas com espaços removidos
+            // Formato 3: Apenas espaços removidos
             const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
             evaluationMapping[key3] = level;
             
+            // Formato 4: Utilizando IDs
+            const key4 = `${domain.id}-${subdomain.id}`;
+            evaluationMapping[key4] = level;
+            
             console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
-            console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}]`);
+            console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}]`);
           }
         });
       });
@@ -246,7 +251,7 @@ export default function Evaluation() {
       // Prepare os dados de seções para o PDF
       const evaluationSections = domains.map(domain => ({
         title: domain.name,
-        description: domain.id,  // Incluindo o ID do domínio na descrição para facilitar debug
+        description: domain.id,
         parameters: domain.subdomains.map(s => s.name)
       }));
 
