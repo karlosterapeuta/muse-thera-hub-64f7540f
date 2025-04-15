@@ -65,12 +65,28 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     // Formato 5: Para a estrutura específica do componente de avaliação TEA
     const key5 = `${sectionTitle}-${parameter}-${level}`;
     
+    // Formato 6: Tenta encontrar com subdomain inforamado
+    const key6 = `${sectionTitle.split(' ')[0]}-${parameter}`;
+    
+    // Formato 7: Chave direta com nível
+    const key7 = level;
+    
     // Verificando todos os formatos possíveis
-    return selections[key1] === level || 
-           selections[key2] === level || 
-           selections[key3] === level ||
-           selections[key4] === level ||
-           selections[key5] === level;
+    const isSelected = 
+      selections[key1] === level || 
+      selections[key2] === level || 
+      selections[key3] === level ||
+      selections[key4] === level ||
+      selections[key5] === level ||
+      selections[key6] === level ||
+      (parameter in selections && selections[parameter] === level);
+      
+    // Log adicional para debug apenas quando encontramos uma correspondência
+    if (isSelected) {
+      console.log(`Encontrada seleção para ${sectionTitle}-${parameter}: ${level}`);
+    }
+    
+    return isSelected;
   };
 
   return (

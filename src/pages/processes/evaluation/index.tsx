@@ -40,6 +40,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 interface Domain {
   id: string;
@@ -195,28 +196,33 @@ export default function Evaluation() {
               default: break;
             }
             
-            // Criar múltiplos formatos de chave para garantir compatibilidade
-            const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
-            const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
-            
-            // Formato 1: Nome completo
-            const key1 = `${domain.name}-${subdomain.name}`;
-            evaluationMapping[key1] = level;
-            
-            // Formato 2: Sem caracteres especiais
-            const key2 = `${normalizedDomainName}-${normalizedSubdomainName}`;
-            evaluationMapping[key2] = level;
-            
-            // Formato 3: Apenas espaços removidos
-            const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
-            evaluationMapping[key3] = level;
-            
-            // Formato 4: Utilizando IDs
-            const key4 = `${domain.id}-${subdomain.id}`;
-            evaluationMapping[key4] = level;
-            
-            console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
-            console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}]`);
+            if (level) {
+              // Criar múltiplos formatos de chave para garantir compatibilidade
+              const normalizedDomainName = domain.name.replace(/[^a-zA-Z0-9]/g, '');
+              const normalizedSubdomainName = subdomain.name.replace(/[^a-zA-Z0-9]/g, '');
+              
+              // Formato 1: Nome completo
+              const key1 = `${domain.name}-${subdomain.name}`;
+              evaluationMapping[key1] = level;
+              
+              // Formato 2: Sem caracteres especiais
+              const key2 = `${normalizedDomainName}-${normalizedSubdomainName}`;
+              evaluationMapping[key2] = level;
+              
+              // Formato 3: Apenas espaços removidos
+              const key3 = `${domain.name.replace(/\s+/g, '')}-${subdomain.name.replace(/\s+/g, '')}`;
+              evaluationMapping[key3] = level;
+              
+              // Formato 4: Utilizando IDs
+              const key4 = `${domain.id}-${subdomain.id}`;
+              evaluationMapping[key4] = level;
+              
+              // Formato 5: Nome do subdomínio direto
+              evaluationMapping[subdomain.name] = level;
+              
+              console.log(`Adicionando seleção: Domain: ${domain.name}, Subdomain: ${subdomain.name}, Score: ${subdomain.score}, Level: ${level}`);
+              console.log(`Chaves mapeadas: [${key1}], [${key2}], [${key3}], [${key4}], [${subdomain.name}]`);
+            }
           }
         });
       });
@@ -263,8 +269,9 @@ export default function Evaluation() {
       document.body.appendChild(tempRoot);
       tempContainer = tempRoot;
 
-      // Renderizar o componente PDF no container temporário
-      ReactDOM.render(
+      // Renderizar o componente PDF no container temporário usando createRoot (React 18)
+      const root = createRoot(tempRoot);
+      root.render(
         <TeaScalePDF
           evaluationSections={evaluationSections}
           selections={evaluationMapping}
@@ -273,8 +280,7 @@ export default function Evaluation() {
           patientName="Paciente de Avaliação"
           evaluatorName="Musicoterapeuta"
           evaluatorEmail=""
-        />,
-        tempRoot
+        />
       );
 
       // Dar tempo suficiente para renderizar completamente
@@ -317,7 +323,8 @@ export default function Evaluation() {
       // Limpar o container temporário de forma segura
       if (tempContainer) {
         try {
-          ReactDOM.unmountComponentAtNode(tempContainer);
+          // Desmontar o componente React
+          root.unmount();
           if (document.body.contains(tempContainer)) {
             document.body.removeChild(tempContainer);
           }
@@ -346,7 +353,10 @@ export default function Evaluation() {
       // Garantir que o container temporário seja sempre removido
       if (tempContainer) {
         try {
-          ReactDOM.unmountComponentAtNode(tempContainer);
+          // Se estamos usando createRoot, precisamos desmontar dessa maneira
+          if (tempContainer._reactRootContainer) {
+            ReactDOM.unmountComponentAtNode(tempContainer);
+          }
           if (document.body.contains(tempContainer)) {
             document.body.removeChild(tempContainer);
           }
