@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -87,10 +88,10 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                           width: '20px', 
                           height: '20px', 
                           borderRadius: '50%', 
-                          backgroundColor: isSelected ? circleColor : 'white',
+                          backgroundColor: isSelected ? circleColor : 'transparent',
                           border: `2px solid ${circleColor}`,
                           display: 'inline-block',
-                          opacity: '1 !important'
+                          opacity: isSelected ? '1 !important' : '1'
                         }}></div>
                       </TableCell>
                     );
