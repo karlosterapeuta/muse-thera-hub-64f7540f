@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Music2, Download, FileText, Volume2, VolumeX, StopCircle } from "lucide-react";
@@ -8,16 +7,16 @@ import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 
-// Define the notes and their corresponding colors
+// Define the notes and their corresponding colors to match the image
 const notes = [
-  { note: "C1", color: "#EA384C", colorName: "VERMELHO" },   // Red
-  { note: "D", color: "#F97316", colorName: "LARANJA" },     // Orange
-  { note: "E", color: "#FEF08A", colorName: "AMARELA" },     // Yellow
-  { note: "F", color: "#4ADE80", colorName: "VERDE" },       // Green
-  { note: "G", color: "#33C3F0", colorName: "AZUL CLARO" },  // Light Blue
-  { note: "A", color: "#3730A3", colorName: "AZUL ESCURO" }, // Dark Blue - Updated to correct color
-  { note: "B", color: "#9B87F5", colorName: "ROXO" },        // Purple
-  { note: "C8", color: "#FFFFFF", colorName: "BRANCO" },     // White
+  { note: "C1", label: "Dó", color: "#FF0000", colorName: "VERMELHO" },    // Red
+  { note: "D", label: "Ré", color: "#FF9933", colorName: "LARANJA" },      // Orange
+  { note: "E", label: "Mi", color: "#FFFF00", colorName: "AMARELO" },      // Yellow
+  { note: "F", label: "Fá", color: "#33CC33", colorName: "VERDE" },        // Green
+  { note: "G", label: "Sol", color: "#33CCFF", colorName: "AZUL CLARO" },  // Light Blue
+  { note: "A", label: "Lá", color: "#0000FF", colorName: "AZUL" },         // Blue
+  { note: "B", label: "Si", color: "#9933CC", colorName: "ROXO" },         // Purple
+  { note: "C8", label: "Dó", color: "#FFFFFF", colorName: "BRANCO" },      // White
 ];
 
 // Define complete songs with consistent structure for notes and lyrics
@@ -462,10 +461,18 @@ export default function MusicalBells() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-primary">
-        Sinos Musicais
+      <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-primary text-center">
+        Notas Musicais
       </h1>
       
+      <div className="text-center mb-6">
+        <p className="text-lg mb-4">As notas musicais são:</p>
+        <p className="text-xl mb-6 font-medium">
+          {notes.map(note => note.label).join(" ")}
+        </p>
+        <p className="text-lg mb-4">As notas serão representadas por cores:</p>
+      </div>
+
       <div className="flex justify-end mb-4 gap-2">
         {isPlaying && (
           <Button
@@ -490,7 +497,7 @@ export default function MusicalBells() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Musical Bells Display */}
+        {/* Musical Notes Display */}
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -502,34 +509,38 @@ export default function MusicalBells() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <div className="flex flex-wrap justify-center items-center gap-4 mb-6">
               {notes.map((note, index) => (
-                <Button
-                  key={note.note}
-                  onClick={() => playNote(note.note)}
-                  className={`transition-all h-16 w-16 rounded-full text-white font-bold ${
-                    currentNoteIndex === index ? "scale-110 ring-4 ring-white" : ""
-                  }`}
-                  style={{ 
-                    backgroundColor: note.color,
-                    boxShadow: `0 0 ${currentNoteIndex === index ? '20px' : '10px'} rgba(0,0,0,0.3)`,
-                    color: ["C8", "E"].includes(note.note) ? "#333" : "white"
-                  }}
-                >
-                  {note.note}
-                </Button>
+                <div key={note.note} className="flex flex-col items-center gap-2">
+                  <Button
+                    onClick={() => playNote(note.note)}
+                    className={`transition-all h-16 w-16 rounded-full text-white font-bold hover:scale-105 ${
+                      currentNoteIndex === index ? "scale-110 ring-4 ring-white" : ""
+                    }`}
+                    style={{ 
+                      backgroundColor: note.color,
+                      boxShadow: `0 0 ${currentNoteIndex === index ? '20px' : '10px'} rgba(0,0,0,0.3)`,
+                      color: ["C8", "E"].includes(note.note) ? "#333" : "white"
+                    }}
+                  >
+                    {note.label}
+                  </Button>
+                  <span className="text-sm font-medium">{note.label}</span>
+                </div>
               ))}
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 text-sm border border-gray-200 rounded-lg p-3 bg-gray-50">
+
+            <div className="flex justify-center items-center gap-4 flex-wrap border border-gray-200 rounded-lg p-4 bg-gray-50">
               {notes.map((note) => (
-                <div key={note.note} className="flex flex-col items-center">
+                <div 
+                  key={note.note} 
+                  className="flex items-center gap-2"
+                >
                   <div
-                    className="w-4 h-4 rounded-full mb-1"
-                    style={{ backgroundColor: note.color }}
+                    className="w-6 h-6 rounded-full"
+                    style={{ backgroundColor: note.color, border: note.note === "C8" ? "1px solid #ddd" : "none" }}
                   ></div>
-                  <span className="font-semibold">{note.note}</span>
-                  <span className="text-xs text-gray-600">{note.colorName}</span>
+                  <span className="text-sm font-medium">{note.label}</span>
                 </div>
               ))}
             </div>
