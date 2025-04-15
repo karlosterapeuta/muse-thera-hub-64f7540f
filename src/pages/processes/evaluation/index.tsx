@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -176,6 +177,7 @@ export default function Evaluation() {
         description: "Aguarde enquanto seu PDF é criado...",
       });
 
+      // Cria o mapeamento correto das seleções para o PDF
       const evaluationMapping: Record<string, string> = {};
 
       domains.forEach(domain => {
@@ -190,11 +192,15 @@ export default function Evaluation() {
               case 5: level = "independente"; break;
             }
             
-            evaluationMapping[`${domain.name}-${subdomain.name}`] = level;
+            // Usar o formato de chave que o TeaScalePDF espera
+            subdomain.name && (evaluationMapping[`${domain.name}-${subdomain.name}`] = level);
           }
         });
       });
 
+      console.log("Enviando para o PDF - Seleções:", evaluationMapping);
+
+      // Calcular dados para os gráficos
       const totalEvaluated = domains.flatMap(d => d.subdomains).filter(s => s.score > 0).length;
       const totalItems = domains.flatMap(d => d.subdomains).length;
       const percentComplete = totalEvaluated > 0 ? Math.round((totalEvaluated / totalItems) * 100) : 0;
@@ -211,17 +217,20 @@ export default function Evaluation() {
         }))
       );
 
+      // Prepare os dados de seções para o PDF
       const evaluationSections = domains.map(domain => ({
         title: domain.name,
         description: "",
         parameters: domain.subdomains.map(s => s.name)
       }));
 
+      // Criar container temporário para renderizar o PDF
       const pdfContent = document.createElement('div');
       pdfContent.style.position = 'absolute';
       pdfContent.style.left = '-9999px';
       document.body.appendChild(pdfContent);
 
+      // Renderizar o componente PDF
       ReactDOM.render(
         <TeaScalePDF
           evaluationSections={evaluationSections}
@@ -235,8 +244,10 @@ export default function Evaluation() {
         pdfContent
       );
 
+      // Dar tempo para renderizar
       await new Promise(resolve => setTimeout(resolve, 1000));
 
+      // Capturar como imagem
       const canvas = await html2canvas(pdfContent, {
         scale: 2,
         logging: false,
@@ -245,6 +256,7 @@ export default function Evaluation() {
         backgroundColor: '#ffffff'
       });
 
+      // Converter para PDF
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -257,6 +269,7 @@ export default function Evaluation() {
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
+      // Lidar com páginas múltiplas se necessário
       let heightLeft = pdfHeight;
       let position = 0;
       
@@ -268,8 +281,10 @@ export default function Evaluation() {
         position -= pdf.internal.pageSize.getHeight();
       }
 
+      // Limpar o container temporário
       document.body.removeChild(pdfContent);
       
+      // Salvar o PDF
       pdf.save('avaliacao-musicoterapeutica.pdf');
       
       toast({
