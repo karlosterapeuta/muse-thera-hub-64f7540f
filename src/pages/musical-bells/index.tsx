@@ -29,9 +29,9 @@ const songs = [
   },
   {
     title: "Parabéns a Você",
-    notes: ["C1", "C1", "D", "C1", "F", "E", "C1", "C1", "D", "C1", "G", "F", "C1", "C1", "C8", "A", "F", "E", "D", "B", "B", "A", "F", "G", "F"],
+    notes: ["C1", "C1", "D", "C1", "F", "E", "C1", "C1", "D", "C1", "G", "F", "C1", "C1", "C8", "A", "F", "E", "D", "C1", "D", "E", "F", "F", "E", "D", "C1"],
     lyrics: ["Pa", "ra", "béns", "a", "vo", "cê", "nes", "ta", "da", "ta", "que", "ri", "da", "mui", "tas", "fe", "li", "ci", "da", "des", "mui", "tos", "a", "nos", "de", "vi", "da"],
-    description: "A canção tradicional de aniversário completa, com todas as estrofes."
+    description: "A tradicional canção de aniversário brasileira, com letra e melodia completas."
   },
   {
     title: "Dó-Ré-Mi",
@@ -198,7 +198,7 @@ const songs = [
   {
     title: "Peixe Vivo",
     notes: ["C1", "E", "G", "C1", "E", "G", "A", "G", "F", "E", "D", "C1", "C1", "E", "G", "C1", "E", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Co", "mo", "po", "de", "um", "pei", "xe", "vi", "vo", "vi", "ver", "fo", "ra", "da", "á", "gua", "cla", "ra", "co", "mo", "po", "de", "eu"],
+    lyrics: ["Co", "mo", "po", "de", "um", "pei", "xe", "vi", "vo", "vi", "ver", "foi", "da", "á", "gua", "cla", "ra", "co", "mo", "po", "de", "eu"],
     description: "Canção folclórica brasileira que expressa sentimentos de saudade e pertencimento."
   },
   {
@@ -318,10 +318,8 @@ export default function MusicalBells() {
   const [selectedSong, setSelectedSong] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const { toast } = useToast();
-  // Add a ref to track the currently playing interval/timeout
   const playbackRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup audio context when component unmounts
   useEffect(() => {
     return () => {
       if (playbackRef.current) {
@@ -331,24 +329,19 @@ export default function MusicalBells() {
     };
   }, []);
 
-  // Play a single note
   const playNote = (note: string) => {
-    // Find the index of the note in our notes array
     const noteIndex = notes.findIndex(n => n.note === note);
     if (noteIndex >= 0) {
       setCurrentNoteIndex(noteIndex);
       
-      // Play the note sound if audio is enabled
       if (audioEnabled) {
         playNoteSound(note);
       }
       
-      // Reset the highlight after a short delay
       setTimeout(() => setCurrentNoteIndex(null), 500);
     }
   };
 
-  // Play a song
   const playSong = (songIndex: number) => {
     if (isPlaying) {
       toast({
@@ -369,8 +362,7 @@ export default function MusicalBells() {
       if (noteIndex < songNotes.length) {
         playNote(songNotes[noteIndex]);
         noteIndex++;
-        // Store the timeout reference so we can clear it when stopping
-        playbackRef.current = setTimeout(playNextNote, 800); // Play each note with a delay
+        playbackRef.current = setTimeout(playNextNote, 800);
       } else {
         if (playbackRef.current) {
           clearTimeout(playbackRef.current);
@@ -386,23 +378,18 @@ export default function MusicalBells() {
       }
     };
 
-    // Start playing the song
     playNextNote();
   };
 
-  // Stop playing the current song
   const stopPlaying = () => {
     if (isPlaying) {
-      // Clear any pending timeouts to stop the playback sequence
       if (playbackRef.current) {
         clearTimeout(playbackRef.current);
         playbackRef.current = null;
       }
       
-      // Stop all audio playing
       stopAllAudio();
       
-      // Reset state
       setCurrentSong(null);
       setIsPlaying(false);
       
@@ -413,11 +400,9 @@ export default function MusicalBells() {
     }
   };
 
-  // Toggle audio on/off
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
     
-    // Show toast to inform the user
     toast({
       title: audioEnabled ? "Áudio desativado" : "Áudio ativado",
       description: audioEnabled 
@@ -425,13 +410,11 @@ export default function MusicalBells() {
         : "Agora você ouvirá o som das notas musicais.",
     });
     
-    // Stop any ongoing audio if turning off
     if (audioEnabled) {
       stopAllAudio();
     }
   };
 
-  // Function to generate and download PDF
   const downloadSongPDF = (songIndex: number) => {
     setSelectedSong(songIndex);
     
@@ -497,7 +480,6 @@ export default function MusicalBells() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Musical Notes Display */}
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -537,8 +519,11 @@ export default function MusicalBells() {
                   className="flex items-center gap-2"
                 >
                   <div
-                    className="w-6 h-6 rounded-full"
-                    style={{ backgroundColor: note.color, border: note.note === "C8" ? "1px solid #ddd" : "none" }}
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mx-auto"
+                    style={{ 
+                      backgroundColor: note.color,
+                      border: note.note === "C8" ? "1px solid #ddd" : "none"
+                    }}
                   ></div>
                   <span className="text-sm font-medium">{note.label}</span>
                 </div>
@@ -547,7 +532,6 @@ export default function MusicalBells() {
           </CardContent>
         </Card>
 
-        {/* Songs List */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -569,7 +553,6 @@ export default function MusicalBells() {
                     <div className="font-semibold text-lg mb-2">{song.title}</div>
                     <p className="text-sm text-gray-600 mb-3">{song.description}</p>
                     
-                    {/* Notes with lyrics - Modified to display all notes properly */}
                     <div className="mb-4 flex flex-wrap">
                       {song.notes.map((note, noteIndex) => {
                         const noteData = notes.find(n => n.note === note);
@@ -592,7 +575,6 @@ export default function MusicalBells() {
                       })}
                     </div>
                     
-                    {/* Action buttons */}
                     <div className="flex justify-end gap-2 mt-2">
                       <Button 
                         size="sm" 
@@ -624,7 +606,6 @@ export default function MusicalBells() {
         </Card>
       </div>
 
-      {/* Hidden PDF content for generation */}
       <div className="hidden">
         {selectedSong !== null && (
           <div id="song-pdf-content">
