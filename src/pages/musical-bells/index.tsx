@@ -193,7 +193,7 @@ const songs = [
       "mas", "o", "ga", "to", 
       "não", "mor", "reu", "reu", "reu", 
       "do", "na", 
-      "chi", "ca", "ca", ad", "mi", "rou", "não", "mor", 
+      "chi", "ca", "ca", "ad", "mi", "rou", "não", "mor", 
       "pe", "lo", "pau", 
       "que", "le", "vou", 
       "ó", "ca", "i", "ca", "i", "ca", "i"
