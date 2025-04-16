@@ -52,7 +52,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", "do", "E", "lí", "sio", 
+      "fi", "lha", do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -282,4 +282,16 @@ const songs = [
     title: "Nesta Rua",
     notes: [
       "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", 
-      "C↓", "E", "G", "C↓",
+      "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓"
+    ],
+    lyrics: [
+      "Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", 
+      "tem", "um", "bos", "que", "que", "se", 
+      "cha", "ma", "que", "se", "cha", "ma", 
+      "so", "li", "dão", "den", "tro", "dele"
+    ],
+    description: "Canção folclórica brasileira romântica, cantada em rodas infantis."
+  }
+];
+
+export default MusicalBells;
