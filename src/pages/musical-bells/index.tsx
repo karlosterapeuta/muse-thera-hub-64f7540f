@@ -113,7 +113,7 @@ const songs = [
   },
   {
     title: "Cai, Cai, Balão",
-    notes: ["G", "E", "G", "E", "C1", "G", "F", "E", "D", "C1", "G", "E", "G", "E", "C1", "G", "F", "E", "D", "C1", "C1", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C1"],
+    notes: ["G", "G", "E", "E", "G", "G", "E", "E", "G", "A", "G", "F", "E", "D", "D", "E", "F", "D", "E", "F", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C1"],
     lyrics: ["Cai", "cai", "ba", "lão", "cai", "cai", "ba", "lão", "a", "qui", "na", "mi", "nha", "mão", "não", "cai", "não", "não", "não", "não", "cai", "a", "qui", "na", "mi", "nha", "mão", "mão", "mão", "mão", "mão"],
     description: "Canção tradicional das festas juninas no Brasil, com todos os versos."
   },
@@ -156,7 +156,7 @@ const songs = [
   {
     title: "Caranguejo",
     notes: ["C1", "C1", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E", "C1", "C1", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E"],
-    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "ca", "ran", "gue", "jo", "pei", "xe", "é", "na", "va", "zi", "a", "ni", "ma", "ré"],
+    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "ca", "ran", "gue", "jo", "pei", "xe", "é", "na", "va", "zi", "nha", "ni", "ma", "ré"],
     description: "Música folclórica brasileira popular em brincadeiras infantis, com todos os versos."
   },
   {
