@@ -245,9 +245,9 @@ const songs = [
   },
   {
     title: "Pirulito que Bate Bate",
-    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "D", "E", "F", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "D", "E", "F"],
-    lyrics: ["Pi", "ru", "li", "to", "que", "ba", "te", "ba", "te", "pi", "ru", "li", "to", "que", "já", "ba", "teu", "quem", "gos", "ta", "de", "mim", "é", "e", "la", "quem"],
-    description: "Canção folclórica brasileira popular entre crianças, com todos os versos."
+    notes: ["E", "F", "G", "G", "G", "F", "E", "A", "A", "D", "E", "F", "F", "F", "E", "D", "G", "E", "F", "G", "G", "G", "F", "E", "A", "C", "B", "A", "G", "F", "E", "D", "C"],
+    lyrics: ["Pi", "ru", "li", "to", "que", "ba", "te", "ba", "te", "pi", "ru", "li", "to", "que", "já", "ba", "teu", "quem", "gos", "ta", "de", "mim", "é", "e", "la", "quem", "tam", "bém", "gos", "ta", "de", "vo", "cê"],
+    description: "Canção folclórica brasileira popular entre crianças, com todos os versos atualizados."
   },
   {
     title: "O Cravo e a Rosa",
