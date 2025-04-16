@@ -43,7 +43,7 @@ const songs = [
     title: "Ode à Alegria",
     notes: [
       "E", "E", "E", "F", "G", "G", "F", "E", "D", "D", 
-      "C1", "C1", "B", "B", "A", "G", "F", "E", "D", "C1", 
+      "C1", "C1", "C1", "C1", "A", "G", "F", "E", "D", "C1", 
       "G", "G", "F", "E", "D", "C1", "A", "G", "F", "E", "D", "C1"
     ],
     lyrics: [
