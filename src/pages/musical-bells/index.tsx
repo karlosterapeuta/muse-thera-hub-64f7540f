@@ -275,4 +275,288 @@ const songs = [
   },
   {
     title: "Nesta Rua",
-    notes: ["C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E",
+    notes: ["C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓"],
+    lyrics: ["Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", "tem", "um", "bos", "que", "que", "se", "cha", "ma", "se", "cha", "ma", "so", "li", "dão", "den", "tro", "de", "le"],
+    description: "Canção folclórica brasileira tradicional que fala sobre amor e saudade."
+  }
+];
+
+const MusicalBells = () => {
+  const [selectedSong, setSelectedSong] = useState<typeof songs[0] | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState<number>(-1);
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const playingTimerRef = useRef<number | null>(null);
+
+  const playNote = (note: string, index: number) => {
+    if (muted) return;
+    
+    setCurrentNoteIndex(index);
+    playNoteSound(note);
+    
+    // Highlight timing
+    setTimeout(() => {
+      if (currentNoteIndex === index) {
+        setCurrentNoteIndex(-1);
+      }
+    }, 500);
+  };
+
+  const playSong = () => {
+    if (!selectedSong) return;
+    
+    setIsPlaying(true);
+    let noteIndex = 0;
+    
+    const playNextNote = () => {
+      if (noteIndex < selectedSong.notes.length) {
+        playNote(selectedSong.notes[noteIndex], noteIndex);
+        noteIndex++;
+        playingTimerRef.current = window.setTimeout(playNextNote, 800);
+      } else {
+        setIsPlaying(false);
+        setCurrentNoteIndex(-1);
+      }
+    };
+    
+    playNextNote();
+  };
+
+  const stopPlaying = () => {
+    if (playingTimerRef.current) {
+      clearTimeout(playingTimerRef.current);
+      playingTimerRef.current = null;
+    }
+    stopAllAudio();
+    setIsPlaying(false);
+    setCurrentNoteIndex(-1);
+  };
+
+  const toggleMute = () => {
+    setMuted(!muted);
+    if (!muted) {
+      stopAllAudio();
+    }
+  };
+
+  const handleSongSelect = (song: typeof songs[0]) => {
+    stopPlaying();
+    setSelectedSong(song);
+  };
+
+  const generatePDF = () => {
+    if (!selectedSong || !pdfRef.current) return;
+    
+    const element = pdfRef.current;
+    const options = {
+      margin: 10,
+      filename: `${selectedSong.title}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(options).from(element).save();
+    
+    toast({
+      title: "PDF gerado com sucesso!",
+      description: `O arquivo "${selectedSong.title}.pdf" está pronto para download.`,
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (playingTimerRef.current) {
+        clearTimeout(playingTimerRef.current);
+      }
+      stopAllAudio();
+    };
+  }, []);
+
+  const findNoteColor = (noteValue: string) => {
+    const noteObj = notes.find(n => n.note === noteValue);
+    return noteObj ? noteObj.color : "#FFFFFF";
+  };
+
+  const findNoteLabel = (noteValue: string) => {
+    const noteObj = notes.find(n => n.note === noteValue);
+    return noteObj ? noteObj.label : noteValue;
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <h1 className="text-3xl font-bold mb-6 text-center">Sinos Musicais</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lista de Músicas</CardTitle>
+              <CardDescription>Selecione uma música para tocar</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[60vh] overflow-y-auto space-y-2 pr-2">
+                {songs.map((song, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-3 rounded-md cursor-pointer transition-colors ${
+                      selectedSong?.title === song.title
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary hover:bg-secondary/80"
+                    }`}
+                    onClick={() => handleSongSelect(song)}
+                  >
+                    <div className="font-medium">{song.title}</div>
+                    <div className="text-xs opacity-80">{song.description}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="md:col-span-2 space-y-4">
+          {selectedSong ? (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{selectedSong.title}</CardTitle>
+                  <CardDescription>{selectedSong.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3 mb-6">
+                    {selectedSong.notes.map((note, idx) => (
+                      <div
+                        key={idx}
+                        className={`relative p-4 w-12 h-12 flex items-center justify-center rounded-full transition-transform ${
+                          currentNoteIndex === idx ? "scale-110 ring-4 ring-primary" : ""
+                        }`}
+                        style={{ backgroundColor: findNoteColor(note) }}
+                        onClick={() => playNote(note, idx)}
+                      >
+                        <span 
+                          className={`font-bold ${
+                            ["#FFFF00", "#33CCFF", "#FFFFFF"].includes(findNoteColor(note))
+                              ? "text-black"
+                              : "text-white"
+                          }`}
+                        >
+                          {findNoteLabel(note)}
+                        </span>
+                        {selectedSong.lyrics && selectedSong.lyrics[idx] && (
+                          <span 
+                            className={`absolute -bottom-5 text-xs ${
+                              currentNoteIndex === idx ? "font-bold" : ""
+                            }`}
+                          >
+                            {selectedSong.lyrics[idx]}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex flex-wrap justify-center gap-3 mt-10">
+                    {isPlaying ? (
+                      <Button
+                        variant="destructive"
+                        onClick={stopPlaying}
+                        className="flex items-center gap-2"
+                      >
+                        <StopCircle size={16} />
+                        Parar
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={playSong} 
+                        className="flex items-center gap-2"
+                      >
+                        <Music2 size={16} />
+                        Tocar Música
+                      </Button>
+                    )}
+                    
+                    <Button
+                      variant="outline"
+                      onClick={toggleMute}
+                      className="flex items-center gap-2"
+                    >
+                      {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                      {muted ? "Ativar Som" : "Silenciar"}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={generatePDF}
+                      className="flex items-center gap-2"
+                    >
+                      <Download size={16} />
+                      Baixar PDF
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <div className="hidden">
+                <div ref={pdfRef}>
+                  <SongPDF
+                    title={selectedSong.title}
+                    notes={selectedSong.notes}
+                    lyrics={selectedSong.lyrics}
+                    description={selectedSong.description}
+                    findNoteColor={findNoteColor}
+                    findNoteLabel={findNoteLabel}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Instruções</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center justify-center text-center p-8 space-y-4">
+                  <FileText size={48} className="text-muted-foreground" />
+                  <p>Selecione uma música da lista para começar</p>
+                  <p className="text-sm text-muted-foreground">
+                    Você poderá tocar os sinos individualmente ou reproduzir a música completa
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Cores dos Sinos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {notes.map((note) => (
+                  <div
+                    key={note.note}
+                    className="flex items-center space-x-2"
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full"
+                      style={{ backgroundColor: note.color }}
+                    ></div>
+                    <div>
+                      <div className="text-sm font-medium">{note.label}</div>
+                      <div className="text-xs text-muted-foreground">{note.colorName}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MusicalBells;
