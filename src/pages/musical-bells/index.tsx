@@ -226,7 +226,7 @@ const songs = [
   },
   {
     title: "Samba Lelê",
-    notes: ["G", "G", "G", "E", "A", "A", "G", "E", "G", "F", "E", "D", "C↓", "G", "G", "G", "E", "A", "A", "G", "E", "G", "F", "E", "D", "C↓"],
+    notes: ["C", "E", "F", "G", "E", "C", "D", "D", "B", "D", "E", "F", "E", "B", "C", "C", "C", "E", "C", "E", "D", "F", "F", "F", "B", "D", "E", "F", "D", "B", "C", "C"],
     lyrics: ["Sam", "ba", "Le", "lê", "es", "tá", "do", "en", "te", "es", "tá", "com", "a", "ca", "be", "ça", "que", "bra", "da", "pre", "ci", "sa", "de", "u", "ma", "ben", "ção"],
     description: "Canção folclórica brasileira muito usada em brincadeiras, com todos os versos."
   },
