@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 
-// Define the notes and their corresponding colors to match the image
 const notes = [
   { note: "C1", label: "Dó", color: "#FF0000", colorName: "VERMELHO" },    // Red
   { note: "D", label: "Ré", color: "#FF9933", colorName: "LARANJA" },      // Orange
@@ -20,7 +18,6 @@ const notes = [
   { note: "C8", label: "Dó", color: "#FFFFFF", colorName: "BRANCO" },      // White
 ];
 
-// Define complete songs with consistent structure for notes and lyrics
 const songs = [
   {
     title: "Brilha, Brilha Estrelinha",
@@ -83,8 +80,8 @@ const songs = [
   },
   {
     title: "Marcha Soldado",
-    notes: ["E", "E", "E", "G", "C1", "C1", "G", "G", "E", "E", "C1", "E", "E", "E", "G", "C1", "C1", "G", "G", "E", "E", "C1"],
-    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel", "se", "não", "mar", "char", "di", "rei", "ti", "nho", "vai", "pre", "so"],
+    notes: ["G", "G", "E", "C1", "C1", "E", "G", "G", "E", "D", "F", "F", "F", "E", "D", "G", "G", "A", "G", "F", "E", "D", "C1"],
+    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel", "se", "não", "mar", "char", "di", "rei\", \"ti\", \"nho\", \"vai\", \"pre\", \"so\"],
     description: "Canção infantil brasileira tradicional com todos os versos."
   },
   {
