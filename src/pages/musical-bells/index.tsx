@@ -52,7 +52,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", "do", "E", "lí", "sio", 
+      "fi", "lha", do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -161,8 +161,13 @@ const songs = [
   },
   {
     title: "Borboletinha",
-    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "F", "E", "D", "C↓", "G", "F", "E", "D"],
-    lyrics: ["Bor", "bo", "le", "ti", "nha", "tá", "na", "co", "zi", "nha", "fa", "zen", "do", "cho", "co", "la", "te", "pa", "ra", "ma", "dri", "nha", "po", "ti", "po", "ti", "po", "ti"],
+    notes: ["G", "A", "G", "C", "G", "A", "G", "B", "G", "A", "G", "B", "G", "A", "B", "C"],
+    lyrics: [
+      "Bor", "bo", "le", "ti", "nha", "tá", "na", "co", 
+      "zi", "nha", "fa", "zen", "do", "cho", "co", "la", 
+      "te", "pa", "ra", "ma", "dri", "nha", "po", "ti", 
+      "po", "ti", "po", "ti"
+    ],
     description: "Canção infantil brasileira muito popular em escolas, com todos os versos."
   },
   {
