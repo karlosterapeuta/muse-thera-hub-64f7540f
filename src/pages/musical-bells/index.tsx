@@ -119,8 +119,14 @@ const songs = [
   },
   {
     title: "A Canoa Virou",
-    notes: ["E", "G", "C1", "G", "E", "G", "C1", "G", "C1", "B", "A", "G", "F", "E", "E", "G", "C1", "G", "E", "G", "C1", "G", "C1", "B", "A", "G", "F", "E"],
-    lyrics: ["A", "ca", "no", "a", "vi", "rou", "por", "dei", "xar", "e", "la", "vi", "rar", "foi", "por", "cau", "sa", "do", "Ma", "ri", "a", "que", "não", "sou", "be", "re", "mar"],
+    notes: ["G", "G", "G", "G", "E", "E", "E", "G", "C1", "C1", "B", "A", "A", "C1", "D", "D", "C1", "B", "B", "A", "G", "G", "G", "F", "E", 
+            "G", "G", "G", "G", "E", "E", "E", "G", "C1", "C1", "B", "A", "A", "C1", "D", "D", "C1", "B", "B", "A", "G", "G", "G", "A", "B", "C1"],
+    lyrics: [
+      "A", "ca", "no", "a", "vi", "rou", "por", "dei", "xar", "e", "la", "vi", "rar", "foi", "por", "cau", "sa", "do", 
+      "Ma", "ri", "a", "que", "não", "sou", "be", "re", "mar",
+      "A", "ca", "no", "a", "vi", "rou", "por", "dei", "xar", "e", "la", "vi", "rar", "foi", "por", "cau", "sa", "do", 
+      "Ma", "ri", "a", "que", "não", "sou", "be", "re", "mar"
+    ],
     description: "Canção folclórica brasileira completa com todos os versos."
   },
   {
