@@ -71,7 +71,7 @@ const songs = [
   },
   {
     title: "Ciranda, Cirandinha",
-    notes: ["G", "G", "A", "G", "F", "E", "D", "D", "G", "G", "A", "G", "F", "E", "D", "C1", "G", "A", "G", "F", "E", "D", "G", "G", "A", "G", "F", "E", "D"],
+    notes: ["G", "G", "G", "E", "G", "G", "G", "E", "G", "A", "G", "F", "E", "D", "A", "A", "A", "A", "B", "A", "G", "G", "E", "G", "F", "F", "E", "D", "C1"],
     lyrics: [
       "Ci", "ran", "da", "ci", "ran", "di", "nha", "vá", "mos", 
       "to", "dos", "ci", "ran", "dar", "em", "ro", "da", 
