@@ -275,4 +275,244 @@ const songs = [
   },
   {
     title: "Nesta Rua",
-    notes: ["C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E",
+    notes: ["C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓"],
+    lyrics: ["Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", "tem", "um", "bos", "que", "que", "se", "cha", "ma", "que", "se", "cha", "ma", "so", "li", "dão", "den", "tro", "dele"],
+    description: "Canção folclórica brasileira romântica, cantada em rodas infantis."
+  }
+];
+
+const MusicalBells = () => {
+  const [selectedSong, setSelectedSong] = useState(songs[0]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState(-1);
+  const playTimeout = useRef<NodeJS.Timeout | null>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    return () => {
+      stopPlayback();
+    };
+  }, []);
+
+  useEffect(() => {
+    setCurrentNoteIndex(-1);
+    stopPlayback();
+  }, [selectedSong]);
+
+  const stopPlayback = () => {
+    if (playTimeout.current) {
+      clearTimeout(playTimeout.current);
+      playTimeout.current = null;
+    }
+    setIsPlaying(false);
+    setCurrentNoteIndex(-1);
+    stopAllAudio();
+  };
+
+  const playNote = (noteIndex: number) => {
+    if (noteIndex >= selectedSong.notes.length) {
+      setIsPlaying(false);
+      setCurrentNoteIndex(-1);
+      return;
+    }
+    
+    setCurrentNoteIndex(noteIndex);
+    
+    if (!isMuted) {
+      const noteKey = selectedSong.notes[noteIndex];
+      playNoteSound(noteKey);
+    }
+    
+    playTimeout.current = setTimeout(() => {
+      playNote(noteIndex + 1);
+    }, 800);
+  };
+
+  const handlePlaySong = () => {
+    if (isPlaying) {
+      stopPlayback();
+    } else {
+      setIsPlaying(true);
+      playNote(0);
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    if (!isMuted) {
+      stopAllAudio();
+    }
+  };
+
+  const handleClickNote = (noteKey: string) => {
+    if (!isMuted) {
+      playNoteSound(noteKey);
+    }
+  };
+
+  const generatePDF = () => {
+    if (!pdfRef.current) return;
+    
+    const element = pdfRef.current;
+    const opt = {
+      margin: 10,
+      filename: `${selectedSong.title.replace(/\s+/g, '_')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    toast({
+      title: "Gerando PDF",
+      description: "Aguarde enquanto criamos o PDF para download...",
+    });
+
+    setTimeout(() => {
+      html2pdf().set(opt).from(element).save().then(() => {
+        toast({
+          title: "Download concluído",
+          description: "O PDF foi gerado com sucesso!",
+        });
+      });
+    }, 500);
+  };
+
+  return (
+    <div className="container mx-auto py-8 max-w-6xl">
+      <div className="mb-8">
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="text-2xl">Sinos Musicais</CardTitle>
+                <CardDescription>
+                  Explore e toque músicas com sinos coloridos
+                </CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="icon" onClick={toggleMute}>
+                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </Button>
+                <Button variant="outline" size="icon" onClick={generatePDF}>
+                  <Download size={18} />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium mb-2">Seleção de Música</h3>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={selectedSong.title}
+                    onChange={(e) => {
+                      const song = songs.find(s => s.title === e.target.value);
+                      if (song) setSelectedSong(song);
+                    }}
+                  >
+                    {songs.map((song) => (
+                      <option key={song.title} value={song.title}>
+                        {song.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Controles</h3>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={handlePlaySong}
+                      className="flex items-center space-x-1"
+                    >
+                      {isPlaying ? <StopCircle size={18} /> : <Music2 size={18} />}
+                      <span>{isPlaying ? "Parar" : "Tocar"} Música</span>
+                    </Button>
+                    <Button variant="outline" onClick={generatePDF} className="flex items-center space-x-1">
+                      <FileText size={18} />
+                      <span>Gerar Partitura</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-3">Sinos Musicais</h3>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {notes.map((note) => (
+                    <div 
+                      key={note.note}
+                      onClick={() => handleClickNote(note.note)}
+                      className="relative flex flex-col items-center cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                    >
+                      <div
+                        style={{ backgroundColor: note.color, borderColor: note.color === "#FFFFFF" ? "#DDD" : note.color }}
+                        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center shadow-md ${
+                          note.color === "#FFFFFF" ? "text-black" : "text-white"
+                        }`}
+                      >
+                        <span className="font-bold">{note.note}</span>
+                      </div>
+                      <span className="mt-1 text-xs font-medium">{note.label}</span>
+                      <span className="text-[10px] text-gray-500">{note.colorName}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-3">Partitura Visual: {selectedSong.title}</h3>
+                <p className="text-sm text-gray-500 mb-4">{selectedSong.description}</p>
+                
+                <div className="flex flex-wrap justify-center gap-3">
+                  {selectedSong.notes.map((noteKey, index) => {
+                    const noteData = notes.find(n => n.note === noteKey);
+                    const isCurrentNote = index === currentNoteIndex;
+                    
+                    return (
+                      <div 
+                        key={`${noteKey}-${index}`}
+                        className={`flex flex-col items-center mb-2 transition-transform ${
+                          isCurrentNote ? "scale-110" : ""
+                        }`}
+                      >
+                        <div
+                          style={{ 
+                            backgroundColor: noteData?.color, 
+                            borderColor: noteData?.color === "#FFFFFF" ? "#DDD" : noteData?.color,
+                            boxShadow: isCurrentNote ? "0 0 10px 3px rgba(66, 153, 225, 0.6)" : "none"
+                          }}
+                          className={`w-12 h-12 rounded-full border-2 flex items-center justify-center ${
+                            noteData?.color === "#FFFFFF" ? "text-black" : "text-white"
+                          }`}
+                          onClick={() => handleClickNote(noteKey)}
+                        >
+                          <span className="font-medium text-sm">{noteKey}</span>
+                        </div>
+                        {selectedSong.lyrics && selectedSong.lyrics[index] && (
+                          <span className="mt-1 text-xs">{selectedSong.lyrics[index]}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="hidden">
+        <div ref={pdfRef}>
+          <SongPDF song={selectedSong} notes={notes} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MusicalBells;
