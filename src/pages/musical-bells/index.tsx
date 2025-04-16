@@ -42,19 +42,26 @@ const songs = [
   {
     title: "Ode à Alegria",
     notes: [
-      "E", "E", "E", "F", "G", "G", "F", "E", "D", "D", 
-      "C1", "C1", "C1", "C1", "A", "G", "F", "E", "D", "C1", 
-      "G", "G", "F", "E", "D", "C1", "A", "G", "F", "E", "D", "C1"
+      "E", "E", "F", "G", "G", "F", "E", "D", 
+      "C1", "C1", "D", "E", "E", "D", "D",
+      "E", "E", "F", "G", "G", "F", "E", "D", 
+      "C1", "C1", "D", "E", "D", "C1", "C1",
+      "D", "D", "E", "C1", "D", "E", "F", "E", "C1",
+      "D", "E", "F", "E", "D", "C1", "D", "G",
+      "E", "E", "F", "G", "G", "F", "E", "D",
+      "C1", "C1", "D", "E", "D", "C1", "C1"
     ],
     lyrics: [
-      "Ale", "gri", "a", "bri", "lhan", "te", 
-      "di", "vi", "na", "luz", 
-      "es", "pe", "ran", "ça", 
-      "de", "u", "ma", "vi", "da", 
-      "me", "lhor", "fra", "ter", "na", 
-      "lei", "da", "har", "mo", "ni", "a"
+      "A", "le", "gri", "a", "be", "la", 
+      "cen", "te", "lha", "di", "vi", "na", 
+      "fi", "lha", "do", "E", "lí", "sio", 
+      "e", "bri", "os", "pe", "ne", "tra", "mos", 
+      "no", "teu", "san", "tu", "á", "rio", 
+      "ce", "les", "te", "tua", "ma", "gi", "a", 
+      "vol", "ta", "a", "u", "nir", "o", "que", 
+      "a", "mo", "da", "se", "pa", "rou"
     ],
-    description: "Tema principal do 4º movimento da Nona Sinfonia de Beethoven, 'Ode à Alegria', com notas e letra originais."
+    description: "Tema principal do 4º movimento da Nona Sinfonia de Beethoven, 'Ode à Alegria', com notas e letra em português."
   },
   {
     title: "Escala Cromática",
