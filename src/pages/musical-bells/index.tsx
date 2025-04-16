@@ -246,7 +246,7 @@ const songs = [
   {
     title: "Boi da Cara Preta",
     notes: ["G", "G", "E", "C↓", "G", "G", "E", "C↓", "C↓", "C↓", "D", "E", "D", "C↓", "B", "A", "G"],
-    lyrics: ["Boi", "boi", "boi", "boi", "da", "ca", "ra", "pre", "ta", "pe", "ga", "es", "sa", "cri", "an", "ça", "que"],
+    lyrics: ["Boi", "boi", "boi", "boi", "da", "ca", "ra", "pre", "ta", "pe", "ga", "es", "sa", "cri", "an", "��a", "que"],
     description: "Cantiga de ninar tradicional brasileira, usada para acalmar crianças pequenas."
   },
   {
@@ -275,8 +275,16 @@ const songs = [
   },
   {
     title: "Nesta Rua",
-    notes: ["C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", "tem", "um", "bos", "que", "que", "se", "cha", "ma", "que", "se", "cha", "ma", "so", "li", "dão", "den", "tro", "dele"],
+    notes: [
+      "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D", "C↓", 
+      "C↓", "E", "G", "C↓", "B", "A", "G", "E", "G", "F", "E", "D"
+    ],
+    lyrics: [
+      "Nes", "ta", "ru", "a", "nes", "ta", "ru", "a", 
+      "tem", "um", "bos", "que", "que", "se", 
+      "cha", "ma", "que", "se", "cha", "ma", 
+      "so", "li", "dão", "den", "tro", "dele"
+    ],
     description: "Canção folclórica brasileira romântica, cantada em rodas infantis."
   }
 ];
