@@ -52,7 +52,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", do", "E", "lí", "sio", 
+      "fi", "lha", "do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
