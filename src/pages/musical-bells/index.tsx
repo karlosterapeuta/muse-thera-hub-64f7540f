@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", "do", "E", "lí", "sio", 
+      "fi", "lha", do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -65,7 +64,7 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C↓", "D", "E", "F", "G", "A", "B", "C↑", "B", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
@@ -194,7 +193,7 @@ const songs = [
       "mas", "o", "ga", "to", 
       "não", "mor", "reu", "reu", "reu", 
       "do", "na", 
-      "chi", "ca", "ca", "ad", "mi", "rou", "não", "mor", 
+      "chi", "ca", "ca", ad", "mi", "rou", "não", "mor", 
       "pe", "lo", "pau", 
       "que", "le", "vou", 
       "ó", "ca", "i", "ca", "i", "ca", "i"
@@ -203,9 +202,21 @@ const songs = [
   },
   {
     title: "Caranguejo",
-    notes: ["C↓", "C↓", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E", "C↓", "C↓", "A", "A", "G", "G", "E", "G", "A", "G", "F", "E"],
-    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "ca", "ran", "gue", "jo", "pei", "xe", "é", "na", "va", "zi", "nha", "ni", "ma", "ré"],
-    description: "Música folclórica brasileira popular em brincadeiras infantis, com todos os versos."
+    notes: [
+      "D", "E", "G", "G", "F", "E", "A", "A", 
+      "D", "E", "F", "F", "E", "D", "G", 
+      "D", "E", "G", "G", "F", "E", "A", "C", "B", "A", "G", "F", "E", "D", "C",
+      "G", "G", "G", "G", "G", "G", "C", "C", "C", 
+      "D", "C", "B", "A", "C", "G", "G", "G", "A", "A", "B", "B", "C"
+    ],
+    lyrics: [
+      "Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", 
+      "ca", "ran", "gue", "jo", "pei", "xe", "é", 
+      "na", "va", "zi", "nha", "ni", "ma", "ré", "do", "mar", "a", "guar", "da", "do", 
+      "den", "tro", "den", "tro", "den", "tro", "den", "tro", "den", 
+      "tro", "do", "mar", "a", "gui", "lhão", "a", "gui", "lhão", "a", "gui", "lhão"
+    ],
+    description: "Música folclórica brasileira popular sobre o caranguejo, com versão atualizada de notas e letra."
   },
   {
     title: "Row, Row, Row Your Boat",
@@ -260,30 +271,6 @@ const songs = [
     notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓"],
     lyrics: ["Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio", "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha", "um", "ca", "chor", "ro", "au"],
     description: "Canção infantil educativa que apresenta os sons dos animais da fazenda."
-  },
-  {
-    title: "A Barata Diz Que Tem",
-    notes: ["E", "E", "F", "G", "G", "F", "E", "D", "E", "E", "F", "G", "G", "F", "E", "D", "D", "D", "E", "F", "E", "D", "C↓", "D", "E", "C↓"],
-    lyrics: ["A", "ba", "ra", "ta", "diz", "que", "tem", "se", "te", "sai", "as", "de", "fi", "ló", "é", "men", "ti", "ra", "da", "ba", "ra", "ta", "e", "la", "tem", "é"],
-    description: "Canção folclórica divertida que retrata as mentiras de uma barata sobre suas posses."
-  },
-  {
-    title: "Boi da Cara Preta",
-    notes: ["G", "G", "E", "C↓", "G", "G", "E", "C↓", "C↓", "C↓", "D", "E", "D", "C↓", "B", "A", "G"],
-    lyrics: ["Boi", "boi", "boi", "boi", "da", "ca", "ra", "pre", "ta", "pe", "ga", "es", "sa", "cri", "an", "ça", "que"],
-    description: "Cantiga de ninar tradicional brasileira, usada para acalmar crianças pequenas."
-  },
-  {
-    title: "Peixe Vivo",
-    notes: ["C↓", "E", "G", "C↓", "E", "G", "A", "G", "F", "E", "D", "C↓", "C↓", "E", "G", "C↓", "E", "G", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Co", "mo", "po", "de", "um", "pei", "xe", "vi", "vo", "vi", "ver", "foi", "da", "á", "gua", "cla", "ra", "co", "mo", "po", "de", "eu"],
-    description: "Canção folclórica brasileira que expressa sentimentos de saudade e pertencimento."
-  },
-  {
-    title: "Indiozinhos",
-    notes: ["E", "G", "C↓", "E", "G", "C↓", "E", "D", "C↓", "B", "A", "G", "E", "G", "C↓", "E", "G", "C↓", "E", "D", "C↓", "B", "A", "G"],
-    lyrics: ["Um", "dois", "três", "ín", "dios", "zi", "nhos", "qua", "tro", "cin", "co", "seis", "ín", "dios", "zi", "nhos", "se", "te", "oi", "to", "no", "ve", "ín", "dios"],
-    description: "Cantiga infantil que ensina os números de forma divertida, contando índios."
   },
   {
     title: "A Linda Rosa Juvenil",
