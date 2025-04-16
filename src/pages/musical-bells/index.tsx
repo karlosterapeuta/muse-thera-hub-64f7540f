@@ -239,8 +239,8 @@ const songs = [
   },
   {
     title: "Meu Lanchinho",
-    notes: ["C↓", "D", "E", "C↓", "C↓", "D", "E", "C↓", "E", "F", "G", "E", "F", "G", "C↓", "D", "E", "C↓", "C↓", "D", "E", "C↓"],
-    lyrics: ["Meu", "lan", "chi", "nho", "meu", "lan", "chi", "nho", "vou", "co", "mer", "pra", "fi", "car", "for", "ti", "nho", "e", "cres", "cer"],
+    notes: ["C↓", "D", "E", "C↓", "C↓", "D", "E", "C↓", "E", "F", "G", "E", "F", "G", "G", "A", "G", "F", "E", "C↓", "G", "A", "G", "F", "E", "C↓", "D", "G", "C↓"],
+    lyrics: ["Meu", "lan", "chi", "nho", "meu", "lan", "chi", "nho", "vou", "co", "mer", "pra", "fi", "car", "for", "ti", "nho", "e", "cres", "cer", "meu", "lan", "chi", "nho"],
     description: "Canção infantil brasileira cantada na hora do lanche escolar, com todos os versos."
   },
   {
