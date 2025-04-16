@@ -131,8 +131,16 @@ const songs = [
   },
   {
     title: "Eu Vi Uma Barata",
-    notes: ["C1", "C1", "D", "E", "C1", "E", "D", "C1", "C1", "D", "E", "C1", "C1", "C1", "D", "E", "C1", "E", "D", "C1", "C1", "D", "E", "C1"],
-    lyrics: ["Eu", "vi", "u", "ma", "ba", "ra", "ta", "na", "ca", "re", "ca", "do", "ve", "lho", "pa", "dre", "an", "tô", "nio", "sai", "ba", "ra", "ta", "dei"],
+    notes: [
+      "C1", "F", "E", "D", "C1", "D", "C1", "D", "C1", "D", "C1", "D", "E", "F",
+      "C1", "F", "E", "D", "C1", "D", "C1", "D", "C1", "D", "C1", "D", "E", "F",
+      "C1", "D", "E", "F", "F", "F", "C1", "D", "C1", "D", "D", "D", "C1", "G", "F", "E", "E", "E", "C1", "D", "E", "F", "F", "F"
+    ],
+    lyrics: [
+      "Eu", "vi", "u", "ma", "ba", "ra", "ta", "na", "ca", "re", "ca", "do", "ve", "lho",
+      "Eu", "vi", "u", "ma", "ba", "ra", "ta", "na", "ca", "re", "ca", "do", "ve", "lho",
+      "pa", "dre", "an", "tô", "nio", "sai", "ba", "ra", "ta", "dei", "a", "qui", "la", "ba", "ra", "ta", "dei", "a", "qui", "la", "ba", "ra", "ta", "dei"
+    ],
     description: "Canção infantil brasileira simples e divertida, com todos os versos."
   },
   {
