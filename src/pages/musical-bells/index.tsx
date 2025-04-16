@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", do", "E", "lí", "sio", 
+      "fi", "lha", "do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -64,7 +65,7 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C↓", "D", "E", "F", "G", "A", "B", "C↑", "B", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
