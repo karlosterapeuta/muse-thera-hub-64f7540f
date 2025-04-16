@@ -81,7 +81,7 @@ const songs = [
   {
     title: "Marcha Soldado",
     notes: ["G", "G", "E", "C1", "C1", "E", "G", "G", "E", "D", "F", "F", "F", "E", "D", "G", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel", "se", "não", "mar", "char", "di", "rei\", \"ti\", \"nho\", \"vai\", \"pre\", \"so\"],
+    lyrics: ["Mar", "cha", "sol", "da", "do", "ca", "be", "ça", "de", "pa", "pel", "se", "não", "mar", "char", "di", "rei", "ti", "nho", "vai", "pre", "so", "já"],
     description: "Canção infantil brasileira tradicional com todos os versos."
   },
   {
