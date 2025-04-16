@@ -145,8 +145,18 @@ const songs = [
   },
   {
     title: "Se Esta Rua Fosse Minha",
-    notes: ["C1", "E", "F", "G", "G", "F", "E", "D", "C1", "E", "G", "C1", "C1", "E", "F", "G", "G", "F", "E", "D", "C1", "E", "G", "C1", "G", "G", "A", "G", "F", "E", "D", "C1", "D", "E", "F"],
-    lyrics: ["Se", "es", "ta", "ru", "a", "fos", "se", "mi", "nha", "eu", "man", "da", "va", "la", "dri", "lhar", "com", "pe", "dri", "nhas", "de", "bri", "lhan", "te", "pa", "ra", "o", "meu", "a", "mor", "pas", "sar"],
+    notes: [
+      "E", "E", "A", "A", "E", "C", "A", "C", "G", "F", "E", "D", 
+      "E", "E", "B", "B", "F", "E", "F", "E", "C", "B", "A", 
+      "E", "E", "A", "A", "C", "B", "A", "G", "F", "E", "G", "F",
+      "F", "F", "E", "B", "F", "E", "D", "C", "B", "A"
+    ],
+    lyrics: [
+      "Se", "es", "ta", "ru", "a", "fos", "se", "mi", "nha", "eu", "man", "da", 
+      "la", "dri", "lhar", "com", "pe", "dri", "nhas", "de", "bri", "lhan", "te", 
+      "pa", "ra", "o", "meu", "a", "mor", "pas", "sar", 
+      "de", "ou", "tro", "mo", "do", "pa", "ra", "eu", "po", "der", "pas", "sar"
+    ],
     description: "Canção de ninar tradicional brasileira completa."
   },
   {
