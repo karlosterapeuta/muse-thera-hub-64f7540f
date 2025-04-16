@@ -100,9 +100,14 @@ const songs = [
     title: "Escravos de Jó",
     notes: ["C1", "B", "A", "G", "A", "G", "A", "G", "F", "E", "G", "E", "G", "E", "E", "E", "D", "C1", "G", "A", "G", "E", "G", "A", "G", "E", "G", "A", "G", "A", "B", "C1", "G", "A", "G", "E", "G", "A", "G", "E", "G", "A", "G", "A", "B", "C1"],
     lyrics: [
-      "Es", "cra", "vos", "de", "Jó", "jo", "ga", "vam", "ca", "xan", "gá", 
-      "ti", "ra", "ti", "ra", "bo", "ta", "dei", "xa", "fi", "car", 
-      "guer", "rei", "ros", "com", "guer", "rei", "ros", "fa", "zem"
+      "Es", "cra", "vos", "de", "Jó", 
+      "Jo", "ga", "vam", "ca", "xan", "gá", 
+      "Ti", "ra", "põe", 
+      "Dei", "xa", "o", "Zé", "Pei", "rei", "ra", "fi", "car", 
+      "Guer", "rei", "ros", "com", "guer", "rei", "ros", 
+      "Fa", "zem", "zi", "gue", "zi", "gue", "zá", 
+      "Guer", "rei", "ros", "com", "guer", "rei", "ros", 
+      "Fa", "zem", "zi", "gue", "zi", "gue", "zá"
     ],
     description: "Música folclórica brasileira usada em jogos infantis, com todos os versos."
   },
