@@ -66,12 +66,12 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C1", "D", "E", "F", "G", "A", "B", "C8", "B", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
     title: "Ciranda, Cirandinha",
-    notes: ["C1", "D", "E", "C1", "D", "E", "C1", "E", "D", "C1", "D", "E", "C1", "D", "D", "E", "F", "F", "E", "D", "C1"],
+    notes: ["G", "G", "E", "E", "G", "G", "E", "E", "E", "F", "G", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C1"],
     lyrics: ["Ci", "ran", "da", "ci", "ran", "di", "nha", "va", "mos", "to", "dos", "ci", "ran", "dar", "o", "a", "nel", "que", "tu", "me", "des", "te"],
     description: "Canção folclórica brasileira muito popular entre crianças, com versos completos."
   },
