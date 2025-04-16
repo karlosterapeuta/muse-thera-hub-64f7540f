@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import html2pdf from "html2pdf.js";
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 
 const notes = [
-  { note: "C↓", label: "Dó↓", color: "#FF0000", colorName: "VERMELHO" },    // Red - Low Dó
+  { note: "C↓", label: "Dó↓", color: "#FF0000", colorName: "VERMELHO" },    // Red - Low Dó (confirmed correct)
   { note: "D", label: "Ré", color: "#FF9933", colorName: "LARANJA" },      // Orange
   { note: "E", label: "Mi", color: "#FFFF00", colorName: "AMARELO" },      // Yellow
   { note: "F", label: "Fá", color: "#33CC33", colorName: "VERDE" },        // Green
