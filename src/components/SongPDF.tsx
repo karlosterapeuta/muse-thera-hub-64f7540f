@@ -5,6 +5,7 @@ interface Note {
   note: string;
   color: string;
   colorName: string;
+  label?: string;
 }
 
 interface Song {
@@ -91,7 +92,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: ["C8", "E"].includes(noteKey) ? '#333' : '#fff',
+                          color: noteData?.color === "#FFFFFF" ? '#333' : '#fff',
                           fontWeight: 'bold',
                           fontSize: '18px'
                         }}

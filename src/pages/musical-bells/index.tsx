@@ -16,6 +16,7 @@ const notes = [
   { note: "A", label: "Lá", color: "#0000FF", colorName: "AZUL" },         // Blue
   { note: "B", label: "Si", color: "#9933CC", colorName: "ROXO" },         // Purple
   { note: "C↑", label: "Dó↑", color: "#FF0000", colorName: "VERMELHO" },   // Red - High Dó
+  { note: "C", label: "Dó", color: "#FF0000", colorName: "VERMELHO" },     // Red - Regular Dó
 ];
 
 const songs = [
