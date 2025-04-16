@@ -41,8 +41,12 @@ const songs = [
   },
   {
     title: "Ode à Alegria",
-    notes: ["E", "E", "E", "F", "G", "G", "F", "E", "D", "D", "C1", "C1", "B", "B", "A", "G", "F", "E", "D", "C1", "G", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Ale", "gri", "a", "bri", "lhan", "te", "es", "pe", "ran", "ça", "di", "vi", "na", "luz", "e", "ter", "na", "ale", "gri", "a", "ale", "gri", "a", "di", "vi", "na", "luz", "e", "ter", "na"],
+    notes: ["E", "E", "E", "F", "G", "G", "F", "E", "D", "D", "C1", "C1", "B", "B", "A", "G", "F", "E", "D", "C1", "G", "G", "F", "A", "G", "F", "E", "D", "C1"],
+    lyrics: [
+      "Ale", "gri", "a", "bri", "lhan", "te", "di", "vi", "na", 
+      "luz", "es", "pe", "ran", "ça", "de", "u", "ma", 
+      "vi", "da", "me", "lhor", "fra", "ter", "na", "lei"
+    ],
     description: "Tema principal do 4º movimento da Nona Sinfonia de Beethoven, 'Ode à Alegria'."
   },
   {
@@ -492,16 +496,16 @@ export default function MusicalBells() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap justify-center items-center gap-4 mb-6">
-              {notes.map((note, index) => (
+              {notes.map(note => (
                 <div key={note.note} className="flex flex-col items-center gap-2">
                   <Button
                     onClick={() => playNote(note.note)}
                     className={`transition-all h-16 w-16 rounded-full text-white font-bold hover:scale-105 ${
-                      currentNoteIndex === index ? "scale-110 ring-4 ring-white" : ""
+                      currentNoteIndex === notes.findIndex(n => n.note === note.note) ? "scale-110 ring-4 ring-white" : ""
                     }`}
                     style={{ 
                       backgroundColor: note.color,
-                      boxShadow: `0 0 ${currentNoteIndex === index ? '20px' : '10px'} rgba(0,0,0,0.3)`,
+                      boxShadow: `0 0 ${currentNoteIndex === notes.findIndex(n => n.note === note.note) ? '20px' : '10px'} rgba(0,0,0,0.3)`,
                       color: ["C8", "E"].includes(note.note) ? "#333" : "white"
                     }}
                   >
