@@ -205,15 +205,15 @@ const songs = [
     notes: [
       "D", "E", "G", "G", "F", "E", "A", "A", 
       "D", "E", "F", "F", "E", "D", "G", 
-      "D", "E", "G", "G", "F", "E", "A", "C", "B", "A", "G", "F", "E", "D", "C",
-      "G", "G", "G", "G", "G", "G", "C", "C", "C", 
-      "D", "C", "B", "A", "C", "G", "G", "G", "A", "A", "B", "B", "C"
+      "D", "E", "G", "G", "F", "E", "A", "C↑", "B", "A", "G", "F", "E", "D", "C↓",
+      "G", "G", "G", "G", "G", "G", "C↑", "C↑", "C↑", 
+      "D", "C↑", "B", "A", "C↑", "G", "G", "G", "A", "A", "B", "B", "C↑"
     ],
     lyrics: [
       "Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", 
       "ca", "ran", "gue", "jo", "pei", "xe", "é", 
       "na", "va", "zi", "nha", "ni", "ma", "ré", "do", "mar", "a", "guar", "da", "do", 
-      "den", "tro", "den", "tro", "den", "tro", "den", "tro", "den", 
+      "den", "tro", "den", "tro", "den", "tro", "den", "tro", "den", "tro", "den", 
       "tro", "do", "mar", "a", "gui", "lhão", "a", "gui", "lhão", "a", "gui", "lhão"
     ],
     description: "Música folclórica brasileira popular sobre o caranguejo, com versão atualizada de notas e letra."
