@@ -71,9 +71,14 @@ const songs = [
   },
   {
     title: "Ciranda, Cirandinha",
-    notes: ["G", "G", "E", "E", "G", "G", "E", "E", "E", "F", "G", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C1"],
-    lyrics: ["Ci", "ran", "da", "ci", "ran", "di", "nha", "va", "mos", "to", "dos", "ci", "ran", "dar", "o", "a", "nel", "que", "tu", "me", "des", "te"],
-    description: "Canção folclórica brasileira muito popular entre crianças, com versos completos."
+    notes: ["G", "G", "A", "G", "F", "E", "D", "D", "G", "G", "A", "G", "F", "E", "D", "C1", "G", "A", "G", "F", "E", "D", "G", "G", "A", "G", "F", "E", "D"],
+    lyrics: [
+      "Ci", "ran", "da", "ci", "ran", "di", "nha", "vá", "mos", 
+      "to", "dos", "ci", "ran", "dar", "em", "ro", "da", 
+      "vol", "ta", "e", "vol", "ta", "o", "a", "nel", 
+      "que", "tu", "me", "des", "te"
+    ],
+    description: "Canção folclórica brasileira tradicional de roda, com letra e melodia completas."
   },
   {
     title: "Marcha Soldado",
@@ -193,7 +198,7 @@ const songs = [
     title: "Sapo Cururu",
     notes: ["C1", "D", "E", "G", "C1", "D", "E", "G", "E", "F", "G", "A", "G", "F", "E", "D", "C1", "D", "E", "G", "C1", "D", "E", "G"],
     lyrics: ["Sa", "po", "cu", "ru", "ru", "na", "bei", "ra", "do", "ri", "o", "quan", "do", "o", "sa", "po", "can", "ta", "ó", "ma", "na", "é", "por", "que"],
-    description: "Canção folclórica brasileira sobre um sapo à beira do rio. Popular entre crianças."
+    description: "Canção tradicional das festas juninas no Brasil, popular entre crianças."
   },
   {
     title: "O Sítio do Seu Lobato",
