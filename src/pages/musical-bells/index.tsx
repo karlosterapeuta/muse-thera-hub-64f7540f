@@ -26,6 +26,30 @@ const songs = [
     description: "Uma canção infantil clássica, também conhecida como 'Twinkle Twinkle Little Star', com todas as estrofes completas."
   },
   {
+    title: "Ciranda, Cirandinha",
+    notes: ["C↓", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C↓"],
+    lyrics: ["Ci", "ran", "da", "ci", "ran", "di", "nha", "va", "mos", "to", "dos", "já"],
+    description: "Uma das cantigas de roda mais populares do Brasil."
+  },
+  {
+    title: "O Sapo Não Lava o Pé",
+    notes: ["C↓", "G", "E", "A", "F", "D", "G", "C↓"],
+    lyrics: ["O", "sa", "po", "não", "la", "va", "o", "pé"],
+    description: "Uma divertida cantiga infantil brasileira."
+  },
+  {
+    title: "Marcha Soldado",
+    notes: ["C↓", "C↓", "G", "G", "E", "E", "C↓"],
+    lyrics: ["Mar", "cha", "sol", "da", "di", "nho"],
+    description: "Uma tradicional cantiga de marcha infantil."
+  },
+  {
+    title: "Atirei o Pau no Gato",
+    notes: ["C↓", "D", "E", "F", "G", "G", "A", "G", "F", "E", "D", "C↓"],
+    lyrics: ["A", "ti", "rei", "o", "pau", "no", "ga", "to", "to", "mas", "o", "ga"],
+    description: "Uma cantiga de roda tradicional brasileira."
+  },
+  {
     title: "Parabéns a Você",
     notes: ["C↓", "C↓", "D", "C↓", "F", "E", "C↓", "C↓", "D", "C↓", "G", "F", "C↓", "C↓", "C↑", "A", "F", "E", "D", "C↓", "D", "E", "F", "F", "E", "D", "C↓"],
     lyrics: ["Pa", "ra", "béns", "a", "vo", "cê", "nes", "ta", "da", "ta", "que", "ri", "da", "mui", "tas", "fe", "li", "ci", "da", "des", "mui", "tos", "a", "nos", "de", "vi", "da"],
@@ -67,6 +91,24 @@ const songs = [
     lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
+  {
+    title: "Caranguejo",
+    notes: ["C↓", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C↓"],
+    lyrics: ["Ca", "ran", "gue", "jo", "não", "é", "pei", "xe", "xe", "xe"],
+    description: "Uma divertida cantiga de roda sobre um caranguejo."
+  },
+  {
+    title: "A Barata Diz Que Tem",
+    notes: ["C↓", "D", "E", "F", "G", "G", "F", "E", "D", "C↓"],
+    lyrics: ["A", "ba", "ra", "ta", "diz", "que", "tem", "se", "te", "saias"],
+    description: "Uma cantiga infantil brasileira sobre uma barata mentirosa."
+  },
+  {
+    title: "O Cravo e a Rosa",
+    notes: ["C↓", "D", "E", "F", "G", "A", "G", "F", "E", "D", "C↓"],
+    lyrics: ["O", "cra", "vo", "bri", "gou", "com", "a", "ro", "sa"],
+    description: "Uma linda cantiga de roda sobre o amor entre um cravo e uma rosa."
+  }
 ];
 
 const MusicalBells: React.FC = () => {
