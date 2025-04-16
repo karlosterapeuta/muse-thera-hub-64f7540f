@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,7 @@ const songs = [
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", "do", "E", "lí", "sio", 
+      "fi", "lha", do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -65,7 +64,7 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C↓", "D", "E", "F", "G", "A", "B", "C↑", "B", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
@@ -179,8 +178,26 @@ const songs = [
   },
   {
     title: "Atirei o Pau no Gato",
-    notes: ["G", "E", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C↓", "G", "E", "E", "F", "G", "G", "G", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["A", "ti", "rei", "o", "pau", "no", "ga", "to", "to", "mas", "o", "ga", "to", "não", "mor", "reu", "reu", "reu", "do", "na", "chi", "ca", "ca", "ad", "mi", "rou"],
+    notes: [
+      "G", "F", "E", "D", "E", "F", "G", "G", "G", 
+      "A", "G", "F", 
+      "F", "F", "G", "F", "E", 
+      "E", "E", 
+      "C↓", "C↓", "A", "A", "A", "B", "A", "G", "G", "G",
+      "E", "F", "G", 
+      "E", "F", "G", 
+      "E", "F", "G", "F", "E", "D", "C↓"
+    ],
+    lyrics: [
+      "A", "ti", "rei", "o", "pau", "no", "ga", "to", "to", 
+      "mas", "o", "ga", "to", 
+      "não", "mor", "reu", "reu", "reu", 
+      "do", "na", 
+      "chi", "ca", "ca", "ad", "mi", "rou", "não", "mor", 
+      "pe", "lo", "pau", 
+      "que", "le", "vou", 
+      "ó", "ca", "i", "ca", "i", "ca", "i"
+    ],
     description: "Canção infantil tradicional brasileira, com todos os versos."
   },
   {
