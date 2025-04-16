@@ -86,7 +86,7 @@ const songs = [
   },
   {
     title: "O Sapo Não Lava o Pé",
-    notes: ["G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G", "G", "A", "G", "F", "E", "F", "G"],
+    notes: ["G", "C1", "C1", "G", "A", "G", "E", "G", "C1", "C1", "G", "A", "G", "F", "G", "B", "B", "G", "A", "G", "B", "B", "G", "A", "G", "B", "G", "A", "B", "C1"],
     lyrics: ["O", "sa", "po", "não", "la", "va", "o", "pé", "não", "la", "va", "por", "que", "não", "e", "le", "mo", "ra", "lá", "na", "la", "go", "a", "não", "la", "va", "o", "pé"],
     description: "Canção infantil brasileira divertida e educativa, com todos os versos."
   },
