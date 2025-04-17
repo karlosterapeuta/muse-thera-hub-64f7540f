@@ -22,20 +22,40 @@ const WordTracker = () => {
   
   // Load saved words from localStorage on component mount
   useEffect(() => {
-    const savedWords = localStorage.getItem('trackedWords');
-    if (savedWords) {
-      try {
-        setWords(JSON.parse(savedWords));
-      } catch (error) {
-        console.error('Error loading saved words:', error);
+    try {
+      const savedWords = localStorage.getItem('trackedWords');
+      if (savedWords) {
+        const parsedWords = JSON.parse(savedWords);
+        // Validate the parsed data
+        if (Array.isArray(parsedWords)) {
+          // Convert string dates back to Date objects
+          const processedWords = parsedWords.map(word => ({
+            ...word,
+            lastAttempt: word.lastAttempt ? new Date(word.lastAttempt) : undefined
+          }));
+          setWords(processedWords);
+        }
       }
+    } catch (error) {
+      console.error('Error loading saved words:', error);
+      // If there's an error, start with an empty array
+      setWords([]);
     }
   }, []);
   
   // Save words to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('trackedWords', JSON.stringify(words));
-  }, [words]);
+    try {
+      localStorage.setItem('trackedWords', JSON.stringify(words));
+    } catch (error) {
+      console.error('Error saving words to localStorage:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar suas palavras.",
+        variant: "destructive",
+      });
+    }
+  }, [words, toast]);
 
   const addWord = () => {
     if (newWord.trim()) {
@@ -68,7 +88,7 @@ const WordTracker = () => {
         : word
     ));
     
-    const wordText = words[index].text;
+    const wordText = words[index]?.text || '';
     
     playRewardSound('success');
     

@@ -17,12 +17,24 @@ const REWARD_NOTES = {
 export const playRewardSound = (type: RewardSound) => {
   const notes = REWARD_NOTES[type];
   
+  // Ensure we actually have notes to play
+  if (!notes || notes.length === 0) {
+    console.error(`No notes defined for reward type: ${type}`);
+    return;
+  }
+  
+  // Play each note in sequence with a delay
   notes.forEach((note, index) => {
     setTimeout(() => {
       try {
-        playNoteSound(note);
+        // Verify the note exists before playing
+        if (note) {
+          playNoteSound(note);
+        } else {
+          console.error(`Invalid note at index ${index} for ${type}`);
+        }
       } catch (error) {
-        console.error(`Error playing ${type} sound:`, error);
+        console.error(`Error playing ${type} sound at index ${index}:`, error);
       }
     }, index * 200); // Play each note with a 200ms delay
   });

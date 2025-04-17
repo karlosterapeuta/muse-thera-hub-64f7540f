@@ -35,26 +35,37 @@ export default function SpeechDetector({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const lastVocalizationRef = useRef<number>(0);
   
-  // Initialize audio analyzer
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      stopListening();
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, []);
 
   const startListening = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop any previous listening sessions
+      stopListening();
+      
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: { 
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
       streamRef.current = stream;
       
-      const audioContext = new AudioContext();
+      // Create audio context and analyzer
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
       
       const analyser = audioContext.createAnalyser();
@@ -64,12 +75,15 @@ export default function SpeechDetector({
       const microphone = audioContext.createMediaStreamSource(stream);
       microphone.connect(analyser);
       
+      // Update state
       setIsListening(true);
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
+      // Start analyzing audio
       analyzeAudio();
       
+      // Set timeout for auto stop
       if (autoStop) {
         timeoutRef.current = setTimeout(() => {
           stopListening();
@@ -92,16 +106,34 @@ export default function SpeechDetector({
   };
 
   const stopListening = () => {
+    // Stop the microphone stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     
+    // Clear the timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
     
+    // Cancel animation frame
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
+    // Close audio context
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try {
+        audioContextRef.current.close();
+      } catch (e) {
+        console.error("Error closing audio context:", e);
+      }
+    }
+    
+    // Reset state
     setIsListening(false);
     setVolume(0);
   };
@@ -178,7 +210,7 @@ export default function SpeechDetector({
     }
     
     // Continue monitoring
-    requestAnimationFrame(analyzeAudio);
+    animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   };
 
   // Countdown timer
