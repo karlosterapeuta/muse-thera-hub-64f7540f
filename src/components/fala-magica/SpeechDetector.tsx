@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Music, Sparkles } from "lucide-react";
@@ -8,6 +7,7 @@ import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import { motion, AnimatePresence } from "framer-motion";
 import { playRewardSound } from "@/utils/soundRewards";
+import SpeechCanvas from './SpeechCanvas';
 
 interface SpeechDetectorProps {
   onVocalization: () => void;
@@ -38,7 +38,6 @@ export default function SpeechDetector({
   const animationFrameRef = useRef<number | null>(null);
   const lastVocalizationRef = useRef<number>(0);
   
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopListening();
@@ -50,10 +49,8 @@ export default function SpeechDetector({
 
   const startListening = async () => {
     try {
-      // Stop any previous listening sessions
       stopListening();
       
-      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: true,
@@ -63,7 +60,6 @@ export default function SpeechDetector({
       });
       streamRef.current = stream;
       
-      // Create audio context and analyzer
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
@@ -75,15 +71,12 @@ export default function SpeechDetector({
       const microphone = audioContext.createMediaStreamSource(stream);
       microphone.connect(analyser);
       
-      // Update state
       setIsListening(true);
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
-      // Start analyzing audio
       analyzeAudio();
       
-      // Set timeout for auto stop
       if (autoStop) {
         timeoutRef.current = setTimeout(() => {
           stopListening();
@@ -106,25 +99,21 @@ export default function SpeechDetector({
   };
 
   const stopListening = () => {
-    // Stop the microphone stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     
-    // Clear the timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
     
-    // Cancel animation frame
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
     
-    // Close audio context
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       try {
         audioContextRef.current.close();
@@ -133,7 +122,6 @@ export default function SpeechDetector({
       }
     }
     
-    // Reset state
     setIsListening(false);
     setVolume(0);
   };
@@ -145,7 +133,6 @@ export default function SpeechDetector({
     
     setRecentStars(prev => [...prev, { id: starId, x, y }]);
     
-    // Remove star after animation
     setTimeout(() => {
       setRecentStars(prev => prev.filter(star => star.id !== starId));
     }, 2000);
@@ -155,16 +142,15 @@ export default function SpeechDetector({
     const now = Date.now();
     const timeSinceLastVocalization = now - lastVocalizationRef.current;
     
-    // Only trigger if more than 500ms has passed since last vocalization
     if (timeSinceLastVocalization < 500) return;
     
     lastVocalizationRef.current = now;
     
-    // Increment consecutive vocalizations
+    (window as any).addShapeToCanvas?.();
+    
     setConsecutiveVocalizations(prev => {
       const newCount = prev + 1;
       
-      // Different rewards based on consecutive vocalizations
       if (newCount === 3) {
         playRewardSound('levelUp');
         toast({
@@ -188,7 +174,6 @@ export default function SpeechDetector({
     addStar();
     onVocalization();
     
-    // Reset confetti after animation
     setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
@@ -200,20 +185,16 @@ export default function SpeechDetector({
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Calculate average volume from frequency data
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
     
-    // Check if volume exceeds threshold for vocalization
     if (average > sensitivity) {
       triggerVocalization();
     }
     
-    // Continue monitoring
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   };
 
-  // Countdown timer
   useEffect(() => {
     if (isListening && autoStop && timeLeft > 0) {
       const interval = setInterval(() => {
@@ -249,6 +230,10 @@ export default function SpeechDetector({
           Detector de Fala
           <Sparkles className="text-yellow-500" />
         </h3>
+        
+        <div className="w-full max-w-md mx-auto">
+          <SpeechCanvas width={400} height={300} />
+        </div>
         
         <div className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative">
           <motion.div 
