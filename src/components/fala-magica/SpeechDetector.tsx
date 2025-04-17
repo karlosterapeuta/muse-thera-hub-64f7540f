@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Volume2, Star, Sparkles } from "lucide-react";
+import { Mic, MicOff, Volume2, Star, Sparkles, Music, Bird } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import Confetti from 'react-confetti';
@@ -85,14 +85,14 @@ export default function SpeechDetector({
       }
       
       toast({
-        title: "🎤 Microfone ativado!",
-        description: "Tente fazer qualquer som! Vamos brincar juntos!",
+        title: "🎤 Vamos começar nossa aventura sonora!",
+        description: "Faça qualquer som! Pode ser 'Aaaa', 'Mmmm' ou o que você quiser!",
       });
     } catch (error) {
       console.error("Error accessing microphone:", error);
       toast({
-        title: "❌ Erro no microfone",
-        description: "Verifique se você permitiu o acesso ao microfone.",
+        title: "❌ Ops! Não consigo ouvir você",
+        description: "Por favor, permita o acesso ao microfone para brincarmos juntos!",
         variant: "destructive",
       });
     }
@@ -204,26 +204,42 @@ export default function SpeechDetector({
       
       <div className="flex flex-col items-center space-y-6">
         <h3 className="text-2xl font-bold text-purple-700 flex items-center gap-2">
-          <Sparkles className="text-yellow-500" />
-          Detector de Sons Mágico
-          <Sparkles className="text-yellow-500" />
+          <Bird className="text-blue-500" />
+          Vamos Fazer Sons Juntos!
+          <Music className="text-pink-500" />
         </h3>
         
         <div className="w-full max-w-md mx-auto mb-6">
           <SpeechCanvas width={400} height={300} />
         </div>
         
-        <div className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative">
+        <motion.div 
+          className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative"
+          animate={isListening ? {
+            scale: [1, 1.05, 1],
+            boxShadow: [
+              "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
+              "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+            ]
+          } : {}}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
           <motion.div 
             className={`w-32 h-32 rounded-full flex items-center justify-center transition-colors ${
               isListening ? 'bg-purple-500' : 'bg-gray-200'
             }`}
-            animate={{
-              scale: isListening ? [1, 1.1, 1] : 1,
-            }}
+            animate={isListening ? {
+              scale: [1, 1.1, 1],
+              rotate: [0, 5, -5, 0]
+            } : {}}
             transition={{
               duration: 2,
-              repeat: isListening ? Infinity : 0,
+              repeat: Infinity,
               ease: "easeInOut"
             }}
           >
@@ -242,32 +258,41 @@ export default function SpeechDetector({
           {isListening && consecutiveVocalizations > 0 && (
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
               className="absolute -top-2 -right-2 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-lg"
             >
               {consecutiveVocalizations}
             </motion.div>
           )}
-        </div>
+        </motion.div>
         
         {isListening && (
           <div className="w-full space-y-2">
             <div className="flex items-center justify-between">
               <Volume2 className={volume > sensitivity ? 'text-green-500' : 'text-purple-500'} />
-              <span className={`font-medium ${volume > sensitivity ? 'text-green-600' : 'text-purple-700'}`}>
+              <motion.span 
+                className={`font-medium ${volume > sensitivity ? 'text-green-600' : 'text-purple-700'}`}
+                animate={volume > sensitivity ? { scale: [1, 1.2, 1] } : {}}
+              >
                 {Math.round(volume)}
-              </span>
+              </motion.span>
             </div>
             <Progress value={volume} max={100} className="h-4" />
           </div>
         )}
         
         {consecutiveVocalizations > 0 && (
-          <div className="text-center bg-purple-50 px-4 py-2 rounded-full">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center bg-purple-50 px-4 py-2 rounded-full"
+          >
             <p className="text-sm text-purple-600 font-medium">
-              {consecutiveVocalizations} {consecutiveVocalizations === 1 ? 'som' : 'sons'} detectados! Continue assim!
+              {consecutiveVocalizations === 1 
+                ? "Uau! Que som legal! Vamos fazer outro?" 
+                : `Incrível! Você já fez ${consecutiveVocalizations} sons! Continue assim!`}
             </p>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
