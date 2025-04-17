@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +13,8 @@ import SpeechDetector from "@/components/fala-magica/SpeechDetector";
 import PDFViewer from "@/components/fala-magica/PDFViewer";
 import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
+import WordTracker from "@/components/fala-magica/WordTracker";
+import SessionControl from "@/components/fala-magica/SessionControl";
 
 import MagicalGuide from "@/components/fala-magica/MagicalGuide";
 
