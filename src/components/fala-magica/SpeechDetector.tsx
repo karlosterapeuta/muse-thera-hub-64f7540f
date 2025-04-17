@@ -29,6 +29,7 @@ export default function SpeechDetector({
   const [showConfetti, setShowConfetti] = useState(false);
   const [consecutiveVocalizations, setConsecutiveVocalizations] = useState(0);
   const [recentStars, setRecentStars] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [micError, setMicError] = useState<string | null>(null);
   const { width, height } = useWindowSize();
   const { toast } = useToast();
   
@@ -51,7 +52,9 @@ export default function SpeechDetector({
   const startListening = async () => {
     try {
       stopListening();
+      setMicError(null);
       
+      console.log("Requesting microphone access...");
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: true,
@@ -60,22 +63,34 @@ export default function SpeechDetector({
         } 
       });
       
+      console.log("Microphone access granted!");
       streamRef.current = stream;
       
+      // Make sure we're using correct audio context class
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      audioContextRef.current = new AudioContextClass();
+      if (!AudioContextClass) {
+        throw new Error("AudioContext not supported in this browser");
+      }
       
+      audioContextRef.current = new AudioContextClass();
+      console.log("AudioContext created");
+      
+      // Create and configure analyser
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.5;
       
+      // Connect mic to analyser
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
       microphone.connect(analyser);
+      console.log("Microphone connected to analyser");
       
       setIsListening(true);
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
+      // Start analyzing audio
       analyzeAudio();
       
       if (autoStop) {
@@ -90,6 +105,9 @@ export default function SpeechDetector({
       });
     } catch (error) {
       console.error("Error accessing microphone:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      setMicError(`Erro de microfone: ${errorMessage}`);
+      
       toast({
         title: "❌ Ops! Não consigo ouvir você",
         description: "Por favor, permita o acesso ao microfone para brincarmos juntos!",
@@ -99,8 +117,13 @@ export default function SpeechDetector({
   };
 
   const stopListening = () => {
+    console.log("Stopping listening...");
+    
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        console.log("Stopping track:", track.kind);
+        track.stop();
+      });
       streamRef.current = null;
     }
     
@@ -110,12 +133,17 @@ export default function SpeechDetector({
     
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
     
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      audioContextRef.current.close().catch(err => {
+        console.error("Error closing audio context:", err);
+      });
+      audioContextRef.current = null;
     }
     
+    analyserRef.current = null;
     setIsListening(false);
     setVolume(0);
   };
@@ -154,19 +182,27 @@ export default function SpeechDetector({
     addStar();
     onVocalization();
     
+    console.log("Vocalization triggered! Volume level:", volume);
+    
     setTimeout(() => setShowConfetti(false), 3000);
   };
 
   const analyzeAudio = () => {
-    if (!isListening || !analyserRef.current) return;
+    if (!isListening || !analyserRef.current) {
+      return;
+    }
     
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
+    // Calculate volume from frequency data
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
     
+    console.log("Current volume:", average, "Threshold:", sensitivity);
+    
     if (average > sensitivity) {
+      console.log("Volume threshold exceeded!");
       triggerVocalization();
     }
     
@@ -212,6 +248,15 @@ export default function SpeechDetector({
         <div className="w-full max-w-md mx-auto mb-6">
           <SpeechCanvas width={400} height={300} />
         </div>
+        
+        {micError && (
+          <div className="w-full p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-3">
+            <p className="font-medium">Problema com o microfone:</p>
+            <p>{micError}</p>
+            <p className="mt-2 text-xs">Dicas: Verifique se seu navegador tem permissão para acessar o microfone. 
+            Tente atualizar a página ou usar outro navegador como Chrome.</p>
+          </div>
+        )}
         
         <motion.div 
           className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative"
