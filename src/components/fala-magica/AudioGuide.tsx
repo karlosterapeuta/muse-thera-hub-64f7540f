@@ -13,7 +13,7 @@ import {
   Repeat,
   Music,
 } from "lucide-react";
-import { Howl } from "howler";
+import { Howl, HowlOptions } from "howler";
 import { GuidedAudio } from "./types";
 
 interface AudioGuideProps {
