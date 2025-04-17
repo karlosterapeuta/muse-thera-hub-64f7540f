@@ -1,4 +1,3 @@
-
 export interface InteractivePDF {
   id: string;
   title: string;
@@ -24,8 +23,18 @@ export interface GuidedAudio {
   audioUrl: string;
   thumbnailUrl?: string;
   voiceType: 'adulto' | 'infantil' | 'personalizado';
+  category: 'palavras' | 'frases' | 'musicas' | 'historias';
+  tags: string[];
   duration: number;
+  hasBackgroundMusic: boolean;
+  therapistId?: string;
   createdAt: Date;
+  metadata?: {
+    bpm?: number;
+    key?: string;
+    words?: string[];
+    difficulty?: 'facil' | 'medio' | 'avancado';
+  };
 }
 
 export interface Reward {

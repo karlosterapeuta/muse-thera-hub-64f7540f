@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -32,7 +31,6 @@ export default function AudioGuide({ audio, onComplete }: AudioGuideProps) {
   const soundRef = useRef<Howl | null>(null);
   
   useEffect(() => {
-    // Create a new Howl instance
     const sound = new Howl({
       src: [audio.audioUrl],
       html5: true,
@@ -71,7 +69,6 @@ export default function AudioGuide({ audio, onComplete }: AudioGuideProps) {
     };
   }, [audio.audioUrl, volume, isMuted, isRepeat, onComplete]);
   
-  // Update progress while playing
   const updateProgress = () => {
     if (soundRef.current && isPlaying) {
       const time = soundRef.current.seek();
@@ -140,7 +137,19 @@ export default function AudioGuide({ audio, onComplete }: AudioGuideProps) {
         <div>
           <h3 className="text-xl font-bold text-purple-700">{audio.title}</h3>
           <p className="text-sm text-gray-600">{audio.description}</p>
-          <p className="text-xs text-gray-500">Voz: {audio.voiceType}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">
+              {audio.voiceType}
+            </span>
+            <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full">
+              {audio.category}
+            </span>
+            {audio.hasBackgroundMusic && (
+              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full">
+                Música de Fundo
+              </span>
+            )}
+          </div>
         </div>
       </div>
       
