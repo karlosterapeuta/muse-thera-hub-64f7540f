@@ -133,7 +133,7 @@ export default function SongsPage() {
   const [youtubeSongs, setYoutubeSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingYoutube, setIsSearchingYoutube] = useState(false);
-  const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs'>('traditionalSongs');
+  const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs'>('youtubeSongs');
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [preloadedSongs, setPreloadedSongs] = useState<{[id: number]: HTMLAudioElement}>({});
@@ -838,6 +838,34 @@ export default function SongsPage() {
           <CardDescription className={`${isMobile ? "text-2xl" : "text-xl"} text-gray-300`}>
             Repertório de músicas para sessões de musicoterapia
           </CardDescription>
+          
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs')} 
+            className="mt-6"
+          >
+            <TabsList className="grid w-full grid-cols-3 bg-[#2A2A2A] p-1 rounded-full">
+              <TabsTrigger 
+                value="traditionalSongs" 
+                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
+              >
+                Músicas Tradicionais
+              </TabsTrigger>
+              <TabsTrigger 
+                value="jamendoSongs" 
+                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
+              >
+                Músicas Relaxantes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="youtubeSongs" 
+                className="rounded-full data-[state=active]:bg-[#ff0000] data-[state=active]:text-white"
+              >
+                YouTube
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
           <div className="relative mt-6">
             <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
               <Search size={24} />
@@ -872,33 +900,6 @@ export default function SongsPage() {
               </Button>
             </form>
           )}
-          
-          <Tabs 
-            value={activeTab} 
-            onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs')} 
-            className="mt-6"
-          >
-            <TabsList className="grid w-full grid-cols-3 bg-[#2A2A2A] p-1 rounded-full">
-              <TabsTrigger 
-                value="traditionalSongs" 
-                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
-              >
-                Músicas Tradicionais
-              </TabsTrigger>
-              <TabsTrigger 
-                value="jamendoSongs" 
-                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
-              >
-                Músicas Relaxantes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="youtubeSongs" 
-                className="rounded-full data-[state=active]:bg-[#ff0000] data-[state=active]:text-white"
-              >
-                YouTube
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
         </CardHeader>
         
         {currentSong && (
@@ -1137,7 +1138,10 @@ export default function SongsPage() {
                       }
                     </div>
                   ) : (
-                    filteredYoutubeSongs.map((song) => (
+                    youtubeSongs.filter(song => 
+                      song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                      song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+                    ).map((song) => (
                       <div
                         key={song.id}
                         className={`p-3 hover:bg-[#282828] transition-colors cursor-pointer rounded-md flex justify-between items-center group ${
