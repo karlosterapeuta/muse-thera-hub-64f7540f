@@ -66,7 +66,10 @@ const mockAudios: GuidedAudio[] = [
     audioUrl: "#",
     thumbnailUrl: "https://placehold.co/200x150?text=Audio+1",
     voiceType: "infantil",
+    category: "palavras",
+    tags: ["animais", "melodia", "infantil"],
     duration: 120,
+    hasBackgroundMusic: true,
     createdAt: new Date()
   },
   {
@@ -76,7 +79,10 @@ const mockAudios: GuidedAudio[] = [
     audioUrl: "#",
     thumbnailUrl: "https://placehold.co/200x150?text=Audio+2",
     voiceType: "adulto",
+    category: "frases",
+    tags: ["casa", "objetos"],
     duration: 90,
+    hasBackgroundMusic: false,
     createdAt: new Date()
   }
 ];
