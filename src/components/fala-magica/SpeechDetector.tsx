@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Sparkles, Music, Bird } from "lucide-react";
@@ -30,6 +29,8 @@ export default function SpeechDetector({
   const [consecutiveVocalizations, setConsecutiveVocalizations] = useState(0);
   const [recentStars, setRecentStars] = useState<{ id: number; x: number; y: number }[]>([]);
   const [micError, setMicError] = useState<string | null>(null);
+  const [soundDetected, setSoundDetected] = useState(false);
+  const [maxVolume, setMaxVolume] = useState(0);
   const { width, height } = useWindowSize();
   const { toast } = useToast();
   
@@ -66,7 +67,6 @@ export default function SpeechDetector({
       console.log("Microphone access granted!");
       streamRef.current = stream;
       
-      // Make sure we're using correct audio context class
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) {
         throw new Error("AudioContext not supported in this browser");
@@ -75,13 +75,11 @@ export default function SpeechDetector({
       audioContextRef.current = new AudioContextClass();
       console.log("AudioContext created");
       
-      // Create and configure analyser
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
       analyser.smoothingTimeConstant = 0.5;
       
-      // Connect mic to analyser
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
       microphone.connect(analyser);
       console.log("Microphone connected to analyser");
@@ -90,7 +88,6 @@ export default function SpeechDetector({
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
-      // Start analyzing audio
       analyzeAudio();
       
       if (autoStop) {
@@ -195,15 +192,25 @@ export default function SpeechDetector({
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Calculate volume from frequency data
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
     
-    console.log("Current volume:", average, "Threshold:", sensitivity);
+    setMaxVolume(prevMax => Math.max(prevMax, average));
     
     if (average > sensitivity) {
-      console.log("Volume threshold exceeded!");
-      triggerVocalization();
+      setSoundDetected(true);
+      
+      if (typeof (window as any).addShapeToCanvas === 'function') {
+        (window as any).addShapeToCanvas();
+      }
+      
+      const now = Date.now();
+      if (now - lastVocalizationRef.current > 500) {
+        triggerVocalization();
+        lastVocalizationRef.current = now;
+      }
+    } else {
+      setSoundDetected(false);
     }
     
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
@@ -312,17 +319,29 @@ export default function SpeechDetector({
         </motion.div>
         
         {isListening && (
-          <div className="w-full space-y-2">
+          <div className="w-full space-y-4">
             <div className="flex items-center justify-between">
-              <Volume2 className={volume > sensitivity ? 'text-green-500' : 'text-purple-500'} />
-              <motion.span 
-                className={`font-medium ${volume > sensitivity ? 'text-green-600' : 'text-purple-700'}`}
-                animate={volume > sensitivity ? { scale: [1, 1.2, 1] } : {}}
-              >
-                {Math.round(volume)}
-              </motion.span>
+              <div className="flex items-center space-x-2">
+                <Volume2 className={`${soundDetected ? 'text-green-500 animate-pulse' : 'text-purple-500'}`} />
+                <motion.span 
+                  className={`font-medium ${soundDetected ? 'text-green-600' : 'text-purple-700'}`}
+                  animate={soundDetected ? { scale: [1, 1.2, 1] } : {}}
+                >
+                  Volume: {Math.round(volume)} | Máximo: {Math.round(maxVolume)}
+                </motion.span>
+              </div>
+              {soundDetected && (
+                <div className="text-green-600 font-medium flex items-center space-x-2">
+                  <Sparkles className="w-5 h-5 text-green-500" />
+                  Som detectado!
+                </div>
+              )}
             </div>
-            <Progress value={volume} max={100} className="h-4" />
+            <Progress 
+              value={volume} 
+              max={100} 
+              className={`h-4 ${soundDetected ? 'border-2 border-green-500' : ''}`} 
+            />
           </div>
         )}
         
