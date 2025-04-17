@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,7 +18,6 @@ interface Song {
   fallbackUrls?: string[];
 }
 
-// Lista confiável de URLs para músicas tradicionais (serviços estáveis)
 const traditionalSongUrls = [
   "https://assets.mixkit.co/music/preview/mixkit-sweet-and-sour-keys-846.mp3",
   "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3",
@@ -38,7 +36,6 @@ const traditionalSongUrls = [
   "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
 ];
 
-// URLs de fallback adicionais para garantir disponibilidade
 const fallbackSongUrls = [
   "https://file-examples.com/storage/fe03845071696b0f59a7ee1/2017/11/file_example_MP3_700KB.mp3",
   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
@@ -48,7 +45,6 @@ const fallbackSongUrls = [
   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
 ];
 
-// Ambientes sonoros (serviço mais estável)
 const musicApiEndpoints = [
   "https://assets.mixkit.co/sfx/download/mixkit-rain-ambience-light-1252.mp3",
   "https://assets.mixkit.co/sfx/download/mixkit-sea-waves-ambience-1189.mp3",
@@ -62,11 +58,10 @@ const musicApiEndpoints = [
   "https://assets.mixkit.co/sfx/download/mixkit-crickets-and-insects-in-the-wild-ambience-58.mp3",
 ];
 
-// Função para verificar se uma URL é acessível
 const checkAudioUrl = async (url: string): Promise<boolean> => {
   try {
     const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-    return true; // No CORS não podemos verificar o status, então assumimos que está ok
+    return true;
   } catch (error) {
     console.error(`URL inacessível: ${url}`, error);
     return false;
@@ -74,7 +69,6 @@ const checkAudioUrl = async (url: string): Promise<boolean> => {
 };
 
 export default function SongsPage() {
-  // Criar músicas com URLs principais e URLs de fallback
   const songs: Song[] = [
     { id: 1, title: "Atirei o Pau no Gato", artist: "Tradicional" },
     { id: 2, title: "Sapo Cururu", artist: "Tradicional" },
@@ -154,7 +148,30 @@ export default function SongsPage() {
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Precarregar algumas músicas para melhorar a experiência do usuário
+  const nextSong = useCallback(() => {
+    if (!currentSong) return;
+    
+    const currentList = activeTab === 'traditionalSongs' 
+      ? filteredTraditionalSongs 
+      : filteredJamendoSongs;
+    
+    if (currentList.length === 0) return;
+    
+    if (isShuffle) {
+      const randomIndex = Math.floor(Math.random() * currentList.length);
+      playSong(currentList[randomIndex]);
+      return;
+    }
+    
+    const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
+    
+    if (currentIndex !== -1 && currentIndex < currentList.length - 1) {
+      playSong(currentList[currentIndex + 1]);
+    } else if (currentList.length > 0) {
+      playSong(currentList[0]);
+    }
+  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, isShuffle]);
+
   useEffect(() => {
     const preloadSongs = () => {
       const preloadCache: {[id: number]: HTMLAudioElement} = {};
@@ -168,9 +185,7 @@ export default function SongsPage() {
         if (!song.audioUrl) return;
         
         try {
-          // Verificar se a URL da música não falhou anteriormente
           if (failedUrls.has(song.audioUrl)) {
-            // Se a URL principal falhou, tentar uma URL de fallback que não tenha falhado
             const validFallbackUrl = song.fallbackUrls?.find(url => !failedUrls.has(url));
             if (!validFallbackUrl) return;
             
@@ -204,7 +219,6 @@ export default function SongsPage() {
     };
   }, [filteredTraditionalSongs.slice(0, 5), filteredJamendoSongs.slice(0, 5), failedUrls]);
 
-  // Carregar músicas relaxantes
   useEffect(() => {
     const fetchFreeMusicSongs = async () => {
       try {
@@ -250,7 +264,6 @@ export default function SongsPage() {
     fetchFreeMusicSongs();
   }, [toast]);
 
-  // Configurar o elemento de áudio
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
@@ -284,14 +297,11 @@ export default function SongsPage() {
     audio.addEventListener('error', (e) => {
       console.error('Erro de áudio:', e);
       
-      // Se temos uma música atual e ela tem URLs de fallback
       if (currentSong && currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
-        // Marcar a URL atual como falha
         if (audio.src) {
           setFailedUrls(prev => new Set([...prev, audio.src]));
         }
         
-        // Tentar a próxima URL de fallback
         const nextUrlIndex = currentUrlIndex + 1;
         if (nextUrlIndex < currentSong.fallbackUrls.length) {
           setCurrentUrlIndex(nextUrlIndex);
@@ -310,17 +320,23 @@ export default function SongsPage() {
             .catch((error) => {
               console.error('Erro ao usar URL de fallback:', error);
               
-              // Se falhar novamente, vamos para a próxima música
-              toast({
-                title: "Erro",
-                description: "Não foi possível reproduzir esta música. Tentando próxima...",
-                variant: "destructive"
-              });
-              
-              setTimeout(() => nextSong(), 1000);
+              if (failedUrls.has(audio.src)) {
+                toast({
+                  title: "Erro",
+                  description: "Não foi possível reproduzir esta música. Tentando próxima...",
+                  variant: "destructive"
+                });
+                
+                setTimeout(() => nextSong(), 1000);
+              } else {
+                toast({
+                  title: "Erro",
+                  description: "Não foi possível reproduzir esta música. O arquivo de áudio pode estar indisponível.",
+                  variant: "destructive"
+                });
+              }
             });
         } else {
-          // Esgotamos todas as URLs de fallback, vamos para a próxima música
           toast({
             title: "Erro",
             description: "Não foi possível reproduzir esta música. Tentando próxima...",
@@ -349,8 +365,7 @@ export default function SongsPage() {
     };
   }, [toast, isRepeat, currentSong, currentUrlIndex, nextSong]);
 
-  // Função para tocar uma música
-  const playSong = (song: Song) => {
+  const playSong = useCallback((song: Song) => {
     if (!song.audioUrl && (!song.fallbackUrls || song.fallbackUrls.length === 0)) {
       toast({
         title: "Aviso",
@@ -360,23 +375,19 @@ export default function SongsPage() {
       return;
     }
     
-    // Se for a mesma música, apenas toggle play/pause
     if (currentSong && currentSong.id === song.id) {
       togglePlayPause();
       return;
     }
     
-    // Resetar o índice de URL ao trocar de música
     setCurrentUrlIndex(0);
     
-    // Verificar se temos essa música pré-carregada
     const preloadedAudio = preloadedSongs[song.id];
     
     if (audioRef.current) {
       audioRef.current.pause();
       
       if (preloadedAudio) {
-        // Usar áudio pré-carregado
         audioRef.current = preloadedAudio;
         preloadedAudio.volume = volume;
         
@@ -395,16 +406,13 @@ export default function SongsPage() {
         fallbackPlayMethod(song);
       }
     }
-  };
+  }, [currentSong, preloadedSongs, volume]);
 
-  // Método alternativo para tocar a música se o pré-carregado falhar
-  const fallbackPlayMethod = (song: Song) => {
+  const fallbackPlayMethod = useCallback((song: Song) => {
     if (!audioRef.current) return;
     
-    // Escolher a URL principal ou uma de fallback que não tenha falhado
     let audioUrl = song.audioUrl;
     
-    // Se a URL principal falhou, tentar uma URL de fallback
     if (audioUrl && failedUrls.has(audioUrl) && song.fallbackUrls && song.fallbackUrls.length > 0) {
       const validFallbackUrl = song.fallbackUrls.find(url => !failedUrls.has(url));
       if (validFallbackUrl) {
@@ -424,7 +432,6 @@ export default function SongsPage() {
     audioRef.current.src = audioUrl;
     audioRef.current.volume = volume;
     
-    // Mostrar feedback visual enquanto carrega
     toast({
       title: "Carregando",
       description: "Aguarde enquanto carregamos a música...",
@@ -440,9 +447,7 @@ export default function SongsPage() {
         .catch(error => {
           console.error('Erro ao reproduzir áudio:', error);
           
-          // Tentar URL de fallback se disponível
           if (song.fallbackUrls && song.fallbackUrls.length > 0) {
-            // Marcar a URL atual como falha
             if (audioUrl) {
               setFailedUrls(prev => new Set([...prev, audioUrl]));
             }
@@ -480,7 +485,6 @@ export default function SongsPage() {
     };
     
     audioRef.current.onerror = () => {
-      // Marcar a URL atual como falha
       if (audioUrl) {
         setFailedUrls(prev => new Set([...prev, audioUrl]));
       }
@@ -491,7 +495,6 @@ export default function SongsPage() {
         variant: "destructive"
       });
       
-      // Tentar URL de fallback se disponível
       if (song.fallbackUrls && song.fallbackUrls.length > 0) {
         const fallbackUrl = song.fallbackUrls[0];
         toast({
@@ -517,10 +520,9 @@ export default function SongsPage() {
           });
       }
     };
-  };
+  }, [failedUrls, toast, volume]);
 
-  // Toggle play/pause
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     if (!audioRef.current || !currentSong) return;
     
     if (isPlaying) {
@@ -530,7 +532,6 @@ export default function SongsPage() {
         .catch(error => {
           console.error('Erro ao reproduzir áudio:', error);
           
-          // Tentar recarregar a fonte de áudio
           if (currentSong.audioUrl) {
             toast({
               title: "Reconectando",
@@ -543,7 +544,6 @@ export default function SongsPage() {
             audioRef.current!.play().catch(e => {
               console.error('Falha ao tentar novamente:', e);
               
-              // Tentar URL de fallback se disponível
               if (currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
                 const fallbackUrl = currentSong.fallbackUrls[0];
                 toast({
@@ -577,35 +577,9 @@ export default function SongsPage() {
     }
     
     setIsPlaying(!isPlaying);
-  };
+  }, [currentSong, isPlaying, toast]);
 
-  // Próxima música
-  const nextSong = () => {
-    if (!currentSong) return;
-    
-    const currentList = activeTab === 'traditionalSongs' 
-      ? filteredTraditionalSongs 
-      : filteredJamendoSongs;
-    
-    if (currentList.length === 0) return;
-    
-    if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * currentList.length);
-      playSong(currentList[randomIndex]);
-      return;
-    }
-    
-    const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
-    
-    if (currentIndex !== -1 && currentIndex < currentList.length - 1) {
-      playSong(currentList[currentIndex + 1]);
-    } else if (currentList.length > 0) {
-      playSong(currentList[0]);
-    }
-  };
-
-  // Música anterior
-  const prevSong = () => {
+  const prevSong = useCallback(() => {
     if (!currentSong) return;
     
     const currentList = activeTab === 'traditionalSongs' 
@@ -627,9 +601,8 @@ export default function SongsPage() {
     } else if (currentList.length > 0) {
       playSong(currentList[currentList.length - 1]);
     }
-  };
+  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, isShuffle, playSong]);
 
-  // Mudar posição na música
   const handleSeek = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -638,7 +611,6 @@ export default function SongsPage() {
     setCurrentTime(newTime);
   };
 
-  // Mudar volume
   const handleVolumeChange = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -653,7 +625,6 @@ export default function SongsPage() {
     }
   };
 
-  // Toggle mudo
   const toggleMute = () => {
     if (!audioRef.current) return;
     
@@ -666,7 +637,6 @@ export default function SongsPage() {
     }
   };
 
-  // Toggle shuffle
   const toggleShuffle = () => {
     setIsShuffle(!isShuffle);
     toast({
@@ -676,7 +646,6 @@ export default function SongsPage() {
     });
   };
 
-  // Toggle repetição
   const toggleRepeat = () => {
     setIsRepeat(!isRepeat);
     
@@ -691,7 +660,6 @@ export default function SongsPage() {
     });
   };
 
-  // Formatar tempo
   const formatTime = (time: number) => {
     if (!time) return '0:00';
     
