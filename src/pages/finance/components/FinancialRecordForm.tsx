@@ -1,4 +1,4 @@
-
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ const weekdayOptions = [
   { label: "Quarta-feira", value: "quarta" },
   { label: "Quinta-feira", value: "quinta" },
   { label: "Sexta-feira", value: "sexta" },
+  { label: "Sábado", value: "sabado" },
 ];
 
 const baseTimeOptions = Array.from({ length: 14 }, (_, i) => {
@@ -84,14 +85,12 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const { data: patients = [], isLoading: patientsLoading } = useQuery({
     queryKey: ["patients"],
     queryFn: async () => {
-      // Get the current user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         throw new Error("Usuário não autenticado");
       }
       
-      // Fetch patients only for the current user
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
@@ -115,6 +114,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
       case 3: return "quarta";
       case 4: return "quinta";
       case 5: return "sexta";
+      case 6: return "sabado";
       default: return "segunda";
     }
   };
