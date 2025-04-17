@@ -162,12 +162,12 @@ const songs = [
   },
   {
     title: "Borboletinha",
-    notes: ["G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "G", "E", "G", "E", "A", "G", "F", "E", "D", "C↓", "F", "E", "D", "C↓", "G", "F", "E", "D"],
+    notes: ["G", "A", "G", "C↓", "G", "A", "G", "B", "G", "A", "G", "B", "G", "A", "B", "C↓"],
     lyrics: [
-      "Bor", "bo", "le", "ti", "nha", "tá", "na", "co", 
-      "zi", "nha", "fa", "zen", "do", "cho", "co", "la", 
-      "te", "pa", "ra", "ma", "dri", "nha", "po", "ti", 
-      "po", "ti", "po", "ti"
+      "Bor", "bo", "le", "ti", "nha", 
+      "tá", "na", "co", "zi", 
+      "nha", "fa", "zen", "do", 
+      "cho", "co", "la", "te"
     ],
     description: "Canção infantil brasileira muito popular em escolas, com todos os versos."
   },
