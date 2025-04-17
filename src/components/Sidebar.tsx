@@ -49,7 +49,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
-    { icon: Music, text: "Músicas", path: "/songs" },
+    { icon: Music, text: "Fala Mágica", path: "/songs" }, // Changed label here
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },
