@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Music, Sparkles } from "lucide-react";
@@ -37,6 +38,7 @@ export default function SpeechDetector({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastVocalizationRef = useRef<number>(0);
+  const micPermissionGrantedRef = useRef<boolean>(false);
   
   useEffect(() => {
     return () => {
@@ -49,8 +51,12 @@ export default function SpeechDetector({
 
   const startListening = async () => {
     try {
+      // Make sure to stop any existing stream before starting a new one
       stopListening();
       
+      console.log("Requesting microphone permission...");
+      
+      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: true,
@@ -58,16 +64,26 @@ export default function SpeechDetector({
           autoGainControl: true
         } 
       });
+      
+      console.log("Microphone permission granted");
+      micPermissionGrantedRef.current = true;
       streamRef.current = stream;
       
+      // Initialize audio context
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) {
+        throw new Error("AudioContext not supported in this browser");
+      }
+      
       const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
       
+      // Create analyzer node
       const analyser = audioContext.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
       
+      // Connect microphone to analyser
       const microphone = audioContext.createMediaStreamSource(stream);
       microphone.connect(analyser);
       
@@ -75,6 +91,7 @@ export default function SpeechDetector({
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
+      // Start analyzing audio
       analyzeAudio();
       
       if (autoStop) {
@@ -99,29 +116,46 @@ export default function SpeechDetector({
   };
 
   const stopListening = () => {
+    console.log("Stopping listening...");
+    
+    // Stop audio tracks
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        track.stop();
+        console.log("Track stopped:", track.kind);
+      });
       streamRef.current = null;
     }
     
+    // Clear timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
     
+    // Stop animation frame
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
     
-    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-      try {
-        audioContextRef.current.close();
-      } catch (e) {
-        console.error("Error closing audio context:", e);
+    // Close audio context
+    if (audioContextRef.current) {
+      if (audioContextRef.current.state !== 'closed') {
+        try {
+          audioContextRef.current.close();
+          console.log("Audio context closed");
+        } catch (e) {
+          console.error("Error closing audio context:", e);
+        }
       }
+      audioContextRef.current = null;
     }
     
+    // Reset analyzer
+    analyserRef.current = null;
+    
+    // Update state
     setIsListening(false);
     setVolume(0);
   };
@@ -142,12 +176,20 @@ export default function SpeechDetector({
     const now = Date.now();
     const timeSinceLastVocalization = now - lastVocalizationRef.current;
     
+    // Prevent triggering too often
     if (timeSinceLastVocalization < 500) return;
     
     lastVocalizationRef.current = now;
     
-    (window as any).addShapeToCanvas?.();
+    // Add shape to canvas
+    console.log("Triggering vocalization, adding shape to canvas");
+    if (typeof (window as any).addShapeToCanvas === 'function') {
+      (window as any).addShapeToCanvas();
+    } else {
+      console.error("addShapeToCanvas function not found");
+    }
     
+    // Update vocalization count
     setConsecutiveVocalizations(prev => {
       const newCount = prev + 1;
       
@@ -170,29 +212,57 @@ export default function SpeechDetector({
       return newCount;
     });
     
+    // Show visual effects
     setShowConfetti(true);
     addStar();
+    
+    // Call the provided callback
     onVocalization();
     
+    // Hide confetti after 3 seconds
     setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
   };
 
   const analyzeAudio = () => {
-    if (!isListening || !analyserRef.current) return;
-    
-    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-    analyserRef.current.getByteFrequencyData(dataArray);
-    
-    const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-    setVolume(average);
-    
-    if (average > sensitivity) {
-      triggerVocalization();
+    if (!isListening || !analyserRef.current) {
+      console.log("Not listening or no analyser");
+      return;
     }
     
-    animationFrameRef.current = requestAnimationFrame(analyzeAudio);
+    try {
+      // Get audio data
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      analyserRef.current.getByteFrequencyData(dataArray);
+      
+      // Calculate average volume
+      const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+      setVolume(average);
+      
+      // Debug volume
+      if (average > 0) {
+        console.log("Current volume:", average, "threshold:", sensitivity);
+      }
+      
+      // Check if volume is above threshold
+      if (average > sensitivity) {
+        console.log("Volume above threshold, triggering vocalization");
+        triggerVocalization();
+      }
+      
+      // Continue analyzing
+      animationFrameRef.current = requestAnimationFrame(analyzeAudio);
+    } catch (error) {
+      console.error("Error analyzing audio:", error);
+      stopListening();
+      
+      toast({
+        title: "Erro na detecção de áudio",
+        description: "Ocorreu um erro ao analisar o áudio. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
