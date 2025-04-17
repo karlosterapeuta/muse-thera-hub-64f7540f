@@ -104,7 +104,6 @@ export default function SpeechDetector({
     
     setIsListening(false);
     setVolume(0);
-    setConsecutiveVocalizations(0);
   };
 
   const addStar = () => {

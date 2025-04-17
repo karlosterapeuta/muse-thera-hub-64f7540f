@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -165,10 +166,28 @@ export default function SongsPage() {
       vocalizationCount: prev.vocalizationCount + 1
     }));
     
-    toast({
-      title: "🎉 Você falou!",
-      description: "Você ganhou 5 pontos por falar!",
-    });
+    // Check if user has enough points to unlock new rewards
+    const newlyUnlockedRewards = mockRewards
+      .filter(reward => !userProgress.unlockedRewards.includes(reward.id))
+      .filter(reward => userProgress.totalPoints + 5 >= reward.requiredPoints)
+      .map(reward => reward.id);
+    
+    if (newlyUnlockedRewards.length > 0) {
+      setUserProgress(prev => ({
+        ...prev,
+        unlockedRewards: [...prev.unlockedRewards, ...newlyUnlockedRewards]
+      }));
+      
+      toast({
+        title: "🎁 Nova recompensa desbloqueada!",
+        description: "Vá até a guia Recompensas para ver o que você ganhou!",
+      });
+    } else {
+      toast({
+        title: "🎉 Você falou!",
+        description: "Você ganhou 5 pontos por falar!",
+      });
+    }
   };
   
   const handleClaimReward = (rewardId: string) => {
@@ -177,6 +196,41 @@ export default function SongsPage() {
         ...prev,
         unlockedRewards: [...prev.unlockedRewards, rewardId]
       }));
+    }
+  };
+
+  const handlePlayWord = (word: Word) => {
+    // Create an audio element to play the word
+    const audio = new Audio(word.audioUrl);
+    audio.play();
+    
+    // Add points for practicing words
+    setUserProgress(prev => ({
+      ...prev,
+      totalPoints: prev.totalPoints + 2
+    }));
+    
+    toast({
+      title: "🔊 " + word.text,
+      description: "Você ganhou 2 pontos por praticar esta palavra!",
+    });
+  };
+
+  const handleCompleteAudio = () => {
+    if (!currentAudio) return;
+    
+    // Avoid adding the same activity twice
+    if (!userProgress.completedActivities.includes(currentAudio.id)) {
+      setUserProgress(prev => ({
+        ...prev,
+        totalPoints: prev.totalPoints + 10,
+        completedActivities: [...prev.completedActivities, currentAudio.id]
+      }));
+      
+      toast({
+        title: "🎵 Áudio completo!",
+        description: "Você ganhou 10 pontos por terminar o áudio!",
+      });
     }
   };
 
@@ -226,7 +280,7 @@ export default function SongsPage() {
                 </CardHeader>
                 <CardContent>
                   {currentAudio ? (
-                    <AudioGuide audio={currentAudio} />
+                    <AudioGuide audio={currentAudio} onComplete={handleCompleteAudio} />
                   ) : (
                     <div className="text-center text-gray-500">
                       Selecione um áudio dos materiais para começar
@@ -291,7 +345,7 @@ export default function SongsPage() {
             
             <div className="md:col-span-2">
               {currentPDF ? (
-                <PDFViewer pdf={currentPDF} onPlayWord={() => {}} />
+                <PDFViewer pdf={currentPDF} onPlayWord={handlePlayWord} />
               ) : (
                 <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
                   <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />

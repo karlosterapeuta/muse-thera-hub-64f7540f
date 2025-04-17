@@ -1,180 +1,131 @@
 
-import { useState } from "react";
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  FileText, 
-  Download, 
-  Printer, 
-  ChevronLeft, 
-  ChevronRight,
-  QrCode,
-  Volume2
-} from "lucide-react";
-import { InteractivePDF, Word } from "./types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Volume2, Music, Eye, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { InteractivePDF, Word } from './types';
+import { motion } from "framer-motion";
 
 interface PDFViewerProps {
   pdf: InteractivePDF;
-  onPlayWord?: (word: Word) => void;
+  onPlayWord: (word: Word) => void;
 }
 
 export default function PDFViewer({ pdf, onPlayWord }: PDFViewerProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 4; // Placeholder - would be dynamic in a real implementation
-  
-  const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const [activeView, setActiveView] = useState<'pdf' | 'words'>('words');
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+
+  const handlePlayRegular = (word: Word) => {
+    setSelectedWord(word);
+    onPlayWord(word);
   };
-  
-  const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+
+  const handlePlaySung = (word: Word) => {
+    setSelectedWord(word);
+    setIsPlayingMusic(true);
+    
+    // Create audio element to play sung version
+    const audio = new Audio(word.sungAudioUrl);
+    audio.onended = () => setIsPlayingMusic(false);
+    audio.play();
+    
+    onPlayWord(word);
   };
-  
-  const handlePrint = () => {
-    window.print();
-  };
-  
-  const handleDownload = () => {
-    // In a real implementation, this would download the PDF
-    const link = document.createElement("a");
-    link.href = pdf.pdfUrl;
-    link.download = `${pdf.title}.pdf`;
-    link.click();
-  };
-  
-  const handlePlayWord = (word: Word) => {
-    if (onPlayWord) {
-      onPlayWord(word);
-    }
-  };
-  
+
   return (
-    <div className="flex flex-col bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="flex items-center justify-between bg-purple-600 text-white p-4">
-        <h3 className="text-xl font-bold flex items-center">
-          <FileText className="mr-2" /> {pdf.title}
-        </h3>
+    <Card className="shadow-lg">
+      <Tabs value={activeView} onValueChange={(value) => setActiveView(value as 'pdf' | 'words')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="words" className="flex items-center gap-2">
+            <Volume2 size={16} />
+            <span>Palavras</span>
+          </TabsTrigger>
+          <TabsTrigger value="pdf" className="flex items-center gap-2">
+            <Eye size={16} />
+            <span>Cartela</span>
+          </TabsTrigger>
+        </TabsList>
         
-        <div className="flex space-x-2">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={handlePrint}
-            className="text-white hover:bg-purple-500"
-            aria-label="Imprimir PDF"
-          >
-            <Printer size={20} />
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={handleDownload}
-            className="text-white hover:bg-purple-500"
-            aria-label="Baixar PDF"
-          >
-            <Download size={20} />
-          </Button>
-        </div>
-      </div>
-      
-      <div className="relative bg-gray-100 min-h-[500px] flex items-center justify-center border-t border-b border-gray-200">
-        {/* PDF Preview area - in a real implementation, this would render the PDF */}
-        <div className="w-full max-w-3xl bg-white shadow-md mx-auto my-8 p-8 rounded">
-          <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
-            {pdf.title} - Página {currentPage}
-          </h2>
-          
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            {pdf.words.slice(0, 4).map((word) => (
-              <Card key={word.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden">
-                    <img 
-                      src={word.imageUrl} 
-                      alt={word.text}
-                      className="w-full h-40 object-cover"
-                    />
-                    <button
-                      onClick={() => handlePlayWord(word)}
-                      className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-purple-100"
-                      aria-label={`Ouvir a palavra ${word.text}`}
-                    >
-                      <Volume2 size={18} className="text-purple-600" />
-                    </button>
-                    
-                    <div className="absolute top-2 right-2">
-                      <QrCode size={24} className="text-white drop-shadow-md" />
+        <TabsContent value="words" className="p-4 min-h-[300px]">
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold">{pdf.title}</h3>
+              <Badge>{pdf.category}</Badge>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {pdf.words.map((word) => (
+                <div key={word.id} className="relative">
+                  <motion.div 
+                    className={`bg-white border rounded-lg shadow-md overflow-hidden ${
+                      selectedWord?.id === word.id ? 'ring-2 ring-purple-500' : ''
+                    }`}
+                    whileHover={{ y: -5, scale: 1.03 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="aspect-square relative">
+                      <img 
+                        src={word.imageUrl} 
+                        alt={word.text} 
+                        className="w-full h-full object-cover"
+                      />
+                      {selectedWord?.id === word.id && isPlayingMusic && (
+                        <motion.div 
+                          className="absolute inset-0 bg-purple-500/20 flex items-center justify-center"
+                          animate={{ opacity: [0.2, 0.5, 0.2] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        >
+                          <Sparkles className="text-purple-600" size={40} />
+                        </motion.div>
+                      )}
                     </div>
-                  </div>
-                  
-                  <div className="p-4">
-                    <h4 className="text-xl font-bold text-center text-purple-700">
-                      {word.text}
-                    </h4>
-                    <p className="text-sm text-center text-gray-500 mt-1">
-                      Toque para ouvir
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          <div className="border-t border-gray-200 pt-4">
-            <h3 className="text-lg font-semibold text-purple-700 mb-3">
-              Atividades:
-            </h3>
-            <div className="space-y-4">
-              <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <p className="font-medium text-yellow-800">Complete a palavra:</p>
-                <div className="flex items-center justify-center mt-2 space-x-2">
-                  <span className="text-2xl font-bold text-purple-700">C</span>
-                  <span className="text-2xl font-bold text-purple-700">A</span>
-                  <div className="w-8 h-8 border-b-2 border-purple-700"></div>
-                  <div className="w-8 h-8 border-b-2 border-purple-700"></div>
+                    
+                    <div className="p-3">
+                      <h4 className="text-center font-bold mb-2">{word.text}</h4>
+                      <div className="flex justify-between gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-1 text-xs" 
+                          onClick={() => handlePlayRegular(word)}
+                        >
+                          <Volume2 size={14} className="mr-1" />
+                          Falar
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-1 text-xs" 
+                          onClick={() => handlePlaySung(word)}
+                        >
+                          <Music size={14} className="mr-1" />
+                          Cantar
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
-              
-              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                <p className="font-medium text-green-800">Fale e ganhe um selo:</p>
-                <div className="flex justify-center mt-2">
-                  <div className="w-14 h-14 border-2 border-dashed border-green-500 rounded-full flex items-center justify-center text-green-500">
-                    <span className="text-xs">Selo</span>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        </TabsContent>
         
-        {/* Navigation buttons */}
-        <Button 
-          variant="outline"
-          size="icon"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="absolute left-4 bg-white rounded-full shadow-md h-10 w-10"
-          aria-label="Página anterior"
-        >
-          <ChevronLeft size={20} />
-        </Button>
-        
-        <Button 
-          variant="outline"
-          size="icon"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="absolute right-4 bg-white rounded-full shadow-md h-10 w-10"
-          aria-label="Próxima página"
-        >
-          <ChevronRight size={20} />
-        </Button>
-      </div>
-      
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-200 text-center text-sm text-gray-600">
-        Página {currentPage} de {totalPages}
-      </div>
-    </div>
+        <TabsContent value="pdf" className="min-h-[500px] flex items-center justify-center">
+          <div className="text-center p-8">
+            <img 
+              src={pdf.thumbnailUrl || "https://placehold.co/600x800?text=PDF+Preview"} 
+              alt={pdf.title}
+              className="max-w-full max-h-[500px] mx-auto rounded-lg shadow-lg"
+            />
+            <p className="mt-4 text-gray-500">
+              O PDF "{pdf.title}" estaria visível aqui.
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </Card>
   );
 }
