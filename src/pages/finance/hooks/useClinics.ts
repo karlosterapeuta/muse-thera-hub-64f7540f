@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clinic } from "../types";
+import { PostgrestError } from "@supabase/supabase-js";
 
 export const useClinics = () => {
   const { toast } = useToast();
@@ -114,10 +115,10 @@ export const useUpdateClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error: Error) => {
+    onError: (error: Error | PostgrestError) => {
       toast({
         title: "Erro ao atualizar clínica",
-        description: error.message,
+        description: "error" in error ? error.error : error.message,
         variant: "destructive",
       });
     },
@@ -148,10 +149,10 @@ export const useDeleteClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error: Error) => {
+    onError: (error: Error | PostgrestError) => {
       toast({
         title: "Erro ao excluir clínica",
-        description: error.message,
+        description: "error" in error ? error.error : error.message,
         variant: "destructive",
       });
     },
