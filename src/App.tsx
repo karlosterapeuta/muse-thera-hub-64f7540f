@@ -1,89 +1,171 @@
-import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/theme-provider";
-import Layout from "@/components/Layout";
-import LoadingScreen from "@/components/LoadingScreen";
-import HomePage from "@/pages/home";
-import SongsPage from "@/pages/songs";
-import MusicTherapyPage from "@/pages/music-therapy";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import Dashboard from "./pages/Dashboard";
+import Professional from "./pages/Professional";
+import Processes from "./pages/processes";
+import Evaluation from "./pages/evaluation";
+import AnamnesisForm from "./pages/anamnesis";
+import Patients from "./pages/patients";
+import TreatmentPlanForm from "./pages/treatment-plan";
+import InterventionForm from "./pages/intervention";
+import ReevaluationForm from "./pages/reevaluation";
+import ReportPage from "./pages/processes/report";
+import ReportsPage from "./pages/processes/reports";
+import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
+import InviteCodes from "./pages/InviteCodes";
+import Users from "./pages/users";
+import HawkinsScale from "./pages/hawkins";
+import SongsPage from "./pages/songs";
+import MusicalBells from "./pages/musical-bells";
+import BinauralFrequencies from "./pages/binaural-frequencies";
+import FinanceDashboard from "./pages/finance";
+import FinancialRecords from "./pages/finance/records";
+import ClinicsManagement from "./pages/finance/clinics";
+import FinancialReports from "./pages/finance/reports";
+import ActivitiesPage from "./pages/activities";
+import ActivityCategoryPage from "./pages/activities/category";
+import AuthStatusChecker from "./components/auth/AuthStatusChecker";
+import "./App.css";
 
-// Lazy-loaded routes
-const ActivitiesPage = lazy(() => import("@/pages/activities"));
-const ActivityDetailsPage = lazy(() => import("@/pages/activities/[id]"));
-const SettingsPage = lazy(() => import("@/pages/settings"));
-const ProfilePage = lazy(() => import("@/pages/profile"));
-const NotificationsPage = lazy(() => import("@/pages/notifications"));
-const HelpPage = lazy(() => import("@/pages/help"));
-const NotFoundPage = lazy(() => import("@/pages/404"));
+const queryClient = new QueryClient();
 
-const routes = [
+const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <Navigate to="/login" replace />,
   },
   {
-    path: "/activities",
-    element: <ActivitiesPage />,
+    path: "/login",
+    element: <Login />,
   },
   {
-    path: "/activities/:id",
-    element: <ActivityDetailsPage />,
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
-    path: "/songs",
-    element: <SongsPage />,
-  },
-  {
-    path: "/music-therapy",
-    element: <MusicTherapyPage />,
-  },
-  {
-    path: "/settings",
-    element: <SettingsPage />,
-  },
-  {
-    path: "/profile",
-    element: <ProfilePage />,
-  },
-  {
-    path: "/notifications",
-    element: <NotificationsPage />,
-  },
-  {
-    path: "/help",
-    element: <HelpPage />,
-  },
-  {
-    path: "/404",
-    element: <NotFoundPage />,
+    element: (
+      <>
+        <Layout />
+        <AuthStatusChecker />
+      </>
+    ),
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/professional",
+        element: <Professional />,
+      },
+      {
+        path: "/patients",
+        element: <Patients />,
+      },
+      {
+        path: "/processes",
+        element: <Processes />,
+      },
+      {
+        path: "/processos/avaliacao",
+        element: <Evaluation />,
+      },
+      {
+        path: "/anamnesis",
+        element: <AnamnesisForm />,
+      },
+      {
+        path: "/processos/plano",
+        element: <TreatmentPlanForm />,
+      },
+      {
+        path: "/intervention",
+        element: <InterventionForm />,
+      },
+      {
+        path: "/processos/reavaliacao",
+        element: <ReevaluationForm />,
+      },
+      {
+        path: "/processos/relatorios",
+        element: <ReportsPage />,
+      },
+      {
+        path: "/processos/relatorio",
+        element: <ReportPage />,
+      },
+      {
+        path: "/invite-codes",
+        element: <InviteCodes />,
+      },
+      {
+        path: "/users",
+        element: <Users />,
+      },
+      {
+        path: "/hawkins",
+        element: <HawkinsScale />,
+      },
+      {
+        path: "/activities",
+        element: <ActivitiesPage />,
+      },
+      {
+        path: "/activities/:categoryId",
+        element: <ActivityCategoryPage />,
+      },
+      {
+        path: "/songs",
+        element: <SongsPage />,
+      },
+      {
+        path: "/musical-bells",
+        element: <MusicalBells />,
+      },
+      {
+        path: "/binaural-frequencies",
+        element: <BinauralFrequencies />,
+      },
+      {
+        path: "/finance",
+        element: <FinanceDashboard />,
+      },
+      {
+        path: "/finance/records",
+        element: <FinancialRecords />,
+      },
+      {
+        path: "/finance/clinics",
+        element: <ClinicsManagement />,
+      },
+      {
+        path: "/finance/reports",
+        element: <FinancialReports />,
+      },
+    ],
   },
   {
     path: "*",
-    element: <Navigate to="/404" replace />,
+    element: <NotFound />,
   },
-];
+]);
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <Router>
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              {routes.map((route) => (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={route.element}
-                />
-              ))}
-            </Route>
-          </Routes>
-        </Suspense>
-      </Router>
-      <Toaster />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

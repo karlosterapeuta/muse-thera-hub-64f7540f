@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -89,39 +90,25 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       <nav className="flex-1 py-4">
-        <div className="space-y-1">
-          {menuItems.map((item) => (
-            item && (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => onNavigate?.()}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
-                    isActive && "bg-primary/10 text-primary",
-                    collapsed && "justify-center"
-                  )
-                }
-              >
-                <item.icon size={20} />
-                {!collapsed && <span>{item.text}</span>}
-              </NavLink>
-            )
-          ))}
-          <NavLink
-            to="/music-therapy"
-            className={({ isActive }) =>
-              cn(
-                "flex items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors",
-                isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-              )
-            }
-          >
-            <Music size={20} className="mr-3" />
-            {!collapsed && <span>Musicoterapia TEA</span>}
-          </NavLink>
-        </div>
+        {menuItems.map((item) => (
+          item && (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => onNavigate?.()}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
+                  isActive && "bg-primary/10 text-primary",
+                  collapsed && "justify-center"
+                )
+              }
+            >
+              <item.icon size={20} />
+              {!collapsed && <span>{item.text}</span>}
+            </NavLink>
+          )
+        ))}
       </nav>
 
       <div className="p-4 border-t border-gray-200">
