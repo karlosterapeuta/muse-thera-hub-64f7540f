@@ -1,15 +1,19 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search } from "lucide-react";
+import { Search, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 interface Song {
   id: number;
   title: string;
   artist: string;
+  audioUrl?: string;
 }
 
 export default function SongsPage() {
@@ -56,12 +60,246 @@ export default function SongsPage() {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
-  const isMobile = useIsMobile();
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
+  const [jamendoSongs, setJamendoSongs] = useState<Song[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs'>('traditionalSongs');
   
-  const filteredSongs = songs.filter(song => 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isMobile = useIsMobile();
+  const { toast } = useToast();
+  
+  const filteredTraditionalSongs = songs.filter(song => 
     song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const filteredJamendoSongs = jamendoSongs.filter(song => 
+    song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Buscar músicas da API Jamendo quando o componente montar
+  useEffect(() => {
+    const fetchJamendoSongs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          'https://api.jamendo.com/v3.0/tracks/?client_id=1c9a87c5&format=json&limit=20&tags=relaxing,meditation,ambient&include=musicinfo'
+        );
+        
+        if (!response.ok) {
+          throw new Error('Falha ao buscar músicas');
+        }
+        
+        const data = await response.json();
+        
+        const formattedSongs = data.results.map((song: any) => ({
+          id: song.id,
+          title: song.name,
+          artist: song.artist_name,
+          audioUrl: song.audio
+        }));
+        
+        setJamendoSongs(formattedSongs);
+      } catch (error) {
+        console.error('Erro ao buscar músicas:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as músicas da API.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchJamendoSongs();
+  }, [toast]);
+  
+  // Configurar o áudio e os event listeners
+  useEffect(() => {
+    const audio = new Audio();
+    audioRef.current = audio;
+    
+    const handleTimeUpdate = () => {
+      if (audio.currentTime && audio.duration) {
+        setCurrentTime(audio.currentTime);
+        setDuration(audio.duration);
+      }
+    };
+    
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+    
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration);
+    });
+    
+    return () => {
+      audio.pause();
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('loadedmetadata', () => {});
+    };
+  }, []);
+  
+  // Reproduzir música selecionada
+  const playSong = (song: Song) => {
+    if (!song.audioUrl) {
+      toast({
+        title: "Aviso",
+        description: "Esta música não possui um URL de áudio disponível.",
+        variant: "default"
+      });
+      return;
+    }
+    
+    // Se é a mesma música, apenas toggle play/pause
+    if (currentSong && currentSong.id === song.id) {
+      togglePlayPause();
+      return;
+    }
+    
+    // Se é uma nova música
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = song.audioUrl;
+      audioRef.current.volume = volume;
+      
+      // Reproduzir após carregar os metadados
+      audioRef.current.onloadedmetadata = () => {
+        audioRef.current?.play()
+          .then(() => {
+            setIsPlaying(true);
+            setCurrentSong(song);
+          })
+          .catch(error => {
+            console.error('Erro ao reproduzir áudio:', error);
+            toast({
+              title: "Erro",
+              description: "Não foi possível reproduzir esta música.",
+              variant: "destructive"
+            });
+          });
+      };
+      
+      audioRef.current.onerror = () => {
+        toast({
+          title: "Erro",
+          description: "Não foi possível reproduzir esta música. O arquivo de áudio pode estar indisponível.",
+          variant: "destructive"
+        });
+      };
+    }
+  };
+  
+  // Toggle play/pause
+  const togglePlayPause = () => {
+    if (!audioRef.current || !currentSong) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play()
+        .catch(error => {
+          console.error('Erro ao reproduzir áudio:', error);
+        });
+    }
+    
+    setIsPlaying(!isPlaying);
+  };
+  
+  // Avançar para a próxima música
+  const nextSong = () => {
+    if (!currentSong) return;
+    
+    const currentList = activeTab === 'traditionalSongs' 
+      ? filteredTraditionalSongs 
+      : filteredJamendoSongs;
+    
+    const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
+    
+    if (currentIndex !== -1 && currentIndex < currentList.length - 1) {
+      playSong(currentList[currentIndex + 1]);
+    } else if (currentList.length > 0) {
+      // Voltar para a primeira música se estiver na última
+      playSong(currentList[0]);
+    }
+  };
+  
+  // Voltar para a música anterior
+  const prevSong = () => {
+    if (!currentSong) return;
+    
+    const currentList = activeTab === 'traditionalSongs' 
+      ? filteredTraditionalSongs 
+      : filteredJamendoSongs;
+    
+    const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
+    
+    if (currentIndex > 0) {
+      playSong(currentList[currentIndex - 1]);
+    } else if (currentList.length > 0) {
+      // Ir para a última música se estiver na primeira
+      playSong(currentList[currentList.length - 1]);
+    }
+  };
+  
+  // Alterar a posição da reprodução
+  const handleSeek = (value: number[]) => {
+    if (!audioRef.current) return;
+    
+    const newTime = value[0];
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+  
+  // Controlar o volume
+  const handleVolumeChange = (value: number[]) => {
+    if (!audioRef.current) return;
+    
+    const newVolume = value[0];
+    audioRef.current.volume = newVolume;
+    setVolume(newVolume);
+    
+    if (newVolume === 0) {
+      setIsMuted(true);
+    } else {
+      setIsMuted(false);
+    }
+  };
+  
+  // Toggle mute
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    
+    if (isMuted) {
+      audioRef.current.volume = volume > 0 ? volume : 0.7;
+      setIsMuted(false);
+    } else {
+      audioRef.current.volume = 0;
+      setIsMuted(true);
+    }
+  };
+  
+  // Formatar tempo em mm:ss
+  const formatTime = (time: number) => {
+    if (!time) return '0:00';
+    
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="container mx-auto py-6">
@@ -80,26 +318,177 @@ export default function SongsPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          
+          <div className="mt-6 flex space-x-2">
+            <Button 
+              variant={activeTab === 'traditionalSongs' ? "default" : "outline"} 
+              onClick={() => setActiveTab('traditionalSongs')}
+              className="flex-1"
+            >
+              Músicas Tradicionais
+            </Button>
+            <Button 
+              variant={activeTab === 'jamendoSongs' ? "default" : "outline"} 
+              onClick={() => setActiveTab('jamendoSongs')}
+              className="flex-1"
+            >
+              Músicas Relaxantes
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[70vh]">
-            <div className="space-y-6">
-              {filteredSongs.map((song) => (
-                <div
-                  key={song.id}
-                  className={`p-6 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer ${isMobile ? "mb-4" : ""}`}
-                >
-                  <h3 className={`font-medium ${isMobile ? "text-3xl" : "text-2xl"} mb-2`}>{song.title}</h3>
-                  <p className={`text-gray-600 ${isMobile ? "text-2xl" : "text-xl"}`}>{song.artist}</p>
+        
+        {/* Player de Música */}
+        {currentSong && (
+          <div className="px-6 py-4 bg-gray-50 border-t border-b">
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-medium text-lg">{currentSong.title}</h3>
+                  <p className="text-gray-600">{currentSong.artist}</p>
                 </div>
-              ))}
+                <div className="flex items-center space-x-4">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={toggleMute}
+                  >
+                    {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </Button>
+                  <div className="w-24 hidden md:block">
+                    <Slider
+                      value={[isMuted ? 0 : volume]}
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      onValueChange={handleVolumeChange}
+                    />
+                  </div>
+                </div>
+              </div>
               
-              {filteredSongs.length === 0 && (
-                <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
-                  Nenhuma música encontrada com o termo "{searchTerm}"
-                </div>
-              )}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm w-12 text-right">{formatTime(currentTime)}</span>
+                <Slider
+                  value={[currentTime]}
+                  min={0}
+                  max={duration || 100}
+                  step={1}
+                  onValueChange={handleSeek}
+                  className="flex-1"
+                />
+                <span className="text-sm w-12">{formatTime(duration)}</span>
+              </div>
+              
+              <div className="flex justify-center items-center space-x-4 mt-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={prevSong}
+                >
+                  <SkipBack size={20} />
+                </Button>
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="h-12 w-12 rounded-full"
+                  onClick={togglePlayPause}
+                >
+                  {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={nextSong}
+                >
+                  <SkipForward size={20} />
+                </Button>
+              </div>
             </div>
+          </div>
+        )}
+        
+        <CardContent>
+          <ScrollArea className="h-[60vh]">
+            {activeTab === 'traditionalSongs' ? (
+              // Lista de músicas tradicionais
+              <div className="space-y-4">
+                {filteredTraditionalSongs.length === 0 ? (
+                  <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
+                    Nenhuma música encontrada com o termo "{searchTerm}"
+                  </div>
+                ) : (
+                  filteredTraditionalSongs.map((song) => (
+                    <div
+                      key={song.id}
+                      className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
+                        currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                      }`}
+                      onClick={() => {
+                        // Como as músicas tradicionais não têm URL de áudio na lista original,
+                        // vamos procurar uma música similar no Jamendo
+                        if (!song.audioUrl && jamendoSongs.length > 0) {
+                          const randomJamendoSong = jamendoSongs[Math.floor(Math.random() * jamendoSongs.length)];
+                          const songWithAudio = { ...song, audioUrl: randomJamendoSong.audioUrl };
+                          playSong(songWithAudio);
+                        } else {
+                          playSong(song);
+                        }
+                      }}
+                    >
+                      <div>
+                        <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
+                        <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 rounded-full"
+                      >
+                        {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              // Lista de músicas do Jamendo
+              <div className="space-y-4">
+                {isLoading ? (
+                  <div className="py-12 text-center">
+                    <div className="animate-pulse flex flex-col items-center">
+                      <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
+                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ) : filteredJamendoSongs.length === 0 ? (
+                  <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
+                    Nenhuma música encontrada com o termo "{searchTerm}"
+                  </div>
+                ) : (
+                  filteredJamendoSongs.map((song) => (
+                    <div
+                      key={song.id}
+                      className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
+                        currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                      }`}
+                      onClick={() => playSong(song)}
+                    >
+                      <div>
+                        <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
+                        <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 rounded-full"
+                      >
+                        {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </ScrollArea>
         </CardContent>
       </Card>
