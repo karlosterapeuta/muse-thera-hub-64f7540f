@@ -48,12 +48,12 @@ const songs = [
       "D", "D", "E", "C↓", "D", "E", "F", "E", "C↓",
       "D", "E", "F", "E", "D", "C↓", "D", "G",
       "E", "E", "F", "G", "G", "F", "E", "D",
-      "C↓", "C↓", "D", "E", "D", "C↓", "C↓"
+      "C↓", "C���", "D", "E", "D", "C↓", "C↓"
     ],
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", "do", "E", "lí", "sio", 
+      "fi", "lha", do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -65,7 +65,7 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C↓", "D", "E", "F", "G", "A", "B", "C↑", "B", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
@@ -263,8 +263,14 @@ const songs = [
   },
   {
     title: "Sapo Cururu",
-    notes: ["C↓", "D", "E", "G", "C↓", "D", "E", "G", "E", "F", "G", "A", "G", "F", "E", "D", "C↓", "D", "E", "G", "C↓", "D", "E", "G"],
-    lyrics: ["Sa", "po", "cu", "ru", "ru", "na", "bei", "ra", "do", "ri", "o", "quan", "do", "o", "sa", "po", "can", "ta", "ó", "ma", "na", "é", "por", "que"],
+    notes: ["G", "A", "G", "E", "C↓", "G", "A", "G", "E", "C↓", "E", "E", "D", "E", "F", "E", "C", "G", "E", "A", "B", "A", "B", "C↓"],
+    lyrics: [
+      "Sa", "po", "cu", "ru", "ru", 
+      "na", "bei", "ra", "do", "ri", 
+      "o", "quan", "do", "o", "sa", 
+      "po", "can", "ta", "ó", "ma", 
+      "na", "é", "por", "que"
+    ],
     description: "Canção tradicional das festas juninas no Brasil, popular entre crianças."
   },
   {
