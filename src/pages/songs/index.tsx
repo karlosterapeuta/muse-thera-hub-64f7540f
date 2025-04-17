@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Song {
   id: number;
@@ -15,6 +15,19 @@ interface Song {
   artist: string;
   audioUrl?: string;
 }
+
+const traditionalSongUrls = [
+  "https://assets.mixkit.co/music/preview/mixkit-sweet-and-sour-keys-846.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-life-is-a-dream-837.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-just-kidding-13.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-sun-and-his-daughter-580.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-piano-in-the-forest-548.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-feeling-happy-5.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-forest-treasure-138.mp3",
+];
 
 export default function SongsPage() {
   const songs: Song[] = [
@@ -57,7 +70,10 @@ export default function SongsPage() {
     { id: 37, title: "O Leãozinho", artist: "Toquinho" },
     { id: 38, title: "O Sapo Não Lava o Pé", artist: "Tradicional" },
     { id: 39, title: "A Canoa Virou", artist: "Tradicional" },
-  ];
+  ].map((song, index) => ({
+    ...song,
+    audioUrl: traditionalSongUrls[index % traditionalSongUrls.length]
+  }));
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
@@ -84,13 +100,13 @@ export default function SongsPage() {
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Buscar músicas da API Jamendo quando o componente montar
   useEffect(() => {
-    const fetchJamendoSongs = async () => {
+    const fetchFreeMusicSongs = async () => {
       try {
         setIsLoading(true);
+        
         const response = await fetch(
-          'https://api.jamendo.com/v3.0/tracks/?client_id=1c9a87c5&format=json&limit=20&tags=relaxing,meditation,ambient&include=musicinfo'
+          'https://freesound.org/apiv2/search/text/?query=piano&token=YCFaxGlYnL3hG6FGD4l1KIsCnTKXihSOHV4TyUJ3&fields=id,name,username,previews'
         );
         
         if (!response.ok) {
@@ -99,30 +115,40 @@ export default function SongsPage() {
         
         const data = await response.json();
         
-        const formattedSongs = data.results.map((song: any) => ({
-          id: song.id,
-          title: song.name,
-          artist: song.artist_name,
-          audioUrl: song.audio
-        }));
-        
-        setJamendoSongs(formattedSongs);
+        if (data.results && Array.isArray(data.results)) {
+          const formattedSongs = data.results.map((song: any, index: number) => ({
+            id: song.id || index + 1000,
+            title: song.name || 'Música sem título',
+            artist: song.username || 'Artista desconhecido',
+            audioUrl: song.previews?.['preview-hq-mp3'] || song.previews?.['preview-lq-mp3']
+          }));
+          
+          setJamendoSongs(formattedSongs);
+        } else {
+          const fallbackSongs = [
+            { id: 1001, title: "Peaceful Piano", artist: "Relaxing Music", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3" },
+            { id: 1002, title: "Meditation Sounds", artist: "Calm Waves", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" },
+            { id: 1003, title: "Nature Ambience", artist: "Zen Garden", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-spirit-889.mp3" },
+            { id: 1004, title: "Healing Tones", artist: "Sound Therapy", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-just-kidding-13.mp3" },
+            { id: 1005, title: "Deep Sleep", artist: "Relaxation Aid", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3" }
+          ];
+          setJamendoSongs(fallbackSongs);
+        }
       } catch (error) {
         console.error('Erro ao buscar músicas:', error);
         toast({
-          title: "Erro",
-          description: "Não foi possível carregar as músicas da API.",
-          variant: "destructive"
+          title: "Informação",
+          description: "Usando músicas de demonstração devido a limitações da API.",
+          variant: "default"
         });
       } finally {
         setIsLoading(false);
       }
     };
     
-    fetchJamendoSongs();
+    fetchFreeMusicSongs();
   }, [toast]);
   
-  // Configurar o áudio e os event listeners
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
@@ -137,6 +163,7 @@ export default function SongsPage() {
     const handleEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      setTimeout(() => nextSong(), 500);
     };
     
     audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -145,15 +172,25 @@ export default function SongsPage() {
       setDuration(audio.duration);
     });
     
+    audio.addEventListener('error', (e) => {
+      console.error('Erro de áudio:', e);
+      toast({
+        title: "Erro",
+        description: "Não foi possível reproduzir esta música. Tentando próxima...",
+        variant: "destructive"
+      });
+      setTimeout(() => nextSong(), 1000);
+    });
+    
     return () => {
       audio.pause();
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('loadedmetadata', () => {});
+      audio.removeEventListener('error', () => {});
     };
-  }, []);
+  }, [toast]);
   
-  // Reproduzir música selecionada
   const playSong = (song: Song) => {
     if (!song.audioUrl) {
       toast({
@@ -164,19 +201,16 @@ export default function SongsPage() {
       return;
     }
     
-    // Se é a mesma música, apenas toggle play/pause
     if (currentSong && currentSong.id === song.id) {
       togglePlayPause();
       return;
     }
     
-    // Se é uma nova música
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = song.audioUrl;
       audioRef.current.volume = volume;
       
-      // Reproduzir após carregar os metadados
       audioRef.current.onloadedmetadata = () => {
         audioRef.current?.play()
           .then(() => {
@@ -203,7 +237,6 @@ export default function SongsPage() {
     }
   };
   
-  // Toggle play/pause
   const togglePlayPause = () => {
     if (!audioRef.current || !currentSong) return;
     
@@ -219,7 +252,6 @@ export default function SongsPage() {
     setIsPlaying(!isPlaying);
   };
   
-  // Avançar para a próxima música
   const nextSong = () => {
     if (!currentSong) return;
     
@@ -232,12 +264,10 @@ export default function SongsPage() {
     if (currentIndex !== -1 && currentIndex < currentList.length - 1) {
       playSong(currentList[currentIndex + 1]);
     } else if (currentList.length > 0) {
-      // Voltar para a primeira música se estiver na última
       playSong(currentList[0]);
     }
   };
   
-  // Voltar para a música anterior
   const prevSong = () => {
     if (!currentSong) return;
     
@@ -250,12 +280,10 @@ export default function SongsPage() {
     if (currentIndex > 0) {
       playSong(currentList[currentIndex - 1]);
     } else if (currentList.length > 0) {
-      // Ir para a última música se estiver na primeira
       playSong(currentList[currentList.length - 1]);
     }
   };
   
-  // Alterar a posição da reprodução
   const handleSeek = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -264,7 +292,6 @@ export default function SongsPage() {
     setCurrentTime(newTime);
   };
   
-  // Controlar o volume
   const handleVolumeChange = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -279,7 +306,6 @@ export default function SongsPage() {
     }
   };
   
-  // Toggle mute
   const toggleMute = () => {
     if (!audioRef.current) return;
     
@@ -292,7 +318,6 @@ export default function SongsPage() {
     }
   };
   
-  // Formatar tempo em mm:ss
   const formatTime = (time: number) => {
     if (!time) return '0:00';
     
@@ -319,25 +344,14 @@ export default function SongsPage() {
             />
           </div>
           
-          <div className="mt-6 flex space-x-2">
-            <Button 
-              variant={activeTab === 'traditionalSongs' ? "default" : "outline"} 
-              onClick={() => setActiveTab('traditionalSongs')}
-              className="flex-1"
-            >
-              Músicas Tradicionais
-            </Button>
-            <Button 
-              variant={activeTab === 'jamendoSongs' ? "default" : "outline"} 
-              onClick={() => setActiveTab('jamendoSongs')}
-              className="flex-1"
-            >
-              Músicas Relaxantes
-            </Button>
-          </div>
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')} className="mt-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="traditionalSongs">Músicas Tradicionais</TabsTrigger>
+              <TabsTrigger value="jamendoSongs">Músicas Relaxantes</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </CardHeader>
         
-        {/* Player de Música */}
         {currentSong && (
           <div className="px-6 py-4 bg-gray-50 border-t border-b">
             <div className="flex flex-col space-y-2">
@@ -408,88 +422,82 @@ export default function SongsPage() {
         )}
         
         <CardContent>
-          <ScrollArea className="h-[60vh]">
-            {activeTab === 'traditionalSongs' ? (
-              // Lista de músicas tradicionais
-              <div className="space-y-4">
-                {filteredTraditionalSongs.length === 0 ? (
-                  <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
-                    Nenhuma música encontrada com o termo "{searchTerm}"
-                  </div>
-                ) : (
-                  filteredTraditionalSongs.map((song) => (
-                    <div
-                      key={song.id}
-                      className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
-                        currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
-                      }`}
-                      onClick={() => {
-                        // Como as músicas tradicionais não têm URL de áudio na lista original,
-                        // vamos procurar uma música similar no Jamendo
-                        if (!song.audioUrl && jamendoSongs.length > 0) {
-                          const randomJamendoSong = jamendoSongs[Math.floor(Math.random() * jamendoSongs.length)];
-                          const songWithAudio = { ...song, audioUrl: randomJamendoSong.audioUrl };
-                          playSong(songWithAudio);
-                        } else {
-                          playSong(song);
-                        }
-                      }}
-                    >
-                      <div>
-                        <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
-                        <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-10 w-10 rounded-full"
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')}>
+            <TabsContent value="traditionalSongs">
+              <ScrollArea className="h-[60vh]">
+                <div className="space-y-4">
+                  {filteredTraditionalSongs.length === 0 ? (
+                    <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
+                      Nenhuma música encontrada com o termo "{searchTerm}"
+                    </div>
+                  ) : (
+                    filteredTraditionalSongs.map((song) => (
+                      <div
+                        key={song.id}
+                        className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
+                          currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                        }`}
+                        onClick={() => playSong(song)}
                       >
-                        {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </div>
-            ) : (
-              // Lista de músicas do Jamendo
-              <div className="space-y-4">
-                {isLoading ? (
-                  <div className="py-12 text-center">
-                    <div className="animate-pulse flex flex-col items-center">
-                      <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
-                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
-                    </div>
-                  </div>
-                ) : filteredJamendoSongs.length === 0 ? (
-                  <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
-                    Nenhuma música encontrada com o termo "{searchTerm}"
-                  </div>
-                ) : (
-                  filteredJamendoSongs.map((song) => (
-                    <div
-                      key={song.id}
-                      className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
-                        currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
-                      }`}
-                      onClick={() => playSong(song)}
-                    >
-                      <div>
-                        <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
-                        <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                        <div>
+                          <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
+                          <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 rounded-full"
+                        >
+                          {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-10 w-10 rounded-full"
-                      >
-                        {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-                      </Button>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+            
+            <TabsContent value="jamendoSongs">
+              <ScrollArea className="h-[60vh]">
+                <div className="space-y-4">
+                  {isLoading ? (
+                    <div className="py-12 text-center">
+                      <div className="animate-pulse flex flex-col items-center">
+                        <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
+                        <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                      </div>
                     </div>
-                  ))
-                )}
-              </div>
-            )}
-          </ScrollArea>
+                  ) : filteredJamendoSongs.length === 0 ? (
+                    <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
+                      Nenhuma música encontrada com o termo "{searchTerm}"
+                    </div>
+                  ) : (
+                    filteredJamendoSongs.map((song) => (
+                      <div
+                        key={song.id}
+                        className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
+                          currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                        }`}
+                        onClick={() => playSong(song)}
+                      >
+                        <div>
+                          <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
+                          <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 rounded-full"
+                        >
+                          {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
