@@ -8,6 +8,7 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import { motion, AnimatePresence } from "framer-motion";
 import { playRewardSound } from "@/utils/soundRewards";
 import SpeechCanvas from './SpeechCanvas';
+import AudioVisualizer from "./AudioVisualizer";
 
 interface SpeechDetectorProps {
   onVocalization: () => void;
@@ -31,6 +32,7 @@ export default function SpeechDetector({
   const [micError, setMicError] = useState<string | null>(null);
   const [soundDetected, setSoundDetected] = useState(false);
   const [maxVolume, setMaxVolume] = useState(0);
+  const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array());
   const { width, height } = useWindowSize();
   const { toast } = useToast();
   
@@ -191,6 +193,7 @@ export default function SpeechDetector({
     
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
+    setAudioData(dataArray);
     
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
@@ -266,8 +269,8 @@ export default function SpeechDetector({
           <Music className="text-pink-500" />
         </h3>
         
-        <div className="w-full max-w-md mx-auto mb-6">
-          <SpeechCanvas width={400} height={300} />
+        <div className="w-full">
+          <AudioVisualizer audioData={audioData} isActive={isListening} />
         </div>
         
         {micError && (
