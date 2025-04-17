@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 
 interface Song {
   id: number;
@@ -27,6 +28,24 @@ const traditionalSongUrls = [
   "https://assets.mixkit.co/music/preview/mixkit-piano-in-the-forest-548.mp3",
   "https://assets.mixkit.co/music/preview/mixkit-feeling-happy-5.mp3",
   "https://assets.mixkit.co/music/preview/mixkit-forest-treasure-138.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-a-very-happy-christmas-51.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-spirit-889.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
+];
+
+const musicApiEndpoints = [
+  "https://assets.mixkit.co/sfx/download/mixkit-rain-ambience-light-1252.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-sea-waves-ambience-1189.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-campfire-crackles-1330.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-forest-birds-ambience-1210.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-morning-birds-singing-2472.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-small-stream-running-loop-1248.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-meditation-bell-595.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-rain-and-thunder-storm-2390.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-dense-static-noise-2132.mp3",
+  "https://assets.mixkit.co/sfx/download/mixkit-crickets-and-insects-in-the-wild-ambience-58.mp3"
 ];
 
 export default function SongsPage() {
@@ -87,55 +106,83 @@ export default function SongsPage() {
   const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs'>('traditionalSongs');
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  
+  const [preloadedSongs, setPreloadedSongs] = useState<{[id: number]: HTMLAudioElement}>({});
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  
+
   const filteredTraditionalSongs = songs.filter(song => 
     song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const filteredJamendoSongs = jamendoSongs.filter(song => 
     song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
+    const preloadSongs = () => {
+      const preloadCache: {[id: number]: HTMLAudioElement} = {};
+      
+      const songsToPreload = [
+        ...filteredTraditionalSongs.slice(0, 5),
+        ...filteredJamendoSongs.slice(0, 5)
+      ];
+      
+      songsToPreload.forEach(song => {
+        if (!song.audioUrl) return;
+        
+        try {
+          const audio = new Audio();
+          audio.src = song.audioUrl;
+          audio.load();
+          preloadCache[song.id] = audio;
+        } catch (error) {
+          console.error(`Error preloading song ${song.id}:`, error);
+        }
+      });
+      
+      setPreloadedSongs(preloadCache);
+    };
+    
+    if (filteredTraditionalSongs.length > 0 || filteredJamendoSongs.length > 0) {
+      preloadSongs();
+    }
+    
+    return () => {
+      Object.values(preloadedSongs).forEach(audio => {
+        audio.pause();
+        audio.src = '';
+      });
+    };
+  }, [filteredTraditionalSongs.slice(0, 5), filteredJamendoSongs.slice(0, 5)]);
+
+  useEffect(() => {
     const fetchFreeMusicSongs = async () => {
       try {
         setIsLoading(true);
         
-        const response = await fetch(
-          'https://freesound.org/apiv2/search/text/?query=piano&token=YCFaxGlYnL3hG6FGD4l1KIsCnTKXihSOHV4TyUJ3&fields=id,name,username,previews'
-        );
+        const fallbackSongs = [
+          { id: 1001, title: "Peaceful Piano", artist: "Relaxing Music", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3" },
+          { id: 1002, title: "Meditation Sounds", artist: "Calm Waves", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" },
+          { id: 1003, title: "Nature Ambience", artist: "Zen Garden", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-spirit-889.mp3" },
+          { id: 1004, title: "Healing Tones", artist: "Sound Therapy", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-just-kidding-13.mp3" },
+          { id: 1005, title: "Deep Sleep", artist: "Relaxation Aid", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3" },
+          { id: 1006, title: "Ambient Rain", artist: "Nature Sounds", audioUrl: musicApiEndpoints[0] },
+          { id: 1007, title: "Ocean Waves", artist: "Sea Sounds", audioUrl: musicApiEndpoints[1] },
+          { id: 1008, title: "Fireplace Crackling", artist: "Cozy Ambience", audioUrl: musicApiEndpoints[2] },
+          { id: 1009, title: "Forest Birds", artist: "Natural World", audioUrl: musicApiEndpoints[3] },
+          { id: 1010, title: "Morning Birdsong", artist: "Dawn Chorus", audioUrl: musicApiEndpoints[4] }
+        ];
         
-        if (!response.ok) {
-          throw new Error('Falha ao buscar músicas');
-        }
-        
-        const data = await response.json();
-        
-        if (data.results && Array.isArray(data.results)) {
-          const formattedSongs = data.results.map((song: any, index: number) => ({
-            id: song.id || index + 1000,
-            title: song.name || 'Música sem título',
-            artist: song.username || 'Artista desconhecido',
-            audioUrl: song.previews?.['preview-hq-mp3'] || song.previews?.['preview-lq-mp3']
-          }));
-          
-          setJamendoSongs(formattedSongs);
-        } else {
-          const fallbackSongs = [
-            { id: 1001, title: "Peaceful Piano", artist: "Relaxing Music", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3" },
-            { id: 1002, title: "Meditation Sounds", artist: "Calm Waves", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" },
-            { id: 1003, title: "Nature Ambience", artist: "Zen Garden", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-spirit-889.mp3" },
-            { id: 1004, title: "Healing Tones", artist: "Sound Therapy", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-just-kidding-13.mp3" },
-            { id: 1005, title: "Deep Sleep", artist: "Relaxation Aid", audioUrl: "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3" }
-          ];
-          setJamendoSongs(fallbackSongs);
-        }
+        setJamendoSongs(fallbackSongs);
+        toast({
+          title: "Músicas Carregadas",
+          description: "Utilizando músicas gratuitas para sua sessão de musicoterapia.",
+          variant: "default"
+        });
       } catch (error) {
         console.error('Erro ao buscar músicas:', error);
         toast({
@@ -150,7 +197,7 @@ export default function SongsPage() {
     
     fetchFreeMusicSongs();
   }, [toast]);
-  
+
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
@@ -163,9 +210,16 @@ export default function SongsPage() {
     };
     
     const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentTime(0);
-      setTimeout(() => nextSong(), 500);
+      if (isRepeat) {
+        audio.currentTime = 0;
+        audio.play().catch(error => {
+          console.error('Erro ao repetir áudio:', error);
+        });
+      } else {
+        setIsPlaying(false);
+        setCurrentTime(0);
+        setTimeout(() => nextSong(), 500);
+      }
     };
     
     audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -191,8 +245,8 @@ export default function SongsPage() {
       audio.removeEventListener('loadedmetadata', () => {});
       audio.removeEventListener('error', () => {});
     };
-  }, [toast]);
-  
+  }, [toast, isRepeat]);
+
   const playSong = (song: Song) => {
     if (!song.audioUrl) {
       toast({
@@ -208,37 +262,63 @@ export default function SongsPage() {
       return;
     }
     
+    const preloadedAudio = preloadedSongs[song.id];
+    
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.src = song.audioUrl;
-      audioRef.current.volume = volume;
       
-      audioRef.current.onloadedmetadata = () => {
-        audioRef.current?.play()
+      if (preloadedAudio) {
+        audioRef.current = preloadedAudio;
+        preloadedAudio.volume = volume;
+        
+        preloadedAudio.play()
           .then(() => {
             setIsPlaying(true);
             setCurrentSong(song);
+            setCurrentTime(preloadedAudio.currentTime);
+            setDuration(preloadedAudio.duration);
           })
           .catch(error => {
-            console.error('Erro ao reproduzir áudio:', error);
-            toast({
-              title: "Erro",
-              description: "Não foi possível reproduzir esta música.",
-              variant: "destructive"
-            });
+            console.error('Erro ao reproduzir áudio precarregado:', error);
+            fallbackPlayMethod(song);
           });
-      };
-      
-      audioRef.current.onerror = () => {
-        toast({
-          title: "Erro",
-          description: "Não foi possível reproduzir esta música. O arquivo de áudio pode estar indisponível.",
-          variant: "destructive"
-        });
-      };
+      } else {
+        fallbackPlayMethod(song);
+      }
     }
   };
-  
+
+  const fallbackPlayMethod = (song: Song) => {
+    if (!audioRef.current || !song.audioUrl) return;
+    
+    audioRef.current.src = song.audioUrl;
+    audioRef.current.volume = volume;
+    
+    audioRef.current.onloadedmetadata = () => {
+      audioRef.current?.play()
+        .then(() => {
+          setIsPlaying(true);
+          setCurrentSong(song);
+        })
+        .catch(error => {
+          console.error('Erro ao reproduzir áudio:', error);
+          toast({
+            title: "Erro",
+            description: "Não foi possível reproduzir esta música.",
+            variant: "destructive"
+          });
+        });
+    };
+    
+    audioRef.current.onerror = () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível reproduzir esta música. O arquivo de áudio pode estar indisponível.",
+        variant: "destructive"
+      });
+    };
+  };
+
   const togglePlayPause = () => {
     if (!audioRef.current || !currentSong) return;
     
@@ -248,18 +328,32 @@ export default function SongsPage() {
       audioRef.current.play()
         .catch(error => {
           console.error('Erro ao reproduzir áudio:', error);
+          if (currentSong.audioUrl) {
+            audioRef.current!.src = currentSong.audioUrl;
+            audioRef.current!.load();
+            audioRef.current!.play().catch(e => {
+              console.error('Falha ao tentar novamente:', e);
+              toast({
+                title: "Erro de Reprodução",
+                description: "Não foi possível iniciar a reprodução. Tente outra música.",
+                variant: "destructive"
+              });
+            });
+          }
         });
     }
     
     setIsPlaying(!isPlaying);
   };
-  
+
   const nextSong = () => {
     if (!currentSong) return;
     
     const currentList = activeTab === 'traditionalSongs' 
       ? filteredTraditionalSongs 
       : filteredJamendoSongs;
+    
+    if (currentList.length === 0) return;
     
     if (isShuffle) {
       const randomIndex = Math.floor(Math.random() * currentList.length);
@@ -275,13 +369,15 @@ export default function SongsPage() {
       playSong(currentList[0]);
     }
   };
-  
+
   const prevSong = () => {
     if (!currentSong) return;
     
     const currentList = activeTab === 'traditionalSongs' 
       ? filteredTraditionalSongs 
       : filteredJamendoSongs;
+      
+    if (currentList.length === 0) return;
     
     if (isShuffle) {
       const randomIndex = Math.floor(Math.random() * currentList.length);
@@ -297,7 +393,7 @@ export default function SongsPage() {
       playSong(currentList[currentList.length - 1]);
     }
   };
-  
+
   const handleSeek = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -305,7 +401,7 @@ export default function SongsPage() {
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
-  
+
   const handleVolumeChange = (value: number[]) => {
     if (!audioRef.current) return;
     
@@ -319,7 +415,7 @@ export default function SongsPage() {
       setIsMuted(false);
     }
   };
-  
+
   const toggleMute = () => {
     if (!audioRef.current) return;
     
@@ -331,7 +427,7 @@ export default function SongsPage() {
       setIsMuted(true);
     }
   };
-  
+
   const toggleShuffle = () => {
     setIsShuffle(!isShuffle);
     toast({
@@ -340,7 +436,7 @@ export default function SongsPage() {
       variant: "default"
     });
   };
-  
+
   const toggleRepeat = () => {
     setIsRepeat(!isRepeat);
     
@@ -354,7 +450,7 @@ export default function SongsPage() {
       variant: "default"
     });
   };
-  
+
   const formatTime = (time: number) => {
     if (!time) return '0:00';
     
@@ -437,14 +533,23 @@ export default function SongsPage() {
               
               <div className="flex items-center space-x-2">
                 <span className="text-sm w-12 text-right text-gray-400">{formatTime(currentTime)}</span>
-                <Slider
-                  value={[currentTime]}
-                  min={0}
-                  max={duration || 100}
-                  step={1}
-                  onValueChange={handleSeek}
-                  className="flex-1"
-                />
+                <div className="flex-1">
+                  <Progress 
+                    value={(currentTime / duration) * 100} 
+                    className="h-2 cursor-pointer bg-[#5e5e5e]"
+                    onClick={(e) => {
+                      if (!audioRef.current || !duration) return;
+                      
+                      const progressBar = e.currentTarget;
+                      const rect = progressBar.getBoundingClientRect();
+                      const percentage = (e.clientX - rect.left) / rect.width;
+                      const newTime = percentage * duration;
+                      
+                      audioRef.current.currentTime = newTime;
+                      setCurrentTime(newTime);
+                    }}
+                  />
+                </div>
                 <span className="text-sm w-12 text-gray-400">{formatTime(duration)}</span>
               </div>
               
