@@ -385,6 +385,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string | null
+          created_by: string | null
           id: string
           name: string
           patient_ids: string[] | null
@@ -394,6 +395,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           name: string
           patient_ids?: string[] | null
@@ -403,6 +405,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           name?: string
           patient_ids?: string[] | null
