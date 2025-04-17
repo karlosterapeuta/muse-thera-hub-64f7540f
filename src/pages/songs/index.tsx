@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
+import { Search, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Shuffle, Repeat } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -85,6 +85,8 @@ export default function SongsPage() {
   const [jamendoSongs, setJamendoSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs'>('traditionalSongs');
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMobile = useIsMobile();
@@ -259,6 +261,12 @@ export default function SongsPage() {
       ? filteredTraditionalSongs 
       : filteredJamendoSongs;
     
+    if (isShuffle) {
+      const randomIndex = Math.floor(Math.random() * currentList.length);
+      playSong(currentList[randomIndex]);
+      return;
+    }
+    
     const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
     
     if (currentIndex !== -1 && currentIndex < currentList.length - 1) {
@@ -274,6 +282,12 @@ export default function SongsPage() {
     const currentList = activeTab === 'traditionalSongs' 
       ? filteredTraditionalSongs 
       : filteredJamendoSongs;
+    
+    if (isShuffle) {
+      const randomIndex = Math.floor(Math.random() * currentList.length);
+      playSong(currentList[randomIndex]);
+      return;
+    }
     
     const currentIndex = currentList.findIndex(song => song.id === currentSong.id);
     
@@ -318,6 +332,29 @@ export default function SongsPage() {
     }
   };
   
+  const toggleShuffle = () => {
+    setIsShuffle(!isShuffle);
+    toast({
+      title: isShuffle ? "Shuffle desativado" : "Shuffle ativado",
+      description: isShuffle ? "As músicas serão reproduzidas em ordem" : "As músicas serão reproduzidas aleatoriamente",
+      variant: "default"
+    });
+  };
+  
+  const toggleRepeat = () => {
+    setIsRepeat(!isRepeat);
+    
+    if (audioRef.current) {
+      audioRef.current.loop = !isRepeat;
+    }
+    
+    toast({
+      title: isRepeat ? "Repetição desativada" : "Repetição ativada",
+      description: isRepeat ? "A música não será repetida" : "A música atual será repetida",
+      variant: "default"
+    });
+  };
+  
   const formatTime = (time: number) => {
     if (!time) return '0:00';
     
@@ -328,43 +365,60 @@ export default function SongsPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className={`${isMobile ? "text-4xl" : "text-3xl"} mb-2`}>Músicas</CardTitle>
-          <CardDescription className={`${isMobile ? "text-2xl" : "text-xl"}`}>
+      <Card className="bg-[#121212] border-0 shadow-xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-b from-[#1A1F2C] to-[#121212] pb-2">
+          <CardTitle className={`${isMobile ? "text-4xl" : "text-3xl"} mb-2 text-white`}>Músicas</CardTitle>
+          <CardDescription className={`${isMobile ? "text-2xl" : "text-xl"} text-gray-300`}>
             Repertório de músicas para sessões de musicoterapia
           </CardDescription>
           <div className="relative mt-6">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <Search size={24} />
+            </div>
             <Input
               placeholder="Buscar música ou artista..."
-              className={`pl-12 ${isMobile ? "text-xl py-7" : "text-lg py-6"} rounded-xl`}
+              className={`pl-12 ${isMobile ? "text-xl py-7" : "text-lg py-6"} rounded-full bg-[#2A2A2A] border-0 text-white placeholder:text-gray-400 focus:ring-[#1DB954] focus:ring-2`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')} className="mt-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="traditionalSongs">Músicas Tradicionais</TabsTrigger>
-              <TabsTrigger value="jamendoSongs">Músicas Relaxantes</TabsTrigger>
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')} 
+            className="mt-6"
+          >
+            <TabsList className="grid w-full grid-cols-2 bg-[#2A2A2A] p-1 rounded-full">
+              <TabsTrigger 
+                value="traditionalSongs" 
+                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
+              >
+                Músicas Tradicionais
+              </TabsTrigger>
+              <TabsTrigger 
+                value="jamendoSongs" 
+                className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
+              >
+                Músicas Relaxantes
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
         
         {currentSong && (
-          <div className="px-6 py-4 bg-gray-50 border-t border-b">
+          <div className="px-6 py-4 bg-[#181818] border-t border-[#282828]">
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium text-lg">{currentSong.title}</h3>
-                  <p className="text-gray-600">{currentSong.artist}</p>
+                  <h3 className="font-medium text-lg text-white">{currentSong.title}</h3>
+                  <p className="text-gray-400">{currentSong.artist}</p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="icon" 
                     onClick={toggleMute}
+                    className="text-gray-400 hover:text-white hover:bg-[#282828]"
                   >
                     {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                   </Button>
@@ -375,13 +429,14 @@ export default function SongsPage() {
                       max={1}
                       step={0.01}
                       onValueChange={handleVolumeChange}
+                      className="cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
               
               <div className="flex items-center space-x-2">
-                <span className="text-sm w-12 text-right">{formatTime(currentTime)}</span>
+                <span className="text-sm w-12 text-right text-gray-400">{formatTime(currentTime)}</span>
                 <Slider
                   value={[currentTime]}
                   min={0}
@@ -390,42 +445,60 @@ export default function SongsPage() {
                   onValueChange={handleSeek}
                   className="flex-1"
                 />
-                <span className="text-sm w-12">{formatTime(duration)}</span>
+                <span className="text-sm w-12 text-gray-400">{formatTime(duration)}</span>
               </div>
               
               <div className="flex justify-center items-center space-x-4 mt-2">
                 <Button
-                  variant="outline"
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleShuffle}
+                  className={`text-gray-400 hover:text-white hover:bg-[#282828] ${isShuffle ? 'text-[#1DB954]' : ''}`}
+                >
+                  <Shuffle size={20} />
+                </Button>
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={prevSong}
+                  className="text-gray-400 hover:text-white hover:bg-[#282828]"
                 >
                   <SkipBack size={20} />
                 </Button>
                 <Button
                   variant="default"
                   size="icon"
-                  className="h-12 w-12 rounded-full"
+                  className="h-12 w-12 rounded-full bg-[#1DB954] hover:bg-[#1ED760] text-black"
                   onClick={togglePlayPause}
                 >
                   {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={nextSong}
+                  className="text-gray-400 hover:text-white hover:bg-[#282828]"
                 >
                   <SkipForward size={20} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleRepeat}
+                  className={`text-gray-400 hover:text-white hover:bg-[#282828] ${isRepeat ? 'text-[#1DB954]' : ''}`}
+                >
+                  <Repeat size={20} />
                 </Button>
               </div>
             </div>
           </div>
         )}
         
-        <CardContent>
+        <CardContent className="p-0">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')}>
-            <TabsContent value="traditionalSongs">
-              <ScrollArea className="h-[60vh]">
-                <div className="space-y-4">
+            <TabsContent value="traditionalSongs" className="m-0">
+              <ScrollArea className="h-[60vh] bg-[#121212]">
+                <div className="space-y-1 p-4">
                   {filteredTraditionalSongs.length === 0 ? (
                     <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
                       Nenhuma música encontrada com o termo "{searchTerm}"
@@ -434,22 +507,37 @@ export default function SongsPage() {
                     filteredTraditionalSongs.map((song) => (
                       <div
                         key={song.id}
-                        className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
-                          currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                        className={`p-3 hover:bg-[#282828] transition-colors cursor-pointer rounded-md flex justify-between items-center group ${
+                          currentSong?.id === song.id ? "bg-[#282828]" : ""
                         }`}
                         onClick={() => playSong(song)}
                       >
-                        <div>
-                          <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
-                          <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                        <div className="flex items-center">
+                          <div className="relative w-10 h-10 mr-4 flex items-center justify-center bg-[#333] rounded-md">
+                            {(currentSong?.id === song.id && isPlaying) ? (
+                              <div className="w-6 h-6 flex items-center justify-center">
+                                <span className="animate-pulse block w-1 h-1 mx-[1px] bg-[#1DB954] rounded-full"></span>
+                                <span className="animate-pulse block w-1 h-2 mx-[1px] bg-[#1DB954] rounded-full delay-75"></span>
+                                <span className="animate-pulse block w-1 h-3 mx-[1px] bg-[#1DB954] rounded-full delay-150"></span>
+                              </div>
+                            ) : (
+                              <Play size={18} className="ml-0.5 opacity-0 group-hover:opacity-100 text-white" />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className={`font-medium ${isMobile ? "text-xl" : "text-base"} mb-1 text-white`}>
+                              {song.title}
+                            </h3>
+                            <p className={`${isMobile ? "text-lg" : "text-sm"} text-gray-400`}>
+                              {song.artist}
+                            </p>
+                          </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-full"
-                        >
-                          {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-                        </Button>
+                        <div className="opacity-0 group-hover:opacity-100">
+                          {currentSong?.id === song.id && (
+                            <div className="w-2 h-2 bg-[#1DB954] rounded-full"></div>
+                          )}
+                        </div>
                       </div>
                     ))
                   )}
@@ -457,14 +545,14 @@ export default function SongsPage() {
               </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="jamendoSongs">
-              <ScrollArea className="h-[60vh]">
-                <div className="space-y-4">
+            <TabsContent value="jamendoSongs" className="m-0">
+              <ScrollArea className="h-[60vh] bg-[#121212]">
+                <div className="space-y-1 p-4">
                   {isLoading ? (
                     <div className="py-12 text-center">
                       <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
-                        <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                        <div className="h-8 w-64 bg-[#333] rounded mb-4"></div>
+                        <div className="h-4 w-48 bg-[#333] rounded"></div>
                       </div>
                     </div>
                   ) : filteredJamendoSongs.length === 0 ? (
@@ -475,22 +563,37 @@ export default function SongsPage() {
                     filteredJamendoSongs.map((song) => (
                       <div
                         key={song.id}
-                        className={`p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center ${
-                          currentSong?.id === song.id ? "bg-gray-100 border-primary" : ""
+                        className={`p-3 hover:bg-[#282828] transition-colors cursor-pointer rounded-md flex justify-between items-center group ${
+                          currentSong?.id === song.id ? "bg-[#282828]" : ""
                         }`}
                         onClick={() => playSong(song)}
                       >
-                        <div>
-                          <h3 className={`font-medium ${isMobile ? "text-2xl" : "text-xl"} mb-1`}>{song.title}</h3>
-                          <p className={`text-gray-600 ${isMobile ? "text-xl" : "text-base"}`}>{song.artist}</p>
+                        <div className="flex items-center">
+                          <div className="relative w-10 h-10 mr-4 flex items-center justify-center bg-[#333] rounded-md">
+                            {(currentSong?.id === song.id && isPlaying) ? (
+                              <div className="w-6 h-6 flex items-center justify-center">
+                                <span className="animate-pulse block w-1 h-1 mx-[1px] bg-[#1DB954] rounded-full"></span>
+                                <span className="animate-pulse block w-1 h-2 mx-[1px] bg-[#1DB954] rounded-full delay-75"></span>
+                                <span className="animate-pulse block w-1 h-3 mx-[1px] bg-[#1DB954] rounded-full delay-150"></span>
+                              </div>
+                            ) : (
+                              <Play size={18} className="ml-0.5 opacity-0 group-hover:opacity-100 text-white" />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className={`font-medium ${isMobile ? "text-xl" : "text-base"} mb-1 text-white`}>
+                              {song.title}
+                            </h3>
+                            <p className={`${isMobile ? "text-lg" : "text-sm"} text-gray-400`}>
+                              {song.artist}
+                            </p>
+                          </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-full"
-                        >
-                          {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-                        </Button>
+                        <div className="opacity-0 group-hover:opacity-100">
+                          {currentSong?.id === song.id && (
+                            <div className="w-2 h-2 bg-[#1DB954] rounded-full"></div>
+                          )}
+                        </div>
                       </div>
                     ))
                   )}
