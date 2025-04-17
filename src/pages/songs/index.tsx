@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   FileText, Music, Mic, Gift, 
-  PlayCircle, Sparkles, Plus, Download
+  Sparkles
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
@@ -13,8 +12,6 @@ import PDFViewer from "@/components/fala-magica/PDFViewer";
 import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
 import WordTracker from "@/components/fala-magica/WordTracker";
-// Removed SessionControl import
-
 import MagicalGuide from "@/components/fala-magica/MagicalGuide";
 
 import { 
@@ -196,22 +193,27 @@ export default function SongsPage() {
         </CardHeader>
       </Card>
       
-      <Tabs defaultValue="speech" className="space-y-6">
+      <Tabs defaultValue="practice" className="space-y-6">
         <TabsList className="w-full grid grid-cols-3 gap-2">
-          <TabsTrigger value="speech" className="flex items-center justify-center">
-            <Mic className="mr-2" /> Detector de Fala
+          <TabsTrigger value="practice" className="flex items-center justify-center">
+            <Mic className="mr-2" /> Prática de Fala
+          </TabsTrigger>
+          <TabsTrigger value="materials" className="flex items-center justify-center">
+            <FileText className="mr-2" /> Materiais
           </TabsTrigger>
           <TabsTrigger value="rewards" className="flex items-center justify-center">
-            <Gift className="mr-2" /> Mini-Mundo
-          </TabsTrigger>
-          <TabsTrigger value="pdfs" className="flex items-center justify-center">
-            <FileText className="mr-2" /> PDFs Interativos
+            <Gift className="mr-2" /> Recompensas
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="speech">
+        <TabsContent value="practice">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
+              <MagicalGuide 
+                character="fada"
+                message="Vamos praticar! Cada som é uma conquista mágica!"
+              />
+              <SpeechDetector onVocalization={handleVocalization} />
               <WordTracker />
             </div>
             
@@ -219,77 +221,69 @@ export default function SongsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center">
-                    <Mic className="mr-2 text-purple-500" /> Detector de Fala
+                    <Music className="mr-2 text-purple-500" /> Áudio Guiado
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    <MagicalGuide 
-                      character="fada"
-                      message="Vamos praticar! Cada som é uma conquista mágica!"
-                    />
-                    
-                    <SpeechDetector onVocalization={handleVocalization} />
-                  </div>
+                  {currentAudio ? (
+                    <AudioGuide audio={currentAudio} />
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      Selecione um áudio dos materiais para começar
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-              
-              <RewardSystem 
-                rewards={mockRewards} 
-                userProgress={userProgress}
-                onClaimReward={handleClaimReward}
-              />
             </div>
           </div>
         </TabsContent>
         
-        <TabsContent value="pdfs">
+        <TabsContent value="materials">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center">
-                    <FileText className="mr-2 text-purple-500" /> Cartelas Interativas
+                    <FileText className="mr-2 text-purple-500" /> PDFs e Áudios
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {mockPDFs.map(pdf => (
-                      <div 
-                        key={pdf.id}
-                        className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                          currentPDF?.id === pdf.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
-                        }`}
-                        onClick={() => setCurrentPDF(pdf)}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden">
-                            {pdf.thumbnailUrl ? (
-                              <img 
-                                src={pdf.thumbnailUrl} 
-                                alt={pdf.title}
-                                className="w-full h-full object-cover" 
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-purple-100">
-                                <FileText className="text-purple-500" />
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h4 className="font-medium text-purple-700">{pdf.title}</h4>
-                            <p className="text-sm text-gray-500">
-                              {pdf.words.length} palavras • {pdf.category}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-purple-700">Cartelas Interativas</h3>
+                      {mockPDFs.map(pdf => (
+                        <button
+                          key={pdf.id}
+                          onClick={() => setCurrentPDF(pdf)}
+                          className={`w-full text-left p-3 rounded-lg border transition-all ${
+                            currentPDF?.id === pdf.id 
+                              ? 'border-purple-500 bg-purple-50' 
+                              : 'border-gray-200 hover:border-purple-200'
+                          }`}
+                        >
+                          <div className="font-medium">{pdf.title}</div>
+                          <div className="text-sm text-gray-500">{pdf.category}</div>
+                        </button>
+                      ))}
+                    </div>
                     
-                    <Button className="w-full" variant="outline">
-                      <Plus size={16} className="mr-2" /> Adicionar Nova Cartela
-                    </Button>
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-purple-700">Áudios Guiados</h3>
+                      {mockAudios.map(audio => (
+                        <button
+                          key={audio.id}
+                          onClick={() => setCurrentAudio(audio)}
+                          className={`w-full text-left p-3 rounded-lg border transition-all ${
+                            currentAudio?.id === audio.id 
+                              ? 'border-purple-500 bg-purple-50' 
+                              : 'border-gray-200 hover:border-purple-200'
+                          }`}
+                        >
+                          <div className="font-medium">{audio.title}</div>
+                          <div className="text-sm text-gray-500">{audio.voiceType}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -299,96 +293,11 @@ export default function SongsPage() {
               {currentPDF ? (
                 <PDFViewer pdf={currentPDF} onPlayWord={() => {}} />
               ) : (
-                <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 h-full flex flex-col items-center justify-center">
-                  <FileText size={64} className="text-gray-300 mb-4" />
-                  <h3 className="text-xl font-medium text-gray-700 mb-2">Nenhuma cartela selecionada</h3>
-                  <p className="text-gray-500 text-center mb-6">
-                    Selecione uma cartela à esquerda ou crie uma nova para começar
-                  </p>
-                  <div className="flex space-x-4">
-                    <Button variant="outline">
-                      <Plus size={16} className="mr-2" /> Nova Cartela
-                    </Button>
-                    <Button>
-                      <Download size={16} className="mr-2" /> Baixar Exemplos
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="audios">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center">
-                    <Music className="mr-2 text-purple-500" /> Áudios Musicais
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {mockAudios.map(audio => (
-                      <div 
-                        key={audio.id}
-                        className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                          currentAudio?.id === audio.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
-                        }`}
-                        onClick={() => setCurrentAudio(audio)}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden">
-                            {audio.thumbnailUrl ? (
-                              <img 
-                                src={audio.thumbnailUrl} 
-                                alt={audio.title}
-                                className="w-full h-full object-cover" 
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-purple-100">
-                                <Music className="text-purple-500" />
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h4 className="font-medium text-purple-700">{audio.title}</h4>
-                            <p className="text-sm text-gray-500">
-                              {Math.floor(audio.duration / 60)}:{(audio.duration % 60).toString().padStart(2, '0')} • {audio.voiceType}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <Button className="w-full" variant="outline">
-                      <Plus size={16} className="mr-2" /> Adicionar Novo Áudio
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="md:col-span-2">
-              {currentAudio ? (
-                <AudioGuide audio={currentAudio} />
-              ) : (
-                <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 h-full flex flex-col items-center justify-center">
-                  <Music size={64} className="text-gray-300 mb-4" />
-                  <h3 className="text-xl font-medium text-gray-700 mb-2">Nenhum áudio selecionado</h3>
-                  <p className="text-gray-500 text-center mb-6">
-                    Selecione um áudio à esquerda ou adicione um novo para começar
-                  </p>
-                  <div className="flex space-x-4">
-                    <Button variant="outline">
-                      <Plus size={16} className="mr-2" /> Novo Áudio
-                    </Button>
-                    <Button>
-                      <Download size={16} className="mr-2" /> Baixar Exemplos
-                    </Button>
-                  </div>
+                <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
+                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                  <h3 className="text-lg font-medium text-gray-600">
+                    Selecione um material para visualizar
+                  </h3>
                 </div>
               )}
             </div>
@@ -396,70 +305,11 @@ export default function SongsPage() {
         </TabsContent>
         
         <TabsContent value="rewards">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <RewardSystem 
-                rewards={mockRewards} 
-                userProgress={userProgress}
-                onClaimReward={handleClaimReward}
-              />
-            </div>
-            
-            <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center">
-                    <Gift className="mr-2 text-purple-500" /> Progresso
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-medium text-gray-700 mb-2">Estatísticas</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-purple-50 p-4 rounded-lg text-center">
-                          <div className="text-3xl font-bold text-purple-600">
-                            {userProgress.vocalizationCount}
-                          </div>
-                          <div className="text-sm text-gray-600">Vocalizações</div>
-                        </div>
-                        <div className="bg-indigo-50 p-4 rounded-lg text-center">
-                          <div className="text-3xl font-bold text-indigo-600">
-                            {userProgress.totalPoints}
-                          </div>
-                          <div className="text-sm text-gray-600">Pontos</div>
-                        </div>
-                        <div className="bg-amber-50 p-4 rounded-lg text-center">
-                          <div className="text-3xl font-bold text-amber-600">
-                            {userProgress.unlockedRewards.length}
-                          </div>
-                          <div className="text-sm text-gray-600">Recompensas</div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg text-center">
-                          <div className="text-3xl font-bold text-green-600">
-                            {userProgress.completedActivities.length}
-                          </div>
-                          <div className="text-sm text-gray-600">Atividades</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-700 mb-2">Dicas para Pais e Terapeutas</h4>
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-800 text-sm">
-                        <ul className="list-disc pl-4 space-y-2">
-                          <li>Celebre todas as tentativas de vocalização, não apenas palavras formadas.</li>
-                          <li>Use as cartelas de palavras em momentos de brincadeira, sem pressão.</li>
-                          <li>Escute os áudios guiados junto com a criança e imite os sons.</li>
-                          <li>Mantenha sessões curtas (5-10 minutos) várias vezes ao dia, em vez de sessões longas.</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          <RewardSystem 
+            rewards={mockRewards} 
+            userProgress={userProgress}
+            onClaimReward={handleClaimReward}
+          />
         </TabsContent>
       </Tabs>
     </div>
