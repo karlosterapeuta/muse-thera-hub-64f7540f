@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,14 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
 import PDFViewer from "@/components/fala-magica/PDFViewer";
-import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
-import WordTracker from "@/components/fala-magica/WordTracker";
 import MagicalGuide from "@/components/fala-magica/MagicalGuide";
 
 import { 
   InteractivePDF, 
-  Word, 
   GuidedAudio, 
   Reward, 
   UserProgress 
@@ -148,7 +144,6 @@ const mockRewards: Reward[] = [
 
 export default function SongsPage() {
   const [currentPDF, setCurrentPDF] = useState<InteractivePDF | null>(null);
-  const [currentAudio, setCurrentAudio] = useState<GuidedAudio | null>(null);
   const [userProgress, setUserProgress] = useState<UserProgress>({
     totalPoints: 15,
     vocalizationCount: 3,
@@ -285,35 +280,13 @@ export default function SongsPage() {
         </TabsList>
         
         <TabsContent value="practice">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             <div className="space-y-6">
               <MagicalGuide 
                 character="fada"
                 message="Vamos praticar! Cada som é uma conquista mágica!"
               />
               <SpeechDetector onVocalization={handleVocalization} />
-              <WordTracker />
-            </div>
-            
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center">
-                    <Music className="mr-2 text-purple-500" /> Áudio Guiado
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {currentAudio ? (
-                    <AudioGuide audio={currentAudio} onComplete={handleCompleteAudio} />
-                  ) : (
-                    <div className="text-center text-gray-500 p-6">
-                      <Music className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                      <p>Selecione um áudio dos materiais para começar</p>
-                      <p className="text-sm mt-2">Vá para a guia Materiais e escolha um áudio guiado</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </div>
         </TabsContent>
