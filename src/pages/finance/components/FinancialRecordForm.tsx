@@ -15,7 +15,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
-import { useEffect } from "react";
 
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
@@ -163,7 +162,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   useEffect(() => {
     if (record) {
       const cleanDescription = record.description 
-        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "")
+        ? record.description.replace(/Dia da semana: [a-z]+\\s*\\|\\s*Horário: \\d{2}:\\d{2}\\s*\\|\\s*Duração: \\d+ minutos\\s*\\|\\s*/, "")
         : "";
         
       form.reset({
