@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Sparkles, Music, Bird } from "lucide-react";
@@ -32,7 +33,7 @@ export default function SpeechDetector({
   const [micError, setMicError] = useState<string | null>(null);
   const [soundDetected, setSoundDetected] = useState(false);
   const [maxVolume, setMaxVolume] = useState(0);
-  const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array());
+  const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array(128).fill(0));
   const { width, height } = useWindowSize();
   const { toast } = useToast();
   
@@ -89,6 +90,8 @@ export default function SpeechDetector({
       setIsListening(true);
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
+      setMaxVolume(0);
+      setAudioData(new Uint8Array(analyser.frequencyBinCount).fill(0));
       
       analyzeAudio();
       
@@ -191,17 +194,21 @@ export default function SpeechDetector({
       return;
     }
     
+    // Get frequency data
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
+    // Create a copy of the data with amplification for visualization
     const gainFactor = 1.5;
     const amplifiedData = new Uint8Array(dataArray.length);
     for (let i = 0; i < dataArray.length; i++) {
       amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
     }
     
+    // Update state with the amplified audio data for visualization
     setAudioData(amplifiedData);
     
+    // Calculate average volume for detection
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
     
@@ -249,6 +256,18 @@ export default function SpeechDetector({
       return () => clearInterval(interval);
     }
   }, [isListening, autoStop, timeLeft]);
+
+  // Start listening automatically when component mounts to fix the initial state
+  useEffect(() => {
+    // Auto-start after a short delay to allow the component to fully mount
+    const timer = setTimeout(() => {
+      if (!isListening) {
+        startListening();
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="relative bg-gradient-to-r from-purple-100 to-indigo-100 p-6 rounded-xl shadow-md">

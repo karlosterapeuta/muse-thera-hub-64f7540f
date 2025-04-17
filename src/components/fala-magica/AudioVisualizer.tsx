@@ -30,9 +30,14 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
 
   // Create an array of bars with their heights based on audio data
   const bars = Array.from({ length: numberOfBars }, (_, i) => {
+    // Map the bar index to a position in the audio data array
     const dataIndex = Math.floor(i * (audioData.length / numberOfBars));
     const value = audioData[dataIndex] || 0;
-    const heightPercentage = Math.max(2, (value / 255) * 100);
+    
+    // Apply a stronger amplification factor to make the visualization more responsive
+    const amplificationFactor = 1.5;
+    const baseHeightPercentage = Math.max(2, (value / 255) * 100);
+    const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     
     // Update max height if current height is greater
     if (heightPercentage > maxHeight[i]) {
@@ -40,7 +45,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     }
     
     // Add some randomness to make visualization more lively when active
-    const variationFactor = isActive ? (1 + Math.random() * 0.3) : 1;
+    const variationFactor = isActive && value > 5 ? (1 + Math.random() * 0.3) : 1;
     const displayHeight = `${heightPercentage * variationFactor}%`;
     const maxDisplayHeight = `${maxHeight[i]}%`;
     
