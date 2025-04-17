@@ -10,9 +10,18 @@ export const useClinics = () => {
   return useQuery({
     queryKey: ["clinics"],
     queryFn: async () => {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
+      // Fetch only clinics associated with the current user
       const { data, error } = await supabase
         .from("clinics")
         .select("*")
+        .eq("created_by", user.id)
         .order("name");
         
       if (error) {
@@ -35,9 +44,19 @@ export const useAddClinic = () => {
   
   return useMutation({
     mutationFn: async (clinic: Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">) => {
+      // Get the current user to set as creator
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
       const { data, error } = await supabase
         .from("clinics")
-        .insert(clinic)
+        .insert({
+          ...clinic,
+          created_by: user.id // Add the user ID as creator
+        })
         .select()
         .single();
         
