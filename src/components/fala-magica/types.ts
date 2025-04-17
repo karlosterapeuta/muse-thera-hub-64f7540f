@@ -60,3 +60,20 @@ export interface UserProgress {
   streakDays?: number;
   achievements?: string[];
 }
+
+export interface SessionProgress {
+  wordsAttempted: string[];
+  totalAttempts: number;
+  sessionDuration: number;
+  startTime: Date;
+  endTime?: Date;
+}
+
+export interface WordActivity {
+  word: string;
+  imageUrl?: string;
+  customImage?: boolean;
+  attempts: number;
+  lastAttempt?: Date;
+  completed: boolean;
+}

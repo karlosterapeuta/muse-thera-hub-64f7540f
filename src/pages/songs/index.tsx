@@ -181,6 +181,19 @@ export default function SongsPage() {
     }
   };
 
+  const handleSessionComplete = (stats: { attempts: number; duration: number }) => {
+    setUserProgress(prev => ({
+      ...prev,
+      vocalizationCount: prev.vocalizationCount + stats.attempts,
+      completedActivities: [...prev.completedActivities, `session-${Date.now()}`]
+    }));
+    
+    toast({
+      title: "Sessão Concluída",
+      description: `Total de vocalizações: ${stats.attempts}, Duração: ${Math.floor(stats.duration / 60)} minutos`
+    });
+  };
+
   return (
     <div className="container mx-auto py-6">
       <Card className="shadow-lg mb-6">
@@ -194,21 +207,56 @@ export default function SongsPage() {
         </CardHeader>
       </Card>
       
-      <Tabs defaultValue="pdfs" className="space-y-6">
+      <Tabs defaultValue="speech" className="space-y-6">
         <TabsList className="w-full grid grid-cols-4 gap-2">
-          <TabsTrigger value="pdfs" className="flex items-center justify-center">
-            <FileText className="mr-2" /> PDFs Interativos
-          </TabsTrigger>
-          <TabsTrigger value="audios" className="flex items-center justify-center">
-            <PlayCircle className="mr-2" /> Áudios Guiados
-          </TabsTrigger>
           <TabsTrigger value="speech" className="flex items-center justify-center">
             <Mic className="mr-2" /> Detector de Fala
           </TabsTrigger>
           <TabsTrigger value="rewards" className="flex items-center justify-center">
             <Gift className="mr-2" /> Mini-Mundo
           </TabsTrigger>
+          <TabsTrigger value="pdfs" className="flex items-center justify-center">
+            <FileText className="mr-2" /> PDFs Interativos
+          </TabsTrigger>
+          <TabsTrigger value="audios" className="flex items-center justify-center">
+            <PlayCircle className="mr-2" /> Áudios Guiados
+          </TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="speech">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <SessionControl onSessionComplete={handleSessionComplete} />
+              <WordTracker />
+            </div>
+            
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center">
+                    <Mic className="mr-2 text-purple-500" /> Detector de Fala
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <MagicalGuide 
+                      character="fada"
+                      message="Vamos praticar! Cada som é uma conquista mágica!"
+                    />
+                    
+                    <SpeechDetector onVocalization={handleVocalization} />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <RewardSystem 
+                rewards={mockRewards} 
+                userProgress={userProgress}
+                onClaimReward={handleClaimReward}
+              />
+            </div>
+          </div>
+        </TabsContent>
         
         <TabsContent value="pdfs">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -358,43 +406,6 @@ export default function SongsPage() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="speech">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center">
-                    <Mic className="mr-2 text-purple-500" /> Detector de Fala
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <MagicalGuide 
-                      character="fada"
-                      message="Olá! Vamos brincar de fazer sons? Eu vou te ajudar a ganhar recompensas mágicas!"
-                    />
-                    
-                    <p className="text-gray-600">
-                      Esta ferramenta usa o microfone para detectar vocalizações. Quando você fizer um som vocal, 
-                      mesmo um balbucio simples, você receberá recompensas mágicas!
-                    </p>
-                    
-                    <SpeechDetector onVocalization={handleVocalization} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div>
-              <RewardSystem 
-                rewards={mockRewards} 
-                userProgress={userProgress}
-                onClaimReward={handleClaimReward}
-              />
             </div>
           </div>
         </TabsContent>
