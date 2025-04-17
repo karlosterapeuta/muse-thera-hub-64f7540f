@@ -16,7 +16,8 @@ import {
   InteractivePDF, 
   GuidedAudio, 
   Reward, 
-  UserProgress 
+  UserProgress,
+  Word
 } from "@/components/fala-magica/types";
 
 const mockPDFs: InteractivePDF[] = [
@@ -232,25 +233,6 @@ export default function SongsPage() {
       title: "🔊 " + word.text,
       description: "Você ganhou 2 pontos por praticar esta palavra!",
     });
-  };
-
-  const handleCompleteAudio = () => {
-    if (!currentAudio) return;
-    
-    // Avoid adding the same activity twice
-    if (!userProgress.completedActivities.includes(currentAudio.id)) {
-      setUserProgress(prev => ({
-        ...prev,
-        totalPoints: prev.totalPoints + 10,
-        completedActivities: [...prev.completedActivities, currentAudio.id],
-        lastSessionDate: new Date()
-      }));
-      
-      toast({
-        title: "🎵 Áudio completo!",
-        description: "Você ganhou 10 pontos por terminar o áudio!",
-      });
-    }
   };
 
   return (
