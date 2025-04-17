@@ -269,7 +269,7 @@ const songs = [
   },
   {
     title: "O Sítio do Seu Lobato",
-    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓"],
+    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C���"],
     lyrics: ["Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio", "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha", "um", "ca", "chor", "ro", "au"],
     description: "Canção infantil educativa que apresenta os sons dos animais da fazenda."
   },
