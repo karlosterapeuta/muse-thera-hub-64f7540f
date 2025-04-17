@@ -15,7 +15,6 @@ import MagicalGuide from "@/components/fala-magica/MagicalGuide";
 
 import { 
   InteractivePDF, 
-  GuidedAudio, 
   Reward, 
   UserProgress,
   Word
@@ -48,35 +47,6 @@ const mockPDFs: InteractivePDF[] = [
       { id: "w7", text: "Cadeira", imageUrl: "https://placehold.co/200?text=Cadeira", audioUrl: "#", sungAudioUrl: "#" },
       { id: "w8", text: "Sofá", imageUrl: "https://placehold.co/200?text=Sofá", audioUrl: "#", sungAudioUrl: "#" },
     ],
-    createdAt: new Date()
-  }
-];
-
-const mockAudios: GuidedAudio[] = [
-  {
-    id: "a1",
-    title: "Animais com melodia",
-    description: "Nomes de animais com melodia suave",
-    audioUrl: "#",
-    thumbnailUrl: "https://placehold.co/200x150?text=Audio+1",
-    voiceType: "infantil",
-    category: "palavras",
-    tags: ["animais", "melodia", "infantil"],
-    duration: 120,
-    hasBackgroundMusic: true,
-    createdAt: new Date()
-  },
-  {
-    id: "a2",
-    title: "Palavras de casa",
-    description: "Objetos de casa com voz calma",
-    audioUrl: "#",
-    thumbnailUrl: "https://placehold.co/200x150?text=Audio+2",
-    voiceType: "adulto",
-    category: "frases",
-    tags: ["casa", "objetos"],
-    duration: 90,
-    hasBackgroundMusic: false,
     createdAt: new Date()
   }
 ];
@@ -267,9 +237,13 @@ export default function SongsPage() {
             <div className="space-y-6">
               <MagicalGuide 
                 character="fada"
-                message="Vamos praticar! Cada som é uma conquista mágica!"
+                message="Vamos praticar! Cada som é uma conquista mágica! Tente imitar os sons dos animais que aparecem."
               />
-              <SpeechDetector onVocalization={handleVocalization} />
+              <SpeechDetector 
+                onVocalization={handleVocalization}
+                sensitivity={10} // Lower sensitivity for easier detection
+                duration={30} // Longer duration to give more time to practice
+              />
             </div>
           </div>
         </TabsContent>
@@ -280,7 +254,7 @@ export default function SongsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center">
-                    <FileText className="mr-2 text-purple-500" /> PDFs e Áudios
+                    <FileText className="mr-2 text-purple-500" /> Materiais Visuais
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -299,19 +273,6 @@ export default function SongsPage() {
                         >
                           <div className="font-medium">{pdf.title}</div>
                           <div className="text-sm text-gray-500">{pdf.category}</div>
-                        </button>
-                      ))}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-purple-700">Áudios Guiados</h3>
-                      {mockAudios.map(audio => (
-                        <button
-                          key={audio.id}
-                          className={`w-full text-left p-3 rounded-lg border border-gray-200 hover:border-purple-200`}
-                        >
-                          <div className="font-medium">{audio.title}</div>
-                          <div className="text-sm text-gray-500">{audio.voiceType}</div>
                         </button>
                       ))}
                     </div>

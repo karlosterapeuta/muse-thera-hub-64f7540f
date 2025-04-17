@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Volume2, Star, Music, Sparkles } from "lucide-react";
+import { Mic, MicOff, Volume2, Star, Music, Sparkles, Dog, Cat, Bird, Fish, Baby } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import Confetti from 'react-confetti';
@@ -16,6 +16,9 @@ interface SpeechDetectorProps {
   duration?: number;
 }
 
+const animalIcons = [Dog, Cat, Bird, Fish, Baby];
+const animalSounds = ["woof", "meow", "tweet", "blub", "baba"];
+
 export default function SpeechDetector({
   onVocalization,
   sensitivity = 15,
@@ -28,6 +31,8 @@ export default function SpeechDetector({
   const [showConfetti, setShowConfetti] = useState(false);
   const [consecutiveVocalizations, setConsecutiveVocalizations] = useState(0);
   const [recentStars, setRecentStars] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [currentAnimal, setCurrentAnimal] = useState(0);
+  const [showAnimalReward, setShowAnimalReward] = useState(false);
   const { width, height } = useWindowSize();
   const { toast } = useToast();
   
@@ -50,12 +55,10 @@ export default function SpeechDetector({
 
   const startListening = async () => {
     try {
-      // Make sure to stop any existing stream before starting a new one
       stopListening();
       
       console.log("Requesting microphone permission...");
       
-      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: true,
@@ -68,7 +71,6 @@ export default function SpeechDetector({
       micPermissionGrantedRef.current = true;
       streamRef.current = stream;
       
-      // Initialize audio context
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) {
         throw new Error("AudioContext not supported in this browser");
@@ -77,12 +79,10 @@ export default function SpeechDetector({
       const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
       
-      // Create analyzer node
       const analyser = audioContext.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
       
-      // Connect microphone to analyser
       const microphone = audioContext.createMediaStreamSource(stream);
       microphone.connect(analyser);
       
@@ -90,7 +90,6 @@ export default function SpeechDetector({
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       
-      // Start analyzing audio
       analyzeAudio();
       
       if (autoStop) {
@@ -117,7 +116,6 @@ export default function SpeechDetector({
   const stopListening = () => {
     console.log("Stopping listening...");
     
-    // Stop audio tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => {
         track.stop();
@@ -126,19 +124,16 @@ export default function SpeechDetector({
       streamRef.current = null;
     }
     
-    // Clear timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
     
-    // Stop animation frame
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
     
-    // Close audio context
     if (audioContextRef.current) {
       if (audioContextRef.current.state !== 'closed') {
         try {
@@ -151,10 +146,8 @@ export default function SpeechDetector({
       audioContextRef.current = null;
     }
     
-    // Reset analyzer
     analyserRef.current = null;
     
-    // Update state
     setIsListening(false);
     setVolume(0);
   };
@@ -171,21 +164,32 @@ export default function SpeechDetector({
     }, 2000);
   };
 
+  const showAnimalAnimation = () => {
+    setShowAnimalReward(true);
+    
+    setTimeout(() => {
+      setShowAnimalReward(false);
+    }, 2000);
+  };
+
   const triggerVocalization = () => {
     const now = Date.now();
     const timeSinceLastVocalization = now - lastVocalizationRef.current;
     
-    // Prevent triggering too often (500ms delay)
     if (timeSinceLastVocalization < 500) return;
     
     lastVocalizationRef.current = now;
     
-    // Add shape to canvas when voice is detected
     if (typeof (window as any).addShapeToCanvas === 'function') {
-      (window as any).addShapeToCanvas();
+      for (let i = 0; i < 3; i++) {
+        (window as any).addShapeToCanvas();
+      }
     }
     
-    // Update vocalization count
+    if (consecutiveVocalizations % 3 === 0) {
+      showAnimalAnimation();
+    }
+    
     setConsecutiveVocalizations(prev => {
       const newCount = prev + 1;
       
@@ -208,14 +212,11 @@ export default function SpeechDetector({
       return newCount;
     });
     
-    // Show visual effects
     setShowConfetti(true);
     addStar();
     
-    // Call the provided callback
     onVocalization();
     
-    // Hide confetti after 3 seconds
     setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
@@ -228,26 +229,21 @@ export default function SpeechDetector({
     }
     
     try {
-      // Get audio data
       const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      // Calculate average volume
       const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
       setVolume(average);
       
-      // Debug volume
       if (average > 0) {
         console.log("Current volume:", average, "threshold:", sensitivity);
       }
       
-      // Check if volume is above threshold
       if (average > sensitivity) {
         console.log("Volume above threshold, triggering vocalization");
         triggerVocalization();
       }
       
-      // Continue analyzing
       animationFrameRef.current = requestAnimationFrame(analyzeAudio);
     } catch (error) {
       console.error("Error analyzing audio:", error);
@@ -271,6 +267,20 @@ export default function SpeechDetector({
     }
   }, [isListening, autoStop, timeLeft]);
 
+  const getPromptText = () => {
+    if (consecutiveVocalizations === 0) {
+      return "Clique no microfone e faça qualquer som!";
+    } else if (consecutiveVocalizations < 3) {
+      return `Tente dizer "${animalSounds[currentAnimal]}"!`;
+    } else if (consecutiveVocalizations < 5) {
+      return "Você está indo muito bem! Continue falando!";
+    } else {
+      return "Uau! Você é incrível falando!";
+    }
+  };
+
+  const AnimalIcon = animalIcons[currentAnimal];
+
   return (
     <div className="relative bg-gradient-to-r from-purple-100 to-indigo-100 p-6 rounded-xl shadow-md">
       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={200} />}
@@ -293,13 +303,36 @@ export default function SpeechDetector({
       <div className="flex flex-col items-center space-y-6">
         <h3 className="text-2xl font-bold text-purple-700 flex items-center gap-2">
           <Sparkles className="text-yellow-500" />
-          Detector de Fala
+          Detector de Fala Mágico
           <Sparkles className="text-yellow-500" />
         </h3>
         
         <div className="w-full max-w-md mx-auto mb-6">
           <SpeechCanvas width={400} height={300} />
         </div>
+        
+        <AnimatePresence>
+          {showAnimalReward && (
+            <motion.div
+              initial={{ scale: 0, y: 50 }}
+              animate={{ scale: [0, 1.5, 1], y: [50, -20, 0], rotate: [0, -10, 10, 0] }}
+              exit={{ scale: 0, y: -50 }}
+              transition={{ duration: 1 }}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
+            >
+              <div className="bg-white rounded-full p-6 shadow-lg">
+                <AnimalIcon size={80} className="text-purple-500" />
+              </div>
+              <motion.div 
+                className="text-center font-bold text-purple-700 text-xl mt-2"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: 3, duration: 0.5 }}
+              >
+                {animalSounds[currentAnimal].toUpperCase()}!
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative">
           <motion.div 
@@ -369,10 +402,11 @@ export default function SpeechDetector({
           </>
         )}
         
-        <motion.p 
-          className="text-center text-gray-700 max-w-xs"
+        <motion.div 
+          className="p-4 bg-white rounded-lg shadow-sm max-w-xs text-center"
           animate={{
             scale: isListening ? [1, 1.05, 1] : 1,
+            borderColor: ['#d8b4fe', '#c084fc', '#d8b4fe'],
           }}
           transition={{
             duration: 2,
@@ -380,13 +414,21 @@ export default function SpeechDetector({
             ease: "easeInOut"
           }}
         >
-          {isListening 
-            ? "Fale algo! Quando eu detectar sua voz, você ganhará uma recompensa!"
-            : "Clique no microfone para começar a detectar sua voz"}
-        </motion.p>
+          <motion.div
+            className="flex justify-center mb-2"
+            animate={{ rotate: isListening ? [0, 10, -10, 0] : 0 }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <AnimalIcon className="text-purple-500 w-8 h-8" />
+          </motion.div>
+          
+          <p className="font-medium text-purple-700">
+            {isListening ? getPromptText() : "Clique no microfone para começar a detectar sua voz"}
+          </p>
+        </motion.div>
         
         {consecutiveVocalizations > 0 && (
-          <div className="text-center">
+          <div className="text-center bg-purple-50 px-4 py-2 rounded-full">
             <p className="text-sm text-purple-600 font-medium">
               {consecutiveVocalizations} {consecutiveVocalizations === 1 ? 'som' : 'sons'} detectados!
             </p>
