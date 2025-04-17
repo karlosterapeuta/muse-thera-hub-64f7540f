@@ -86,7 +86,7 @@ export default function SpeechDetector({
       
       toast({
         title: "🎤 Microfone ativado!",
-        description: "Agora estou ouvindo você. Tente fazer qualquer som!",
+        description: "Tente fazer qualquer som! Vamos brincar juntos!",
       });
     } catch (error) {
       console.error("Error accessing microphone:", error);
