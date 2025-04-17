@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -158,12 +158,38 @@ export default function SongsPage() {
   });
   
   const { toast } = useToast();
+  
+  // Load user progress from localStorage on component mount
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('userProgress');
+    if (savedProgress) {
+      try {
+        const parsedProgress = JSON.parse(savedProgress);
+        // Ensure lastSessionDate is a Date object
+        parsedProgress.lastSessionDate = new Date(parsedProgress.lastSessionDate);
+        setUserProgress(parsedProgress);
+      } catch (error) {
+        console.error('Error loading saved progress:', error);
+      }
+    }
+    
+    // Set the first PDF as selected by default if none is selected
+    if (!currentPDF && mockPDFs.length > 0) {
+      setCurrentPDF(mockPDFs[0]);
+    }
+  }, []);
+  
+  // Save user progress to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('userProgress', JSON.stringify(userProgress));
+  }, [userProgress]);
 
   const handleVocalization = () => {
     setUserProgress(prev => ({
       ...prev,
       totalPoints: prev.totalPoints + 5,
-      vocalizationCount: prev.vocalizationCount + 1
+      vocalizationCount: prev.vocalizationCount + 1,
+      lastSessionDate: new Date()
     }));
     
     // Check if user has enough points to unlock new rewards
@@ -200,14 +226,11 @@ export default function SongsPage() {
   };
 
   const handlePlayWord = (word: Word) => {
-    // Create an audio element to play the word
-    const audio = new Audio(word.audioUrl);
-    audio.play();
-    
     // Add points for practicing words
     setUserProgress(prev => ({
       ...prev,
-      totalPoints: prev.totalPoints + 2
+      totalPoints: prev.totalPoints + 2,
+      lastSessionDate: new Date()
     }));
     
     toast({
@@ -224,7 +247,8 @@ export default function SongsPage() {
       setUserProgress(prev => ({
         ...prev,
         totalPoints: prev.totalPoints + 10,
-        completedActivities: [...prev.completedActivities, currentAudio.id]
+        completedActivities: [...prev.completedActivities, currentAudio.id],
+        lastSessionDate: new Date()
       }));
       
       toast({
@@ -282,8 +306,10 @@ export default function SongsPage() {
                   {currentAudio ? (
                     <AudioGuide audio={currentAudio} onComplete={handleCompleteAudio} />
                   ) : (
-                    <div className="text-center text-gray-500">
-                      Selecione um áudio dos materiais para começar
+                    <div className="text-center text-gray-500 p-6">
+                      <Music className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                      <p>Selecione um áudio dos materiais para começar</p>
+                      <p className="text-sm mt-2">Vá para a guia Materiais e escolha um áudio guiado</p>
                     </div>
                   )}
                 </CardContent>
@@ -347,11 +373,13 @@ export default function SongsPage() {
               {currentPDF ? (
                 <PDFViewer pdf={currentPDF} onPlayWord={handlePlayWord} />
               ) : (
-                <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                  <h3 className="text-lg font-medium text-gray-600">
-                    Selecione um material para visualizar
-                  </h3>
+                <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center h-full flex items-center justify-center">
+                  <div>
+                    <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                    <h3 className="text-lg font-medium text-gray-600">
+                      Selecione um material para visualizar
+                    </h3>
+                  </div>
                 </div>
               )}
             </div>

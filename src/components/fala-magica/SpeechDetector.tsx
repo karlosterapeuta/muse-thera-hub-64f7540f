@@ -108,7 +108,7 @@ export default function SpeechDetector({
 
   const addStar = () => {
     const starId = Date.now();
-    const x = Math.random() * (width - 100); // Keep stars within boundaries
+    const x = Math.random() * (width - 100);
     const y = Math.random() * (height - 100);
     
     setRecentStars(prev => [...prev, { id: starId, x, y }]);

@@ -7,6 +7,8 @@ import { Volume2, Music, Eye, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { InteractivePDF, Word } from './types';
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
+import { playRewardSound } from "@/utils/soundRewards";
 
 interface PDFViewerProps {
   pdf: InteractivePDF;
@@ -17,20 +19,53 @@ export default function PDFViewer({ pdf, onPlayWord }: PDFViewerProps) {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [activeView, setActiveView] = useState<'pdf' | 'words'>('words');
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const { toast } = useToast();
 
   const handlePlayRegular = (word: Word) => {
     setSelectedWord(word);
     onPlayWord(word);
+    
+    // Create audio element to play regular version
+    const audio = new Audio(word.audioUrl);
+    audio.onended = () => {
+      toast({
+        title: "Palavra reproduzida",
+        description: `Você ouviu a palavra "${word.text}"`,
+      });
+    };
+    audio.play().catch(error => {
+      console.error("Error playing audio:", error);
+      toast({
+        title: "Erro ao reproduzir",
+        description: "Não foi possível reproduzir o áudio",
+        variant: "destructive",
+      });
+    });
   };
 
   const handlePlaySung = (word: Word) => {
     setSelectedWord(word);
     setIsPlayingMusic(true);
+    playRewardSound('levelUp');
     
     // Create audio element to play sung version
     const audio = new Audio(word.sungAudioUrl);
-    audio.onended = () => setIsPlayingMusic(false);
-    audio.play();
+    audio.onended = () => {
+      setIsPlayingMusic(false);
+      toast({
+        title: "Palavra cantada",
+        description: `Você ouviu a versão cantada de "${word.text}"`,
+      });
+    };
+    audio.play().catch(error => {
+      console.error("Error playing sung audio:", error);
+      setIsPlayingMusic(false);
+      toast({
+        title: "Erro ao reproduzir",
+        description: "Não foi possível reproduzir o áudio cantado",
+        variant: "destructive",
+      });
+    });
     
     onPlayWord(word);
   };

@@ -10,12 +10,20 @@ const REWARD_NOTES = {
   achievement: ['G', 'C↑', 'E', 'G']
 };
 
+/**
+ * Plays a reward sound when a user achieves something
+ * @param type The type of reward sound to play
+ */
 export const playRewardSound = (type: RewardSound) => {
   const notes = REWARD_NOTES[type];
   
   notes.forEach((note, index) => {
     setTimeout(() => {
-      playNoteSound(note);
+      try {
+        playNoteSound(note);
+      } catch (error) {
+        console.error(`Error playing ${type} sound:`, error);
+      }
     }, index * 200); // Play each note with a 200ms delay
   });
 };
