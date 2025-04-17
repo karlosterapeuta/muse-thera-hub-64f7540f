@@ -216,6 +216,20 @@ export default function SpeechDetector({
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   };
 
+  const getVolumeColor = (volume: number) => {
+    if (volume < 20) return 'bg-purple-500';
+    if (volume < 40) return 'bg-blue-500';
+    if (volume < 60) return 'bg-green-500';
+    if (volume < 80) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const getVolumeStyles = (currentVolume: number) => {
+    const baseStyles = "transition-all duration-200 h-full rounded-full";
+    const colorClass = getVolumeColor(currentVolume);
+    return `${baseStyles} ${colorClass}`;
+  };
+
   useEffect(() => {
     if (isListening && autoStop && timeLeft > 0) {
       const interval = setInterval(() => {
@@ -325,23 +339,49 @@ export default function SpeechDetector({
                 <Volume2 className={`${soundDetected ? 'text-green-500 animate-pulse' : 'text-purple-500'}`} />
                 <motion.span 
                   className={`font-medium ${soundDetected ? 'text-green-600' : 'text-purple-700'}`}
-                  animate={soundDetected ? { scale: [1, 1.2, 1] } : {}}
+                  animate={soundDetected ? { 
+                    scale: [1, 1.1, 1],
+                    transition: { duration: 0.3, repeat: Infinity }
+                  } : {}}
                 >
                   Volume: {Math.round(volume)} | Máximo: {Math.round(maxVolume)}
                 </motion.span>
               </div>
               {soundDetected && (
-                <div className="text-green-600 font-medium flex items-center space-x-2">
+                <motion.div 
+                  className="text-green-600 font-medium flex items-center space-x-2"
+                  animate={{ 
+                    opacity: [1, 0.7, 1],
+                    transition: { duration: 1, repeat: Infinity }
+                  }}
+                >
                   <Sparkles className="w-5 h-5 text-green-500" />
                   Som detectado!
-                </div>
+                </motion.div>
               )}
             </div>
-            <Progress 
-              value={volume} 
-              max={100} 
-              className={`h-4 ${soundDetected ? 'border-2 border-green-500' : ''}`} 
-            />
+            
+            <div className="relative w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+              <motion.div
+                className={getVolumeStyles(volume)}
+                style={{
+                  width: `${Math.min(100, volume)}%`,
+                }}
+                animate={{
+                  scale: soundDetected ? [1, 1.02, 1] : 1
+                }}
+                transition={{
+                  duration: 0.3,
+                  repeat: soundDetected ? Infinity : 0
+                }}
+              />
+            </div>
+            
+            <div className="w-full flex justify-between text-xs text-gray-500">
+              <span>Baixo</span>
+              <span>Médio</span>
+              <span>Alto</span>
+            </div>
           </div>
         )}
         
