@@ -257,9 +257,9 @@ const songs = [
   },
   {
     title: "Passarinho que Som é Esse",
-    notes: ["G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C↓", "G", "G", "E", "G", "A", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu"],
-    description: "Canção educativa brasileira para ensinar sons de animais, com todos os versos."
+    notes: ["C↓", "C↓", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G", "C↓", "C↓", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G"],
+    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu", "Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se"],
+    description: "Canção infantil brasileira sobre os sons dos passarinhos."
   },
   {
     title: "Sapo Cururu",
