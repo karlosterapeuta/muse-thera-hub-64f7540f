@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +13,7 @@ import PDFViewer from "@/components/fala-magica/PDFViewer";
 import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
 import WordTracker from "@/components/fala-magica/WordTracker";
-import SessionControl from "@/components/fala-magica/SessionControl";
+// Removed SessionControl import
 
 import MagicalGuide from "@/components/fala-magica/MagicalGuide";
 
@@ -184,19 +183,6 @@ export default function SongsPage() {
     }
   };
 
-  const handleSessionComplete = (stats: { attempts: number; duration: number }) => {
-    setUserProgress(prev => ({
-      ...prev,
-      vocalizationCount: prev.vocalizationCount + stats.attempts,
-      completedActivities: [...prev.completedActivities, `session-${Date.now()}`]
-    }));
-    
-    toast({
-      title: "Sessão Concluída",
-      description: `Total de vocalizações: ${stats.attempts}, Duração: ${Math.floor(stats.duration / 60)} minutos`
-    });
-  };
-
   return (
     <div className="container mx-auto py-6">
       <Card className="shadow-lg mb-6">
@@ -211,7 +197,7 @@ export default function SongsPage() {
       </Card>
       
       <Tabs defaultValue="speech" className="space-y-6">
-        <TabsList className="w-full grid grid-cols-4 gap-2">
+        <TabsList className="w-full grid grid-cols-3 gap-2">
           <TabsTrigger value="speech" className="flex items-center justify-center">
             <Mic className="mr-2" /> Detector de Fala
           </TabsTrigger>
@@ -221,15 +207,11 @@ export default function SongsPage() {
           <TabsTrigger value="pdfs" className="flex items-center justify-center">
             <FileText className="mr-2" /> PDFs Interativos
           </TabsTrigger>
-          <TabsTrigger value="audios" className="flex items-center justify-center">
-            <PlayCircle className="mr-2" /> Áudios Guiados
-          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="speech">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
-              <SessionControl onSessionComplete={handleSessionComplete} />
               <WordTracker />
             </div>
             
