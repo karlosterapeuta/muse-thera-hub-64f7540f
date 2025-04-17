@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Play, Pause, SkipForward, SkipBack, Volume2, 
@@ -67,7 +66,6 @@ export default function MusicPlayer({
         barRadius: 3,
         barGap: 2,
         height: 80,
-        responsive: true,
       });
       
       waveformRef.current = wavesurfer;
@@ -256,7 +254,7 @@ export default function MusicPlayer({
       
       toast({
         title: "Arquivo carregado",
-        description: `"${newSong.title}" foi adicionado à biblioteca`,
+        description: `"${newSong.title}" foi adicionado à biblioteca",
         variant: "default"
       });
     };

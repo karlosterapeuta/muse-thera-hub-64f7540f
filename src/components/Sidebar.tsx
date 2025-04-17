@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -109,17 +109,18 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
               </NavLink>
             )
           ))}
-          <Link
+          <NavLink
             to="/music-therapy"
-            className={`flex items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === "/music-therapy"
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }`}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors",
+                isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+              )
+            }
           >
             <Music size={20} className="mr-3" />
-            Musicoterapia TEA
-          </Link>
+            {!collapsed && <span>Musicoterapia TEA</span>}
+          </NavLink>
         </div>
       </nav>
 
