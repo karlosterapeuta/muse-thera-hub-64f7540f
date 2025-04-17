@@ -73,7 +73,7 @@ export const useAddClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao adicionar clínica",
         description: error.message,
@@ -114,7 +114,7 @@ export const useUpdateClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao atualizar clínica",
         description: error.message,
@@ -148,7 +148,7 @@ export const useDeleteClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao excluir clínica",
         description: error.message,
