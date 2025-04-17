@@ -19,35 +19,35 @@ export const searchYouTube = async (query: string): Promise<YouTubeSearchResult[
     // Mock YouTube search results
     const mockResults: YouTubeSearchResult[] = [
       {
-        id: 1001,
+        id: "1001",
         title: "Música Infantil - Atirei o Pau no Gato",
         artist: "Canal Infantil",
         audioUrl: "https://assets.mixkit.co/music/preview/mixkit-sweet-and-sour-keys-846.mp3",
         thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/default.jpg"
       },
       {
-        id: 1002,
+        id: "1002",
         title: "Ciranda Cirandinha - Cantigas de Roda",
         artist: "Música Popular",
         audioUrl: "https://assets.mixkit.co/music/preview/mixkit-piano-reflections-22.mp3",
         thumbnailUrl: "https://img.youtube.com/vi/RcQn5BZGE8A/default.jpg"
       },
       {
-        id: 1003,
+        id: "1003",
         title: "O Sapo não Lava o Pé - Música Infantil",
         artist: "Galinha Pintadinha",
         audioUrl: "https://assets.mixkit.co/music/preview/mixkit-life-is-a-dream-837.mp3",
         thumbnailUrl: "https://img.youtube.com/vi/VZGN4hI7T9E/default.jpg"
       },
       {
-        id: 1004,
+        id: "1004",
         title: "O Cravo e a Rosa - Música Infantil",
         artist: "Turma da Criança",
         audioUrl: "https://assets.mixkit.co/music/preview/mixkit-just-kidding-13.mp3",
         thumbnailUrl: "https://img.youtube.com/vi/NF3SBQr6ZtY/default.jpg"
       },
       {
-        id: 1005,
+        id: "1005",
         title: "A Barata Diz Que Tem - Canção Popular",
         artist: "Cantiga Infantil",
         audioUrl: "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
