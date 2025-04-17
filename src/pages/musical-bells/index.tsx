@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -276,8 +275,20 @@ const songs = [
   },
   {
     title: "O Sítio do Seu Lobato",
-    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C"],
-    lyrics: ["Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio", "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha", "um", "ca", "chor", "ro", "au"],
+    notes: [
+      "G", "G", "G", "D", "E", "E", "D", "B", "B", "B", "A", "A", "G", 
+      "G", "G", "D", "E", "E", "D", "B", "B", "B", "A", "A", "G",
+      "D", "D", "G", "G", "G", "D", "E",
+      "D", "D", "G", "G", "G", "D", "E",
+      "D", "D", "G", "G", "G",
+      "D", "D", "G", "G", "G",
+      "B", "B", "A", "A", "G"
+    ],
+    lyrics: [
+      "Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio",
+      "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha",
+      "um", "ca", "chor", "ro", "au"
+    ],
     description: "Canção infantil educativa que apresenta os sons dos animais da fazenda."
   },
   {
