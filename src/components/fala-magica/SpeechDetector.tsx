@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Music, Sparkles } from "lucide-react";
@@ -176,17 +175,14 @@ export default function SpeechDetector({
     const now = Date.now();
     const timeSinceLastVocalization = now - lastVocalizationRef.current;
     
-    // Prevent triggering too often
+    // Prevent triggering too often (500ms delay)
     if (timeSinceLastVocalization < 500) return;
     
     lastVocalizationRef.current = now;
     
-    // Add shape to canvas
-    console.log("Triggering vocalization, adding shape to canvas");
+    // Add shape to canvas when voice is detected
     if (typeof (window as any).addShapeToCanvas === 'function') {
       (window as any).addShapeToCanvas();
-    } else {
-      console.error("addShapeToCanvas function not found");
     }
     
     // Update vocalization count
@@ -301,7 +297,7 @@ export default function SpeechDetector({
           <Sparkles className="text-yellow-500" />
         </h3>
         
-        <div className="w-full max-w-md mx-auto">
+        <div className="w-full max-w-md mx-auto mb-6">
           <SpeechCanvas width={400} height={300} />
         </div>
         
