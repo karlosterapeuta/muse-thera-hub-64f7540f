@@ -88,13 +88,26 @@ export const useAddClinic = () => {
   });
 };
 
+type ErrorWithMessage = {
+  message: string;
+};
+
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as ErrorWithMessage).message === "string"
+  );
+}
+
 export const useUpdateClinic = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
   return useMutation<
     Clinic,
-    Error | PostgrestError,
+    unknown,
     Partial<Clinic> & { id: string }
   >({
     mutationFn: async (clinic) => {
@@ -124,11 +137,14 @@ export const useUpdateClinic = () => {
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
     onError: (error) => {
-      const errorMessage = 
-        error instanceof Error ? error.message :
-        'code' in error ? error.message :
-        "Erro desconhecido";
-        
+      let errorMessage = "Erro desconhecido";
+      
+      if (isErrorWithMessage(error)) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Erro ao atualizar clínica",
         description: errorMessage,
@@ -144,7 +160,7 @@ export const useDeleteClinic = () => {
   
   return useMutation<
     string,
-    Error | PostgrestError,
+    unknown,
     string
   >({
     mutationFn: async (id) => {
@@ -167,11 +183,14 @@ export const useDeleteClinic = () => {
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
     onError: (error) => {
-      const errorMessage = 
-        error instanceof Error ? error.message :
-        'code' in error ? error.message :
-        "Erro desconhecido";
-        
+      let errorMessage = "Erro desconhecido";
+      
+      if (isErrorWithMessage(error)) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Erro ao excluir clínica",
         description: errorMessage,
