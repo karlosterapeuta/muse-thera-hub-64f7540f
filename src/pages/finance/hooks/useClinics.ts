@@ -10,7 +10,7 @@ export const useClinics = () => {
   
   return useQuery<Clinic[], Error>({
     queryKey: ["clinics"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Clinic[]> => {
       // Get the current user
       const { data: { user } } = await supabase.auth.getUser();
       
