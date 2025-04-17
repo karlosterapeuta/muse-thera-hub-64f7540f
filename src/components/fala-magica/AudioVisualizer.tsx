@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface AudioVisualizerProps {
   audioData: Uint8Array;
@@ -9,40 +9,94 @@ interface AudioVisualizerProps {
 
 const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
   const numberOfBars = 32; // Number of frequency bars to display
+  const [maxHeight, setMaxHeight] = useState<number[]>(Array(numberOfBars).fill(2));
+  
   const colors = [
     'bg-purple-500', 'bg-pink-500', 'bg-red-500', 
     'bg-orange-500', 'bg-yellow-500', 'bg-lime-400',
     'bg-green-500', 'bg-cyan-400', 'bg-blue-500'
   ];
 
+  // Update max heights with decay effect
+  useEffect(() => {
+    if (!isActive) return;
+    
+    const timer = setInterval(() => {
+      setMaxHeight(prev => prev.map(height => Math.max(2, height * 0.95)));
+    }, 150);
+    
+    return () => clearInterval(timer);
+  }, [isActive]);
+
   // Create an array of bars with their heights based on audio data
   const bars = Array.from({ length: numberOfBars }, (_, i) => {
     const dataIndex = Math.floor(i * (audioData.length / numberOfBars));
     const value = audioData[dataIndex] || 0;
-    const height = `${Math.max(2, (value / 255) * 100)}%`;
+    const heightPercentage = Math.max(2, (value / 255) * 100);
+    
+    // Update max height if current height is greater
+    if (heightPercentage > maxHeight[i]) {
+      maxHeight[i] = heightPercentage;
+    }
+    
+    // Add some randomness to make visualization more lively when active
+    const variationFactor = isActive ? (1 + Math.random() * 0.3) : 1;
+    const displayHeight = `${heightPercentage * variationFactor}%`;
+    const maxDisplayHeight = `${maxHeight[i]}%`;
+    
     const colorIndex = Math.floor((i / numberOfBars) * colors.length);
     
     return {
-      height,
+      height: displayHeight,
+      maxHeight: maxDisplayHeight,
       color: colors[colorIndex],
+      value
     };
   });
 
   return (
-    <div className="w-full h-48 bg-black rounded-lg p-4 flex items-end gap-1">
+    <div className="w-full h-48 bg-black bg-opacity-90 rounded-lg p-4 flex items-end gap-1 relative">
       {bars.map((bar, index) => (
-        <motion.div
-          key={index}
-          className={`w-full ${bar.color}`}
-          style={{ height: bar.height }}
-          initial={{ height: "2%" }}
-          animate={{ 
-            height: bar.height,
-            transition: { type: "spring", stiffness: 300, damping: 20 }
-          }}
-          transition={{ duration: 0.1 }}
-        />
+        <div key={index} className="relative h-full flex-1 flex flex-col justify-end">
+          {/* Peak indicator */}
+          <motion.div
+            className={`absolute w-full h-1 ${bar.color} opacity-70 rounded-t-sm z-10`}
+            style={{ bottom: bar.maxHeight }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
+            transition={{ duration: 0.2 }}
+          />
+          
+          {/* Main bar */}
+          <motion.div
+            className={`w-full ${bar.color} rounded-sm ${
+              bar.value > 120 ? 'animate-pulse' : ''
+            }`}
+            style={{ height: bar.height }}
+            initial={{ height: "2%" }}
+            animate={{ 
+              height: bar.height,
+              transition: { 
+                type: "spring", 
+                stiffness: 300, 
+                damping: isActive ? 10 : 30 
+              }
+            }}
+            transition={{ duration: 0.05 }}
+          />
+        </div>
       ))}
+      
+      {/* Grid lines */}
+      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none p-4">
+        {[0, 1, 2, 3].map((_, i) => (
+          <div 
+            key={i} 
+            className="w-full h-px bg-white bg-opacity-10"
+            style={{ bottom: `${i * 25}%` }}
+          />
+        ))}
+      </div>
     </div>
   );
 };

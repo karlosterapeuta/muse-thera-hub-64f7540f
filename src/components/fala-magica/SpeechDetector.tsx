@@ -193,7 +193,14 @@ export default function SpeechDetector({
     
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
-    setAudioData(dataArray);
+    
+    const gainFactor = 1.5;
+    const amplifiedData = new Uint8Array(dataArray.length);
+    for (let i = 0; i < dataArray.length; i++) {
+      amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
+    }
+    
+    setAudioData(amplifiedData);
     
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
@@ -270,7 +277,7 @@ export default function SpeechDetector({
         </h3>
         
         <div className="w-full">
-          <AudioVisualizer audioData={audioData} isActive={isListening} />
+          <AudioVisualizer audioData={audioData} isActive={isListening && volume > 5} />
         </div>
         
         {micError && (
