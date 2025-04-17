@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +13,6 @@ import SpeechDetector from "@/components/fala-magica/SpeechDetector";
 import PDFViewer from "@/components/fala-magica/PDFViewer";
 import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
-import MusicPlayer from "@/components/music-therapy/MusicPlayer";
 
 // Import types
 import { 
@@ -24,7 +22,6 @@ import {
   Reward, 
   UserProgress 
 } from "@/components/fala-magica/types";
-import { Song, Playlist } from "@/components/music-therapy/types";
 
 // Mock data for development
 const mockPDFs: InteractivePDF[] = [
@@ -123,24 +120,6 @@ const mockRewards: Reward[] = [
 ];
 
 export default function SongsPage() {
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playlists, setPlaylists] = useState<Playlist[]>([
-    {
-      id: 'library',
-      name: 'Biblioteca',
-      songs: [],
-      createdAt: new Date()
-    },
-    {
-      id: 'favorites',
-      name: 'Favoritos',
-      songs: [],
-      createdAt: new Date()
-    }
-  ]);
-  
-  // Fala Mágica state
   const [currentPDF, setCurrentPDF] = useState<InteractivePDF | null>(null);
   const [currentAudio, setCurrentAudio] = useState<GuidedAudio | null>(null);
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -153,9 +132,7 @@ export default function SongsPage() {
   
   const { toast } = useToast();
 
-  // Function to handle vocalization detection
   const handleVocalization = () => {
-    // Add points for vocalization
     setUserProgress(prev => ({
       ...prev,
       totalPoints: prev.totalPoints + 5,
@@ -168,48 +145,11 @@ export default function SongsPage() {
     });
   };
   
-  // Function to handle claiming rewards
   const handleClaimReward = (rewardId: string) => {
     if (!userProgress.unlockedRewards.includes(rewardId)) {
       setUserProgress(prev => ({
         ...prev,
         unlockedRewards: [...prev.unlockedRewards, rewardId]
-      }));
-    }
-  };
-  
-  // MusicPlayer functions
-  const addSongToPlaylist = (playlistId: string, song: Song) => {
-    setPlaylists(playlists.map(playlist => {
-      if (playlist.id === playlistId && !playlist.songs.find(s => s.id === song.id)) {
-        return { ...playlist, songs: [...playlist.songs, song] };
-      }
-      return playlist;
-    }));
-  };
-
-  const toggleFavorite = (song: Song) => {
-    const updatedSong = { ...song, isFavorite: !song.isFavorite };
-    
-    // Update the song in all playlists
-    setPlaylists(playlists.map(playlist => ({
-      ...playlist,
-      songs: playlist.songs.map(s => s.id === song.id ? updatedSong : s)
-    })));
-
-    // If favoriting, add to favorites playlist
-    if (!song.isFavorite) {
-      addSongToPlaylist('favorites', updatedSong);
-    } else {
-      // If unfavoriting, remove from favorites playlist
-      setPlaylists(playlists.map(playlist => {
-        if (playlist.id === 'favorites') {
-          return {
-            ...playlist,
-            songs: playlist.songs.filter(s => s.id !== song.id)
-          };
-        }
-        return playlist;
       }));
     }
   };
@@ -496,24 +436,6 @@ export default function SongsPage() {
           </div>
         </TabsContent>
       </Tabs>
-      
-      <Card className="mt-6 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl mb-2 text-purple-700">
-            <Music className="inline-block mr-2" /> Músicas para Musicoterapia
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <MusicPlayer
-            currentSong={currentSong}
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            playlists={playlists}
-            addSongToPlaylist={addSongToPlaylist}
-            toggleFavorite={toggleFavorite}
-          />
-        </CardContent>
-      </Card>
     </div>
   );
 }
