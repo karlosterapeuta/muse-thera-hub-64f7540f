@@ -2,13 +2,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Shuffle, Repeat } from "lucide-react";
+import { Search, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Shuffle, Repeat, Youtube } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { searchYouTube, YouTubeSearchResult } from "@/utils/youtubeUtils";
 
 interface Song {
   id: number;
@@ -16,6 +17,8 @@ interface Song {
   artist: string;
   audioUrl?: string;
   fallbackUrls?: string[];
+  thumbnailUrl?: string;
+  source?: 'traditional' | 'relaxing' | 'youtube';
 }
 
 const traditionalSongUrls = [
@@ -58,10 +61,8 @@ const musicApiEndpoints = [
   "https://assets.mixkit.co/sfx/download/mixkit-crickets-and-insects-in-the-wild-ambience-58.mp3",
 ];
 
-// This check is updated to avoid no-cors to prevent CORS issues
 const checkAudioUrl = async (url: string): Promise<boolean> => {
   try {
-    // Just do a simple HEAD request without no-cors to properly detect errors
     const response = await fetch(url, { method: 'HEAD' });
     return response.ok;
   } catch (error) {
@@ -117,7 +118,8 @@ export default function SongsPage() {
     fallbackUrls: [
       fallbackSongUrls[index % fallbackSongUrls.length],
       ...traditionalSongUrls.filter((_, i) => i !== index % traditionalSongUrls.length).slice(0, 2)
-    ]
+    ],
+    source: 'traditional' as const
   }));
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,14 +130,17 @@ export default function SongsPage() {
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [jamendoSongs, setJamendoSongs] = useState<Song[]>([]);
+  const [youtubeSongs, setYoutubeSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs'>('traditionalSongs');
+  const [isSearchingYoutube, setIsSearchingYoutube] = useState(false);
+  const [activeTab, setActiveTab] = useState<'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs'>('traditionalSongs');
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [preloadedSongs, setPreloadedSongs] = useState<{[id: number]: HTMLAudioElement}>({});
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
   const [failedUrls, setFailedUrls] = useState<Set<string>>(new Set());
   const [isChangingTrack, setIsChangingTrack] = useState(false);
+  const [youtubeQuery, setYoutubeQuery] = useState("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMobile = useIsMobile();
@@ -151,29 +156,36 @@ export default function SongsPage() {
     song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Define the nextSong function with useCallback before it's used
+  const filteredYoutubeSongs = youtubeSongs.filter(song => 
+    song.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const nextSong = useCallback(() => {
     if (!currentSong) return;
     
-    // Set flag to prevent audio conflicts during track change
     setIsChangingTrack(true);
     
-    // Stop current audio playback
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
     
-    const currentList = activeTab === 'traditionalSongs' 
-      ? filteredTraditionalSongs 
-      : filteredJamendoSongs;
+    let currentList: Song[] = [];
+    
+    if (activeTab === 'traditionalSongs') {
+      currentList = filteredTraditionalSongs;
+    } else if (activeTab === 'jamendoSongs') {
+      currentList = filteredJamendoSongs;
+    } else if (activeTab === 'youtubeSongs') {
+      currentList = filteredYoutubeSongs;
+    }
     
     if (currentList.length === 0) {
       setIsChangingTrack(false);
       return;
     }
     
-    // Add small delay to ensure audio contexts are properly cleaned up
     setTimeout(() => {
       if (isShuffle) {
         const randomIndex = Math.floor(Math.random() * currentList.length);
@@ -190,31 +202,33 @@ export default function SongsPage() {
       
       setIsChangingTrack(false);
     }, 100);
-  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, isShuffle]);
+  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, filteredYoutubeSongs, isShuffle]);
 
-  // Define the prevSong function with useCallback
   const prevSong = useCallback(() => {
     if (!currentSong) return;
     
-    // Set flag to prevent audio conflicts during track change
     setIsChangingTrack(true);
     
-    // Stop current audio playback
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
     
-    const currentList = activeTab === 'traditionalSongs' 
-      ? filteredTraditionalSongs 
-      : filteredJamendoSongs;
+    let currentList: Song[] = [];
+    
+    if (activeTab === 'traditionalSongs') {
+      currentList = filteredTraditionalSongs;
+    } else if (activeTab === 'jamendoSongs') {
+      currentList = filteredJamendoSongs;
+    } else if (activeTab === 'youtubeSongs') {
+      currentList = filteredYoutubeSongs;
+    }
       
     if (currentList.length === 0) {
       setIsChangingTrack(false);
       return;
     }
     
-    // Add small delay to ensure audio contexts are properly cleaned up
     setTimeout(() => {
       if (isShuffle) {
         const randomIndex = Math.floor(Math.random() * currentList.length);
@@ -231,7 +245,7 @@ export default function SongsPage() {
       
       setIsChangingTrack(false);
     }, 100);
-  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, isShuffle]);
+  }, [currentSong, activeTab, filteredTraditionalSongs, filteredJamendoSongs, filteredYoutubeSongs, isShuffle]);
 
   const togglePlayPause = useCallback(() => {
     if (!audioRef.current || !currentSong) return;
@@ -240,12 +254,10 @@ export default function SongsPage() {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      // Clear any existing play/pause errors by stopping and starting fresh
       const currentTime = audioRef.current.currentTime;
       
       audioRef.current.pause();
       
-      // Small timeout to ensure the pause completes before play
       setTimeout(() => {
         if (audioRef.current) {
           audioRef.current.currentTime = currentTime;
@@ -264,7 +276,6 @@ export default function SongsPage() {
                   variant: "default"
                 });
                 
-                // Retry with fallback URL if available
                 if (currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
                   const fallbackUrl = currentSong.fallbackUrls[0];
                   audioRef.current!.src = fallbackUrl;
@@ -287,70 +298,56 @@ export default function SongsPage() {
     }
   }, [currentSong, isPlaying, toast]);
 
-  // Preload songs effect
-  useEffect(() => {
-    const preloadSongs = () => {
-      // Clean up existing preloaded songs to prevent memory leaks
-      Object.values(preloadedSongs).forEach(audio => {
-        audio.pause();
-        audio.src = '';
-      });
+  const preloadSongs = useCallback(() => {
+    Object.values(preloadedSongs).forEach(audio => {
+      audio.pause();
+      audio.src = '';
+    });
+    
+    const preloadCache: {[id: number]: HTMLAudioElement} = {};
+    
+    const songsToPreload = [
+      ...filteredTraditionalSongs.slice(0, 5),
+      ...filteredJamendoSongs.slice(0, 5)
+    ];
+    
+    songsToPreload.forEach(song => {
+      if (!song.audioUrl) return;
       
-      const preloadCache: {[id: number]: HTMLAudioElement} = {};
-      
-      const songsToPreload = [
-        ...filteredTraditionalSongs.slice(0, 5),
-        ...filteredJamendoSongs.slice(0, 5)
-      ];
-      
-      songsToPreload.forEach(song => {
-        if (!song.audioUrl) return;
-        
-        try {
-          if (failedUrls.has(song.audioUrl)) {
-            const validFallbackUrl = song.fallbackUrls?.find(url => !failedUrls.has(url));
-            if (!validFallbackUrl) return;
-            
-            const audio = new Audio();
-            audio.preload = "metadata"; // Only load metadata at first to reduce bandwidth
-            audio.src = validFallbackUrl;
-            audio.load();
-            preloadCache[song.id] = audio;
-          } else {
-            const audio = new Audio();
-            audio.preload = "metadata";
-            audio.src = song.audioUrl;
-            audio.load();
-            preloadCache[song.id] = audio;
-          }
-        } catch (error) {
-          console.error(`Erro ao precarregar música ${song.id}:`, error);
+      try {
+        if (failedUrls.has(song.audioUrl)) {
+          const validFallbackUrl = song.fallbackUrls?.find(url => !failedUrls.has(url));
+          if (!validFallbackUrl) return;
+          
+          const audio = new Audio();
+          audio.preload = "metadata";
+          audio.src = validFallbackUrl;
+          audio.load();
+          preloadCache[song.id] = audio;
+        } else {
+          const audio = new Audio();
+          audio.preload = "metadata";
+          audio.src = song.audioUrl;
+          audio.load();
+          preloadCache[song.id] = audio;
         }
-      });
-      
-      setPreloadedSongs(preloadCache);
-    };
+      } catch (error) {
+        console.error(`Erro ao precarregar música ${song.id}:`, error);
+      }
+    });
     
-    if (filteredTraditionalSongs.length > 0 || filteredJamendoSongs.length > 0) {
-      preloadSongs();
-    }
-    
-    return () => {
-      Object.values(preloadedSongs).forEach(audio => {
-        audio.pause();
-        audio.src = '';
-      });
-    };
+    setPreloadedSongs(preloadCache);
   }, [filteredTraditionalSongs.slice(0, 5), filteredJamendoSongs.slice(0, 5), failedUrls]);
 
-  // Initialize audio element and set up event listeners
   useEffect(() => {
-    // Cleanup the previous audio element if it exists
+    preloadSongs();
+  }, [preloadSongs]);
+
+  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
       
-      // Remove event listeners from the previous audio element
       audioRef.current.removeEventListener('timeupdate', () => {});
       audioRef.current.removeEventListener('ended', () => {});
       audioRef.current.removeEventListener('loadedmetadata', () => {});
@@ -390,7 +387,6 @@ export default function SongsPage() {
     audio.addEventListener('error', (e) => {
       console.error('Erro de áudio:', e);
       
-      // Don't try fallbacks if we're actively changing tracks
       if (isChangingTrack) return;
       
       if (currentSong && currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
@@ -409,7 +405,6 @@ export default function SongsPage() {
             variant: "default"
           });
           
-          // Use a small timeout to ensure proper audio context cleanup
           setTimeout(() => {
             if (audioRef.current) {
               audioRef.current.src = nextUrl;
@@ -467,7 +462,6 @@ export default function SongsPage() {
     };
   }, [toast, isRepeat, currentSong, currentUrlIndex, nextSong, volume, isChangingTrack, failedUrls]);
 
-  // Fetch jamendo songs (relaxing music) on component mount
   useEffect(() => {
     const fetchFreeMusicSongs = async () => {
       try {
@@ -513,7 +507,6 @@ export default function SongsPage() {
     fetchFreeMusicSongs();
   }, [toast]);
 
-  // Improved playSong function
   const playSong = useCallback((song: Song) => {
     if (!song.audioUrl && (!song.fallbackUrls || song.fallbackUrls.length === 0)) {
       toast({
@@ -524,35 +517,28 @@ export default function SongsPage() {
       return;
     }
     
-    // If same song is selected, just toggle play/pause
     if (currentSong && currentSong.id === song.id) {
       togglePlayPause();
       return;
     }
     
-    // Reset URL index when starting a new song
     setCurrentUrlIndex(0);
     
-    // First, safely stop any current playback
     if (audioRef.current) {
       setIsChangingTrack(true);
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
     
-    // Set the current song immediately so UI updates
     setCurrentSong(song);
     
-    // Use a small timeout to ensure clean audio context
     setTimeout(() => {
       const preloadedAudio = preloadedSongs[song.id];
       
       if (preloadedAudio) {
-        // Use the preloaded audio if available
         audioRef.current = preloadedAudio;
         audioRef.current.volume = volume;
         
-        // Set the current time to 0 to ensure playing from the beginning
         audioRef.current.currentTime = 0;
         
         audioRef.current.play()
@@ -572,7 +558,6 @@ export default function SongsPage() {
     }, 100);
   }, [currentSong, preloadedSongs, volume, togglePlayPause]);
 
-  // Separate fallback method for song playback
   const fallbackPlayMethod = useCallback((song: Song) => {
     setIsChangingTrack(true);
     
@@ -583,7 +568,6 @@ export default function SongsPage() {
     
     let audioUrl = song.audioUrl;
     
-    // Check if the primary URL failed and try a fallback
     if (audioUrl && failedUrls.has(audioUrl) && song.fallbackUrls && song.fallbackUrls.length > 0) {
       const validFallbackUrl = song.fallbackUrls.find(url => !failedUrls.has(url));
       if (validFallbackUrl) {
@@ -601,12 +585,10 @@ export default function SongsPage() {
       return;
     }
     
-    // Create a new audio element to avoid state conflicts
     const newAudio = new Audio();
     newAudio.volume = volume;
     newAudio.src = audioUrl;
     
-    // Update reference to the new audio element
     audioRef.current = newAudio;
     
     toast({
@@ -615,7 +597,6 @@ export default function SongsPage() {
       variant: "default"
     });
     
-    // Play when metadata is loaded
     newAudio.onloadedmetadata = () => {
       newAudio.play()
         .then(() => {
@@ -639,11 +620,9 @@ export default function SongsPage() {
               variant: "default"
             });
             
-            // Try with the first fallback URL
             newAudio.src = fallbackUrl;
             newAudio.load();
             
-            // Wait a small moment before trying to play again
             setTimeout(() => {
               newAudio.play()
                 .then(() => {
@@ -670,17 +649,16 @@ export default function SongsPage() {
               variant: "destructive"
             });
             setIsChangingTrack(false);
+            setTimeout(() => nextSong(), 1000);
           }
         });
     };
     
-    // Handle errors when loading metadata
     newAudio.onerror = () => {
       if (audioUrl) {
         setFailedUrls(prev => new Set([...prev, audioUrl]));
       }
       
-      // Try with fallback URLs if available
       if (song.fallbackUrls && song.fallbackUrls.length > 0) {
         const fallbackUrl = song.fallbackUrls[0];
         
@@ -694,7 +672,6 @@ export default function SongsPage() {
           newAudio.src = fallbackUrl;
           newAudio.load();
           
-          // Try to play after a small delay
           setTimeout(() => {
             newAudio.play()
               .then(() => {
@@ -733,7 +710,6 @@ export default function SongsPage() {
       }
     };
     
-    // Start loading the audio file
     newAudio.load();
   }, [failedUrls, toast, volume, nextSong]);
 
@@ -802,6 +778,66 @@ export default function SongsPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const searchYouTubeSongs = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    
+    try {
+      setIsSearchingYoutube(true);
+      toast({
+        title: "Buscando no YouTube",
+        description: `Procurando por "${query}"...`,
+        variant: "default"
+      });
+      
+      const results = await searchYouTube(query);
+      
+      const formattedResults: Song[] = results.map((result, index) => ({
+        id: 2000 + index,
+        title: result.title,
+        artist: result.artist,
+        audioUrl: result.audioUrl,
+        thumbnailUrl: result.thumbnailUrl,
+        source: 'youtube' as const,
+        fallbackUrls: [
+          ...fallbackSongUrls,
+          ...traditionalSongUrls.slice(0, 3)
+        ]
+      }));
+      
+      setYoutubeSongs(formattedResults);
+      
+      if (formattedResults.length === 0) {
+        toast({
+          title: "Nenhum resultado",
+          description: "Não foram encontrados resultados para sua busca no YouTube.",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Resultados encontrados",
+          description: `Foram encontrados ${formattedResults.length} resultados no YouTube.`,
+          variant: "default"
+        });
+        
+        setActiveTab('youtubeSongs');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar músicas do YouTube:', error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao buscar músicas do YouTube.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSearchingYoutube(false);
+    }
+  }, [toast]);
+
+  const handleYouTubeSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchYouTubeSongs(youtubeQuery);
+  };
+
   return (
     <div className="container mx-auto py-6">
       <Card className="bg-[#121212] border-0 shadow-xl overflow-hidden">
@@ -822,12 +858,35 @@ export default function SongsPage() {
             />
           </div>
           
+          {activeTab === 'youtubeSongs' && (
+            <form onSubmit={handleYouTubeSearch} className="mt-4 flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <Youtube size={24} />
+                </div>
+                <Input
+                  placeholder="Buscar no YouTube..."
+                  className={`pl-12 ${isMobile ? "text-xl py-7" : "text-lg py-6"} rounded-full bg-[#2A2A2A] border-0 text-white placeholder:text-gray-400 focus:ring-[#ff0000] focus:ring-2`}
+                  value={youtubeQuery}
+                  onChange={(e) => setYoutubeQuery(e.target.value)}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="bg-[#ff0000] hover:bg-[#cc0000] rounded-full"
+                disabled={isSearchingYoutube || !youtubeQuery.trim()}
+              >
+                {isSearchingYoutube ? "Buscando..." : "Buscar"}
+              </Button>
+            </form>
+          )}
+          
           <Tabs 
             value={activeTab} 
-            onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')} 
+            onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs')} 
             className="mt-6"
           >
-            <TabsList className="grid w-full grid-cols-2 bg-[#2A2A2A] p-1 rounded-full">
+            <TabsList className="grid w-full grid-cols-3 bg-[#2A2A2A] p-1 rounded-full">
               <TabsTrigger 
                 value="traditionalSongs" 
                 className="rounded-full data-[state=active]:bg-[#1DB954] data-[state=active]:text-white"
@@ -840,6 +899,12 @@ export default function SongsPage() {
               >
                 Músicas Relaxantes
               </TabsTrigger>
+              <TabsTrigger 
+                value="youtubeSongs" 
+                className="rounded-full data-[state=active]:bg-[#ff0000] data-[state=active]:text-white"
+              >
+                YouTube
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
@@ -848,9 +913,19 @@ export default function SongsPage() {
           <div className="px-6 py-4 bg-[#181818] border-t border-[#282828]">
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium text-lg text-white">{currentSong.title}</h3>
-                  <p className="text-gray-400">{currentSong.artist}</p>
+                <div className="flex items-center">
+                  {currentSong.thumbnailUrl && (
+                    <img src={currentSong.thumbnailUrl} alt={currentSong.title} className="w-12 h-12 mr-3 rounded-md object-cover" />
+                  )}
+                  <div>
+                    <h3 className="font-medium text-lg text-white flex items-center">
+                      {currentSong.title}
+                      {currentSong.source === 'youtube' && (
+                        <Youtube size={16} className="ml-2 text-[#ff0000]" />
+                      )}
+                    </h3>
+                    <p className="text-gray-400">{currentSong.artist}</p>
+                  </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <Button 
@@ -946,7 +1021,7 @@ export default function SongsPage() {
         )}
         
         <CardContent className="p-0">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs')}>
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'traditionalSongs' | 'jamendoSongs' | 'youtubeSongs')}>
             <TabsContent value="traditionalSongs" className="m-0">
               <ScrollArea className="h-[60vh] bg-[#121212]">
                 <div className="space-y-1 p-4">
@@ -1034,6 +1109,66 @@ export default function SongsPage() {
                           <div>
                             <h3 className={`font-medium ${isMobile ? "text-xl" : "text-base"} mb-1 text-white`}>
                               {song.title}
+                            </h3>
+                            <p className={`${isMobile ? "text-lg" : "text-sm"} text-gray-400`}>
+                              {song.artist}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="opacity-0 group-hover:opacity-100">
+                          {currentSong?.id === song.id && (
+                            <div className="w-2 h-2 bg-[#1DB954] rounded-full"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+            
+            <TabsContent value="youtubeSongs" className="m-0">
+              <ScrollArea className="h-[60vh] bg-[#121212]">
+                <div className="space-y-1 p-4">
+                  {isSearchingYoutube ? (
+                    <div className="py-12 text-center">
+                      <div className="animate-pulse flex flex-col items-center">
+                        <div className="h-8 w-64 bg-[#333] rounded mb-4"></div>
+                        <div className="h-4 w-48 bg-[#333] rounded"></div>
+                      </div>
+                    </div>
+                  ) : youtubeSongs.length === 0 ? (
+                    <div className={`py-12 text-center text-gray-500 ${isMobile ? "text-2xl" : "text-xl"}`}>
+                      {youtubeQuery ? 
+                        `Nenhuma música encontrada para "${youtubeQuery}" no YouTube` : 
+                        "Busque músicas no YouTube usando a barra de pesquisa acima"
+                      }
+                    </div>
+                  ) : (
+                    filteredYoutubeSongs.map((song) => (
+                      <div
+                        key={song.id}
+                        className={`p-3 hover:bg-[#282828] transition-colors cursor-pointer rounded-md flex justify-between items-center group ${
+                          currentSong?.id === song.id ? "bg-[#282828]" : ""
+                        }`}
+                        onClick={() => playSong(song)}
+                      >
+                        <div className="flex items-center">
+                          {song.thumbnailUrl ? (
+                            <img 
+                              src={song.thumbnailUrl} 
+                              alt={song.title} 
+                              className="w-10 h-10 mr-4 rounded-md object-cover"
+                            />
+                          ) : (
+                            <div className="relative w-10 h-10 mr-4 flex items-center justify-center bg-[#ff0000] rounded-md">
+                              <Youtube size={16} className="text-white" />
+                            </div>
+                          )}
+                          <div>
+                            <h3 className={`font-medium ${isMobile ? "text-xl" : "text-base"} mb-1 text-white flex items-center`}>
+                              {song.title}
+                              <Youtube size={14} className="ml-2 text-[#ff0000]" />
                             </h3>
                             <p className={`${isMobile ? "text-lg" : "text-sm"} text-gray-400`}>
                               {song.artist}
