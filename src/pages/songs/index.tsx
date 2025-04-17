@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -263,41 +262,61 @@ export default function SongsPage() {
         if (audioRef.current) {
           audioRef.current.currentTime = currentTime;
           
-          audioRef.current.play()
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch(error => {
-              console.error('Erro ao reproduzir áudio:', error);
-              
-              if (currentSong.audioUrl) {
-                toast({
-                  title: "Reconectando",
-                  description: "Tentando restabelecer a reprodução...",
-                  variant: "default"
-                });
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+              })
+              .catch(error => {
+                console.error('Erro ao reproduzir áudio:', error);
                 
-                if (currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
-                  const fallbackUrl = currentSong.fallbackUrls[0];
-                  audioRef.current!.src = fallbackUrl;
-                  audioRef.current!.load();
-                  audioRef.current!.play()
-                    .then(() => setIsPlaying(true))
-                    .catch(e2 => {
-                      console.error('Falha ao tentar URL alternativa:', e2);
+                if (currentSong.audioUrl) {
+                  toast({
+                    title: "Problema de reprodução",
+                    description: "Tentando usar uma fonte alternativa...",
+                    variant: "default"
+                  });
+                  
+                  if (currentSong.fallbackUrls && currentSong.fallbackUrls.length > 0) {
+                    const fallbackUrl = currentSong.fallbackUrls[0];
+                    
+                    const newAudio = new Audio();
+                    newAudio.volume = volume;
+                    newAudio.src = fallbackUrl;
+                    
+                    audioRef.current = newAudio;
+                    
+                    newAudio.addEventListener('canplaythrough', () => {
+                      newAudio.play()
+                        .then(() => setIsPlaying(true))
+                        .catch(e2 => {
+                          console.error('Falha ao tentar URL alternativa:', e2);
+                          toast({
+                            title: "Erro de Reprodução",
+                            description: "Não foi possível iniciar a reprodução. Tente outra música.",
+                            variant: "destructive"
+                          });
+                        });
+                    }, { once: true });
+                    
+                    newAudio.addEventListener('error', () => {
                       toast({
                         title: "Erro de Reprodução",
                         description: "Não foi possível iniciar a reprodução. Tente outra música.",
                         variant: "destructive"
                       });
-                    });
+                    }, { once: true });
+                    
+                    newAudio.load();
+                  }
                 }
-              }
-            });
+              });
+          }
         }
       }, 100);
     }
-  }, [currentSong, isPlaying, toast]);
+  }, [currentSong, isPlaying, toast, volume]);
 
   const preloadSongs = useCallback(() => {
     Object.values(preloadedSongs).forEach(audio => {
@@ -603,6 +622,7 @@ export default function SongsPage() {
     });
     
     newAudio.onloadedmetadata = () => {
+      newAudio.volume = volume;
       const playPromise = newAudio.play();
       if (playPromise !== undefined) {
         playPromise
@@ -614,62 +634,19 @@ export default function SongsPage() {
           })
           .catch(error => {
             console.error('Erro ao reproduzir áudio:', error);
-            
-            if (song.fallbackUrls && song.fallbackUrls.length > 0) {
-              if (audioUrl) {
-                setFailedUrls(prev => new Set([...prev, audioUrl]));
-              }
-              
-              const fallbackUrl = song.fallbackUrls[0];
-              toast({
-                title: "Tentando alternativa",
-                description: "Usando fonte alternativa para esta música...",
-                variant: "default"
-              });
-              
-              newAudio.src = fallbackUrl;
-              newAudio.load();
-              
-              setTimeout(() => {
-                const fallbackPlayPromise = newAudio.play();
-                if (fallbackPlayPromise !== undefined) {
-                  fallbackPlayPromise
-                    .then(() => {
-                      setIsPlaying(true);
-                      setCurrentTime(newAudio.currentTime);
-                      setDuration(newAudio.duration);
-                      setIsChangingTrack(false);
-                    })
-                    .catch(e => {
-                      console.error('Falha ao tentar URL alternativa:', e);
-                      setFailedUrls(prev => new Set([...prev, fallbackUrl]));
-                      toast({
-                        title: "Erro de Reprodução",
-                        description: "Não foi possível iniciar a reprodução. Tente outra música.",
-                        variant: "destructive"
-                      });
-                      setIsChangingTrack(false);
-                    });
-                }
-              }, 100);
-            } else {
-              toast({
-                title: "Erro de Reprodução",
-                description: "Não foi possível iniciar a reprodução. Tente outra música.",
-                variant: "destructive"
-              });
-              setIsChangingTrack(false);
-              setTimeout(() => nextSong(), 1000);
-            }
+            tryFallbackUrl(song, newAudio);
           });
       }
     };
     
     newAudio.onerror = () => {
       if (audioUrl) {
-        setFailedUrls(prev => new Set([...prev, audioUrl]));
+        setFailedUrls(prev => new Set([...prev, audioUrl!]));
       }
-      
+      tryFallbackUrl(song, newAudio);
+    };
+    
+    const tryFallbackUrl = (song: Song, audioElement: HTMLAudioElement) => {
       if (song.fallbackUrls && song.fallbackUrls.length > 0) {
         const fallbackUrl = song.fallbackUrls[0];
         
@@ -680,17 +657,18 @@ export default function SongsPage() {
             variant: "default"
           });
           
-          newAudio.src = fallbackUrl;
-          newAudio.load();
+          audioElement.src = fallbackUrl;
+          audioElement.volume = volume;
+          audioElement.load();
           
           setTimeout(() => {
-            const fallbackPlayPromise = newAudio.play();
+            const fallbackPlayPromise = audioElement.play();
             if (fallbackPlayPromise !== undefined) {
               fallbackPlayPromise
                 .then(() => {
                   setIsPlaying(true);
-                  setCurrentTime(newAudio.currentTime);
-                  setDuration(newAudio.duration);
+                  setCurrentTime(audioElement.currentTime);
+                  setDuration(audioElement.duration);
                   setIsChangingTrack(false);
                 })
                 .catch(e => {
@@ -805,7 +783,7 @@ export default function SongsPage() {
       
       const results = await searchYouTube(query);
       
-      const formattedResults: Song[] = results.map((result, index) => ({
+      const formattedResults: Song[] = results.map(result => ({
         id: result.id, // Using string ID from YouTube
         title: result.title,
         artist: result.artist,
@@ -845,7 +823,7 @@ export default function SongsPage() {
     } finally {
       setIsSearchingYoutube(false);
     }
-  }, [toast]);
+  }, [toast, fallbackSongUrls, traditionalSongUrls]);
 
   const handleYouTubeSearch = (e: React.FormEvent) => {
     e.preventDefault();
