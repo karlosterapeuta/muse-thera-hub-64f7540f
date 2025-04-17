@@ -103,7 +103,7 @@ const songs = [
     lyrics: [
       "Es", "cra", "vos", "de", "Jó", 
       "Jo", "ga", "vam", "ca", "xan", "gá", 
-      "Ti", "ra", "põe", 
+      "Ti", "ra", "p��e", 
       "Dei", "xa", "o", "Zé", "Pei", "rei", "ra", "fi", "car", 
       "Guer", "rei", "ros", "com", "guer", "rei", "ros", 
       "Fa", "zem", "zi", "gue", "zi", "gue", "zá", 
@@ -278,9 +278,9 @@ const songs = [
     notes: [
       "G", "G", "G", "D", "E", "E", "D", "B", "B", "B", "A", "A", "G", 
       "G", "G", "D", "E", "E", "D", "B", "B", "B", "A", "A", "G",
+      "D", "D", "G", "G", "G", "D", "E", 
       "D", "D", "G", "G", "G", "D", "E",
-      "D", "D", "G", "G", "G", "D", "E",
-      "D", "D", "G", "G", "G",
+      "D", "D", "G", "G", "G", 
       "D", "D", "G", "G", "G",
       "B", "B", "A", "A", "G"
     ],
