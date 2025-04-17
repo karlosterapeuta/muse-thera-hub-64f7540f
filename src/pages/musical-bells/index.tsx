@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,12 +49,12 @@ const songs = [
       "D", "D", "E", "C↓", "D", "E", "F", "E", "C↓",
       "D", "E", "F", "E", "D", "C↓", "D", "G",
       "E", "E", "F", "G", "G", "F", "E", "D",
-      "C↓", "C���", "D", "E", "D", "C↓", "C↓"
+      "C↓", "C↓", "D", "E", "D", "C↓", "C↓"
     ],
     lyrics: [
       "A", "le", "gri", "a", "be", "la", 
       "cen", "te", "lha", "di", "vi", "na", 
-      "fi", "lha", do", "E", "lí", "sio", 
+      "fi", "lha", "do", "E", "lí", "sio", 
       "e", "bri", "os", "pe", "ne", "tra", "mos", 
       "no", "teu", "san", "tu", "á", "rio", 
       "ce", "les", "te", "tua", "ma", "gi", "a", 
@@ -65,7 +66,7 @@ const songs = [
   {
     title: "Escala Cromática",
     notes: ["C↓", "D", "E", "F", "G", "A", "B", "C↑", "B", "A", "G", "F", "E", "D", "C↓"],
-    lyrics: ["Su", "bin", "do", a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
+    lyrics: ["Su", "bin", "do", "a", "es", "ca", "la", "mú", "si", "cal", "des", "cen", "do", "a", "gora"],
     description: "Uma escala que percorre todas as notas em sequência, subindo e descendo."
   },
   {
@@ -257,13 +258,13 @@ const songs = [
   },
   {
     title: "Passarinho que Som é Esse",
-    notes: ["C↓", "C↓", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G", "C↓", "C↓", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G"],
-    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu", "Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se"],
+    notes: ["C", "C", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G", "C", "C", "G", "E", "G", "G", "E", "A", "G", "G", "A", "B", "A", "G"],
+    lyrics: ["Pas", "sa", "ri", "nho", "que", "som", "é", "es", "se", "que", "tu", "fa", "zes", "quan", "do", "vo", "as", "pe", "lo", "ar", "piu", "piu", "Pas", "sa", "ri", "nho", "que", "som"],
     description: "Canção infantil brasileira sobre os sons dos passarinhos."
   },
   {
     title: "Sapo Cururu",
-    notes: ["G", "A", "G", "E", "C↓", "G", "A", "G", "E", "C↓", "E", "E", "D", "E", "F", "E", "C", "G", "E", "A", "B", "A", "B", "C↓"],
+    notes: ["G", "A", "G", "E", "C", "G", "A", "G", "E", "C", "E", "E", "D", "E", "F", "E", "C", "G", "E", "A", "B", "A", "B", "C"],
     lyrics: [
       "Sa", "po", "cu", "ru", "ru", 
       "na", "bei", "ra", "do", "ri", 
@@ -275,7 +276,7 @@ const songs = [
   },
   {
     title: "O Sítio do Seu Lobato",
-    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C↓", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C���"],
+    notes: ["G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C", "G", "G", "G", "D", "E", "E", "D", "B", "B", "A", "B", "C"],
     lyrics: ["Seu", "Lo", "ba", "to", "ti", "nha", "um", "sí", "tio", "ia", "ia", "ô", "e", "nes", "se", "sí", "tio", "ti", "nha", "um", "ca", "chor", "ro", "au"],
     description: "Canção infantil educativa que apresenta os sons dos animais da fazenda."
   },
