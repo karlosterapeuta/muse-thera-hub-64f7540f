@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Play, Pause, SkipForward, SkipBack, Volume2, 
@@ -254,14 +255,14 @@ export default function MusicPlayer({
       
       toast({
         title: "Arquivo carregado",
-        description: `"${newSong.title}" foi adicionado à biblioteca",
+        description: `"${newSong.title}" foi adicionado à biblioteca`,
         variant: "default"
       });
     };
     input.click();
   };
 
-  const formatTime = (time: number) => {
+  const formatTime = (time: number): string => {
     if (!time) return '0:00';
     
     const minutes = Math.floor(time / 60);
