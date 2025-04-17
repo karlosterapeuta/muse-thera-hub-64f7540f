@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -90,25 +89,38 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       <nav className="flex-1 py-4">
-        {menuItems.map((item) => (
-          item && (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={() => onNavigate?.()}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
-                  isActive && "bg-primary/10 text-primary",
-                  collapsed && "justify-center"
-                )
-              }
-            >
-              <item.icon size={20} />
-              {!collapsed && <span>{item.text}</span>}
-            </NavLink>
-          )
-        ))}
+        <div className="space-y-1">
+          {menuItems.map((item) => (
+            item && (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={() => onNavigate?.()}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors",
+                    isActive && "bg-primary/10 text-primary",
+                    collapsed && "justify-center"
+                  )
+                }
+              >
+                <item.icon size={20} />
+                {!collapsed && <span>{item.text}</span>}
+              </NavLink>
+            )
+          ))}
+          <Link
+            to="/music-therapy"
+            className={`flex items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === "/music-therapy"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <Music size={20} className="mr-3" />
+            Musicoterapia TEA
+          </Link>
+        </div>
       </nav>
 
       <div className="p-4 border-t border-gray-200">
