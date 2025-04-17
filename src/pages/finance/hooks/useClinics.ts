@@ -8,9 +8,9 @@ import { PostgrestError } from "@supabase/supabase-js";
 export const useClinics = () => {
   const { toast } = useToast();
   
-  return useQuery({
+  return useQuery<Clinic[], Error>({
     queryKey: ["clinics"],
-    queryFn: async (): Promise<Clinic[]> => {
+    queryFn: async () => {
       // Get the current user
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -43,8 +43,12 @@ export const useAddClinic = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  return useMutation({
-    mutationFn: async (clinic: Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">): Promise<Clinic> => {
+  return useMutation<
+    Clinic,
+    Error,
+    Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">
+  >({
+    mutationFn: async (clinic) => {
       // Get the current user to set as creator
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -74,10 +78,10 @@ export const useAddClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast({
         title: "Erro ao adicionar clínica",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     },
@@ -88,8 +92,12 @@ export const useUpdateClinic = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  return useMutation({
-    mutationFn: async (clinic: Partial<Clinic> & { id: string }): Promise<Clinic> => {
+  return useMutation<
+    Clinic,
+    Error | PostgrestError,
+    Partial<Clinic> & { id: string }
+  >({
+    mutationFn: async (clinic) => {
       const { data, error } = await supabase
         .from("clinics")
         .update({
@@ -115,10 +123,15 @@ export const useUpdateClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error: Error | PostgrestError) => {
+    onError: (error) => {
+      const errorMessage = 
+        error instanceof Error ? error.message :
+        'code' in error ? error.message :
+        "Erro desconhecido";
+        
       toast({
         title: "Erro ao atualizar clínica",
-        description: "error" in error ? error.error : error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -129,8 +142,12 @@ export const useDeleteClinic = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  return useMutation({
-    mutationFn: async (id: string): Promise<string> => {
+  return useMutation<
+    string,
+    Error | PostgrestError,
+    string
+  >({
+    mutationFn: async (id) => {
       const { error } = await supabase
         .from("clinics")
         .delete()
@@ -149,10 +166,15 @@ export const useDeleteClinic = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["clinics"] });
     },
-    onError: (error: Error | PostgrestError) => {
+    onError: (error) => {
+      const errorMessage = 
+        error instanceof Error ? error.message :
+        'code' in error ? error.message :
+        "Erro desconhecido";
+        
       toast({
         title: "Erro ao excluir clínica",
-        description: "error" in error ? error.error : error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
