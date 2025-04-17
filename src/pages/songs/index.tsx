@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -307,12 +308,7 @@ export default function SongsPage() {
                       {mockAudios.map(audio => (
                         <button
                           key={audio.id}
-                          onClick={() => setCurrentAudio(audio)}
-                          className={`w-full text-left p-3 rounded-lg border transition-all ${
-                            currentAudio?.id === audio.id 
-                              ? 'border-purple-500 bg-purple-50' 
-                              : 'border-gray-200 hover:border-purple-200'
-                          }`}
+                          className={`w-full text-left p-3 rounded-lg border border-gray-200 hover:border-purple-200`}
                         >
                           <div className="font-medium">{audio.title}</div>
                           <div className="text-sm text-gray-500">{audio.voiceType}</div>
