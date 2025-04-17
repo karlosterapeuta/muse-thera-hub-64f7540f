@@ -9,7 +9,7 @@ export const useClinics = () => {
   
   return useQuery({
     queryKey: ["clinics"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Clinic[]> => {
       // Get the current user
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -43,7 +43,7 @@ export const useAddClinic = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (clinic: Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">) => {
+    mutationFn: async (clinic: Pick<Clinic, "name" | "address" | "service_days" | "patient_ids">): Promise<Clinic> => {
       // Get the current user to set as creator
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -88,7 +88,7 @@ export const useUpdateClinic = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (clinic: Partial<Clinic> & { id: string }) => {
+    mutationFn: async (clinic: Partial<Clinic> & { id: string }): Promise<Clinic> => {
       const { data, error } = await supabase
         .from("clinics")
         .update({
@@ -129,7 +129,7 @@ export const useDeleteClinic = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: string): Promise<string> => {
       const { error } = await supabase
         .from("clinics")
         .delete()
