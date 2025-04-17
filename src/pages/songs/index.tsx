@@ -8,13 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
-// Import all the components we created
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
 import PDFViewer from "@/components/fala-magica/PDFViewer";
 import AudioGuide from "@/components/fala-magica/AudioGuide";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
 
-// Import types
+import MagicalGuide from "@/components/fala-magica/MagicalGuide";
+
 import { 
   InteractivePDF, 
   Word, 
@@ -23,7 +23,6 @@ import {
   UserProgress 
 } from "@/components/fala-magica/types";
 
-// Mock data for development
 const mockPDFs: InteractivePDF[] = [
   {
     id: "pdf1",
@@ -91,31 +90,59 @@ const mockRewards: Reward[] = [
     type: "adesivo",
     imageUrl: "https://placehold.co/200?text=Estrela",
     unlocked: true,
-    requiredPoints: 10
+    requiredPoints: 10,
+    description: "Uma estrela mágica que brilha quando você fala!",
+    category: "magia",
+    animation: "glow",
+    soundEffect: "sparkle"
   },
   {
     id: "r2",
-    name: "Gatinho Falante",
+    name: "Fada Melodia",
     type: "personagem",
-    imageUrl: "https://placehold.co/200?text=Gatinho",
+    imageUrl: "https://placehold.co/200?text=Fada",
     unlocked: false,
-    requiredPoints: 30
+    requiredPoints: 30,
+    description: "Uma fada musical que dança com sua voz!",
+    category: "magia",
+    animation: "float",
+    soundEffect: "magic"
   },
   {
     id: "r3",
-    name: "Foguete Mágico",
-    type: "efeito",
-    imageUrl: "https://placehold.co/200?text=Foguete",
+    name: "Pássaro Cantor",
+    type: "personagem",
+    imageUrl: "https://placehold.co/200?text=Passaro",
     unlocked: false,
-    requiredPoints: 50
+    requiredPoints: 50,
+    description: "Um pássaro que canta junto com você!",
+    category: "animais",
+    animation: "bounce",
+    soundEffect: "cheer"
   },
   {
     id: "r4",
-    name: "Coroa Real",
-    type: "adesivo",
-    imageUrl: "https://placehold.co/200?text=Coroa",
+    name: "Arco-Íris Mágico",
+    type: "efeito",
+    imageUrl: "https://placehold.co/200?text=Arco-Iris",
     unlocked: false,
-    requiredPoints: 100
+    requiredPoints: 75,
+    description: "Um lindo arco-íris que aparece quando você fala!",
+    category: "natureza",
+    animation: "float",
+    soundEffect: "sparkle"
+  },
+  {
+    id: "r5",
+    name: "Varinha Musical",
+    type: "efeito",
+    imageUrl: "https://placehold.co/200?text=Varinha",
+    unlocked: false,
+    requiredPoints: 100,
+    description: "Uma varinha que transforma sua voz em música!",
+    category: "música",
+    animation: "spin",
+    soundEffect: "tada"
   }
 ];
 
@@ -183,7 +210,6 @@ export default function SongsPage() {
           </TabsTrigger>
         </TabsList>
         
-        {/* PDFs Tab */}
         <TabsContent value="pdfs">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1">
@@ -260,7 +286,6 @@ export default function SongsPage() {
           </div>
         </TabsContent>
         
-        {/* Audios Tab */}
         <TabsContent value="audios">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1">
@@ -337,7 +362,6 @@ export default function SongsPage() {
           </div>
         </TabsContent>
         
-        {/* Speech Detector Tab */}
         <TabsContent value="speech">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -348,12 +372,19 @@ export default function SongsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-6">
-                    Esta ferramenta usa o microfone para detectar vocalizações. Quando a criança faz um som vocal, 
-                    mesmo um balbucio simples, a ferramenta reage com animações e recompensas, incentivando a tentativa de comunicação.
-                  </p>
-                  
-                  <SpeechDetector onVocalization={handleVocalization} />
+                  <div className="space-y-6">
+                    <MagicalGuide 
+                      character="fada"
+                      message="Olá! Vamos brincar de fazer sons? Eu vou te ajudar a ganhar recompensas mágicas!"
+                    />
+                    
+                    <p className="text-gray-600">
+                      Esta ferramenta usa o microfone para detectar vocalizações. Quando você fizer um som vocal, 
+                      mesmo um balbucio simples, você receberá recompensas mágicas!
+                    </p>
+                    
+                    <SpeechDetector onVocalization={handleVocalization} />
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -368,7 +399,6 @@ export default function SongsPage() {
           </div>
         </TabsContent>
         
-        {/* Rewards Tab */}
         <TabsContent value="rewards">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">

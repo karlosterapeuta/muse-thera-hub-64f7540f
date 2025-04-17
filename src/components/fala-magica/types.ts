@@ -44,6 +44,10 @@ export interface Reward {
   imageUrl: string;
   unlocked: boolean;
   requiredPoints: number;
+  description?: string;
+  category?: 'natureza' | 'animais' | 'magia' | 'música';
+  animation?: 'float' | 'spin' | 'bounce' | 'glow';
+  soundEffect?: 'sparkle' | 'magic' | 'cheer' | 'tada';
 }
 
 export interface UserProgress {
@@ -52,4 +56,7 @@ export interface UserProgress {
   completedActivities: string[];
   unlockedRewards: string[];
   lastSessionDate: Date;
+  currentLevel?: number;
+  streakDays?: number;
+  achievements?: string[];
 }
