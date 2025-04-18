@@ -35,7 +35,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     const value = audioData[dataIndex] || 0;
     
     // Apply a stronger amplification factor to make the visualization more responsive
-    const amplificationFactor = 1.8; // Increased from 1.5 for better visibility
+    const amplificationFactor = 2.0; // Increased for better visibility
     const baseHeightPercentage = Math.max(2, (value / 255) * 100);
     const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     

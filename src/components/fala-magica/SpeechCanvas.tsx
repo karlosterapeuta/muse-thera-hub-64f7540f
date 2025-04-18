@@ -33,7 +33,7 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
     };
   }, [width, height]);
   
-  const addRandomShape = () => {
+  const addRandomShape = (intensity = 1) => {
     if (!fabricRef.current) {
       console.error("Canvas not initialized");
       return;
@@ -47,15 +47,16 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
     ];
     
     // Create multiple shapes at once for a more dynamic effect
-    const numberOfShapes = Math.floor(Math.random() * 3) + 2; // 2-4 shapes at once
+    // Scale the number based on intensity
+    const numberOfShapes = Math.floor(Math.random() * 3 * intensity) + 2; // More shapes with higher intensity
     
     for (let i = 0; i < numberOfShapes; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       
-      // Random position spreading across the canvas
+      // Random position spreading across the canvas with more variance for higher intensity
       const x = Math.random() * width;
       const y = Math.random() * height;
-      const size = 10 + Math.random() * 30; // Smaller sizes for better spread
+      const size = (10 + Math.random() * 30) * Math.min(intensity, 2); // Slightly larger with high intensity
       
       // Create circle (bubble effect)
       const circle = new fabric.Circle({
@@ -68,17 +69,18 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
       
       canvas.add(circle);
       
-      // Animate each circle
-      animateShape(circle);
+      // Animate each circle with more spread for higher intensity
+      animateShape(circle, intensity);
     }
     
     canvas.renderAll();
   };
   
-  const animateShape = (shape: fabric.Object) => {
-    // Random movement direction
-    const dx = (Math.random() - 0.5) * 10;
-    const dy = (Math.random() - 0.5) * 10;
+  const animateShape = (shape: fabric.Object, intensity: number) => {
+    // Random movement direction with greater spread for higher intensity
+    const spreadFactor = Math.min(intensity * 1.5, 3); // Limit max spread
+    const dx = (Math.random() - 0.5) * 10 * spreadFactor;
+    const dy = (Math.random() - 0.5) * 10 * spreadFactor;
     
     // Random rotation
     const rotation = Math.random() * 360;

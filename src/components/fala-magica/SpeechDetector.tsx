@@ -179,10 +179,14 @@ export default function SpeechDetector({
     
     lastVocalizationRef.current = now;
     
+    // Calculate intensity based on current volume (0-100 scale)
+    const volumeIntensity = Math.max(1, volume / 25);
+    
     // Add visual effects to the canvas if available
     if (typeof (window as any).addShapeToCanvas === 'function') {
-      for (let i = 0; i < 3; i++) {
-        (window as any).addShapeToCanvas();
+      // Call multiple times based on volume intensity
+      for (let i = 0; i < Math.min(5, Math.ceil(volumeIntensity)); i++) {
+        (window as any).addShapeToCanvas(volumeIntensity);
       }
     }
     
@@ -198,7 +202,7 @@ export default function SpeechDetector({
     addStar();
     onVocalization();
     
-    console.log("Vocalization triggered! Volume level:", volume);
+    console.log("Vocalization triggered! Volume level:", volume, "Intensity:", volumeIntensity);
     
     // Hide the confetti after a few seconds
     setTimeout(() => setShowConfetti(false), 3000);
@@ -234,9 +238,12 @@ export default function SpeechDetector({
     if (average > sensitivity) {
       setSoundDetected(true);
       
+      // Calculate intensity factor based on how far above threshold
+      const intensityFactor = Math.min(3, (average - sensitivity) / (100 - sensitivity) * 3 + 1);
+      
       // Add visual feedback when sound is detected
       if (typeof (window as any).addShapeToCanvas === 'function') {
-        (window as any).addShapeToCanvas();
+        (window as any).addShapeToCanvas(intensityFactor);
       }
       
       // Trigger vocalization with rate limiting
