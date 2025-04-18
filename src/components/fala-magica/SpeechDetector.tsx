@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Sparkles, Music, Bird } from "lucide-react";
@@ -96,12 +95,15 @@ export default function SpeechDetector({
       micAttempts.current += 1;
       
       console.log("Requesting microphone access...");
-      // Request microphone access with noise suppression options
+      
+      // Request microphone access with enhanced options for better detection
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
-          echoCancellation: false, // Turn off echo cancellation for better voice detection
-          noiseSuppression: false, // Turn off noise suppression for better detection
-          autoGainControl: true
+          echoCancellation: false,    // Turn off echo cancellation for better detection
+          noiseSuppression: false,    // Turn off noise suppression for better detection
+          autoGainControl: true,      // Keep auto gain control ON for better sensitivity
+          latency: 0,                 // Minimize latency
+          channelCount: 1             // Mono is sufficient for voice detection
         } 
       });
       
@@ -114,19 +116,35 @@ export default function SpeechDetector({
         throw new Error("AudioContext not supported in this browser");
       }
       
-      audioContextRef.current = new AudioContextClass();
-      console.log("AudioContext created");
+      try {
+        audioContextRef.current = new AudioContextClass();
+        console.log("AudioContext created with state:", audioContextRef.current.state);
+        
+        // If the context is in suspended state (common on mobile), try to resume it
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+          console.log("AudioContext resumed from suspended state");
+        }
+      } catch (contextError) {
+        console.error("Error creating or resuming AudioContext:", contextError);
+        throw new Error("Could not initialize audio processing");
+      }
       
-      // Create and configure the analyzer for audio processing
+      // Create and configure the analyzer for audio processing with more sensitive settings
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.3; // Lower value for faster response
+      analyser.fftSize = 1024;  // Larger FFT size for more detailed frequency data
+      analyser.smoothingTimeConstant = 0.2;  // Lower value for faster response (was 0.3)
       
-      // Connect the microphone to the analyzer
+      // Create gain node to amplify the input signal
+      const gainNode = audioContextRef.current.createGain();
+      gainNode.gain.value = 1.5;  // Boost the input signal
+      
+      // Connect the microphone to gain node and then to the analyzer
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
-      microphone.connect(analyser);
-      console.log("Microphone connected to analyser");
+      microphone.connect(gainNode);
+      gainNode.connect(analyser);
+      console.log("Microphone connected to analyser with gain boost");
       
       // Update state to reflect that we're now listening
       setIsListening(true);
@@ -191,13 +209,14 @@ export default function SpeechDetector({
     
     lastVocalizationRef.current = now;
     
-    // Calculate intensity based on current volume (0-100 scale)
-    const volumeIntensity = Math.max(1, volume / 20); // Made more sensitive
+    // Calculate intensity based on current volume (0-100 scale) with higher sensitivity
+    const volumeIntensity = Math.max(1, volume / 15); // Made even more sensitive (was /20)
     
-    // Add visual effects to the canvas if available
+    // Add visual effects to the canvas if available - call multiple times for stronger effect
     if (typeof (window as any).addShapeToCanvas === 'function') {
       // Call multiple times based on volume intensity
-      for (let i = 0; i < Math.min(6, Math.ceil(volumeIntensity)); i++) {
+      const burstCount = Math.min(10, Math.ceil(volumeIntensity * 1.5));
+      for (let i = 0; i < burstCount; i++) {
         (window as any).addShapeToCanvas(volumeIntensity);
       }
     }
@@ -229,8 +248,8 @@ export default function SpeechDetector({
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Amplify the frequency data for better visualization
-    const gainFactor = 2.0; // Increased gain for better sensitivity
+    // Amplify the frequency data for better visualization and detection
+    const gainFactor = 3.0; // Increased gain for better sensitivity (was 2.0)
     const amplifiedData = new Uint8Array(dataArray.length);
     for (let i = 0; i < dataArray.length; i++) {
       amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
@@ -239,33 +258,37 @@ export default function SpeechDetector({
     // Update audio data state for visualization
     setAudioData(amplifiedData);
     
-    // Calculate average volume for detection (focusing on mid-range frequencies for voice)
+    // Calculate average volume with focus on human voice frequency range
+    // Human voice typically ranges from 85Hz to 255Hz
     let sum = 0;
     let count = 0;
-    // Focus on mid-range frequencies (voice typically 85-255Hz)
-    const midStartIndex = Math.floor(dataArray.length * 0.1); // ~85Hz
-    const midEndIndex = Math.floor(dataArray.length * 0.3);   // ~255Hz
     
-    for (let i = midStartIndex; i < midEndIndex; i++) {
+    // Focus more precisely on typical voice frequencies
+    // For a 1024 FFT size with 48kHz sample rate, each bin is roughly 46.9Hz
+    // Voice range (85-255Hz) would be approximately bins 2-6
+    const voiceStartBin = Math.floor(dataArray.length * 0.01); // ~85Hz
+    const voiceEndBin = Math.floor(dataArray.length * 0.06);   // ~255Hz
+    
+    for (let i = voiceStartBin; i < voiceEndBin; i++) {
       sum += dataArray[i];
       count++;
     }
     
-    const average = count > 0 ? sum / count : 0;
+    const average = count > 0 ? (sum / count) : 0;
     setVolume(average);
     
     // Track the maximum volume reached
     setMaxVolume(prevMax => Math.max(prevMax, average));
     
-    // Lower the detection threshold for better sensitivity
-    const actualSensitivity = Math.max(5, sensitivity - 5);
+    // Lower the detection threshold significantly for better sensitivity
+    const actualSensitivity = Math.max(3, sensitivity - 10); // Much more sensitive (was -5)
     
     // Detect sound based on sensitivity threshold
     if (average > actualSensitivity) {
       setSoundDetected(true);
       
       // Calculate intensity factor based on how far above threshold
-      const intensityFactor = Math.min(4, (average - actualSensitivity) / (100 - actualSensitivity) * 4 + 1);
+      const intensityFactor = Math.min(5, (average - actualSensitivity) / (100 - actualSensitivity) * 5 + 1);
       
       // Add visual feedback when sound is detected
       if (typeof (window as any).addShapeToCanvas === 'function') {
@@ -331,22 +354,43 @@ export default function SpeechDetector({
 
   // Attempt to resume AudioContext if it was suspended (common on mobile)
   useEffect(() => {
-    if (isListening && audioContextRef.current && audioContextRef.current.state === 'suspended') {
-      const resumeAudio = () => {
-        if (audioContextRef.current) {
-          audioContextRef.current.resume().catch(err => {
+    if (isListening && audioContextRef.current) {
+      // Add a more aggressive approach to resuming audio context (important on mobile)
+      const resumeAudioContext = async () => {
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          try {
+            console.log("Attempting to resume suspended audio context...");
+            await audioContextRef.current.resume();
+            console.log("Audio context resumed successfully");
+          } catch (err) {
             console.error("Failed to resume audio context:", err);
-          });
+          }
         }
       };
+      
+      // Try to resume immediately
+      resumeAudioContext();
+      
+      // Set up event listeners for user interactions that can resume audio
+      const resumeAudio = () => {
+        resumeAudioContext();
+      };
 
-      // Add event listeners to resume audio context on user interaction
-      document.addEventListener('click', resumeAudio, { once: true });
-      document.addEventListener('touchstart', resumeAudio, { once: true });
+      // Add listeners for various user interactions that could unlock audio
+      document.addEventListener('click', resumeAudio);
+      document.addEventListener('touchstart', resumeAudio);
+      document.addEventListener('touchend', resumeAudio);
+      document.addEventListener('keydown', resumeAudio);
+      
+      // Create a periodic check to keep trying to resume audio context
+      const intervalId = setInterval(resumeAudioContext, 1000);
       
       return () => {
         document.removeEventListener('click', resumeAudio);
         document.removeEventListener('touchstart', resumeAudio);
+        document.removeEventListener('touchend', resumeAudio);
+        document.removeEventListener('keydown', resumeAudio);
+        clearInterval(intervalId);
       };
     }
   }, [isListening]);
@@ -378,15 +422,23 @@ export default function SpeechDetector({
         </h3>
         
         <div className="w-full">
-          <AudioVisualizer audioData={audioData} isActive={isListening && volume > 5} />
+          <AudioVisualizer audioData={audioData} isActive={isListening && volume > 1} />
         </div>
         
         {micError && (
           <div className="w-full p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-3">
             <p className="font-medium">Problema com o microfone:</p>
             <p>{micError}</p>
-            <p className="mt-2 text-xs">Dicas: Verifique se seu navegador tem permissão para acessar o microfone. 
-            Em celulares, tente tocar na tela antes de ativar. Tente atualizar a página ou usar outro navegador como Chrome.</p>
+            <p className="mt-2 text-xs">
+              Dicas para resolver:
+              <ul className="list-disc pl-5 mt-1">
+                <li>Verifique se o navegador tem permissão para acessar o microfone nas configurações</li>
+                <li>Em celulares, toque na tela antes de ativar</li>
+                <li>Tente atualizar a página</li>
+                <li>Use um navegador como Chrome ou Firefox que tenha melhor suporte a áudio</li>
+                <li>Desligue outros aplicativos que possam estar usando o microfone</li>
+              </ul>
+            </p>
           </div>
         )}
         

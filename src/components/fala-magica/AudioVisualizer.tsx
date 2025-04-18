@@ -11,10 +11,12 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
   const numberOfBars = 32; // Number of frequency bars to display
   const [maxHeight, setMaxHeight] = useState<number[]>(Array(numberOfBars).fill(2));
   
+  // Enhanced color palette for better visual impact
   const colors = [
     'bg-purple-500', 'bg-pink-500', 'bg-red-500', 
     'bg-orange-500', 'bg-yellow-500', 'bg-lime-400',
-    'bg-green-500', 'bg-cyan-400', 'bg-blue-500'
+    'bg-green-500', 'bg-cyan-400', 'bg-blue-500',
+    'bg-indigo-500', 'bg-violet-500', 'bg-fuchsia-500'
   ];
 
   // Update max heights with decay effect
@@ -35,7 +37,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     const value = audioData[dataIndex] || 0;
     
     // Apply a stronger amplification factor to make the visualization more responsive
-    const amplificationFactor = 2.5; // Increased even more for better visibility
+    const amplificationFactor = 3.5; // Increased even more for better visibility
     const baseHeightPercentage = Math.max(2, (value / 255) * 100);
     const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     
@@ -45,7 +47,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     }
     
     // Add some randomness to make visualization more lively when active
-    const variationFactor = isActive && value > 5 ? (1 + Math.random() * 0.3) : 1;
+    const variationFactor = isActive && value > 2 ? (1 + Math.random() * 0.4) : 1;
     const displayHeight = `${heightPercentage * variationFactor}%`;
     const maxDisplayHeight = `${maxHeight[i]}%`;
     
@@ -75,7 +77,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
           {/* Main bar */}
           <motion.div
             className={`w-full ${bar.color} rounded-sm ${
-              bar.value > 100 ? 'animate-pulse' : ''
+              bar.value > 80 ? 'animate-pulse' : ''
             }`}
             style={{ height: bar.height }}
             initial={{ height: "2%" }}
