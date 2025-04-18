@@ -1,3 +1,4 @@
+
 import React from 'react';
 import LogoRound from './LogoRound';
 
@@ -145,7 +146,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
 
       <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px solid #E5E7EB', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px' }}>
-          <div style={{ width: '40px', height: '40px', marginRight: '8px' }}>
+          <div style={{ width: '20px', height: '20px', marginRight: '8px' }}>
             <img
               src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
               alt="Musetera Logo"
