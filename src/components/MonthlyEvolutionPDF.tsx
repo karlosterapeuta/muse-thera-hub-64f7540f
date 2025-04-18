@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface MonthlyEvolutionPDFProps {
@@ -25,7 +26,7 @@ export const MonthlyEvolutionPDF: React.FC<MonthlyEvolutionPDFProps> = ({
         <div style={{ marginBottom: '24px' }}>
           <img 
             src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
-            style={{ width: '100px', height: 'auto', margin: '0 auto' }} 
+            style={{ width: '60px', height: 'auto', margin: '0 auto' }} 
           />
         </div>
         <h1 style={{ color: '#2563EB', fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>

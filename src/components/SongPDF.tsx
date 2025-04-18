@@ -25,7 +25,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-          <div style={{ width: '30px', height: '30px', marginRight: '12px' }}>
+          <div style={{ width: '20px', height: '20px', marginRight: '12px' }}>
             <img
               src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
               alt="Musetera Logo"
