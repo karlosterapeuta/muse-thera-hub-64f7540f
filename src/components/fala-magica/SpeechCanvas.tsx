@@ -41,18 +41,18 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
     }
     
     const canvas = fabricRef.current;
-    // Expanded color palette for more vibrant visuals
+    // Expanded vibrant color palette for more impactful visuals
     const colors = [
-      '#FF9999', '#99FF99', '#9999FF', '#FFFF99', 
-      '#FF99FF', '#99FFFF', '#FFD700', '#FF6347', 
-      '#7FFFD4', '#DDA0DD', '#FFB6C1', '#98FB98',
-      '#FF4500', '#00FFFF', '#FF00FF', '#FFFF00',
-      '#FF8C00', '#8A2BE2', '#32CD32', '#FF1493'
+      '#FF5555', '#55FF55', '#5555FF', '#FFFF55', 
+      '#FF55FF', '#55FFFF', '#FFD700', '#FF6347', 
+      '#00FFFF', '#FF00FF', '#FFFF00', '#FF1493',
+      '#FF8C00', '#8A2BE2', '#32CD32', '#FF4500',
+      '#9933FF', '#FF3377', '#33FF77', '#77FF33'
     ];
     
     // Create multiple shapes at once for a more dynamic effect
     // Scale the number based on intensity
-    const numberOfShapes = Math.floor(Math.random() * 4 * intensity) + 2; // More shapes with higher intensity
+    const numberOfShapes = Math.floor(Math.random() * 5 * intensity) + 3; // More shapes with higher intensity
     
     console.log(`Adding ${numberOfShapes} shapes with intensity ${intensity}`);
     
@@ -63,24 +63,50 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
       const x = Math.random() * width;
       const y = Math.random() * height;
       
-      // Larger circles with higher intensity
-      const size = (10 + Math.random() * 40) * Math.min(intensity, 3.0);
+      // Larger shapes with higher intensity
+      const size = (15 + Math.random() * 60) * Math.min(intensity, 5.0);
       
-      // Create circle (bubble effect)
-      const circle = new fabric.Circle({
-        left: x,
-        top: y,
-        radius: size / 2,
-        fill: color,
-        opacity: 0.8,
-        strokeWidth: 1,
-        stroke: 'rgba(255, 255, 255, 0.3)'
-      });
-      
-      canvas.add(circle);
-      
-      // Animate each circle with more spread for higher intensity
-      animateShape(circle, intensity);
+      // Randomize between circle and star shapes
+      if (Math.random() > 0.7) {
+        // Create a star (for variety)
+        const starPoints = [];
+        const spikes = 5 + Math.floor(Math.random() * 3);
+        const outerRadius = size / 2;
+        const innerRadius = outerRadius * 0.4;
+        
+        for (let i = 0; i < spikes * 2; i++) {
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const angle = (Math.PI / spikes) * i;
+          starPoints.push({
+            x: x + radius * Math.sin(angle),
+            y: y + radius * Math.cos(angle)
+          });
+        }
+        
+        const star = new fabric.Polygon(starPoints, {
+          fill: color,
+          opacity: 0.8,
+          stroke: 'rgba(255, 255, 255, 0.5)',
+          strokeWidth: 2
+        });
+        
+        canvas.add(star);
+        animateShape(star, intensity);
+      } else {
+        // Create bubble/circle (main effect)
+        const circle = new fabric.Circle({
+          left: x,
+          top: y,
+          radius: size / 2,
+          fill: color,
+          opacity: 0.9,
+          strokeWidth: 2,
+          stroke: 'rgba(255, 255, 255, 0.5)'
+        });
+        
+        canvas.add(circle);
+        animateShape(circle, intensity);
+      }
     }
     
     canvas.renderAll();
@@ -88,23 +114,23 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
   
   const animateShape = (shape: fabric.Object, intensity: number) => {
     // Random movement direction with greater spread for higher intensity
-    const spreadFactor = Math.min(intensity * 3, 6); // Increased spread factor
-    const dx = (Math.random() - 0.5) * 15 * spreadFactor;
-    const dy = (Math.random() - 0.5) * 15 * spreadFactor;
+    const spreadFactor = Math.min(intensity * 5, 10); // Increased spread factor
+    const dx = (Math.random() - 0.5) * 25 * spreadFactor;
+    const dy = (Math.random() - 0.5) * 25 * spreadFactor;
     
     // Random rotation
     const rotation = Math.random() * 360;
     
     // Animate with random movement
     fabric.util.animate({
-      startValue: { left: shape.left, top: shape.top, opacity: 0.9, scale: 0.8 },
+      startValue: { left: shape.left, top: shape.top, opacity: 1.0, scale: 0.5 },
       endValue: { 
-        left: shape.left! + dx * 15, // Increased movement distance
-        top: shape.top! + dy * 15,
+        left: shape.left! + dx * 20, // Increased movement distance
+        top: shape.top! + dy * 20,
         opacity: 0, 
-        scale: Math.min(2.0, 1 + intensity * 0.3) // Grow while fading
+        scale: Math.min(3.0, 1 + intensity * 0.5) // Grow while fading
       },
-      duration: 1200 + Math.random() * 800, // Varied duration
+      duration: 1000 + Math.random() * 1000, // Varied duration
       onChange: (value: any) => {
         shape.set({
           left: value.left,
