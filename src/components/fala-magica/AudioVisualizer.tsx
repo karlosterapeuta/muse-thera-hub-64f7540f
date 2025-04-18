@@ -35,7 +35,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     const value = audioData[dataIndex] || 0;
     
     // Apply a stronger amplification factor to make the visualization more responsive
-    const amplificationFactor = 1.5;
+    const amplificationFactor = 1.8; // Increased from 1.5 for better visibility
     const baseHeightPercentage = Math.max(2, (value / 255) * 100);
     const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     
@@ -68,7 +68,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
             className={`absolute w-full h-1 ${bar.color} opacity-70 rounded-t-sm z-10`}
             style={{ bottom: bar.maxHeight }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            animate={{ opacity: isActive ? 0.7 : 0.2 }}
             transition={{ duration: 0.2 }}
           />
           
@@ -98,7 +98,6 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
           <div 
             key={i} 
             className="w-full h-px bg-white bg-opacity-10"
-            style={{ bottom: `${i * 25}%` }}
           />
         ))}
       </div>

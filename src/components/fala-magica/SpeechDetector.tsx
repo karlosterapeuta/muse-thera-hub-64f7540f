@@ -43,22 +43,57 @@ export default function SpeechDetector({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastVocalizationRef = useRef<number>(0);
+  const hasTriedInitRef = useRef(false);
 
+  // Cleanup function to properly stop and release resources
+  const cleanupAudio = () => {
+    console.log("Stopping listening...");
+    
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        console.log("Stopping track:", track.kind);
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close().catch(err => {
+        console.error("Error closing audio context:", err);
+      });
+      audioContextRef.current = null;
+    }
+    
+    analyserRef.current = null;
+    setIsListening(false);
+    setVolume(0);
+  };
+
+  // Cleanup on component unmount
   useEffect(() => {
     return () => {
-      stopListening();
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      cleanupAudio();
     };
   }, []);
 
   const startListening = async () => {
     try {
-      stopListening();
+      // Clean up any existing audio resources first
+      cleanupAudio();
       setMicError(null);
       
       console.log("Requesting microphone access...");
+      // Request microphone access with noise suppression options
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: true,
@@ -70,6 +105,7 @@ export default function SpeechDetector({
       console.log("Microphone access granted!");
       streamRef.current = stream;
       
+      // Create audio context with fallback for different browsers
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) {
         throw new Error("AudioContext not supported in this browser");
@@ -78,29 +114,35 @@ export default function SpeechDetector({
       audioContextRef.current = new AudioContextClass();
       console.log("AudioContext created");
       
+      // Create and configure the analyzer for audio processing
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
       analyser.smoothingTimeConstant = 0.5;
       
+      // Connect the microphone to the analyzer
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
       microphone.connect(analyser);
       console.log("Microphone connected to analyser");
       
+      // Update state to reflect that we're now listening
       setIsListening(true);
       setTimeLeft(duration);
       setConsecutiveVocalizations(0);
       setMaxVolume(0);
       setAudioData(new Uint8Array(analyser.frequencyBinCount).fill(0));
       
+      // Start the audio analysis loop
       analyzeAudio();
       
-      if (autoStop) {
+      // Set auto-stop timer if enabled
+      if (autoStop && duration > 0) {
         timeoutRef.current = setTimeout(() => {
-          stopListening();
+          cleanupAudio();
         }, duration * 1000);
       }
       
+      // Show a toast to prompt the user
       toast({
         title: "🎤 Vamos começar nossa aventura sonora!",
         description: "Faça qualquer som! Pode ser 'Aaaa', 'Mmmm' ou o que você quiser!",
@@ -118,38 +160,6 @@ export default function SpeechDetector({
     }
   };
 
-  const stopListening = () => {
-    console.log("Stopping listening...");
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => {
-        console.log("Stopping track:", track.kind);
-        track.stop();
-      });
-      streamRef.current = null;
-    }
-    
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
-    
-    if (audioContextRef.current) {
-      audioContextRef.current.close().catch(err => {
-        console.error("Error closing audio context:", err);
-      });
-      audioContextRef.current = null;
-    }
-    
-    analyserRef.current = null;
-    setIsListening(false);
-    setVolume(0);
-  };
-
   const addStar = () => {
     const starId = Date.now();
     const x = Math.random() * (width - 100);
@@ -164,28 +174,33 @@ export default function SpeechDetector({
 
   const triggerVocalization = () => {
     const now = Date.now();
+    // Prevent multiple triggers in quick succession
     if (now - lastVocalizationRef.current < 500) return;
     
     lastVocalizationRef.current = now;
     
+    // Add visual effects to the canvas if available
     if (typeof (window as any).addShapeToCanvas === 'function') {
       for (let i = 0; i < 3; i++) {
         (window as any).addShapeToCanvas();
       }
     }
     
+    // Update the vocalization count and play appropriate sounds
     setConsecutiveVocalizations(prev => {
       const newCount = prev + 1;
       playRewardSound(newCount >= 5 ? 'achievement' : newCount >= 3 ? 'levelUp' : 'success');
       return newCount;
     });
     
+    // Show visual feedback
     setShowConfetti(true);
     addStar();
     onVocalization();
     
     console.log("Vocalization triggered! Volume level:", volume);
     
+    // Hide the confetti after a few seconds
     setTimeout(() => setShowConfetti(false), 3000);
   };
 
@@ -194,33 +209,37 @@ export default function SpeechDetector({
       return;
     }
     
-    // Get frequency data
+    // Get frequency data from the analyzer
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Create a copy of the data with amplification for visualization
+    // Amplify the frequency data for better visualization
     const gainFactor = 1.5;
     const amplifiedData = new Uint8Array(dataArray.length);
     for (let i = 0; i < dataArray.length; i++) {
       amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
     }
     
-    // Update state with the amplified audio data for visualization
+    // Update audio data state for visualization
     setAudioData(amplifiedData);
     
     // Calculate average volume for detection
     const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
     setVolume(average);
     
+    // Track the maximum volume reached
     setMaxVolume(prevMax => Math.max(prevMax, average));
     
+    // Detect sound based on sensitivity threshold
     if (average > sensitivity) {
       setSoundDetected(true);
       
+      // Add visual feedback when sound is detected
       if (typeof (window as any).addShapeToCanvas === 'function') {
         (window as any).addShapeToCanvas();
       }
       
+      // Trigger vocalization with rate limiting
       const now = Date.now();
       if (now - lastVocalizationRef.current > 500) {
         triggerVocalization();
@@ -230,9 +249,11 @@ export default function SpeechDetector({
       setSoundDetected(false);
     }
     
+    // Continue the analysis loop
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   };
 
+  // Handle color changes based on volume level
   const getVolumeColor = (volume: number) => {
     if (volume < 20) return 'bg-purple-500';
     if (volume < 40) return 'bg-blue-500';
@@ -247,6 +268,7 @@ export default function SpeechDetector({
     return `${baseStyles} ${colorClass}`;
   };
 
+  // Auto-start timer for remaining time
   useEffect(() => {
     if (isListening && autoStop && timeLeft > 0) {
       const interval = setInterval(() => {
@@ -257,16 +279,21 @@ export default function SpeechDetector({
     }
   }, [isListening, autoStop, timeLeft]);
 
-  // Start listening automatically when component mounts to fix the initial state
+  // Auto-initialize on component mount with a small delay
   useEffect(() => {
-    // Auto-start after a short delay to allow the component to fully mount
-    const timer = setTimeout(() => {
-      if (!isListening) {
-        startListening();
-      }
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    // Only try to auto-start once
+    if (!hasTriedInitRef.current) {
+      hasTriedInitRef.current = true;
+      
+      // Auto-start after a short delay to allow the component to fully mount
+      const timer = setTimeout(() => {
+        if (!isListening) {
+          startListening();
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
@@ -339,7 +366,7 @@ export default function SpeechDetector({
             }}
           >
             <Button
-              onClick={isListening ? stopListening : startListening}
+              onClick={isListening ? cleanupAudio : startListening}
               variant="ghost"
               size="icon"
               className={`w-24 h-24 rounded-full ${
