@@ -31,7 +31,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             <img 
               src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
               alt="Logo" 
-              style={{ width: '120px', height: 'auto' }} 
+              style={{ width: '60px', height: 'auto' }} 
             />
           </div>
           <div className="text-center">
