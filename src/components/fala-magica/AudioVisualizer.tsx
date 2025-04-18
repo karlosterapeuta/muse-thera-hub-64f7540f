@@ -35,7 +35,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     const value = audioData[dataIndex] || 0;
     
     // Apply a stronger amplification factor to make the visualization more responsive
-    const amplificationFactor = 2.0; // Increased for better visibility
+    const amplificationFactor = 2.5; // Increased even more for better visibility
     const baseHeightPercentage = Math.max(2, (value / 255) * 100);
     const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     
@@ -75,7 +75,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
           {/* Main bar */}
           <motion.div
             className={`w-full ${bar.color} rounded-sm ${
-              bar.value > 120 ? 'animate-pulse' : ''
+              bar.value > 100 ? 'animate-pulse' : ''
             }`}
             style={{ height: bar.height }}
             initial={{ height: "2%" }}
@@ -84,7 +84,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
               transition: { 
                 type: "spring", 
                 stiffness: 300, 
-                damping: isActive ? 10 : 30 
+                damping: isActive ? 5 : 30  // Lower damping for more bouncy effect
               }
             }}
             transition={{ duration: 0.05 }}

@@ -44,6 +44,7 @@ export default function SpeechDetector({
   const animationFrameRef = useRef<number | null>(null);
   const lastVocalizationRef = useRef<number>(0);
   const hasTriedInitRef = useRef(false);
+  const micAttempts = useRef(0);
 
   // Cleanup function to properly stop and release resources
   const cleanupAudio = () => {
@@ -77,6 +78,7 @@ export default function SpeechDetector({
     analyserRef.current = null;
     setIsListening(false);
     setVolume(0);
+    setAudioData(new Uint8Array(128).fill(0));
   };
 
   // Cleanup on component unmount
@@ -91,13 +93,14 @@ export default function SpeechDetector({
       // Clean up any existing audio resources first
       cleanupAudio();
       setMicError(null);
+      micAttempts.current += 1;
       
       console.log("Requesting microphone access...");
       // Request microphone access with noise suppression options
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
-          echoCancellation: true,
-          noiseSuppression: true,
+          echoCancellation: false, // Turn off echo cancellation for better voice detection
+          noiseSuppression: false, // Turn off noise suppression for better detection
           autoGainControl: true
         } 
       });
@@ -118,7 +121,7 @@ export default function SpeechDetector({
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.5;
+      analyser.smoothingTimeConstant = 0.3; // Lower value for faster response
       
       // Connect the microphone to the analyzer
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
@@ -157,6 +160,15 @@ export default function SpeechDetector({
         description: "Por favor, permita o acesso ao microfone para brincarmos juntos!",
         variant: "destructive",
       });
+      
+      // If we've tried a few times without success, show a more helpful message
+      if (micAttempts.current > 2) {
+        toast({
+          title: "🤔 Dicas para o microfone",
+          description: "Verifique se seu navegador tem permissão. Em celulares, tente tocar na tela primeiro para ativar o áudio.",
+          duration: 6000,
+        });
+      }
     }
   };
 
@@ -180,12 +192,12 @@ export default function SpeechDetector({
     lastVocalizationRef.current = now;
     
     // Calculate intensity based on current volume (0-100 scale)
-    const volumeIntensity = Math.max(1, volume / 25);
+    const volumeIntensity = Math.max(1, volume / 20); // Made more sensitive
     
     // Add visual effects to the canvas if available
     if (typeof (window as any).addShapeToCanvas === 'function') {
       // Call multiple times based on volume intensity
-      for (let i = 0; i < Math.min(5, Math.ceil(volumeIntensity)); i++) {
+      for (let i = 0; i < Math.min(6, Math.ceil(volumeIntensity)); i++) {
         (window as any).addShapeToCanvas(volumeIntensity);
       }
     }
@@ -218,7 +230,7 @@ export default function SpeechDetector({
     analyserRef.current.getByteFrequencyData(dataArray);
     
     // Amplify the frequency data for better visualization
-    const gainFactor = 1.5;
+    const gainFactor = 2.0; // Increased gain for better sensitivity
     const amplifiedData = new Uint8Array(dataArray.length);
     for (let i = 0; i < dataArray.length; i++) {
       amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
@@ -227,19 +239,33 @@ export default function SpeechDetector({
     // Update audio data state for visualization
     setAudioData(amplifiedData);
     
-    // Calculate average volume for detection
-    const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+    // Calculate average volume for detection (focusing on mid-range frequencies for voice)
+    let sum = 0;
+    let count = 0;
+    // Focus on mid-range frequencies (voice typically 85-255Hz)
+    const midStartIndex = Math.floor(dataArray.length * 0.1); // ~85Hz
+    const midEndIndex = Math.floor(dataArray.length * 0.3);   // ~255Hz
+    
+    for (let i = midStartIndex; i < midEndIndex; i++) {
+      sum += dataArray[i];
+      count++;
+    }
+    
+    const average = count > 0 ? sum / count : 0;
     setVolume(average);
     
     // Track the maximum volume reached
     setMaxVolume(prevMax => Math.max(prevMax, average));
     
+    // Lower the detection threshold for better sensitivity
+    const actualSensitivity = Math.max(5, sensitivity - 5);
+    
     // Detect sound based on sensitivity threshold
-    if (average > sensitivity) {
+    if (average > actualSensitivity) {
       setSoundDetected(true);
       
       // Calculate intensity factor based on how far above threshold
-      const intensityFactor = Math.min(3, (average - sensitivity) / (100 - sensitivity) * 3 + 1);
+      const intensityFactor = Math.min(4, (average - actualSensitivity) / (100 - actualSensitivity) * 4 + 1);
       
       // Add visual feedback when sound is detected
       if (typeof (window as any).addShapeToCanvas === 'function') {
@@ -303,6 +329,28 @@ export default function SpeechDetector({
     }
   }, []);
 
+  // Attempt to resume AudioContext if it was suspended (common on mobile)
+  useEffect(() => {
+    if (isListening && audioContextRef.current && audioContextRef.current.state === 'suspended') {
+      const resumeAudio = () => {
+        if (audioContextRef.current) {
+          audioContextRef.current.resume().catch(err => {
+            console.error("Failed to resume audio context:", err);
+          });
+        }
+      };
+
+      // Add event listeners to resume audio context on user interaction
+      document.addEventListener('click', resumeAudio, { once: true });
+      document.addEventListener('touchstart', resumeAudio, { once: true });
+      
+      return () => {
+        document.removeEventListener('click', resumeAudio);
+        document.removeEventListener('touchstart', resumeAudio);
+      };
+    }
+  }, [isListening]);
+
   return (
     <div className="relative bg-gradient-to-r from-purple-100 to-indigo-100 p-6 rounded-xl shadow-md">
       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={200} />}
@@ -338,7 +386,7 @@ export default function SpeechDetector({
             <p className="font-medium">Problema com o microfone:</p>
             <p>{micError}</p>
             <p className="mt-2 text-xs">Dicas: Verifique se seu navegador tem permissão para acessar o microfone. 
-            Tente atualizar a página ou usar outro navegador como Chrome.</p>
+            Em celulares, tente tocar na tela antes de ativar. Tente atualizar a página ou usar outro navegador como Chrome.</p>
           </div>
         )}
         
@@ -360,14 +408,18 @@ export default function SpeechDetector({
         >
           <motion.div 
             className={`w-32 h-32 rounded-full flex items-center justify-center transition-colors ${
-              isListening ? 'bg-purple-500' : 'bg-gray-200'
+              isListening 
+                ? soundDetected 
+                  ? 'bg-green-500' 
+                  : 'bg-purple-500' 
+                : 'bg-gray-200'
             }`}
             animate={isListening ? {
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0]
+              scale: soundDetected ? [1, 1.2, 1] : [1, 1.1, 1],
+              rotate: soundDetected ? [0, 5, -5, 0] : [0, 3, -3, 0]
             } : {}}
             transition={{
-              duration: 2,
+              duration: soundDetected ? 0.5 : 2,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -377,7 +429,11 @@ export default function SpeechDetector({
               variant="ghost"
               size="icon"
               className={`w-24 h-24 rounded-full ${
-                isListening ? 'text-white hover:bg-purple-600' : 'text-gray-500 hover:bg-gray-300'
+                isListening 
+                  ? soundDetected 
+                    ? 'text-white hover:bg-green-600' 
+                    : 'text-white hover:bg-purple-600' 
+                  : 'text-gray-500 hover:bg-gray-300'
               }`}
             >
               {isListening ? <MicOff size={48} /> : <Mic size={48} />}
