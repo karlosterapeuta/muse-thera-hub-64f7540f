@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Volume2, Star, Sparkles, Music, Bird } from "lucide-react";
@@ -44,6 +45,8 @@ export default function SpeechDetector({
   const lastVocalizationRef = useRef<number>(0);
   const hasTriedInitRef = useRef(false);
   const micAttempts = useRef(0);
+  
+  const resumeAudioContextInterval = useRef<NodeJS.Timeout | null>(null);
 
   const cleanupAudio = () => {
     console.log("Stopping listening...");
@@ -64,6 +67,11 @@ export default function SpeechDetector({
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
+    }
+    
+    if (resumeAudioContextInterval.current) {
+      clearInterval(resumeAudioContextInterval.current);
+      resumeAudioContextInterval.current = null;
     }
     
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
@@ -93,6 +101,7 @@ export default function SpeechDetector({
       
       console.log("Requesting microphone access...");
       
+      // Improved microphone request with proper constraints
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
           echoCancellation: false,    // Turn off echo cancellation for better detection
@@ -113,6 +122,7 @@ export default function SpeechDetector({
         audioContextRef.current = new AudioContextClass();
         console.log("AudioContext created with state:", audioContextRef.current.state);
         
+        // Resume audio context immediately after creation if needed
         if (audioContextRef.current.state === 'suspended') {
           await audioContextRef.current.resume();
           console.log("AudioContext resumed from suspended state");
@@ -124,11 +134,14 @@ export default function SpeechDetector({
       
       const analyser = audioContextRef.current.createAnalyser();
       analyserRef.current = analyser;
-      analyser.fftSize = 1024;
-      analyser.smoothingTimeConstant = 0.2;
+      // Increased FFT size for better frequency resolution
+      analyser.fftSize = 2048;
+      // Lower smoothing for more responsive visualization
+      analyser.smoothingTimeConstant = 0.1;
       
+      // Create gain node with higher boost for better sensitivity
       const gainNode = audioContextRef.current.createGain();
-      gainNode.gain.value = 3.0;
+      gainNode.gain.value = 5.0; // Increased from 3.0
       
       const microphone = audioContextRef.current.createMediaStreamSource(stream);
       microphone.connect(gainNode);
@@ -140,6 +153,15 @@ export default function SpeechDetector({
       setConsecutiveVocalizations(0);
       setMaxVolume(0);
       setAudioData(new Uint8Array(analyser.frequencyBinCount).fill(0));
+      
+      // Setup interval to regularly attempt resuming audio context (common fix for iOS/Safari)
+      resumeAudioContextInterval.current = setInterval(() => {
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume().catch(err => {
+            console.error("Failed to resume audio context in interval:", err);
+          });
+        }
+      }, 300);
       
       analyzeAudio();
       
@@ -224,7 +246,8 @@ export default function SpeechDetector({
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    const gainFactor = 5.0;
+    // Apply higher gain factor for more sensitivity
+    const gainFactor = 8.0; // Increased from 5.0
     const amplifiedData = new Uint8Array(dataArray.length);
     for (let i = 0; i < dataArray.length; i++) {
       amplifiedData[i] = Math.min(255, dataArray[i] * gainFactor);
@@ -235,8 +258,10 @@ export default function SpeechDetector({
     let sum = 0;
     let count = 0;
     
-    const voiceStartBin = Math.floor(dataArray.length * 0.005);
-    const voiceEndBin = Math.floor(dataArray.length * 0.08);
+    // Focus more on voice frequency range (250Hz-4kHz)
+    // With 2048 FFT size, we have more precise frequency bins
+    const voiceStartBin = Math.floor(dataArray.length * 0.01);  // ~200Hz
+    const voiceEndBin = Math.floor(dataArray.length * 0.2);     // ~4kHz
     
     for (let i = voiceStartBin; i < voiceEndBin; i++) {
       sum += dataArray[i];
@@ -248,7 +273,8 @@ export default function SpeechDetector({
     
     setMaxVolume(prevMax => Math.max(prevMax, average));
     
-    const actualSensitivity = Math.max(2, sensitivity - 12);
+    // Lower sensitivity threshold for easier detection
+    const actualSensitivity = Math.max(2, sensitivity - 14); // Reduced from 12
     
     if (average > actualSensitivity) {
       setSoundDetected(true);
@@ -325,6 +351,8 @@ export default function SpeechDetector({
       
       resumeAudioContext();
       
+      // Add multiple event handlers to resume audio context
+      // This is especially important for iOS/Safari
       const resumeAudio = () => {
         resumeAudioContext();
       };
@@ -334,6 +362,7 @@ export default function SpeechDetector({
       document.addEventListener('touchend', resumeAudio, { capture: true });
       document.addEventListener('keydown', resumeAudio, { capture: true });
       
+      // Try to resume audio context on regular intervals
       const intervalId = setInterval(resumeAudioContext, 500);
       
       return () => {
@@ -345,6 +374,23 @@ export default function SpeechDetector({
       };
     }
   }, [isListening]);
+
+  // Extra touch interaction for mobile
+  useEffect(() => {
+    const handleTouch = () => {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().catch(err => {
+          console.error("Failed to resume audio context on touch:", err);
+        });
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouch);
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouch);
+    };
+  }, []);
 
   return (
     <div className="relative bg-gradient-to-r from-purple-100 to-indigo-100 p-6 rounded-xl shadow-md">
@@ -384,8 +430,8 @@ export default function SpeechDetector({
               Dicas para resolver:
               <ul className="list-disc pl-5 mt-1">
                 <li>Verifique se o navegador tem permissão para acessar o microfone nas configurações</li>
-                <li>Em celulares, toque na tela várias vezes antes de ativar o microfone</li>
-                <li>Tente atualizar a página</li>
+                <li>Em celulares, toque várias vezes na tela ou no botão antes de ativar o microfone</li>
+                <li>Tente atualizar a página e tentar novamente</li>
                 <li>Use um navegador como Chrome ou Firefox que tenha melhor suporte a áudio</li>
                 <li>Desligue outros aplicativos que possam estar usando o microfone</li>
                 <li>Em Android, verifique se o app do navegador tem permissão para usar o microfone</li>
@@ -396,7 +442,7 @@ export default function SpeechDetector({
         )}
         
         <motion.div 
-          className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative"
+          className="w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-lg relative cursor-pointer"
           animate={isListening ? {
             scale: [1, 1.05, 1],
             boxShadow: [
@@ -410,6 +456,7 @@ export default function SpeechDetector({
             repeat: Infinity,
             ease: "easeInOut"
           }}
+          onClick={isListening ? cleanupAudio : startListening}
         >
           <motion.div 
             className={`w-32 h-32 rounded-full flex items-center justify-center transition-colors ${

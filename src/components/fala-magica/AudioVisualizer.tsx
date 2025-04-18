@@ -24,8 +24,8 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     if (!isActive) return;
     
     const timer = setInterval(() => {
-      setMaxHeight(prev => prev.map(height => Math.max(2, height * 0.92))); // Faster decay for more responsive peaks
-    }, 100); // Faster updates
+      setMaxHeight(prev => prev.map(height => Math.max(2, height * 0.9))); // Faster decay for more responsive peaks
+    }, 80); // Faster updates for more responsiveness
     
     return () => clearInterval(timer);
   }, [isActive]);
@@ -37,7 +37,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
     const value = audioData[dataIndex] || 0;
     
     // Apply a stronger amplification factor to make the visualization more responsive
-    const amplificationFactor = 4.5; // Increased even more for better visibility
+    const amplificationFactor = 6.0; // Increased even more for better visibility
     const baseHeightPercentage = Math.max(2, (value / 255) * 100);
     const heightPercentage = Math.min(100, baseHeightPercentage * amplificationFactor);
     
@@ -46,8 +46,8 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
       maxHeight[i] = heightPercentage;
     }
     
-    // Add some randomness to make visualization more lively when active
-    const variationFactor = isActive && value > 2 ? (1 + Math.random() * 0.6) : 1; // More variation
+    // Add more randomness to make visualization more lively when active
+    const variationFactor = isActive && value > 2 ? (1 + Math.random() * 0.8) : 1; // More variation
     const displayHeight = `${heightPercentage * variationFactor}%`;
     const maxDisplayHeight = `${maxHeight[i]}%`;
     
@@ -77,7 +77,7 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
           {/* Main bar */}
           <motion.div
             className={`w-full ${bar.color} rounded-sm ${
-              bar.value > 60 ? 'animate-pulse' : ''
+              bar.value > 50 ? 'animate-pulse' : ''  // Lower threshold for pulse animation
             }`}
             style={{ height: bar.height }}
             initial={{ height: "2%" }}
@@ -85,8 +85,8 @@ const AudioVisualizer = ({ audioData, isActive }: AudioVisualizerProps) => {
               height: bar.height,
               transition: { 
                 type: "spring", 
-                stiffness: 500, // More responsive
-                damping: isActive ? 5 : 20  // Lower damping for more bouncy effect
+                stiffness: 600, // More responsive spring
+                damping: isActive ? 3 : 15  // Lower damping for more bouncy effect
               }
             }}
             transition={{ duration: 0.05 }}

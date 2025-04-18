@@ -52,7 +52,7 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
     
     // Create multiple shapes at once for a more dynamic effect
     // Scale the number based on intensity
-    const numberOfShapes = Math.floor(Math.random() * 5 * intensity) + 3; // More shapes with higher intensity
+    const numberOfShapes = Math.floor(Math.random() * 5 * intensity) + 5; // More shapes with higher intensity
     
     console.log(`Adding ${numberOfShapes} shapes with intensity ${intensity}`);
     
@@ -64,13 +64,13 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
       const y = Math.random() * height;
       
       // Larger shapes with higher intensity
-      const size = (15 + Math.random() * 60) * Math.min(intensity, 5.0);
+      const size = (20 + Math.random() * 80) * Math.min(intensity, 6.0);
       
       // Randomize between circle and star shapes
-      if (Math.random() > 0.7) {
+      if (Math.random() > 0.5) { // Increase probability of stars
         // Create a star (for variety)
         const starPoints = [];
-        const spikes = 5 + Math.floor(Math.random() * 3);
+        const spikes = 5 + Math.floor(Math.random() * 4); // More variety in star points
         const outerRadius = size / 2;
         const innerRadius = outerRadius * 0.4;
         
@@ -86,7 +86,7 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
         const star = new fabric.Polygon(starPoints, {
           fill: color,
           opacity: 0.8,
-          stroke: 'rgba(255, 255, 255, 0.5)',
+          stroke: 'rgba(255, 255, 255, 0.6)', // Brighter outline
           strokeWidth: 2
         });
         
@@ -101,7 +101,7 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
           fill: color,
           opacity: 0.9,
           strokeWidth: 2,
-          stroke: 'rgba(255, 255, 255, 0.5)'
+          stroke: 'rgba(255, 255, 255, 0.6)' // Brighter outline
         });
         
         canvas.add(circle);
@@ -114,7 +114,7 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
   
   const animateShape = (shape: fabric.Object, intensity: number) => {
     // Random movement direction with greater spread for higher intensity
-    const spreadFactor = Math.min(intensity * 5, 10); // Increased spread factor
+    const spreadFactor = Math.min(intensity * 6, 12); // Increased spread factor for more dynamic movement
     const dx = (Math.random() - 0.5) * 25 * spreadFactor;
     const dy = (Math.random() - 0.5) * 25 * spreadFactor;
     
@@ -128,9 +128,9 @@ export default function SpeechCanvas({ width = 400, height = 300 }: SpeechCanvas
         left: shape.left! + dx * 20, // Increased movement distance
         top: shape.top! + dy * 20,
         opacity: 0, 
-        scale: Math.min(3.0, 1 + intensity * 0.5) // Grow while fading
+        scale: Math.min(3.5, 1 + intensity * 0.7) // Grow while fading
       },
-      duration: 1000 + Math.random() * 1000, // Varied duration
+      duration: 800 + Math.random() * 1000, // Slightly faster animation for better responsiveness
       onChange: (value: any) => {
         shape.set({
           left: value.left,
