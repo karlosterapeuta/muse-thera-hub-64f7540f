@@ -413,9 +413,12 @@ export default function ReportForm() {
               ? "Relatório de Sessão em Grupo"
               : "Evolução Semestral"}
           </h1>
-          <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 12px;">
+          <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 8px;">
             Paciente: ${patientName}
           </h2>
+          <p style="color: #1F2937; font-size: 16px; margin-bottom: 12px;">
+            Musicoterapeuta: ${userName}
+          </p>
           <p style="color: #6B7280; font-size: 16px;">
             Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
           </p>
