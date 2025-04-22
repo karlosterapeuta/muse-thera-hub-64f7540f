@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -88,7 +87,6 @@ export default function Evaluation() {
     fetchPatients();
   }, []);
 
-  // Update selectedPatientData when selectedPatient changes
   useEffect(() => {
     const patient = patients.find(p => p.id === selectedPatient);
     setSelectedPatientData(patient || null);
@@ -690,3 +688,134 @@ export default function Evaluation() {
     </div>
   );
 }
+
+const TeaScalePDF = ({
+  categoryData,
+  pieData,
+  patientName,
+  evaluatorName,
+  evaluatorEmail,
+  radarData
+}) => {
+  return (
+    <div style="padding: 40px; font-family: Arial, sans-serif;">
+      <div style="text-align: center; margin-bottom: 32px; border-bottom: 2px solid #E5E7EB; padding-bottom: 20px;">
+        <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 150px; margin: 0 auto 20px;" />
+        <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+          Avaliação Musicoterapêutica TEA
+        </h1>
+        <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+          Paciente: ${patientName || 'Não informado'}
+        </h2>
+        <p style="color: #1F2937; font-size: 16px; margin-bottom: 12px;">
+          Musicoterapeuta: ${evaluatorName || 'Não informado'}
+        </p>
+        <p style="color: #6B7280; font-size: 13px;">
+          Data da Avaliação: ${new Date().toLocaleDateString('pt-BR')}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        <Card className="p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+            Perfil de Habilidades
+          </h3>
+          <div className="h-[300px] sm:h-[350px] w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="name" />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                <Legend />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+            Pontuação Global
+          </h3>
+          <div className="h-[300px] sm:h-[350px] w-full flex flex-col items-center justify-center">
+            <div className="h-[200px] sm:h-[250px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="60%"
+                    outerRadius="80%"
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="text-center mt-4">
+              <p className="text-lg font-medium">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+              <p className="text-sm text-gray-600">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="mt-8">
+        <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+          Desempenho por Subdomínios
+        </h3>
+        <div className="h-[400px] sm:h-[450px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={categoryData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="name" 
+                angle={-45} 
+                textAnchor="end" 
+                height={100}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis domain={[0, 100]} />
+              <RechartsTooltip content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload;
+                  return (
+                    <div className="bg-white p-3 border rounded shadow-md">
+                      <p className="text-sm font-medium">{data.name}</p>
+                      <p className="text-sm">Domínio: {data.domain}</p>
+                      <p className="text-sm text-blue-600">Pontuação: {data.value}%</p>
+                    </div>
+                  );
+                }
+                return null;
+              }} />
+              <Bar dataKey="value" fill="#6D28D9">
+                {categoryData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={
+                      entry.domain === "Musical" ? "#8884d8" :
+                      entry.domain === "Psicossocial" ? "#82ca9d" : 
+                      entry.domain === "Cognitivo" ? "#ffc658" : "#ff8042"
+                    } 
+                  />
+                ))}
+              </Bar>
+              <Legend />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+};
