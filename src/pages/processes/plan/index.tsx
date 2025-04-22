@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,9 +78,14 @@ export default function TreatmentPlanForm() {
   const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+
+  // NOVO: informações detalhadas do profissional
+  const [professionalInfo, setProfessionalInfo] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+  }>({ name: "", email: "", phone: "" });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,14 +98,36 @@ export default function TreatmentPlanForm() {
     },
   });
 
-  const formatNameFromEmail = (email: string) => {
-    const namePart = email.split('@')[0];
-    return namePart
-      .split(/[._-]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
+  // Função para buscar nome, email e telefone do profissional
+  useEffect(() => {
+    async function fetchProfessionalInfo() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserId(user.id);
 
+          const { data, error } = await supabase
+            .from("professionals")
+            .select("name, email, phone")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (!error && data) {
+            setProfessionalInfo({
+              name: data.name || "",
+              email: data.email || "",
+              phone: data.phone || ""
+            });
+          }
+        }
+      } catch (err) {
+        // fallback: não faz nada, deixa campos vazios
+      }
+    }
+    fetchProfessionalInfo();
+  }, []);
+
+  // Busca pacientes usuais...
   useEffect(() => {
     async function fetchData() {
       try {
@@ -107,11 +135,7 @@ export default function TreatmentPlanForm() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Usuário não autenticado");
 
-        setUserEmail(user.email || "");
-        setUserName(formatNameFromEmail(user.email || ""));
         setUserId(user.id);
-
-        console.log("Buscando pacientes para usuário:", user.id);
 
         const { data, error } = await supabase
           .from("patients")
@@ -138,8 +162,22 @@ export default function TreatmentPlanForm() {
   }, [toast]);
 
   const generatePDF = async (data: FormValues, patientName: string) => {
+    // Rodapé com as informações do profissional
+    const profFooter = `
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
+        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
+          <strong>Nome:</strong> ${professionalInfo.name || "-"}
+        </p>
+        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
+          <strong>Telefone:</strong> ${professionalInfo.phone || "-"}
+        </p>
+        <p style="color: #6B7280; font-size: 13px;">
+          <strong>Email:</strong> ${professionalInfo.email || "-"}
+        </p>
+      </div>
+    `;
+
     const element = document.createElement('div');
-    
     element.innerHTML = `
     <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
       <div style="text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid #E5E7EB;">
@@ -151,7 +189,7 @@ export default function TreatmentPlanForm() {
           Paciente: ${patientName}
         </h2>
         <p style="color: #1F2937; font-size: 16px; margin-bottom: 12px;">
-          Musicoterapeuta: ${userName}
+          Musicoterapeuta: ${professionalInfo.name || "-"}
         </p>
         <p style="color: #6B7280; font-size: 13px;">
           Data: ${new Date().toLocaleDateString('pt-BR')}
@@ -193,20 +231,11 @@ export default function TreatmentPlanForm() {
           </div>
         `).join('')}
       </div>
-
-      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-          Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
-        </p>
-        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-          Musetera - Sistema de Gestão para Musicoterapia
-        </p>
-        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-          Musicoterapeuta: ${userName}
-        </p>
-        <p style="color: #6B7280; font-size: 13px;">
-          Email: ${userEmail}
-        </p>
+      ${profFooter}
+      <div style="color: #6B7280; font-size: 13px; margin-top: 4px; text-align:center;">
+        Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
+        <br/>
+        Musetera - Sistema de Gestão para Musicoterapia
       </div>
     </div>
   `;
@@ -233,7 +262,6 @@ export default function TreatmentPlanForm() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      console.log("Submetendo formulário com dados:", data);
       const selectedPatient = patients.find(p => p.id === data.patient_id);
       if (!selectedPatient) {
         throw new Error("Paciente não encontrado");
