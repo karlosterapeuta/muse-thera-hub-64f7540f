@@ -77,6 +77,7 @@ export default function ReportForm() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [userPhone, setUserPhone] = useState<string>("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -104,9 +105,18 @@ export default function ReportForm() {
         setUserName(formatNameFromEmail(user.email || ""));
         setUserId(user.id);
 
-        console.log("Buscando pacientes para usuário:", user.id);
-        
-        // Only fetch patients registered by the current user
+        const { data: profData } = await supabase
+          .from("professionals")
+          .select("name, email, phone")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profData) {
+          setUserName(profData.name || formatNameFromEmail(user.email || ""));
+          setUserPhone(profData.phone || "");
+          setUserEmail(profData.email || user.email || "");
+        }
+
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
@@ -114,7 +124,7 @@ export default function ReportForm() {
           .order("name");
 
         if (error) throw error;
-        
+
         setPatients(data || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -393,7 +403,21 @@ export default function ReportForm() {
 
   const generatePDF = async (patientName: string, formValues: FormValues) => {
     const element = document.createElement('div');
-    
+
+    const footer = `
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: left;">
+        <p style="color: #111827; font-size: 15px; margin-bottom: 6px;">
+          <strong>Nome:</strong> ${userName || "-"}
+        </p>
+        <p style="color: #111827; font-size: 15px; margin-bottom: 6px;">
+          <strong>Telefone:</strong> ${userPhone || "-"}
+        </p>
+        <p style="color: #111827; font-size: 15px;">
+          <strong>Email:</strong> ${userEmail || "-"}
+        </p>
+      </div>
+    `;
+
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
@@ -401,10 +425,10 @@ export default function ReportForm() {
             <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 150px; height: auto; margin: 0 auto;">
           </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
-            ${formValues.type === "monthly_evolution" 
-              ? "Evolução Mensal" 
-              : formValues.type === "daily_evolution" 
-              ? "Evolução Diária" 
+            ${formValues.type === "monthly_evolution"
+              ? "Evolução Mensal"
+              : formValues.type === "daily_evolution"
+              ? "Evolução Diária"
               : formValues.type === "therapeutic_discharge"
               ? "Alta Terapêutica"
               : formValues.type === "individual_session"
@@ -423,33 +447,22 @@ export default function ReportForm() {
             Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
           </p>
         </div>
-
         <div style="margin-bottom: 32px;">
           ${generateContentHTML(formValues.content, formValues.type)}
         </div>
-
-        <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Musetera - Sistema de Gestão para Musicoterapia
-          </p>
-          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Musicoterapeuta: ${userName}
-          </p>
-          <p style="color: #6B7280; font-size: 13px;">
-            Email: ${userEmail}
-          </p>
+        ${footer}
+        <div style="color: #6B7280; font-size: 13px; margin-top: 4px; text-align:center;">
+          Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}<br/>
+          Musetera - Sistema de Gestão para Musicoterapia
         </div>
       </div>
     `;
 
     const opt = {
       margin: [20, 20, 20, 20],
-      filename: `${formValues.type === "monthly_evolution" 
-        ? "Evolução Mensal" 
-        : formValues.type === "daily_evolution" 
+      filename: `${formValues.type === "monthly_evolution"
+        ? "Evolução Mensal"
+        : formValues.type === "daily_evolution"
         ? "Evolução Diária"
         : formValues.type === "therapeutic_discharge"
         ? "Alta Terapêutica"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -80,7 +79,7 @@ export default function TreatmentPlanForm() {
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // NOVO: informações detalhadas do profissional
+  // Pegando as informações do profissional
   const [professionalInfo, setProfessionalInfo] = useState<{
     name: string;
     email: string;
@@ -121,7 +120,7 @@ export default function TreatmentPlanForm() {
           }
         }
       } catch (err) {
-        // fallback: não faz nada, deixa campos vazios
+        // fallback: campos vazios
       }
     }
     fetchProfessionalInfo();
@@ -162,16 +161,16 @@ export default function TreatmentPlanForm() {
   }, [toast]);
 
   const generatePDF = async (data: FormValues, patientName: string) => {
-    // Rodapé com as informações do profissional
+    // Rodapé detalhado, padrão solicitado:
     const profFooter = `
-      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
-        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: left;">
+        <p style="color: #111827; font-size: 15px; margin-bottom: 6px;">
           <strong>Nome:</strong> ${professionalInfo.name || "-"}
         </p>
-        <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
+        <p style="color: #111827; font-size: 15px; margin-bottom: 6px;">
           <strong>Telefone:</strong> ${professionalInfo.phone || "-"}
         </p>
-        <p style="color: #6B7280; font-size: 13px;">
+        <p style="color: #111827; font-size: 15px;">
           <strong>Email:</strong> ${professionalInfo.email || "-"}
         </p>
       </div>
