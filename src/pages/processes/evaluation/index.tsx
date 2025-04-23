@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -51,8 +52,6 @@ export default function Evaluation() {
   const [activeTab, setActiveTab] = useState("evaluation");
   const [selectedPatientData, setSelectedPatientData] = useState<Patient | null>(null);
 
-  const COLORS = ['#4ade80', '#ffa1b5'];
-
   useEffect(() => {
     async function fetchPatients() {
       setIsLoading(true);
@@ -89,6 +88,7 @@ export default function Evaluation() {
     fetchPatients();
   }, []);
 
+  // Update selectedPatientData when selectedPatient changes
   useEffect(() => {
     const patient = patients.find(p => p.id === selectedPatient);
     setSelectedPatientData(patient || null);
@@ -305,6 +305,8 @@ export default function Evaluation() {
     { name: "Desenvolvido", value: overallScore.percentage },
     { name: "A desenvolver", value: 100 - overallScore.percentage },
   ];
+
+  const COLORS = ['#4ade80', '#ffa1b5'];
 
   const [userName, setUserName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");

@@ -23,6 +23,12 @@ export const MonthlyEvolutionPDF: React.FC<MonthlyEvolutionPDFProps> = ({
   return (
     <div className="bg-white p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <img 
+            src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+            style={{ width: '60px', height: 'auto', margin: '0 auto' }} 
+          />
+        </div>
         <h1 style={{ color: '#2563EB', fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>
           Evolução Mensal
         </h1>
@@ -82,6 +88,9 @@ export const MonthlyEvolutionPDF: React.FC<MonthlyEvolutionPDFProps> = ({
       <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '2px solid #E5E7EB', textAlign: 'center' }}>
         <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
           Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+        </p>
+        <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
+          Musetera - Sistema de Gestão para Musicoterapia
         </p>
         <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
           Musicoterapeuta: {evaluatorName || 'Não informado'}

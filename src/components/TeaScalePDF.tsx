@@ -28,6 +28,13 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
       <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
         {/* Header Section */}
         <div className="border-b-2 border-gray-200 pb-6 mb-8">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+              alt="Logo" 
+              style={{ width: '40px', height: 'auto' }} 
+            />
+          </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-blue-600 mb-3">
               Resultados da Avaliação TEA
@@ -151,6 +158,9 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
         <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
           <p className="text-sm text-gray-500 mb-1">
             Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          <p className="text-sm text-gray-500 mb-1">
+            Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p className="text-sm text-gray-500 mb-1">
             Musicoterapeuta: {evaluatorName || 'Não informado'}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,6 +69,7 @@ export default function AnamnesisForm() {
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
+      // Usando o user.id diretamente como professional_id
       setProfessionalId(user.id);
 
       console.log('Buscando pacientes para usuário:', user.id);
@@ -107,6 +109,7 @@ export default function AnamnesisForm() {
 
     try {
       setIsLoading(true);
+      // Modified query to order by created_at desc and limit to 1 record
       const { data: anamnesisData, error } = await supabase
         .from("anamnesis")
         .select("*")
@@ -129,6 +132,7 @@ export default function AnamnesisForm() {
         setFormData(anamnesisData);
         setExistingAnamnesisId(anamnesisData.id);
       } else {
+        // Reset form data if no anamnesis exists for this patient
         setFormData({});
         setExistingAnamnesisId(null);
       }
@@ -298,8 +302,8 @@ export default function AnamnesisForm() {
           title: "Aspectos Sociais",
           textFields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
-            { id: "school_adaptation", label: "Adaptação Escolar" },
-            { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
+            { key: "school_adaptation", label: "Adaptação Escolar" },
+            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
       ];
@@ -349,12 +353,9 @@ export default function AnamnesisForm() {
           <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
             Anamnese Musicoterapêutica
           </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
+          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
             Paciente: ${patientName}
           </h2>
-          <p style="color: #1F2937; font-size: 16px; margin-bottom: 12px;">
-            Musicoterapeuta: ${userName}
-          </p>
           <p style="color: #6B7280; font-size: 13px;">
             Data da Avaliação: ${new Date().toLocaleDateString('pt-BR')}
           </p>
@@ -435,52 +436,68 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
+      // Lista atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
+        // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
         'referral_professional', 'main_clinical_demand',
         
+        // Musical history
         'musical_education', 'instrumental_practice', 'body_musical_expression',
         'vocal_expression', 'choral_activities', 'no_musical_experience',
         
+        // Behavior
         'active_musical_listening', 'body_expression', 'sound_responsiveness',
         'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity',
         
+        // Sound processing
         'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response',
         'active_sound_search', 'specific_sound_aversion', 'sound_source_location',
         
+        // Musical preferences
         'children_repertoire', 'rock_genre', 'sacred_gospel', 'brazilian_popular',
         'country_music', 'classical_music', 'other_musical_genres',
         
+        // Development
         'cervical_control', 'crawling_pattern', 'fine_motor_dev',
         'independent_sitting', 'autonomous_walking', 'broad_motor_dev',
         
+        // Language
         'babbling', 'simple_phrases', 'echolalia', 'first_words',
         'nonverbal_communication', 'verbal_language_absence',
         
+        // Behavior
         'visual_contact', 'shared_play', 'stereotyped_behavior',
         'peer_interaction', 'social_isolation', 'restricted_interests',
         
+        // Emotional regulation
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
+        // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         
+        // Therapy
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
         
+        // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
         'therapeutic_goals', 'treatment_approach',
       ];
       
+      // Filtrar os dados para incluir apenas colunas conhecidas
       const cleanedFormData = Object.fromEntries(
         Object.entries(formData).filter(([key, value]) => {
+          // Incluir apenas colunas conhecidas e valores não nulos
           return knownColumns.includes(key) && value !== null && value !== undefined;
         })
       );
       
       console.log("Dados filtrados para salvar:", cleanedFormData);
       
+      // Garantir que temos dados válidos antes de prosseguir
       const anamnesisData = {
         ...cleanedFormData,
         patient_id: selectedPatient,
@@ -491,12 +508,15 @@ export default function AnamnesisForm() {
 
       let result;
       
+      // Determinar se deve inserir ou atualizar
       if (existingAnamnesisId) {
+        // Atualizar registro existente
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData)
           .eq("id", existingAnamnesisId);
       } else {
+        // Inserir novo registro
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData);
@@ -507,11 +527,13 @@ export default function AnamnesisForm() {
         throw result.error;
       }
 
+      // Encontrar dados do paciente
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (!selectedPatientData) {
         throw new Error("Dados do paciente não encontrados");
       }
       
+      // Gerar PDF
       const pdfGenerated = await generatePDF(selectedPatientData.name);
       
       if (pdfGenerated) {
@@ -530,6 +552,7 @@ export default function AnamnesisForm() {
     } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
       
+      // Mensagem de erro mais detalhada
       let errorMessage = "Não foi possível salvar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
