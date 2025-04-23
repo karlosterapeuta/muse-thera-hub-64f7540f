@@ -235,9 +235,6 @@ export default function ReevaluationForm() {
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
-          <div style="margin-bottom: 24px;">
-            <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
-          </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
             Reavaliação Musicoterapêutica
           </h1>
@@ -256,9 +253,6 @@ export default function ReevaluationForm() {
         <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-            Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
             Musicoterapeuta: ${userName}
