@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface Note {
@@ -134,18 +135,6 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
       </div>
 
       <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px solid #E5E7EB', textAlign: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px' }}>
-          <div style={{ width: '20px', height: '20px', marginRight: '8px' }}>
-            <img
-              src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
-              alt="Musetera Logo"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-            />
-          </div>
-          <p style={{ color: '#6B7280', fontSize: '14px', fontWeight: 'bold' }}>
-            Musetera - Sistema de Gestão para Musicoterapia
-          </p>
-        </div>
         <p style={{ color: '#6B7280', fontSize: '11px', marginBottom: '4px' }}>
           Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
         </p>

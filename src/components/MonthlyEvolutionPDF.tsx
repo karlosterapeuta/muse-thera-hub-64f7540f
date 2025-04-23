@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface MonthlyEvolutionPDFProps {
@@ -81,9 +82,6 @@ export const MonthlyEvolutionPDF: React.FC<MonthlyEvolutionPDFProps> = ({
       <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '2px solid #E5E7EB', textAlign: 'center' }}>
         <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
           Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-        </p>
-        <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
-          Musetera - Sistema de Gestão para Musicoterapia
         </p>
         <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '4px' }}>
           Musicoterapeuta: {evaluatorName || 'Não informado'}

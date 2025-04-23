@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
@@ -150,9 +151,6 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
         <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
           <p className="text-sm text-gray-500 mb-1">
             Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p className="text-sm text-gray-500 mb-1">
-            Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p className="text-sm text-gray-500 mb-1">
             Musicoterapeuta: {evaluatorName || 'Não informado'}
