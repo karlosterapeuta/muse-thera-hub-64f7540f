@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
@@ -28,13 +27,6 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
       <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
         {/* Header Section */}
         <div className="border-b-2 border-gray-200 pb-6 mb-8">
-          <div className="flex justify-center mb-6">
-            <img 
-              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
-              alt="Logo" 
-              style={{ width: '40px', height: 'auto' }} 
-            />
-          </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-blue-600 mb-3">
               Resultados da Avaliação TEA
