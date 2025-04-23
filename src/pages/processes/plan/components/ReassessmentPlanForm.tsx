@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import {
@@ -18,14 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 
 interface ReassessmentPlanFormProps {
   form: UseFormReturn<any>;
 }
 
 export function ReassessmentPlanForm({ form }: ReassessmentPlanFormProps) {
-  const { fields: reassessments, append, remove } = form.control._formValues.reassessments || [];
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "reassessments"
+  });
 
   const reassessmentTypes = [
     "Mensal",
@@ -54,8 +56,8 @@ export function ReassessmentPlanForm({ form }: ReassessmentPlanFormProps) {
         </Button>
       </div>
 
-      {reassessments && reassessments.length > 0 ? (
-        reassessments.map((field: any, index: number) => (
+      {fields && fields.length > 0 ? (
+        fields.map((field, index) => (
           <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
             <Button
               type="button"

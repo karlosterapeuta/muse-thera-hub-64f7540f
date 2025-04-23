@@ -3,12 +3,22 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ReassessmentPlanForm } from "./components/ReassessmentPlanForm";
 import { supabase } from "@/integrations/supabase/client";
+import { useForm, FormProvider } from "react-hook-form";
 
 // Define an interface for professionalInfo
 interface ProfessionalInfo {
   name: string;
   phone: string;
   email: string;
+}
+
+// Form initial values interface
+interface TreatmentPlanFormValues {
+  reassessments: Array<{
+    type: string;
+    date: string;
+    description: string;
+  }>;
 }
 
 const TreatmentPlanPage = () => {
@@ -18,6 +28,13 @@ const TreatmentPlanPage = () => {
     email: ""
   });
   const { toast } = useToast();
+  
+  // Initialize react-hook-form
+  const methods = useForm<TreatmentPlanFormValues>({
+    defaultValues: {
+      reassessments: []
+    }
+  });
   
   // Load professional data
   useEffect(() => {
@@ -79,7 +96,9 @@ const TreatmentPlanPage = () => {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">Plano de Tratamento</h1>
-      <ReassessmentPlanForm form={{ control: { _formValues: { reassessments: [] } } }} />
+      <FormProvider {...methods}>
+        <ReassessmentPlanForm form={methods} />
+      </FormProvider>
       {/* More plan page content would go here */}
     </div>
   );
