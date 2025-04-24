@@ -73,7 +73,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <img
-            src="/lovable-uploads/a8f641fc-f081-490d-8028-c68c5eb3f911.png"
+            src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
             alt="MuseTera"
             className="h-8 w-8"
           />
