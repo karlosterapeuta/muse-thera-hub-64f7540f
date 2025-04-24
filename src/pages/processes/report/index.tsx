@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -77,6 +77,11 @@ export default function ReportForm() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [professionalData, setProfessionalData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -130,6 +135,38 @@ export default function ReportForm() {
 
     fetchData();
   }, [toast]);
+
+  useEffect(() => {
+    loadProfessionalData();
+  }, []);
+
+  const loadProfessionalData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: professional, error } = await supabase
+        .from('professionals')
+        .select('name, phone, email')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading professional data:', error);
+        return;
+      }
+
+      if (professional) {
+        setProfessionalData({
+          name: professional.name || '',
+          phone: professional.phone || '',
+          email: professional.email || '',
+        });
+      }
+    } catch (error) {
+      console.error('Error loading professional data:', error);
+    }
+  };
 
   const generateContentHTML = (content: Record<string, any>, type: string) => {
     if (type === "daily_evolution") {
@@ -397,6 +434,17 @@ export default function ReportForm() {
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 18px; color: #374151; margin-bottom: 8px;">
+              ${professionalData.name}
+            </h2>
+            <p style="font-size: 14px; color: #6B7280; margin-bottom: 4px;">
+              ${professionalData.phone}
+            </p>
+            <p style="font-size: 14px; color: #6B7280; margin-bottom: 16px;">
+              ${professionalData.email}
+            </p>
+          </div>
           <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 16px;">
             ${formValues.type === "monthly_evolution" 
               ? "Evolução Mensal" 
@@ -413,9 +461,6 @@ export default function ReportForm() {
           <h2 style="color: #1F2937; font-size: 22px; margin-bottom: 8px;">
             Paciente: ${patientName}
           </h2>
-          <p style="color: #1F2937; font-size: 16px; margin-bottom: 12px;">
-            Musicoterapeuta: ${userName}
-          </p>
           <p style="color: #6B7280; font-size: 16px;">
             Data do Relatório: ${format(formValues.date, 'PPP', { locale: ptBR })}
           </p>
