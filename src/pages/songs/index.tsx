@@ -36,6 +36,9 @@ const mockPDFs: InteractivePDF[] = [
       { id: "w3", text: "Vaca", imageUrl: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cow-moo-1744.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
       { id: "w4", text: "Galinha", imageUrl: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-hen-on-the-farm-clucking-16.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
       { id: "w5", text: "Cavalo", imageUrl: "https://images.unsplash.com/photo-1598974357801-cbca100e65d3", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-horse-neighing-1712.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w25", text: "Porco", imageUrl: "https://images.unsplash.com/photo-1604848698030-c434ba08ece1", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-pig-squeals-1728.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w26", text: "Ovelha", imageUrl: "https://images.unsplash.com/photo-1452960962994-acf4fd70b632", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-sheep-bleat-718.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w27", text: "Cabra", imageUrl: "https://images.unsplash.com/photo-1524764517294-136962dcbfe9", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-goat-baa-1746.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" }
     ],
     createdAt: new Date()
   },
@@ -67,6 +70,52 @@ const mockPDFs: InteractivePDF[] = [
       { id: "w14", text: "Amarelo", imageUrl: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?q=80&w=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-yellow-4785.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
       { id: "w15", text: "Círculo", imageUrl: "https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?q=80&w=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-circle-4786.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
       { id: "w16", text: "Quadrado", imageUrl: "https://images.unsplash.com/photo-1638784110009-ba9e7fb3c10a?q=80&w=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-square-4787.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+    ],
+    createdAt: new Date()
+  },
+  {
+    id: "pdf4",
+    title: "Animais da Selva",
+    category: "animais",
+    pdfUrl: "#",
+    thumbnailUrl: "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
+    words: [
+      { id: "w17", text: "Leão", imageUrl: "https://images.unsplash.com/photo-1546182990-dffeafbe841d", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-lion-roar-1729.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" },
+      { id: "w18", text: "Tigre", imageUrl: "https://images.unsplash.com/photo-1549480017-d76466a4b7e8", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-tiger-roar-1737.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" },
+      { id: "w19", text: "Girafa", imageUrl: "https://images.unsplash.com/photo-1547721064-da6cfb341d50", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-male-voice-saying-giraffe-4767.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" },
+      { id: "w20", text: "Elefante", imageUrl: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-elephant-trumpeting-1740.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" },
+      { id: "w21", text: "Macaco", imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-chimpanzee-scream-1736.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" },
+      { id: "w22", text: "Zebra", imageUrl: "https://images.unsplash.com/photo-1466721591366-2d5fba72006d", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-male-voice-saying-zebra-4768.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-casino-notification-255.mp3" }
+    ],
+    createdAt: new Date()
+  },
+  {
+    id: "pdf5",
+    title: "Animais Marinhos",
+    category: "animais",
+    pdfUrl: "#",
+    thumbnailUrl: "https://images.unsplash.com/photo-1518877593221-1f28583780b4",
+    words: [
+      { id: "w28", text: "Baleia", imageUrl: "https://images.unsplash.com/photo-1518877593221-1f28583780b4", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-whale-distant-calls-305.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-medieval-show-fanfare-announcement-226.mp3" },
+      { id: "w29", text: "Golfinho", imageUrl: "https://images.unsplash.com/photo-1607153333879-c174d265f1d2", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-dolphin-squeak-voices-307.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-medieval-show-fanfare-announcement-226.mp3" },
+      { id: "w30", text: "Tartaruga", imageUrl: "https://images.unsplash.com/photo-1573551089778-46a7abc39d9f", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-male-voice-saying-turtle-4769.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-medieval-show-fanfare-announcement-226.mp3" },
+      { id: "w31", text: "Polvo", imageUrl: "https://images.unsplash.com/photo-1545671913-b89ac1b4ac10", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-male-voice-saying-octopus-4770.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-medieval-show-fanfare-announcement-226.mp3" },
+      { id: "w32", text: "Tubarão", imageUrl: "https://images.unsplash.com/photo-1560275619-4662e36fa65c", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-male-voice-saying-shark-4771.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-medieval-show-fanfare-announcement-226.mp3" }
+    ],
+    createdAt: new Date()
+  },
+  {
+    id: "pdf6",
+    title: "Aves Incríveis",
+    category: "animais",
+    pdfUrl: "#",
+    thumbnailUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3",
+    words: [
+      { id: "w33", text: "Papagaio", imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-parrot-squawk-15.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-melodic-bonus-collect-1938.mp3" },
+      { id: "w34", text: "Coruja", imageUrl: "https://images.unsplash.com/photo-1582845512747-e42001c95638", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-owl-hooting-1756.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-melodic-bonus-collect-1938.mp3" },
+      { id: "w35", text: "Águia", imageUrl: "https://images.unsplash.com/photo-1611689102192-1f6e0e52df0a", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-eagle-cry-bird-calling-153.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-melodic-bonus-collect-1938.mp3" },
+      { id: "w36", text: "Pinguim", imageUrl: "https://images.unsplash.com/photo-1441057206919-63d19fac2369", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-penguin-squeak-voice-48.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-melodic-bonus-collect-1938.mp3" },
+      { id: "w37", text: "Pavão", imageUrl: "https://images.unsplash.com/photo-1572489473147-a05970539869", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-bird-calling-loudly-75.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-melodic-bonus-collect-1938.mp3" }
     ],
     createdAt: new Date()
   }
