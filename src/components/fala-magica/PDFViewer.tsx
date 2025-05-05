@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Volume2, Music, Download, ArrowLeftCircle, ArrowRightCircle, Maximize } from 'lucide-react';
+import { Volume2, Music, Download, ArrowLeftCircle, ArrowRightCircle, Fullscreen } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -16,14 +16,90 @@ interface PDFViewerProps {
 const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const { toast } = useToast();
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   // Get current word being viewed
   const currentWord = pdf.words[currentWordIndex];
   
+  // Effect to preload images for better user experience
+  useEffect(() => {
+    const preloadImages = () => {
+      pdf.words.forEach(word => {
+        const img = new Image();
+        img.src = word.imageUrl;
+      });
+    };
+    
+    preloadImages();
+  }, [pdf]);
+  
+  // Handle audio playback completion
+  useEffect(() => {
+    const handleAudioEnd = () => {
+      setIsPlaying(false);
+      setIsLoadingAudio(false);
+    };
+    
+    if (audioRef.current) {
+      audioRef.current.addEventListener('ended', handleAudioEnd);
+    }
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener('ended', handleAudioEnd);
+      }
+    };
+  }, [audioRef.current]);
+  
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        handleNextWord();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevWord();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        handlePlayRegular();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [currentWordIndex]);
+  
+  // Handle fullscreen mode
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isFullscreen]);
+  
   const handleNextWord = () => {
     if (currentWordIndex < pdf.words.length - 1) {
       setCurrentWordIndex(prevIndex => prevIndex + 1);
+      // Stop any currently playing audio
+      if (audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlaying(false);
+      }
     } else {
       toast({
         title: "Fim do material",
@@ -35,33 +111,56 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
   const handlePrevWord = () => {
     if (currentWordIndex > 0) {
       setCurrentWordIndex(prevIndex => prevIndex - 1);
+      // Stop any currently playing audio
+      if (audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlaying(false);
+      }
     }
   };
   
-  const handlePlayRegular = () => {
-    onPlayWord(currentWord);
-    const audio = new Audio(currentWord.audioUrl);
-    audio.play().catch(error => {
-      console.error("Error playing audio:", error);
-      toast({
-        title: "Erro na reprodução",
-        description: "Não foi possível reproduzir o áudio.",
-        variant: "destructive"
+  const playAudio = (url: string) => {
+    // Create or reuse audio element
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    
+    // Stop any currently playing audio
+    if (!audioRef.current.paused) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    
+    // Set up new audio
+    audioRef.current.src = url;
+    setIsLoadingAudio(true);
+    setIsPlaying(true);
+    
+    // Play the audio
+    audioRef.current.play()
+      .then(() => {
+        setIsLoadingAudio(false);
+        onPlayWord(currentWord);
+      })
+      .catch(error => {
+        console.error("Error playing audio:", error);
+        setIsLoadingAudio(false);
+        setIsPlaying(false);
+        toast({
+          title: "Erro na reprodução",
+          description: "Não foi possível reproduzir o áudio.",
+          variant: "destructive"
+        });
       });
-    });
+  };
+  
+  const handlePlayRegular = () => {
+    playAudio(currentWord.audioUrl);
   };
   
   const handlePlaySung = () => {
-    onPlayWord(currentWord);
-    const audio = new Audio(currentWord.sungAudioUrl);
-    audio.play().catch(error => {
-      console.error("Error playing sung audio:", error);
-      toast({
-        title: "Erro na reprodução",
-        description: "Não foi possível reproduzir o áudio cantado.",
-        variant: "destructive"
-      });
-    });
+    playAudio(currentWord.sungAudioUrl);
   };
   
   const handleDownload = () => {
@@ -81,11 +180,29 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    
+    // Use Fullscreen API if available
+    if (containerRef.current) {
+      if (!isFullscreen) {
+        if (containerRef.current.requestFullscreen) {
+          containerRef.current.requestFullscreen().catch(err => {
+            console.error("Error attempting to enable fullscreen:", err);
+          });
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => {
+            console.error("Error attempting to exit fullscreen:", err);
+          });
+        }
+      }
+    }
   };
   
   return (
     <AnimatePresence>
       <motion.div
+        ref={containerRef}
         className={cn(
           "transition-all duration-300", 
           isFullscreen ? "fixed inset-0 z-50 bg-white p-6" : ""
@@ -102,8 +219,9 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={toggleFullscreen}
+                title={isFullscreen ? "Sair do modo de tela cheia" : "Entrar no modo de tela cheia"}
               >
-                <Maximize className="h-4 w-4" />
+                <Fullscreen className="h-4 w-4" />
               </Button>
             </div>
             <div className="flex items-center gap-2 text-xs text-purple-600">
@@ -138,13 +256,23 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white rounded-lg shadow-md p-4 w-full max-w-md aspect-square flex flex-col items-center justify-center"
+                className="bg-white rounded-lg shadow-md p-4 w-full max-w-md flex flex-col items-center justify-center"
               >
-                <div className="w-full h-64 overflow-hidden rounded-lg border mb-6">
+                <div className="w-full h-64 overflow-hidden rounded-lg border mb-6 relative">
                   <img 
                     src={currentWord.imageUrl} 
                     alt={currentWord.text} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      // Fallback for broken images
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/400x300?text=Imagem+não+disponível";
+                      toast({
+                        title: "Erro ao carregar imagem",
+                        description: "A imagem para esta palavra não pode ser carregada.",
+                        variant: "destructive"
+                      });
+                    }}
                   />
                 </div>
                 <h3 className="text-3xl font-bold text-center text-purple-700 mb-2">
@@ -156,14 +284,31 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button
                 onClick={handlePlayRegular}
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
+                disabled={isLoadingAudio}
+                className={cn(
+                  "flex-1", 
+                  isPlaying ? "bg-purple-700 hover:bg-purple-800" : "bg-purple-600 hover:bg-purple-700"
+                )}
               >
-                <Volume2 className="mr-2 h-4 w-4" /> Ouvir Palavra
+                {isLoadingAudio ? (
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Carregando...
+                  </div>
+                ) : (
+                  <>
+                    <Volume2 className="mr-2 h-4 w-4" /> Ouvir Palavra
+                  </>
+                )}
               </Button>
               
               <Button
                 onClick={handlePlaySung}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                disabled={isLoadingAudio}
+                className={cn(
+                  "flex-1",
+                  isPlaying ? "bg-blue-700 hover:bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
+                )}
               >
                 <Music className="mr-2 h-4 w-4" /> Ouvir Cantando
               </Button>
