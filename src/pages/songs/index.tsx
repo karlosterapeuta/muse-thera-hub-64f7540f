@@ -2,16 +2,19 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { 
   FileText, Music, Mic, Gift, 
-  Sparkles
+  Sparkles, Search, Filter
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
 import PDFViewer from "@/components/fala-magica/PDFViewer";
 import RewardSystem from "@/components/fala-magica/RewardSystem";
 import MagicalGuide from "@/components/fala-magica/MagicalGuide";
+import WordTracker from "@/components/fala-magica/WordTracker";
 
 import { 
   InteractivePDF, 
@@ -28,10 +31,11 @@ const mockPDFs: InteractivePDF[] = [
     pdfUrl: "#",
     thumbnailUrl: "https://placehold.co/200x150?text=Animais",
     words: [
-      { id: "w1", text: "Gato", imageUrl: "https://placehold.co/200?text=Gato", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w2", text: "Cachorro", imageUrl: "https://placehold.co/200?text=Cachorro", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w3", text: "Vaca", imageUrl: "https://placehold.co/200?text=Vaca", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w4", text: "Galinha", imageUrl: "https://placehold.co/200?text=Galinha", audioUrl: "#", sungAudioUrl: "#" },
+      { id: "w1", text: "Gato", imageUrl: "https://placehold.co/400x400?text=Gato", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-domestic-cat-hungry-meow-45.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w2", text: "Cachorro", imageUrl: "https://placehold.co/400x400?text=Cachorro", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-dog-barking-twice-1.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w3", text: "Vaca", imageUrl: "https://placehold.co/400x400?text=Vaca", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cow-moo-1744.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w4", text: "Galinha", imageUrl: "https://placehold.co/400x400?text=Galinha", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-hen-on-the-farm-clucking-16.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w5", text: "Cavalo", imageUrl: "https://placehold.co/400x400?text=Cavalo", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-horse-neighing-1712.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
     ],
     createdAt: new Date()
   },
@@ -42,10 +46,27 @@ const mockPDFs: InteractivePDF[] = [
     pdfUrl: "#",
     thumbnailUrl: "https://placehold.co/200x150?text=Casa",
     words: [
-      { id: "w5", text: "Mesa", imageUrl: "https://placehold.co/200?text=Mesa", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w6", text: "Cama", imageUrl: "https://placehold.co/200?text=Cama", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w7", text: "Cadeira", imageUrl: "https://placehold.co/200?text=Cadeira", audioUrl: "#", sungAudioUrl: "#" },
-      { id: "w8", text: "Sofá", imageUrl: "https://placehold.co/200?text=Sofá", audioUrl: "#", sungAudioUrl: "#" },
+      { id: "w6", text: "Mesa", imageUrl: "https://placehold.co/400x400?text=Mesa", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-table-4773.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3" },
+      { id: "w7", text: "Cama", imageUrl: "https://placehold.co/400x400?text=Cama", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-bed-4774.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3" },
+      { id: "w8", text: "Cadeira", imageUrl: "https://placehold.co/400x400?text=Cadeira", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-chair-4772.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3" },
+      { id: "w9", text: "Sofá", imageUrl: "https://placehold.co/400x400?text=Sofá", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-sofa-4775.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3" },
+      { id: "w10", text: "Geladeira", imageUrl: "https://placehold.co/400x400?text=Geladeira", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-fridge-4776.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3" },
+    ],
+    createdAt: new Date()
+  },
+  {
+    id: "pdf3",
+    title: "Cores e Formas",
+    category: "outros",
+    pdfUrl: "#",
+    thumbnailUrl: "https://placehold.co/200x150?text=Cores",
+    words: [
+      { id: "w11", text: "Vermelho", imageUrl: "https://placehold.co/400x400/ff0000/ffffff?text=Vermelho", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-red-4782.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+      { id: "w12", text: "Azul", imageUrl: "https://placehold.co/400x400/0000ff/ffffff?text=Azul", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-blue-4783.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+      { id: "w13", text: "Verde", imageUrl: "https://placehold.co/400x400/00ff00/ffffff?text=Verde", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-green-4784.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+      { id: "w14", text: "Amarelo", imageUrl: "https://placehold.co/400x400/ffff00/000000?text=Amarelo", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-yellow-4785.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+      { id: "w15", text: "Círculo", imageUrl: "https://placehold.co/400x400/ffffff/000000?text=○", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-circle-4786.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
+      { id: "w16", text: "Quadrado", imageUrl: "https://placehold.co/400x400/ffffff/000000?text=□", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-female-voice-saying-square-4787.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-game-flute-bonus-2313.mp3" },
     ],
     createdAt: new Date()
   }
@@ -116,6 +137,8 @@ const mockRewards: Reward[] = [
 
 export default function SongsPage() {
   const [currentPDF, setCurrentPDF] = useState<InteractivePDF | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("todos");
   const [userProgress, setUserProgress] = useState<UserProgress>({
     totalPoints: 15,
     vocalizationCount: 3,
@@ -125,6 +148,16 @@ export default function SongsPage() {
   });
   
   const { toast } = useToast();
+  
+  // Filter PDFs based on search term and category
+  const filteredPDFs = mockPDFs.filter(pdf => {
+    const matchesSearch = pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pdf.words.some(word => word.text.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesCategory = categoryFilter === "todos" || pdf.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
   
   // Load user progress from localStorage on component mount
   useEffect(() => {
@@ -233,8 +266,8 @@ export default function SongsPage() {
         </TabsList>
         
         <TabsContent value="practice">
-          <div className="grid grid-cols-1 gap-6">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-6">
               <MagicalGuide 
                 character="fada"
                 message="Vamos praticar! Cada som é uma conquista mágica! Tente imitar os sons dos animais que aparecem."
@@ -244,6 +277,10 @@ export default function SongsPage() {
                 sensitivity={10} // Lower sensitivity for easier detection
                 duration={30} // Longer duration to give more time to practice
               />
+            </div>
+            
+            <div className="md:col-span-1">
+              <WordTracker />
             </div>
           </div>
         </TabsContent>
@@ -256,25 +293,97 @@ export default function SongsPage() {
                   <CardTitle className="text-xl flex items-center">
                     <FileText className="mr-2 text-purple-500" /> Materiais Visuais
                   </CardTitle>
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Buscar materiais..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button variant="outline" size="icon">
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={categoryFilter === "todos" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("todos")}
+                        className="flex items-center gap-1"
+                      >
+                        <Filter className="h-3 w-3" /> Todos
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "animais" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("animais")}
+                      >
+                        Animais
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "casa" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("casa")}
+                      >
+                        Casa
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "outros" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("outros")}
+                      >
+                        Outros
+                      </Button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <h3 className="font-medium text-purple-700">Cartelas Interativas</h3>
-                      {mockPDFs.map(pdf => (
-                        <button
-                          key={pdf.id}
-                          onClick={() => setCurrentPDF(pdf)}
-                          className={`w-full text-left p-3 rounded-lg border transition-all ${
-                            currentPDF?.id === pdf.id 
-                              ? 'border-purple-500 bg-purple-50' 
-                              : 'border-gray-200 hover:border-purple-200'
-                          }`}
-                        >
-                          <div className="font-medium">{pdf.title}</div>
-                          <div className="text-sm text-gray-500">{pdf.category}</div>
-                        </button>
-                      ))}
+                      {filteredPDFs.length > 0 ? (
+                        filteredPDFs.map(pdf => (
+                          <button
+                            key={pdf.id}
+                            onClick={() => setCurrentPDF(pdf)}
+                            className={`w-full text-left p-3 rounded-lg border transition-all ${
+                              currentPDF?.id === pdf.id 
+                                ? 'border-purple-500 bg-purple-50' 
+                                : 'border-gray-200 hover:border-purple-200'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-12 h-12 rounded bg-purple-100 flex items-center justify-center overflow-hidden"
+                              >
+                                {pdf.thumbnailUrl && (
+                                  <img 
+                                    src={pdf.thumbnailUrl} 
+                                    alt={pdf.title} 
+                                    className="w-full h-full object-cover" 
+                                  />
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-medium">{pdf.title}</div>
+                                <div className="text-sm text-gray-500 flex items-center gap-2">
+                                  <span className="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded-full">
+                                    {pdf.category}
+                                  </span>
+                                  <span>{pdf.words.length} palavras</span>
+                                </div>
+                              </div>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="text-center py-6 text-gray-500">
+                          <FileText className="h-8 w-8 mb-2 mx-auto opacity-40" />
+                          <p>Nenhum material encontrado.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -291,6 +400,9 @@ export default function SongsPage() {
                     <h3 className="text-lg font-medium text-gray-600">
                       Selecione um material para visualizar
                     </h3>
+                    <p className="text-gray-500 max-w-md mx-auto mt-2">
+                      Escolha um dos materiais disponíveis na lista ao lado para começar a praticar palavras e sons.
+                    </p>
                   </div>
                 </div>
               )}
