@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,7 +37,18 @@ const mockPDFs: InteractivePDF[] = [
       { id: "w5", text: "Cavalo", imageUrl: "https://images.unsplash.com/photo-1598974357801-cbca100e65d3", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-horse-neighing-1712.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
       { id: "w25", text: "Porco", imageUrl: "https://images.unsplash.com/photo-1604848698030-c434ba08ece1", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-pig-squeals-1728.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
       { id: "w26", text: "Ovelha", imageUrl: "https://images.unsplash.com/photo-1452960962994-acf4fd70b632", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-sheep-bleat-718.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
-      { id: "w27", text: "Cabra", imageUrl: "https://images.unsplash.com/photo-1524764517294-136962dcbfe9", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-goat-baa-1746.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" }
+      { id: "w27", text: "Cabra", imageUrl: "https://images.unsplash.com/photo-1524764517294-136962dcbfe9", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-goat-baa-1746.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      // Adicionando 10 novos animais da fazenda
+      { id: "w38", text: "Pato", imageUrl: "https://images.unsplash.com/photo-1565171146567-e57fccc3067f", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-duck-toy-squeak-1000.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w39", text: "Burro", imageUrl: "https://images.unsplash.com/photo-1596097558602-940a60e8c5a3", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-wild-donkey-animal-call-3042.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w40", text: "Coelho", imageUrl: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-rabbit-chewing-14.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w41", text: "Peru", imageUrl: "https://images.unsplash.com/photo-1572502702398-ec8bd8ec7551", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-turkey-cartoon-joke-bird-3029.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w42", text: "Rato", imageUrl: "https://images.unsplash.com/photo-1425082661705-1834bfd09dca", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-mouse-squeaks-1148.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w43", text: "Ganso", imageUrl: "https://images.unsplash.com/photo-1570169797761-8a705cdf23ca", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-sleepy-bird-quack-3037.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w44", text: "Bode", imageUrl: "https://images.unsplash.com/photo-1560803262-95a9de00a057", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-goat-baa-1746.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w45", text: "Pintinho", imageUrl: "https://images.unsplash.com/photo-1585151045903-348c33dd738c", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-bird-chirp-17.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w46", text: "Bezerro", imageUrl: "https://images.unsplash.com/photo-1595792461458-a22da105e737", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-baby-cow-calling-1747.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" },
+      { id: "w47", text: "Mula", imageUrl: "https://images.unsplash.com/photo-1595791202630-467c80a95d0a", audioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-wild-donkey-animal-call-3042.mp3", sungAudioUrl: "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-toy-whistle-616.mp3" }
     ],
     createdAt: new Date()
   },
