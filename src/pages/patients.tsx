@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,8 @@ import {
 import { 
   Search, 
   UserRoundPlus,
-  Loader2
+  Loader2,
+  FileText
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +41,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { PatientList } from "./components/patients/PatientList";
 import { PatientCard } from "./components/patients/PatientCard";
 import { AddPatientDialog, EditPatientDialog } from "./components/patients/PatientDialogs";
+import { ViewAnamnesisDialog } from "./components/patients/ViewAnamnesisDialog";
 
 type Patient = {
   id: string;
@@ -49,6 +52,7 @@ type Patient = {
   responsible: string | null;
   contact: string | null;
   age: number | null;
+  has_anamnesis?: boolean;
 };
 
 interface PatientFilter {
@@ -64,6 +68,8 @@ export default function PatientsPage() {
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -116,7 +122,23 @@ export default function PatientsPage() {
         age: patient.age || calculateAge(patient.birth_date)
       })) || [];
 
-      setPatients(patientsWithAge);
+      // Check if each patient has anamnesis records
+      const patientsWithAnamnesis = await Promise.all(
+        patientsWithAge.map(async (patient) => {
+          const { data, error } = await supabase
+            .from("anamnesis")
+            .select("id")
+            .eq("patient_id", patient.id)
+            .maybeSingle();
+
+          return {
+            ...patient,
+            has_anamnesis: !!data
+          };
+        })
+      );
+
+      setPatients(patientsWithAnamnesis);
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
       toast({
@@ -228,6 +250,11 @@ export default function PatientsPage() {
     setIsEditDialogOpen(true);
   };
 
+  const handleViewAnamnesis = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setIsViewAnamnesisOpen(true);
+  };
+
   return (
     <div className="container mx-auto py-6">
       <Card className="shadow-md">
@@ -274,6 +301,7 @@ export default function PatientsPage() {
                         patient={patient}
                         onEdit={() => handleEditClick(patient)}
                         onDelete={() => handleDeletePatient(patient)}
+                        onViewAnamnesis={() => handleViewAnamnesis(patient)}
                       />
                     ))
                   ) : (
@@ -287,6 +315,7 @@ export default function PatientsPage() {
                   patients={filteredPatients}
                   onEdit={handleEditClick}
                   onDelete={handleDeletePatient}
+                  onViewAnamnesis={handleViewAnamnesis}
                 />
               )}
             </>
@@ -351,6 +380,23 @@ export default function PatientsPage() {
               patient={patientToEdit} 
               loadPatients={loadPatients} 
               closeModal={() => setIsEditDialogOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isViewAnamnesisOpen} onOpenChange={setIsViewAnamnesisOpen}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Anamnese</DialogTitle>
+            <DialogDescription>
+              Visualize a anamnese do paciente.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPatient && (
+            <ViewAnamnesisDialog 
+              patient={selectedPatient} 
+              closeModal={() => setIsViewAnamnesisOpen(false)}
             />
           )}
         </DialogContent>

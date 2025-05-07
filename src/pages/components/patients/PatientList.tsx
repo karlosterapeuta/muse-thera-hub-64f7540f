@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, FileText } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,8 +21,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
-// Updated Patient type to match the one used in patients.tsx
+// Updated Patient type to include anamnesis status
 type Patient = {
   id: string;
   created_at: string;
@@ -32,15 +33,17 @@ type Patient = {
   responsible: string | null;
   contact: string | null;
   age: number | null;
+  has_anamnesis?: boolean;
 };
 
 interface PatientListProps {
   patients: Patient[];
   onEdit: (patient: Patient) => void;
   onDelete: (patient: Patient) => void;
+  onViewAnamnesis: (patient: Patient) => void;
 }
 
-export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
+export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis }: PatientListProps) {
   if (patients.length === 0) {
     return (
       <div className="text-center text-gray-500 py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
@@ -58,6 +61,7 @@ export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
             <TableHead className="font-medium">Idade</TableHead>
             <TableHead className="font-medium">Responsável</TableHead>
             <TableHead className="font-medium">Contato</TableHead>
+            <TableHead className="font-medium">Anamnese</TableHead>
             <TableHead className="text-right font-medium">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -70,6 +74,17 @@ export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
               </TableCell>
               <TableCell>{patient.responsible || "N/A"}</TableCell>
               <TableCell>{patient.contact || "N/A"}</TableCell>
+              <TableCell>
+                {patient.has_anamnesis ? (
+                  <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
+                    Registrada
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="bg-gray-50 text-gray-500 hover:bg-gray-100 border-gray-200">
+                    Não registrada
+                  </Badge>
+                )}
+              </TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="ghost"
@@ -80,6 +95,17 @@ export function PatientList({ patients, onEdit, onDelete }: PatientListProps) {
                   <Pencil className="h-4 w-4 mr-1" />
                   Editar
                 </Button>
+                {patient.has_anamnesis && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onViewAnamnesis(patient)}
+                    className="text-gray-600 hover:text-blue-600 mr-1"
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Ver Anamnese
+                  </Button>
+                )}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button 
