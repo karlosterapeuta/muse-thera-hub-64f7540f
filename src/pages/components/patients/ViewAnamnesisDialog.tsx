@@ -75,7 +75,7 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
         if (data) {
           setAnamnesis(data);
           
-          // Load professional data - this is the part that needs to be fixed
+          // Load professional data
           try {
             // First try to get the user with auth.getUser()
             const { data: authData } = await supabase.auth.getUser();
@@ -470,7 +470,11 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
             Fechar
           </Button>
           {onEdit && (
-            <Button onClick={() => onEdit(anamnesis)} variant="outline" className="hover:text-primary">
+            <Button 
+              onClick={() => onEdit(anamnesis)} 
+              variant="outline" 
+              className="hover:text-primary"
+            >
               <Pencil className="h-4 w-4 mr-2" />
               Editar
             </Button>

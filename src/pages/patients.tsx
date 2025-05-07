@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -309,7 +310,7 @@ export default function PatientsPage() {
 
   const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
     if (selectedPatient) {
-      handleEditAnamnesis(selectedPatient);
+      window.location.href = `/anamnesis?patient_id=${selectedPatient.id}&anamnesis_id=${anamnesis.id}&mode=edit`;
     }
     setIsViewAnamnesisOpen(false);
   };
