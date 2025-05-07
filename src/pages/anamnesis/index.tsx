@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
-import { Download } from "lucide-react";
+import { Download, Save } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -293,7 +292,7 @@ export default function AnamnesisForm() {
           ]
         },
         {
-          title: "Medicação",
+          title: "Medicaç��o",
           textFields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
@@ -405,6 +404,144 @@ export default function AnamnesisForm() {
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       return false;
+    }
+  };
+
+  // New function to save anamnesis without generating PDF
+  const saveAnamnesis = async () => {
+    if (!selectedPatient) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, selecione um paciente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!professionalId) {
+      toast({
+        title: "Erro",
+        description: "ID do profissional não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Lista atualizada de colunas conhecidas da tabela anamnesis
+      const knownColumns = [
+        // Core fields
+        'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
+        'referral_professional', 'main_clinical_demand',
+        
+        // Musical history
+        'musical_education', 'instrumental_practice', 'body_musical_expression',
+        'vocal_expression', 'choral_activities', 'no_musical_experience',
+        
+        // Behavior
+        'active_musical_listening', 'body_expression', 'sound_responsiveness',
+        'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity',
+        
+        // Sound processing
+        'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response',
+        'active_sound_search', 'specific_sound_aversion', 'sound_source_location',
+        
+        // Musical preferences
+        'children_repertoire', 'rock_genre', 'sacred_gospel', 'brazilian_popular',
+        'country_music', 'classical_music', 'other_musical_genres',
+        
+        // Development
+        'cervical_control', 'crawling_pattern', 'fine_motor_dev',
+        'independent_sitting', 'autonomous_walking', 'broad_motor_dev',
+        
+        // Language
+        'babbling', 'simple_phrases', 'echolalia', 'first_words',
+        'nonverbal_communication', 'verbal_language_absence',
+        
+        // Behavior
+        'visual_contact', 'shared_play', 'stereotyped_behavior',
+        'peer_interaction', 'social_isolation', 'restricted_interests',
+        
+        // Emotional regulation
+        'irritability', 'heteroaggressive', 'emotional_ability',
+        'anxiety', 'frequent_crying', 'low_frustration_tolerance',
+        
+        // Health conditions
+        'autism_spectrum', 'down_syndrome', 'intellectual_disability',
+        'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        
+        // Therapy
+        'speech_therapy', 'psychological_support', 'psychopedagogical',
+        'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        
+        // Additional fields
+        'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
+        'therapeutic_goals', 'treatment_approach',
+      ];
+      
+      // Filtrar os dados para incluir apenas colunas conhecidas
+      const cleanedFormData = Object.fromEntries(
+        Object.entries(formData).filter(([key, value]) => {
+          // Incluir apenas colunas conhecidas e valores não nulos
+          return knownColumns.includes(key) && value !== null && value !== undefined;
+        })
+      );
+      
+      // Garantir que temos dados válidos antes de prosseguir
+      const anamnesisData = {
+        ...cleanedFormData,
+        patient_id: selectedPatient,
+        professional_id: professionalId,
+      };
+
+      let result;
+      
+      // Determinar se deve inserir ou atualizar
+      if (existingAnamnesisId) {
+        // Atualizar registro existente
+        result = await supabase
+          .from("anamnesis")
+          .update(anamnesisData)
+          .eq("id", existingAnamnesisId);
+      } else {
+        // Inserir novo registro
+        result = await supabase
+          .from("anamnesis")
+          .insert(anamnesisData);
+      }
+
+      if (result.error) {
+        console.error("Erro ao salvar anamnese:", result.error);
+        throw result.error;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Anamnese salva com sucesso no sistema.",
+      });
+      
+      // Atualizar o ID da anamnese existente se for um novo registro
+      if (!existingAnamnesisId && result.data && result.data[0]?.id) {
+        setExistingAnamnesisId(result.data[0].id);
+      }
+      
+    } catch (error: any) {
+      console.error("Erro ao salvar anamnese:", error);
+      
+      let errorMessage = "Não foi possível salvar a anamnese.";
+      if (error?.message) {
+        errorMessage += ` Detalhe: ${error.message}`;
+      }
+      
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -602,6 +739,24 @@ export default function AnamnesisForm() {
                 onClick={() => navigate("/processes")}
               >
                 Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isSubmitting}
+                onClick={saveAnamnesis}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2" />
+                    Salvar
+                  </>
+                )}
               </Button>
               <Button 
                 type="submit" 
