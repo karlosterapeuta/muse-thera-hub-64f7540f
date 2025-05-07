@@ -316,9 +316,9 @@ export default function PatientsPage() {
   };
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-4 md:py-6">
       <Card className="shadow-md">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 bg-gradient-to-r from-purple-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-t-lg">
+        <CardHeader className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 pb-3 bg-gradient-to-r from-purple-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-t-lg p-4 md:p-6">
           <div>
             <CardTitle className="text-xl md:text-2xl font-bold">Pacientes</CardTitle>
             <CardDescription className="text-sm md:text-base">
@@ -327,16 +327,16 @@ export default function PatientsPage() {
           </div>
           <Button 
             onClick={() => setIsAddDialogOpen(true)} 
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-white transition-all"
+            size={isMobile ? "sm" : "default"}
+            className="bg-primary hover:bg-primary/90 text-white transition-all w-full md:w-auto"
           >
             <UserRoundPlus className="h-4 w-4 mr-2" />
-            <span className={isMobile ? "hidden" : "inline"}>Novo Paciente</span>
+            {isMobile ? "Novo" : "Novo Paciente"}
           </Button>
         </CardHeader>
-        <CardContent className="p-4 md:p-6">
+        <CardContent className="p-3 md:p-6">
           <div className="mb-4 flex items-center space-x-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md">
-            <Search className="h-4 w-4 text-gray-500" />
+            <Search className="h-4 w-4 text-gray-500 ml-2" />
             <Input
               type="search"
               placeholder="Buscar paciente..."
@@ -353,7 +353,7 @@ export default function PatientsPage() {
           ) : (
             <>
               {isMobile ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {filteredPatients.length > 0 ? (
                     filteredPatients.map((patient) => (
                       <PatientCard
@@ -383,10 +383,15 @@ export default function PatientsPage() {
             </>
           )}
         </CardContent>
-        <CardFooter className="flex justify-between items-center p-4 border-t bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <CardFooter className="flex flex-col md:flex-row justify-between items-center p-4 border-t bg-gray-50 dark:bg-gray-800 rounded-b-lg gap-3 md:gap-0">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm" disabled={patients.length === 0}>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                disabled={patients.length === 0}
+                className="w-full md:w-auto order-2 md:order-1"
+              >
                 Excluir Todos os Pacientes
               </Button>
             </AlertDialogTrigger>
@@ -411,57 +416,63 @@ export default function PatientsPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 order-1 md:order-2">
             {patients.length} paciente{patients.length !== 1 ? 's' : ''}
           </div>
         </CardFooter>
       </Card>
 
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[425px] p-0 sm:p-6">
+          <DialogHeader className="p-4 sm:p-0">
             <DialogTitle>Adicionar Paciente</DialogTitle>
             <DialogDescription>
               Crie um novo paciente para iniciar o processo.
             </DialogDescription>
           </DialogHeader>
-          <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
+          <div className="px-4 pb-4 sm:p-0">
+            <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[425px] p-0 sm:p-6">
+          <DialogHeader className="p-4 sm:p-0">
             <DialogTitle>Editar Paciente</DialogTitle>
             <DialogDescription>
               Atualize as informações do paciente.
             </DialogDescription>
           </DialogHeader>
-          {patientToEdit && (
-            <EditPatientDialog 
-              patient={patientToEdit} 
-              loadPatients={loadPatients} 
-              closeModal={() => setIsEditDialogOpen(false)}
-            />
-          )}
+          <div className="px-4 pb-4 sm:p-0">
+            {patientToEdit && (
+              <EditPatientDialog 
+                patient={patientToEdit} 
+                loadPatients={loadPatients} 
+                closeModal={() => setIsEditDialogOpen(false)}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isViewAnamnesisOpen} onOpenChange={setIsViewAnamnesisOpen}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 sm:p-6">
+          <DialogHeader className="p-4 sm:p-0">
             <DialogTitle>Anamnese</DialogTitle>
             <DialogDescription>
               Visualize a anamnese do paciente.
             </DialogDescription>
           </DialogHeader>
-          {selectedPatient && (
-            <ViewAnamnesisDialog 
-              patient={selectedPatient} 
-              closeModal={() => setIsViewAnamnesisOpen(false)}
-              onEdit={handleAnamnesisEdit}
-            />
-          )}
+          <div className="px-4 pb-4 sm:p-0">
+            {selectedPatient && (
+              <ViewAnamnesisDialog 
+                patient={selectedPatient} 
+                closeModal={() => setIsViewAnamnesisOpen(false)}
+                onEdit={handleAnamnesisEdit}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
