@@ -41,9 +41,10 @@ interface PatientListProps {
   onEdit: (patient: Patient) => void;
   onDelete: (patient: Patient) => void;
   onViewAnamnesis: (patient: Patient) => void;
+  onEditAnamnesis?: (patient: Patient) => void;
 }
 
-export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis }: PatientListProps) {
+export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis }: PatientListProps) {
   if (patients.length === 0) {
     return (
       <div className="text-center text-gray-500 py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
@@ -95,17 +96,33 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis }: Pat
                   <Pencil className="h-4 w-4 mr-1" />
                   Editar
                 </Button>
+                
                 {patient.has_anamnesis && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onViewAnamnesis(patient)}
-                    className="text-gray-600 hover:text-blue-600 mr-1"
-                  >
-                    <FileText className="h-4 w-4 mr-1" />
-                    Ver Anamnese
-                  </Button>
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewAnamnesis(patient)}
+                      className="text-gray-600 hover:text-blue-600 mr-1"
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Ver Anamnese
+                    </Button>
+                    
+                    {onEditAnamnesis && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEditAnamnesis(patient)}
+                        className="text-gray-600 hover:text-green-600 mr-1"
+                      >
+                        <Pencil className="h-4 w-4 mr-1" />
+                        Editar Anamnese
+                      </Button>
+                    )}
+                  </>
                 )}
+                
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button 

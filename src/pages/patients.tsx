@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,6 +54,19 @@ type Patient = {
   has_anamnesis?: boolean;
 };
 
+type Anamnesis = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  professional_id: string;
+  patient_id: string;
+  legal_guardian?: string | null;
+  family_relationship?: string | null;
+  referral_professional?: string | null;
+  main_clinical_demand?: string | null;
+  [key: string]: any;
+};
+
 interface PatientFilter {
   searchTerm: string;
 }
@@ -69,7 +81,9 @@ export default function PatientsPage() {
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);
+  const [isEditAnamnesisOpen, setIsEditAnamnesisOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -255,6 +269,51 @@ export default function PatientsPage() {
     setIsViewAnamnesisOpen(true);
   };
 
+  const handleEditAnamnesis = (patient: Patient) => {
+    setSelectedPatient(patient);
+    // First, we need to fetch the anamnesis data
+    const fetchAnamnesis = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from("anamnesis")
+          .select("*")
+          .eq("patient_id", patient.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          setSelectedAnamnesis(data);
+          // Navigate to anamnesis page with pre-populated data
+          window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
+        }
+      } catch (error) {
+        console.error("Erro ao carregar anamnese para edição:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Não foi possível carregar os dados da anamnese para edição.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnamnesis();
+  };
+
+  const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
+    if (selectedPatient) {
+      handleEditAnamnesis(selectedPatient);
+    }
+    setIsViewAnamnesisOpen(false);
+  };
+
   return (
     <div className="container mx-auto py-6">
       <Card className="shadow-md">
@@ -302,6 +361,7 @@ export default function PatientsPage() {
                         onEdit={() => handleEditClick(patient)}
                         onDelete={() => handleDeletePatient(patient)}
                         onViewAnamnesis={() => handleViewAnamnesis(patient)}
+                        onEditAnamnesis={() => handleEditAnamnesis(patient)}
                       />
                     ))
                   ) : (
@@ -316,6 +376,7 @@ export default function PatientsPage() {
                   onEdit={handleEditClick}
                   onDelete={handleDeletePatient}
                   onViewAnamnesis={handleViewAnamnesis}
+                  onEditAnamnesis={handleEditAnamnesis}
                 />
               )}
             </>
@@ -397,6 +458,7 @@ export default function PatientsPage() {
             <ViewAnamnesisDialog 
               patient={selectedPatient} 
               closeModal={() => setIsViewAnamnesisOpen(false)}
+              onEdit={handleAnamnesisEdit}
             />
           )}
         </DialogContent>

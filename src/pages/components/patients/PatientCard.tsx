@@ -29,9 +29,10 @@ interface PatientCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewAnamnesis: () => void;
+  onEditAnamnesis?: () => void;
 }
 
-export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis }: PatientCardProps) {
+export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis }: PatientCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4">
@@ -64,10 +65,19 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis }: Pati
         </Button>
         
         {patient.has_anamnesis && (
-          <Button variant="ghost" size="sm" onClick={onViewAnamnesis}>
-            <FileText className="h-4 w-4 mr-1" />
-            Ver Anamnese
-          </Button>
+          <>
+            <Button variant="ghost" size="sm" onClick={onViewAnamnesis}>
+              <FileText className="h-4 w-4 mr-1" />
+              Ver Anamnese
+            </Button>
+            
+            {onEditAnamnesis && (
+              <Button variant="ghost" size="sm" onClick={onEditAnamnesis}>
+                <Pencil className="h-4 w-4 mr-1" />
+                Editar Anamnese
+              </Button>
+            )}
+          </>
         )}
         
         <AlertDialog>

@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
@@ -33,9 +32,10 @@ type Anamnesis = {
 interface ViewAnamnesisDialogProps {
   patient: Patient;
   closeModal: () => void;
+  onEdit?: (anamnesis: Anamnesis) => void;
 }
 
-export function ViewAnamnesisDialog({ patient, closeModal }: ViewAnamnesisDialogProps) {
+export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnesisDialogProps) {
   const [anamnesis, setAnamnesis] = useState<Anamnesis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [professional, setProfessional] = useState<{ email: string; name?: string } | null>(null);
@@ -75,28 +75,30 @@ export function ViewAnamnesisDialog({ patient, closeModal }: ViewAnamnesisDialog
         if (data) {
           setAnamnesis(data);
           
-          // Load professional data
-          const { data: userData, error: userError } = await supabase
-            .from("profiles")
-            .select("name, email")
-            .eq("id", data.professional_id)
-            .maybeSingle();
+          // Load professional data - this is the part that needs to be fixed
+          try {
+            // First try to get the user with auth.getUser()
+            const { data: authData } = await supabase.auth.getUser();
             
-          if (!userError && userData) {
-            setProfessional({
-              email: userData.email,
-              name: userData.name
-            });
-          } else {
-            const { data: authUser } = await supabase
-              .auth.admin.getUserById(data.professional_id);
-            
-            if (authUser && authUser.user) {
+            if (authData.user) {
               setProfessional({
-                email: authUser.user.email || '',
-                name: formatNameFromEmail(authUser.user.email || '')
+                email: authData.user.email || '',
+                name: formatNameFromEmail(authData.user.email || '')
+              });
+            } else {
+              // Fallback to just using the ID without profile data
+              setProfessional({
+                email: 'profissional@musetera.app',
+                name: 'Profissional'
               });
             }
+          } catch (userError) {
+            console.error("Error fetching user data:", userError);
+            // Set a fallback value
+            setProfessional({
+              email: 'profissional@musetera.app',
+              name: 'Profissional'
+            });
           }
         }
       } catch (error) {
@@ -467,6 +469,12 @@ export function ViewAnamnesisDialog({ patient, closeModal }: ViewAnamnesisDialog
           <Button variant="outline" onClick={closeModal}>
             Fechar
           </Button>
+          {onEdit && (
+            <Button onClick={() => onEdit(anamnesis)} variant="outline" className="hover:text-primary">
+              <Pencil className="h-4 w-4 mr-2" />
+              Editar
+            </Button>
+          )}
           <Button onClick={generatePDF}>
             <Download className="h-4 w-4 mr-2" />
             Baixar PDF
