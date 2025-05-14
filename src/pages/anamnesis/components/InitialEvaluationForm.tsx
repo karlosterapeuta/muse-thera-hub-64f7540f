@@ -513,6 +513,12 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.bipolar_disorder || false,
             onChange: (value) => updateField("bipolar_disorder", value),
           },
+          {
+            id: "alzheimer",
+            label: "Alzheimer",
+            checked: content.alzheimer || false,
+            onChange: (value) => updateField("alzheimer", value),
+          },
         ]}
       />
 

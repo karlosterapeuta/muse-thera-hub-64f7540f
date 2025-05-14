@@ -471,6 +471,7 @@ export default function AnamnesisForm() {
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        'alzheimer',
         
         // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
@@ -615,6 +616,7 @@ export default function AnamnesisForm() {
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        'alzheimer',
         
         // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
