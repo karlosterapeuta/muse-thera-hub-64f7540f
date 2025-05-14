@@ -1,5 +1,5 @@
 
-import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckboxSection } from "./CheckboxSection";
 import { FormSection } from "./FormSection";
 import { Label } from "@/components/ui/label";
@@ -25,56 +25,46 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
   return (
     <div className="space-y-6">
-      <FormSection title="Dados Pessoais">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="legal_guardian">Responsável Legal</Label>
-            <Input
-              id="legal_guardian"
-              name="legal_guardian"
-              value={content.legal_guardian || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="family_relationship">Parentesco</Label>
-            <Input
-              id="family_relationship"
-              name="family_relationship"
-              value={content.family_relationship || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="referral_professional">Profissional que Encaminhou</Label>
-            <Input
-              id="referral_professional"
-              name="referral_professional"
-              value={content.referral_professional || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="main_clinical_demand">Demanda Clínica Principal</Label>
-            <Textarea
-              id="main_clinical_demand"
-              name="main_clinical_demand"
-              value={content.main_clinical_demand || ""}
-              onChange={handleTextChange}
-              className="min-h-[80px]"
-            />
-          </div>
-        </div>
-      </FormSection>
+      <FormSection
+        title="Dados Pessoais"
+        fields={[
+          {
+            key: "legal_guardian",
+            label: "Responsável Legal",
+            placeholder: "Nome do responsável legal",
+            value: content.legal_guardian || "",
+            onChange: (value) => updateField("legal_guardian", value),
+            type: "text"
+          },
+          {
+            key: "family_relationship",
+            label: "Parentesco",
+            placeholder: "Parentesco com o paciente",
+            value: content.family_relationship || "",
+            onChange: (value) => updateField("family_relationship", value),
+            type: "text"
+          },
+          {
+            key: "referral_professional",
+            label: "Profissional que Encaminhou",
+            placeholder: "Nome do profissional",
+            value: content.referral_professional || "",
+            onChange: (value) => updateField("referral_professional", value),
+            type: "text"
+          },
+          {
+            key: "main_clinical_demand",
+            label: "Demanda Clínica Principal",
+            placeholder: "Descreva a demanda clínica principal",
+            value: content.main_clinical_demand || "",
+            onChange: (value) => updateField("main_clinical_demand", value)
+          }
+        ]}
+      />
 
       <CheckboxSection 
         title="Histórico Musical" 
-        items={[
+        fields={[
           {
             id: "musical_education",
             label: "Educação Musical",
@@ -116,7 +106,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Comportamento Musical" 
-        items={[
+        fields={[
           {
             id: "active_musical_listening",
             label: "Escuta Musical Ativa",
@@ -158,7 +148,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Processamento Sonoro" 
-        items={[
+        fields={[
           {
             id: "auditory_hypersensitivity",
             label: "Hipersensibilidade Auditiva",
@@ -200,7 +190,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Preferências Musicais" 
-        items={[
+        fields={[
           {
             id: "children_repertoire",
             label: "Repertório Infantil",
@@ -248,7 +238,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Desenvolvimento" 
-        items={[
+        fields={[
           {
             id: "cervical_control",
             label: "Controle Cervical",
@@ -290,7 +280,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Desenvolvimento da Linguagem" 
-        items={[
+        fields={[
           {
             id: "babbling",
             label: "Balbucios",
@@ -332,7 +322,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Comportamento" 
-        items={[
+        fields={[
           {
             id: "visual_contact",
             label: "Contato Visual",
@@ -374,7 +364,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Regulação Emocional" 
-        items={[
+        fields={[
           {
             id: "irritability",
             label: "Irritabilidade",
@@ -416,7 +406,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Saúde" 
-        items={[
+        fields={[
           {
             id: "autism_spectrum",
             label: "Transtorno do Espectro Autista",
@@ -470,7 +460,7 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
 
       <CheckboxSection 
         title="Medicação e Terapias" 
-        items={[
+        fields={[
           {
             id: "speech_therapy",
             label: "Fonoaudiologia",
@@ -507,58 +497,49 @@ export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFo
             checked: content.equine_therapy || false,
             onChange: (value) => updateField("equine_therapy", value),
           },
-          // Removemos as opções que não existem no banco de dados
         ]}
       />
 
-      <FormSection title="Medicação">
-        <div className="space-y-2">
-          <Label htmlFor="current_medication">Medicação Atual</Label>
-          <Textarea
-            id="current_medication"
-            name="current_medication"
-            value={content.current_medication || ""}
-            onChange={handleTextChange}
-            className="min-h-[100px]"
-          />
-        </div>
-      </FormSection>
+      <FormSection
+        title="Medicação"
+        fields={[
+          {
+            key: "current_medication",
+            label: "Medicação Atual",
+            placeholder: "Liste as medicações em uso",
+            value: content.current_medication || "",
+            onChange: (value) => updateField("current_medication", value),
+          }
+        ]}
+      />
 
-      <FormSection title="Aspectos Sociais">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="school_enrollment">Matrícula Escolar</Label>
-            <Input
-              id="school_enrollment"
-              name="school_enrollment"
-              value={content.school_enrollment || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="school_adaptation">Adaptação Escolar</Label>
-            <Textarea
-              id="school_adaptation"
-              name="school_adaptation"
-              value={content.school_adaptation || ""}
-              onChange={handleTextChange}
-              className="min-h-[100px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="extracurricular_activities">Atividades Extracurriculares</Label>
-            <Textarea
-              id="extracurricular_activities"
-              name="extracurricular_activities"
-              value={content.extracurricular_activities || ""}
-              onChange={handleTextChange}
-              className="min-h-[100px]"
-            />
-          </div>
-        </div>
-      </FormSection>
+      <FormSection
+        title="Aspectos Sociais"
+        fields={[
+          {
+            key: "school_enrollment",
+            label: "Matrícula Escolar",
+            placeholder: "Informações sobre matrícula escolar",
+            value: content.school_enrollment || "",
+            onChange: (value) => updateField("school_enrollment", value),
+            type: "text"
+          },
+          {
+            key: "school_adaptation",
+            label: "Adaptação Escolar",
+            placeholder: "Detalhes sobre adaptação escolar",
+            value: content.school_adaptation || "",
+            onChange: (value) => updateField("school_adaptation", value)
+          },
+          {
+            key: "extracurricular_activities",
+            label: "Atividades Extracurriculares",
+            placeholder: "Atividades extracurriculares",
+            value: content.extracurricular_activities || "",
+            onChange: (value) => updateField("extracurricular_activities", value)
+          }
+        ]}
+      />
     </div>
   );
 }
