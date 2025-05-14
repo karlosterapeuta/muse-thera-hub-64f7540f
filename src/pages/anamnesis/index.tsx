@@ -292,7 +292,7 @@ export default function AnamnesisForm() {
           ]
         },
         {
-          title: "Medica��o",
+          title: "Medicaço",
           textFields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
@@ -430,7 +430,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis - removendo colunas que não existem
+      // Lista atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -473,9 +473,10 @@ export default function AnamnesisForm() {
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         'alzheimer',
         
-        // Therapy - Removido opções que não existem no banco
+        // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -574,7 +575,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis - removendo colunas que não existem
+      // Lista atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -617,9 +618,10 @@ export default function AnamnesisForm() {
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         'alzheimer',
         
-        // Therapy - Removido opções que não existem no banco
+        // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
