@@ -292,7 +292,7 @@ export default function AnamnesisForm() {
           ]
         },
         {
-          title: "Medicaço",
+          title: "Medica��o",
           textFields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
@@ -430,7 +430,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis (com 'alzheimer' adicionado)
+      // Lista atualizada de colunas conhecidas da tabela anamnesis - removendo colunas que não existem
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -468,15 +468,14 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
-        // Health conditions including alzheimer
+        // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         'alzheimer',
         
-        // Therapy
+        // Therapy - Removido opções que não existem no banco
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -575,7 +574,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis
+      // Lista atualizada de colunas conhecidas da tabela anamnesis - removendo colunas que não existem
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -618,10 +617,9 @@ export default function AnamnesisForm() {
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         'alzheimer',
         
-        // Therapy - Updated with new options
+        // Therapy - Removido opções que não existem no banco
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',

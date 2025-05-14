@@ -1,27 +1,32 @@
-import { FormSection } from "./FormSection";
-import { CheckboxSection } from "./CheckboxSection";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-type FormProps = {
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxSection } from "./CheckboxSection";
+import { FormSection } from "./FormSection";
+import { Label } from "@/components/ui/label";
+import { SelectField } from "./SelectField";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+
+interface InitialEvaluationFormProps {
   content: Record<string, any>;
   onChange: (content: Record<string, any>) => void;
-};
+}
 
-export function InitialEvaluationForm({ content, onChange }: FormProps) {
-  const updateField = (field: string, value: any) => {
-    onChange({ ...content, [field]: value });
+export function InitialEvaluationForm({ content, onChange }: InitialEvaluationFormProps) {
+  const updateField = (key: string, value: any) => {
+    onChange({ ...content, [key]: value });
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    updateField(name, value);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <FormSection
-        title="Dados Pessoais e Familiares"
+        title="Dados Pessoais"
         fields={[
           {
             key: "legal_guardian",
@@ -29,13 +34,15 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             placeholder: "Nome do responsável legal",
             value: content.legal_guardian || "",
             onChange: (value) => updateField("legal_guardian", value),
+            type: "text"
           },
           {
             key: "family_relationship",
             label: "Parentesco",
-            placeholder: "Grau de parentesco com o paciente",
+            placeholder: "Parentesco com o paciente",
             value: content.family_relationship || "",
             onChange: (value) => updateField("family_relationship", value),
+            type: "text"
           },
           {
             key: "referral_professional",
@@ -43,19 +50,20 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             placeholder: "Nome do profissional",
             value: content.referral_professional || "",
             onChange: (value) => updateField("referral_professional", value),
+            type: "text"
           },
           {
             key: "main_clinical_demand",
             label: "Demanda Clínica Principal",
             placeholder: "Descreva a demanda clínica principal",
             value: content.main_clinical_demand || "",
-            onChange: (value) => updateField("main_clinical_demand", value),
-          },
+            onChange: (value) => updateField("main_clinical_demand", value)
+          }
         ]}
       />
 
-      <CheckboxSection
-        title="Histórico Musical"
+      <CheckboxSection 
+        title="Histórico Musical" 
         fields={[
           {
             id: "musical_education",
@@ -96,8 +104,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Comportamento Musical"
+      <CheckboxSection 
+        title="Comportamento Musical" 
         fields={[
           {
             id: "active_musical_listening",
@@ -138,8 +146,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Processamento Sonoro"
+      <CheckboxSection 
+        title="Processamento Sonoro" 
         fields={[
           {
             id: "auditory_hypersensitivity",
@@ -180,8 +188,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Preferências Musicais"
+      <CheckboxSection 
+        title="Preferências Musicais" 
         fields={[
           {
             id: "children_repertoire",
@@ -228,8 +236,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Desenvolvimento"
+      <CheckboxSection 
+        title="Desenvolvimento" 
         fields={[
           {
             id: "cervical_control",
@@ -270,8 +278,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Desenvolvimento da Linguagem"
+      <CheckboxSection 
+        title="Desenvolvimento da Linguagem" 
         fields={[
           {
             id: "babbling",
@@ -312,8 +320,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Comportamento"
+      <CheckboxSection 
+        title="Comportamento" 
         fields={[
           {
             id: "visual_contact",
@@ -354,8 +362,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Regulação Emocional"
+      <CheckboxSection 
+        title="Regulação Emocional" 
         fields={[
           {
             id: "irritability",
@@ -396,135 +404,15 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
-      <CheckboxSection
-        title="Transtorno do Espectro Autista (TEA)"
+      <CheckboxSection 
+        title="Saúde" 
         fields={[
           {
-            id: "autism_level_1",
-            label: "TEA Nível 1 (Suporte Leve)",
-            checked: content.autism_level_1 || false,
-            onChange: (value) => updateField("autism_level_1", value),
+            id: "autism_spectrum",
+            label: "Transtorno do Espectro Autista",
+            checked: content.autism_spectrum || false,
+            onChange: (value) => updateField("autism_spectrum", value),
           },
-          {
-            id: "autism_level_2",
-            label: "TEA Nível 2 (Suporte Substancial)",
-            checked: content.autism_level_2 || false,
-            onChange: (value) => updateField("autism_level_2", value),
-          },
-          {
-            id: "autism_level_3",
-            label: "TEA Nível 3 (Suporte Muito Substancial)",
-            checked: content.autism_level_3 || false,
-            onChange: (value) => updateField("autism_level_3", value),
-          },
-          {
-            id: "high_functioning_autism",
-            label: "Autismo de Alto Funcionamento",
-            checked: content.high_functioning_autism || false,
-            onChange: (value) => updateField("high_functioning_autism", value),
-          },
-          {
-            id: "asperger_syndrome",
-            label: "Síndrome de Asperger",
-            checked: content.asperger_syndrome || false,
-            onChange: (value) => updateField("asperger_syndrome", value),
-          },
-          {
-            id: "pdd_nos",
-            label: "Transtorno Global do Desenvolvimento SOE",
-            checked: content.pdd_nos || false,
-            onChange: (value) => updateField("pdd_nos", value),
-          },
-          {
-            id: "regressive_autism",
-            label: "Autismo Regressivo",
-            checked: content.regressive_autism || false,
-            onChange: (value) => updateField("regressive_autism", value),
-          },
-        ]}
-      />
-
-      <CheckboxSection
-        title="Transtornos Mentais"
-        fields={[
-          {
-            id: "adhd",
-            label: "TDAH",
-            checked: content.adhd || false,
-            onChange: (value) => updateField("adhd", value),
-          },
-          {
-            id: "adhd_inattentive",
-            label: "TDAH Predominantemente Desatento",
-            checked: content.adhd_inattentive || false,
-            onChange: (value) => updateField("adhd_inattentive", value),
-          },
-          {
-            id: "adhd_hyperactive",
-            label: "TDAH Predominantemente Hiperativo/Impulsivo",
-            checked: content.adhd_hyperactive || false,
-            onChange: (value) => updateField("adhd_hyperactive", value),
-          },
-          {
-            id: "oppositional_defiant_disorder",
-            label: "Transtorno Opositor Desafiador (TOD)",
-            checked: content.oppositional_defiant_disorder || false,
-            onChange: (value) => updateField("oppositional_defiant_disorder", value),
-          },
-          {
-            id: "anxiety_disorders",
-            label: "Transtornos de Ansiedade",
-            checked: content.anxiety_disorders || false,
-            onChange: (value) => updateField("anxiety_disorders", value),
-          },
-          {
-            id: "specific_phobia",
-            label: "Fobia Específica",
-            checked: content.specific_phobia || false,
-            onChange: (value) => updateField("specific_phobia", value),
-          },
-          {
-            id: "separation_anxiety",
-            label: "Ansiedade de Separação",
-            checked: content.separation_anxiety || false,
-            onChange: (value) => updateField("separation_anxiety", value),
-          },
-          {
-            id: "social_anxiety",
-            label: "Ansiedade Social",
-            checked: content.social_anxiety || false,
-            onChange: (value) => updateField("social_anxiety", value),
-          },
-          {
-            id: "ocd",
-            label: "Transtorno Obsessivo-Compulsivo (TOC)",
-            checked: content.ocd || false,
-            onChange: (value) => updateField("ocd", value),
-          },
-          {
-            id: "depression",
-            label: "Depressão",
-            checked: content.depression || false,
-            onChange: (value) => updateField("depression", value),
-          },
-          {
-            id: "bipolar_disorder",
-            label: "Transtorno Bipolar",
-            checked: content.bipolar_disorder || false,
-            onChange: (value) => updateField("bipolar_disorder", value),
-          },
-          {
-            id: "alzheimer",
-            label: "Alzheimer",
-            checked: content.alzheimer || false,
-            onChange: (value) => updateField("alzheimer", value),
-          },
-        ]}
-      />
-
-      <CheckboxSection
-        title="Outras Condições"
-        fields={[
           {
             id: "down_syndrome",
             label: "Síndrome de Down",
@@ -538,40 +426,22 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange: (value) => updateField("intellectual_disability", value),
           },
           {
+            id: "adhd",
+            label: "TDAH",
+            checked: content.adhd || false,
+            onChange: (value) => updateField("adhd", value),
+          },
+          {
             id: "chronic_encephalopathy",
             label: "Encefalopatia Crônica",
             checked: content.chronic_encephalopathy || false,
             onChange: (value) => updateField("chronic_encephalopathy", value),
           },
           {
-            id: "cerebral_palsy",
-            label: "Paralisia Cerebral",
-            checked: content.cerebral_palsy || false,
-            onChange: (value) => updateField("cerebral_palsy", value),
-          },
-          {
-            id: "epilepsy",
-            label: "Epilepsia",
-            checked: content.epilepsy || false,
-            onChange: (value) => updateField("epilepsy", value),
-          },
-          {
-            id: "williams_syndrome",
-            label: "Síndrome de Williams",
-            checked: content.williams_syndrome || false,
-            onChange: (value) => updateField("williams_syndrome", value),
-          },
-          {
-            id: "fragile_x_syndrome",
-            label: "Síndrome do X Frágil",
-            checked: content.fragile_x_syndrome || false,
-            onChange: (value) => updateField("fragile_x_syndrome", value),
-          },
-          {
-            id: "rett_syndrome",
-            label: "Síndrome de Rett",
-            checked: content.rett_syndrome || false,
-            onChange: (value) => updateField("rett_syndrome", value),
+            id: "anxiety_disorders",
+            label: "Transtornos de Ansiedade",
+            checked: content.anxiety_disorders || false,
+            onChange: (value) => updateField("anxiety_disorders", value),
           },
           {
             id: "other_diagnoses",
@@ -579,11 +449,17 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.other_diagnoses || false,
             onChange: (value) => updateField("other_diagnoses", value),
           },
+          {
+            id: "alzheimer",
+            label: "Alzheimer",
+            checked: content.alzheimer || false,
+            onChange: (value) => updateField("alzheimer", value),
+          },
         ]}
       />
 
-      <CheckboxSection
-        title="Medicação e Terapias"
+      <CheckboxSection 
+        title="Medicação e Terapias" 
         fields={[
           {
             id: "speech_therapy",
@@ -621,36 +497,6 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.equine_therapy || false,
             onChange: (value) => updateField("equine_therapy", value),
           },
-          {
-            id: "aba_therapy",
-            label: "Terapia ABA",
-            checked: content.aba_therapy || false,
-            onChange: (value) => updateField("aba_therapy", value),
-          },
-          {
-            id: "sensory_integration",
-            label: "Integração Sensorial",
-            checked: content.sensory_integration || false,
-            onChange: (value) => updateField("sensory_integration", value),
-          },
-          {
-            id: "psychomotricity",
-            label: "Psicomotricidade",
-            checked: content.psychomotricity || false,
-            onChange: (value) => updateField("psychomotricity", value),
-          },
-          {
-            id: "music_therapy",
-            label: "Musicoterapia",
-            checked: content.music_therapy || false,
-            onChange: (value) => updateField("music_therapy", value),
-          },
-          {
-            id: "nutrition",
-            label: "Nutrição",
-            checked: content.nutrition || false,
-            onChange: (value) => updateField("nutrition", value),
-          },
         ]}
       />
 
@@ -663,7 +509,7 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             placeholder: "Liste as medicações em uso",
             value: content.current_medication || "",
             onChange: (value) => updateField("current_medication", value),
-          },
+          }
         ]}
       />
 
@@ -676,21 +522,22 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             placeholder: "Informações sobre matrícula escolar",
             value: content.school_enrollment || "",
             onChange: (value) => updateField("school_enrollment", value),
+            type: "text"
           },
           {
             key: "school_adaptation",
             label: "Adaptação Escolar",
-            placeholder: "Como tem sido a adaptação escolar",
+            placeholder: "Detalhes sobre adaptação escolar",
             value: content.school_adaptation || "",
-            onChange: (value) => updateField("school_adaptation", value),
+            onChange: (value) => updateField("school_adaptation", value)
           },
           {
             key: "extracurricular_activities",
             label: "Atividades Extracurriculares",
-            placeholder: "Liste as atividades extracurriculares",
+            placeholder: "Atividades extracurriculares",
             value: content.extracurricular_activities || "",
-            onChange: (value) => updateField("extracurricular_activities", value),
-          },
+            onChange: (value) => updateField("extracurricular_activities", value)
+          }
         ]}
       />
     </div>

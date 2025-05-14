@@ -1,7 +1,6 @@
 
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { SelectField } from "@/pages/anamnesis/components/SelectField";
-import { toast } from "@/components/ui/use-toast";
 
 type FormProps = {
   content: Record<string, any>;
