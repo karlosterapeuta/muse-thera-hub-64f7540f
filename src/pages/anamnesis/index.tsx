@@ -430,7 +430,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis
+      // Lista atualizada de colunas conhecidas da tabela anamnesis (com 'alzheimer' adicionado)
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -468,12 +468,12 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
-        // Health conditions
+        // Health conditions including alzheimer
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         'alzheimer',
         
-        // Therapy - Updated with new options
+        // Therapy
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
         'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
