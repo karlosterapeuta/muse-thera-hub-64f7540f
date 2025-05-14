@@ -292,7 +292,7 @@ export default function AnamnesisForm() {
           ]
         },
         {
-          title: "Medicaç��o",
+          title: "Medicaço",
           textFields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
@@ -475,7 +475,7 @@ export default function AnamnesisForm() {
         // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -619,7 +619,7 @@ export default function AnamnesisForm() {
         // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',

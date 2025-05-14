@@ -639,6 +639,12 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.music_therapy || false,
             onChange: (value) => updateField("music_therapy", value),
           },
+          {
+            id: "nutrition",
+            label: "Nutrição",
+            checked: content.nutrition || false,
+            onChange: (value) => updateField("nutrition", value),
+          },
         ]}
       />
 
