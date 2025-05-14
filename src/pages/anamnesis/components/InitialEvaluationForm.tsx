@@ -627,6 +627,18 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.sensory_integration || false,
             onChange: (value) => updateField("sensory_integration", value),
           },
+          {
+            id: "psychomotricity",
+            label: "Psicomotricidade",
+            checked: content.psychomotricity || false,
+            onChange: (value) => updateField("psychomotricity", value),
+          },
+          {
+            id: "music_therapy",
+            label: "Musicoterapia",
+            checked: content.music_therapy || false,
+            onChange: (value) => updateField("music_therapy", value),
+          },
         ]}
       />
 
@@ -672,4 +684,3 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     </div>
   );
 }
-

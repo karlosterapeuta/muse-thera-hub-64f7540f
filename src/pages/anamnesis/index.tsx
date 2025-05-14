@@ -472,9 +472,10 @@ export default function AnamnesisForm() {
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         
-        // Therapy
+        // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -615,9 +616,10 @@ export default function AnamnesisForm() {
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
         'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
         
-        // Therapy
+        // Therapy - Updated with new options
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
