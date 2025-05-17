@@ -430,7 +430,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis
+      // Lista completa e atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -468,19 +468,20 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
-        // Mental disorders including new Alzheimer's field
+        // Mental disorders with updated Alzheimer field
         'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
         'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
         'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
         
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'chronic_encephalopathy', 'other_diagnoses',
+        'chronic_encephalopathy', 'cerebral_palsy', 'epilepsy', 'williams_syndrome',
+        'fragile_x_syndrome', 'rett_syndrome', 'other_diagnoses',
         
-        // Therapy including new fields
+        // Therapy with all new fields included
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
+        'psychomotricity', 'music_therapy', 'nutrition', 'aba_therapy', 'sensory_integration',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -583,7 +584,7 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista atualizada de colunas conhecidas da tabela anamnesis
+      // Lista completa e atualizada de colunas conhecidas da tabela anamnesis
       const knownColumns = [
         // Core fields
         'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
@@ -621,19 +622,20 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
-        // Mental disorders including new Alzheimer's field
+        // Mental disorders with updated Alzheimer field
         'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
         'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
         'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
         
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'chronic_encephalopathy', 'other_diagnoses',
+        'chronic_encephalopathy', 'cerebral_palsy', 'epilepsy', 'williams_syndrome',
+        'fragile_x_syndrome', 'rett_syndrome', 'other_diagnoses',
         
-        // Therapy including new fields
+        // Therapy with all new fields included
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
+        'psychomotricity', 'music_therapy', 'nutrition', 'aba_therapy', 'sensory_integration',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
