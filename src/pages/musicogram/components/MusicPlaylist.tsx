@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -362,19 +363,23 @@ export const MusicPlaylist = ({
 
   // Carrega a API do YouTube
   useEffect(() => {
-    // Cria o script do YouTube API
-    if (!window.YT) {
+    // Verificar se já existe um script do YouTube API
+    if (!document.getElementById('youtube-api-script')) {
+      // Cria o script do YouTube API
       const tag = document.createElement('script');
+      tag.id = 'youtube-api-script';
       tag.src = 'https://www.youtube.com/iframe_api';
       
       // Função de callback quando a API estiver pronta
       window.onYouTubeIframeAPIReady = () => {
+        console.log("YouTube API ready");
         setYoutubeApiLoaded(true);
       };
       
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-    } else if (window.YT.Player) {
+    } else if (window.YT && window.YT.Player) {
+      console.log("YouTube API already loaded");
       setYoutubeApiLoaded(true);
     }
     
@@ -388,45 +393,53 @@ export const MusicPlaylist = ({
 
   // Inicializa o player do YouTube quando a API estiver carregada
   useEffect(() => {
-    if (youtubeApiLoaded && !youtubePlayer) {
-      // Cria um elemento div invisível para o player do YouTube
-      const playerDiv = document.createElement('div');
-      playerDiv.id = 'youtube-player';
-      playerDiv.style.display = 'none';
-      document.body.appendChild(playerDiv);
-      
-      const player = new window.YT.Player('youtube-player', {
-        height: '0',
-        width: '0',
-        playerVars: {
-          'playsinline': 1,
-          'controls': 0,
-          'disablekb': 1
-        },
-        events: {
-          'onReady': () => {
-            setYoutubePlayer(player);
-            player.setVolume(volume);
+    if (youtubeApiLoaded && !youtubePlayer && window.YT && window.YT.Player) {
+      try {
+        // Cria um elemento div invisível para o player do YouTube se não existir
+        let playerDiv = document.getElementById('youtube-player');
+        if (!playerDiv) {
+          playerDiv = document.createElement('div');
+          playerDiv.id = 'youtube-player';
+          playerDiv.style.display = 'none';
+          document.body.appendChild(playerDiv);
+        }
+        
+        const player = new window.YT.Player('youtube-player', {
+          height: '0',
+          width: '0',
+          playerVars: {
+            'playsinline': 1,
+            'controls': 0,
+            'disablekb': 1
           },
-          'onStateChange': (event: any) => {
-            if (event.data === window.YT.PlayerState.ENDED) {
-              // Quando a música terminar, notifica o componente pai
-              onPause();
-            }
-          },
-          'onError': (event: any) => {
-            console.error("Erro no player do YouTube:", event);
-            toast.error("Erro ao reproduzir o vídeo do YouTube. Tentando alternativa...");
-            
-            // Tenta tocar a versão alternativa do arquivo
-            if (currentSong) {
-              onPlay(currentSong.url);
+          events: {
+            'onReady': () => {
+              console.log("YouTube player ready");
+              setYoutubePlayer(player);
+              player.setVolume(volume);
+            },
+            'onStateChange': (event: any) => {
+              if (event.data === window.YT.PlayerState.ENDED) {
+                // Quando a música terminar, notifica o componente pai
+                onPause();
+              }
+            },
+            'onError': (event: any) => {
+              console.error("Erro no player do YouTube:", event);
+              toast.error("Erro ao reproduzir o vídeo do YouTube. Tentando alternativa...");
+              
+              // Tenta tocar a versão alternativa do arquivo
+              if (currentSong) {
+                handleFallbackAudio(currentSong.url);
+              }
             }
           }
-        }
-      });
+        });
+      } catch (error) {
+        console.error("Erro ao inicializar o player do YouTube:", error);
+      }
     }
-  }, [youtubeApiLoaded, onPause, volume]);
+  }, [youtubeApiLoaded, onPause, volume, currentSong]);
 
   // Atualiza o volume quando for alterado
   useEffect(() => {
@@ -441,22 +454,50 @@ export const MusicPlaylist = ({
     playNoteSound("C");
   };
 
+  // Função para tratar reprodução de áudio quando o YouTube falhar
+  const handleFallbackAudio = (songUrl: string) => {
+    // Criar um elemento de áudio para tocar a música
+    const audio = new Audio();
+    audio.src = songUrl;
+    audio.volume = volume / 100;
+    
+    audio.onplay = () => {
+      console.log("Reproduzindo áudio via fallback:", songUrl);
+    };
+    
+    audio.onerror = (error) => {
+      console.error("Error playing audio:", error);
+      toast.error("Não foi possível reproduzir esta música. Tente outra.");
+    };
+    
+    // Tenta reproduzir o áudio
+    audio.play().catch(error => {
+      console.error("Error playing audio:", error);
+      toast.error("Falha ao iniciar a reprodução. Verifique as permissões do navegador.");
+    });
+    
+    // Notifica o componente pai que o áudio está sendo reproduzido
+    onPlay(songUrl);
+  };
+
   const handlePlaySong = (song: Song) => {
     // Se tivermos um player do YouTube e a música tiver um ID do YouTube, toca pelo YouTube
-    if (youtubePlayer && song.youtubeId) {
+    if (youtubePlayer && song.youtubeId && window.navigator.onLine) {
       try {
         youtubePlayer.loadVideoById(song.youtubeId);
         youtubePlayer.playVideo();
         onPlay(song.url); // Notifica o componente pai
+        console.log("Reproduzindo via YouTube:", song.title, song.youtubeId);
       } catch (error) {
         console.error("Erro ao tocar vídeo do YouTube:", error);
         toast.error("Erro ao reproduzir o vídeo. Usando fonte alternativa.");
         // Usa a URL alternativa se o YouTube falhar
-        onPlay(song.url);
+        handleFallbackAudio(song.url);
       }
     } else {
-      // Caso contrário, usa o método padrão
-      onPlay(song.url);
+      // Caso contrário, usa o método alternativo
+      console.log("Usando reprodução alternativa para:", song.title);
+      handleFallbackAudio(song.url);
     }
     setSelectedSong(song);
   };
