@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -53,6 +54,7 @@ export default function MusicogramPage() {
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
   const [tempo, setTempo] = useState(60); // BPM
+  const [isDragging, setIsDragging] = useState(false);
   
   // Audio Player State
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
@@ -64,6 +66,9 @@ export default function MusicogramPage() {
   const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
   const animationRef = useRef<number | null>(null);
   const canvasInitializedRef = useRef(false);
+
+  // Reference to the currently dragged instrument
+  const draggedInstrumentRef = useRef<InstrumentType | null>(null);
   
   // Initialize the canvas
   useEffect(() => {
@@ -98,6 +103,13 @@ export default function MusicogramPage() {
         });
         canvas.add(playhead);
         
+        // Add drop event listener to the canvas for drag and drop functionality
+        canvas.on('drop', handleCanvasDrop);
+        canvas.on('dragover', handleCanvasDragOver);
+        canvas.on('dragenter', (e) => {
+          e.preventDefault();
+        });
+        
         setFabricCanvas(canvas);
         canvasInitializedRef.current = true;
       } catch (error) {
@@ -120,6 +132,93 @@ export default function MusicogramPage() {
     };
   }, []);
   
+  // Handle canvas dragover event
+  const handleCanvasDragOver = (e: any) => {
+    if (e.e && e.e.preventDefault) {
+      e.e.preventDefault();
+    }
+    return false;
+  };
+  
+  // Handle canvas drop event
+  const handleCanvasDrop = (e: any) => {
+    if (!fabricCanvas || !draggedInstrumentRef.current) return;
+    
+    // Prevent default browser behavior
+    if (e.e && e.e.preventDefault) {
+      e.e.preventDefault();
+    }
+    
+    const instrument = draggedInstrumentRef.current;
+    
+    // Calculate the position in the canvas
+    const pointer = fabricCanvas.getPointer(e.e);
+    const canvasWidth = fabricCanvas.getWidth();
+    const position = (pointer.x / canvasWidth) * 100;
+    
+    // Add the instrument to the timeline at the drop position
+    addInstrumentAtPosition(instrument.id, position);
+    
+    // Reset the dragged instrument reference
+    draggedInstrumentRef.current = null;
+    setIsDragging(false);
+    
+    return false;
+  };
+  
+  // Add instrument to timeline at specific position
+  const addInstrumentAtPosition = (instrumentId: string, position: number) => {
+    const newEvent: TimelineEvent = {
+      id: uuidv4(),
+      instrumentId: instrumentId,
+      position: Math.max(0, Math.min(100, position)) // Clamp between 0-100
+    };
+    
+    setTimelineEvents(prev => [...prev, newEvent]);
+    toast.success("Instrumento adicionado à linha do tempo");
+  };
+  
+  // Start dragging an instrument
+  const handleDragStart = (e: React.DragEvent, instrument: InstrumentType) => {
+    draggedInstrumentRef.current = instrument;
+    setIsDragging(true);
+    
+    // Set drag image
+    if (e.dataTransfer) {
+      try {
+        // Create a custom drag image
+        const dragImage = document.createElement('div');
+        dragImage.style.width = '40px';
+        dragImage.style.height = '40px';
+        dragImage.style.borderRadius = instrument.shape === 'circle' ? '50%' : '4px';
+        dragImage.style.backgroundColor = instrument.color;
+        dragImage.style.display = 'inline-block';
+        
+        document.body.appendChild(dragImage);
+        e.dataTransfer.setDragImage(dragImage, 20, 20);
+        
+        // Clean up the temporary element after a small delay
+        setTimeout(() => {
+          document.body.removeChild(dragImage);
+        }, 100);
+      } catch (error) {
+        console.error("Error setting drag image:", error);
+      }
+    }
+    
+    // Set data transfer
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', instrument.id);
+      e.dataTransfer.effectAllowed = 'copy';
+    }
+  };
+  
+  // Handle ending the drag
+  const handleDragEnd = () => {
+    draggedInstrumentRef.current = null;
+    setIsDragging(false);
+  };
+
   // Update canvas when timeline events change
   useEffect(() => {
     if (!fabricCanvas) return;
@@ -597,8 +696,29 @@ export default function MusicogramPage() {
             {/* Canvas Card */}
             <Card>
               <CardContent className="pt-6">
-                <div className="border border-gray-300 rounded-lg shadow-lg overflow-hidden bg-white">
+                <div 
+                  className="border border-gray-300 rounded-lg shadow-lg overflow-hidden bg-white"
+                  style={{
+                    position: 'relative',
+                    cursor: isDragging ? 'grabbing' : 'default'
+                  }}
+                >
                   <canvas ref={canvasRef} />
+                  <div className="absolute top-0 left-0 w-full h-full" 
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (!fabricCanvas) return;
+                      
+                      const pointer = fabricCanvas.getPointer(e);
+                      const canvasWidth = fabricCanvas.getWidth();
+                      const position = (pointer.x / canvasWidth) * 100;
+                      
+                      if (draggedInstrumentRef.current) {
+                        addInstrumentAtPosition(draggedInstrumentRef.current.id, position);
+                      }
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -673,6 +793,9 @@ export default function MusicogramPage() {
                       pressed={selectedInstrument === instrument.id}
                       onPressedChange={() => setSelectedInstrument(instrument.id)}
                       className="flex flex-col items-center gap-1 h-auto p-4 data-[state=on]:bg-primary/10"
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, instrument)}
+                      onDragEnd={handleDragEnd}
                     >
                       <div 
                         className="w-12 h-12 flex items-center justify-center rounded-md border-2 border-gray-800"
@@ -735,6 +858,7 @@ export default function MusicogramPage() {
                   <ul className="text-sm space-y-1 list-disc pl-4 text-muted-foreground">
                     <li>Escolha um instrumento clicando em seu ícone</li>
                     <li>Adicione à linha do tempo usando o botão "Adicionar"</li>
+                    <li>Arraste e solte um instrumento diretamente na linha do tempo</li>
                     <li>Selecione uma música da playlist para tocar junto</li>
                     <li>Use o botão Play para animar as formas</li>
                     <li>Ajuste a velocidade e volume conforme necessário</li>
