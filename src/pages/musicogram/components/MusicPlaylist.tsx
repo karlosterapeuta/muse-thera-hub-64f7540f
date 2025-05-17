@@ -27,6 +27,9 @@ const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHeli
 // YouTube API embed URL base
 const YOUTUBE_EMBED_API_BASE = "https://www.youtube.com/embed/";
 
+// YouTube oEmbed API URL to fetch video title
+const YOUTUBE_OEMBED_API = "https://www.youtube.com/oembed?url=";
+
 interface MusicPlaylistProps {
   onPlay: (url: string) => void;
   onPause: () => void;
@@ -103,8 +106,45 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     return /^[a-zA-Z0-9_-]{11}$/.test(id);
   };
 
+  // Function to fetch YouTube video title from thumbnail or metadata
+  const fetchYouTubeVideoInfo = (youtubeId: string): Promise<{ title: string, success: boolean }> => {
+    return new Promise((resolve) => {
+      // First try fetching via thumbnail
+      const img = new Image();
+      
+      img.onload = () => {
+        // If thumbnail loads, we know video exists, try to fetch title
+        // Use a simple approach since we can't access YouTube API directly
+        const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+        
+        fetch(`/api/youtube-info?id=${youtubeId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.title) {
+              resolve({ title: data.title, success: true });
+            } else {
+              // If API call fails, use a placeholder with ID
+              resolve({ title: `Vídeo ${youtubeId}`, success: true });
+            }
+          })
+          .catch(() => {
+            // On error, create a basic title with partial ID
+            const shortId = youtubeId.substring(0, 6);
+            resolve({ title: `Vídeo do YouTube (${shortId}...)`, success: true });
+          });
+      };
+      
+      img.onerror = () => {
+        // If thumbnail doesn't load, video likely doesn't exist
+        resolve({ title: "", success: false });
+      };
+      
+      img.src = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
+    });
+  };
+
   // Handle search submission
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.error("Digite algo para pesquisar");
       return;
@@ -117,55 +157,59 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     
     // Validate the ID format
     if (youtubeId && validateYouTubeId(youtubeId)) {
-      // Create a song entry for valid YouTube ID
-      const newSong: Song = {
-        id: `youtube-${youtubeId}`,
-        title: `Vídeo do YouTube`,
-        artist: "YouTube",
-        url: `https://www.youtube.com/watch?v=${youtubeId}`,
-        thumbnail: `https://img.youtube.com/vi/${youtubeId}/0.jpg`,
-        source: "youtube"
-      };
+      try {
+        // Try to fetch video metadata or at least validate it exists
+        const { title, success } = await fetchYouTubeVideoInfo(youtubeId);
+        
+        if (success) {
+          // Create a song entry for valid YouTube ID
+          const newSong: Song = {
+            id: `youtube-${youtubeId}`,
+            title: title || `Vídeo do YouTube (${youtubeId.substring(0, 6)}...)`,
+            artist: "YouTube",
+            url: `https://www.youtube.com/watch?v=${youtubeId}`,
+            thumbnail: `https://img.youtube.com/vi/${youtubeId}/0.jpg`,
+            source: "youtube"
+          };
+          
+          setSearchResults([newSong]);
+          setDisplaySongs(prev => {
+            // Check if the song already exists to prevent duplicates
+            const exists = prev.some(song => song.id === newSong.id);
+            return exists ? prev : [...prev, newSong];
+          });
+          toast.success("Vídeo do YouTube encontrado!");
+        } else {
+          toast.error("ID de vídeo do YouTube inválido ou vídeo não encontrado");
+        }
+      } catch (error) {
+        console.error("Error validating YouTube video:", error);
+        toast.error("Erro ao validar vídeo do YouTube");
+      }
       
-      // Attempt to fetch video title from thumbnail load success
-      const img = new Image();
-      img.onload = () => {
-        setSearchResults([newSong]);
-        setDisplaySongs(prev => {
-          // Check if the song already exists to prevent duplicates
-          const exists = prev.some(song => song.id === newSong.id);
-          return exists ? prev : [...prev, newSong];
-        });
-        setIsSearching(false);
-        toast.success("Vídeo do YouTube encontrado!");
-      };
-      
-      img.onerror = () => {
-        // If thumbnail doesn't load, the video likely doesn't exist
-        setIsSearching(false);
-        toast.error("ID de vídeo do YouTube inválido ou vídeo não encontrado");
-      };
-      
-      // Start loading the thumbnail to verify the video exists
-      img.src = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
+      setIsSearching(false);
       return;
     }
     
-    // If not a direct YouTube URL, simulate search results
-    setTimeout(() => {
+    // If not a direct YouTube URL, treat as search query
+    try {
+      // Create some search-based results
+      const searchTerm = encodeURIComponent(searchQuery);
+      
+      // Simulate search results with sequential IDs that won't conflict
       const mockResults: Song[] = [
         {
-          id: `yt-${Date.now()}-1`,
-          title: `${searchQuery} - Música Infantil`,
-          artist: "YouTube Kids",
+          id: `yt-search-${Date.now()}-1`,
+          title: `${searchQuery} - Música`,
+          artist: "YouTube Music",
           url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Example URL
           thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
           source: "youtube"
         },
         {
-          id: `yt-${Date.now()}-2`,
-          title: `${searchQuery} - Canção Educativa`,
-          artist: "Música Educativa",
+          id: `yt-search-${Date.now()}-2`,
+          title: `${searchQuery} - Versão Acústica`,
+          artist: "YouTube Acoustic",
           url: "https://www.youtube.com/watch?v=_bP6aVG6L1w", // Example URL
           thumbnail: "https://img.youtube.com/vi/_bP6aVG6L1w/0.jpg",
           source: "youtube"
@@ -173,10 +217,14 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
       ];
       
       setSearchResults(mockResults);
-      setDisplaySongs([...songLibrary, ...mockResults]);
+      setDisplaySongs(prev => [...prev, ...mockResults]);
+      toast.success("Resultados da pesquisa encontrados!");
+    } catch (error) {
+      console.error("Search error:", error);
+      toast.error("Erro ao buscar músicas");
+    } finally {
       setIsSearching(false);
-      toast.success("Músicas encontradas!");
-    }, 1000);
+    }
   };
   
   // Reset search
