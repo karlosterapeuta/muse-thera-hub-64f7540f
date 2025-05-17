@@ -15,6 +15,11 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     console.log(`Report form - Field ${field} updated with value:`, value);
   };
 
+  // Função para garantir que os valores booleanos sejam tratados corretamente
+  const getBooleanValue = (fieldName: string): boolean => {
+    return Boolean(content[fieldName]);
+  };
+
   const musicalEngagementOptions = [
     { value: "high", label: "Alto engajamento com atividades musicais" },
     { value: "moderate", label: "Engajamento moderado" },
@@ -50,31 +55,31 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "psychomotricity",
             label: "Psicomotricidade",
-            checked: Boolean(content.psychomotricity),
+            checked: getBooleanValue("psychomotricity"),
             onChange: (value) => updateField("psychomotricity", value),
           },
           {
             id: "music_therapy",
             label: "Musicoterapia",
-            checked: Boolean(content.music_therapy),
+            checked: getBooleanValue("music_therapy"),
             onChange: (value) => updateField("music_therapy", value),
           },
           {
             id: "nutrition",
             label: "Nutrição",
-            checked: Boolean(content.nutrition),
+            checked: getBooleanValue("nutrition"),
             onChange: (value) => updateField("nutrition", value),
           },
           {
             id: "aba_therapy",
             label: "Terapia ABA",
-            checked: Boolean(content.aba_therapy),
+            checked: getBooleanValue("aba_therapy"),
             onChange: (value) => updateField("aba_therapy", value),
           },
           {
             id: "sensory_integration",
             label: "Integração Sensorial",
-            checked: Boolean(content.sensory_integration),
+            checked: getBooleanValue("sensory_integration"),
             onChange: (value) => updateField("sensory_integration", value),
           },
         ]}
@@ -86,7 +91,7 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "alzheimer",
             label: "Alzheimer",
-            checked: Boolean(content.alzheimer),
+            checked: getBooleanValue("alzheimer"),
             onChange: (value) => updateField("alzheimer", value),
           },
         ]}

@@ -1,79 +1,118 @@
 
--- Drop and recreate the migration to ensure clean execution
--- First, explicitly create each column if it doesn't exist
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS psychomotricity BOOLEAN DEFAULT false;
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS music_therapy BOOLEAN DEFAULT false;
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS nutrition BOOLEAN DEFAULT false;
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS alzheimer BOOLEAN DEFAULT false;
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS aba_therapy BOOLEAN DEFAULT false;
-ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS sensory_integration BOOLEAN DEFAULT false;
+-- Limpeza de cache antes de iniciar
+DO $$
+BEGIN
+  PERFORM pg_notify('pgrst', 'reload schema');
+END $$;
 
--- Explicit type conversions and default value settings
-ALTER TABLE anamnesis ALTER COLUMN psychomotricity SET DATA TYPE BOOLEAN USING COALESCE(psychomotricity::boolean, false);
-ALTER TABLE anamnesis ALTER COLUMN music_therapy SET DATA TYPE BOOLEAN USING COALESCE(music_therapy::boolean, false);
-ALTER TABLE anamnesis ALTER COLUMN nutrition SET DATA TYPE BOOLEAN USING COALESCE(nutrition::boolean, false);
-ALTER TABLE anamnesis ALTER COLUMN alzheimer SET DATA TYPE BOOLEAN USING COALESCE(alzheimer::boolean, false);
-ALTER TABLE anamnesis ALTER COLUMN aba_therapy SET DATA TYPE BOOLEAN USING COALESCE(aba_therapy::boolean, false);
-ALTER TABLE anamnesis ALTER COLUMN sensory_integration SET DATA TYPE BOOLEAN USING COALESCE(sensory_integration::boolean, false);
+-- Adicionar as colunas se não existirem com tratamento mais robusto
+DO $$
+DECLARE
+  column_exists BOOLEAN;
+BEGIN
+  -- aba_therapy
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'aba_therapy'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN aba_therapy BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN aba_therapy TYPE BOOLEAN USING aba_therapy::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN aba_therapy SET DEFAULT false';
+  END IF;
 
--- Make sure default values are set for all columns
-ALTER TABLE anamnesis ALTER COLUMN psychomotricity SET DEFAULT false;
-ALTER TABLE anamnesis ALTER COLUMN music_therapy SET DEFAULT false;
-ALTER TABLE anamnesis ALTER COLUMN nutrition SET DEFAULT false;
-ALTER TABLE anamnesis ALTER COLUMN alzheimer SET DEFAULT false;
-ALTER TABLE anamnesis ALTER COLUMN aba_therapy SET DEFAULT false;
-ALTER TABLE anamnesis ALTER COLUMN sensory_integration SET DEFAULT false;
+  -- psychomotricity
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'psychomotricity'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN psychomotricity BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN psychomotricity TYPE BOOLEAN USING psychomotricity::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN psychomotricity SET DEFAULT false';
+  END IF;
 
--- Update comment with timestamp to force schema refresh
-COMMENT ON TABLE anamnesis IS 'Table updated with alzheimer and other fields at: ' || NOW()::text;
+  -- music_therapy
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'music_therapy'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN music_therapy BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN music_therapy TYPE BOOLEAN USING music_therapy::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN music_therapy SET DEFAULT false';
+  END IF;
 
--- Force schema cache refresh using multiple approaches
-SELECT pg_catalog.pg_advisory_unlock_all();
+  -- nutrition
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'nutrition'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN nutrition BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN nutrition TYPE BOOLEAN USING nutrition::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN nutrition SET DEFAULT false';
+  END IF;
 
--- Multiple notification approaches to ensure cache is refreshed
+  -- sensory_integration
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'sensory_integration'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN sensory_integration BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN sensory_integration TYPE BOOLEAN USING sensory_integration::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN sensory_integration SET DEFAULT false';
+  END IF;
+
+  -- alzheimer
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'alzheimer'
+  ) INTO column_exists;
+  
+  IF NOT column_exists THEN
+    EXECUTE 'ALTER TABLE anamnesis ADD COLUMN alzheimer BOOLEAN DEFAULT false';
+  ELSE
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN alzheimer TYPE BOOLEAN USING alzheimer::BOOLEAN';
+    EXECUTE 'ALTER TABLE anamnesis ALTER COLUMN alzheimer SET DEFAULT false';
+  END IF;
+END $$;
+
+-- Atualizar timestamp na tabela para forçar atualização no cache
+COMMENT ON TABLE anamnesis IS 'Table updated with new fields at: ' || NOW()::text;
+
+-- Forçar atualização do cache do schema de múltiplas formas
+SELECT pg_advisory_unlock_all();
 NOTIFY pgrst, 'reload schema';
 SELECT pg_notify('pgrst', 'reload schema');
 SELECT pg_notify('pgrst', 'reload config');
 
--- Wait a moment and try again with another notification
-DO $$
-BEGIN
-  PERFORM pg_sleep(1);
-  PERFORM pg_notify('pgrst', 'reload schema');
-  PERFORM pg_notify('pgrst', 'reload config');
-END $$;
+-- Atualizar estatísticas da tabela
+ANALYZE anamnesis;
 
--- More aggressive schema refresh
+-- Verificação final
 DO $$
-DECLARE
-  r RECORD;
 BEGIN
-  -- Update table statistics
-  FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'anamnesis'
-  LOOP
-    EXECUTE 'ANALYZE ' || quote_ident(r.tablename);
-  END LOOP;
+  PERFORM column_name 
+  FROM information_schema.columns 
+  WHERE table_schema = 'public' 
+    AND table_name = 'anamnesis' 
+    AND column_name IN ('aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer');
   
-  -- Issue more notifications
-  PERFORM pg_notify('pgrst', 'reload schema');
-  PERFORM pg_sleep(1);
-  PERFORM pg_notify('pgrst', 'reload schema');
-END $$;
-
--- One final cache flush attempt
-SELECT pg_notify('pgrst', 'reload schema');
-NOTIFY pgrst, 'reload schema';
-
--- Verification step
-DO $$
-BEGIN
-  -- This will raise an error if any column doesn't exist
-  PERFORM psychomotricity::boolean FROM anamnesis LIMIT 0;
-  PERFORM music_therapy::boolean FROM anamnesis LIMIT 0;
-  PERFORM nutrition::boolean FROM anamnesis LIMIT 0;
-  PERFORM alzheimer::boolean FROM anamnesis LIMIT 0;
-  PERFORM aba_therapy::boolean FROM anamnesis LIMIT 0;
-  PERFORM sensory_integration::boolean FROM anamnesis LIMIT 0;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Colunas necessárias não foram criadas corretamente';
+  END IF;
   
-  RAISE NOTICE 'All columns verified successfully';
+  RAISE NOTICE 'Todas as colunas foram criadas e verificadas com sucesso';
 END $$;

@@ -1,3 +1,4 @@
+
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -18,6 +19,11 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
   const updateField = (field: string, value: any) => {
     onChange({ ...content, [field]: value });
     console.log(`Field ${field} updated with value:`, value);
+  };
+
+  // Função para garantir que os valores booleanos sejam tratados corretamente
+  const getBooleanValue = (fieldName: string): boolean => {
+    return Boolean(content[fieldName]);
   };
 
   return (
@@ -404,73 +410,73 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "adhd",
             label: "TDAH",
-            checked: Boolean(content.adhd),
+            checked: getBooleanValue("adhd"),
             onChange: (value) => updateField("adhd", value),
           },
           {
             id: "adhd_inattentive",
             label: "TDAH Predominantemente Desatento",
-            checked: Boolean(content.adhd_inattentive),
+            checked: getBooleanValue("adhd_inattentive"),
             onChange: (value) => updateField("adhd_inattentive", value),
           },
           {
             id: "adhd_hyperactive",
             label: "TDAH Predominantemente Hiperativo/Impulsivo",
-            checked: Boolean(content.adhd_hyperactive),
+            checked: getBooleanValue("adhd_hyperactive"),
             onChange: (value) => updateField("adhd_hyperactive", value),
           },
           {
             id: "oppositional_defiant_disorder",
             label: "Transtorno Opositor Desafiador (TOD)",
-            checked: Boolean(content.oppositional_defiant_disorder),
+            checked: getBooleanValue("oppositional_defiant_disorder"),
             onChange: (value) => updateField("oppositional_defiant_disorder", value),
           },
           {
             id: "anxiety_disorders",
             label: "Transtornos de Ansiedade",
-            checked: Boolean(content.anxiety_disorders),
+            checked: getBooleanValue("anxiety_disorders"),
             onChange: (value) => updateField("anxiety_disorders", value),
           },
           {
             id: "specific_phobia",
             label: "Fobia Específica",
-            checked: Boolean(content.specific_phobia),
+            checked: getBooleanValue("specific_phobia"),
             onChange: (value) => updateField("specific_phobia", value),
           },
           {
             id: "separation_anxiety",
             label: "Ansiedade de Separação",
-            checked: Boolean(content.separation_anxiety),
+            checked: getBooleanValue("separation_anxiety"),
             onChange: (value) => updateField("separation_anxiety", value),
           },
           {
             id: "social_anxiety",
             label: "Ansiedade Social",
-            checked: Boolean(content.social_anxiety),
+            checked: getBooleanValue("social_anxiety"),
             onChange: (value) => updateField("social_anxiety", value),
           },
           {
             id: "ocd",
             label: "Transtorno Obsessivo-Compulsivo (TOC)",
-            checked: Boolean(content.ocd),
+            checked: getBooleanValue("ocd"),
             onChange: (value) => updateField("ocd", value),
           },
           {
             id: "depression",
             label: "Depressão",
-            checked: Boolean(content.depression),
+            checked: getBooleanValue("depression"),
             onChange: (value) => updateField("depression", value),
           },
           {
             id: "bipolar_disorder",
             label: "Transtorno Bipolar",
-            checked: Boolean(content.bipolar_disorder),
+            checked: getBooleanValue("bipolar_disorder"),
             onChange: (value) => updateField("bipolar_disorder", value),
           },
           {
             id: "alzheimer",
             label: "Alzheimer",
-            checked: Boolean(content.alzheimer),
+            checked: getBooleanValue("alzheimer"),
             onChange: (value) => updateField("alzheimer", value),
           },
         ]}
@@ -482,55 +488,55 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "down_syndrome",
             label: "Síndrome de Down",
-            checked: Boolean(content.down_syndrome),
+            checked: getBooleanValue("down_syndrome"),
             onChange: (value) => updateField("down_syndrome", value),
           },
           {
             id: "intellectual_disability",
             label: "Deficiência Intelectual",
-            checked: content.intellectual_disability || false,
+            checked: getBooleanValue("intellectual_disability"),
             onChange: (value) => updateField("intellectual_disability", value),
           },
           {
             id: "chronic_encephalopathy",
             label: "Encefalopatia Crônica",
-            checked: content.chronic_encephalopathy || false,
+            checked: getBooleanValue("chronic_encephalopathy"),
             onChange: (value) => updateField("chronic_encephalopathy", value),
           },
           {
             id: "cerebral_palsy",
             label: "Paralisia Cerebral",
-            checked: content.cerebral_palsy || false,
+            checked: getBooleanValue("cerebral_palsy"),
             onChange: (value) => updateField("cerebral_palsy", value),
           },
           {
             id: "epilepsy",
             label: "Epilepsia",
-            checked: content.epilepsy || false,
+            checked: getBooleanValue("epilepsy"),
             onChange: (value) => updateField("epilepsy", value),
           },
           {
             id: "williams_syndrome",
             label: "Síndrome de Williams",
-            checked: content.williams_syndrome || false,
+            checked: getBooleanValue("williams_syndrome"),
             onChange: (value) => updateField("williams_syndrome", value),
           },
           {
             id: "fragile_x_syndrome",
             label: "Síndrome do X Frágil",
-            checked: content.fragile_x_syndrome || false,
+            checked: getBooleanValue("fragile_x_syndrome"),
             onChange: (value) => updateField("fragile_x_syndrome", value),
           },
           {
             id: "rett_syndrome",
             label: "Síndrome de Rett",
-            checked: content.rett_syndrome || false,
+            checked: getBooleanValue("rett_syndrome"),
             onChange: (value) => updateField("rett_syndrome", value),
           },
           {
             id: "other_diagnoses",
             label: "Outros Diagnósticos",
-            checked: content.other_diagnoses || false,
+            checked: getBooleanValue("other_diagnoses"),
             onChange: (value) => updateField("other_diagnoses", value),
           },
         ]}
@@ -542,67 +548,67 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "speech_therapy",
             label: "Fonoaudiologia",
-            checked: Boolean(content.speech_therapy),
+            checked: getBooleanValue("speech_therapy"),
             onChange: (value) => updateField("speech_therapy", value),
           },
           {
             id: "psychological_support",
             label: "Acompanhamento Psicológico",
-            checked: Boolean(content.psychological_support),
+            checked: getBooleanValue("psychological_support"),
             onChange: (value) => updateField("psychological_support", value),
           },
           {
             id: "psychopedagogical",
             label: "Psicopedagogia",
-            checked: Boolean(content.psychopedagogical),
+            checked: getBooleanValue("psychopedagogical"),
             onChange: (value) => updateField("psychopedagogical", value),
           },
           {
             id: "occupational_therapy",
             label: "Terapia Ocupacional",
-            checked: Boolean(content.occupational_therapy),
+            checked: getBooleanValue("occupational_therapy"),
             onChange: (value) => updateField("occupational_therapy", value),
           },
           {
             id: "physiotherapy",
             label: "Fisioterapia",
-            checked: Boolean(content.physiotherapy),
+            checked: getBooleanValue("physiotherapy"),
             onChange: (value) => updateField("physiotherapy", value),
           },
           {
             id: "equine_therapy",
             label: "Equoterapia",
-            checked: Boolean(content.equine_therapy),
+            checked: getBooleanValue("equine_therapy"),
             onChange: (value) => updateField("equine_therapy", value),
           },
           {
             id: "aba_therapy",
             label: "Terapia ABA",
-            checked: Boolean(content.aba_therapy),
+            checked: getBooleanValue("aba_therapy"),
             onChange: (value) => updateField("aba_therapy", value),
           },
           {
             id: "sensory_integration",
             label: "Integração Sensorial",
-            checked: Boolean(content.sensory_integration),
+            checked: getBooleanValue("sensory_integration"),
             onChange: (value) => updateField("sensory_integration", value),
           },
           {
             id: "psychomotricity",
             label: "Psicomotricidade",
-            checked: Boolean(content.psychomotricity),
+            checked: getBooleanValue("psychomotricity"),
             onChange: (value) => updateField("psychomotricity", value),
           },
           {
             id: "music_therapy",
             label: "Musicoterapia",
-            checked: Boolean(content.music_therapy),
+            checked: getBooleanValue("music_therapy"),
             onChange: (value) => updateField("music_therapy", value),
           },
           {
             id: "nutrition",
             label: "Nutrição",
-            checked: Boolean(content.nutrition),
+            checked: getBooleanValue("nutrition"),
             onChange: (value) => updateField("nutrition", value),
           },
         ]}

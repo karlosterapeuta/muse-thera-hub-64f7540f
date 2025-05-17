@@ -433,11 +433,14 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
+      console.log("Debug - dados brutos do formulário:", formData);
+      
       // Create a data object with explicit boolean handling for the new fields
       const anamnesisData = {
         ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
+        // Explicitamente convertendo cada campo para o tipo correto
         alzheimer: Boolean(formData.alzheimer),
         psychomotricity: Boolean(formData.psychomotricity),
         music_therapy: Boolean(formData.music_therapy),
@@ -446,7 +449,14 @@ export default function AnamnesisForm() {
         sensory_integration: Boolean(formData.sensory_integration),
       };
 
-      console.log("Debug - saving anamnesis data:", anamnesisData);
+      console.log("Debug - salvando dados de anamnese processados:", anamnesisData);
+      console.log("Debug - valores específicos:");
+      console.log("- alzheimer:", anamnesisData.alzheimer, "tipo:", typeof anamnesisData.alzheimer);
+      console.log("- aba_therapy:", anamnesisData.aba_therapy, "tipo:", typeof anamnesisData.aba_therapy);
+      console.log("- psychomotricity:", anamnesisData.psychomotricity, "tipo:", typeof anamnesisData.psychomotricity);
+      console.log("- music_therapy:", anamnesisData.music_therapy, "tipo:", typeof anamnesisData.music_therapy);
+      console.log("- nutrition:", anamnesisData.nutrition, "tipo:", typeof anamnesisData.nutrition);
+      console.log("- sensory_integration:", anamnesisData.sensory_integration, "tipo:", typeof anamnesisData.sensory_integration);
 
       let result;
       
@@ -525,11 +535,14 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
+      console.log("Debug - dados brutos do formulário ao enviar:", formData);
+      
       // Create a data object with explicit boolean handling for the new fields
       const anamnesisData = {
         ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
+        // Explicitamente convertendo cada campo para o tipo correto
         alzheimer: Boolean(formData.alzheimer),
         psychomotricity: Boolean(formData.psychomotricity),
         music_therapy: Boolean(formData.music_therapy),
@@ -538,7 +551,14 @@ export default function AnamnesisForm() {
         sensory_integration: Boolean(formData.sensory_integration),
       };
 
-      console.log("Debug - submitting anamnesis data:", anamnesisData);
+      console.log("Debug - enviando dados de anamnese processados:", anamnesisData);
+      console.log("Debug - valores específicos:");
+      console.log("- alzheimer:", anamnesisData.alzheimer, "tipo:", typeof anamnesisData.alzheimer);
+      console.log("- aba_therapy:", anamnesisData.aba_therapy, "tipo:", typeof anamnesisData.aba_therapy);
+      console.log("- psychomotricity:", anamnesisData.psychomotricity, "tipo:", typeof anamnesisData.psychomotricity);
+      console.log("- music_therapy:", anamnesisData.music_therapy, "tipo:", typeof anamnesisData.music_therapy);
+      console.log("- nutrition:", anamnesisData.nutrition, "tipo:", typeof anamnesisData.nutrition);
+      console.log("- sensory_integration:", anamnesisData.sensory_integration, "tipo:", typeof anamnesisData.sensory_integration);
 
       let result;
       
