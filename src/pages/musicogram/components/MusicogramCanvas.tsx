@@ -1,7 +1,9 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
 import { Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
@@ -54,7 +56,9 @@ export function MusicogramCanvas({
             shape: obj.type,
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
-            rotation: obj.angle || 0
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
           };
           onUpdateElement(updatedElement);
         }
@@ -72,7 +76,9 @@ export function MusicogramCanvas({
             shape: obj.type,
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
-            rotation: obj.angle || 0
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
           };
           onUpdateElement(updatedElement);
         }
@@ -90,7 +96,9 @@ export function MusicogramCanvas({
             shape: obj.type,
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
-            rotation: obj.angle || 0
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
           };
           onUpdateElement(updatedElement);
         }
@@ -152,45 +160,62 @@ export function MusicogramCanvas({
     const x = element.position?.x || element.x;
     const y = element.position?.y || element.y;
     
-    switch (element.shape) {
-      case 'circle':
-        fabricElement = new fabric.Circle({
+    // Handle different element types
+    if (element.iconType === 'symbol') {
+      if (element.iconContent) {
+        const textObj = new fabric.Text(element.iconContent, {
           left: x,
           top: y,
-          radius: element.size / 2,
+          fontSize: element.size || 24,
           fill: element.color,
           originX: 'center',
           originY: 'center',
-          hasControls: false,
-          hasBorders: false,
+          hasControls: true,
+          hasBorders: true,
           lockMovementX: !isDrawingMode,
           lockMovementY: !isDrawingMode,
           angle: element.rotation || 0
         });
-        break;
-      case 'rect':
-        fabricElement = new fabric.Rect({
-          left: x,
-          top: y,
-          width: element.size,
-          height: element.size / 2,
-          fill: element.color,
-          originX: 'center',
-          originY: 'center',
-          hasControls: false,
-          hasBorders: false,
-          lockMovementX: !isDrawingMode,
-          lockMovementY: !isDrawingMode,
-          angle: element.rotation || 0
-        });
-        break;
-      default:
-        return null;
+        fabricElement = textObj;
+      }
+    } else if (element.shape === 'circle') {
+      fabricElement = new fabric.Circle({
+        left: x,
+        top: y,
+        radius: element.size / 2,
+        fill: element.color,
+        originX: 'center',
+        originY: 'center',
+        hasControls: false,
+        hasBorders: false,
+        lockMovementX: !isDrawingMode,
+        lockMovementY: !isDrawingMode,
+        angle: element.rotation || 0
+      });
+    } else if (element.shape === 'rect') {
+      fabricElement = new fabric.Rect({
+        left: x,
+        top: y,
+        width: element.size,
+        height: element.size / 2,
+        fill: element.color,
+        originX: 'center',
+        originY: 'center',
+        hasControls: false,
+        hasBorders: false,
+        lockMovementX: !isDrawingMode,
+        lockMovementY: !isDrawingMode,
+        angle: element.rotation || 0
+      });
     }
 
     if (fabricElement) {
       fabricElement.lockScalingFlip = true;
-      fabricElement.data = { id: element.id };
+      fabricElement.data = { 
+        id: element.id,
+        iconType: element.iconType,
+        iconContent: element.iconContent
+      };
       fabricElement.on('mousedown', (e) => {
         if (isErasing) {
           onDeleteElement(element.id);

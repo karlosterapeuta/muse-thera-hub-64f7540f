@@ -8,9 +8,23 @@ import { Star } from "./components/Star";
 import PatientSelector from "./components/PatientSelector";
 import TemplateSelector from "./components/TemplateSelector";
 import { defaultTemplates } from "./data/musicogramData";
-import { Brush, Eraser, Trash2, Save, Hand, Download, ZoomIn, ZoomOut } from "lucide-react";
+import { 
+  Brush, 
+  Eraser, 
+  Trash2, 
+  Save, 
+  Hand, 
+  Download, 
+  ZoomIn, 
+  ZoomOut,
+  Circle,
+  MusicIcon,
+  Piano,
+  Microphone,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
+import { v4 as uuidv4 } from "uuid";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -23,11 +37,26 @@ const defaultInstruments: InstrumentType[] = [
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
+// Define our musical symbols
+const musicalSymbols: InstrumentType[] = [
+  { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●" },
+  { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●" },
+  { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●" },
+  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○" },
+  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N" },
+  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~" },
+  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋" },
+  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳" },
+  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺" },
+  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘" }
+];
+
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
   const [isErasing, setIsErasing] = useState(false);
   const [isDrawingMode, setIsDrawingMode] = useState(true);
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
+  const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
   const [currentPatient, setCurrentPatient] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -38,6 +67,7 @@ export default function MusicogramPage() {
   const handleInstrumentSelect = (instrumentId: string) => {
     setActiveInstrument(instrumentId);
     setIsErasing(false);
+    setActiveSymbol(null);
     
     // Find selected instrument and use its color
     const instrument = defaultInstruments.find(i => i.id === instrumentId);
@@ -48,9 +78,35 @@ export default function MusicogramPage() {
     setIsDrawingMode(true);
   };
 
+  const handleSymbolSelect = (symbol: InstrumentType) => {
+    setActiveSymbol(symbol);
+    setActiveInstrument(null);
+    setIsErasing(false);
+    setActiveColor(symbol.color);
+    setIsDrawingMode(true);
+
+    // Add the symbol to the canvas
+    const newElement = {
+      id: uuidv4(),
+      type: 'element',
+      x: 50,
+      y: 50,
+      color: symbol.color,
+      size: 24,
+      shape: symbol.shape,
+      iconType: symbol.iconType,
+      iconContent: symbol.iconContent,
+      position: { x: 50, y: 50 },
+      rotation: 0
+    };
+
+    setCanvasElements(prev => [...prev, newElement]);
+  };
+
   const toggleEraser = () => {
     setIsErasing(!isErasing);
     setActiveInstrument(null);
+    setActiveSymbol(null);
     setIsDrawingMode(true);
   };
 
@@ -149,6 +205,29 @@ export default function MusicogramPage() {
           ) : null}
         </div>
         <span className="text-xs mt-1 text-center">{instrument.name}</span>
+      </div>
+    );
+  };
+
+  // Function to render musical symbols
+  const renderMusicalSymbol = (symbol: InstrumentType, index: number) => {
+    const isActive = activeSymbol?.id === symbol.id;
+    
+    return (
+      <div 
+        key={index} 
+        className={`flex flex-col items-center justify-center p-2 transition-all cursor-pointer rounded-lg ${
+          isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+        }`}
+        onClick={() => handleSymbolSelect(symbol)}
+      >
+        <div 
+          className="flex items-center justify-center w-10 h-10 rounded-md transition-transform duration-200 hover:scale-110 text-xl font-bold"
+          style={{ color: symbol.color }}
+        >
+          {symbol.iconContent}
+        </div>
+        <span className="text-xs mt-1 text-center">{symbol.name}</span>
       </div>
     );
   };
@@ -272,6 +351,13 @@ export default function MusicogramPage() {
           <h3 className="font-medium mb-3 text-center">Instrumentos</h3>
           <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
             {defaultInstruments.map((instrument, index) => renderInstrumentShape(instrument, index))}
+          </div>
+          
+          <div className="mt-6">
+            <h3 className="font-medium mb-3 text-center">Símbolos Musicais</h3>
+            <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+              {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
+            </div>
           </div>
           
           <div className="mt-6">
