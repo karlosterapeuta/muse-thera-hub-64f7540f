@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -17,6 +18,7 @@ import {
   Circle,
   MusicIcon,
   Piano,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
