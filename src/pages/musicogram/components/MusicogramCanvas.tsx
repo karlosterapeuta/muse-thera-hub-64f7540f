@@ -34,9 +34,11 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     const initCanvas = () => {
+      // Increased cell size from 50 to 80 pixels
+      const cellSize = 80;
       const newCanvas = new fabric.Canvas('musicogram-canvas', {
-        width: template.columns * 50,
-        height: template.rows * 50,
+        width: template.columns * cellSize,
+        height: template.rows * cellSize,
         backgroundColor: '#fff',
         selection: false,
       });
@@ -130,9 +132,11 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     if (fabricRef.current) {
+      // Update cell size to 80 here as well
+      const cellSize = 80;
       fabricRef.current.setZoom(zoom);
-      fabricRef.current.setWidth(template.columns * 50 * zoom);
-      fabricRef.current.setHeight(template.rows * 50 * zoom);
+      fabricRef.current.setWidth(template.columns * cellSize * zoom);
+      fabricRef.current.setHeight(template.rows * cellSize * zoom);
       fabricRef.current.renderAll();
     }
   }, [zoom, template]);
