@@ -15,6 +15,8 @@ interface MusicogramCanvasProps {
   onUpdateElement: (element: any) => void;
   onDeleteElement: (elementId: string) => void;
   zoom: number;
+  onDrop: (e: React.DragEvent<HTMLCanvasElement>) => void;
+  onDragOver: (e: React.DragEvent<HTMLCanvasElement>) => void;
 }
 
 export function MusicogramCanvas({ 
@@ -26,12 +28,15 @@ export function MusicogramCanvas({
   elements,
   onUpdateElement,
   onDeleteElement,
-  zoom 
+  zoom,
+  onDrop,
+  onDragOver
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const [selectedElement, setSelectedElement] = useState<fabric.Object | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initCanvas = () => {
@@ -329,7 +334,12 @@ export function MusicogramCanvas({
   };
 
   return (
-    <div className="relative">
+    <div 
+      className="relative" 
+      ref={canvasContainerRef}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
       <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
       {selectedElement && (
         <button

@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -123,6 +124,8 @@ export default function MusicogramPage() {
           position: { x, y },
           rotation: 0
         };
+        
+        toast.success("Símbolo adicionado com sucesso!");
       } else if (dropData.type === 'instrument') {
         // Criar novo elemento de instrumento no canvas na posição do drop
         let iconContent = "▪"; // Default square shape
@@ -156,6 +159,8 @@ export default function MusicogramPage() {
           position: { x, y },
           rotation: 0
         };
+        
+        toast.success("Instrumento adicionado com sucesso!");
       }
       
       if (newElement) {
@@ -163,6 +168,7 @@ export default function MusicogramPage() {
       }
     } catch (error) {
       console.error("Erro ao soltar o elemento:", error);
+      toast.error("Erro ao adicionar elemento");
     }
   };
 
@@ -444,6 +450,9 @@ export default function MusicogramPage() {
                 Clique e arraste para mover elementos
               </div>
             )}
+            <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
+              Arraste os ícones diretamente para o quadro
+            </div>
           </div>
           
           {renderStarIcon()}
