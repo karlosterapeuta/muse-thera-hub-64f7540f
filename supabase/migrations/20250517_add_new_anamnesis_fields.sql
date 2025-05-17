@@ -9,3 +9,7 @@ ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS sensory_integration BOOLEAN DEFAU
 
 -- Force Supabase to recognize the new columns by touching the table
 COMMENT ON TABLE anamnesis IS 'Table updated with new therapy and mental disorder fields';
+
+-- Force schema cache refresh
+SELECT pg_catalog.pg_advisory_unlock_all();
+NOTIFY pgrst, 'reload schema';

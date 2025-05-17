@@ -49,31 +49,31 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "psychomotricity",
             label: "Psicomotricidade",
-            checked: content.psychomotricity || false,
+            checked: Boolean(content.psychomotricity),
             onChange: (value) => updateField("psychomotricity", value),
           },
           {
             id: "music_therapy",
             label: "Musicoterapia",
-            checked: content.music_therapy || false,
+            checked: Boolean(content.music_therapy),
             onChange: (value) => updateField("music_therapy", value),
           },
           {
             id: "nutrition",
             label: "Nutrição",
-            checked: content.nutrition || false,
+            checked: Boolean(content.nutrition),
             onChange: (value) => updateField("nutrition", value),
           },
           {
             id: "aba_therapy",
             label: "Terapia ABA",
-            checked: content.aba_therapy || false,
+            checked: Boolean(content.aba_therapy),
             onChange: (value) => updateField("aba_therapy", value),
           },
           {
             id: "sensory_integration",
             label: "Integração Sensorial",
-            checked: content.sensory_integration || false,
+            checked: Boolean(content.sensory_integration),
             onChange: (value) => updateField("sensory_integration", value),
           },
         ]}
@@ -85,7 +85,7 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "alzheimer",
             label: "Alzheimer",
-            checked: content.alzheimer || false,
+            checked: Boolean(content.alzheimer),
             onChange: (value) => updateField("alzheimer", value),
           },
         ]}
