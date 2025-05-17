@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -57,6 +58,7 @@ export default function MusicogramPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
   const [zoom, setZoom] = useState(1);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   // Canvas ref and elements state would be here
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
@@ -245,7 +247,7 @@ export default function MusicogramPage() {
     return (
       <div 
         key={index} 
-        className={`flex flex-col items-center justify-center p-2 transition-all cursor-grab rounded-lg ${
+        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-grab rounded-lg ${
           isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
         }`}
         onClick={() => handleInstrumentSelect(instrument.id)}
@@ -253,40 +255,40 @@ export default function MusicogramPage() {
         onDragStart={(e) => handleDragStart(e, instrument, 'instrument')}
       >
         <div 
-          className="flex items-center justify-center w-10 h-10 rounded-md transition-transform duration-200 hover:scale-110"
+          className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-md transition-transform duration-200 hover:scale-110"
           style={{ color: instrument.color }}
         >
           {instrument.id === "ukulele" ? (
-            <UkuleleIcon className="w-10 h-10" />
+            <UkuleleIcon className="w-8 h-8 sm:w-10 sm:h-10" />
           ) : instrument.shape === "circle" ? (
-            <div className="w-8 h-8 rounded-full" style={{ backgroundColor: instrument.color }}></div>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full" style={{ backgroundColor: instrument.color }}></div>
           ) : instrument.shape === "triangle" ? (
             <div style={{ 
               width: '0', 
               height: '0', 
-              borderLeft: '15px solid transparent',
-              borderRight: '15px solid transparent',
-              borderBottom: `30px solid ${instrument.color}`
+              borderLeft: isMobile ? '12px solid transparent' : '15px solid transparent',
+              borderRight: isMobile ? '12px solid transparent' : '15px solid transparent',
+              borderBottom: `${isMobile ? '24px' : '30px'} solid ${instrument.color}`
             }}></div>
           ) : instrument.shape === "square" ? (
-            <div className="w-8 h-8 rounded-md" style={{ backgroundColor: instrument.color }}></div>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md" style={{ backgroundColor: instrument.color }}></div>
           ) : instrument.shape === "hand" ? (
-            <Hand size={32} fill={instrument.color} color={instrument.color} />
+            <Hand size={isMobile ? 24 : 32} fill={instrument.color} color={instrument.color} />
           ) : instrument.shape === "footprints" ? (
-            <div className="w-8 h-8 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" width="32" height="32" fill={instrument.color}>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" width={isMobile ? "24" : "32"} height={isMobile ? "24" : "32"} fill={instrument.color}>
                 <path d="M9 1c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3zm1.75 7l-2.5 2l1.5 1l-4.75 4.75l2 2l7-7l1.5 1l-2-5l-2.75 1.25z" />
               </svg>
             </div>
           ) : instrument.shape === "silence" ? (
-            <div className="w-8 h-8 flex items-center justify-center opacity-80">
-              <svg viewBox="0 0 24 24" width="32" height="32" fill={instrument.color}>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center opacity-80">
+              <svg viewBox="0 0 24 24" width={isMobile ? "24" : "32"} height={isMobile ? "24" : "32"} fill={instrument.color}>
                 <path d="M12 2c-5.5 0-10 4.5-10 10s4.5 10 10 10s10-4.5 10-10s-4.5-10-10-10zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z" />
               </svg>
             </div>
           ) : null}
         </div>
-        <span className="text-xs mt-1 text-center">{instrument.name}</span>
+        <span className="text-[10px] sm:text-xs mt-1 text-center">{instrument.name}</span>
       </div>
     );
   };
@@ -298,7 +300,7 @@ export default function MusicogramPage() {
     return (
       <div 
         key={index} 
-        className={`flex flex-col items-center justify-center p-2 transition-all cursor-grab rounded-lg ${
+        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-grab rounded-lg ${
           isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
         }`}
         onClick={() => handleSymbolSelect(symbol)}
@@ -306,12 +308,12 @@ export default function MusicogramPage() {
         onDragStart={(e) => handleDragStart(e, symbol, 'symbol')}
       >
         <div 
-          className="flex items-center justify-center w-12 h-12 rounded-md transition-transform duration-200 hover:scale-110 text-2xl font-bold"
+          className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
           style={{ color: symbol.color }}
         >
           {symbol.iconContent}
         </div>
-        <span className="text-xs mt-1 text-center">{symbol.name}</span>
+        <span className="text-[10px] sm:text-xs mt-1 text-center">{symbol.name}</span>
       </div>
     );
   };
@@ -332,8 +334,8 @@ export default function MusicogramPage() {
 
   // Modified the Star component rendering to pass it as a React component
   const renderStarIcon = () => {
-    return <div className="flex-grow flex items-end justify-center pb-4">
-      <div className="w-32 h-32 opacity-10">
+    return <div className="hidden md:flex flex-grow items-end justify-center pb-4">
+      <div className="w-20 h-20 md:w-32 md:h-32 opacity-10">
         <Star />
       </div>
     </div>;
@@ -341,8 +343,8 @@ export default function MusicogramPage() {
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Musicograma</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Musicograma</h1>
         <div className="flex items-center space-x-2">
           <TemplateSelector 
             templates={defaultTemplates}
@@ -352,90 +354,90 @@ export default function MusicogramPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow">
+      <div className="flex flex-wrap gap-1 sm:gap-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
         <Button
           variant={isDrawingMode ? "default" : "outline"}
-          size="icon"
+          size={isMobile ? "sm" : "icon"}
           onClick={() => {
             setIsDrawingMode(true);
             setIsErasing(false);
           }}
           title="Modo Desenho"
         >
-          <Brush size={18} />
+          <Brush size={isMobile ? 16 : 18} />
         </Button>
         <Button
           variant={!isDrawingMode ? "default" : "outline"}
-          size="icon"
+          size={isMobile ? "sm" : "icon"}
           onClick={toggleMode}
           title="Modo Movimentação Livre"
           className={!isDrawingMode ? "bg-green-500 hover:bg-green-600" : ""}
         >
-          <Hand size={18} />
+          <Hand size={isMobile ? 16 : 18} />
         </Button>
         <Button 
           variant={isErasing ? "destructive" : "outline"} 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={toggleEraser}
           title="Borracha"
           disabled={!isDrawingMode}
         >
-          <Eraser size={18} />
+          <Eraser size={isMobile ? 16 : 18} />
         </Button>
         <Button 
           variant="outline" 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={clearCanvas}
           title="Limpar Tudo"
         >
-          <Trash2 size={18} />
+          <Trash2 size={isMobile ? 16 : 18} />
         </Button>
-        <div className="h-6 border-r border-gray-200 mx-1"></div>
+        <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
         <Button 
           variant="outline" 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={handleZoomIn}
           title="Ampliar"
         >
-          <ZoomIn size={18} />
+          <ZoomIn size={isMobile ? 16 : 18} />
         </Button>
         <Button 
           variant="outline" 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={handleZoomOut}
           title="Reduzir"
         >
-          <ZoomOut size={18} />
+          <ZoomOut size={isMobile ? 16 : 18} />
         </Button>
-        <div className="h-6 border-r border-gray-200 mx-1"></div>
+        <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
         <Button 
           variant="outline" 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={saveCanvas}
           title="Salvar Musicograma"
         >
-          <Save size={18} />
+          <Save size={isMobile ? 16 : 18} />
         </Button>
         <Button 
           variant="outline" 
-          size="icon" 
+          size={isMobile ? "sm" : "icon"}
           onClick={exportAsImage}
           title="Baixar como Imagem"
         >
-          <Download size={18} />
+          <Download size={isMobile ? 16 : 18} />
         </Button>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4 flex-1">
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-3 flex flex-col md:w-48">
-          <h3 className="font-medium mb-3 text-center">Instrumentos</h3>
-          <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
+          <h3 className="font-medium mb-2 sm:mb-3 text-center">Instrumentos</h3>
+          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
             {defaultInstruments.map((instrument, index) => renderInstrumentShape(instrument, index))}
           </div>
           
-          <div className="mt-6">
-            <h3 className="font-medium mb-3 text-center">Símbolos Musicais</h3>
-            <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+          <div className="mt-4 sm:mt-6">
+            <h3 className="font-medium mb-2 sm:mb-3 text-center">Símbolos Musicais</h3>
+            <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
               {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
             </div>
           </div>
@@ -462,7 +464,7 @@ export default function MusicogramPage() {
         
         <div 
           ref={canvasRef} 
-          className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-2 relative"
+          className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-1 sm:p-2 relative"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >

@@ -1,9 +1,9 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
 import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
@@ -37,11 +37,12 @@ export function MusicogramCanvas({
   const [selectedElement, setSelectedElement] = useState<fabric.Object | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const initCanvas = () => {
-      // Increased cell size from 50 to 80 pixels
-      const cellSize = 80;
+      // Adjust cell size based on screen size
+      const cellSize = isMobile ? 60 : 80;
       const newCanvas = new fabric.Canvas('musicogram-canvas', {
         width: template.columns * cellSize,
         height: template.rows * cellSize,
@@ -146,18 +147,18 @@ export function MusicogramCanvas({
     return () => {
       canvas?.dispose();
     };
-  }, [template]);
+  }, [template, isMobile]);
 
   useEffect(() => {
     if (fabricRef.current) {
-      // Update cell size to 80 here as well
-      const cellSize = 80;
+      // Adapt cell size for mobile
+      const cellSize = isMobile ? 60 : 80;
       fabricRef.current.setZoom(zoom);
       fabricRef.current.setWidth(template.columns * cellSize * zoom);
       fabricRef.current.setHeight(template.rows * cellSize * zoom);
       fabricRef.current.renderAll();
     }
-  }, [zoom, template]);
+  }, [zoom, template, isMobile]);
 
   useEffect(() => {
     if (canvas) {
@@ -213,7 +214,7 @@ export function MusicogramCanvas({
           selectable: !isDrawingMode,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
-          cornerSize: 10,
+          cornerSize: isMobile ? 8 : 10, // Smaller corners on mobile
           cornerStyle: 'circle',
           transparentCorners: false,
           borderColor: '#5186EC',
@@ -237,7 +238,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: 10,
+        cornerSize: isMobile ? 8 : 10,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -260,7 +261,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: 10,
+        cornerSize: isMobile ? 8 : 10,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -283,7 +284,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: 10,
+        cornerSize: isMobile ? 8 : 10,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -341,7 +342,7 @@ export function MusicogramCanvas({
 
   return (
     <div 
-      className="relative" 
+      className="relative w-full h-full overflow-auto"
       ref={canvasContainerRef}
       onDragOver={onDragOver}
       onDrop={onDrop}
@@ -349,15 +350,15 @@ export function MusicogramCanvas({
       <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
       {selectedElement && (
         <button
-          className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded z-10"
           onClick={handleDeleteSelected}
         >
           <Trash2 size={16} />
         </button>
       )}
       {!isDrawingMode && (
-        <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80">
-          <Grab size={18} />
+        <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
+          <Grab size={isMobile ? 16 : 18} />
           <span className="text-xs">Modo Movimentação Livre</span>
         </div>
       )}
