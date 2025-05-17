@@ -58,18 +58,49 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     };
   }, []);
   
-  // Parse YouTube video ID from various YouTube URL formats
+  // Enhanced YouTube video ID extraction function
   const getYouTubeId = (url: string): string | null => {
-    // Check if it's already an ID (no slashes or dots)
-    if (!/[\/\.]/.test(url) && url.length >= 11) {
+    // Simple validation check
+    if (!url || url.trim() === '') {
+      return null;
+    }
+    
+    // Direct ID pattern (no slashes, dots, etc.)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
       return url;
     }
     
-    // Try to extract ID from URL
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
+    // Common YouTube URL patterns
+    const patterns = [
+      // youtu.be short URL
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      // youtube.com/watch?v= standard URL
+      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      // youtube.com/v/ alternative format
+      /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+      // youtube.com/embed/ embed format
+      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+      // More general pattern as fallback
+      /[?&]v=([a-zA-Z0-9_-]{11})/
+    ];
     
-    return (match && match[2].length === 11) ? match[2] : null;
+    // Try each pattern until we find a match
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    return null;
+  };
+  
+  // Validate YouTube ID to ensure it's the correct format
+  const validateYouTubeId = (id: string | null): boolean => {
+    if (!id) return false;
+    
+    // YouTube IDs are 11 characters, alphanumeric, plus underscore and hyphen
+    return /^[a-zA-Z0-9_-]{11}$/.test(id);
   };
 
   // Handle search submission
@@ -81,34 +112,53 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     
     setIsSearching(true);
     
+    // Extract YouTube ID from input
     const youtubeId = getYouTubeId(searchQuery);
-    if (youtubeId) {
-      // If the input is a YouTube URL or ID
+    
+    // Validate the ID format
+    if (youtubeId && validateYouTubeId(youtubeId)) {
+      // Create a song entry for valid YouTube ID
       const newSong: Song = {
         id: `youtube-${youtubeId}`,
-        title: `Vídeo do YouTube ${youtubeId}`,
+        title: `Vídeo do YouTube`,
         artist: "YouTube",
         url: `https://www.youtube.com/watch?v=${youtubeId}`,
         thumbnail: `https://img.youtube.com/vi/${youtubeId}/0.jpg`,
         source: "youtube"
       };
       
-      setSearchResults([newSong]);
-      setDisplaySongs([...songLibrary, newSong]);
-      setIsSearching(false);
-      toast.success("Vídeo do YouTube encontrado!");
+      // Attempt to fetch video title from thumbnail load success
+      const img = new Image();
+      img.onload = () => {
+        setSearchResults([newSong]);
+        setDisplaySongs(prev => {
+          // Check if the song already exists to prevent duplicates
+          const exists = prev.some(song => song.id === newSong.id);
+          return exists ? prev : [...prev, newSong];
+        });
+        setIsSearching(false);
+        toast.success("Vídeo do YouTube encontrado!");
+      };
+      
+      img.onerror = () => {
+        // If thumbnail doesn't load, the video likely doesn't exist
+        setIsSearching(false);
+        toast.error("ID de vídeo do YouTube inválido ou vídeo não encontrado");
+      };
+      
+      // Start loading the thumbnail to verify the video exists
+      img.src = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
       return;
     }
     
-    // Simulate searching for music based on the query
-    // In a real app, this would use a YouTube API call
+    // If not a direct YouTube URL, simulate search results
     setTimeout(() => {
       const mockResults: Song[] = [
         {
           id: `yt-${Date.now()}-1`,
           title: `${searchQuery} - Música Infantil`,
           artist: "YouTube Kids",
-          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Placeholder URL
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Example URL
           thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
           source: "youtube"
         },
@@ -116,7 +166,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
           id: `yt-${Date.now()}-2`,
           title: `${searchQuery} - Canção Educativa`,
           artist: "Música Educativa",
-          url: "https://www.youtube.com/watch?v=_bP6aVG6L1w", // Placeholder URL
+          url: "https://www.youtube.com/watch?v=_bP6aVG6L1w", // Example URL
           thumbnail: "https://img.youtube.com/vi/_bP6aVG6L1w/0.jpg",
           source: "youtube"
         }
@@ -147,7 +197,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
       // Handle YouTube video
       const youtubeId = getYouTubeId(song.url);
       
-      if (!youtubeId) {
+      if (!youtubeId || !validateYouTubeId(youtubeId)) {
         toast.error("ID de vídeo inválido");
         return;
       }
