@@ -1,6 +1,7 @@
 
 import { FormSection } from "@/pages/anamnesis/components/FormSection";
 import { SelectField } from "@/pages/anamnesis/components/SelectField";
+import { CheckboxSection } from "@/pages/anamnesis/components/CheckboxSection";
 
 type FormProps = {
   content: Record<string, any>;
@@ -39,6 +40,42 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         value={content.musicalPreference || ""}
         onChange={(value) => updateField("musicalPreference", value)}
         options={musicalPreferenceOptions}
+      />
+
+      <CheckboxSection
+        title="Medicação e Terapias"
+        fields={[
+          {
+            id: "psychomotricity",
+            label: "Psicomotricidade",
+            checked: content.psychomotricity || false,
+            onChange: (value) => updateField("psychomotricity", value),
+          },
+          {
+            id: "music_therapy",
+            label: "Musicoterapia",
+            checked: content.music_therapy || false,
+            onChange: (value) => updateField("music_therapy", value),
+          },
+          {
+            id: "nutrition",
+            label: "Nutrição",
+            checked: content.nutrition || false,
+            onChange: (value) => updateField("nutrition", value),
+          },
+        ]}
+      />
+
+      <CheckboxSection
+        title="Transtornos Mentais"
+        fields={[
+          {
+            id: "alzheimer",
+            label: "Alzheimer",
+            checked: content.alzheimer || false,
+            onChange: (value) => updateField("alzheimer", value),
+          },
+        ]}
       />
 
       <FormSection
