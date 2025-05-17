@@ -33,8 +33,10 @@ fabric.util.classRegistry.addSVGParser("star", Star);
 // Extend the fabric namespace
 declare global {
   namespace fabric {
-    // Use 'const' instead of 'var' to avoid self-reference error
-    const Star: typeof Star;
+    // Use interface instead of direct type reference to avoid self-reference error
+    interface StaticCanvas {
+      Star: typeof Star;
+    }
     
     interface IPolylineOptions {
       numPoints?: number;
