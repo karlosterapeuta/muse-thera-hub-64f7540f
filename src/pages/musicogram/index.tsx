@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -215,15 +214,15 @@ export default function MusicogramPage() {
       setAudioPlaying(false);
     };
     
-    // Add event handlers for tracking audio errors - FIX THE ERROR HERE
-    audio.onerror = (e) => {
-      console.error("Audio error:", e);
-      // Fix for TypeScript error - ensure we're handling this as an Event
-      if (e instanceof Event && e.target instanceof HTMLAudioElement) {
-        const errorMessage = e.target.error ? e.target.error.message : 'Não foi possível reproduzir o áudio';
-        toast.error(`Erro ao carregar áudio: ${errorMessage}`);
+    // Fix the error handler to properly type the event
+    audio.onerror = (event) => {
+      console.error("Audio error:", event);
+      // Ensure we're properly type checking before accessing properties
+      if (event instanceof Event && event.target instanceof HTMLAudioElement) {
+        const errorMsg = event.target.error ? event.target.error.message : 'Erro desconhecido';
+        toast.error(`Erro ao carregar áudio: ${errorMsg}`);
       } else {
-        toast.error(`Erro ao carregar áudio: Não foi possível reproduzir o áudio`);
+        toast.error("Erro ao carregar áudio: Não foi possível reproduzir o arquivo");
       }
       setAudioPlaying(false);
     };
@@ -248,30 +247,25 @@ export default function MusicogramPage() {
     const song = songLibrary.find(s => s.url === songUrl);
     if (!song) return;
     
-    // Create a dummy audio element to test if the file exists
-    const testAudio = new Audio(songUrl);
-    
-    testAudio.onloadeddata = () => {
-      // If we can load the audio, play it with the real audio element
-      if (audioRef.current) {
+    if (audioRef.current) {
+      // Add error handling directly when setting the source
+      try {
         audioRef.current.src = songUrl;
-        audioRef.current.play().catch(error => {
-          console.error("Error playing audio:", error);
-          toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
-        });
-        
-        setCurrentSong(song);
-        setAudioPlaying(true);
-        
-        // Also start musicogram animation
-        setIsPlaying(true);
+        audioRef.current.play()
+          .then(() => {
+            setCurrentSong(song);
+            setAudioPlaying(true);
+            setIsPlaying(true);
+          })
+          .catch(error => {
+            console.error("Error playing audio:", error);
+            toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
+          });
+      } catch (error) {
+        console.error("Error setting audio source:", error);
+        toast.error("Erro ao configurar áudio. Verifique se o arquivo existe.");
       }
-    };
-    
-    testAudio.onerror = () => {
-      console.info("Attempting to play:", songUrl);
-      toast.error("Não foi possível carregar este arquivo de áudio. Verifique se o arquivo existe.");
-    };
+    }
   };
   
   // Handle song pause
