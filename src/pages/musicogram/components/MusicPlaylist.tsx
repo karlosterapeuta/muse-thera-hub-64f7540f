@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,7 @@ import {
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { Howl, Howler } from "howler";
+import { Audio } from "expo-av";
 
 interface Song {
   id: string;
@@ -53,7 +54,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-1",
     title: "Atirei o Pau no Gato",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/01_Atirei_o_Pau_no_Gato.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_01_-_Atirei_o_pau_no_gato.mp3",
     duration: "1:23",
     youtubeId: "RQEm7LUMI7g"
   },
@@ -61,7 +62,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-2",
     title: "Sapo Cururu",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/02_Sapo_Cururu.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_02_-_Sapo_Cururu.mp3",
     duration: "1:12",
     youtubeId: "TdaqmdJKHh4"
   },
@@ -69,7 +70,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-3",
     title: "Ciranda, Cirandinha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/03_Ciranda_Cirandinha.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_03_-_Ciranda_Cirandinha.mp3",
     duration: "1:52",
     youtubeId: "1fhx98uqOMA"
   },
@@ -77,7 +78,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-4",
     title: "O Sítio do Seu Lobato",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/04_O_Sitio_do_Seu_Lobato.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_04_-_O_Sitio_do_Seu_Lobato.mp3",
     duration: "1:30",
     youtubeId: "P0XtiCDqYr4"
   },
@@ -85,7 +86,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-5",
     title: "A Barata Diz Que Tem",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/05_A_Barata_Diz_Que_Tem.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_05_-_A_Barata_Diz_Que_Tem.mp3",
     duration: "1:23",
     youtubeId: "0jmKF0Um4sE"
   },
@@ -374,8 +375,33 @@ export const MusicPlaylist = ({
   const [songLibrary, setSongLibrary] = useState<Song[]>(initialSongLibrary);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const howlRef = useRef<Howl | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const [soundObject, setSoundObject] = useState<Audio.Sound | null>(null);
+
+  // Initialize Audio
+  useEffect(() => {
+    const initializeAudio = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: true,
+          shouldDuckAndroid: true,
+        });
+        console.log("Audio mode set successfully");
+      } catch (error) {
+        console.error("Failed to set audio mode:", error);
+      }
+    };
+
+    initializeAudio();
+    
+    // Cleanup function
+    return () => {
+      if (soundObject) {
+        soundObject.unloadAsync();
+      }
+    };
+  }, []);
 
   // Fetch songs from Jamendo API
   useEffect(() => {
@@ -430,21 +456,18 @@ export const MusicPlaylist = ({
     };
     
     fetchSongs();
-    
-    // Cleanup function
-    return () => {
-      if (howlRef.current) {
-        howlRef.current.unload();
-      }
-    };
   }, []);
 
   // Update volume
   useEffect(() => {
-    if (howlRef.current) {
-      howlRef.current.volume(volume / 100);
-    }
-  }, [volume]);
+    const updateVolume = async () => {
+      if (soundObject) {
+        await soundObject.setVolumeAsync(volume / 100);
+      }
+    };
+    
+    updateVolume();
+  }, [volume, soundObject]);
 
   const handleSelectSong = (song: Song) => {
     setSelectedSong(song);
@@ -452,49 +475,44 @@ export const MusicPlaylist = ({
     playNoteSound("C");
   };
 
-  // Function to play audio using Howler
-  const playAudio = (song: Song) => {
+  // Function to play audio using Expo Audio
+  const playAudio = async (song: Song) => {
     try {
       // Stop any current audio playback
-      if (howlRef.current) {
-        howlRef.current.unload();
+      stopAllAudio();
+      if (soundObject) {
+        await soundObject.unloadAsync();
       }
       
       const audioUrl = song.url;
       console.log("Attempting to play:", audioUrl);
       
-      // Create a new Howl instance
-      howlRef.current = new Howl({
-        src: [audioUrl],
-        html5: true, // This is more compatible with various sources
-        volume: volume / 100,
-        onplay: () => {
-          console.log("Audio playback started");
-          onPlay(song.url);
-          setSelectedSong(song);
-        },
-        onend: () => {
-          console.log("Audio playback ended");
-          onPause();
-        },
-        onloaderror: (id, error) => {
-          console.error("Error loading audio:", error);
-          toast.error("Falha ao carregar áudio. Tentando outra música...");
-          handleNextSong();
-        },
-        onplayerror: (id, error) => {
-          console.error("Error playing audio:", error);
-          toast.error("Erro ao reproduzir esta música. Tentando a próxima...");
-          handleNextSong();
+      // Create a new Sound object
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: audioUrl },
+        { volume: volume / 100, shouldPlay: true },
+        (status) => {
+          if (status.didJustFinish) {
+            console.log("Audio playback ended");
+            onPause();
+          }
         }
-      });
+      );
       
-      // Attempt to play
-      howlRef.current.play();
+      console.log("Audio loaded successfully");
+      setSoundObject(sound);
+      soundRef.current = sound;
+      
+      // Play the sound
+      await sound.playAsync();
+      console.log("Audio playback started");
+      onPlay(song.url);
+      setSelectedSong(song);
       
     } catch (error) {
       console.error("Error setting up audio playback:", error);
-      toast.error("Erro ao configurar a reprodução de áudio.");
+      toast.error("Erro ao reproduzir áudio. Tentando próxima música...");
+      handleNextSong();
     }
   };
 
@@ -505,10 +523,10 @@ export const MusicPlaylist = ({
     playAudio(song);
   };
 
-  const handlePauseSong = () => {
-    if (howlRef.current) {
+  const handlePauseSong = async () => {
+    if (soundObject) {
       try {
-        howlRef.current.pause();
+        await soundObject.pauseAsync();
       } catch (e) {
         console.error("Error pausing audio:", e);
       }
