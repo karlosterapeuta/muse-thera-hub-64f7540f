@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -242,119 +241,135 @@ export default function MusicogramPage() {
         const x = (event.position / 100) * 800;
         let shape;
         
-        switch (instrument.shape) {
-          case 'circle':
-            shape = new fabric.Circle({
-              left: x,
-              top: 90,
-              radius: 20,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          case 'square':
-            shape = new fabric.Rect({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          case 'triangle':
-            shape = new fabric.Triangle({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          case 'hand':
-            // For hand, we still use a rect but will show an icon in the UI
-            shape = new fabric.Rect({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          case 'footprints':
-            // For footprints, we still use a rect but will show an icon in the UI
-            shape = new fabric.Rect({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          case 'silence':
-            // For silence, we still use a rect but will show an icon in the UI
-            shape = new fabric.Rect({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
-            break;
-            
-          default:
-            shape = new fabric.Rect({
-              left: x,
-              top: 90,
-              width: 40,
-              height: 40,
-              fill: instrument.color,
-              stroke: '#333333',
-              strokeWidth: 2,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              data: { eventId: event.id }
-            });
+        // Special case for ukulele
+        if (instrument.id === 'ukulele') {
+          // Create a custom path for ukulele
+          const ukuleleShape = new fabric.Path('M 0 0 C 0 -10 -5 -20 -15 -20 C -25 -20 -30 -10 -30 0 C -30 10 -25 20 -15 20 C -5 20 0 10 0 0 Z M 0 0 L -30 -30 M -32 -32 C -34 -34 -36 -34 -38 -32 C -40 -30 -40 -28 -38 -26 C -36 -24 -34 -24 -32 -26 C -30 -28 -30 -30 -32 -32 Z M -28 -38 C -30 -40 -32 -40 -34 -38 C -36 -36 -36 -34 -34 -32 C -32 -30 -30 -30 -28 -32 C -26 -34 -26 -36 -28 -38 Z', {
+            left: x,
+            top: 90,
+            fill: instrument.color,
+            stroke: '#333333',
+            strokeWidth: 2,
+            scaleX: 0.8,
+            scaleY: 0.8,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            data: { eventId: event.id }
+          });
+          shape = ukuleleShape;
+        } else {
+          switch (instrument.shape) {
+            case 'circle':
+              shape = new fabric.Circle({
+                left: x,
+                top: 90,
+                radius: 20,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            case 'square':
+              shape = new fabric.Rect({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            case 'triangle':
+              shape = new fabric.Triangle({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            case 'hand':
+              shape = new fabric.Rect({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            case 'footprints':
+              shape = new fabric.Rect({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            case 'silence':
+              shape = new fabric.Rect({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+              break;
+              
+            default:
+              shape = new fabric.Rect({
+                left: x,
+                top: 90,
+                width: 40,
+                height: 40,
+                fill: instrument.color,
+                stroke: '#333333',
+                strokeWidth: 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                data: { eventId: event.id }
+              });
+          }
         }
         
         fabricCanvas.add(shape);
