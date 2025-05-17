@@ -1,196 +1,319 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
   TabsContent, 
   TabsList, 
   TabsTrigger 
 } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle,
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { Toggle } from "@/components/ui/toggle";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { 
-  Plus, Save, Calendar, Download, User, Pencil, 
-  Eye, FileText, Trash, PlusCircle
-} from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { fabric } from "fabric";
+import { 
+  Play, Pause, Save, Download, RotateCcw, Plus, Square, Circle, Triangle
+} from "lucide-react";
 
-import { MusicogramCanvas } from "./components/MusicogramCanvas";
-import { ElementPalette } from "./components/ElementPalette";
-import { TemplateSelector } from "./components/TemplateSelector";
-import { PatientSelector } from "./components/PatientSelector";
-import { 
-  musicElements, 
-  musicogramTemplates as templates,
-  sampleMusicograms
-} from "./data/musicogramData";
-import { 
-  MusicElement, 
-  PatientMusicogram, 
-  VisualElement, 
-  MusicogramTemplate 
-} from "./types";
+type InstrumentType = {
+  id: string;
+  name: string;
+  shape: "circle" | "square" | "triangle" | "star" | "diamond"; 
+  color: string;
+};
+
+type TimelineEvent = {
+  id: string;
+  instrumentId: string;
+  position: number; // Position in timeline (0-100)
+};
+
+const defaultInstruments: InstrumentType[] = [
+  { id: "ukulele", name: "Ukulele", shape: "square", color: "#FF5252" },
+  { id: "triangle", name: "Triângulo", shape: "triangle", color: "#7E69AB" },
+  { id: "drum", name: "Tambor", shape: "circle", color: "#1E88E5" },
+  { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
+  { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" }
+];
 
 export default function MusicogramPage() {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("create");
-  const [selectedElement, setSelectedElement] = useState<MusicElement | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<MusicogramTemplate | null>(null);
-  const [currentMusicogram, setCurrentMusicogram] = useState<PatientMusicogram | null>(null);
-  const [canvasElements, setCanvasElements] = useState<VisualElement[]>([]);
-  const [savedMusicograms, setSavedMusicograms] = useState<PatientMusicogram[]>(sampleMusicograms);
+  const [instruments, setInstruments] = useState<InstrumentType[]>(defaultInstruments);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
+  const [tempo, setTempo] = useState(60); // BPM
   
-  // Dialog states
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [selectedMusicogram, setSelectedMusicogram] = useState<PatientMusicogram | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [musicogramToDelete, setMusicogramToDelete] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
+  const animationRef = useRef<number | null>(null);
   
-  // Form states
-  const [patientId, setPatientId] = useState<string>("");
-  const [patientName, setPatientName] = useState<string>("");
-  const [sessionNotes, setSessionNotes] = useState<string>("");
-  
-  // Add element to canvas
-  const handleAddElement = (element: MusicElement) => {
-    if (!element) return;
+  // Initialize the canvas
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: 800,
+      height: 180,
+      backgroundColor: "#F4F4F8",
+      selection: false
+    });
     
-    const newElement: VisualElement = {
+    // Draw timeline base
+    const timeline = new fabric.Rect({
+      left: 0,
+      top: 90,
+      width: 800,
+      height: 2,
+      fill: "#CCCCCC",
+      selectable: false
+    });
+    
+    canvas.add(timeline);
+    
+    // Draw playhead
+    const playhead = new fabric.Line([0, 40, 0, 140], {
+      stroke: '#FF0000',
+      strokeWidth: 2,
+      selectable: false,
+      name: 'playhead'
+    });
+    canvas.add(playhead);
+    
+    setFabricCanvas(canvas);
+    
+    return () => {
+      canvas.dispose();
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+  
+  // Update canvas when timeline events change
+  useEffect(() => {
+    if (!fabricCanvas) return;
+    
+    // Clear canvas except timeline and playhead
+    const objects = fabricCanvas.getObjects();
+    const timeline = objects.find(obj => obj.type === 'rect');
+    const playhead = objects.find(obj => obj.name === 'playhead');
+    
+    fabricCanvas.clear();
+    
+    if (timeline) fabricCanvas.add(timeline);
+    if (playhead) fabricCanvas.add(playhead);
+    
+    // Add timeline events
+    timelineEvents.forEach(event => {
+      const instrument = instruments.find(i => i.id === event.instrumentId);
+      if (!instrument) return;
+      
+      const x = (event.position / 100) * 800;
+      let shape;
+      
+      switch (instrument.shape) {
+        case 'circle':
+          shape = new fabric.Circle({
+            left: x,
+            top: 90,
+            radius: 20,
+            fill: instrument.color,
+            stroke: '#333333',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            data: { eventId: event.id }
+          });
+          break;
+          
+        case 'square':
+          shape = new fabric.Rect({
+            left: x,
+            top: 90,
+            width: 40,
+            height: 40,
+            fill: instrument.color,
+            stroke: '#333333',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            data: { eventId: event.id }
+          });
+          break;
+          
+        case 'triangle':
+          shape = new fabric.Triangle({
+            left: x,
+            top: 90,
+            width: 40,
+            height: 40,
+            fill: instrument.color,
+            stroke: '#333333',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            data: { eventId: event.id }
+          });
+          break;
+          
+        default:
+          shape = new fabric.Rect({
+            left: x,
+            top: 90,
+            width: 40,
+            height: 40,
+            fill: instrument.color,
+            stroke: '#333333',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            data: { eventId: event.id }
+          });
+      }
+      
+      fabricCanvas.add(shape);
+      
+      // Add label
+      const text = new fabric.Text(instrument.name, {
+        left: x,
+        top: 140,
+        fontSize: 12,
+        fill: '#333',
+        originX: 'center',
+        textAlign: 'center',
+        selectable: false
+      });
+      
+      fabricCanvas.add(text);
+    });
+    
+    fabricCanvas.renderAll();
+  }, [timelineEvents, instruments, fabricCanvas]);
+  
+  // Animation loop
+  useEffect(() => {
+    if (!isPlaying || !fabricCanvas) return;
+    
+    let lastTime = 0;
+    const duration = 10000; // 10 seconds for full timeline
+    
+    const animate = (timestamp: number) => {
+      if (!lastTime) lastTime = timestamp;
+      
+      // Calculate elapsed time
+      const elapsed = timestamp - lastTime;
+      
+      // Calculate new position (0-100)
+      const newPosition = playbackPosition + (elapsed / duration * 100);
+      
+      // Reset if reached the end
+      if (newPosition >= 100) {
+        setPlaybackPosition(0);
+        lastTime = timestamp;
+      } else {
+        setPlaybackPosition(newPosition);
+        lastTime = timestamp;
+      }
+      
+      // Update playhead position
+      const playhead = fabricCanvas.getObjects().find(obj => obj.name === 'playhead');
+      if (playhead) {
+        const x = (newPosition / 100) * 800;
+        playhead.set({ left: x, x1: x, x2: x });
+        fabricCanvas.renderAll();
+      }
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isPlaying, playbackPosition, fabricCanvas]);
+  
+  // Handle adding instrument to timeline
+  const handleAddInstrumentToTimeline = () => {
+    if (!selectedInstrument) {
+      toast.error("Selecione um instrumento primeiro");
+      return;
+    }
+    
+    const newEvent: TimelineEvent = {
       id: uuidv4(),
-      type: element.category,
-      color: element.defaultColor,
-      shape: element.defaultShape,
-      size: element.defaultSize,
-      position: { x: 400, y: 250 }, // Center of canvas
-      rotation: 0,
-      label: element.name
+      instrumentId: selectedInstrument,
+      position: playbackPosition
     };
     
-    setCanvasElements(prev => [...prev, newElement]);
-    toast.success(`Elemento ${element.name} adicionado!`);
+    setTimelineEvents(prev => [...prev, newEvent]);
+    toast.success("Instrumento adicionado à linha do tempo");
   };
   
-  // Select a template
-  const handleSelectTemplate = (template: MusicogramTemplate) => {
-    setSelectedTemplate(template);
-    setCanvasElements(template.elements);
-    toast.success(`Template ${template.name} selecionado!`);
-  };
-  
-  // Save current musicogram
-  const handleSave = () => {
-    if (canvasElements.length === 0) {
-      toast.error("Não é possível salvar um musicograma vazio!");
-      return;
-    }
-    
-    setSaveDialogOpen(true);
-  };
-  
-  // Save with dialog data
-  const handleSaveWithData = () => {
-    if (!patientId || !patientName) {
-      toast.error("Selecione um paciente!");
-      return;
-    }
-    
-    const newMusicogram: PatientMusicogram = {
-      id: currentMusicogram?.id || uuidv4(),
-      patientId,
-      patientName,
-      date: new Date().toISOString().split('T')[0],
-      musicogramData: canvasElements,
-      notes: sessionNotes,
-      templateId: selectedTemplate?.id
-    };
-    
-    // Update or add to saved musicograms
-    if (currentMusicogram) {
-      setSavedMusicograms(prev => 
-        prev.map(m => m.id === currentMusicogram.id ? newMusicogram : m)
-      );
-      setCurrentMusicogram(null);
+  // Play/pause control
+  const togglePlayback = () => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     } else {
-      setSavedMusicograms(prev => [...prev, newMusicogram]);
+      setIsPlaying(true);
+    }
+  };
+  
+  // Reset timeline
+  const resetTimeline = () => {
+    setPlaybackPosition(0);
+    setIsPlaying(false);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
     
-    // Reset states
-    setSessionNotes("");
-    setSaveDialogOpen(false);
-    toast.success("Musicograma salvo com sucesso!");
-    
-    // Switch to library tab
-    setActiveTab("library");
-  };
-  
-  // Select patient handler
-  const handleSelectPatient = (id: string, name: string) => {
-    setPatientId(id);
-    setPatientName(name);
-  };
-  
-  // View musicogram
-  const handleView = (musicogram: PatientMusicogram) => {
-    setSelectedMusicogram(musicogram);
-    setViewDialogOpen(true);
-  };
-  
-  // Edit musicogram
-  const handleEdit = (musicogram: PatientMusicogram) => {
-    setCurrentMusicogram(musicogram);
-    setCanvasElements(musicogram.musicogramData);
-    setPatientId(musicogram.patientId);
-    setPatientName(musicogram.patientName);
-    setSessionNotes(musicogram.notes);
-    
-    // Set template if one was used
-    if (musicogram.templateId) {
-      const template = templates.find(t => t.id === musicogram.templateId);
-      if (template) {
-        setSelectedTemplate(template);
+    // Update playhead position
+    if (fabricCanvas) {
+      const playhead = fabricCanvas.getObjects().find(obj => obj.name === 'playhead');
+      if (playhead) {
+        playhead.set({ left: 0, x1: 0, x2: 0 });
+        fabricCanvas.renderAll();
       }
     }
+  };
+  
+  // Clear all events
+  const clearEvents = () => {
+    setTimelineEvents([]);
+    resetTimeline();
+    toast.success("Linha do tempo limpa");
+  };
+  
+  // Export as image
+  const exportAsImage = () => {
+    if (!fabricCanvas) return;
     
-    setActiveTab("create");
-  };
-  
-  // Handle delete
-  const handleDelete = (id: string) => {
-    setMusicogramToDelete(id);
-    setDeleteDialogOpen(true);
-  };
-  
-  // Confirm delete
-  const handleConfirmDelete = () => {
-    if (!musicogramToDelete) return;
+    const dataURL = fabricCanvas.toDataURL({
+      format: 'png',
+      quality: 1
+    });
     
-    setSavedMusicograms(prev => prev.filter(m => m.id !== musicogramToDelete));
-    setDeleteDialogOpen(false);
-    setMusicogramToDelete(null);
-    toast.success("Musicograma excluído com sucesso!");
-  };
-  
-  // New musicogram
-  const handleNewMusicogram = () => {
-    setCurrentMusicogram(null);
-    setCanvasElements([]);
-    setSelectedTemplate(null);
-    setPatientId("");
-    setPatientName("");
-    setSessionNotes("");
-    setActiveTab("create");
+    const link = document.createElement('a');
+    link.download = `musicograma-${new Date().toISOString().slice(0, 10)}.png`;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success("Musicograma baixado como imagem!");
   };
   
   return (
@@ -198,322 +321,130 @@ export default function MusicogramPage() {
       <div className="flex flex-col space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-primary">Musicograma</h1>
-          
-          <div className="flex space-x-2">
-            {activeTab === "library" && (
-              <Button onClick={handleNewMusicogram} className="flex items-center gap-2">
-                <PlusCircle className="h-4 w-4" />
-                Novo Musicograma
-              </Button>
-            )}
-          </div>
         </div>
         
         <p className="text-muted-foreground">
-          O Musicograma é uma ferramenta de representação visual de elementos sonoros,
-          especialmente útil para crianças com TEA ou dificuldades cognitivas.
-          Facilita a compreensão de estruturas e comandos musicais básicos.
+          Musicograma com Formas e Cores - Uma ferramenta visual para representar sons e música,
+          especialmente útil para crianças pequenas e pessoas com autismo não verbal.
         </p>
         
-        <Tabs defaultValue="create" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="create">Criar Musicograma</TabsTrigger>
-            <TabsTrigger value="library">Biblioteca</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="create" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3">
-                <Card className="mb-4">
-                  <CardContent className="pt-6">
-                    <MusicogramCanvas 
-                      initialElements={canvasElements} 
-                      template={selectedTemplate}
-                      onSave={setCanvasElements}
-                    />
-                  </CardContent>
-                </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-3">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="border border-gray-300 rounded-lg shadow-lg overflow-hidden bg-white">
+                  <canvas ref={canvasRef} />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="flex flex-wrap gap-4 items-center justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant={isPlaying ? "outline" : "default"} 
+                  size="icon" 
+                  onClick={togglePlayback}
+                >
+                  {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                </Button>
                 
-                <div className="flex flex-wrap gap-2 justify-between items-center">
-                  <div className="flex flex-wrap gap-2">
-                    <TemplateSelector 
-                      templates={templates} 
-                      onSelectTemplate={handleSelectTemplate} 
-                    />
-                    
-                    {currentMusicogram ? (
-                      <Button variant="outline" disabled className="flex items-center gap-2">
-                        <Pencil className="h-4 w-4" />
-                        Editando: {currentMusicogram.patientName}
-                      </Button>
-                    ) : (
-                      <PatientSelector 
-                        onSelectPatient={handleSelectPatient}
-                        selectedPatientId={patientId}
-                      />
-                    )}
-                  </div>
-                  
-                  <Button onClick={handleSave} className="flex items-center gap-2">
-                    <Save className="h-4 w-4" />
-                    Salvar Musicograma
-                  </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={resetTimeline} 
+                  title="Reiniciar"
+                >
+                  <RotateCcw size={18} />
+                </Button>
+                
+                <div className="text-sm">
+                  Posição: {playbackPosition.toFixed(0)}%
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <ElementPalette 
-                  elements={musicElements}
-                  onSelectElement={(element) => {
-                    setSelectedElement(element);
-                    handleAddElement(element);
-                  }}
-                />
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={clearEvents}>
+                  Limpar
+                </Button>
                 
-                <Card>
-                  <CardContent className="pt-6">
-                    <h3 className="text-lg font-semibold mb-2">Elemento Selecionado</h3>
-                    {selectedElement ? (
-                      <div className="flex flex-col items-center space-y-3 p-2 border rounded-md">
-                        <div 
-                          className="w-16 h-16 flex items-center justify-center"
-                          style={{ 
-                            backgroundColor: selectedElement.defaultColor,
-                            borderRadius: selectedElement.defaultShape === 'circle' ? '50%' : '4px',
-                            width: `${selectedElement.defaultSize}px`,
-                            height: selectedElement.defaultShape === 'rect' 
-                              ? `${selectedElement.defaultSize * 0.5}px` 
-                              : `${selectedElement.defaultSize}px`
-                          }}
-                        />
-                        <div className="text-center">
-                          <h4 className="font-medium">{selectedElement.name}</h4>
-                          <p className="text-sm text-muted-foreground">{selectedElement.description}</p>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={() => handleAddElement(selectedElement)}>
-                          <Plus className="h-4 w-4 mr-1" />
-                          Adicionar ao Musicograma
-                        </Button>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Selecione um elemento na paleta acima para adicioná-lo ao musicograma.
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-                
-                {(patientId && patientName) && (
-                  <Card>
-                    <CardContent className="pt-6">
-                      <h3 className="text-lg font-semibold mb-2">Anotações</h3>
-                      <Textarea 
-                        placeholder="Adicione notas sobre a sessão..."
-                        value={sessionNotes}
-                        onChange={(e) => setSessionNotes(e.target.value)}
-                        className="min-h-[120px]"
-                      />
-                    </CardContent>
-                  </Card>
-                )}
+                <Button variant="outline" size="sm" onClick={exportAsImage}>
+                  <Download size={16} className="mr-1" />
+                  Exportar
+                </Button>
               </div>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="library" className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {savedMusicograms.length === 0 ? (
-                <Card className="col-span-full p-8 text-center">
-                  <CardContent className="pt-6 flex flex-col items-center space-y-4">
-                    <p className="text-muted-foreground">Nenhum musicograma salvo ainda.</p>
-                    <Button onClick={handleNewMusicogram}>
-                      <Plus className="h-4 w-4 mr-1" /> Criar Musicograma
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                savedMusicograms.map((musicogram) => (
-                  <Card key={musicogram.id} className="overflow-hidden">
-                    <div className="h-44 bg-muted p-3 flex items-center justify-center relative">
-                      {musicogram.musicogramData.slice(0, 6).map((element, index) => (
-                        <div 
-                          key={`${musicogram.id}-${index}`}
-                          className="absolute"
-                          style={{
-                            left: `${element.position.x * 0.25}px`,
-                            top: `${element.position.y * 0.25}px`,
-                            backgroundColor: element.color,
-                            width: `${element.size * 0.25}px`,
-                            height: element.shape === 'rect' 
-                              ? `${element.size * 0.125}px` 
-                              : `${element.size * 0.25}px`,
-                            borderRadius: element.shape === 'circle' ? '50%' : '4px',
-                            transform: `rotate(${element.rotation}deg)`
-                          }}
-                        />
-                      ))}
-                      {musicogram.musicogramData.length > 6 && (
-                        <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-xs p-1 rounded-md">
-                          +{musicogram.musicogramData.length - 6} elementos
-                        </div>
-                      )}
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Instrumentos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {instruments.map(instrument => (
+                  <Toggle
+                    key={instrument.id}
+                    pressed={selectedInstrument === instrument.id}
+                    onPressedChange={() => setSelectedInstrument(instrument.id)}
+                    className="flex flex-col items-center gap-1 h-auto p-4 data-[state=on]:bg-primary/10"
+                  >
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-md border-2 border-gray-800"
+                      style={{ backgroundColor: instrument.color }}
+                    >
+                      {instrument.shape === 'circle' && <Circle className="h-8 w-8" />}
+                      {instrument.shape === 'square' && <Square className="h-8 w-8" />}
+                      {instrument.shape === 'triangle' && <Triangle className="h-8 w-8" />}
                     </div>
-                    
-                    <CardContent className="pt-4 pb-2">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center mb-1">
-                            <User className="h-4 w-4 mr-1 text-muted-foreground" />
-                            <p className="text-sm font-medium">{musicogram.patientName}</p>
-                          </div>
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">{musicogram.date}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex space-x-1">
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleView(musicogram)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleEdit(musicogram)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleDelete(musicogram.id)}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {musicogram.notes && (
-                        <div className="mt-2">
-                          <div className="flex items-center mb-1">
-                            <FileText className="h-4 w-4 mr-1 text-muted-foreground" />
-                            <p className="text-xs font-medium">Anotações:</p>
-                          </div>
-                          <p className="text-xs text-muted-foreground line-clamp-2">
-                            {musicogram.notes}
-                          </p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      {/* Save Dialog */}
-      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Salvar Musicograma</DialogTitle>
-            <DialogDescription>
-              Preencha as informações para salvar o musicograma.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            {!currentMusicogram && (
-              <PatientSelector 
-                onSelectPatient={handleSelectPatient}
-                selectedPatientId={patientId}
-              />
-            )}
-            
-            <div>
-              <h4 className="text-sm font-medium mb-2">Anotações da Sessão</h4>
-              <Textarea 
-                placeholder="Anotações sobre o musicograma e a sessão..."
-                value={sessionNotes}
-                onChange={(e) => setSessionNotes(e.target.value)}
-                className="min-h-[120px]"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveWithData}>Salvar Musicograma</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* View Dialog */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="sm:max-w-[900px]">
-          <DialogHeader>
-            <DialogTitle>Visualizando Musicograma</DialogTitle>
-            <DialogDescription>
-              {selectedMusicogram?.patientName} - {selectedMusicogram?.date}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-2">
-            <MusicogramCanvas 
-              initialElements={selectedMusicogram?.musicogramData || []} 
-              readOnly={true}
-            />
-            
-            {selectedMusicogram?.notes && (
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Anotações da Sessão</h4>
-                <p className="text-sm text-muted-foreground p-3 border rounded-md bg-muted/50">
-                  {selectedMusicogram.notes}
-                </p>
+                    <span className="text-xs font-medium">{instrument.name}</span>
+                  </Toggle>
+                ))}
               </div>
-            )}
-          </div>
+              
+              <div className="flex justify-center mt-6">
+                <Button onClick={handleAddInstrumentToTimeline} className="gap-2">
+                  <Plus size={16} />
+                  Adicionar na Linha do Tempo
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewDialogOpen(false)}>Fechar</Button>
-            <Button onClick={() => {
-              setViewDialogOpen(false);
-              handleEdit(selectedMusicogram!);
-            }}>
-              <Pencil className="h-4 w-4 mr-1" />
-              Editar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar Exclusão</DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja excluir este musicograma? Esta ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
-            <Button 
-              variant="destructive" 
-              onClick={handleConfirmDelete}
-            >
-              Excluir Permanentemente
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <Card>
+            <CardHeader>
+              <CardTitle>Configurações</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span>Velocidade (BPM)</span>
+                  <span className="font-mono">{tempo}</span>
+                </div>
+                <Slider 
+                  value={[tempo]} 
+                  min={30} 
+                  max={120} 
+                  step={1} 
+                  onValueChange={(vals) => setTempo(vals[0])}
+                />
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-2">Dicas para Uso</h3>
+                <ul className="text-sm space-y-1 list-disc pl-4 text-muted-foreground">
+                  <li>Escolha um instrumento clicando em seu ícone</li>
+                  <li>Adicione à linha do tempo usando o botão "Adicionar"</li>
+                  <li>Use o botão Play para animar as formas</li>
+                  <li>Ajuste a velocidade conforme necessário</li>
+                  <li>Exporte a imagem para usar em sessões offline</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

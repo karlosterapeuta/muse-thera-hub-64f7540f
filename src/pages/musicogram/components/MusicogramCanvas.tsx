@@ -322,4 +322,4 @@ export const MusicogramCanvas = ({
       </div>
     </div>
   );
-};
+}
