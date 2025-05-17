@@ -1,4 +1,3 @@
-
 export interface InstrumentType {
   id: string;
   name: string;
@@ -6,6 +5,7 @@ export interface InstrumentType {
   color: string;
   iconType?: 'svg' | 'symbol' | 'image';
   iconContent?: string;
+  size?: number;  // Adicionada propriedade de tamanho opcional
 }
 
 export interface MusicElement {

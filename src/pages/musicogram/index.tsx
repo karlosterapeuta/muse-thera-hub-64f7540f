@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -35,18 +34,18 @@ const defaultInstruments: InstrumentType[] = [
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
-// Define our musical symbols
+// Define our musical symbols with increased size
 const musicalSymbols: InstrumentType[] = [
-  { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●" },
-  { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●" },
-  { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●" },
-  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○" },
-  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N" },
-  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~" },
-  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋" },
-  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳" },
-  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺" },
-  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘" }
+  { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●", size: 36 },
+  { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●", size: 36 },
+  { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●", size: 36 },
+  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○", size: 36 },
+  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N", size: 36 },
+  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~", size: 36 },
+  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 36 },
+  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 36 },
+  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 36 },
+  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
 ];
 
 export default function MusicogramPage() {
@@ -83,14 +82,14 @@ export default function MusicogramPage() {
     setActiveColor(symbol.color);
     setIsDrawingMode(true);
 
-    // Add the symbol to the canvas
+    // Add the symbol to the canvas with the increased size
     const newElement = {
       id: uuidv4(),
       type: 'element',
       x: 50,
       y: 50,
       color: symbol.color,
-      size: 24,
+      size: symbol.size || 36,  // Use the symbol's size or default to 36
       shape: symbol.shape,
       iconType: symbol.iconType,
       iconContent: symbol.iconContent,
@@ -220,7 +219,7 @@ export default function MusicogramPage() {
         onClick={() => handleSymbolSelect(symbol)}
       >
         <div 
-          className="flex items-center justify-center w-10 h-10 rounded-md transition-transform duration-200 hover:scale-110 text-xl font-bold"
+          className="flex items-center justify-center w-12 h-12 rounded-md transition-transform duration-200 hover:scale-110 text-2xl font-bold"
           style={{ color: symbol.color }}
         >
           {symbol.iconContent}

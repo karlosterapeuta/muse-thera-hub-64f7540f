@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -166,7 +165,7 @@ export function MusicogramCanvas({
         const textObj = new fabric.Text(element.iconContent, {
           left: x,
           top: y,
-          fontSize: element.size || 24,
+          fontSize: element.size || 36,  // Use element size or default to 36
           fill: element.color,
           originX: 'center',
           originY: 'center',
