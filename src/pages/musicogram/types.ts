@@ -4,6 +4,7 @@ export interface InstrumentType {
   name: string;
   shape: string;
   color: string;
+  patternUrl?: string;
 }
 
 export interface MusicElement {
@@ -26,6 +27,7 @@ export interface VisualElement {
   position?: { x: number; y: number };
   rotation?: number;
   label?: string;
+  patternUrl?: string;
 }
 
 export interface MusicogramTemplate {

@@ -1,29 +1,37 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
 import { Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
   activeInstrument: string | null;
+  activePattern: string | null;
   isErasing: boolean;
   isDrawingMode: boolean;
   activeColor: string;
   elements: any[];
   onUpdateElement: (element: any) => void;
   onDeleteElement: (elementId: string) => void;
+  onAddElement: (element: any) => void;
+  patternImages: any[];
   zoom: number;
 }
 
 export function MusicogramCanvas({ 
   template, 
   activeInstrument, 
+  activePattern,
   isErasing,
   isDrawingMode,
   activeColor,
   elements,
   onUpdateElement,
   onDeleteElement,
+  onAddElement,
+  patternImages,
   zoom 
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
@@ -108,6 +116,18 @@ export function MusicogramCanvas({
         setSelectedElement(null);
       });
 
+      // Add mouse down event for adding patterns
+      newCanvas.on('mouse:down', (options) => {
+        if (activePattern && isDrawingMode) {
+          const pointer = newCanvas.getPointer(options.e);
+          const pattern = patternImages.find(p => p.id === activePattern);
+          
+          if (pattern) {
+            addPatternImageToCanvas(pattern, pointer.x, pointer.y);
+          }
+        }
+      });
+
       return newCanvas;
     };
 
@@ -143,14 +163,61 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     if (canvas) {
-      canvas.isDrawingMode = isDrawingMode;
+      canvas.isDrawingMode = isDrawingMode && !activePattern;
     }
-  }, [isDrawingMode, canvas]);
+  }, [isDrawingMode, activePattern, canvas]);
+
+  const addPatternImageToCanvas = (pattern: any, x: number, y: number) => {
+    if (!canvas) return;
+
+    fabric.Image.fromURL(pattern.patternUrl, (img) => {
+      const id = uuidv4();
+      img.set({
+        left: x,
+        top: y,
+        scaleX: 0.3,
+        scaleY: 0.3,
+        originX: 'center',
+        originY: 'center',
+        hasControls: true,
+        hasBorders: true
+      });
+
+      img.data = { id };
+
+      img.on('mousedown', (e) => {
+        if (isErasing) {
+          onDeleteElement(id);
+          canvas.remove(img);
+        }
+      });
+
+      canvas.add(img);
+      canvas.renderAll();
+
+      // Add to elements array
+      const newElement = {
+        id,
+        type: 'pattern',
+        x,
+        y,
+        patternUrl: pattern.patternUrl,
+        size: 100,
+        shape: 'pattern',
+        position: { x, y }
+      };
+      onAddElement(newElement);
+    });
+  };
 
   const createElement = (element: any) => {
     let fabricElement: fabric.Object | null = null;
     const x = element.position?.x || element.x;
     const y = element.position?.y || element.y;
+    
+    if (element.shape === 'pattern' && element.patternUrl) {
+      return createPatternElement(element);
+    }
     
     switch (element.shape) {
       case 'circle':
@@ -200,6 +267,41 @@ export function MusicogramCanvas({
     }
 
     return fabricElement;
+  };
+
+  const createPatternElement = (element: any) => {
+    return new Promise<fabric.Image | null>((resolve) => {
+      if (!element.patternUrl) {
+        resolve(null);
+        return;
+      }
+
+      fabric.Image.fromURL(element.patternUrl, (img) => {
+        img.set({
+          left: element.x,
+          top: element.y,
+          scaleX: 0.3,
+          scaleY: 0.3,
+          originX: 'center',
+          originY: 'center',
+          hasControls: true,
+          hasBorders: true,
+          lockMovementX: !isDrawingMode,
+          lockMovementY: !isDrawingMode,
+        });
+
+        img.data = { id: element.id };
+
+        img.on('mousedown', (e) => {
+          if (isErasing) {
+            onDeleteElement(element.id);
+            canvas?.remove(img);
+          }
+        });
+
+        resolve(img);
+      });
+    });
   };
 
   const handleDeleteSelected = () => {

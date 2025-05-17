@@ -23,6 +23,11 @@ const defaultInstruments: InstrumentType[] = [
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
+const patternImages = [
+  { id: "pattern1", name: "Linhas", patternUrl: "/lovable-uploads/da9b5309-7b44-441b-9fe5-352641d9a819.png", shape: "pattern" },
+  { id: "pattern2", name: "Figuras", patternUrl: "/lovable-uploads/30a8193e-2bfd-48ab-b197-cfa41e617d30.png", shape: "pattern" },
+];
+
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
   const [isErasing, setIsErasing] = useState(false);
@@ -31,12 +36,14 @@ export default function MusicogramPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
   const [currentPatient, setCurrentPatient] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [activePattern, setActivePattern] = useState<string | null>(null);
 
   // Canvas ref and elements state would be here
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
 
   const handleInstrumentSelect = (instrumentId: string) => {
     setActiveInstrument(instrumentId);
+    setActivePattern(null);
     setIsErasing(false);
     
     // Find selected instrument and use its color
@@ -48,9 +55,17 @@ export default function MusicogramPage() {
     setIsDrawingMode(true);
   };
 
+  const handlePatternSelect = (patternId: string) => {
+    setActivePattern(patternId);
+    setActiveInstrument(null);
+    setIsErasing(false);
+    setIsDrawingMode(true);
+  };
+
   const toggleEraser = () => {
     setIsErasing(!isErasing);
     setActiveInstrument(null);
+    setActivePattern(null);
     setIsDrawingMode(true);
   };
 
@@ -153,6 +168,31 @@ export default function MusicogramPage() {
     );
   };
 
+  // Function to render pattern images
+  const renderPatternItem = (pattern: any, index: number) => {
+    const isActive = activePattern === pattern.id;
+    
+    return (
+      <div 
+        key={`pattern-${index}`} 
+        className={`flex flex-col items-center justify-center p-2 transition-all cursor-pointer rounded-lg ${
+          isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+        }`}
+        onClick={() => handlePatternSelect(pattern.id)}
+      >
+        <div className="w-10 h-10 rounded-md overflow-hidden transition-transform duration-200 hover:scale-110">
+          <img 
+            src={pattern.patternUrl} 
+            alt={pattern.name} 
+            className="w-full h-full object-cover" 
+            draggable="false"
+          />
+        </div>
+        <span className="text-xs mt-1 text-center">{pattern.name}</span>
+      </div>
+    );
+  };
+
   const handleAddElement = (element: any) => {
     setCanvasElements(prev => [...prev, element]);
   };
@@ -178,6 +218,22 @@ export default function MusicogramPage() {
         <Star />
       </div>
     </div>;
+  };
+
+  const handleCanvasPatternDrop = (patternId: string, x: number, y: number) => {
+    const pattern = patternImages.find(p => p.id === patternId);
+    if (pattern) {
+      const newElement = {
+        id: `pattern-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        type: 'pattern',
+        x,
+        y,
+        patternUrl: pattern.patternUrl,
+        size: 100,
+        shape: 'pattern'
+      };
+      handleAddElement(newElement);
+    }
   };
 
   return (
@@ -275,6 +331,13 @@ export default function MusicogramPage() {
           </div>
           
           <div className="mt-6">
+            <h3 className="font-medium mb-3 text-center">Padrões</h3>
+            <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+              {patternImages.map((pattern, index) => renderPatternItem(pattern, index))}
+            </div>
+          </div>
+          
+          <div className="mt-6">
             <h3 className="font-medium mb-3 text-center">Elementos</h3>
             <ElementPalette onAddElement={handleAddElement} />
           </div>
@@ -286,12 +349,15 @@ export default function MusicogramPage() {
           <MusicogramCanvas 
             template={getTemplateById(selectedTemplate)}
             activeInstrument={activeInstrument}
+            activePattern={activePattern}
             isErasing={isErasing}
             isDrawingMode={isDrawingMode}
             activeColor={activeColor}
             elements={canvasElements}
             onUpdateElement={handleUpdateElement}
             onDeleteElement={handleDeleteElement}
+            onAddElement={handleAddElement}
+            patternImages={patternImages}
             zoom={zoom}
           />
         </div>
