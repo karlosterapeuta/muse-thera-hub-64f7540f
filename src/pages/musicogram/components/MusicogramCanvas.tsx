@@ -174,7 +174,7 @@ export function MusicogramCanvas({
     const y = element.position?.y || element.y;
     
     // Handle different element types
-    if (element.iconType === 'symbol') {
+    if (element.iconType === 'symbol' || element.iconType === 'instrument') {
       if (element.iconContent) {
         const textObj = new fabric.Text(element.iconContent, {
           left: x,
@@ -207,12 +207,28 @@ export function MusicogramCanvas({
         selectable: !isDrawingMode,
         angle: element.rotation || 0
       });
-    } else if (element.shape === 'rect') {
+    } else if (element.shape === 'rect' || element.shape === 'square') {
       fabricElement = new fabric.Rect({
         left: x,
         top: y,
-        width: element.size,
-        height: element.size / 2,
+        width: element.size || 40,
+        height: element.shape === 'rect' ? (element.size / 2 || 20) : (element.size || 40),
+        fill: element.color,
+        originX: 'center',
+        originY: 'center',
+        hasControls: !isDrawingMode,
+        hasBorders: !isDrawingMode,
+        lockMovementX: isDrawingMode,
+        lockMovementY: isDrawingMode,
+        selectable: !isDrawingMode,
+        angle: element.rotation || 0
+      });
+    } else if (element.shape === 'triangle') {
+      fabricElement = new fabric.Triangle({
+        left: x,
+        top: y,
+        width: element.size || 40,
+        height: element.size || 40,
         fill: element.color,
         originX: 'center',
         originY: 'center',
@@ -230,7 +246,8 @@ export function MusicogramCanvas({
       fabricElement.data = { 
         id: element.id,
         iconType: element.iconType,
-        iconContent: element.iconContent
+        iconContent: element.iconContent,
+        instrumentId: element.instrumentId
       };
       fabricElement.on('mousedown', (e) => {
         if (isErasing) {

@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -83,9 +82,13 @@ export default function MusicogramPage() {
     setIsDrawingMode(true);
   };
 
-  // Função para lidar com o início do arrasto
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, symbol: InstrumentType) => {
-    e.dataTransfer.setData('application/json', JSON.stringify(symbol));
+  // Função para lidar com o início do arrasto (para símbolos e instrumentos)
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
+    const dragData = {
+      ...item,
+      type
+    };
+    e.dataTransfer.setData('application/json', JSON.stringify(dragData));
     e.dataTransfer.effectAllowed = 'copy';
   };
 
@@ -94,7 +97,7 @@ export default function MusicogramPage() {
     e.preventDefault();
     
     try {
-      const symbolData = JSON.parse(e.dataTransfer.getData('application/json')) as InstrumentType;
+      const dropData = JSON.parse(e.dataTransfer.getData('application/json'));
       
       if (!canvasRef.current) return;
       
@@ -103,22 +106,61 @@ export default function MusicogramPage() {
       const x = (e.clientX - rect.left) / zoom;
       const y = (e.clientY - rect.top) / zoom;
       
-      // Criar novo elemento no canvas na posição do drop
-      const newElement = {
-        id: uuidv4(),
-        type: 'element',
-        x: x,
-        y: y,
-        color: symbolData.color,
-        size: symbolData.size || 36,
-        shape: symbolData.shape,
-        iconType: symbolData.iconType,
-        iconContent: symbolData.iconContent,
-        position: { x, y },
-        rotation: 0
-      };
+      let newElement;
       
-      setCanvasElements(prev => [...prev, newElement]);
+      if (dropData.type === 'symbol') {
+        // Criar novo elemento simbólico no canvas na posição do drop
+        newElement = {
+          id: uuidv4(),
+          type: 'element',
+          x: x,
+          y: y,
+          color: dropData.color,
+          size: dropData.size || 36,
+          shape: dropData.shape,
+          iconType: dropData.iconType,
+          iconContent: dropData.iconContent,
+          position: { x, y },
+          rotation: 0
+        };
+      } else if (dropData.type === 'instrument') {
+        // Criar novo elemento de instrumento no canvas na posição do drop
+        let iconContent = "▪"; // Default square shape
+        
+        // Adaptar o ícone conforme o tipo de instrumento
+        if (dropData.shape === 'circle') {
+          iconContent = "●";
+        } else if (dropData.shape === 'triangle') {
+          iconContent = "▲";
+        } else if (dropData.shape === 'hand') {
+          iconContent = "✋";
+        } else if (dropData.shape === 'footprints') {
+          iconContent = "👣";
+        } else if (dropData.shape === 'silence') {
+          iconContent = "🤫";
+        } else if (dropData.id === 'ukulele') {
+          iconContent = "🎸";
+        }
+        
+        newElement = {
+          id: uuidv4(),
+          type: 'element',
+          x: x,
+          y: y,
+          color: dropData.color,
+          size: dropData.size || 40,
+          shape: dropData.shape,
+          iconType: 'instrument',
+          iconContent: iconContent,
+          instrumentId: dropData.id,
+          position: { x, y },
+          rotation: 0
+        };
+      }
+      
+      if (newElement) {
+        setCanvasElements(prev => [...prev, newElement]);
+      }
     } catch (error) {
       console.error("Erro ao soltar o elemento:", error);
     }
@@ -185,17 +227,19 @@ export default function MusicogramPage() {
     setZoom(prev => Math.max(prev - 0.1, 0.5));
   };
 
-  // Function to render the instrument shape
+  // Function to render the instrument shape with drag and drop support
   const renderInstrumentShape = (instrument: InstrumentType, index: number) => {
     const isActive = activeInstrument === instrument.id;
     
     return (
       <div 
         key={index} 
-        className={`flex flex-col items-center justify-center p-2 transition-all cursor-pointer rounded-lg ${
+        className={`flex flex-col items-center justify-center p-2 transition-all cursor-grab rounded-lg ${
           isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
         }`}
         onClick={() => handleInstrumentSelect(instrument.id)}
+        draggable
+        onDragStart={(e) => handleDragStart(e, instrument, 'instrument')}
       >
         <div 
           className="flex items-center justify-center w-10 h-10 rounded-md transition-transform duration-200 hover:scale-110"
@@ -248,7 +292,7 @@ export default function MusicogramPage() {
         }`}
         onClick={() => handleSymbolSelect(symbol)}
         draggable
-        onDragStart={(e) => handleDragStart(e, symbol)}
+        onDragStart={(e) => handleDragStart(e, symbol, 'symbol')}
       >
         <div 
           className="flex items-center justify-center w-12 h-12 rounded-md transition-transform duration-200 hover:scale-110 text-2xl font-bold"
