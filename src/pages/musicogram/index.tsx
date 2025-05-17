@@ -15,14 +15,14 @@ import { v4 as uuidv4 } from "uuid";
 import { fabric } from "fabric";
 import { 
   Play, Pause, Save, Download, RotateCcw, Plus, Square, Circle, Triangle,
-  Volume, VolumeX
+  Volume, VolumeX, Hand, Footprints
 } from "lucide-react";
 import { MusicPlaylist, Song, songLibrary } from "./components/MusicPlaylist";
 
 type InstrumentType = {
   id: string;
   name: string;
-  shape: "circle" | "square" | "triangle" | "star" | "diamond"; 
+  shape: "circle" | "square" | "triangle" | "star" | "diamond" | "hand" | "footprints"; 
   color: string;
 };
 
@@ -37,7 +37,9 @@ const defaultInstruments: InstrumentType[] = [
   { id: "triangle", name: "Triângulo", shape: "triangle", color: "#7E69AB" },
   { id: "drum", name: "Tambor", shape: "circle", color: "#1E88E5" },
   { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
-  { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" }
+  { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" },
+  { id: "hands", name: "Palmas", shape: "hand", color: "#FF9800" },
+  { id: "feet", name: "Pés", shape: "footprints", color: "#4CAF50" }
 ];
 
 // Ultimate fallback URL that should work in most browsers
@@ -174,6 +176,40 @@ export default function MusicogramPage() {
             
           case 'triangle':
             shape = new fabric.Triangle({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          case 'hand':
+            // For hand, we still use a rect but will show an icon in the UI
+            shape = new fabric.Rect({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          case 'footprints':
+            // For footprints, we still use a rect but will show an icon in the UI
+            shape = new fabric.Rect({
               left: x,
               top: 90,
               width: 40,
@@ -627,6 +663,8 @@ export default function MusicogramPage() {
                         {instrument.shape === 'circle' && <Circle className="h-8 w-8" />}
                         {instrument.shape === 'square' && <Square className="h-8 w-8" />}
                         {instrument.shape === 'triangle' && <Triangle className="h-8 w-8" />}
+                        {instrument.shape === 'hand' && <Hand className="h-8 w-8" />}
+                        {instrument.shape === 'footprints' && <Footprints className="h-8 w-8" />}
                       </div>
                       <span className="text-xs font-medium">{instrument.name}</span>
                     </Toggle>
