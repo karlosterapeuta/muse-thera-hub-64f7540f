@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas, Circle, IEvent, Rect, Triangle, Text } from "fabric";
+import { fabric } from "fabric";
 import { Star } from "./Star";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export const MusicogramCanvas = ({
   readOnly = false
 }: MusicogramCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<Canvas | null>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
   const [elements, setElements] = useState<VisualElement[]>(initialElements);
   const [zoom, setZoom] = useState(1);
 
@@ -29,7 +29,7 @@ export const MusicogramCanvas = ({
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const canvas = new Canvas(canvasRef.current, {
+    const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 500,
       backgroundColor: template?.background || "#FFFFFF",
@@ -69,13 +69,13 @@ export const MusicogramCanvas = ({
   }, [fabricCanvas, initialElements, template]);
   
   // Function to add an element to the canvas
-  const addElementToCanvas = (element: VisualElement, canvas: Canvas) => {
+  const addElementToCanvas = (element: VisualElement, canvas: fabric.Canvas) => {
     let fabricObject;
     
     // Create the appropriate shape
     switch (element.shape) {
       case 'circle':
-        fabricObject = new Circle({
+        fabricObject = new fabric.Circle({
           left: element.position.x,
           top: element.position.y,
           radius: element.size / 2,
@@ -90,7 +90,7 @@ export const MusicogramCanvas = ({
         break;
         
       case 'rect':
-        fabricObject = new Rect({
+        fabricObject = new fabric.Rect({
           left: element.position.x,
           top: element.position.y,
           width: element.size,
@@ -106,7 +106,7 @@ export const MusicogramCanvas = ({
         break;
         
       case 'triangle':
-        fabricObject = new Triangle({
+        fabricObject = new fabric.Triangle({
           left: element.position.x,
           top: element.position.y,
           width: element.size,
@@ -139,7 +139,7 @@ export const MusicogramCanvas = ({
         
       default:
         // Default to rect if shape not recognized
-        fabricObject = new Rect({
+        fabricObject = new fabric.Rect({
           left: element.position.x,
           top: element.position.y,
           width: element.size,
@@ -159,7 +159,7 @@ export const MusicogramCanvas = ({
       canvas.add(fabricObject);
       
       // Add text below the shape
-      const text = new Text(element.label, {
+      const text = new fabric.Text(element.label, {
         left: element.position.x,
         top: element.position.y + (element.size / 2) + 10,
         fontSize: 14,
@@ -175,7 +175,7 @@ export const MusicogramCanvas = ({
       // Group the shape with its label
       if (!readOnly) {
         // Event listener to update text position when shape moves
-        fabricObject.on('moving', (e: IEvent) => {
+        fabricObject.on('moving', (e: fabric.IEvent) => {
           const target = e.target;
           if (!target) return;
           
@@ -192,7 +192,7 @@ export const MusicogramCanvas = ({
     
     // Add event listener to update the element's position when moved
     if (!readOnly) {
-      fabricObject.on('modified', (e: IEvent) => {
+      fabricObject.on('modified', (e: fabric.IEvent) => {
         const target = e.target;
         if (!target) return;
         

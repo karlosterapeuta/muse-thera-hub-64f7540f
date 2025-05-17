@@ -1,8 +1,8 @@
 
-import { Polygon } from "fabric";
+import { fabric } from "fabric";
 
-// Create a Star class that extends Polygon for use in the MusicogramCanvas
-export class Star extends Polygon {
+// Create a Star class that extends fabric.Polygon for use in the MusicogramCanvas
+export class Star extends fabric.Polygon {
   constructor(options: any) {
     const points = Star.createStarPoints(options.radius || 50, 5);
     super(points, {
