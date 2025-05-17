@@ -161,14 +161,14 @@ export default function SpeechDetector({
             console.error("Failed to resume audio context in interval:", err);
           });
         }
-      }, 300);
+      }, 300) as unknown as NodeJS.Timeout;
       
       analyzeAudio();
       
       if (autoStop && duration > 0) {
         timeoutRef.current = setTimeout(() => {
           cleanupAudio();
-        }, duration * 1000);
+        }, duration * 1000) as unknown as NodeJS.Timeout;
       }
       
       toast({

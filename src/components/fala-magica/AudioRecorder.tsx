@@ -48,7 +48,7 @@ export default function AudioRecorder({ onSave, maxDuration = 300 }: AudioRecord
           }
           return prev + 1;
         });
-      }, 1000);
+      }, 1000) as unknown as NodeJS.Timeout;
 
       toast({
         title: "Gravação iniciada",

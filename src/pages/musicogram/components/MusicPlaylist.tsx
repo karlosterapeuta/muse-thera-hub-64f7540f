@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,7 @@ interface Song {
   spotifyId?: string; // Spotify track ID
   previewUrl?: string; // Spotify preview URL (30 seconds)
   albumArt?: string; // Album artwork URL
+  youtubeId?: string; // YouTube video ID for reference
 }
 
 interface MusicPlaylistProps {
