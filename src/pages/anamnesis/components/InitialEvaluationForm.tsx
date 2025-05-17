@@ -397,54 +397,6 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title="Transtorno do Espectro Autista (TEA)"
-        fields={[
-          {
-            id: "autism_level_1",
-            label: "TEA Nível 1 (Suporte Leve)",
-            checked: content.autism_level_1 || false,
-            onChange: (value) => updateField("autism_level_1", value),
-          },
-          {
-            id: "autism_level_2",
-            label: "TEA Nível 2 (Suporte Substancial)",
-            checked: content.autism_level_2 || false,
-            onChange: (value) => updateField("autism_level_2", value),
-          },
-          {
-            id: "autism_level_3",
-            label: "TEA Nível 3 (Suporte Muito Substancial)",
-            checked: content.autism_level_3 || false,
-            onChange: (value) => updateField("autism_level_3", value),
-          },
-          {
-            id: "high_functioning_autism",
-            label: "Autismo de Alto Funcionamento",
-            checked: content.high_functioning_autism || false,
-            onChange: (value) => updateField("high_functioning_autism", value),
-          },
-          {
-            id: "asperger_syndrome",
-            label: "Síndrome de Asperger",
-            checked: content.asperger_syndrome || false,
-            onChange: (value) => updateField("asperger_syndrome", value),
-          },
-          {
-            id: "pdd_nos",
-            label: "Transtorno Global do Desenvolvimento SOE",
-            checked: content.pdd_nos || false,
-            onChange: (value) => updateField("pdd_nos", value),
-          },
-          {
-            id: "regressive_autism",
-            label: "Autismo Regressivo",
-            checked: content.regressive_autism || false,
-            onChange: (value) => updateField("regressive_autism", value),
-          },
-        ]}
-      />
-
-      <CheckboxSection
         title="Transtornos Mentais"
         fields={[
           {
@@ -512,6 +464,12 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             label: "Transtorno Bipolar",
             checked: content.bipolar_disorder || false,
             onChange: (value) => updateField("bipolar_disorder", value),
+          },
+          {
+            id: "alzheimer",
+            label: "Alzheimer",
+            checked: content.alzheimer || false,
+            onChange: (value) => updateField("alzheimer", value),
           },
         ]}
       />
@@ -627,6 +585,24 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.sensory_integration || false,
             onChange: (value) => updateField("sensory_integration", value),
           },
+          {
+            id: "psychomotricity",
+            label: "Psicomotricidade",
+            checked: content.psychomotricity || false,
+            onChange: (value) => updateField("psychomotricity", value),
+          },
+          {
+            id: "music_therapy",
+            label: "Musicoterapia",
+            checked: content.music_therapy || false,
+            onChange: (value) => updateField("music_therapy", value),
+          },
+          {
+            id: "nutrition",
+            label: "Nutrição",
+            checked: content.nutrition || false,
+            onChange: (value) => updateField("nutrition", value),
+          },
         ]}
       />
 
@@ -672,4 +648,3 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
     </div>
   );
 }
-

@@ -302,7 +302,7 @@ export default function AnamnesisForm() {
           textFields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
             { key: "school_adaptation", label: "Adaptação Escolar" },
-            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+            { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
       ];
@@ -468,13 +468,19 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
+        // Mental disorders including new Alzheimer's field
+        'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
+        'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
+        'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
+        
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        'chronic_encephalopathy', 'other_diagnoses',
         
-        // Therapy
+        // Therapy including new fields
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -611,13 +617,19 @@ export default function AnamnesisForm() {
         'irritability', 'heteroaggressive', 'emotional_ability',
         'anxiety', 'frequent_crying', 'low_frustration_tolerance',
         
+        // Mental disorders including new Alzheimer's field
+        'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
+        'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
+        'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
+        
         // Health conditions
         'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'other_diagnoses',
+        'chronic_encephalopathy', 'other_diagnoses',
         
-        // Therapy
+        // Therapy including new fields
         'speech_therapy', 'psychological_support', 'psychopedagogical',
         'occupational_therapy', 'physiotherapy', 'equine_therapy',
+        'aba_therapy', 'sensory_integration', 'psychomotricity', 'music_therapy', 'nutrition',
         
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',

@@ -1,1 +1,7 @@
+
 project_id = "jztbkimlcrfndooyhohg"
+
+[migrations.templates]
+brand_color = "#2863EB"
+highlight_color = "#3182F6"
+website_url = "https://musetera.com.br"
