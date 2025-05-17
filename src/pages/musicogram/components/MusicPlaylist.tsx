@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -149,35 +150,88 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     
     // If not a direct YouTube URL, treat as search query
     try {
-      // Use the search term to find videos (in a real app, this would use YouTube API)
+      // Use the search term to search for videos (simulating a YouTube search)
       const searchTerm = encodeURIComponent(searchQuery);
       
-      // These are just example videos with customized titles based on the search
-      const demoVideoIds = ["dQw4w9WgXcQ", "_bP6aVG6L1w", "QDia3e12czc"];
-      const resultPromises = demoVideoIds.map(async (videoId, index) => {
-        const info = await fetchYouTubeVideoInfo(videoId);
-        return {
-          id: `yt-search-${Date.now()}-${index}`,
-          title: info.success ? info.title : `${searchQuery} - Resultado ${index + 1}`,
-          artist: info.success ? info.artist : "YouTube Music",
-          url: `https://www.youtube.com/watch?v=${videoId}`,
-          thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
-          source: "youtube" as const
-        };
+      // Search-related YouTube video IDs based on common music topics
+      // These are just popular music videos that could be relevant to search terms
+      let relatedVideoIds: string[] = [];
+      
+      // Match based on search term to provide more relevant results
+      const lowerSearch = searchQuery.toLowerCase();
+      
+      if (lowerSearch.includes("rock") || lowerSearch.includes("roll")) {
+        relatedVideoIds = ["l482T0yNkeo", "TJXTjZflJdU", "1w7OgIMMRc4"]; // Rock related videos
+      } else if (lowerSearch.includes("pop") || lowerSearch.includes("dance")) {
+        relatedVideoIds = ["CevxZvSJLk8", "dQw4w9WgXcQ", "OPf0YbXqDm0"]; // Pop related videos
+      } else if (lowerSearch.includes("classical") || lowerSearch.includes("orchestra")) {
+        relatedVideoIds = ["_mVW8tgGY_w", "EJC-_j3SnXk", "fOk8Tm815lE"]; // Classical related videos
+      } else if (lowerSearch.includes("country") || lowerSearch.includes("western")) {
+        relatedVideoIds = ["K_yBUfMGvzc", "BjZPvXKewFk", "7yg05DSGWzE"]; // Country related videos
+      } else if (lowerSearch.includes("jazz") || lowerSearch.includes("blues")) {
+        relatedVideoIds = ["CWeXOm4NNb8", "ZhN2PbHMazw", "v6kYEEjwLsU"]; // Jazz related videos
+      } else if (lowerSearch.includes("rap") || lowerSearch.includes("hip hop")) {
+        relatedVideoIds = ["uelHwf8o7_U", "YVkUvmDQ3HY", "5qm8PH4xAss"]; // Rap related videos
+      } else if (lowerSearch.includes("samba") || lowerSearch.includes("brasil")) {
+        relatedVideoIds = ["3yd_eoMOvqk", "W5SLC_n_66M", "KxcP7TRY178"]; // Brazilian music
+      } else if (lowerSearch.includes("infantil") || lowerSearch.includes("crianças") || lowerSearch.includes("crianca")) {
+        relatedVideoIds = ["XqZsoesa55w", "HP8S_0Z5ybM", "LIrJ6UnUTQo"]; // Children's songs
+      } else if (lowerSearch.includes("relaxante") || lowerSearch.includes("medita")) {
+        relatedVideoIds = ["lFcSrYw-ARY", "77ZozI0rw7g", "1ZYbU82GVz4"]; // Relaxing music
+      } else {
+        // Generic popular music videos for any other search
+        relatedVideoIds = [
+          "JGwWNGJdvx8", // Shape of You - Ed Sheeran
+          "RqcjBLMaWCg", // Uptown Funk - Mark Ronson ft. Bruno Mars
+          "kJQP7kiw5Fk"  // Despacito - Luis Fonsi ft. Daddy Yankee
+        ];
+      }
+      
+      const resultPromises = relatedVideoIds.map(async (videoId, index) => {
+        try {
+          const info = await fetchYouTubeVideoInfo(videoId);
+          const videoTitle = info.success 
+            ? info.title 
+            : `${searchQuery} - Resultado ${index + 1}`;
+            
+          const videoArtist = info.success
+            ? info.artist
+            : "YouTube Music";
+            
+          return {
+            id: `yt-search-${Date.now()}-${index}`,
+            title: videoTitle,
+            artist: videoArtist,
+            url: `https://www.youtube.com/watch?v=${videoId}`,
+            thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+            source: "youtube" as const
+          };
+        } catch (error) {
+          console.error("Error fetching video info:", error);
+          // Return a fallback song object in case of error
+          return {
+            id: `yt-search-${Date.now()}-${index}`,
+            title: `${searchQuery} - Resultado ${index + 1}`,
+            artist: "YouTube Music",
+            url: `https://www.youtube.com/watch?v=${videoId}`,
+            thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+            source: "youtube" as const
+          };
+        }
       });
       
-      const mockResults = await Promise.all(resultPromises);
+      const searchResults = await Promise.all(resultPromises);
       
-      setSearchResults(mockResults);
+      setSearchResults(searchResults);
       setDisplaySongs(prev => {
         // Filter out any duplicate IDs
-        const newSongs = mockResults.filter(newSong => 
+        const newSongs = searchResults.filter(newSong => 
           !prev.some(existingSong => existingSong.url === newSong.url)
         );
         return [...prev, ...newSongs];
       });
       
-      toast.success("Resultados da pesquisa encontrados!");
+      toast.success(`Resultados para "${searchQuery}" encontrados!`);
     } catch (error) {
       console.error("Search error:", error);
       toast.error("Erro ao buscar músicas");
