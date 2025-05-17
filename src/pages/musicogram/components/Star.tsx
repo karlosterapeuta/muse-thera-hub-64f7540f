@@ -1,31 +1,45 @@
 
 import { fabric } from "fabric";
 
-// Create a Star class that extends fabric.Polygon for use in the MusicogramCanvas
 export class Star extends fabric.Polygon {
-  constructor(options: any) {
-    const points = Star.createStarPoints(options.radius || 50, 5);
-    super(points, {
-      ...options,
-      objectCaching: false,
-    });
-  }
-
-  static createStarPoints(outerRadius: number, points: number = 5) {
-    const innerRadius = outerRadius * 0.4;
-    const angleIncrement = Math.PI * 2 / (points * 2);
-    const coordinates = [];
-
-    for (let i = 0; i < points * 2; i++) {
+  constructor(options: fabric.IPolylineOptions) {
+    const numPoints = options.numPoints || 5;
+    const outerRadius = options.radius || 25;
+    const innerRadius = options.innerRadius || outerRadius / 2;
+    
+    // Create points for the star
+    const points = [];
+    const angleStep = (Math.PI * 2) / (numPoints * 2);
+    
+    for (let i = 0; i < numPoints * 2; i++) {
+      const angle = i * angleStep - Math.PI / 2;
       const radius = i % 2 === 0 ? outerRadius : innerRadius;
-      const angle = i * angleIncrement;
-      
-      coordinates.push({
-        x: radius * Math.sin(angle),
-        y: -radius * Math.cos(angle)
-      });
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
+      points.push({ x, y });
     }
-
-    return coordinates;
+    
+    // Call the parent Polygon constructor
+    super(points, options);
   }
 }
+
+// Add Star to fabric namespace for consistency with the rest of fabric objects
+fabric.Star = Star;
+
+// Register the class for fabric deserialization
+fabric.util.classRegistry.addSVGParser("star", Star);
+
+declare module "fabric" {
+  interface StaticCanvas {
+    Star: typeof Star;
+  }
+  
+  interface IPolylineOptions {
+    numPoints?: number;
+    innerRadius?: number;
+  }
+}
+
+// @ts-ignore
+fabric.Star = Star;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -15,8 +14,10 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { fabric } from "fabric";
 import { 
-  Play, Pause, Save, Download, RotateCcw, Plus, Square, Circle, Triangle
+  Play, Pause, Save, Download, RotateCcw, Plus, Square, Circle, Triangle,
+  Volume, VolumeX
 } from "lucide-react";
+import { MusicPlaylist, Song, songLibrary } from "./components/MusicPlaylist";
 
 type InstrumentType = {
   id: string;
@@ -46,6 +47,12 @@ export default function MusicogramPage() {
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
   const [tempo, setTempo] = useState(60); // BPM
+  
+  // Audio Player State
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
@@ -198,6 +205,61 @@ export default function MusicogramPage() {
     fabricCanvas.renderAll();
   }, [timelineEvents, instruments, fabricCanvas]);
   
+  // Create Audio Element
+  useEffect(() => {
+    const audio = new Audio();
+    audio.volume = volume / 100;
+    
+    audio.onended = () => {
+      setAudioPlaying(false);
+    };
+    
+    audioRef.current = audio;
+    
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
+  
+  // Handle volume changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
+  
+  // Handle song play
+  const handlePlaySong = (songUrl: string) => {
+    const song = songLibrary.find(s => s.url === songUrl);
+    if (!song) return;
+    
+    if (audioRef.current) {
+      audioRef.current.src = songUrl;
+      audioRef.current.play().catch(error => {
+        console.error("Error playing audio:", error);
+        toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
+      });
+      
+      setCurrentSong(song);
+      setAudioPlaying(true);
+      
+      // Also start musicogram animation
+      setIsPlaying(true);
+    }
+  };
+  
+  // Handle song pause
+  const handlePauseSong = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setAudioPlaying(false);
+      
+      // Also pause musicogram animation
+      setIsPlaying(false);
+    }
+  };
+  
   // Animation loop
   useEffect(() => {
     if (!isPlaying || !fabricCanvas) return;
@@ -267,8 +329,19 @@ export default function MusicogramPage() {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      
+      // Also pause audio
+      if (audioPlaying) {
+        handlePauseSong();
+      }
     } else {
       setIsPlaying(true);
+      
+      // Also start audio
+      if (currentSong && !audioPlaying && audioRef.current) {
+        audioRef.current.play();
+        setAudioPlaying(true);
+      }
     }
   };
   
@@ -286,6 +359,14 @@ export default function MusicogramPage() {
       if (playhead) {
         playhead.set({ left: 0, x1: 0, x2: 0 });
         fabricCanvas.renderAll();
+      }
+    }
+    
+    // Also reset audio
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      if (audioPlaying) {
+        handlePauseSong();
       }
     }
   };
@@ -329,7 +410,7 @@ export default function MusicogramPage() {
         </p>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             <Card>
               <CardContent className="pt-6">
                 <div className="border border-gray-300 rounded-lg shadow-lg overflow-hidden bg-white">
@@ -360,6 +441,26 @@ export default function MusicogramPage() {
                 <div className="text-sm">
                   Posição: {playbackPosition.toFixed(0)}%
                 </div>
+                
+                {/* Volume control */}
+                <div className="flex items-center gap-2 ml-4">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setVolume(volume === 0 ? 50 : 0)}
+                    className="h-8 w-8"
+                  >
+                    {volume === 0 ? <VolumeX size={16} /> : <Volume size={16} />}
+                  </Button>
+                  <Slider 
+                    value={[volume]} 
+                    min={0} 
+                    max={100} 
+                    step={1} 
+                    className="w-24"
+                    onValueChange={(vals) => setVolume(vals[0])}
+                  />
+                </div>
               </div>
               
               <div className="flex gap-2">
@@ -373,6 +474,16 @@ export default function MusicogramPage() {
                 </Button>
               </div>
             </div>
+          </div>
+          
+          {/* Add the music playlist */}
+          <div>
+            <MusicPlaylist
+              onPlay={handlePlaySong}
+              onPause={handlePauseSong}
+              currentSong={currentSong}
+              isPlaying={audioPlaying}
+            />
           </div>
         </div>
         
@@ -436,8 +547,9 @@ export default function MusicogramPage() {
                 <ul className="text-sm space-y-1 list-disc pl-4 text-muted-foreground">
                   <li>Escolha um instrumento clicando em seu ícone</li>
                   <li>Adicione à linha do tempo usando o botão "Adicionar"</li>
+                  <li>Selecione uma música da playlist para tocar junto</li>
                   <li>Use o botão Play para animar as formas</li>
-                  <li>Ajuste a velocidade conforme necessário</li>
+                  <li>Ajuste a velocidade e volume conforme necessário</li>
                   <li>Exporte a imagem para usar em sessões offline</li>
                 </ul>
               </div>

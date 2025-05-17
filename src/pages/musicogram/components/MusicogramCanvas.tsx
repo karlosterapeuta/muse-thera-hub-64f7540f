@@ -43,7 +43,13 @@ export const MusicogramCanvas = ({
     setFabricCanvas(canvas);
 
     return () => {
-      canvas.dispose();
+      if (canvas) {
+        try {
+          canvas.dispose();
+        } catch (e) {
+          console.error("Error disposing canvas:", e);
+        }
+      }
     };
   }, [template, readOnly]);
 
@@ -122,11 +128,12 @@ export const MusicogramCanvas = ({
         break;
         
       case 'star':
-        // Using a custom polygon to create a star
+        // Using our custom Star class
         fabricObject = new Star({
           left: element.position.x,
           top: element.position.y,
           radius: element.size / 2,
+          numPoints: 5,
           fill: element.color,
           originX: 'center',
           originY: 'center',
