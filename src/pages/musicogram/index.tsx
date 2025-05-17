@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -40,6 +39,9 @@ const defaultInstruments: InstrumentType[] = [
   { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
   { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" }
 ];
+
+// Ultimate fallback URL that should work in most browsers
+const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3";
 
 export default function MusicogramPage() {
   const [instruments, setInstruments] = useState<InstrumentType[]>(defaultInstruments);
@@ -224,7 +226,7 @@ export default function MusicogramPage() {
     }
   }, [timelineEvents, instruments, fabricCanvas]);
   
-  // Create Audio Element
+  // Create Audio Element with better error handling
   useEffect(() => {
     // Create a new audio element
     const audio = new Audio();
@@ -234,27 +236,46 @@ export default function MusicogramPage() {
       setAudioPlaying(false);
     };
     
-    // Fix the error handler to properly type the event
+    // Better error handler with precise logging
     audio.onerror = (event) => {
       console.error("Audio error:", event);
       
-      // Type guard to ensure we're handling an Event
-      if (event instanceof Event) {
-        if (event.target instanceof HTMLAudioElement && event.target.error) {
-          // Access the error property safely
-          const errorMsg = event.target.error.message || 'Erro desconhecido';
-          toast.error(`Erro ao carregar áudio: ${errorMsg}`);
-        } else {
-          toast.error("Erro ao carregar áudio: Não foi possível reproduzir o arquivo");
+      let errorMessage = "Erro ao reproduzir áudio";
+      
+      // Type guard to ensure we can access properties safely
+      if (event && event.target instanceof HTMLAudioElement) {
+        const audioElement = event.target;
+        
+        if (audioElement.error) {
+          switch (audioElement.error.code) {
+            case MediaError.MEDIA_ERR_ABORTED:
+              errorMessage = "Reprodução interrompida pelo usuário";
+              break;
+            case MediaError.MEDIA_ERR_NETWORK:
+              errorMessage = "Erro de rede ao carregar o áudio";
+              break;
+            case MediaError.MEDIA_ERR_DECODE:
+              errorMessage = "Erro ao decodificar o áudio";
+              break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage = "Formato de áudio não suportado";
+              break;
+            default:
+              errorMessage = `Erro ao reproduzir: ${audioElement.error.message || 'Erro desconhecido'}`;
+          }
         }
-      } else {
-        toast.error("Erro ao carregar áudio: Formato desconhecido");
       }
       
+      toast.error(errorMessage);
       setAudioPlaying(false);
     };
     
     audioRef.current = audio;
+    
+    // Pre-load the fallback audio to ensure it's in cache
+    const preloadFallback = new Audio(ULTIMATE_FALLBACK_URL);
+    preloadFallback.preload = "metadata";
+    preloadFallback.load();
     
     return () => {
       audio.pause();
@@ -269,7 +290,7 @@ export default function MusicogramPage() {
     }
   }, [volume]);
   
-  // Handle song play
+  // Handle song play with improved reliability
   const handlePlaySong = (songUrl: string) => {
     const song = songLibrary.find(s => s.url === songUrl);
     if (!song) return;
@@ -295,13 +316,18 @@ export default function MusicogramPage() {
             console.error("Error playing audio:", error);
             toast.error("Erro ao reproduzir áudio. Tentando solução alternativa...");
             
-            // Try with a fallback URL as last resort
-            const fallbackUrl = "https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3";
-            audioRef.current!.src = fallbackUrl;
+            // Try with our ultimate fallback URL
+            audioRef.current!.src = ULTIMATE_FALLBACK_URL;
             audioRef.current!.play()
               .then(() => {
-                // We're playing a fallback, but at least something works
-                const fallbackSong = songLibrary.find(s => s.url === fallbackUrl) || song;
+                // Create a fallback song object
+                const fallbackSong: Song = {
+                  id: "fallback",
+                  title: "Música Alternativa",
+                  artist: "Sistema",
+                  url: ULTIMATE_FALLBACK_URL
+                };
+                
                 setCurrentSong(fallbackSong);
                 setAudioPlaying(true);
                 setIsPlaying(true);
@@ -309,12 +335,37 @@ export default function MusicogramPage() {
               })
               .catch(secondError => {
                 console.error("Failed even with fallback:", secondError);
-                toast.error("Não foi possível reproduzir nenhum áudio. Verifique as configurações do navegador.");
+                toast.error("Não foi possível reproduzir áudio. Verifique as configurações do navegador.");
+                
+                // Try to generate a simple tone using Web Audio API as last resort
+                try {
+                  const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+                  if (AudioContext) {
+                    const audioCtx = new AudioContext();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = 440; // A4 note
+                    gainNode.gain.value = 0.1;
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.start();
+                    setTimeout(() => {
+                      oscillator.stop();
+                      toast.info("Gerado um tom simples como alternativa");
+                    }, 1000);
+                  }
+                } catch (finalError) {
+                  console.error("Failed to generate tone:", finalError);
+                }
               });
           });
       } catch (error) {
         console.error("Error setting audio source:", error);
-        toast.error("Erro ao configurar áudio. Verifique se o arquivo existe.");
+        toast.error("Erro ao configurar áudio. Tente novamente mais tarde.");
       }
     }
   };
