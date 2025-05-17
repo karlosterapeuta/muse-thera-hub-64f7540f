@@ -15,14 +15,14 @@ import { v4 as uuidv4 } from "uuid";
 import { fabric } from "fabric";
 import { 
   Play, Pause, Save, Download, RotateCcw, Plus, Square, Circle, Triangle,
-  Volume, VolumeX, Hand, Footprints
+  Volume, VolumeX, Hand, Footprints, MicOff
 } from "lucide-react";
 import { MusicPlaylist, Song, songLibrary } from "./components/MusicPlaylist";
 
 type InstrumentType = {
   id: string;
   name: string;
-  shape: "circle" | "square" | "triangle" | "star" | "diamond" | "hand" | "footprints"; 
+  shape: "circle" | "square" | "triangle" | "star" | "diamond" | "hand" | "footprints" | "silence"; 
   color: string;
 };
 
@@ -39,7 +39,8 @@ const defaultInstruments: InstrumentType[] = [
   { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
   { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" },
   { id: "hands", name: "Palmas", shape: "hand", color: "#FF9800" },
-  { id: "feet", name: "Pés", shape: "footprints", color: "#4CAF50" }
+  { id: "feet", name: "Pés", shape: "footprints", color: "#4CAF50" },
+  { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
 // Ultimate fallback URL that should work in most browsers
@@ -209,6 +210,23 @@ export default function MusicogramPage() {
             
           case 'footprints':
             // For footprints, we still use a rect but will show an icon in the UI
+            shape = new fabric.Rect({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          case 'silence':
+            // For silence, we still use a rect but will show an icon in the UI
             shape = new fabric.Rect({
               left: x,
               top: 90,
@@ -665,6 +683,7 @@ export default function MusicogramPage() {
                         {instrument.shape === 'triangle' && <Triangle className="h-8 w-8" />}
                         {instrument.shape === 'hand' && <Hand className="h-8 w-8" />}
                         {instrument.shape === 'footprints' && <Footprints className="h-8 w-8" />}
+                        {instrument.shape === 'silence' && <MicOff className="h-8 w-8" />}
                       </div>
                       <span className="text-xs font-medium">{instrument.name}</span>
                     </Toggle>
