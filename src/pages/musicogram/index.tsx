@@ -194,6 +194,11 @@ export default function MusicogramPage() {
   const toggleMode = () => {
     setIsDrawingMode(!isDrawingMode);
     setIsErasing(false);
+    
+    // Mostrar dica ao mudar para modo de manipulação
+    if (isDrawingMode) {
+      toast.info("Modo de movimentação livre ativado! Arraste as figuras livremente pelo quadro.");
+    }
   };
 
   const saveCanvas = () => {
@@ -362,11 +367,8 @@ export default function MusicogramPage() {
         <Button
           variant={!isDrawingMode ? "default" : "outline"}
           size="icon"
-          onClick={() => {
-            setIsDrawingMode(false);
-            setIsErasing(false);
-          }}
-          title="Modo Manipulação"
+          onClick={toggleMode}
+          title="Modo Movimentação Livre"
           className={!isDrawingMode ? "bg-green-500 hover:bg-green-600" : ""}
         >
           <Hand size={18} />
@@ -443,15 +445,15 @@ export default function MusicogramPage() {
             <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
               {isDrawingMode 
                 ? "Modo Desenho: Arraste símbolos para o quadro" 
-                : "Modo Manipulação: Mova e redimensione livremente"}
+                : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}
             </div>
             {!isDrawingMode && (
               <div className="text-xs text-gray-600 mt-1">
-                Clique e arraste para mover elementos
+                Clique e arraste para mover. Use os controles para redimensionar e girar.
               </div>
             )}
             <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Arraste os ícones diretamente para o quadro
+              Arraste os ícones diretamente para o quadro - agora com movimentação livre!
             </div>
           </div>
           

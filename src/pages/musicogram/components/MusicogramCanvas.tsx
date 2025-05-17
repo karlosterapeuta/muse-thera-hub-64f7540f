@@ -47,6 +47,7 @@ export function MusicogramCanvas({
         height: template.rows * cellSize,
         backgroundColor: '#fff',
         selection: true, // Enable selection of multiple objects
+        preserveObjectStacking: true, // Keep object stacking order
       });
 
       fabricRef.current = newCanvas;
@@ -304,13 +305,18 @@ export function MusicogramCanvas({
         mtr: true, // middle-top-rotation control point
       });
       
+      // No flip scaling to prevent confusion
       fabricElement.lockScalingFlip = true;
+      
+      // Allow free movement of the elements
       fabricElement.data = { 
         id: element.id,
         iconType: element.iconType,
         iconContent: element.iconContent,
         instrumentId: element.instrumentId
       };
+      
+      // Handle eraser mode
       fabricElement.on('mousedown', (e) => {
         if (isErasing) {
           onDeleteElement(element.id);
@@ -352,7 +358,7 @@ export function MusicogramCanvas({
       {!isDrawingMode && (
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80">
           <Grab size={18} />
-          <span className="text-xs">Modo Arrasto</span>
+          <span className="text-xs">Modo Movimentação Livre</span>
         </div>
       )}
     </div>
