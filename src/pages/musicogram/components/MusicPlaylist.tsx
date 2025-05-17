@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { Audio } from "expo-av";
+import { getSpotifyAccessToken, searchChildrenSongs } from "@/utils/spotifyUtils";
 
 interface Song {
   id: string;
@@ -22,8 +22,9 @@ interface Song {
   artist: string;
   url: string;
   duration: string; // mm:ss format
-  youtubeId?: string; // Optional YouTube video ID
-  jamendoId?: string; // Optional Jamendo track ID
+  spotifyId?: string; // Spotify track ID
+  previewUrl?: string; // Spotify preview URL (30 seconds)
+  albumArt?: string; // Album artwork URL
 }
 
 interface MusicPlaylistProps {
@@ -33,11 +34,7 @@ interface MusicPlaylistProps {
   isPlaying: boolean;
 }
 
-// Jamendo API client ID
-const JAMENDO_CLIENT_ID = "SEU_ID"; // Replace with your actual client ID
-
-// Lista inicial de músicas infantis tradicionais brasileiras
-// This will be replaced by Jamendo API results
+// Initial placeholder song
 const initialSongLibrary: Song[] = [
   {
     id: "song-1",
@@ -48,15 +45,14 @@ const initialSongLibrary: Song[] = [
   }
 ];
 
-// Fallback song library in case Jamendo API fails
+// Fallback song library in case Spotify API fails
 const fallbackSongLibrary: Song[] = [
   {
     id: "song-1",
     title: "Atirei o Pau no Gato",
     artist: "Tradicional",
     url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_01_-_Atirei_o_pau_no_gato.mp3",
-    duration: "1:23",
-    youtubeId: "RQEm7LUMI7g"
+    duration: "1:23"
   },
   {
     id: "song-2",
@@ -403,50 +399,59 @@ export const MusicPlaylist = ({
     };
   }, []);
 
-  // Fetch songs from Jamendo API
+  // Fetch songs from Spotify API
   useEffect(() => {
     const fetchSongs = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
-        const response = await fetch(
-          `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&limit=10&tags=childrens-music`
-        );
+        // Get Spotify access token
+        const accessToken = await getSpotifyAccessToken();
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+        if (!accessToken) {
+          throw new Error("Failed to get Spotify access token");
         }
         
-        const data = await response.json();
+        // Search for children's songs
+        const tracks = await searchChildrenSongs(accessToken);
         
-        if (data.results && Array.isArray(data.results) && data.results.length > 0) {
-          const formattedSongs = data.results.map((track: any) => {
-            // Format duration from seconds to mm:ss
-            const minutes = Math.floor(track.duration / 60);
-            const seconds = Math.floor(track.duration % 60);
+        if (tracks && tracks.length > 0) {
+          const formattedSongs = tracks.map((track: any) => {
+            // Format duration from ms to mm:ss
+            const durationMs = track.duration_ms;
+            const minutes = Math.floor(durationMs / 60000);
+            const seconds = Math.floor((durationMs % 60000) / 1000);
             const formattedDuration = `${minutes}:${seconds.toString().padStart(2, "0")}`;
             
             return {
               id: track.id,
               title: track.name,
-              artist: track.artist_name,
-              url: track.audio,
+              artist: track.artists[0].name,
+              url: track.preview_url || "", // 30-second preview URL
               duration: formattedDuration,
-              jamendoId: track.id
+              spotifyId: track.id,
+              previewUrl: track.preview_url,
+              albumArt: track.album?.images[0]?.url
             };
-          });
+          }).filter((song: Song) => song.url !== ""); // Filter out songs without preview URLs
           
-          setSongLibrary(formattedSongs);
-          console.log("Loaded songs from Jamendo:", formattedSongs.length);
+          if (formattedSongs.length > 0) {
+            setSongLibrary(formattedSongs);
+            console.log("Loaded songs from Spotify:", formattedSongs.length);
+          } else {
+            // If no songs with previews, fallback to local songs
+            console.log("No preview URLs found from Spotify API, using fallback playlist");
+            setSongLibrary(fallbackSongLibrary);
+          }
         } else {
           // If no results, fallback to local songs
-          console.log("No songs found from Jamendo API, using fallback playlist");
+          console.log("No songs found from Spotify API, using fallback playlist");
           setSongLibrary(fallbackSongLibrary);
         }
       } catch (err) {
-        console.error("Error fetching songs from Jamendo:", err);
-        setError("Falha ao carregar músicas do Jamendo. Usando lista de músicas local.");
+        console.error("Error fetching songs from Spotify:", err);
+        setError("Falha ao carregar músicas do Spotify. Usando lista de músicas local.");
         toast.error("Erro ao carregar músicas. Usando playlist offline.");
         // Fallback to the local song library
         setSongLibrary(fallbackSongLibrary);
@@ -492,7 +497,7 @@ export const MusicPlaylist = ({
         { uri: audioUrl },
         { volume: volume / 100, shouldPlay: true },
         (status) => {
-          if (status.didJustFinish) {
+          if (status.isLoaded && status.didJustFinish) {
             console.log("Audio playback ended");
             onPause();
           }
