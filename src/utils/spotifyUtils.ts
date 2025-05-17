@@ -8,15 +8,31 @@
 const CLIENT_ID = 'CLIENT_ID'; // Replace with your Spotify Client ID
 const CLIENT_SECRET = 'CLIENT_SECRET'; // Replace with your Spotify Client Secret
 
+// Variável para controlar se já tentamos e falhamos com o Spotify
+let spotifyFailed = false;
+
 /**
  * Get Spotify access token using Client Credentials flow
  */
 export const getSpotifyAccessToken = async (): Promise<string | null> => {
+  // Se já tentamos e falhamos, não tenta novamente
+  if (spotifyFailed) {
+    console.log("Spotify integration disabled due to previous failures");
+    return null;
+  }
+  
   try {
+    // Verificar se as credenciais foram configuradas
+    if (CLIENT_ID === 'CLIENT_ID' || CLIENT_SECRET === 'CLIENT_SECRET') {
+      console.log("Spotify credentials not configured");
+      spotifyFailed = true;
+      return null;
+    }
+    
     const authOptions = {
       method: 'POST',
       headers: {
-        'Authorization': 'Basic ' + btoa(CLIENT_ID + ':' + CLIENT_SECRET),
+        'Authorization': 'Basic ' + btoa(`${CLIENT_ID}:${CLIENT_SECRET}`),
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: 'grant_type=client_credentials'
@@ -32,6 +48,7 @@ export const getSpotifyAccessToken = async (): Promise<string | null> => {
     return data.access_token;
   } catch (error) {
     console.error("Error fetching Spotify token:", error);
+    spotifyFailed = true;
     return null;
   }
 };
@@ -40,6 +57,8 @@ export const getSpotifyAccessToken = async (): Promise<string | null> => {
  * Search for children's songs on Spotify
  */
 export const searchChildrenSongs = async (accessToken: string, limit: number = 20): Promise<any[]> => {
+  if (spotifyFailed) return [];
+  
   try {
     // Search for children's songs in Portuguese
     const searchParams = new URLSearchParams({
@@ -63,6 +82,7 @@ export const searchChildrenSongs = async (accessToken: string, limit: number = 2
     return data.tracks.items || [];
   } catch (error) {
     console.error("Error searching Spotify:", error);
+    spotifyFailed = true;
     return [];
   }
 };
@@ -71,6 +91,8 @@ export const searchChildrenSongs = async (accessToken: string, limit: number = 2
  * Get track audio features from Spotify
  */
 export const getTrackDetails = async (accessToken: string, trackId: string): Promise<any | null> => {
+  if (spotifyFailed) return null;
+  
   try {
     const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
       headers: {

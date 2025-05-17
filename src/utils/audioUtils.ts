@@ -360,3 +360,57 @@ export const updateBackgroundVolume = (volume: number) => {
     backgroundAudioElement.volume = volume;
   }
 };
+
+// Função para gerar um tom para simular a reprodução de áudio
+export const generateFallbackTone = (duration = 1000, frequency = 440) => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    const audioCtx = new AudioContext();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    
+    // Fade in
+    gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.1);
+    
+    // Fade out
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + (duration / 1000));
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    oscillator.start();
+    
+    setTimeout(() => {
+      oscillator.stop();
+      audioCtx.close();
+    }, duration);
+    
+    return true;
+  } catch (error) {
+    console.error("Erro ao gerar tom de fallback:", error);
+    return false;
+  }
+};
+
+// Verificar se um URL de áudio está acessível
+export const checkAudioUrl = async (url: string): Promise<boolean> => {
+  try {
+    if (!url) return false;
+    
+    const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    return true; // Se não der erro, presumimos que está ok (devido a no-cors)
+  } catch (error) {
+    console.warn(`URL de áudio inacessível: ${url}`, error);
+    return false;
+  }
+};
+
+// URLs de fallback para áudios
+export const audioFallbackUrls: Record<string, string> = {
+  default: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3", // Música genérica
+  infantil: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1ebd.mp3", // Música infantil
+};

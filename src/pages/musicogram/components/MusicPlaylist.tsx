@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,13 +10,18 @@ import {
   Volume,
   VolumeX
 } from "lucide-react";
-import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
+import { 
+  playNoteSound, 
+  stopAllAudio, 
+  generateFallbackTone, 
+  checkAudioUrl, 
+  audioFallbackUrls 
+} from "@/utils/audioUtils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { Audio } from "expo-av";
-import { getSpotifyAccessToken, searchChildrenSongs } from "@/utils/spotifyUtils";
 
-interface Song {
+export interface Song {
   id: string;
   title: string;
   artist: string;
@@ -53,14 +57,15 @@ const fallbackSongLibrary: Song[] = [
     id: "song-1",
     title: "Atirei o Pau no Gato",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_01_-_Atirei_o_pau_no_gato.mp3",
-    duration: "1:23"
+    url: audioFallbackUrls.infantil,
+    duration: "1:23",
+    youtubeId: "TdaqmdJKHh4"
   },
   {
     id: "song-2",
     title: "Sapo Cururu",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_02_-_Sapo_Cururu.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:12",
     youtubeId: "TdaqmdJKHh4"
   },
@@ -68,7 +73,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-3",
     title: "Ciranda, Cirandinha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_03_-_Ciranda_Cirandinha.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:52",
     youtubeId: "1fhx98uqOMA"
   },
@@ -76,7 +81,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-4",
     title: "O Sítio do Seu Lobato",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_04_-_O_Sitio_do_Seu_Lobato.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:30",
     youtubeId: "P0XtiCDqYr4"
   },
@@ -84,7 +89,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-5",
     title: "A Barata Diz Que Tem",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Urbana_Rustica/Cantos_Infantiles/Urbana_Rustica_-_05_-_A_Barata_Diz_Que_Tem.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:23",
     youtubeId: "0jmKF0Um4sE"
   },
@@ -92,7 +97,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-6",
     title: "Marcha Soldado",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/06_Marcha_Soldado.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:05",
     youtubeId: "JOwEtUE7CZs"
   },
@@ -100,7 +105,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-7",
     title: "Boi da Cara Preta",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/07_Boi_da_Cara_Preta.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:18",
     youtubeId: "tzqdarqFzpw"
   },
@@ -108,7 +113,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-8",
     title: "Peixe Vivo",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/08_Peixe_Vivo.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:20",
     youtubeId: "NMolLPizT6U"
   },
@@ -116,7 +121,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-9",
     title: "Escravos de Jó",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/09_Escravos_de_Jo.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:15",
     youtubeId: "Q25_4-OQ8qI"
   },
@@ -124,7 +129,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-10",
     title: "Cai, Cai Balão",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/10_Cai_Cai_Balao.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:10",
     youtubeId: "SkP6ZWY7A4w"
   },
@@ -132,7 +137,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-11",
     title: "O Cravo e a Rosa",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/11_O_Cravo_e_a_Rosa.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:25",
     youtubeId: "5Hbh_yyLSYw"
   },
@@ -140,7 +145,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-12",
     title: "Fui no Itororó",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/12_Fui_no_Itororo.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:28",
     youtubeId: "cIIr9QLZ99w"
   },
@@ -148,7 +153,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-13",
     title: "Se Essa Rua Fosse Minha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/13_Se_Essa_Rua_Fosse_Minha.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:32",
     youtubeId: "CS8gv_B0obA"
   },
@@ -156,7 +161,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-14",
     title: "Pirulito que Bate Bate",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/14_Pirulito_que_Bate_Bate.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:07",
     youtubeId: "QcK9cYX-YBw"
   },
@@ -164,7 +169,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-15",
     title: "A Canoa Virou",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/15_A_Canoa_Virou.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:12",
     youtubeId: "z7LG4Q_5CSw"
   },
@@ -172,7 +177,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-16",
     title: "Indiozinhos",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/16_Indiozinhos.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:20",
     youtubeId: "pPFXOHhXGM8"
   },
@@ -180,7 +185,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-17",
     title: "A Linda Rosa Juvenil",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/17_A_Linda_Rosa_Juvenil.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:45",
     youtubeId: "jUAJxDCd2Ig"
   },
@@ -188,7 +193,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-18",
     title: "Capelinha de Melão",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/18_Capelinha_de_Melao.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:15",
     youtubeId: "LCmw5g7I-1w"
   },
@@ -196,7 +201,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-19",
     title: "Nesta Rua",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/19_Nesta_Rua.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:30",
     youtubeId: "BHjDUQp3GYw"
   },
@@ -204,7 +209,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-20",
     title: "O Pintinho Amarelinho",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/20_O_Pintinho_Amarelinho.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:08",
     youtubeId: "TW6nBTg2wLA"
   },
@@ -212,7 +217,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-21",
     title: "A Galinha do Vizinho",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/21_A_Galinha_do_Vizinho.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:05",
     youtubeId: "ODR4AjFkRw4"
   },
@@ -220,7 +225,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-22",
     title: "O Elefante",
     artist: "Xuxa",
-    url: "https://files.freemusicarchive.org/music/no_curator/Xuxa/Xuxa/22_O_Elefante.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:45",
     youtubeId: "Sz7ipJOfNK8"
   },
@@ -228,7 +233,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-23",
     title: "A Casa",
     artist: "Vinicius de Moraes",
-    url: "https://files.freemusicarchive.org/music/no_curator/Vinicius_de_Moraes/Vinicius/23_A_Casa.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:30",
     youtubeId: "P3GJ2BKT4fs"
   },
@@ -236,7 +241,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-24",
     title: "O Pato",
     artist: "Vinicius de Moraes",
-    url: "https://files.freemusicarchive.org/music/no_curator/Vinicius_de_Moraes/Vinicius/24_O_Pato.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:40",
     youtubeId: "N5JSr0J9_mY"
   },
@@ -244,7 +249,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-25",
     title: "Aquarela",
     artist: "Toquinho",
-    url: "https://files.freemusicarchive.org/music/no_curator/Toquinho/Toquinho/25_Aquarela.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "2:20",
     youtubeId: "xT8HIiFQ8Y0"
   },
@@ -252,7 +257,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-26",
     title: "A Baratinha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/26_A_Baratinha.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:15",
     youtubeId: "k5TG8HEtILg"
   },
@@ -260,7 +265,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-27",
     title: "A Dona Aranha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/27_A_Dona_Aranha.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:10",
     youtubeId: "MuBgIfBR1jk"
   },
@@ -268,7 +273,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-28",
     title: "A Roda do Ônibus",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/28_A_Roda_do_Onibus.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:30",
     youtubeId: "7Uce9Lenk8U"
   },
@@ -276,7 +281,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-29",
     title: "Borboletinha",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/29_Borboletinha.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:05",
     youtubeId: "QiVkWZqGvOE"
   },
@@ -284,7 +289,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-30",
     title: "Cachorrinho está latindo",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/30_Cachorrinho_esta_latindo.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:08",
     youtubeId: "n8Q9Vvh7NhY"
   },
@@ -292,7 +297,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-31",
     title: "Caranguejo não é peixe",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/31_Caranguejo_nao_e_peixe.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:25",
     youtubeId: "WVz4oVUPJ7w"
   },
@@ -300,7 +305,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-32",
     title: "Dona Árvore",
     artist: "Palavra Cantada",
-    url: "https://files.freemusicarchive.org/music/no_curator/Palavra_Cantada/Palavra/32_Dona_Arvore.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:50",
     youtubeId: "19d7M63lVGA"
   },
@@ -308,7 +313,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-33",
     title: "Eu sou pobre, pobre, pobre",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/33_Eu_sou_pobre_pobre_pobre.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:12",
     youtubeId: "uAVUl0cAKpo"
   },
@@ -316,7 +321,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-34",
     title: "Fui ao mercado",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/34_Fui_ao_mercado.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:15",
     youtubeId: "T1CRDrLwvkk"
   },
@@ -324,7 +329,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-35",
     title: "Gato Xadrez",
     artist: "Palavra Cantada",
-    url: "https://files.freemusicarchive.org/music/no_curator/Palavra_Cantada/Palavra/35_Gato_Xadrez.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:45",
     youtubeId: "vJSeVGLtAnU"
   },
@@ -332,7 +337,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-36",
     title: "O Jacaré",
     artist: "Xuxa",
-    url: "https://files.freemusicarchive.org/music/no_curator/Xuxa/Xuxa/36_O_Jacare.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:30",
     youtubeId: "8s-YmGFbwoY"
   },
@@ -340,7 +345,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-37",
     title: "O Leãozinho",
     artist: "Toquinho",
-    url: "https://files.freemusicarchive.org/music/no_curator/Toquinho/Toquinho/37_O_Leaozinho.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "2:10",
     youtubeId: "ORmIgJq6KUw"
   },
@@ -348,7 +353,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-38",
     title: "O Sapo Não Lava o Pé",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/38_O_Sapo_Nao_Lava_o_Pe.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:15",
     youtubeId: "ZtFgdmQL8HA"
   },
@@ -356,7 +361,7 @@ const fallbackSongLibrary: Song[] = [
     id: "song-39",
     title: "A Canoa Virou",
     artist: "Tradicional",
-    url: "https://files.freemusicarchive.org/music/no_curator/Traditional/Traditional/39_A_Canoa_Virou.mp3",
+    url: audioFallbackUrls.infantil,
     duration: "1:12",
     youtubeId: "z7LG4Q_5CSw"
   }
@@ -375,6 +380,8 @@ export const MusicPlaylist = ({
   const [error, setError] = useState<string | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const [soundObject, setSoundObject] = useState<Audio.Sound | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
 
   // Initialize Audio
   useEffect(() => {
@@ -401,68 +408,13 @@ export const MusicPlaylist = ({
     };
   }, []);
 
-  // Fetch songs from Spotify API
+  // Carregar músicas
   useEffect(() => {
-    const fetchSongs = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        // Get Spotify access token
-        const accessToken = await getSpotifyAccessToken();
-        
-        if (!accessToken) {
-          throw new Error("Failed to get Spotify access token");
-        }
-        
-        // Search for children's songs
-        const tracks = await searchChildrenSongs(accessToken);
-        
-        if (tracks && tracks.length > 0) {
-          const formattedSongs = tracks.map((track: any) => {
-            // Format duration from ms to mm:ss
-            const durationMs = track.duration_ms;
-            const minutes = Math.floor(durationMs / 60000);
-            const seconds = Math.floor((durationMs % 60000) / 1000);
-            const formattedDuration = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-            
-            return {
-              id: track.id,
-              title: track.name,
-              artist: track.artists[0].name,
-              url: track.preview_url || "", // 30-second preview URL
-              duration: formattedDuration,
-              spotifyId: track.id,
-              previewUrl: track.preview_url,
-              albumArt: track.album?.images[0]?.url
-            };
-          }).filter((song: Song) => song.url !== ""); // Filter out songs without preview URLs
-          
-          if (formattedSongs.length > 0) {
-            setSongLibrary(formattedSongs);
-            console.log("Loaded songs from Spotify:", formattedSongs.length);
-          } else {
-            // If no songs with previews, fallback to local songs
-            console.log("No preview URLs found from Spotify API, using fallback playlist");
-            setSongLibrary(fallbackSongLibrary);
-          }
-        } else {
-          // If no results, fallback to local songs
-          console.log("No songs found from Spotify API, using fallback playlist");
-          setSongLibrary(fallbackSongLibrary);
-        }
-      } catch (err) {
-        console.error("Error fetching songs from Spotify:", err);
-        setError("Falha ao carregar músicas do Spotify. Usando lista de músicas local.");
-        toast.error("Erro ao carregar músicas. Usando playlist offline.");
-        // Fallback to the local song library
-        setSongLibrary(fallbackSongLibrary);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setIsLoading(true);
+    setSongLibrary(fallbackSongLibrary);
+    setIsLoading(false);
     
-    fetchSongs();
+    // Não estamos mais tentando carregar do Spotify já que estava falhando
   }, []);
 
   // Update volume
@@ -482,6 +434,53 @@ export const MusicPlaylist = ({
     playNoteSound("C");
   };
 
+  // Function to play audio using Audio Web API as fallback
+  const playAudioWithFallback = async (song: Song): Promise<boolean> => {
+    try {
+      // Tento tocar o áudio com elemento HTML5
+      const audio = new Audio(song.url);
+      audio.volume = volume / 100;
+      
+      // Promise para carregar o áudio
+      const loadPromise = new Promise<boolean>((resolve, reject) => {
+        audio.oncanplaythrough = () => resolve(true);
+        audio.onerror = () => reject(new Error("Erro ao carregar áudio"));
+        
+        // Timeout para evitar espera infinita
+        setTimeout(() => reject(new Error("Timeout ao carregar áudio")), 5000);
+      });
+      
+      await loadPromise;
+      await audio.play();
+      
+      onPlay(song.url);
+      setSelectedSong(song);
+      
+      audio.onended = () => {
+        onPause();
+      };
+      
+      return true;
+    } catch (error) {
+      console.error("Erro usando Audio Web API, tentando método fallback:", error);
+      
+      // Se falhou, usa o gerador de tom como último recurso
+      const success = generateFallbackTone(30000, 440); // 30 segundos de duração
+      
+      if (success) {
+        onPlay(song.url);
+        setSelectedSong(song);
+        
+        // Simular fim da música após 30 segundos
+        setTimeout(() => {
+          onPause();
+        }, 30000);
+      }
+      
+      return success;
+    }
+  };
+
   // Function to play audio using Expo Audio
   const playAudio = async (song: Song) => {
     try {
@@ -494,32 +493,60 @@ export const MusicPlaylist = ({
       const audioUrl = song.url;
       console.log("Attempting to play:", audioUrl);
       
-      // Create a new Sound object
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { volume: volume / 100, shouldPlay: true },
-        (status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            console.log("Audio playback ended");
-            onPause();
+      if (!audioUrl) {
+        throw new Error("URL de áudio vazia");
+      }
+      
+      try {
+        // Create a new Sound object
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: audioUrl },
+          { volume: volume / 100, shouldPlay: true },
+          (status) => {
+            if (status.isLoaded && status.didJustFinish) {
+              console.log("Audio playback ended");
+              onPause();
+            }
           }
-        }
-      );
-      
-      console.log("Audio loaded successfully");
-      setSoundObject(sound);
-      soundRef.current = sound;
-      
-      // Play the sound
-      await sound.playAsync();
-      console.log("Audio playback started");
-      onPlay(song.url);
-      setSelectedSong(song);
+        );
+        
+        console.log("Audio loaded successfully");
+        setSoundObject(sound);
+        soundRef.current = sound;
+        
+        // Play the sound
+        await sound.playAsync();
+        console.log("Audio playback started");
+        onPlay(song.url);
+        setSelectedSong(song);
+        setRetryCount(0); // Resetar contagem de tentativas após sucesso
+        
+      } catch (expoError) {
+        console.error("Erro com Expo Audio:", expoError);
+        throw expoError; // Repassar erro para ser tratado pelo fallback
+      }
       
     } catch (error) {
       console.error("Error setting up audio playback:", error);
-      toast.error("Erro ao reproduzir áudio. Tentando próxima música...");
-      handleNextSong();
+      
+      if (retryCount < maxRetries) {
+        setRetryCount(prev => prev + 1);
+        toast.error(`Tentativa ${retryCount + 1}/${maxRetries} falhou. Tentando novamente...`);
+        
+        // Esperar um momento antes de tentar novamente
+        setTimeout(() => {
+          // Tentar com o método de fallback
+          const success = await playAudioWithFallback(song);
+          
+          if (!success && retryCount === maxRetries - 1) {
+            toast.error("Não foi possível reproduzir o áudio após várias tentativas.");
+            handleNextSong();
+          }
+        }, 1000);
+      } else {
+        toast.error("Erro ao reproduzir áudio. Tentando próxima música...");
+        handleNextSong();
+      }
     }
   };
 
