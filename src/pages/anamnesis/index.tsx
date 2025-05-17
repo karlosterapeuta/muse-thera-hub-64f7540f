@@ -410,6 +410,12 @@ export default function AnamnesisForm() {
     }
   };
 
+  // Handle form data changes
+  const updateFormData = (newData: Record<string, any>) => {
+    console.log("Atualizando dados do formulário:", newData);
+    setFormData(newData);
+  };
+
   // New function to save anamnesis without generating PDF
   const saveAnamnesis = async () => {
     if (!selectedPatient) {
@@ -435,18 +441,21 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário:", formData);
       
-      // Create a data object with explicit boolean handling for the new fields
+      // Create a data object with properly formatted fields
       const anamnesisData = {
-        ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
-        // Explicitamente convertendo cada campo para o tipo correto
-        alzheimer: Boolean(formData.alzheimer),
-        psychomotricity: Boolean(formData.psychomotricity),
-        music_therapy: Boolean(formData.music_therapy),
-        nutrition: Boolean(formData.nutrition),
-        aba_therapy: Boolean(formData.aba_therapy),
-        sensory_integration: Boolean(formData.sensory_integration),
+        
+        // Manter campos existentes
+        ...formData,
+        
+        // Garantir que os novos campos sejam booleanos
+        aba_therapy: Boolean(formData.aba_therapy || false),
+        psychomotricity: Boolean(formData.psychomotricity || false),
+        music_therapy: Boolean(formData.music_therapy || false),
+        nutrition: Boolean(formData.nutrition || false),
+        sensory_integration: Boolean(formData.sensory_integration || false),
+        alzheimer: Boolean(formData.alzheimer || false),
       };
 
       console.log("Debug - salvando dados de anamnese processados:", anamnesisData);
@@ -488,6 +497,9 @@ export default function AnamnesisForm() {
       if (!existingAnamnesisId && result.data && result.data[0]?.id) {
         setExistingAnamnesisId(result.data[0].id);
       }
+      
+      // Recarregar os dados para garantir que estamos usando os valores mais recentes
+      loadPatientAnamnesis();
       
     } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
@@ -537,18 +549,21 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário ao enviar:", formData);
       
-      // Create a data object with explicit boolean handling for the new fields
+      // Create a data object with properly formatted fields
       const anamnesisData = {
-        ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
-        // Explicitamente convertendo cada campo para o tipo correto
-        alzheimer: Boolean(formData.alzheimer),
-        psychomotricity: Boolean(formData.psychomotricity),
-        music_therapy: Boolean(formData.music_therapy),
-        nutrition: Boolean(formData.nutrition),
-        aba_therapy: Boolean(formData.aba_therapy),
-        sensory_integration: Boolean(formData.sensory_integration),
+        
+        // Manter campos existentes
+        ...formData,
+        
+        // Garantir que os novos campos sejam booleanos
+        aba_therapy: Boolean(formData.aba_therapy || false),
+        psychomotricity: Boolean(formData.psychomotricity || false),
+        music_therapy: Boolean(formData.music_therapy || false),
+        nutrition: Boolean(formData.nutrition || false),
+        sensory_integration: Boolean(formData.sensory_integration || false),
+        alzheimer: Boolean(formData.alzheimer || false),
       };
 
       console.log("Debug - enviando dados de anamnese processados:", anamnesisData);
@@ -646,7 +661,7 @@ export default function AnamnesisForm() {
             
             <InitialEvaluationForm
               content={formData}
-              onChange={setFormData}
+              onChange={updateFormData}
             />
 
             <div className="flex justify-end space-x-4">

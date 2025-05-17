@@ -1,4 +1,3 @@
-
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -18,7 +17,7 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
   // Ensuring the updateField function properly handles boolean values
   const updateField = (field: string, value: any) => {
     onChange({ ...content, [field]: value });
-    console.log(`Field ${field} updated with value:`, value);
+    console.log(`Field ${field} updated with value:`, value, "type:", typeof value);
   };
 
   // Função para garantir que os valores booleanos sejam tratados corretamente
