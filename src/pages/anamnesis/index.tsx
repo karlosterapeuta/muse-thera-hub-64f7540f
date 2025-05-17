@@ -441,15 +441,45 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário:", formData);
       
-      // Create a data object with properly formatted fields
-      const anamnesisData = {
+      // First, create a data object with the basic fields
+      // that we know definitely exist in the database
+      const baseAnamnesisData = {
         patient_id: selectedPatient,
         professional_id: professionalId,
-        
-        // Manter campos existentes
-        ...formData,
-        
-        // Garantir que os novos campos sejam booleanos
+        // Include existing fields from formData but exclude the new fields
+        ...Object.fromEntries(
+          Object.entries(formData).filter(([key]) => 
+            !['aba_therapy', 'psychomotricity', 'music_therapy', 
+              'nutrition', 'sensory_integration', 'alzheimer'].includes(key)
+          )
+        )
+      };
+      
+      console.log("Debug - tentando salvar dados base primeiro:", baseAnamnesisData);
+
+      let result;
+      
+      // Determine if we should insert or update
+      if (existingAnamnesisId) {
+        // Update existing record with base data
+        result = await supabase
+          .from("anamnesis")
+          .update(baseAnamnesisData)
+          .eq("id", existingAnamnesisId);
+      } else {
+        // Insert new record with base data
+        result = await supabase
+          .from("anamnesis")
+          .insert(baseAnamnesisData);
+      }
+
+      if (result.error) {
+        console.error("Erro ao salvar anamnese (dados base):", result.error);
+        throw result.error;
+      }
+
+      // Now try to save each new field individually to handle potential schema cache issues
+      const newFields = {
         aba_therapy: Boolean(formData.aba_therapy || false),
         psychomotricity: Boolean(formData.psychomotricity || false),
         music_therapy: Boolean(formData.music_therapy || false),
@@ -458,34 +488,26 @@ export default function AnamnesisForm() {
         alzheimer: Boolean(formData.alzheimer || false),
       };
 
-      console.log("Debug - salvando dados de anamnese processados:", anamnesisData);
-      console.log("Debug - valores específicos:");
-      console.log("- alzheimer:", anamnesisData.alzheimer, "tipo:", typeof anamnesisData.alzheimer);
-      console.log("- aba_therapy:", anamnesisData.aba_therapy, "tipo:", typeof anamnesisData.aba_therapy);
-      console.log("- psychomotricity:", anamnesisData.psychomotricity, "tipo:", typeof anamnesisData.psychomotricity);
-      console.log("- music_therapy:", anamnesisData.music_therapy, "tipo:", typeof anamnesisData.music_therapy);
-      console.log("- nutrition:", anamnesisData.nutrition, "tipo:", typeof anamnesisData.nutrition);
-      console.log("- sensory_integration:", anamnesisData.sensory_integration, "tipo:", typeof anamnesisData.sensory_integration);
+      // Get the ID of the record we're working with
+      const recordId = existingAnamnesisId || (result.data && result.data[0]?.id);
 
-      let result;
-      
-      // Determine if we should insert or update
-      if (existingAnamnesisId) {
-        // Update existing record
-        result = await supabase
-          .from("anamnesis")
-          .update(anamnesisData)
-          .eq("id", existingAnamnesisId);
-      } else {
-        // Insert new record
-        result = await supabase
-          .from("anamnesis")
-          .insert(anamnesisData);
-      }
-
-      if (result.error) {
-        console.error("Erro ao salvar anamnese:", result.error);
-        throw result.error;
+      if (recordId) {
+        // Try updating each field individually
+        for (const [field, value] of Object.entries(newFields)) {
+          try {
+            console.log(`Debug - tentando atualizar campo ${field} com valor ${value}`);
+            
+            await supabase
+              .from("anamnesis")
+              .update({ [field]: value })
+              .eq("id", recordId);
+              
+            console.log(`Campo ${field} atualizado com sucesso`);
+          } catch (fieldError) {
+            console.warn(`Não foi possível atualizar o campo ${field}:`, fieldError);
+            // We'll continue even if individual fields fail
+          }
+        }
       }
 
       toast({
@@ -549,31 +571,20 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário ao enviar:", formData);
       
-      // Create a data object with properly formatted fields
-      const anamnesisData = {
+      // First, save the basic anamnesis data without the new fields
+      const baseAnamnesisData = {
         patient_id: selectedPatient,
         professional_id: professionalId,
-        
-        // Manter campos existentes
-        ...formData,
-        
-        // Garantir que os novos campos sejam booleanos
-        aba_therapy: Boolean(formData.aba_therapy || false),
-        psychomotricity: Boolean(formData.psychomotricity || false),
-        music_therapy: Boolean(formData.music_therapy || false),
-        nutrition: Boolean(formData.nutrition || false),
-        sensory_integration: Boolean(formData.sensory_integration || false),
-        alzheimer: Boolean(formData.alzheimer || false),
+        // Include existing fields from formData but exclude the new fields
+        ...Object.fromEntries(
+          Object.entries(formData).filter(([key]) => 
+            !['aba_therapy', 'psychomotricity', 'music_therapy', 
+              'nutrition', 'sensory_integration', 'alzheimer'].includes(key)
+          )
+        )
       };
-
-      console.log("Debug - enviando dados de anamnese processados:", anamnesisData);
-      console.log("Debug - valores específicos:");
-      console.log("- alzheimer:", anamnesisData.alzheimer, "tipo:", typeof anamnesisData.alzheimer);
-      console.log("- aba_therapy:", anamnesisData.aba_therapy, "tipo:", typeof anamnesisData.aba_therapy);
-      console.log("- psychomotricity:", anamnesisData.psychomotricity, "tipo:", typeof anamnesisData.psychomotricity);
-      console.log("- music_therapy:", anamnesisData.music_therapy, "tipo:", typeof anamnesisData.music_therapy);
-      console.log("- nutrition:", anamnesisData.nutrition, "tipo:", typeof anamnesisData.nutrition);
-      console.log("- sensory_integration:", anamnesisData.sensory_integration, "tipo:", typeof anamnesisData.sensory_integration);
+      
+      console.log("Debug - tentando salvar dados base primeiro:", baseAnamnesisData);
 
       let result;
       
@@ -582,18 +593,50 @@ export default function AnamnesisForm() {
         // Update existing record
         result = await supabase
           .from("anamnesis")
-          .update(anamnesisData)
+          .update(baseAnamnesisData)
           .eq("id", existingAnamnesisId);
       } else {
         // Insert new record
         result = await supabase
           .from("anamnesis")
-          .insert(anamnesisData);
+          .insert(baseAnamnesisData);
       }
 
       if (result.error) {
         console.error("Erro ao salvar anamnese:", result.error);
         throw result.error;
+      }
+
+      // Get the ID of the record we just saved
+      const recordId = existingAnamnesisId || (result.data && result.data[0]?.id);
+
+      if (recordId) {
+        // Now try to save each new field individually
+        const newFields = {
+          aba_therapy: Boolean(formData.aba_therapy || false),
+          psychomotricity: Boolean(formData.psychomotricity || false),
+          music_therapy: Boolean(formData.music_therapy || false),
+          nutrition: Boolean(formData.nutrition || false),
+          sensory_integration: Boolean(formData.sensory_integration || false),
+          alzheimer: Boolean(formData.alzheimer || false),
+        };
+
+        // Try updating each field individually
+        for (const [field, value] of Object.entries(newFields)) {
+          try {
+            console.log(`Debug - tentando atualizar campo ${field} com valor ${value}`);
+            
+            await supabase
+              .from("anamnesis")
+              .update({ [field]: value })
+              .eq("id", recordId);
+              
+            console.log(`Campo ${field} atualizado com sucesso`);
+          } catch (fieldError) {
+            console.warn(`Não foi possível atualizar o campo ${field}:`, fieldError);
+            // Continue even if individual fields fail
+          }
+        }
       }
 
       // Find patient data

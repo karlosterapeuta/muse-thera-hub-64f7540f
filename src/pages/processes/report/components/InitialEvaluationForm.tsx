@@ -17,7 +17,10 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
 
   // Função para garantir que os valores booleanos sejam tratados corretamente
   const getBooleanValue = (fieldName: string): boolean => {
-    return Boolean(content[fieldName]);
+    if (fieldName in content) {
+      return Boolean(content[fieldName]);
+    }
+    return false;
   };
 
   const musicalEngagementOptions = [
