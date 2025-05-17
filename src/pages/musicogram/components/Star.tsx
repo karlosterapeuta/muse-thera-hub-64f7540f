@@ -30,10 +30,11 @@ fabric.Star = Star;
 // Register the class for fabric deserialization
 fabric.util.classRegistry.addSVGParser("star", Star);
 
-// Extend the fabric namespace through interface merging instead of module augmentation
+// Extend the fabric namespace
 declare global {
   namespace fabric {
-    var Star: typeof Star;
+    // Use 'const' instead of 'var' to avoid self-reference error
+    const Star: typeof Star;
     
     interface IPolylineOptions {
       numPoints?: number;
@@ -42,5 +43,6 @@ declare global {
   }
 }
 
+// Actually extend the fabric object
 // @ts-ignore
 fabric.Star = Star;
