@@ -1,5 +1,5 @@
 
--- Add new columns to anamnesis table
+-- Add new columns to anamnesis table with explicit defaults
 ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS psychomotricity BOOLEAN DEFAULT false;
 ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS music_therapy BOOLEAN DEFAULT false;
 ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS nutrition BOOLEAN DEFAULT false;
@@ -7,14 +7,28 @@ ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS alzheimer BOOLEAN DEFAULT false;
 ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS aba_therapy BOOLEAN DEFAULT false;
 ALTER TABLE anamnesis ADD COLUMN IF NOT EXISTS sensory_integration BOOLEAN DEFAULT false;
 
--- Force Supabase to recognize the new columns by touching the table
+-- Ensure all columns have the proper type
+DO $$
+BEGIN
+  -- Check if columns exist and have proper type
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'anamnesis' AND column_name = 'alzheimer'
+  ) THEN
+    -- Column exists, ensure proper type
+    ALTER TABLE anamnesis ALTER COLUMN alzheimer TYPE BOOLEAN USING alzheimer::boolean;
+    ALTER TABLE anamnesis ALTER COLUMN alzheimer SET DEFAULT false;
+  END IF;
+END $$;
+
+-- Forces schema refresh
 COMMENT ON TABLE anamnesis IS 'Table updated with new therapy and mental disorder fields';
 
--- These additional commands will force a schema cache refresh
+-- Clear the schema cache
 SELECT pg_catalog.pg_advisory_unlock_all();
 NOTIFY pgrst, 'reload schema';
 
--- Double check that all columns exist and are properly typed
+-- Verify that all columns exist and are properly typed
 DO $$
 BEGIN
   -- This will raise an exception if any column doesn't exist
@@ -31,3 +45,7 @@ END $$;
 -- Force another schema cache refresh after verification
 SELECT pg_catalog.pg_advisory_unlock_all();
 NOTIFY pgrst, 'reload schema';
+
+-- Just to be extra sure, let's update the PostgREST schema again
+SELECT pg_catalog.pg_advisory_unlock_all();
+SELECT pg_notify('pgrst', 'reload schema');
