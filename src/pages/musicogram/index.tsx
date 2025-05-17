@@ -474,6 +474,8 @@ export default function MusicogramPage() {
             onUpdateElement={handleUpdateElement}
             onDeleteElement={handleDeleteElement}
             zoom={zoom}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
           />
         </div>
       </div>

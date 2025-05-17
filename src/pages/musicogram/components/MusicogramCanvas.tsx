@@ -15,8 +15,8 @@ interface MusicogramCanvasProps {
   onUpdateElement: (element: any) => void;
   onDeleteElement: (elementId: string) => void;
   zoom: number;
-  onDrop: (e: React.DragEvent<HTMLCanvasElement>) => void;
-  onDragOver: (e: React.DragEvent<HTMLCanvasElement>) => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
 export function MusicogramCanvas({ 
