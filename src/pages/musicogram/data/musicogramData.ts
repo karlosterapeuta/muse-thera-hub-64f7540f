@@ -1,5 +1,5 @@
 
-import { MusicElement, MusicogramTemplate } from "../types";
+import { MusicElement, MusicogramTemplate, PatientMusicogram } from "../types";
 
 // Music Elements Library
 export const musicElements: MusicElement[] = [
@@ -223,7 +223,7 @@ export const musicogramTemplates: MusicogramTemplate[] = [
 ];
 
 // Sample saved musicograms
-export const sampleMusicograms = [
+export const sampleMusicograms: PatientMusicogram[] = [
   {
     id: "musicogram-1",
     patientId: "patient-123",

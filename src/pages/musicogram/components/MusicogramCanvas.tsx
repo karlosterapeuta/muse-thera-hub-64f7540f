@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas, Circle, IEvent, Rect, Star, Triangle } from "fabric";
+import { Canvas, Circle, IEvent, Rect, Triangle, Text } from "fabric";
+import { Star } from "./Star";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { VisualElement, MusicogramTemplate } from "../types";
@@ -158,7 +159,7 @@ export const MusicogramCanvas = ({
       canvas.add(fabricObject);
       
       // Add text below the shape
-      const text = new fabric.Text(element.label, {
+      const text = new Text(element.label, {
         left: element.position.x,
         top: element.position.y + (element.size / 2) + 10,
         fontSize: 14,
