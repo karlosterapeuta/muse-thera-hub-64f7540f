@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import {
   Users,
   UserCircle,
   FileText,
-  Book,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -48,7 +46,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: UserCircle, text: "Profissional-MT", path: "/professional" },
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
-    { icon: Book, text: "Hawkins", path: "/hawkins" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
     { icon: Music, text: "Fala Mágica", path: "/songs" },
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },

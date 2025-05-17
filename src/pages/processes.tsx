@@ -1,9 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import {
   ClipboardList,
   FileText,
-  Book,
   Users,
   ChartBar,
   Edit,
@@ -30,7 +28,7 @@ export default function Processes() {
     {
       title: "Plano Terapêutico",
       description: "Definição dos objetivos e estratégias de tratamento",
-      icon: Book,
+      icon: Edit,
       path: "/processos/plano"
     },
     {
