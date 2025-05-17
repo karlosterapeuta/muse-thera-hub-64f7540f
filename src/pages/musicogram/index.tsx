@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -173,6 +172,15 @@ export default function MusicogramPage() {
     return defaultTemplates.find(template => template.id === id) || defaultTemplates[0];
   };
 
+  // Modified the Star component rendering to pass it as a React component
+  const renderStarIcon = () => {
+    return <div className="flex-grow flex items-end justify-center pb-4">
+      <div className="w-32 h-32 opacity-10">
+        <Star />
+      </div>
+    </div>;
+  };
+
   return (
     <div className="flex flex-col h-full space-y-4">
       <div className="flex items-center justify-between">
@@ -276,9 +284,7 @@ export default function MusicogramPage() {
             <ElementPalette onAddElement={handleAddElement} />
           </div>
           
-          <div className="flex-grow flex items-end justify-center pb-4">
-            <Star className="w-32 h-32 opacity-10" />
-          </div>
+          {renderStarIcon()}
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-2 relative">

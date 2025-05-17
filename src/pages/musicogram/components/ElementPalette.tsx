@@ -9,11 +9,10 @@ import {
 import { MusicElement } from "../types";
 
 interface ElementPaletteProps {
-  elements: MusicElement[];
-  onSelectElement: (element: MusicElement) => void;
+  onAddElement: (element: any) => void;
 }
 
-export function ElementPalette({ elements, onSelectElement }: ElementPaletteProps) {
+const ElementPalette = ({ onAddElement }: ElementPaletteProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("note");
   
   const categories = [
@@ -23,6 +22,16 @@ export function ElementPalette({ elements, onSelectElement }: ElementPaletteProp
     { id: "dynamics", label: "Dinâmicas", icon: <Volume2 className="h-4 w-4" /> },
     { id: "silence", label: "Silêncios", icon: <Pause className="h-4 w-4" /> },
     { id: "structure", label: "Estruturas", icon: <LayoutGrid className="h-4 w-4" /> },
+  ];
+  
+  // Dummy elements for demonstration
+  const elements: MusicElement[] = [
+    { id: "quarter-note", name: "Semínima", category: "note", defaultColor: "#000000", defaultShape: "circle", defaultSize: 20 },
+    { id: "half-note", name: "Mínima", category: "note", defaultColor: "#000000", defaultShape: "circle", defaultSize: 20 },
+    { id: "whole-note", name: "Semibreve", category: "note", defaultColor: "#000000", defaultShape: "circle", defaultSize: 20 },
+    { id: "forte", name: "Forte", category: "dynamics", defaultColor: "#FF5252", defaultShape: "rect", defaultSize: 30 },
+    { id: "piano", name: "Piano", category: "dynamics", defaultColor: "#4CAF50", defaultShape: "rect", defaultSize: 30 },
+    { id: "quarter-rest", name: "Pausa de Semínima", category: "silence", defaultColor: "#000000", defaultShape: "rect", defaultSize: 20 },
   ];
   
   const filteredElements = elements.filter(element => element.category === selectedCategory);
@@ -49,7 +58,7 @@ export function ElementPalette({ elements, onSelectElement }: ElementPaletteProp
                     <div 
                       key={element.id} 
                       className="p-2 border rounded-md hover:bg-muted/50 cursor-pointer transition-colors flex flex-col items-center"
-                      onClick={() => onSelectElement(element)}
+                      onClick={() => onAddElement(element)}
                     >
                       <div 
                         className="w-10 h-10 mb-1 flex items-center justify-center"
@@ -73,4 +82,6 @@ export function ElementPalette({ elements, onSelectElement }: ElementPaletteProp
       </CardContent>
     </Card>
   );
-}
+};
+
+export default ElementPalette;
