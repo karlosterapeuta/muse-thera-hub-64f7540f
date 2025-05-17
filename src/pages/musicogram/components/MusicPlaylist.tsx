@@ -18,44 +18,8 @@ export type Song = {
   source?: "default" | "youtube";
 };
 
-// Use more reliable CDN URLs for audio files
-export const songLibrary: Song[] = [
-  {
-    id: "1",
-    title: "Atirei o Pau no Gato",
-    artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    source: "default"
-  },
-  {
-    id: "2",
-    title: "Ciranda Cirandinha",
-    artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-    source: "default"
-  },
-  {
-    id: "3",
-    title: "O Sapo não Lava o Pé",
-    artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    source: "default"
-  },
-  {
-    id: "4",
-    title: "Melodia Calma 1",
-    artist: "Musicoterapia",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-    source: "default"
-  },
-  {
-    id: "5",
-    title: "Sons da Natureza",
-    artist: "Ambiente",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-    source: "default"
-  }
-];
+// Create an empty song library
+export const songLibrary: Song[] = [];
 
 // Backup URL if all else fails
 const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3";
@@ -331,7 +295,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
               <p className="text-xs text-muted-foreground text-center">
                 {searchResults.length > 0 
                   ? `${searchResults.length} resultado(s) encontrado(s)` 
-                  : "Músicas para musicoterapia e estimulação auditiva"}
+                  : "Pesquise por música no YouTube para começar"}
               </p>
             </div>
           </div>
