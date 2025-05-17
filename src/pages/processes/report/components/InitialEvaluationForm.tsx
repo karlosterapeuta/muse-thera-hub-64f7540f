@@ -9,7 +9,8 @@ type FormProps = {
 };
 
 export function InitialEvaluationForm({ content, onChange }: FormProps) {
-  const updateField = (field: string, value: string) => {
+  // Update the function to handle both string and boolean values
+  const updateField = (field: string, value: string | boolean) => {
     onChange({ ...content, [field]: value });
   };
 
