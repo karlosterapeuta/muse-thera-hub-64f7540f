@@ -14,8 +14,10 @@ type FormProps = {
 };
 
 export function InitialEvaluationForm({ content, onChange }: FormProps) {
+  // Ensuring the updateField function properly handles boolean values
   const updateField = (field: string, value: any) => {
     onChange({ ...content, [field]: value });
+    console.log(`Field ${field} updated with value:`, value);
   };
 
   return (
@@ -402,73 +404,73 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "adhd",
             label: "TDAH",
-            checked: content.adhd || false,
+            checked: Boolean(content.adhd),
             onChange: (value) => updateField("adhd", value),
           },
           {
             id: "adhd_inattentive",
             label: "TDAH Predominantemente Desatento",
-            checked: content.adhd_inattentive || false,
+            checked: Boolean(content.adhd_inattentive),
             onChange: (value) => updateField("adhd_inattentive", value),
           },
           {
             id: "adhd_hyperactive",
             label: "TDAH Predominantemente Hiperativo/Impulsivo",
-            checked: content.adhd_hyperactive || false,
+            checked: Boolean(content.adhd_hyperactive),
             onChange: (value) => updateField("adhd_hyperactive", value),
           },
           {
             id: "oppositional_defiant_disorder",
             label: "Transtorno Opositor Desafiador (TOD)",
-            checked: content.oppositional_defiant_disorder || false,
+            checked: Boolean(content.oppositional_defiant_disorder),
             onChange: (value) => updateField("oppositional_defiant_disorder", value),
           },
           {
             id: "anxiety_disorders",
             label: "Transtornos de Ansiedade",
-            checked: content.anxiety_disorders || false,
+            checked: Boolean(content.anxiety_disorders),
             onChange: (value) => updateField("anxiety_disorders", value),
           },
           {
             id: "specific_phobia",
             label: "Fobia Específica",
-            checked: content.specific_phobia || false,
+            checked: Boolean(content.specific_phobia),
             onChange: (value) => updateField("specific_phobia", value),
           },
           {
             id: "separation_anxiety",
             label: "Ansiedade de Separação",
-            checked: content.separation_anxiety || false,
+            checked: Boolean(content.separation_anxiety),
             onChange: (value) => updateField("separation_anxiety", value),
           },
           {
             id: "social_anxiety",
             label: "Ansiedade Social",
-            checked: content.social_anxiety || false,
+            checked: Boolean(content.social_anxiety),
             onChange: (value) => updateField("social_anxiety", value),
           },
           {
             id: "ocd",
             label: "Transtorno Obsessivo-Compulsivo (TOC)",
-            checked: content.ocd || false,
+            checked: Boolean(content.ocd),
             onChange: (value) => updateField("ocd", value),
           },
           {
             id: "depression",
             label: "Depressão",
-            checked: content.depression || false,
+            checked: Boolean(content.depression),
             onChange: (value) => updateField("depression", value),
           },
           {
             id: "bipolar_disorder",
             label: "Transtorno Bipolar",
-            checked: content.bipolar_disorder || false,
+            checked: Boolean(content.bipolar_disorder),
             onChange: (value) => updateField("bipolar_disorder", value),
           },
           {
             id: "alzheimer",
             label: "Alzheimer",
-            checked: content.alzheimer || false,
+            checked: Boolean(content.alzheimer),
             onChange: (value) => updateField("alzheimer", value),
           },
         ]}
@@ -480,7 +482,7 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "down_syndrome",
             label: "Síndrome de Down",
-            checked: content.down_syndrome || false,
+            checked: Boolean(content.down_syndrome),
             onChange: (value) => updateField("down_syndrome", value),
           },
           {
@@ -540,67 +542,67 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
           {
             id: "speech_therapy",
             label: "Fonoaudiologia",
-            checked: content.speech_therapy || false,
+            checked: Boolean(content.speech_therapy),
             onChange: (value) => updateField("speech_therapy", value),
           },
           {
             id: "psychological_support",
             label: "Acompanhamento Psicológico",
-            checked: content.psychological_support || false,
+            checked: Boolean(content.psychological_support),
             onChange: (value) => updateField("psychological_support", value),
           },
           {
             id: "psychopedagogical",
             label: "Psicopedagogia",
-            checked: content.psychopedagogical || false,
+            checked: Boolean(content.psychopedagogical),
             onChange: (value) => updateField("psychopedagogical", value),
           },
           {
             id: "occupational_therapy",
             label: "Terapia Ocupacional",
-            checked: content.occupational_therapy || false,
+            checked: Boolean(content.occupational_therapy),
             onChange: (value) => updateField("occupational_therapy", value),
           },
           {
             id: "physiotherapy",
             label: "Fisioterapia",
-            checked: content.physiotherapy || false,
+            checked: Boolean(content.physiotherapy),
             onChange: (value) => updateField("physiotherapy", value),
           },
           {
             id: "equine_therapy",
             label: "Equoterapia",
-            checked: content.equine_therapy || false,
+            checked: Boolean(content.equine_therapy),
             onChange: (value) => updateField("equine_therapy", value),
           },
           {
             id: "aba_therapy",
             label: "Terapia ABA",
-            checked: content.aba_therapy || false,
+            checked: Boolean(content.aba_therapy),
             onChange: (value) => updateField("aba_therapy", value),
           },
           {
             id: "sensory_integration",
             label: "Integração Sensorial",
-            checked: content.sensory_integration || false,
+            checked: Boolean(content.sensory_integration),
             onChange: (value) => updateField("sensory_integration", value),
           },
           {
             id: "psychomotricity",
             label: "Psicomotricidade",
-            checked: content.psychomotricity || false,
+            checked: Boolean(content.psychomotricity),
             onChange: (value) => updateField("psychomotricity", value),
           },
           {
             id: "music_therapy",
             label: "Musicoterapia",
-            checked: content.music_therapy || false,
+            checked: Boolean(content.music_therapy),
             onChange: (value) => updateField("music_therapy", value),
           },
           {
             id: "nutrition",
             label: "Nutrição",
-            checked: content.nutrition || false,
+            checked: Boolean(content.nutrition),
             onChange: (value) => updateField("nutrition", value),
           },
         ]}

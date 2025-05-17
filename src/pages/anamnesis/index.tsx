@@ -108,6 +108,7 @@ export default function AnamnesisForm() {
 
     try {
       setIsLoading(true);
+      console.log("Loading anamnesis for patient:", selectedPatient);
       // Modified query to order by created_at desc and limit to 1 record
       const { data: anamnesisData, error } = await supabase
         .from("anamnesis")
@@ -128,10 +129,12 @@ export default function AnamnesisForm() {
       }
 
       if (anamnesisData) {
+        console.log("Anamnesis data loaded:", anamnesisData);
         setFormData(anamnesisData);
         setExistingAnamnesisId(anamnesisData.id);
       } else {
         // Reset form data if no anamnesis exists for this patient
+        console.log("No anamnesis data found, resetting form");
         setFormData({});
         setExistingAnamnesisId(null);
       }
@@ -430,11 +433,17 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Create a cleaned version of the form data with only valid fields
+      // Create a data object with explicit boolean handling for the new fields
       const anamnesisData = {
         ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
+        alzheimer: Boolean(formData.alzheimer),
+        psychomotricity: Boolean(formData.psychomotricity),
+        music_therapy: Boolean(formData.music_therapy),
+        nutrition: Boolean(formData.nutrition),
+        aba_therapy: Boolean(formData.aba_therapy),
+        sensory_integration: Boolean(formData.sensory_integration),
       };
 
       console.log("Debug - saving anamnesis data:", anamnesisData);
@@ -516,11 +525,17 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Create a cleaned version of the form data with only valid fields
+      // Create a data object with explicit boolean handling for the new fields
       const anamnesisData = {
         ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
+        alzheimer: Boolean(formData.alzheimer),
+        psychomotricity: Boolean(formData.psychomotricity),
+        music_therapy: Boolean(formData.music_therapy),
+        nutrition: Boolean(formData.nutrition),
+        aba_therapy: Boolean(formData.aba_therapy),
+        sensory_integration: Boolean(formData.sensory_integration),
       };
 
       console.log("Debug - submitting anamnesis data:", anamnesisData);
