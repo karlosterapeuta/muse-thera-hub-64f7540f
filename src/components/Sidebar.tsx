@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -8,7 +9,6 @@ import {
   FileText,
   LogOut,
   ChevronLeft,
-  ChevronRight,
   Key,
   UsersRound,
   Music,
@@ -29,7 +29,6 @@ interface SidebarProps {
 
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
   const { data: isAdmin } = useAdmin();
 
   // Buscar o email do usuário atual
@@ -57,11 +56,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ].filter(Boolean);
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    onNavigate?.();
-  };
-
   return (
     <div
       className={cn(
@@ -84,7 +78,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           onClick={() => setCollapsed(!collapsed)}
           className="hover:bg-gray-100"
         >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          {collapsed ? <ChevronLeft size={20} /> : <ChevronLeft size={20} />}
         </Button>
       </div>
 
@@ -117,7 +111,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
             "w-full justify-center text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors",
             !collapsed && "justify-start"
           )}
-          onClick={() => handleNavigation("/")}
+          onClick={async () => {
+            await supabase.auth.signOut();
+            onNavigate?.();
+          }}
         >
           <LogOut size={20} />
           {!collapsed && <span className="ml-3">Sair do Sistema</span>}
