@@ -30,14 +30,15 @@ fabric.Star = Star;
 // Register the class for fabric deserialization
 fabric.util.classRegistry.addSVGParser("star", Star);
 
-declare module "fabric" {
-  interface StaticCanvas {
-    Star: typeof Star;
-  }
-  
-  interface IPolylineOptions {
-    numPoints?: number;
-    innerRadius?: number;
+// Extend the fabric namespace through interface merging instead of module augmentation
+declare global {
+  namespace fabric {
+    var Star: typeof Star;
+    
+    interface IPolylineOptions {
+      numPoints?: number;
+      innerRadius?: number;
+    }
   }
 }
 

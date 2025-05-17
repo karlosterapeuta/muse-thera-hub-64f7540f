@@ -32,35 +32,35 @@ const songLibrary: Song[] = [
     id: "song-1",
     title: "Canção da Natureza",
     artist: "Músicas Infantis",
-    url: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/WFMU/Broke_For_Free/Directionless_EP/Broke_For_Free_-_01_-_Night_Owl.mp3",
     duration: "1:23"
   },
   {
     id: "song-2",
     title: "Canção dos Bichinhos",
     artist: "Músicas Infantis",
-    url: "https://assets.mixkit.co/music/preview/mixkit-kidding-around-9.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3",
     duration: "1:12"
   },
   {
     id: "song-3",
     title: "Dança das Borboletas",
     artist: "Músicas Infantis",
-    url: "https://assets.mixkit.co/music/preview/mixkit-spring-kid-11.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Chad_Crouch/Arps/Chad_Crouch_-_Shipping_Lanes.mp3",
     duration: "1:52"
   },
   {
     id: "song-4",
     title: "Tambores da Selva",
     artist: "Sons da Natureza",
-    url: "https://assets.mixkit.co/music/preview/mixkit-tribal-ritual-383.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Torres/Torres/Torres_-_01_-_Del_campo_al_humo.mp3",
     duration: "1:30"
   },
   {
     id: "song-5",
     title: "Mar Calmo",
     artist: "Sons da Natureza",
-    url: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3",
+    url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Kai_Engel/Satin/Kai_Engel_-_07_-_Heimat.mp3",
     duration: "1:23"
   }
 ];
