@@ -1,10 +1,7 @@
-
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
 import MusicogramCanvas from "./components/MusicogramCanvas";
-import ElementPalette from "./components/ElementPalette";
-import { Star } from "./components/Star";
 import PatientSelector from "./components/PatientSelector";
 import TemplateSelector from "./components/TemplateSelector";
 import { defaultTemplates } from "./data/musicogramData";
@@ -20,7 +17,6 @@ import {
   Circle,
   MusicIcon,
   Piano,
-  Microphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
@@ -232,10 +228,6 @@ export default function MusicogramPage() {
     );
   };
 
-  const handleAddElement = (element: any) => {
-    setCanvasElements(prev => [...prev, element]);
-  };
-
   const handleDeleteElement = (elementId: string) => {
     setCanvasElements(prev => prev.filter(el => el.id !== elementId));
   };
@@ -358,11 +350,6 @@ export default function MusicogramPage() {
             <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
               {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
             </div>
-          </div>
-          
-          <div className="mt-6">
-            <h3 className="font-medium mb-3 text-center">Elementos</h3>
-            <ElementPalette onAddElement={handleAddElement} />
           </div>
           
           {renderStarIcon()}
