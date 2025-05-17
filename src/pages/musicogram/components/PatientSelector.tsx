@@ -7,7 +7,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Patient {
@@ -23,7 +22,6 @@ interface PatientSelectorProps {
 export function PatientSelector({ onPatientSelect, currentPatient }: PatientSelectorProps) {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
   
   useEffect(() => {
     const fetchPatients = async () => {
@@ -58,19 +56,8 @@ export function PatientSelector({ onPatientSelect, currentPatient }: PatientSele
     fetchPatients();
   }, []);
   
-  const filteredPatients = patients.filter(patient => 
-    patient.name.toLowerCase().includes(search.toLowerCase())
-  );
-  
   return (
-    <div className="space-y-2">
-      <Input
-        placeholder="Buscar paciente..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-2"
-      />
-      
+    <div>
       <Select
         value={currentPatient}
         onValueChange={(value) => {
@@ -87,12 +74,12 @@ export function PatientSelector({ onPatientSelect, currentPatient }: PatientSele
           <SelectValue placeholder="Selecionar paciente" />
         </SelectTrigger>
         <SelectContent>
-          {filteredPatients.length === 0 ? (
+          {patients.length === 0 ? (
             <SelectItem value="no-results" disabled>
               Nenhum paciente encontrado
             </SelectItem>
           ) : (
-            filteredPatients.map(patient => (
+            patients.map(patient => (
               <SelectItem key={patient.id} value={patient.id}>
                 {patient.name}
               </SelectItem>

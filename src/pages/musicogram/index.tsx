@@ -1,14 +1,14 @@
+
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
 import MusicogramCanvas from "./components/MusicogramCanvas";
 import ElementPalette from "./components/ElementPalette";
 import { Star } from "./components/Star";
-import MusicPlaylist from "./components/MusicPlaylist";
 import PatientSelector from "./components/PatientSelector";
 import TemplateSelector from "./components/TemplateSelector";
 import { defaultTemplates } from "./data/musicogramData";
-import { Brush, Eraser, Trash2, Save, Music, Image, Hand, Download, ZoomIn, ZoomOut } from "lucide-react";
+import { Brush, Eraser, Trash2, Save, Hand, Download, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
 
@@ -30,7 +30,6 @@ export default function MusicogramPage() {
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
   const [currentPatient, setCurrentPatient] = useState<string | null>(null);
-  const [currentMusic, setCurrentMusic] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
 
   // Canvas ref and elements state would be here
@@ -189,10 +188,6 @@ export default function MusicogramPage() {
           <PatientSelector 
             onPatientSelect={setCurrentPatient} 
             currentPatient={currentPatient}
-          />
-          <MusicPlaylist 
-            onMusicSelect={setCurrentMusic} 
-            currentMusic={currentMusic}
           />
         </div>
       </div>
