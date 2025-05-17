@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -293,6 +292,13 @@ export default function MusicogramPage() {
   
   // Handle song play with improved reliability
   const handlePlaySong = (songUrl: string) => {
+    // Check if it's a YouTube URL
+    if (songUrl.includes("youtube.com") || songUrl.includes("youtu.be")) {
+      // YouTube URLs are handled by the MusicPlaylist component directly
+      // We don't need to do anything here as the iframe is managed in the component
+      return;
+    }
+    
     const song = songLibrary.find(s => s.url === songUrl);
     if (!song) return;
     
@@ -326,7 +332,8 @@ export default function MusicogramPage() {
                   id: "fallback",
                   title: "Música Alternativa",
                   artist: "Sistema",
-                  url: ULTIMATE_FALLBACK_URL
+                  url: ULTIMATE_FALLBACK_URL,
+                  source: "default"
                 };
                 
                 setCurrentSong(fallbackSong);

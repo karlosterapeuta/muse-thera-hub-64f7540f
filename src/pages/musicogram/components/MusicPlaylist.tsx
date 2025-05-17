@@ -1,10 +1,12 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Play, Pause, Music, Volume2 } from "lucide-react";
+import { Play, Pause, Music, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { generateFallbackTone } from "@/utils/audioUtils";
 
 // Define song type
 export type Song = {
@@ -12,6 +14,8 @@ export type Song = {
   title: string;
   artist: string;
   url: string;
+  thumbnail?: string;
+  source?: "default" | "youtube";
 };
 
 // Use more reliable CDN URLs for audio files
@@ -20,36 +24,44 @@ export const songLibrary: Song[] = [
     id: "1",
     title: "Atirei o Pau no Gato",
     artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" // Changed to even more reliable CDN URL
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    source: "default"
   },
   {
     id: "2",
     title: "Ciranda Cirandinha",
     artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    source: "default"
   },
   {
     id: "3",
     title: "O Sapo não Lava o Pé",
     artist: "Música Infantil",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    source: "default"
   },
   {
     id: "4",
     title: "Melodia Calma 1",
     artist: "Musicoterapia",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    source: "default"
   },
   {
     id: "5",
     title: "Sons da Natureza",
     artist: "Ambiente",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    source: "default"
   }
 ];
 
 // Backup URL if all else fails
 const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3";
+
+// YouTube API embed URL base
+const YOUTUBE_EMBED_API_BASE = "https://www.youtube.com/embed/";
 
 interface MusicPlaylistProps {
   onPlay: (url: string) => void;
@@ -59,8 +71,14 @@ interface MusicPlaylistProps {
 }
 
 export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: MusicPlaylistProps) {
-  const [expandedSongId, setExpandedSongId] = useState<string | null>(null);
   const [audioTestElement, setAudioTestElement] = useState<HTMLAudioElement | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<Song[]>([]);
+  const [displaySongs, setDisplaySongs] = useState<Song[]>(songLibrary);
+  const [youtubeIframeVisible, setYoutubeIframeVisible] = useState(false);
+  const [currentYoutubeId, setCurrentYoutubeId] = useState<string | null>(null);
+  const youtubeIframeRef = useRef<HTMLIFrameElement>(null);
   
   // Create a test audio element to verify URLs
   useEffect(() => {
@@ -76,58 +94,132 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     };
   }, []);
   
-  // Function to verify if an audio URL is playable
-  const verifyAudioUrl = (url: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      if (!audioTestElement) {
-        resolve(false);
+  // Parse YouTube video ID from various YouTube URL formats
+  const getYouTubeId = (url: string): string | null => {
+    // Check if it's already an ID (no slashes or dots)
+    if (!/[\/\.]/.test(url) && url.length >= 11) {
+      return url;
+    }
+    
+    // Try to extract ID from URL
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Handle search submission
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      toast.error("Digite algo para pesquisar");
+      return;
+    }
+    
+    setIsSearching(true);
+    
+    const youtubeId = getYouTubeId(searchQuery);
+    if (youtubeId) {
+      // If the input is a YouTube URL or ID
+      const newSong: Song = {
+        id: `youtube-${youtubeId}`,
+        title: `Vídeo do YouTube ${youtubeId}`,
+        artist: "YouTube",
+        url: `https://www.youtube.com/watch?v=${youtubeId}`,
+        thumbnail: `https://img.youtube.com/vi/${youtubeId}/0.jpg`,
+        source: "youtube"
+      };
+      
+      setSearchResults([newSong]);
+      setDisplaySongs([...songLibrary, newSong]);
+      setIsSearching(false);
+      toast.success("Vídeo do YouTube encontrado!");
+      return;
+    }
+    
+    // Simulate searching for music based on the query
+    // In a real app, this would use a YouTube API call
+    setTimeout(() => {
+      const mockResults: Song[] = [
+        {
+          id: `yt-${Date.now()}-1`,
+          title: `${searchQuery} - Música Infantil`,
+          artist: "YouTube Kids",
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Placeholder URL
+          thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
+          source: "youtube"
+        },
+        {
+          id: `yt-${Date.now()}-2`,
+          title: `${searchQuery} - Canção Educativa`,
+          artist: "Música Educativa",
+          url: "https://www.youtube.com/watch?v=_bP6aVG6L1w", // Placeholder URL
+          thumbnail: "https://img.youtube.com/vi/_bP6aVG6L1w/0.jpg",
+          source: "youtube"
+        }
+      ];
+      
+      setSearchResults(mockResults);
+      setDisplaySongs([...songLibrary, ...mockResults]);
+      setIsSearching(false);
+      toast.success("Músicas encontradas!");
+    }, 1000);
+  };
+  
+  // Reset search
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setDisplaySongs(songLibrary);
+    setYoutubeIframeVisible(false);
+    if (youtubeIframeRef.current) {
+      youtubeIframeRef.current.src = "";
+    }
+    setCurrentYoutubeId(null);
+  };
+  
+  // Handle song click from library or search results
+  const handleSongClick = (song: Song) => {
+    if (song.source === "youtube") {
+      // Handle YouTube video
+      const youtubeId = getYouTubeId(song.url);
+      
+      if (!youtubeId) {
+        toast.error("ID de vídeo inválido");
         return;
       }
       
-      // Set timeout to prevent hanging too long
-      const timeoutId = setTimeout(() => {
-        resolve(false);
-      }, 3000);
-      
-      // Set up event handlers
-      const handleCanPlay = () => {
-        clearTimeout(timeoutId);
-        cleanup();
-        resolve(true);
-      };
-      
-      const handleError = () => {
-        clearTimeout(timeoutId);
-        cleanup();
-        resolve(false);
-      };
-      
-      // Clean up function
-      const cleanup = () => {
-        audioTestElement.removeEventListener('canplaythrough', handleCanPlay);
-        audioTestElement.removeEventListener('error', handleError);
-      };
-      
-      // Add event listeners
-      audioTestElement.addEventListener('canplaythrough', handleCanPlay);
-      audioTestElement.addEventListener('error', handleError);
-      
-      // Set source and load
-      audioTestElement.src = url;
-      audioTestElement.load();
-    });
-  };
-  
-  const handleSongClick = async (song: Song) => {
-    if (currentSong?.id === song.id) {
-      if (isPlaying) {
+      if (currentYoutubeId === youtubeId && youtubeIframeVisible) {
+        // Toggle off current YouTube video
+        setYoutubeIframeVisible(false);
+        if (youtubeIframeRef.current) {
+          youtubeIframeRef.current.src = "";
+        }
+        setCurrentYoutubeId(null);
         onPause();
+      } else {
+        // Show new YouTube video
+        setYoutubeIframeVisible(true);
+        setCurrentYoutubeId(youtubeId);
+        
+        if (youtubeIframeRef.current) {
+          youtubeIframeRef.current.src = `${YOUTUBE_EMBED_API_BASE}${youtubeId}?autoplay=1`;
+        }
+        
+        // Use a fallback tone since we can't directly integrate with onPlay
+        generateFallbackTone(300, 440);
+        toast.success(`Tocando: ${song.title}`);
+      }
+    } else {
+      // Handle regular audio file
+      if (currentSong?.id === song.id) {
+        if (isPlaying) {
+          onPause();
+        } else {
+          onPlay(song.url);
+        }
       } else {
         onPlay(song.url);
       }
-    } else {
-      // Try to play the song directly
-      onPlay(song.url);
     }
   };
   
@@ -139,36 +231,107 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
           Playlist Musical
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {/* YouTube iframe container */}
+        {youtubeIframeVisible && (
+          <div className="relative w-full pt-[56.25%] mb-4">
+            <iframe
+              ref={youtubeIframeRef}
+              className="absolute top-0 left-0 w-full h-full rounded-lg"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        )}
+        
+        {/* Search bar */}
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1">
+            <Input
+              type="text"
+              placeholder="Buscar ou colar URL do YouTube"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className="pr-8"
+            />
+            {searchQuery && (
+              <button 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                onClick={clearSearch}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          <Button 
+            variant="secondary" 
+            size="sm"
+            onClick={handleSearch}
+            disabled={isSearching}
+          >
+            <Search size={16} className="mr-1" />
+            {isSearching ? "Buscando..." : "Buscar"}
+          </Button>
+        </div>
+        
+        {/* Results or library */}
         <ScrollArea className="h-[300px] rounded-md">
           <div className="space-y-2">
-            {songLibrary.map((song) => (
+            {displaySongs.map((song) => (
               <div 
                 key={song.id} 
-                className="p-3 border rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                className={`p-3 border rounded-md hover:bg-gray-50 transition-colors cursor-pointer ${
+                  song.source === "youtube" ? "bg-gray-50" : ""
+                }`}
+                onClick={() => handleSongClick(song)}
               >
-                <div className="flex justify-between items-center">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm">{song.title}</h4>
-                    <p className="text-xs text-muted-foreground">{song.artist}</p>
+                <div className="flex items-center space-x-3">
+                  {song.thumbnail && (
+                    <div className="flex-shrink-0">
+                      <img 
+                        src={song.thumbnail} 
+                        alt={song.title}
+                        className="w-12 h-12 rounded object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h4 className="font-medium text-sm truncate">{song.title}</h4>
+                        <p className="text-xs text-muted-foreground truncate">{song.artist}</p>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 flex-shrink-0"
+                      >
+                        {currentSong?.id === song.id && isPlaying && song.source !== "youtube" ? 
+                          <Pause size={16} /> : 
+                          <Play size={16} />
+                        }
+                      </Button>
+                    </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleSongClick(song)}
-                    className="h-8 w-8"
-                  >
-                    {currentSong?.id === song.id && isPlaying ? 
-                      <Pause size={16} /> : 
-                      <Play size={16} />
-                    }
-                  </Button>
                 </div>
+                
+                {song.source === "youtube" && (
+                  <div className="mt-1">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                      YouTube
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
+            
             <div className="p-3 mt-4 border-t pt-4">
               <p className="text-xs text-muted-foreground text-center">
-                Músicas para musicoterapia e estimulação auditiva
+                {searchResults.length > 0 
+                  ? `${searchResults.length} resultado(s) encontrado(s)` 
+                  : "Músicas para musicoterapia e estimulação auditiva"}
               </p>
             </div>
           </div>
