@@ -31,7 +31,7 @@ interface MusicPlaylistProps {
 }
 
 // YouTube API key
-const YOUTUBE_API_KEY = "AIzaSyAfThpfo8yhfvv7skCwlRbnmNFV8Iuo71o";
+const YOUTUBE_API_KEY = "AIzaSyDhe6pEZ92LWhB7B2tHfFokg5K2UTDv4yo";
 
 // Lista atualizada de músicas infantis tradicionais brasileiras
 const songLibrary: Song[] = [
