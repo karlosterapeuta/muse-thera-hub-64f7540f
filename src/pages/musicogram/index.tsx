@@ -215,11 +215,16 @@ export default function MusicogramPage() {
       setAudioPlaying(false);
     };
     
-    // Add event handlers for tracking audio errors
+    // Add event handlers for tracking audio errors - FIX THE ERROR HERE
     audio.onerror = (e) => {
       console.error("Audio error:", e);
-      const error = e.currentTarget as HTMLAudioElement;
-      toast.error(`Erro ao carregar áudio: ${error.error ? error.error.message : 'Não foi possível reproduzir o áudio'}`);
+      // Fix for TypeScript error - ensure we're handling this as an Event
+      if (e instanceof Event && e.target instanceof HTMLAudioElement) {
+        const errorMessage = e.target.error ? e.target.error.message : 'Não foi possível reproduzir o áudio';
+        toast.error(`Erro ao carregar áudio: ${errorMessage}`);
+      } else {
+        toast.error(`Erro ao carregar áudio: Não foi possível reproduzir o áudio`);
+      }
       setAudioPlaying(false);
     };
     
