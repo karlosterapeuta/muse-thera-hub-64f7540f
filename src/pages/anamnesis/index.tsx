@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,34 @@ type Patient = {
 type Professional = {
   email: string;
 };
+
+// Lista de campos conhecidos do banco de dados anamnesis
+const knownDatabaseFields = [
+  'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
+  'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
+  'referral_professional', 'main_clinical_demand', 'musical_education', 
+  'instrumental_practice', 'body_musical_expression', 'vocal_expression', 
+  'choral_activities', 'no_musical_experience', 'active_musical_listening', 
+  'body_expression', 'sound_responsiveness', 'spontaneous_vocal', 
+  'instrumental_exploration', 'adverse_sound_reactivity', 'auditory_hypersensitivity', 
+  'positive_musical_response', 'nominal_call_response', 'active_sound_search', 
+  'specific_sound_aversion', 'sound_source_location', 'children_repertoire', 
+  'rock_genre', 'sacred_gospel', 'other_musical_genres', 'brazilian_popular', 
+  'country_music', 'classical_music', 'cervical_control', 'crawling_pattern', 
+  'fine_motor_dev', 'independent_sitting', 'autonomous_walking', 'broad_motor_dev', 
+  'babbling', 'simple_phrases', 'echolalia', 'first_words', 'nonverbal_communication', 
+  'verbal_language_absence', 'visual_contact', 'shared_play', 'stereotyped_behavior', 
+  'peer_interaction', 'social_isolation', 'restricted_interests', 'irritability', 
+  'heteroaggressive', 'emotional_ability', 'anxiety', 'frequent_crying', 
+  'low_frustration_tolerance', 'autism_spectrum', 'down_syndrome', 'intellectual_disability', 
+  'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
+  'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
+  'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
+  'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
+  'williams_syndrome', 'depression', 'bipolar_disorder',
+  // Novos campos adicionados
+  'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
+];
 
 export default function AnamnesisForm() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -150,6 +179,13 @@ export default function AnamnesisForm() {
     }
   };
 
+  // Filtrar dados para incluir apenas campos conhecidos do banco de dados
+  const filterDatabaseFields = (data: Record<string, any>) => {
+    return Object.fromEntries(
+      Object.entries(data).filter(([key]) => knownDatabaseFields.includes(key))
+    );
+  };
+
   const generatePDF = async (patientName: string) => {
     const element = document.createElement('div');
     
@@ -280,7 +316,8 @@ export default function AnamnesisForm() {
             { id: "adhd", label: "TDAH" },
             { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
             { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
-            { id: "other_diagnoses", label: "Outros Diagnósticos" }
+            { id: "other_diagnoses", label: "Outros Diagnósticos" },
+            { id: "alzheimer", label: "Alzheimer" }
           ]
         },
         {
@@ -291,11 +328,16 @@ export default function AnamnesisForm() {
             { id: "psychopedagogical", label: "Psicopedagogia" },
             { id: "occupational_therapy", label: "Terapia Ocupacional" },
             { id: "physiotherapy", label: "Fisioterapia" },
-            { id: "equine_therapy", label: "Equoterapia" }
+            { id: "equine_therapy", label: "Equoterapia" },
+            { id: "aba_therapy", label: "Terapia ABA" },
+            { id: "psychomotricity", label: "Psicomotricidade" },
+            { id: "music_therapy", label: "Musicoterapia" },
+            { id: "nutrition", label: "Nutrição" },
+            { id: "sensory_integration", label: "Integração Sensorial" }
           ]
         },
         {
-          title: "Medicaç��o",
+          title: "Medicação",
           textFields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
@@ -441,21 +483,18 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário:", formData);
       
-      // First, create a data object with the basic fields
-      // that we know definitely exist in the database
+      // Filtrar dados para incluir apenas campos conhecidos do banco de dados
+      const filteredData = filterDatabaseFields(formData);
+      console.log("Debug - dados filtrados:", filteredData);
+      
+      // Preparar dados básicos
       const baseAnamnesisData = {
         patient_id: selectedPatient,
         professional_id: professionalId,
-        // Include existing fields from formData but exclude the new fields
-        ...Object.fromEntries(
-          Object.entries(formData).filter(([key]) => 
-            !['aba_therapy', 'psychomotricity', 'music_therapy', 
-              'nutrition', 'sensory_integration', 'alzheimer'].includes(key)
-          )
-        )
+        ...filteredData
       };
       
-      console.log("Debug - tentando salvar dados base primeiro:", baseAnamnesisData);
+      console.log("Debug - tentando salvar dados base:", baseAnamnesisData);
 
       let result;
       
@@ -476,38 +515,6 @@ export default function AnamnesisForm() {
       if (result.error) {
         console.error("Erro ao salvar anamnese (dados base):", result.error);
         throw result.error;
-      }
-
-      // Now try to save each new field individually to handle potential schema cache issues
-      const newFields = {
-        aba_therapy: Boolean(formData.aba_therapy || false),
-        psychomotricity: Boolean(formData.psychomotricity || false),
-        music_therapy: Boolean(formData.music_therapy || false),
-        nutrition: Boolean(formData.nutrition || false),
-        sensory_integration: Boolean(formData.sensory_integration || false),
-        alzheimer: Boolean(formData.alzheimer || false),
-      };
-
-      // Get the ID of the record we're working with
-      const recordId = existingAnamnesisId || (result.data && result.data[0]?.id);
-
-      if (recordId) {
-        // Try updating each field individually
-        for (const [field, value] of Object.entries(newFields)) {
-          try {
-            console.log(`Debug - tentando atualizar campo ${field} com valor ${value}`);
-            
-            await supabase
-              .from("anamnesis")
-              .update({ [field]: value })
-              .eq("id", recordId);
-              
-            console.log(`Campo ${field} atualizado com sucesso`);
-          } catch (fieldError) {
-            console.warn(`Não foi possível atualizar o campo ${field}:`, fieldError);
-            // We'll continue even if individual fields fail
-          }
-        }
       }
 
       toast({
@@ -571,17 +578,15 @@ export default function AnamnesisForm() {
       
       console.log("Debug - dados brutos do formulário ao enviar:", formData);
       
-      // First, save the basic anamnesis data without the new fields
+      // Filtrar dados para incluir apenas campos conhecidos do banco de dados
+      const filteredData = filterDatabaseFields(formData);
+      console.log("Debug - dados filtrados para salvar:", filteredData);
+      
+      // First, save the basic anamnesis data
       const baseAnamnesisData = {
         patient_id: selectedPatient,
         professional_id: professionalId,
-        // Include existing fields from formData but exclude the new fields
-        ...Object.fromEntries(
-          Object.entries(formData).filter(([key]) => 
-            !['aba_therapy', 'psychomotricity', 'music_therapy', 
-              'nutrition', 'sensory_integration', 'alzheimer'].includes(key)
-          )
-        )
+        ...filteredData
       };
       
       console.log("Debug - tentando salvar dados base primeiro:", baseAnamnesisData);
@@ -605,38 +610,6 @@ export default function AnamnesisForm() {
       if (result.error) {
         console.error("Erro ao salvar anamnese:", result.error);
         throw result.error;
-      }
-
-      // Get the ID of the record we just saved
-      const recordId = existingAnamnesisId || (result.data && result.data[0]?.id);
-
-      if (recordId) {
-        // Now try to save each new field individually
-        const newFields = {
-          aba_therapy: Boolean(formData.aba_therapy || false),
-          psychomotricity: Boolean(formData.psychomotricity || false),
-          music_therapy: Boolean(formData.music_therapy || false),
-          nutrition: Boolean(formData.nutrition || false),
-          sensory_integration: Boolean(formData.sensory_integration || false),
-          alzheimer: Boolean(formData.alzheimer || false),
-        };
-
-        // Try updating each field individually
-        for (const [field, value] of Object.entries(newFields)) {
-          try {
-            console.log(`Debug - tentando atualizar campo ${field} com valor ${value}`);
-            
-            await supabase
-              .from("anamnesis")
-              .update({ [field]: value })
-              .eq("id", recordId);
-              
-            console.log(`Campo ${field} atualizado com sucesso`);
-          } catch (fieldError) {
-            console.warn(`Não foi possível atualizar o campo ${field}:`, fieldError);
-            // Continue even if individual fields fail
-          }
-        }
       }
 
       // Find patient data

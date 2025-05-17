@@ -1,3 +1,4 @@
+
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -22,7 +23,10 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
 
   // Função para garantir que os valores booleanos sejam tratados corretamente
   const getBooleanValue = (fieldName: string): boolean => {
-    return Boolean(content[fieldName]);
+    if (fieldName in content) {
+      return Boolean(content[fieldName]);
+    }
+    return false;
   };
 
   return (
@@ -413,52 +417,10 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange: (value) => updateField("adhd", value),
           },
           {
-            id: "adhd_inattentive",
-            label: "TDAH Predominantemente Desatento",
-            checked: getBooleanValue("adhd_inattentive"),
-            onChange: (value) => updateField("adhd_inattentive", value),
-          },
-          {
-            id: "adhd_hyperactive",
-            label: "TDAH Predominantemente Hiperativo/Impulsivo",
-            checked: getBooleanValue("adhd_hyperactive"),
-            onChange: (value) => updateField("adhd_hyperactive", value),
-          },
-          {
-            id: "oppositional_defiant_disorder",
-            label: "Transtorno Opositor Desafiador (TOD)",
-            checked: getBooleanValue("oppositional_defiant_disorder"),
-            onChange: (value) => updateField("oppositional_defiant_disorder", value),
-          },
-          {
             id: "anxiety_disorders",
             label: "Transtornos de Ansiedade",
             checked: getBooleanValue("anxiety_disorders"),
             onChange: (value) => updateField("anxiety_disorders", value),
-          },
-          {
-            id: "specific_phobia",
-            label: "Fobia Específica",
-            checked: getBooleanValue("specific_phobia"),
-            onChange: (value) => updateField("specific_phobia", value),
-          },
-          {
-            id: "separation_anxiety",
-            label: "Ansiedade de Separação",
-            checked: getBooleanValue("separation_anxiety"),
-            onChange: (value) => updateField("separation_anxiety", value),
-          },
-          {
-            id: "social_anxiety",
-            label: "Ansiedade Social",
-            checked: getBooleanValue("social_anxiety"),
-            onChange: (value) => updateField("social_anxiety", value),
-          },
-          {
-            id: "ocd",
-            label: "Transtorno Obsessivo-Compulsivo (TOC)",
-            checked: getBooleanValue("ocd"),
-            onChange: (value) => updateField("ocd", value),
           },
           {
             id: "depression",
