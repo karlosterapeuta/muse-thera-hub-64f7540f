@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -57,43 +58,57 @@ export default function MusicogramPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
   const animationRef = useRef<number | null>(null);
+  const canvasInitializedRef = useRef(false);
   
   // Initialize the canvas
   useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 800,
-      height: 180,
-      backgroundColor: "#F4F4F8",
-      selection: false
-    });
-    
-    // Draw timeline base
-    const timeline = new fabric.Rect({
-      left: 0,
-      top: 90,
-      width: 800,
-      height: 2,
-      fill: "#CCCCCC",
-      selectable: false
-    });
-    
-    canvas.add(timeline);
-    
-    // Draw playhead
-    const playhead = new fabric.Line([0, 40, 0, 140], {
-      stroke: '#FF0000',
-      strokeWidth: 2,
-      selectable: false,
-      name: 'playhead'
-    });
-    canvas.add(playhead);
-    
-    setFabricCanvas(canvas);
+    // Only initialize the canvas if it hasn't been initialized yet and the ref exists
+    if (!canvasInitializedRef.current && canvasRef.current) {
+      try {
+        const canvas = new fabric.Canvas(canvasRef.current, {
+          width: 800,
+          height: 180,
+          backgroundColor: "#F4F4F8",
+          selection: false
+        });
+        
+        // Draw timeline base
+        const timeline = new fabric.Rect({
+          left: 0,
+          top: 90,
+          width: 800,
+          height: 2,
+          fill: "#CCCCCC",
+          selectable: false
+        });
+        
+        canvas.add(timeline);
+        
+        // Draw playhead
+        const playhead = new fabric.Line([0, 40, 0, 140], {
+          stroke: '#FF0000',
+          strokeWidth: 2,
+          selectable: false,
+          name: 'playhead'
+        });
+        canvas.add(playhead);
+        
+        setFabricCanvas(canvas);
+        canvasInitializedRef.current = true;
+      } catch (error) {
+        console.error("Error initializing canvas:", error);
+        toast.error("Erro ao inicializar o canvas. Por favor, recarregue a página.");
+      }
+    }
     
     return () => {
-      canvas.dispose();
+      if (fabricCanvas) {
+        try {
+          fabricCanvas.dispose();
+        } catch (error) {
+          console.error("Error disposing canvas:", error);
+        }
+      }
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -104,109 +119,114 @@ export default function MusicogramPage() {
   useEffect(() => {
     if (!fabricCanvas) return;
     
-    // Clear canvas except timeline and playhead
-    const objects = fabricCanvas.getObjects();
-    const timeline = objects.find(obj => obj.type === 'rect');
-    const playhead = objects.find(obj => obj.name === 'playhead');
-    
-    fabricCanvas.clear();
-    
-    if (timeline) fabricCanvas.add(timeline);
-    if (playhead) fabricCanvas.add(playhead);
-    
-    // Add timeline events
-    timelineEvents.forEach(event => {
-      const instrument = instruments.find(i => i.id === event.instrumentId);
-      if (!instrument) return;
+    try {
+      // Clear canvas except timeline and playhead
+      const objects = fabricCanvas.getObjects();
+      const timeline = objects.find(obj => obj.type === 'rect');
+      const playhead = objects.find(obj => obj.name === 'playhead');
       
-      const x = (event.position / 100) * 800;
-      let shape;
+      fabricCanvas.clear();
       
-      switch (instrument.shape) {
-        case 'circle':
-          shape = new fabric.Circle({
-            left: x,
-            top: 90,
-            radius: 20,
-            fill: instrument.color,
-            stroke: '#333333',
-            strokeWidth: 2,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            data: { eventId: event.id }
-          });
-          break;
-          
-        case 'square':
-          shape = new fabric.Rect({
-            left: x,
-            top: 90,
-            width: 40,
-            height: 40,
-            fill: instrument.color,
-            stroke: '#333333',
-            strokeWidth: 2,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            data: { eventId: event.id }
-          });
-          break;
-          
-        case 'triangle':
-          shape = new fabric.Triangle({
-            left: x,
-            top: 90,
-            width: 40,
-            height: 40,
-            fill: instrument.color,
-            stroke: '#333333',
-            strokeWidth: 2,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            data: { eventId: event.id }
-          });
-          break;
-          
-        default:
-          shape = new fabric.Rect({
-            left: x,
-            top: 90,
-            width: 40,
-            height: 40,
-            fill: instrument.color,
-            stroke: '#333333',
-            strokeWidth: 2,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            data: { eventId: event.id }
-          });
-      }
+      if (timeline) fabricCanvas.add(timeline);
+      if (playhead) fabricCanvas.add(playhead);
       
-      fabricCanvas.add(shape);
-      
-      // Add label
-      const text = new fabric.Text(instrument.name, {
-        left: x,
-        top: 140,
-        fontSize: 12,
-        fill: '#333',
-        originX: 'center',
-        textAlign: 'center',
-        selectable: false
+      // Add timeline events
+      timelineEvents.forEach(event => {
+        const instrument = instruments.find(i => i.id === event.instrumentId);
+        if (!instrument) return;
+        
+        const x = (event.position / 100) * 800;
+        let shape;
+        
+        switch (instrument.shape) {
+          case 'circle':
+            shape = new fabric.Circle({
+              left: x,
+              top: 90,
+              radius: 20,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          case 'square':
+            shape = new fabric.Rect({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          case 'triangle':
+            shape = new fabric.Triangle({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+            break;
+            
+          default:
+            shape = new fabric.Rect({
+              left: x,
+              top: 90,
+              width: 40,
+              height: 40,
+              fill: instrument.color,
+              stroke: '#333333',
+              strokeWidth: 2,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              data: { eventId: event.id }
+            });
+        }
+        
+        fabricCanvas.add(shape);
+        
+        // Add label
+        const text = new fabric.Text(instrument.name, {
+          left: x,
+          top: 140,
+          fontSize: 12,
+          fill: '#333',
+          originX: 'center',
+          textAlign: 'center',
+          selectable: false
+        });
+        
+        fabricCanvas.add(text);
       });
       
-      fabricCanvas.add(text);
-    });
-    
-    fabricCanvas.renderAll();
+      fabricCanvas.renderAll();
+    } catch (error) {
+      console.error("Error updating canvas:", error);
+    }
   }, [timelineEvents, instruments, fabricCanvas]);
   
   // Create Audio Element
   useEffect(() => {
+    // Create a new audio element
     const audio = new Audio();
     audio.volume = volume / 100;
     
@@ -217,13 +237,20 @@ export default function MusicogramPage() {
     // Fix the error handler to properly type the event
     audio.onerror = (event) => {
       console.error("Audio error:", event);
-      // Ensure we're properly type checking before accessing properties
-      if (event instanceof Event && event.target instanceof HTMLAudioElement) {
-        const errorMsg = event.target.error ? event.target.error.message : 'Erro desconhecido';
-        toast.error(`Erro ao carregar áudio: ${errorMsg}`);
+      
+      // Type guard to ensure we're handling an Event
+      if (event instanceof Event) {
+        if (event.target instanceof HTMLAudioElement && event.target.error) {
+          // Access the error property safely
+          const errorMsg = event.target.error.message || 'Erro desconhecido';
+          toast.error(`Erro ao carregar áudio: ${errorMsg}`);
+        } else {
+          toast.error("Erro ao carregar áudio: Não foi possível reproduzir o arquivo");
+        }
       } else {
-        toast.error("Erro ao carregar áudio: Não foi possível reproduzir o arquivo");
+        toast.error("Erro ao carregar áudio: Formato desconhecido");
       }
+      
       setAudioPlaying(false);
     };
     
@@ -248,18 +275,42 @@ export default function MusicogramPage() {
     if (!song) return;
     
     if (audioRef.current) {
-      // Add error handling directly when setting the source
       try {
+        // Reset any previous sources and errors
+        audioRef.current.pause();
+        audioRef.current.src = '';
+        
+        // Set new source and play
         audioRef.current.src = songUrl;
+        
+        // When setting up playing, make sure to handle potential promise rejection
         audioRef.current.play()
           .then(() => {
             setCurrentSong(song);
             setAudioPlaying(true);
             setIsPlaying(true);
+            toast.success(`Reproduzindo: ${song.title}`);
           })
           .catch(error => {
             console.error("Error playing audio:", error);
-            toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
+            toast.error("Erro ao reproduzir áudio. Tentando solução alternativa...");
+            
+            // Try with a fallback URL as last resort
+            const fallbackUrl = "https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3";
+            audioRef.current!.src = fallbackUrl;
+            audioRef.current!.play()
+              .then(() => {
+                // We're playing a fallback, but at least something works
+                const fallbackSong = songLibrary.find(s => s.url === fallbackUrl) || song;
+                setCurrentSong(fallbackSong);
+                setAudioPlaying(true);
+                setIsPlaying(true);
+                toast.success(`Reproduzindo música alternativa`);
+              })
+              .catch(secondError => {
+                console.error("Failed even with fallback:", secondError);
+                toast.error("Não foi possível reproduzir nenhum áudio. Verifique as configurações do navegador.");
+              });
           });
       } catch (error) {
         console.error("Error setting audio source:", error);
