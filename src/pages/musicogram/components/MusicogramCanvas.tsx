@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -172,15 +171,24 @@ export function MusicogramCanvas({
 
     fabric.Image.fromURL(pattern.patternUrl, (img) => {
       const id = uuidv4();
+      
+      // Scale the image to a reasonable size
+      const scale = 0.5;
+      const imgWidth = img.width || 100;
+      const imgHeight = img.height || 100;
+      
       img.set({
         left: x,
         top: y,
-        scaleX: 0.3,
-        scaleY: 0.3,
+        scaleX: scale,
+        scaleY: scale,
         originX: 'center',
         originY: 'center',
         hasControls: true,
-        hasBorders: true
+        hasBorders: true,
+        cornerColor: 'rgba(0,0,255,0.5)',
+        cornerSize: 10,
+        transparentCorners: false
       });
 
       img.data = { id };
@@ -191,8 +199,29 @@ export function MusicogramCanvas({
           canvas.remove(img);
         }
       });
+      
+      // Add selection handlers
+      img.on('selected', () => {
+        setSelectedElement(img);
+      });
+      
+      img.on('modified', () => {
+        const updatedElement = {
+          id,
+          type: 'pattern',
+          x: img.left || 0,
+          y: img.top || 0,
+          patternUrl: pattern.patternUrl,
+          size: (img.width || 100) * (img.scaleX || 1),
+          shape: 'pattern',
+          position: { x: img.left || 0, y: img.top || 0 },
+          rotation: img.angle || 0
+        };
+        onUpdateElement(updatedElement);
+      });
 
       canvas.add(img);
+      canvas.setActiveObject(img);
       canvas.renderAll();
 
       // Add to elements array
@@ -202,7 +231,7 @@ export function MusicogramCanvas({
         x,
         y,
         patternUrl: pattern.patternUrl,
-        size: 100,
+        size: Math.max(imgWidth, imgHeight) * scale,
         shape: 'pattern',
         position: { x, y }
       };
@@ -277,15 +306,21 @@ export function MusicogramCanvas({
       }
 
       fabric.Image.fromURL(element.patternUrl, (img) => {
+        const scale = element.size ? element.size / Math.max(img.width || 100, img.height || 100) : 0.5;
+        
         img.set({
           left: element.x,
           top: element.y,
-          scaleX: 0.3,
-          scaleY: 0.3,
+          scaleX: scale,
+          scaleY: scale,
           originX: 'center',
           originY: 'center',
           hasControls: true,
           hasBorders: true,
+          cornerColor: 'rgba(0,0,255,0.5)',
+          cornerSize: 10,
+          transparentCorners: false,
+          angle: element.rotation || 0,
           lockMovementX: !isDrawingMode,
           lockMovementY: !isDrawingMode,
         });
@@ -297,6 +332,26 @@ export function MusicogramCanvas({
             onDeleteElement(element.id);
             canvas?.remove(img);
           }
+        });
+        
+        // Add selection handlers
+        img.on('selected', () => {
+          setSelectedElement(img);
+        });
+        
+        img.on('modified', () => {
+          const updatedElement = {
+            id: element.id,
+            type: 'pattern',
+            x: img.left || 0,
+            y: img.top || 0,
+            patternUrl: element.patternUrl,
+            size: (img.width || 100) * (img.scaleX || 1),
+            shape: 'pattern',
+            position: { x: img.left || 0, y: img.top || 0 },
+            rotation: img.angle || 0
+          };
+          onUpdateElement(updatedElement);
         });
 
         resolve(img);
