@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -214,6 +215,14 @@ export default function MusicogramPage() {
       setAudioPlaying(false);
     };
     
+    // Add event handlers for tracking audio errors
+    audio.onerror = (e) => {
+      console.error("Audio error:", e);
+      const error = e.currentTarget as HTMLAudioElement;
+      toast.error(`Erro ao carregar áudio: ${error.error ? error.error.message : 'Não foi possível reproduzir o áudio'}`);
+      setAudioPlaying(false);
+    };
+    
     audioRef.current = audio;
     
     return () => {
@@ -234,19 +243,30 @@ export default function MusicogramPage() {
     const song = songLibrary.find(s => s.url === songUrl);
     if (!song) return;
     
-    if (audioRef.current) {
-      audioRef.current.src = songUrl;
-      audioRef.current.play().catch(error => {
-        console.error("Error playing audio:", error);
-        toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
-      });
-      
-      setCurrentSong(song);
-      setAudioPlaying(true);
-      
-      // Also start musicogram animation
-      setIsPlaying(true);
-    }
+    // Create a dummy audio element to test if the file exists
+    const testAudio = new Audio(songUrl);
+    
+    testAudio.onloadeddata = () => {
+      // If we can load the audio, play it with the real audio element
+      if (audioRef.current) {
+        audioRef.current.src = songUrl;
+        audioRef.current.play().catch(error => {
+          console.error("Error playing audio:", error);
+          toast.error("Erro ao reproduzir áudio. Verifique as permissões do navegador.");
+        });
+        
+        setCurrentSong(song);
+        setAudioPlaying(true);
+        
+        // Also start musicogram animation
+        setIsPlaying(true);
+      }
+    };
+    
+    testAudio.onerror = () => {
+      console.info("Attempting to play:", songUrl);
+      toast.error("Não foi possível carregar este arquivo de áudio. Verifique se o arquivo existe.");
+    };
   };
   
   // Handle song pause
