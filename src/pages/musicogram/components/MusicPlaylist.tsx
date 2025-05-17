@@ -13,6 +13,7 @@ import {
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
+import { Howl, Howler } from "howler";
 
 interface Song {
   id: string;
@@ -374,6 +375,7 @@ export const MusicPlaylist = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const howlRef = useRef<Howl | null>(null);
 
   // Fetch songs from Jamendo API
   useEffect(() => {
@@ -383,7 +385,7 @@ export const MusicPlaylist = ({
       
       try {
         const response = await fetch(
-          `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&limit=30&tags=childrens-music,children,kids`
+          `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&limit=10&tags=childrens-music`
         );
         
         if (!response.ok) {
@@ -429,80 +431,66 @@ export const MusicPlaylist = ({
     
     fetchSongs();
     
-    // Initialize audio element for direct audio playback
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.addEventListener('ended', () => {
-        console.log("Audio playback ended");
-        onPause();
-      });
-      audioRef.current.addEventListener('error', (e) => {
-        console.error("Error playing audio:", e);
-        toast.error("Erro ao reproduzir o áudio. Tentando alternativa...");
-        handleNextSong(); // Try next song when current fails
-      });
-    }
-    
     // Cleanup function
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
+      if (howlRef.current) {
+        howlRef.current.unload();
       }
     };
   }, []);
 
-  // Atualiza o volume para o elemento de áudio
+  // Update volume
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
+    if (howlRef.current) {
+      howlRef.current.volume(volume / 100);
     }
   }, [volume]);
 
   const handleSelectSong = (song: Song) => {
     setSelectedSong(song);
-    // Tocar um som de seleção
+    // Play a selection sound
     playNoteSound("C");
   };
 
-  // Função para reproduzir áudio usando elemento de áudio nativo
+  // Function to play audio using Howler
   const playAudio = (song: Song) => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
-    
     try {
       // Stop any current audio playback
-      audioRef.current.pause();
+      if (howlRef.current) {
+        howlRef.current.unload();
+      }
       
       const audioUrl = song.url;
       console.log("Attempting to play:", audioUrl);
       
-      audioRef.current.src = audioUrl;
-      audioRef.current.volume = volume / 100;
-      
-      // Setup event handlers
-      audioRef.current.oncanplay = () => {
-        console.log("Audio can play now");
-        audioRef.current?.play().catch(error => {
-          console.error("Error starting audio playback:", error);
-          toast.error("Falha ao iniciar a reprodução. Tentando outra música...");
+      // Create a new Howl instance
+      howlRef.current = new Howl({
+        src: [audioUrl],
+        html5: true, // This is more compatible with various sources
+        volume: volume / 100,
+        onplay: () => {
+          console.log("Audio playback started");
+          onPlay(song.url);
+          setSelectedSong(song);
+        },
+        onend: () => {
+          console.log("Audio playback ended");
+          onPause();
+        },
+        onloaderror: (id, error) => {
+          console.error("Error loading audio:", error);
+          toast.error("Falha ao carregar áudio. Tentando outra música...");
           handleNextSong();
-        });
-      };
+        },
+        onplayerror: (id, error) => {
+          console.error("Error playing audio:", error);
+          toast.error("Erro ao reproduzir esta música. Tentando a próxima...");
+          handleNextSong();
+        }
+      });
       
-      audioRef.current.onerror = (e) => {
-        console.error("Audio source error:", e);
-        toast.error("Erro ao reproduzir esta música. Tentando a próxima...");
-        handleNextSong();
-      };
-      
-      // Load and attempt to play
-      audioRef.current.load();
-      
-      // Notify parent component
-      onPlay(song.url);
-      setSelectedSong(song);
+      // Attempt to play
+      howlRef.current.play();
       
     } catch (error) {
       console.error("Error setting up audio playback:", error);
@@ -518,9 +506,9 @@ export const MusicPlaylist = ({
   };
 
   const handlePauseSong = () => {
-    if (audioRef.current) {
+    if (howlRef.current) {
       try {
-        audioRef.current.pause();
+        howlRef.current.pause();
       } catch (e) {
         console.error("Error pausing audio:", e);
       }
