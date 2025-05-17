@@ -64,6 +64,18 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             checked: content.nutrition || false,
             onChange: (value) => updateField("nutrition", value),
           },
+          {
+            id: "aba_therapy",
+            label: "Terapia ABA",
+            checked: content.aba_therapy || false,
+            onChange: (value) => updateField("aba_therapy", value),
+          },
+          {
+            id: "sensory_integration",
+            label: "Integração Sensorial",
+            checked: content.sensory_integration || false,
+            onChange: (value) => updateField("sensory_integration", value),
+          },
         ]}
       />
 
