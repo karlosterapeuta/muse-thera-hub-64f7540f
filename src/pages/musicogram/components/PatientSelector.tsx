@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { 
   Select, 
@@ -75,9 +76,9 @@ export function PatientSelector({ onPatientSelect, currentPatient }: PatientSele
         onValueChange={(value) => {
           const selectedPatient = patients.find(p => p.id === value);
           if (selectedPatient) {
-            onSelectPatient(selectedPatient.id, selectedPatient.name);
+            onPatientSelect(selectedPatient.id);
           } else {
-            onSelectPatient(null, '');
+            onPatientSelect(null);
           }
         }}
         disabled={isLoading}
