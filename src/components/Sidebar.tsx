@@ -18,6 +18,7 @@ import {
   DollarSign,
   ListChecks,
   Waves,
+  LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -49,9 +50,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: Book, text: "Hawkins", path: "/hawkins" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
-    { icon: Music, text: "Fala Mágica", path: "/songs" }, // Changed label here
+    { icon: Music, text: "Fala Mágica", path: "/songs" },
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
+    { icon: LayoutGrid, text: "Musicograma", path: "/musicogram" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },
     // Always show Users menu for musicoterapeutakarlos@gmail.com
     (userEmail === "musicoterapeutakarlos@gmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },
