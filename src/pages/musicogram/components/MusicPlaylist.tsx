@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,8 @@ import { Play, Pause, Music, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { generateFallbackTone } from "@/utils/audioUtils";
+import { getYouTubeId, validateYouTubeId, checkYouTubeVideoExists } from "@/utils/youtubeUtils";
+import { getYouTubeInfo } from "@/pages/api/youtube-info";
 
 // Define song type
 export type Song = {
@@ -26,9 +27,6 @@ const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHeli
 
 // YouTube API embed URL base
 const YOUTUBE_EMBED_API_BASE = "https://www.youtube.com/embed/";
-
-// YouTube oEmbed API URL to fetch video title
-const YOUTUBE_OEMBED_API = "https://www.youtube.com/oembed?url=";
 
 interface MusicPlaylistProps {
   onPlay: (url: string) => void;
@@ -61,86 +59,44 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     };
   }, []);
   
-  // Enhanced YouTube video ID extraction function
-  const getYouTubeId = (url: string): string | null => {
-    // Simple validation check
-    if (!url || url.trim() === '') {
-      return null;
-    }
-    
-    // Direct ID pattern (no slashes, dots, etc.)
-    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
-      return url;
-    }
-    
-    // Common YouTube URL patterns
-    const patterns = [
-      // youtu.be short URL
-      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-      // youtube.com/watch?v= standard URL
-      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      // youtube.com/v/ alternative format
-      /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
-      // youtube.com/embed/ embed format
-      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      // More general pattern as fallback
-      /[?&]v=([a-zA-Z0-9_-]{11})/
-    ];
-    
-    // Try each pattern until we find a match
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    
-    return null;
-  };
-  
-  // Validate YouTube ID to ensure it's the correct format
-  const validateYouTubeId = (id: string | null): boolean => {
-    if (!id) return false;
-    
-    // YouTube IDs are 11 characters, alphanumeric, plus underscore and hyphen
-    return /^[a-zA-Z0-9_-]{11}$/.test(id);
-  };
-
   // Function to fetch YouTube video title from thumbnail or metadata
-  const fetchYouTubeVideoInfo = (youtubeId: string): Promise<{ title: string, success: boolean }> => {
-    return new Promise((resolve) => {
-      // First try fetching via thumbnail
-      const img = new Image();
+  const fetchYouTubeVideoInfo = async (youtubeId: string): Promise<{ title: string, artist: string, success: boolean }> => {
+    try {
+      // Validate the ID first
+      if (!validateYouTubeId(youtubeId)) {
+        return { title: "", artist: "", success: false };
+      }
       
-      img.onload = () => {
-        // If thumbnail loads, we know video exists, try to fetch title
-        // Use a simple approach since we can't access YouTube API directly
-        const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
-        
-        fetch(`/api/youtube-info?id=${youtubeId}`)
-          .then(response => response.json())
-          .then(data => {
-            if (data && data.title) {
-              resolve({ title: data.title, success: true });
-            } else {
-              // If API call fails, use a placeholder with ID
-              resolve({ title: `Vídeo ${youtubeId}`, success: true });
-            }
-          })
-          .catch(() => {
-            // On error, create a basic title with partial ID
-            const shortId = youtubeId.substring(0, 6);
-            resolve({ title: `Vídeo do YouTube (${shortId}...)`, success: true });
-          });
+      // Check if video exists via thumbnail
+      const videoExists = await checkYouTubeVideoExists(youtubeId);
+      if (!videoExists) {
+        return { title: "", artist: "", success: false };
+      }
+      
+      // Get info from our API handler
+      const info = await getYouTubeInfo(youtubeId);
+      if (info && info.title) {
+        return { 
+          title: info.title, 
+          artist: info.author_name || "YouTube Creator", 
+          success: true 
+        };
+      } else {
+        // Fallback with ID
+        return { 
+          title: `Vídeo do YouTube (${youtubeId.substring(0, 6)}...)`, 
+          artist: "YouTube Creator", 
+          success: true 
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching YouTube info:", error);
+      return { 
+        title: `Vídeo do YouTube (${youtubeId.substring(0, 6)}...)`, 
+        artist: "YouTube Creator", 
+        success: true 
       };
-      
-      img.onerror = () => {
-        // If thumbnail doesn't load, video likely doesn't exist
-        resolve({ title: "", success: false });
-      };
-      
-      img.src = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
-    });
+    }
   };
 
   // Handle search submission
@@ -158,15 +114,15 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     // Validate the ID format
     if (youtubeId && validateYouTubeId(youtubeId)) {
       try {
-        // Try to fetch video metadata or at least validate it exists
-        const { title, success } = await fetchYouTubeVideoInfo(youtubeId);
+        // Try to fetch video metadata
+        const { title, artist, success } = await fetchYouTubeVideoInfo(youtubeId);
         
         if (success) {
           // Create a song entry for valid YouTube ID
           const newSong: Song = {
             id: `youtube-${youtubeId}`,
-            title: title || `Vídeo do YouTube (${youtubeId.substring(0, 6)}...)`,
-            artist: "YouTube",
+            title: title,
+            artist: artist,
             url: `https://www.youtube.com/watch?v=${youtubeId}`,
             thumbnail: `https://img.youtube.com/vi/${youtubeId}/0.jpg`,
             source: "youtube"
@@ -193,31 +149,34 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     
     // If not a direct YouTube URL, treat as search query
     try {
-      // Create some search-based results
+      // Use the search term to find videos (in a real app, this would use YouTube API)
       const searchTerm = encodeURIComponent(searchQuery);
       
-      // Simulate search results with sequential IDs that won't conflict
-      const mockResults: Song[] = [
-        {
-          id: `yt-search-${Date.now()}-1`,
-          title: `${searchQuery} - Música`,
-          artist: "YouTube Music",
-          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Example URL
-          thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
-          source: "youtube"
-        },
-        {
-          id: `yt-search-${Date.now()}-2`,
-          title: `${searchQuery} - Versão Acústica`,
-          artist: "YouTube Acoustic",
-          url: "https://www.youtube.com/watch?v=_bP6aVG6L1w", // Example URL
-          thumbnail: "https://img.youtube.com/vi/_bP6aVG6L1w/0.jpg",
-          source: "youtube"
-        }
-      ];
+      // These are just example videos with customized titles based on the search
+      const demoVideoIds = ["dQw4w9WgXcQ", "_bP6aVG6L1w", "QDia3e12czc"];
+      const resultPromises = demoVideoIds.map(async (videoId, index) => {
+        const info = await fetchYouTubeVideoInfo(videoId);
+        return {
+          id: `yt-search-${Date.now()}-${index}`,
+          title: info.success ? info.title : `${searchQuery} - Resultado ${index + 1}`,
+          artist: info.success ? info.artist : "YouTube Music",
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+          source: "youtube" as const
+        };
+      });
+      
+      const mockResults = await Promise.all(resultPromises);
       
       setSearchResults(mockResults);
-      setDisplaySongs(prev => [...prev, ...mockResults]);
+      setDisplaySongs(prev => {
+        // Filter out any duplicate IDs
+        const newSongs = mockResults.filter(newSong => 
+          !prev.some(existingSong => existingSong.url === newSong.url)
+        );
+        return [...prev, ...newSongs];
+      });
+      
       toast.success("Resultados da pesquisa encontrados!");
     } catch (error) {
       console.error("Search error:", error);
