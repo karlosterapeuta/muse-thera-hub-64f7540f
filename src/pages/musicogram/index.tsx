@@ -539,7 +539,8 @@ export default function MusicogramPage() {
         </p>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Canvas Card */}
             <Card>
               <CardContent className="pt-6">
                 <div className="border border-gray-300 rounded-lg shadow-lg overflow-hidden bg-white">
@@ -548,7 +549,8 @@ export default function MusicogramPage() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-wrap gap-4 items-center justify-between mt-4">
+            {/* Timeline Controls */}
+            <div className="flex flex-wrap gap-4 items-center justify-between">
               <div className="flex items-center gap-2">
                 <Button 
                   variant={isPlaying ? "outline" : "default"} 
@@ -603,87 +605,88 @@ export default function MusicogramPage() {
                 </Button>
               </div>
             </div>
+            
+            {/* Instruments moved up from below */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Instrumentos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {instruments.map(instrument => (
+                    <Toggle
+                      key={instrument.id}
+                      pressed={selectedInstrument === instrument.id}
+                      onPressedChange={() => setSelectedInstrument(instrument.id)}
+                      className="flex flex-col items-center gap-1 h-auto p-4 data-[state=on]:bg-primary/10"
+                    >
+                      <div 
+                        className="w-12 h-12 flex items-center justify-center rounded-md border-2 border-gray-800"
+                        style={{ backgroundColor: instrument.color }}
+                      >
+                        {instrument.shape === 'circle' && <Circle className="h-8 w-8" />}
+                        {instrument.shape === 'square' && <Square className="h-8 w-8" />}
+                        {instrument.shape === 'triangle' && <Triangle className="h-8 w-8" />}
+                      </div>
+                      <span className="text-xs font-medium">{instrument.name}</span>
+                    </Toggle>
+                  ))}
+                </div>
+                
+                <div className="flex justify-center mt-6">
+                  <Button onClick={handleAddInstrumentToTimeline} className="gap-2">
+                    <Plus size={16} />
+                    Adicionar na Linha do Tempo
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
           
-          {/* Add the music playlist */}
-          <div>
+          {/* Right column - Music playlist and settings */}
+          <div className="space-y-6">
+            {/* Music playlist */}
             <MusicPlaylist
               onPlay={handlePlaySong}
               onPause={handlePauseSong}
               currentSong={currentSong}
               isPlaying={audioPlaying}
             />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Instrumentos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {instruments.map(instrument => (
-                  <Toggle
-                    key={instrument.id}
-                    pressed={selectedInstrument === instrument.id}
-                    onPressedChange={() => setSelectedInstrument(instrument.id)}
-                    className="flex flex-col items-center gap-1 h-auto p-4 data-[state=on]:bg-primary/10"
-                  >
-                    <div 
-                      className="w-12 h-12 flex items-center justify-center rounded-md border-2 border-gray-800"
-                      style={{ backgroundColor: instrument.color }}
-                    >
-                      {instrument.shape === 'circle' && <Circle className="h-8 w-8" />}
-                      {instrument.shape === 'square' && <Square className="h-8 w-8" />}
-                      {instrument.shape === 'triangle' && <Triangle className="h-8 w-8" />}
-                    </div>
-                    <span className="text-xs font-medium">{instrument.name}</span>
-                  </Toggle>
-                ))}
-              </div>
-              
-              <div className="flex justify-center mt-6">
-                <Button onClick={handleAddInstrumentToTimeline} className="gap-2">
-                  <Plus size={16} />
-                  Adicionar na Linha do Tempo
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Configurações</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span>Velocidade (BPM)</span>
-                  <span className="font-mono">{tempo}</span>
+            
+            {/* Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span>Velocidade (BPM)</span>
+                    <span className="font-mono">{tempo}</span>
+                  </div>
+                  <Slider 
+                    value={[tempo]} 
+                    min={30} 
+                    max={120} 
+                    step={1} 
+                    onValueChange={(vals) => setTempo(vals[0])}
+                  />
                 </div>
-                <Slider 
-                  value={[tempo]} 
-                  min={30} 
-                  max={120} 
-                  step={1} 
-                  onValueChange={(vals) => setTempo(vals[0])}
-                />
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Dicas para Uso</h3>
-                <ul className="text-sm space-y-1 list-disc pl-4 text-muted-foreground">
-                  <li>Escolha um instrumento clicando em seu ícone</li>
-                  <li>Adicione à linha do tempo usando o botão "Adicionar"</li>
-                  <li>Selecione uma música da playlist para tocar junto</li>
-                  <li>Use o botão Play para animar as formas</li>
-                  <li>Ajuste a velocidade e volume conforme necessário</li>
-                  <li>Exporte a imagem para usar em sessões offline</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Dicas para Uso</h3>
+                  <ul className="text-sm space-y-1 list-disc pl-4 text-muted-foreground">
+                    <li>Escolha um instrumento clicando em seu ícone</li>
+                    <li>Adicione à linha do tempo usando o botão "Adicionar"</li>
+                    <li>Selecione uma música da playlist para tocar junto</li>
+                    <li>Use o botão Play para animar as formas</li>
+                    <li>Ajuste a velocidade e volume conforme necessário</li>
+                    <li>Exporte a imagem para usar em sessões offline</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
