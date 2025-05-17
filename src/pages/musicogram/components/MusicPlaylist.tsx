@@ -434,44 +434,44 @@ export const MusicPlaylist = ({
     playNoteSound("C");
   };
 
-  // Function to play audio using Audio Web API as fallback
+  // Function to play audio using Web API as fallback
   const playAudioWithFallback = async (song: Song): Promise<boolean> => {
     try {
-      // Tento tocar o áudio com elemento HTML5
-      const audio = new Audio(song.url);
-      audio.volume = volume / 100;
+      // Try to play audio with HTML5 element
+      const audioElement = new window.Audio(song.url);
+      audioElement.volume = volume / 100;
       
-      // Promise para carregar o áudio
+      // Promise to load audio
       const loadPromise = new Promise<boolean>((resolve, reject) => {
-        audio.oncanplaythrough = () => resolve(true);
-        audio.onerror = () => reject(new Error("Erro ao carregar áudio"));
+        audioElement.oncanplaythrough = () => resolve(true);
+        audioElement.onerror = () => reject(new Error("Error loading audio"));
         
-        // Timeout para evitar espera infinita
-        setTimeout(() => reject(new Error("Timeout ao carregar áudio")), 5000);
+        // Timeout to avoid infinite wait
+        setTimeout(() => reject(new Error("Timeout loading audio")), 5000);
       });
       
       await loadPromise;
-      await audio.play();
+      await audioElement.play();
       
       onPlay(song.url);
       setSelectedSong(song);
       
-      audio.onended = () => {
+      audioElement.onended = () => {
         onPause();
       };
       
       return true;
     } catch (error) {
-      console.error("Erro usando Audio Web API, tentando método fallback:", error);
+      console.error("Error using Audio Web API, trying fallback method:", error);
       
-      // Se falhou, usa o gerador de tom como último recurso
-      const success = generateFallbackTone(30000, 440); // 30 segundos de duração
+      // If failed, use tone generator as last resort
+      const success = generateFallbackTone(30000, 440); // 30 seconds duration
       
       if (success) {
         onPlay(song.url);
         setSelectedSong(song);
         
-        // Simular fim da música após 30 segundos
+        // Simulate end of song after 30 seconds
         setTimeout(() => {
           onPause();
         }, 30000);
@@ -494,7 +494,7 @@ export const MusicPlaylist = ({
       console.log("Attempting to play:", audioUrl);
       
       if (!audioUrl) {
-        throw new Error("URL de áudio vazia");
+        throw new Error("Empty audio URL");
       }
       
       try {
@@ -519,32 +519,33 @@ export const MusicPlaylist = ({
         console.log("Audio playback started");
         onPlay(song.url);
         setSelectedSong(song);
-        setRetryCount(0); // Resetar contagem de tentativas após sucesso
+        setRetryCount(0); // Reset retry counter after success
         
       } catch (expoError) {
-        console.error("Erro com Expo Audio:", expoError);
-        throw expoError; // Repassar erro para ser tratado pelo fallback
+        console.error("Error with Expo Audio:", expoError);
+        throw expoError; // Pass error to be handled by fallback
       }
       
     } catch (error) {
       console.error("Error setting up audio playback:", error);
       
       if (retryCount < maxRetries) {
-        setRetryCount(prev => prev + 1);
-        toast.error(`Tentativa ${retryCount + 1}/${maxRetries} falhou. Tentando novamente...`);
+        const newRetryCount = retryCount + 1;
+        setRetryCount(newRetryCount);
+        toast.error(`Attempt ${newRetryCount}/${maxRetries} failed. Trying again...`);
         
-        // Esperar um momento antes de tentar novamente
-        setTimeout(() => {
-          // Tentar com o método de fallback
+        // Wait a moment before trying again
+        setTimeout(async () => {
+          // Try with fallback method
           const success = await playAudioWithFallback(song);
           
-          if (!success && retryCount === maxRetries - 1) {
-            toast.error("Não foi possível reproduzir o áudio após várias tentativas.");
+          if (!success && newRetryCount === maxRetries - 1) {
+            toast.error("Could not play audio after multiple attempts.");
             handleNextSong();
           }
         }, 1000);
       } else {
-        toast.error("Erro ao reproduzir áudio. Tentando próxima música...");
+        toast.error("Error playing audio. Trying next song...");
         handleNextSong();
       }
     }
@@ -725,6 +726,5 @@ export const MusicPlaylist = ({
   );
 };
 
-// Export the interface and the fallbackSongLibrary for use in other components
-export type { Song };
+// Export the fallbackSongLibrary for use in other components
 export { fallbackSongLibrary as songLibrary };
