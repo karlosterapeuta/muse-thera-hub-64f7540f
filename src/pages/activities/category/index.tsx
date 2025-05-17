@@ -111,7 +111,10 @@ export default function CategoryPage() {
         </CardContent>
       </Card>
 
-      <h2 className="text-2xl font-semibold mb-4">Lista de Atividades</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">Lista de Atividades</h2>
+        <p className="text-sm text-muted-foreground">Total: {activities.length} atividades</p>
+      </div>
       
       <Accordion type="single" collapsible className="w-full">
         {activities.map((activity) => (
