@@ -24,12 +24,8 @@ const defaultInstruments: InstrumentType[] = [
 ];
 
 const patternImages = [
-  { id: "note1", name: "Nota Musical", patternUrl: "/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png", shape: "pattern" },
-  { id: "note2", name: "Colcheia", patternUrl: "/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png", shape: "pattern" },
-  { id: "note3", name: "Clave de Sol", patternUrl: "/lovable-uploads/87c91aaa-5ccf-47f5-9904-1b87603fefd9.png", shape: "pattern" },
-  { id: "note4", name: "Flauta", patternUrl: "/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png", shape: "pattern" },
-  { id: "note5", name: "Microfone", patternUrl: "/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png", shape: "pattern" },
-  { id: "note6", name: "Piano", patternUrl: "/lovable-uploads/2d7fe17c-c370-4c99-8211-c3e8f49ad3d1.png", shape: "pattern" },
+  { id: "pattern1", name: "Linhas", patternUrl: "/lovable-uploads/da9b5309-7b44-441b-9fe5-352641d9a819.png", shape: "pattern" },
+  { id: "pattern2", name: "Figuras", patternUrl: "/lovable-uploads/30a8193e-2bfd-48ab-b197-cfa41e617d30.png", shape: "pattern" },
 ];
 
 export default function MusicogramPage() {
@@ -184,11 +180,11 @@ export default function MusicogramPage() {
         }`}
         onClick={() => handlePatternSelect(pattern.id)}
       >
-        <div className="w-10 h-10 rounded-md overflow-hidden transition-transform duration-200 hover:scale-110 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-md overflow-hidden transition-transform duration-200 hover:scale-110">
           <img 
             src={pattern.patternUrl} 
             alt={pattern.name} 
-            className="w-8 h-8 object-contain" 
+            className="w-full h-full object-cover" 
             draggable="false"
           />
         </div>
