@@ -15,6 +15,11 @@ export default function AuthStatusChecker() {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (session) {
+      // Always allow this specific user regardless of status
+      if (session.user.email === "marcia.jacira@hotmail.com") {
+        return;
+      }
+      
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('status')

@@ -55,9 +55,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
     { icon: LayoutGrid, text: "Musicograma", path: "/musicogram" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },
-    // Always show Users menu for musicoterapeutakarlos@gmail.com
-    (userEmail === "musicoterapeutakarlos@gmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },
-    isAdmin && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
+    // Show Users menu for specific users or admins
+    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },
+    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ].filter(Boolean);
 
   const handleNavigation = (path: string) => {
