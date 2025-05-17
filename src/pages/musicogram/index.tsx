@@ -437,8 +437,13 @@ export default function MusicogramPage() {
             <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
               {isDrawingMode 
                 ? "Modo Desenho: Arraste símbolos para o quadro" 
-                : "Modo Manipulação: Mova os elementos livremente"}
+                : "Modo Manipulação: Mova e redimensione livremente"}
             </div>
+            {!isDrawingMode && (
+              <div className="text-xs text-gray-600 mt-1">
+                Clique e arraste para mover elementos
+              </div>
+            )}
           </div>
           
           {renderStarIcon()}

@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
-import { Trash2 } from "lucide-react";
+import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 interface MusicogramCanvasProps {
@@ -31,6 +31,7 @@ export function MusicogramCanvas({
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const [selectedElement, setSelectedElement] = useState<fabric.Object | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const initCanvas = () => {
@@ -50,6 +51,7 @@ export function MusicogramCanvas({
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
+          setIsDragging(true);
           const updatedElement = {
             id: obj.data.id,
             x: obj.left || 0,
@@ -64,6 +66,13 @@ export function MusicogramCanvas({
             iconContent: obj.data.iconContent
           };
           onUpdateElement(updatedElement);
+        }
+      });
+
+      // Add mouse up handler to reset dragging state
+      newCanvas.on('mouse:up', () => {
+        if (isDragging) {
+          setIsDragging(false);
         }
       });
 
@@ -303,6 +312,9 @@ export function MusicogramCanvas({
           canvas?.remove(fabricElement!);
         }
       });
+
+      // Set cursor style to move/grab
+      fabricElement.hoverCursor = 'move';
     }
 
     return fabricElement;
@@ -326,6 +338,12 @@ export function MusicogramCanvas({
         >
           <Trash2 size={16} />
         </button>
+      )}
+      {!isDrawingMode && (
+        <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80">
+          <Grab size={18} />
+          <span className="text-xs">Modo Arrasto</span>
+        </div>
       )}
     </div>
   );
