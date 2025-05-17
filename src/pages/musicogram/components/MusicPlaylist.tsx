@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -360,36 +360,75 @@ export const MusicPlaylist = ({
   const [volume, setVolume] = useState(50);
   const [youtubeApiLoaded, setYoutubeApiLoaded] = useState(false);
   const [youtubePlayer, setYoutubePlayer] = useState<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Carrega a API do YouTube
   useEffect(() => {
     // Verificar se já existe um script do YouTube API
     if (!document.getElementById('youtube-api-script')) {
-      // Cria o script do YouTube API
-      const tag = document.createElement('script');
-      tag.id = 'youtube-api-script';
-      tag.src = 'https://www.youtube.com/iframe_api';
-      
-      // Função de callback quando a API estiver pronta
-      window.onYouTubeIframeAPIReady = () => {
-        console.log("YouTube API ready");
-        setYoutubeApiLoaded(true);
-      };
-      
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+      try {
+        // Cria o script do YouTube API
+        const tag = document.createElement('script');
+        tag.id = 'youtube-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        
+        // Função de callback quando a API estiver pronta
+        window.onYouTubeIframeAPIReady = () => {
+          console.log("YouTube API ready");
+          setYoutubeApiLoaded(true);
+        };
+        
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        if (firstScriptTag && firstScriptTag.parentNode) {
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+          document.head.appendChild(tag);
+        }
+      } catch (error) {
+        console.error("Error loading YouTube API:", error);
+        toast.error("Não foi possível carregar a API do YouTube. Usando reprodução alternativa.");
+      }
     } else if (window.YT && window.YT.Player) {
       console.log("YouTube API already loaded");
       setYoutubeApiLoaded(true);
     }
     
+    // Initialize audio element for direct audio playback
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.addEventListener('ended', () => {
+        console.log("Audio playback ended");
+        onPause();
+      });
+      audioRef.current.addEventListener('error', (e) => {
+        console.error("Error playing audio:", e);
+        toast.error("Erro ao reproduzir o áudio. Tentando alternativa...");
+      });
+    }
+    
     // Limpa o player do YouTube quando o componente é desmontado
     return () => {
       if (youtubePlayer) {
-        youtubePlayer.destroy();
+        try {
+          youtubePlayer.destroy();
+        } catch (error) {
+          console.error("Error destroying YouTube player:", error);
+        }
+      }
+      
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
       }
     };
   }, []);
+
+  // Atualiza o volume para o elemento de áudio
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
 
   // Inicializa o player do YouTube quando a API estiver carregada
   useEffect(() => {
@@ -437,6 +476,7 @@ export const MusicPlaylist = ({
         });
       } catch (error) {
         console.error("Erro ao inicializar o player do YouTube:", error);
+        toast.error("Não foi possível inicializar o player do YouTube. Usando método alternativo.");
       }
     }
   }, [youtubeApiLoaded, onPause, volume, currentSong]);
@@ -456,31 +496,66 @@ export const MusicPlaylist = ({
 
   // Função para tratar reprodução de áudio quando o YouTube falhar
   const handleFallbackAudio = (songUrl: string) => {
-    // Criar um elemento de áudio para tocar a música
-    const audio = new Audio();
-    audio.src = songUrl;
-    audio.volume = volume / 100;
+    // Usar o elemento de áudio para reprodução direta
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
     
-    audio.onplay = () => {
-      console.log("Reproduzindo áudio via fallback:", songUrl);
+    // Parar qualquer reprodução atual
+    try {
+      audioRef.current.pause();
+    } catch (e) {
+      console.error("Error stopping current audio:", e);
+    }
+    
+    // Tentar alternativas para a URL de áudio
+    const tryPlayWithUrl = (url: string) => {
+      if (!audioRef.current) return;
+      
+      // Criar elementos extras para debugging
+      console.log(`Attempting to play: ${url}`);
+      
+      audioRef.current.src = url;
+      audioRef.current.volume = volume / 100;
+      
+      audioRef.current.oncanplay = () => {
+        console.log("Audio can play now");
+        audioRef.current?.play().catch(error => {
+          console.error("Error starting audio playback:", error);
+          toast.error("Falha ao iniciar a reprodução. Verifique as permissões do navegador.");
+        });
+      };
+      
+      audioRef.current.onerror = () => {
+        console.error("Audio source error with URL:", url);
+        
+        // Try with a generic sample sound as last resort
+        if (!url.includes('sample')) {
+          console.log("Trying sample sound as last resort");
+          tryPlayWithUrl("https://assets.mixkit.co/sfx/preview/mixkit-short-guitar-riff-2322.mp3");
+        } else {
+          toast.error("Não foi possível reproduzir esta música. Tente outra.");
+        }
+      };
+      
+      // Attempt to play
+      audioRef.current.load();
     };
     
-    audio.onerror = (error) => {
-      console.error("Error playing audio:", error);
-      toast.error("Não foi possível reproduzir esta música. Tente outra.");
-    };
-    
-    // Tenta reproduzir o áudio
-    audio.play().catch(error => {
-      console.error("Error playing audio:", error);
-      toast.error("Falha ao iniciar a reprodução. Verifique as permissões do navegador.");
-    });
+    // Start with the provided URL
+    tryPlayWithUrl(songUrl);
     
     // Notifica o componente pai que o áudio está sendo reproduzido
     onPlay(songUrl);
   };
 
   const handlePlaySong = (song: Song) => {
+    // Stop any current audio playback
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+    
     // Se tivermos um player do YouTube e a música tiver um ID do YouTube, toca pelo YouTube
     if (youtubePlayer && song.youtubeId && window.navigator.onLine) {
       try {
@@ -504,9 +579,38 @@ export const MusicPlaylist = ({
 
   const handlePauseSong = () => {
     if (youtubePlayer && youtubePlayer.pauseVideo) {
-      youtubePlayer.pauseVideo();
+      try {
+        youtubePlayer.pauseVideo();
+      } catch (e) {
+        console.error("Error pausing YouTube:", e);
+      }
     }
+    
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+      } catch (e) {
+        console.error("Error pausing audio:", e);
+      }
+    }
+    
     onPause();
+  };
+
+  // Function to get the previous song
+  const handlePreviousSong = () => {
+    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
+    if (currentIndex > 0) {
+      handlePlaySong(songLibrary[currentIndex - 1]);
+    }
+  };
+
+  // Function to get the next song
+  const handleNextSong = () => {
+    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
+    if (currentIndex < songLibrary.length - 1) {
+      handlePlaySong(songLibrary[currentIndex + 1]);
+    }
   };
 
   return (
@@ -523,13 +627,8 @@ export const MusicPlaylist = ({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => {
-                const currentIndex = songLibrary.findIndex(s => s.id === currentSong?.id);
-                if (currentIndex > 0) {
-                  handlePlaySong(songLibrary[currentIndex - 1]);
-                }
-              }}
-              disabled={!currentSong || songLibrary.findIndex(s => s.id === currentSong?.id) === 0}
+              onClick={handlePreviousSong}
+              disabled={!currentSong && !selectedSong}
             >
               <SkipBack size={16} />
             </Button>
@@ -537,7 +636,8 @@ export const MusicPlaylist = ({
             <Button
               variant={isPlaying ? "outline" : "default"}
               className="h-10 w-10 rounded-full p-0"
-              onClick={() => isPlaying ? handlePauseSong() : currentSong ? handlePlaySong(currentSong) : null}
+              onClick={() => isPlaying ? handlePauseSong() : currentSong ? handlePlaySong(currentSong) : selectedSong ? handlePlaySong(selectedSong) : null}
+              disabled={!currentSong && !selectedSong}
             >
               {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             </Button>
@@ -545,13 +645,8 @@ export const MusicPlaylist = ({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => {
-                const currentIndex = songLibrary.findIndex(s => s.id === currentSong?.id);
-                if (currentIndex < songLibrary.length - 1) {
-                  handlePlaySong(songLibrary[currentIndex + 1]);
-                }
-              }}
-              disabled={!currentSong || songLibrary.findIndex(s => s.id === currentSong?.id) === songLibrary.length - 1}
+              onClick={handleNextSong}
+              disabled={!currentSong && !selectedSong}
             >
               <SkipForward size={16} />
             </Button>
@@ -625,6 +720,9 @@ export const MusicPlaylist = ({
             </div>
           )}
         </div>
+        
+        {/* Hidden audio element for debugging */}
+        <audio id="debug-audio" style={{ display: 'none' }}></audio>
       </CardContent>
     </Card>
   );
@@ -639,3 +737,4 @@ declare global {
 }
 
 export { type Song, songLibrary };
+
