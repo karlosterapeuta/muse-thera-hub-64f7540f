@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +20,8 @@ interface Song {
   artist: string;
   url: string;
   duration: string; // mm:ss format
-  youtubeId?: string; // YouTube video ID
+  youtubeId?: string; // Optional YouTube video ID
+  jamendoId?: string; // Optional Jamendo track ID
 }
 
 interface MusicPlaylistProps {
@@ -31,11 +31,346 @@ interface MusicPlaylistProps {
   isPlaying: boolean;
 }
 
-// YouTube API key
-const YOUTUBE_API_KEY = "AIzaSyDhe6pEZ92LWhB7B2tHfFokg5K2UTDv4yo";
+// Jamendo API client ID
+const JAMENDO_CLIENT_ID = "SEU_ID"; // Replace with your actual client ID
 
-// Lista atualizada de músicas infantis tradicionais brasileiras
-const songLibrary: Song[] = [
+// Lista inicial de músicas infantis tradicionais brasileiras
+// This will be replaced by Jamendo API results
+const initialSongLibrary: Song[] = [
+  {
+    id: "song-1",
+    title: "Carregando músicas...",
+    artist: "Aguarde",
+    url: "",
+    duration: "0:00",
+  }
+];
+
+export const MusicPlaylist = ({ 
+  onPlay, 
+  onPause, 
+  currentSong, 
+  isPlaying 
+}: MusicPlaylistProps) => {
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [volume, setVolume] = useState(50);
+  const [songLibrary, setSongLibrary] = useState<Song[]>(initialSongLibrary);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Fetch songs from Jamendo API
+  useEffect(() => {
+    const fetchSongs = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(
+          `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&limit=30&tags=childrens-music,children,kids`
+        );
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+          const formattedSongs = data.results.map((track: any) => {
+            // Format duration from seconds to mm:ss
+            const minutes = Math.floor(track.duration / 60);
+            const seconds = Math.floor(track.duration % 60);
+            const formattedDuration = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+            
+            return {
+              id: track.id,
+              title: track.name,
+              artist: track.artist_name,
+              url: track.audio,
+              duration: formattedDuration,
+              jamendoId: track.id
+            };
+          });
+          
+          setSongLibrary(formattedSongs);
+          console.log("Loaded songs from Jamendo:", formattedSongs.length);
+        } else {
+          // If no results, fallback to local songs
+          console.log("No songs found from Jamendo API, using fallback playlist");
+          setSongLibrary(fallbackSongLibrary);
+        }
+      } catch (err) {
+        console.error("Error fetching songs from Jamendo:", err);
+        setError("Falha ao carregar músicas do Jamendo. Usando lista de músicas local.");
+        toast.error("Erro ao carregar músicas. Usando playlist offline.");
+        // Fallback to the local song library
+        setSongLibrary(fallbackSongLibrary);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchSongs();
+    
+    // Initialize audio element for direct audio playback
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.addEventListener('ended', () => {
+        console.log("Audio playback ended");
+        onPause();
+      });
+      audioRef.current.addEventListener('error', (e) => {
+        console.error("Error playing audio:", e);
+        toast.error("Erro ao reproduzir o áudio. Tentando alternativa...");
+        handleNextSong(); // Try next song when current fails
+      });
+    }
+    
+    // Cleanup function
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+    };
+  }, []);
+
+  // Atualiza o volume para o elemento de áudio
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
+
+  const handleSelectSong = (song: Song) => {
+    setSelectedSong(song);
+    // Tocar um som de seleção
+    playNoteSound("C");
+  };
+
+  // Função para reproduzir áudio usando elemento de áudio nativo
+  const playAudio = (song: Song) => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    
+    try {
+      // Stop any current audio playback
+      audioRef.current.pause();
+      
+      const audioUrl = song.url;
+      console.log("Attempting to play:", audioUrl);
+      
+      audioRef.current.src = audioUrl;
+      audioRef.current.volume = volume / 100;
+      
+      // Setup event handlers
+      audioRef.current.oncanplay = () => {
+        console.log("Audio can play now");
+        audioRef.current?.play().catch(error => {
+          console.error("Error starting audio playback:", error);
+          toast.error("Falha ao iniciar a reprodução. Tentando outra música...");
+          handleNextSong();
+        });
+      };
+      
+      audioRef.current.onerror = (e) => {
+        console.error("Audio source error:", e);
+        toast.error("Erro ao reproduzir esta música. Tentando a próxima...");
+        handleNextSong();
+      };
+      
+      // Load and attempt to play
+      audioRef.current.load();
+      
+      // Notify parent component
+      onPlay(song.url);
+      setSelectedSong(song);
+      
+    } catch (error) {
+      console.error("Error setting up audio playback:", error);
+      toast.error("Erro ao configurar a reprodução de áudio.");
+    }
+  };
+
+  const handlePlaySong = (song: Song) => {
+    // Stop any current audio playback
+    stopAllAudio();
+    
+    playAudio(song);
+  };
+
+  const handlePauseSong = () => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+      } catch (e) {
+        console.error("Error pausing audio:", e);
+      }
+    }
+    
+    onPause();
+  };
+
+  // Function to get the previous song
+  const handlePreviousSong = () => {
+    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
+    if (currentIndex > 0) {
+      handlePlaySong(songLibrary[currentIndex - 1]);
+    } else {
+      // Loop to the end if at the beginning
+      handlePlaySong(songLibrary[songLibrary.length - 1]);
+    }
+  };
+
+  // Function to get the next song
+  const handleNextSong = () => {
+    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
+    if (currentIndex < songLibrary.length - 1) {
+      handlePlaySong(songLibrary[currentIndex + 1]);
+    } else {
+      // Loop back to the beginning if at the end
+      handlePlaySong(songLibrary[0]);
+    }
+  };
+
+  return (
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Music size={18} />
+          Playlist Musical
+          {isLoading && <span className="text-xs text-muted-foreground ml-2">(Carregando...)</span>}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handlePreviousSong}
+              disabled={!currentSong && !selectedSong || songLibrary.length <= 1}
+            >
+              <SkipBack size={16} />
+            </Button>
+            
+            <Button
+              variant={isPlaying ? "outline" : "default"}
+              className="h-10 w-10 rounded-full p-0"
+              onClick={() => isPlaying ? handlePauseSong() : currentSong ? handlePlaySong(currentSong) : selectedSong ? handlePlaySong(selectedSong) : null}
+              disabled={!currentSong && !selectedSong || songLibrary.length <= 1}
+            >
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleNextSong}
+              disabled={!currentSong && !selectedSong || songLibrary.length <= 1}
+            >
+              <SkipForward size={16} />
+            </Button>
+          </div>
+          
+          {/* Volume Control */}
+          <div className="flex items-center gap-2 mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setVolume(volume === 0 ? 50 : 0)}
+              className="h-8 w-8"
+            >
+              {volume === 0 ? <VolumeX size={16} /> : <Volume size={16} />}
+            </Button>
+            <Slider 
+              value={[volume]} 
+              min={0} 
+              max={100} 
+              step={1} 
+              className="w-32"
+              onValueChange={(vals) => setVolume(vals[0])}
+            />
+            <span className="text-xs w-8 text-center">{volume}%</span>
+          </div>
+          
+          {error && (
+            <div className="text-sm text-red-500 mb-2">{error}</div>
+          )}
+          
+          {isLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex items-center justify-between p-2 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="h-7 w-7 rounded-full bg-muted"></div>
+                    <div>
+                      <div className="h-4 w-32 bg-muted rounded"></div>
+                      <div className="h-3 w-20 bg-muted rounded mt-1"></div>
+                    </div>
+                  </div>
+                  <div className="h-3 w-8 bg-muted rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
+              {songLibrary.map((song) => (
+                <div
+                  key={song.id}
+                  className={`flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
+                    currentSong?.id === song.id
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
+                  }`}
+                  onClick={() => handleSelectSong(song)}
+                  onDoubleClick={() => handlePlaySong(song)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        song.id === currentSong?.id && isPlaying 
+                          ? handlePauseSong() 
+                          : handlePlaySong(song);
+                      }}
+                    >
+                      {song.id === currentSong?.id && isPlaying ? (
+                        <Pause size={14} />
+                      ) : (
+                        <Play size={14} />
+                      )}
+                    </Button>
+                    <div>
+                      <div className="text-sm font-medium">{song.title}</div>
+                      <div className="text-xs text-muted-foreground">{song.artist}</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{song.duration}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {selectedSong && (
+            <div className="pt-2 border-t border-border">
+              <p className="text-sm font-medium">Selecionado:</p>
+              <p className="text-sm">{selectedSong.title} - {selectedSong.artist}</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Fallback song library in case Jamendo API fails
+const fallbackSongLibrary: Song[] = [
   {
     id: "song-1",
     title: "Atirei o Pau no Gato",
@@ -350,391 +685,4 @@ const songLibrary: Song[] = [
   }
 ];
 
-export const MusicPlaylist = ({ 
-  onPlay, 
-  onPause, 
-  currentSong, 
-  isPlaying 
-}: MusicPlaylistProps) => {
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
-  const [volume, setVolume] = useState(50);
-  const [youtubeApiLoaded, setYoutubeApiLoaded] = useState(false);
-  const [youtubePlayer, setYoutubePlayer] = useState<any>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Carrega a API do YouTube
-  useEffect(() => {
-    // Verificar se já existe um script do YouTube API
-    if (!document.getElementById('youtube-api-script')) {
-      try {
-        // Cria o script do YouTube API
-        const tag = document.createElement('script');
-        tag.id = 'youtube-api-script';
-        tag.src = 'https://www.youtube.com/iframe_api';
-        
-        // Função de callback quando a API estiver pronta
-        window.onYouTubeIframeAPIReady = () => {
-          console.log("YouTube API ready");
-          setYoutubeApiLoaded(true);
-        };
-        
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        if (firstScriptTag && firstScriptTag.parentNode) {
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        } else {
-          document.head.appendChild(tag);
-        }
-      } catch (error) {
-        console.error("Error loading YouTube API:", error);
-        toast.error("Não foi possível carregar a API do YouTube. Usando reprodução alternativa.");
-      }
-    } else if (window.YT && window.YT.Player) {
-      console.log("YouTube API already loaded");
-      setYoutubeApiLoaded(true);
-    }
-    
-    // Initialize audio element for direct audio playback
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.addEventListener('ended', () => {
-        console.log("Audio playback ended");
-        onPause();
-      });
-      audioRef.current.addEventListener('error', (e) => {
-        console.error("Error playing audio:", e);
-        toast.error("Erro ao reproduzir o áudio. Tentando alternativa...");
-      });
-    }
-    
-    // Limpa o player do YouTube quando o componente é desmontado
-    return () => {
-      if (youtubePlayer) {
-        try {
-          youtubePlayer.destroy();
-        } catch (error) {
-          console.error("Error destroying YouTube player:", error);
-        }
-      }
-      
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-      }
-    };
-  }, []);
-
-  // Atualiza o volume para o elemento de áudio
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-    }
-  }, [volume]);
-
-  // Inicializa o player do YouTube quando a API estiver carregada
-  useEffect(() => {
-    if (youtubeApiLoaded && !youtubePlayer && window.YT && window.YT.Player) {
-      try {
-        // Cria um elemento div invisível para o player do YouTube se não existir
-        let playerDiv = document.getElementById('youtube-player');
-        if (!playerDiv) {
-          playerDiv = document.createElement('div');
-          playerDiv.id = 'youtube-player';
-          playerDiv.style.display = 'none';
-          document.body.appendChild(playerDiv);
-        }
-        
-        const player = new window.YT.Player('youtube-player', {
-          height: '0',
-          width: '0',
-          playerVars: {
-            'playsinline': 1,
-            'controls': 0,
-            'disablekb': 1
-          },
-          events: {
-            'onReady': () => {
-              console.log("YouTube player ready");
-              setYoutubePlayer(player);
-              player.setVolume(volume);
-            },
-            'onStateChange': (event: any) => {
-              if (event.data === window.YT.PlayerState.ENDED) {
-                // Quando a música terminar, notifica o componente pai
-                onPause();
-              }
-            },
-            'onError': (event: any) => {
-              console.error("Erro no player do YouTube:", event);
-              toast.error("Erro ao reproduzir o vídeo do YouTube. Tentando alternativa...");
-              
-              // Tenta tocar a versão alternativa do arquivo
-              if (currentSong) {
-                handleFallbackAudio(currentSong.url);
-              }
-            }
-          }
-        });
-      } catch (error) {
-        console.error("Erro ao inicializar o player do YouTube:", error);
-        toast.error("Não foi possível inicializar o player do YouTube. Usando método alternativo.");
-      }
-    }
-  }, [youtubeApiLoaded, onPause, volume, currentSong]);
-
-  // Atualiza o volume quando for alterado
-  useEffect(() => {
-    if (youtubePlayer && youtubePlayer.setVolume) {
-      youtubePlayer.setVolume(volume);
-    }
-  }, [volume, youtubePlayer]);
-
-  const handleSelectSong = (song: Song) => {
-    setSelectedSong(song);
-    // Tocar um som de seleção
-    playNoteSound("C");
-  };
-
-  // Função para tratar reprodução de áudio quando o YouTube falhar
-  const handleFallbackAudio = (songUrl: string) => {
-    // Usar o elemento de áudio para reprodução direta
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
-    
-    // Parar qualquer reprodução atual
-    try {
-      audioRef.current.pause();
-    } catch (e) {
-      console.error("Error stopping current audio:", e);
-    }
-    
-    // Tentar alternativas para a URL de áudio
-    const tryPlayWithUrl = (url: string) => {
-      if (!audioRef.current) return;
-      
-      // Criar elementos extras para debugging
-      console.log(`Attempting to play: ${url}`);
-      
-      audioRef.current.src = url;
-      audioRef.current.volume = volume / 100;
-      
-      audioRef.current.oncanplay = () => {
-        console.log("Audio can play now");
-        audioRef.current?.play().catch(error => {
-          console.error("Error starting audio playback:", error);
-          toast.error("Falha ao iniciar a reprodução. Verifique as permissões do navegador.");
-        });
-      };
-      
-      audioRef.current.onerror = () => {
-        console.error("Audio source error with URL:", url);
-        
-        // Try with a generic sample sound as last resort
-        if (!url.includes('sample')) {
-          console.log("Trying sample sound as last resort");
-          tryPlayWithUrl("https://assets.mixkit.co/sfx/preview/mixkit-short-guitar-riff-2322.mp3");
-        } else {
-          toast.error("Não foi possível reproduzir esta música. Tente outra.");
-        }
-      };
-      
-      // Attempt to play
-      audioRef.current.load();
-    };
-    
-    // Start with the provided URL
-    tryPlayWithUrl(songUrl);
-    
-    // Notifica o componente pai que o áudio está sendo reproduzido
-    onPlay(songUrl);
-  };
-
-  const handlePlaySong = (song: Song) => {
-    // Stop any current audio playback
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-    }
-    
-    // Se tivermos um player do YouTube e a música tiver um ID do YouTube, toca pelo YouTube
-    if (youtubePlayer && song.youtubeId && window.navigator.onLine) {
-      try {
-        youtubePlayer.loadVideoById(song.youtubeId);
-        youtubePlayer.playVideo();
-        onPlay(song.url); // Notifica o componente pai
-        console.log("Reproduzindo via YouTube:", song.title, song.youtubeId);
-      } catch (error) {
-        console.error("Erro ao tocar vídeo do YouTube:", error);
-        toast.error("Erro ao reproduzir o vídeo. Usando fonte alternativa.");
-        // Usa a URL alternativa se o YouTube falhar
-        handleFallbackAudio(song.url);
-      }
-    } else {
-      // Caso contrário, usa o método alternativo
-      console.log("Usando reprodução alternativa para:", song.title);
-      handleFallbackAudio(song.url);
-    }
-    setSelectedSong(song);
-  };
-
-  const handlePauseSong = () => {
-    if (youtubePlayer && youtubePlayer.pauseVideo) {
-      try {
-        youtubePlayer.pauseVideo();
-      } catch (e) {
-        console.error("Error pausing YouTube:", e);
-      }
-    }
-    
-    if (audioRef.current) {
-      try {
-        audioRef.current.pause();
-      } catch (e) {
-        console.error("Error pausing audio:", e);
-      }
-    }
-    
-    onPause();
-  };
-
-  // Function to get the previous song
-  const handlePreviousSong = () => {
-    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
-    if (currentIndex > 0) {
-      handlePlaySong(songLibrary[currentIndex - 1]);
-    }
-  };
-
-  // Function to get the next song
-  const handleNextSong = () => {
-    const currentIndex = songLibrary.findIndex(s => s.id === (currentSong?.id || selectedSong?.id));
-    if (currentIndex < songLibrary.length - 1) {
-      handlePlaySong(songLibrary[currentIndex + 1]);
-    }
-  };
-
-  return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Music size={18} />
-          Playlist Musical
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handlePreviousSong}
-              disabled={!currentSong && !selectedSong}
-            >
-              <SkipBack size={16} />
-            </Button>
-            
-            <Button
-              variant={isPlaying ? "outline" : "default"}
-              className="h-10 w-10 rounded-full p-0"
-              onClick={() => isPlaying ? handlePauseSong() : currentSong ? handlePlaySong(currentSong) : selectedSong ? handlePlaySong(selectedSong) : null}
-              disabled={!currentSong && !selectedSong}
-            >
-              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleNextSong}
-              disabled={!currentSong && !selectedSong}
-            >
-              <SkipForward size={16} />
-            </Button>
-          </div>
-          
-          {/* Volume Control */}
-          <div className="flex items-center gap-2 mb-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setVolume(volume === 0 ? 50 : 0)}
-              className="h-8 w-8"
-            >
-              {volume === 0 ? <VolumeX size={16} /> : <Volume size={16} />}
-            </Button>
-            <Slider 
-              value={[volume]} 
-              min={0} 
-              max={100} 
-              step={1} 
-              className="w-32"
-              onValueChange={(vals) => setVolume(vals[0])}
-            />
-            <span className="text-xs w-8 text-center">{volume}%</span>
-          </div>
-          
-          <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
-            {songLibrary.map((song) => (
-              <div
-                key={song.id}
-                className={`flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
-                  currentSong?.id === song.id
-                    ? "bg-primary/10 text-primary"
-                    : "hover:bg-muted"
-                }`}
-                onClick={() => handleSelectSong(song)}
-                onDoubleClick={() => handlePlaySong(song)}
-              >
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      song.id === currentSong?.id && isPlaying 
-                        ? handlePauseSong() 
-                        : handlePlaySong(song);
-                    }}
-                  >
-                    {song.id === currentSong?.id && isPlaying ? (
-                      <Pause size={14} />
-                    ) : (
-                      <Play size={14} />
-                    )}
-                  </Button>
-                  <div>
-                    <div className="text-sm font-medium">{song.title}</div>
-                    <div className="text-xs text-muted-foreground">{song.artist}</div>
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground">{song.duration}</div>
-              </div>
-            ))}
-          </div>
-          
-          {selectedSong && (
-            <div className="pt-2 border-t border-border">
-              <p className="text-sm font-medium">Selecionado:</p>
-              <p className="text-sm">{selectedSong.title} - {selectedSong.artist}</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Hidden audio element for debugging */}
-        <audio id="debug-audio" style={{ display: 'none' }}></audio>
-      </CardContent>
-    </Card>
-  );
-};
-
-// Adicione este tipo global para o YouTube API
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 export { type Song, songLibrary };
-
