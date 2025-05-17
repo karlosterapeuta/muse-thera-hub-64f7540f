@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Tabs, 
@@ -236,14 +237,14 @@ export default function MusicogramPage() {
       setAudioPlaying(false);
     };
     
-    // Better error handler with precise logging
+    // Better error handler with precise logging and type checking
     audio.onerror = (event) => {
       console.error("Audio error:", event);
       
       let errorMessage = "Erro ao reproduzir áudio";
       
       // Type guard to ensure we can access properties safely
-      if (event && event.target instanceof HTMLAudioElement) {
+      if (event instanceof Event && event.target instanceof HTMLAudioElement) {
         const audioElement = event.target;
         
         if (audioElement.error) {
