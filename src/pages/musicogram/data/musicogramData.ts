@@ -7,21 +7,24 @@ export const defaultTemplates: MusicogramTemplate[] = [
     name: "Padrão",
     rows: 12,
     columns: 16,
-    description: "Template padrão de musicograma com 12 linhas e 16 colunas"
+    description: "Template padrão de musicograma com 12 linhas e 16 colunas",
+    elements: []
   },
   {
     id: "small",
     name: "Compacto",
     rows: 8,
     columns: 8,
-    description: "Template compacto para musicogramas curtos"
+    description: "Template compacto para musicogramas curtos",
+    elements: []
   },
   {
     id: "large",
     name: "Amplo",
     rows: 16,
     columns: 24,
-    description: "Template amplo com mais células para musicogramas detalhados"
+    description: "Template amplo com mais células para musicogramas detalhados",
+    elements: []
   }
 ];
 

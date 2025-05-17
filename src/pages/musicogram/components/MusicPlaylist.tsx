@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,13 +29,11 @@ const ULTIMATE_FALLBACK_URL = "https://www.soundhelix.com/examples/mp3/SoundHeli
 const YOUTUBE_EMBED_API_BASE = "https://www.youtube.com/embed/";
 
 interface MusicPlaylistProps {
-  onPlay: (url: string) => void;
-  onPause: () => void;
-  currentSong: Song | null;
-  isPlaying: boolean;
+  onMusicSelect: (musicId: string | null) => void;
+  currentMusic: string | null;
 }
 
-export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: MusicPlaylistProps) {
+export function MusicPlaylist({ onMusicSelect, currentMusic }: MusicPlaylistProps) {
   const [audioTestElement, setAudioTestElement] = useState<HTMLAudioElement | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -270,7 +267,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
           youtubeIframeRef.current.src = "";
         }
         setCurrentYoutubeId(null);
-        onPause();
+        onMusicSelect(null);
       } else {
         // Show new YouTube video
         setYoutubeIframeVisible(true);
@@ -286,15 +283,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
       }
     } else {
       // Handle regular audio file
-      if (currentSong?.id === song.id) {
-        if (isPlaying) {
-          onPause();
-        } else {
-          onPlay(song.url);
-        }
-      } else {
-        onPlay(song.url);
-      }
+      onMusicSelect(song.id);
     }
   };
   
@@ -383,7 +372,7 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
                         size="icon" 
                         className="h-8 w-8 flex-shrink-0"
                       >
-                        {currentSong?.id === song.id && isPlaying && song.source !== "youtube" ? 
+                        {currentMusic === song.id && song.source !== "youtube" ? 
                           <Pause size={16} /> : 
                           <Play size={16} />
                         }
@@ -415,3 +404,5 @@ export function MusicPlaylist({ onPlay, onPause, currentSong, isPlaying }: Music
     </Card>
   );
 }
+
+export default MusicPlaylist;

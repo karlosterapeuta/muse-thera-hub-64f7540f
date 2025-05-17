@@ -23,6 +23,9 @@ export interface VisualElement {
   color: string;
   size: number;
   shape: string;
+  position?: { x: number; y: number };
+  rotation?: number;
+  label?: string;
 }
 
 export interface MusicogramTemplate {
@@ -32,6 +35,8 @@ export interface MusicogramTemplate {
   columns: number;
   backgroundImage?: string;
   description?: string;
+  background?: string;
+  elements?: VisualElement[];
 }
 
 export interface PatientMusicogram {

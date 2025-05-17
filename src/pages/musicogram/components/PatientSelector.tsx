@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Select, 
@@ -16,11 +15,11 @@ interface Patient {
 }
 
 interface PatientSelectorProps {
-  onSelectPatient: (patientId: string, patientName: string) => void;
-  selectedPatientId?: string;
+  onPatientSelect: (patientId: string | null) => void;
+  currentPatient: string | null;
 }
 
-export function PatientSelector({ onSelectPatient, selectedPatientId }: PatientSelectorProps) {
+export function PatientSelector({ onPatientSelect, currentPatient }: PatientSelectorProps) {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -72,11 +71,13 @@ export function PatientSelector({ onSelectPatient, selectedPatientId }: PatientS
       />
       
       <Select
-        value={selectedPatientId}
+        value={currentPatient}
         onValueChange={(value) => {
           const selectedPatient = patients.find(p => p.id === value);
           if (selectedPatient) {
             onSelectPatient(selectedPatient.id, selectedPatient.name);
+          } else {
+            onSelectPatient(null, '');
           }
         }}
         disabled={isLoading}
@@ -101,3 +102,5 @@ export function PatientSelector({ onSelectPatient, selectedPatientId }: PatientS
     </div>
   );
 }
+
+export default PatientSelector;

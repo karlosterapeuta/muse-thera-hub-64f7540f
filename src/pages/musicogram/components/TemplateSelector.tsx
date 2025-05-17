@@ -15,14 +15,15 @@ import { FileDown, Plus } from "lucide-react";
 
 interface TemplateSelectorProps {
   templates: MusicogramTemplate[];
-  onSelectTemplate: (template: MusicogramTemplate) => void;
+  selectedTemplate: string;
+  onSelectTemplate: (templateId: string) => void;
 }
 
-export function TemplateSelector({ templates, onSelectTemplate }: TemplateSelectorProps) {
+export function TemplateSelector({ templates, selectedTemplate, onSelectTemplate }: TemplateSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   const handleSelect = (template: MusicogramTemplate) => {
-    onSelectTemplate(template);
+    onSelectTemplate(template.id);
     setIsOpen(false);
   };
   
@@ -48,24 +49,24 @@ export function TemplateSelector({ templates, onSelectTemplate }: TemplateSelect
                   style={{ backgroundColor: template.background || '#FFFFFF' }}
                 >
                   <div className="relative w-full h-full">
-                    {template.elements.slice(0, 4).map((element, index) => (
+                    {template.elements && template.elements.slice(0, 4).map((element, index) => (
                       <div 
                         key={`preview-${template.id}-${index}`}
                         className="absolute"
                         style={{
-                          left: `${element.position.x * 0.2}px`,
-                          top: `${element.position.y * 0.2}px`,
+                          left: `${(element.position?.x || element.x) * 0.2}px`,
+                          top: `${(element.position?.y || element.y) * 0.2}px`,
                           backgroundColor: element.color,
                           width: `${element.size * 0.2}px`,
                           height: element.shape === 'rect' 
                             ? `${element.size * 0.1}px` 
                             : `${element.size * 0.2}px`,
                           borderRadius: element.shape === 'circle' ? '50%' : '4px',
-                          transform: `rotate(${element.rotation}deg)`
+                          transform: `rotate(${element.rotation || 0}deg)`
                         }}
                       />
                     ))}
-                    {template.elements.length > 4 && (
+                    {template.elements && template.elements.length > 4 && (
                       <div className="absolute bottom-0 right-0 bg-primary text-white text-xs p-1 rounded-md">
                         +{template.elements.length - 4} elementos
                       </div>
@@ -95,3 +96,5 @@ export function TemplateSelector({ templates, onSelectTemplate }: TemplateSelect
     </Dialog>
   );
 }
+
+export default TemplateSelector;
