@@ -485,6 +485,10 @@ export default function AnamnesisForm() {
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
         'therapeutic_goals', 'treatment_approach',
+        
+        // Musical assessment fields
+        'musicalEngagement', 'musicalPreference', 'initialObservations', 'musicalHistory',
+        'therapeuticPotential'
       ];
       
       // Filtrar os dados para incluir apenas colunas conhecidas
@@ -634,6 +638,10 @@ export default function AnamnesisForm() {
         // Additional fields
         'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
         'therapeutic_goals', 'treatment_approach',
+        
+        // Musical assessment fields
+        'musicalEngagement', 'musicalPreference', 'initialObservations', 'musicalHistory',
+        'therapeuticPotential'
       ];
       
       // Filtrar os dados para incluir apenas colunas conhecidas
