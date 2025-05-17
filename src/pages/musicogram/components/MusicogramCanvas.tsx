@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -150,7 +151,20 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     if (canvas) {
+      // When in drawing mode, disable object selection/movement
+      // When not in drawing mode, enable object selection/movement
       canvas.isDrawingMode = isDrawingMode;
+      
+      // Update movability of all objects based on drawing mode
+      canvas.getObjects().forEach(obj => {
+        obj.selectable = !isDrawingMode;
+        obj.lockMovementX = isDrawingMode;
+        obj.lockMovementY = isDrawingMode;
+        obj.hasControls = !isDrawingMode;
+        obj.hasBorders = !isDrawingMode;
+      });
+      
+      canvas.renderAll();
     }
   }, [isDrawingMode, canvas]);
 
@@ -165,15 +179,16 @@ export function MusicogramCanvas({
         const textObj = new fabric.Text(element.iconContent, {
           left: x,
           top: y,
-          fontSize: element.size || 36,  // Use element size or default to 36
+          fontSize: element.size || 36,
           fill: element.color,
           originX: 'center',
           originY: 'center',
-          hasControls: true,
-          hasBorders: true,
-          lockMovementX: !isDrawingMode,
-          lockMovementY: !isDrawingMode,
-          angle: element.rotation || 0
+          hasControls: !isDrawingMode,
+          hasBorders: !isDrawingMode,
+          lockMovementX: isDrawingMode,
+          lockMovementY: isDrawingMode,
+          angle: element.rotation || 0,
+          selectable: !isDrawingMode,
         });
         fabricElement = textObj;
       }
@@ -185,10 +200,11 @@ export function MusicogramCanvas({
         fill: element.color,
         originX: 'center',
         originY: 'center',
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: !isDrawingMode,
-        lockMovementY: !isDrawingMode,
+        hasControls: !isDrawingMode,
+        hasBorders: !isDrawingMode,
+        lockMovementX: isDrawingMode,
+        lockMovementY: isDrawingMode,
+        selectable: !isDrawingMode,
         angle: element.rotation || 0
       });
     } else if (element.shape === 'rect') {
@@ -200,10 +216,11 @@ export function MusicogramCanvas({
         fill: element.color,
         originX: 'center',
         originY: 'center',
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: !isDrawingMode,
-        lockMovementY: !isDrawingMode,
+        hasControls: !isDrawingMode,
+        hasBorders: !isDrawingMode,
+        lockMovementX: isDrawingMode,
+        lockMovementY: isDrawingMode,
+        selectable: !isDrawingMode,
         angle: element.rotation || 0
       });
     }

@@ -301,7 +301,10 @@ export default function MusicogramPage() {
         <Button
           variant={isDrawingMode ? "default" : "outline"}
           size="icon"
-          onClick={() => setIsDrawingMode(true)}
+          onClick={() => {
+            setIsDrawingMode(true);
+            setIsErasing(false);
+          }}
           title="Modo Desenho"
         >
           <Brush size={18} />
@@ -309,8 +312,12 @@ export default function MusicogramPage() {
         <Button
           variant={!isDrawingMode ? "default" : "outline"}
           size="icon"
-          onClick={() => setIsDrawingMode(false)}
+          onClick={() => {
+            setIsDrawingMode(false);
+            setIsErasing(false);
+          }}
           title="Modo Manipulação"
+          className={!isDrawingMode ? "bg-green-500 hover:bg-green-600" : ""}
         >
           <Hand size={18} />
         </Button>
@@ -319,6 +326,7 @@ export default function MusicogramPage() {
           size="icon" 
           onClick={toggleEraser}
           title="Borracha"
+          disabled={!isDrawingMode}
         >
           <Eraser size={18} />
         </Button>
@@ -377,6 +385,15 @@ export default function MusicogramPage() {
             <h3 className="font-medium mb-3 text-center">Símbolos Musicais</h3>
             <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
               {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
+            </div>
+          </div>
+          
+          {/* Status message */}
+          <div className="mt-4 p-2 rounded text-center">
+            <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
+              {isDrawingMode 
+                ? "Modo Desenho: Arraste símbolos para o quadro" 
+                : "Modo Manipulação: Mova os elementos livremente"}
             </div>
           </div>
           
