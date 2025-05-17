@@ -40,12 +40,13 @@ export function MusicogramCanvas({
         width: template.columns * cellSize,
         height: template.rows * cellSize,
         backgroundColor: '#fff',
-        selection: false,
+        selection: true, // Enable selection of multiple objects
       });
 
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
+      // Handle object moving
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
@@ -66,6 +67,7 @@ export function MusicogramCanvas({
         }
       });
 
+      // Handle object scaling
       newCanvas.on('object:scaling', (event) => {
         const obj = event.target;
         if (obj) {
@@ -74,7 +76,7 @@ export function MusicogramCanvas({
             x: obj.left || 0,
             y: obj.top || 0,
             color: obj.fill as string,
-            size: obj.width || 20,
+            size: Math.max(obj.getScaledWidth(), obj.getScaledHeight()) || 20, // Use max dimension for size
             shape: obj.type,
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
@@ -86,6 +88,7 @@ export function MusicogramCanvas({
         }
       });
 
+      // Handle object rotating
       newCanvas.on('object:rotating', (event) => {
         const obj = event.target;
         if (obj) {
@@ -155,16 +158,16 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     if (canvas) {
-      // When in drawing mode, disable object selection/movement
-      // When not in drawing mode, enable object selection/movement
       canvas.isDrawingMode = isDrawingMode;
       
-      // Update movability of all objects based on drawing mode
+      // Update object interaction based on drawing mode
       canvas.getObjects().forEach(obj => {
+        // In drawing mode: disable object manipulation
+        // In manipulation mode: enable object manipulation
         obj.selectable = !isDrawingMode;
         obj.lockMovementX = isDrawingMode;
         obj.lockMovementY = isDrawingMode;
-        obj.hasControls = !isDrawingMode;
+        obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
         obj.hasBorders = !isDrawingMode;
       });
       
@@ -193,6 +196,13 @@ export function MusicogramCanvas({
           lockMovementY: isDrawingMode,
           angle: element.rotation || 0,
           selectable: !isDrawingMode,
+          // Enable controls for better interaction
+          cornerColor: '#5186EC',
+          cornerSize: 10,
+          cornerStyle: 'circle',
+          transparentCorners: false,
+          borderColor: '#5186EC',
+          borderScaleFactor: 1.5
         });
         fabricElement = textObj;
       }
@@ -209,7 +219,14 @@ export function MusicogramCanvas({
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
         selectable: !isDrawingMode,
-        angle: element.rotation || 0
+        angle: element.rotation || 0,
+        // Enable controls for better interaction
+        cornerColor: '#5186EC',
+        cornerSize: 10,
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        borderColor: '#5186EC',
+        borderScaleFactor: 1.5
       });
     } else if (element.shape === 'rect' || element.shape === 'square') {
       fabricElement = new fabric.Rect({
@@ -225,7 +242,14 @@ export function MusicogramCanvas({
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
         selectable: !isDrawingMode,
-        angle: element.rotation || 0
+        angle: element.rotation || 0,
+        // Enable controls for better interaction
+        cornerColor: '#5186EC',
+        cornerSize: 10,
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        borderColor: '#5186EC',
+        borderScaleFactor: 1.5
       });
     } else if (element.shape === 'triangle') {
       fabricElement = new fabric.Triangle({
@@ -241,11 +265,31 @@ export function MusicogramCanvas({
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
         selectable: !isDrawingMode,
-        angle: element.rotation || 0
+        angle: element.rotation || 0,
+        // Enable controls for better interaction
+        cornerColor: '#5186EC',
+        cornerSize: 10,
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        borderColor: '#5186EC',
+        borderScaleFactor: 1.5
       });
     }
 
     if (fabricElement) {
+      // Ensure elements can be freely transformed
+      fabricElement.setControlsVisibility({
+        mt: true, // top-middle control point
+        mb: true, // bottom-middle control point
+        ml: true, // middle-left control point
+        mr: true, // middle-right control point
+        tl: true, // top-left control point
+        tr: true, // top-right control point
+        bl: true, // bottom-left control point
+        br: true, // bottom-right control point
+        mtr: true, // middle-top-rotation control point
+      });
+      
       fabricElement.lockScalingFlip = true;
       fabricElement.data = { 
         id: element.id,
