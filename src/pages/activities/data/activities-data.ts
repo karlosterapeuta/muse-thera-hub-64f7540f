@@ -1,4 +1,3 @@
-
 export const activitiesData = {
   cognitive: [
     {
@@ -50,6 +49,56 @@ export const activitiesData = {
       id: 10,
       title: "Músicas com Movimentos Cognitivos",
       description: "Cantar músicas que incorporam comandos cognitivos (troca de direções, contagem regressiva, nomeação de categorias). Fortalece funções executivas e flexibilidade cognitiva."
+    },
+    {
+      id: 11,
+      title: "Bingo Musical",
+      description: "Criar cartelas com elementos musicais (notas, instrumentos, compositores) e marcar quando ouvirem ou tocarem. Estimula reconhecimento, atenção seletiva e velocidade de processamento."
+    },
+    {
+      id: 12,
+      title: "Padrões Rítmicos Crescentes",
+      description: "Repetir padrões rítmicos que aumentam em complexidade. Trabalha memória auditiva, sequenciamento e habilidades de organização."
+    },
+    {
+      id: 13,
+      title: "Análise de Letras",
+      description: "Identificar temas, metáforas e significados em letras de canções. Promove pensamento abstrato, interpretação e raciocínio dedutivo."
+    },
+    {
+      id: 14,
+      title: "Música e Matemática",
+      description: "Explorar relações matemáticas na música (frações em ritmos, padrões em melodias). Desenvolve raciocínio lógico-matemático e compreensão de padrões."
+    },
+    {
+      id: 15,
+      title: "Construção de Instrumentos",
+      description: "Projetar e construir instrumentos simples com materiais recicláveis. Estimula planejamento, resolução de problemas e pensamento espacial."
+    },
+    {
+      id: 16,
+      title: "Musicando Conceitos",
+      description: "Criar jingles para ajudar a memorizar conceitos ou informações. Trabalha codificação de memória e estratégias mnemônicas."
+    },
+    {
+      id: 17,
+      title: "Quebra-cabeças Musicais",
+      description: "Reorganizar trechos de músicas embaralhadas na ordem correta. Desenvolve análise, síntese e organização sequencial."
+    },
+    {
+      id: 18,
+      title: "Categorização Sonora Avançada",
+      description: "Classificar sons em categorias múltiplas simultaneamente (ex: instrumento de corda/agudo/acústico). Fortalece categorização complexa e flexibilidade cognitiva."
+    },
+    {
+      id: 19,
+      title: "Música e Tomada de Decisão",
+      description: "Improvisar seguindo regras que exigem decisões rápidas sobre quais notas tocar. Melhora velocidade de processamento e tomada de decisões."
+    },
+    {
+      id: 20,
+      title: "Mapeamento Mental Musical",
+      description: "Criar mapas mentais que representam elementos de uma música (estrutura, temas, variações). Trabalha organização de informações complexas e pensamento visual."
     }
   ],
   social: [
@@ -102,6 +151,56 @@ export const activitiesData = {
       id: 10,
       title: "Coral de Identidade",
       description: "Criar um coral onde cada voz representa uma característica do grupo, criando harmonia a partir da diversidade. Valoriza diferenças individuais dentro do contexto social."
+    },
+    {
+      id: 11,
+      title: "Bandas de Papel",
+      description: "Cada participante assume um papel específico em uma 'banda' e deve coordenar sua participação com os outros, seguindo uma partitura visual simplificada. Desenvolve coordenação social e entendimento de papéis."
+    },
+    {
+      id: 12,
+      title: "Círculo de Confiança Musical",
+      description: "Um participante fica no centro do círculo de olhos fechados e se move guiado apenas pelos sons produzidos pelo grupo. Fortalece confiança interpessoal e comunicação não-verbal."
+    },
+    {
+      id: 13,
+      title: "Diálogo Musical",
+      description: "Em pares, os participantes 'conversam' usando apenas instrumentos, respondendo às expressões musicais um do outro. Desenvolve escuta empática e comunicação recíproca."
+    },
+    {
+      id: 14,
+      title: "Narrativa Coletiva Musicada",
+      description: "Criar uma história coletivamente, cada pessoa adicionando uma parte e um elemento musical. Estimula colaboração criativa e construção sobre ideias dos outros."
+    },
+    {
+      id: 15,
+      title: "Música e Resolução de Conflitos",
+      description: "Utilizar música para representar diferentes perspectivas em um conflito e trabalhar colaborativamente para uma 'resolução harmônica'. Trabalha negociação e resolução de problemas sociais."
+    },
+    {
+      id: 16,
+      title: "Círculo de Feedback Positivo",
+      description: "Após performances individuais, o grupo oferece feedback construtivo e observações positivas. Desenvolve habilidades de comunicação assertiva e suporte mútuo."
+    },
+    {
+      id: 17,
+      title: "Orquestra Democrática",
+      description: "O grupo cria regras de funcionamento para uma orquestra e toma decisões coletivas sobre o repertório. Estimula democracia participativa e respeito a processos de grupo."
+    },
+    {
+      id: 18,
+      title: "Mentoria Musical",
+      description: "Participantes mais experientes ensinam elementos musicais aos novatos. Desenvolve habilidades de liderança, ensino e responsabilidade social."
+    },
+    {
+      id: 19,
+      title: "Karaokê de Apoio",
+      description: "Um participante canta enquanto o grupo oferece suporte vocal e instrumental, adaptando-se às necessidades do cantor. Trabalha percepção social e responsividade."
+    },
+    {
+      id: 20,
+      title: "Festival Musical Multicultural",
+      description: "Explorar e apresentar músicas de diferentes culturas, valorizando a diversidade. Promove sensibilidade cultural, respeito às diferenças e ampliação de perspectivas sociais."
     }
   ],
   emotional: [
@@ -154,6 +253,56 @@ export const activitiesData = {
       id: 10,
       title: "Música da Transformação",
       description: "Criar uma música que represente uma mudança emocional positiva. Estimula a esperança e a resiliência."
+    },
+    {
+      id: 11,
+      title: "Autobiografia Musical",
+      description: "Selecionar músicas que marcaram diferentes fases da vida e compartilhar as memórias e sentimentos associados. Desenvolve autoconhecimento emocional e integração de experiências."
+    },
+    {
+      id: 12,
+      title: "Paisagens Sonoras Emocionais",
+      description: "Criar ambientes sonoros que representem diferentes estados emocionais. Expande o vocabulário emocional e a capacidade de expressar nuances de sentimentos."
+    },
+    {
+      id: 13,
+      title: "Regulação Emocional Rítmica",
+      description: "Usar técnicas de percussão para explorar a transição entre diferentes intensidades emocionais. Trabalha autorregulação e modulação de estados emocionais."
+    },
+    {
+      id: 14,
+      title: "Música e Aceitação",
+      description: "Expressar através da música sentimentos difíceis ou considerados 'negativos'. Promove aceitação emocional e redução do julgamento interno."
+    },
+    {
+      id: 15,
+      title: "Ritual de Despedida",
+      description: "Criar uma cerimônia musical para processar perdas ou encerramentos de ciclos. Auxilia no processo de luto e na integração emocional de transições."
+    },
+    {
+      id: 16,
+      title: "Mandala Musical",
+      description: "Desenhar enquanto ouve música, expressando visualmente as emoções evocadas. Integra processamento emocional através de múltiplos canais expressivos."
+    },
+    {
+      id: 17,
+      title: "Cores e Sons das Emoções",
+      description: "Associar cores a estados emocionais e criar expressões musicais correspondentes. Desenvolve simbolização e expressão multimodal de emoções."
+    },
+    {
+      id: 18,
+      title: "Diário Sonoro de Gratidão",
+      description: "Criar pequenas melodias ou canções que expressem gratidão por aspectos específicos da vida. Cultiva emoções positivas e perspectiva apreciativa."
+    },
+    {
+      id: 19,
+      title: "Orquestra das Emoções Mistas",
+      description: "Expressar musicalmente emoções complexas e ambivalentes (como melancolia, nostalgia ou esperança cautelosa). Trabalha a integração de emoções aparentemente contraditórias."
+    },
+    {
+      id: 20,
+      title: "Trilha Sonora Pessoal",
+      description: "Criar uma 'trilha sonora' para diferentes aspectos da identidade ou para desafios emocionais específicos. Fortalece recursos emocionais e narrativa pessoal positiva."
     }
   ],
   motor: [
@@ -206,6 +355,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Relaxamento Progressivo",
       description: "Relaxar diferentes grupos musculares ao som de música suave. Reduz a tensão muscular e promove o bem-estar físico."
+    },
+    {
+      id: 11,
+      title: "Maestro Espelhado",
+      description: "Em pares, os participantes alternam-se como maestro e imitador, realizando movimentos que devem ser espelhados com precisão. Desenvolve coordenação bilateral e consciência espacial."
+    },
+    {
+      id: 12,
+      title: "Estafeta Rítmica",
+      description: "Realizar circuitos motores coordenados com uma sequência rítmica específica. Integra habilidades de sequenciamento motor com timing auditivo."
+    },
+    {
+      id: 13,
+      title: "Dança das Articulações",
+      description: "Movimentar progressivamente diferentes articulações do corpo seguindo a música, isolando cada movimento. Promove consciência corporal segmentada e controle motor fino."
+    },
+    {
+      id: 14,
+      title: "Percussão com Peso",
+      description: "Utilizar instrumentos de percussão com pequenos pesos adaptados para fortalecer músculos específicos. Combina fortalecimento muscular com coordenação rítmica."
+    },
+    {
+      id: 15,
+      title: "Equilíbrio Sonoro",
+      description: "Manter posições de equilíbrio enquanto reproduz padrões rítmicos. Integra sistema vestibular com coordenação motora e foco auditivo."
+    },
+    {
+      id: 16,
+      title: "Instrumentos Adaptados",
+      description: "Tocar instrumentos especialmente adaptados para trabalhar habilidades motoras específicas. Personaliza o trabalho motor conforme necessidades individuais."
+    },
+    {
+      id: 17,
+      title: "Passagem Musical",
+      description: "Passar objetos seguindo o ritmo da música, alterando a velocidade e direção conforme mudanças musicais. Desenvolve timing motor e adaptabilidade."
+    },
+    {
+      id: 18,
+      title: "Mímica Musical",
+      description: "Representar através de mímica elementos ou conceitos expressos na música. Trabalha expressão corporal, planejamento motor e simbolização gestual."
+    },
+    {
+      id: 19,
+      title: "Tecido Elástico Rítmico",
+      description: "Em grupo, manipular um tecido elástico circular criando diferentes tensões e movimentos sincronizados com a música. Promove coordenação interpessoal e percepção de força."
+    },
+    {
+      id: 20,
+      title: "Desenho Rítmico",
+      description: "Desenhar formas ou padrões seguindo precisamente o ritmo da música. Integra coordenação visomotora com percepção rítmica auditiva."
     }
   ],
   language: [
@@ -258,6 +457,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Tradução",
       description: "Traduzir letras de músicas de um idioma para outro. Desenvolve o vocabulário e a compreensão de diferentes culturas."
+    },
+    {
+      id: 11,
+      title: "Canções Progressivas",
+      description: "Aprender canções com complexidade linguística crescente, introduzindo gradualmente estruturas gramaticais mais elaboradas. Desenvolve construção sintática e compreensão estrutural da linguagem."
+    },
+    {
+      id: 12,
+      title: "Rap Terapêutico",
+      description: "Criar raps sobre temas específicos, trabalhando ritmo verbal, articulação e fluência. Promove controle motor oral e expressão verbal rítmica."
+    },
+    {
+      id: 13,
+      title: "Coro Falado",
+      description: "Recitar textos em grupo com diferentes cadências, volumes e entonações. Trabalha prosódia, expressividade vocal e consciência dos elementos suprasegmentais da fala."
+    },
+    {
+      id: 14,
+      title: "Música e Vocabulário Conceitual",
+      description: "Utilizar canções para introduzir e reforçar vocabulário de conceitos abstratos (emoções, tempo, quantidade). Expande léxico relacionado a conceitos complexos."
+    },
+    {
+      id: 15,
+      title: "Narrativa Musical Sequencial",
+      description: "Contar histórias seguindo uma sequência de cartões ou imagens, incorporando elementos musicais. Desenvolve organização narrativa e coesão discursiva."
+    },
+    {
+      id: 16,
+      title: "Diálogos Cantados",
+      description: "Criar conversações onde as respostas são cantadas, explorando perguntas e respostas. Trabalha pragmática da comunicação e habilidades conversacionais."
+    },
+    {
+      id: 17,
+      title: "Preenchimento de Lacunas Melódicas",
+      description: "Completar versos de canções com palavras específicas trabalhando categorias semânticas ou funções sintáticas. Reforça compreensão gramatical e categorização."
+    },
+    {
+      id: 18,
+      title: "Tongue Twisters Musicais",
+      description: "Cantar trava-línguas com acompanhamento musical, gradualmente acelerando o tempo. Promove articulação, consciência fonológica e planejamento motor-oral."
+    },
+    {
+      id: 19,
+      title: "Descrição Musical",
+      description: "Descrever verbalmente músicas instrumentais, detalhando elementos sonoros, emoções e imagens evocadas. Expande vocabulário descritivo e habilidades metalinguísticas."
+    },
+    {
+      id: 20,
+      title: "Música e Linguagem Figurada",
+      description: "Explorar metáforas, expressões idiomáticas e linguagem figurada através de canções. Desenvolve compreensão de significados não-literais e abstração verbal."
     }
   ],
   moral: [
@@ -310,6 +559,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Ação Social",
       description: "Usar a música para promover causas sociais e conscientizar sobre problemas. Fortalece o engajamento cívico e a solidariedade."
+    },
+    {
+      id: 11,
+      title: "Tribunal Musical",
+      description: "Analisar dilemas éticos através de representações musicais das diferentes perspectivas, seguido de discussão. Desenvolve raciocínio moral complexo e consideração de múltiplas perspectivas."
+    },
+    {
+      id: 12,
+      title: "Histórias de Virtudes",
+      description: "Musicar histórias tradicionais ou contemporâneas que exemplificam virtudes específicas. Conecta princípios abstratos a exemplos concretos através da experiência musical."
+    },
+    {
+      id: 13,
+      title: "Canções de Responsabilidade Social",
+      description: "Criar músicas que abordam questões sociais locais ou globais. Cultiva consciência social e senso de responsabilidade coletiva."
+    },
+    {
+      id: 14,
+      title: "Música e Justiça Restaurativa",
+      description: "Utilizar composição musical colaborativa em processos de reconciliação ou reparação. Facilita processos de perdão e restauração de relações."
+    },
+    {
+      id: 15,
+      title: "Exploração de Valores Culturais",
+      description: "Analisar como diferentes culturas expressam valores através da música, identificando semelhanças e diferenças. Desenvolve relativismo cultural e compreensão intercultural."
+    },
+    {
+      id: 16,
+      title: "Legado Musical",
+      description: "Refletir sobre qual contribuição musical cada participante gostaria de deixar como legado e por quê. Trabalha propósito de vida e valores transgeracionais."
+    },
+    {
+      id: 17,
+      title: "Música e Ética Ambiental",
+      description: "Criar canções que expressam a relação ética com a natureza e o meio ambiente. Promove consciência ecológica e responsabilidade ambiental."
+    },
+    {
+      id: 18,
+      title: "Círculo de Sabedoria Musical",
+      description: "Compartilhar músicas que contêm ensinamentos morais importantes para cada participante. Valoriza a transmissão de sabedoria moral através das gerações."
+    },
+    {
+      id: 19,
+      title: "Música e Desenvolvimento do Caráter",
+      description: "Explorar musicalmente como as virtudes se desenvolvem através de hábitos e prática consistente. Conecta ética das virtudes com experiência musical."
+    },
+    {
+      id: 20,
+      title: "Contrato Social Sonoro",
+      description: "Criar coletivamente um conjunto de princípios para interação musical respeitosa e justa. Trabalha fundamentos do contrato social e ética comunitária."
     }
   ],
   creative: [
@@ -362,6 +661,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Inovação",
       description: "Usar a música para encontrar soluções criativas para problemas ou desafios. Fortalece o pensamento divergente e a capacidade de gerar novas ideias."
+    },
+    {
+      id: 11,
+      title: "Fusão de Estilos",
+      description: "Combinar elementos de diferentes gêneros musicais para criar algo novo. Desenvolve pensamento combinatório e inovação através da síntese."
+    },
+    {
+      id: 12,
+      title: "Música Aleatória Estruturada",
+      description: "Criar composições usando elementos aleatórios dentro de estruturas definidas. Explora o equilíbrio entre caos e ordem na expressão criativa."
+    },
+    {
+      id: 13,
+      title: "Recontextualização Sonora",
+      description: "Gravar sons do cotidiano e transformá-los em peças musicais. Estimula a capacidade de encontrar possibilidades criativas em elementos ordinários."
+    },
+    {
+      id: 14,
+      title: "Narrativas Sonoras Não-Lineares",
+      description: "Criar histórias musicais com múltiplos caminhos possíveis, determinados pela interação da audiência. Desenvolve pensamento narrativo complexo e adaptabilidade criativa."
+    },
+    {
+      id: 15,
+      title: "Composição com Restrições",
+      description: "Criar música dentro de limitações específicas (usar apenas três notas, apenas sons vocais, etc.). Estimula soluções criativas frente a restrições."
+    },
+    {
+      id: 16,
+      title: "Sinestesia Musical",
+      description: "Compor músicas baseadas em experiências de outros sentidos (sabores, texturas, aromas). Promove conexões criativas entre diferentes domínios sensoriais."
+    },
+    {
+      id: 17,
+      title: "Reinterpretação Radical",
+      description: "Transformar completamente o estilo, andamento e caráter de uma música conhecida. Desenvolve pensamento divergente e flexibilidade interpretativa."
+    },
+    {
+      id: 18,
+      title: "Música Conceitual",
+      description: "Criar peças musicais baseadas em conceitos filosóficos ou ideias abstratas. Trabalha a expressão sonora de pensamentos complexos."
+    },
+    {
+      id: 19,
+      title: "Instrumentos Imaginários",
+      description: "Desenhar e descrever instrumentos impossíveis, depois tentar aproximar seus sons com recursos disponíveis. Estimula imaginação especulativa e resolução criativa de problemas."
+    },
+    {
+      id: 20,
+      title: "Composição Coletiva Não-Verbal",
+      description: "Criar uma peça musical em grupo sem usar comunicação verbal, apenas gestos e contato visual. Desenvolve comunicação intuitiva e criatividade colaborativa."
     }
   ],
   psychosexual: [
@@ -414,6 +763,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Autonomia",
       description: "Usar a música para expressar a independência e a capacidade de tomar decisões. Fortalece o senso de responsabilidade e a liberdade."
+    },
+    {
+      id: 11,
+      title: "Música e Imagem Corporal",
+      description: "Utilizar dança e movimento com música para promover uma relação positiva com o próprio corpo. Desenvolve aceitação corporal e integração mente-corpo."
+    },
+    {
+      id: 12,
+      title: "Expressão de Limites Pessoais",
+      description: "Criar composições que exploram o conceito de limites pessoais e consentimento. Fortalece a capacidade de estabelecer e comunicar limites saudáveis."
+    },
+    {
+      id: 13,
+      title: "Narrativas de Identidade",
+      description: "Compor canções autobiográficas que exploram a jornada de autodescoberta e aceitação. Promove integração de aspectos da identidade pessoal."
+    },
+    {
+      id: 14,
+      title: "Círculo de Afirmação",
+      description: "Em grupo, criar canções de afirmação específicas para cada participante, celebrando sua singularidade. Trabalha autoestima e validação interpessoal."
+    },
+    {
+      id: 15,
+      title: "Exploração de Papéis",
+      description: "Usar improvisação musical para explorar diferentes papéis e expressões pessoais. Desenvolve flexibilidade na expressão do self e experimentação segura."
+    },
+    {
+      id: 16,
+      title: "Música e Comunicação Íntima",
+      description: "Trabalhar habilidades de comunicação expressiva e receptiva através de diálogos musicais. Fortalece capacidades para relacionamentos íntimos saudáveis."
+    },
+    {
+      id: 17,
+      title: "Integração Biográfica",
+      description: "Criar uma linha do tempo musical que integra experiências desafiadoras em uma narrativa coerente e empoderada. Promove integração de experiências difíceis."
+    },
+    {
+      id: 18,
+      title: "Expressão de Vulnerabilidade",
+      description: "Utilizar composição musical como meio seguro para expressar vulnerabilidades e receber apoio. Desenvolve coragem emocional e conexão autêntica."
+    },
+    {
+      id: 19,
+      title: "Celebração da Diversidade",
+      description: "Explorar músicas que celebram diferentes expressões de identidade e orientação. Promove aceitação da diversidade e inclusão."
+    },
+    {
+      id: 20,
+      title: "Projetos de Futuro",
+      description: "Compor músicas que expressam aspirações para relacionamentos e desenvolvimento pessoal futuros. Trabalha visão positiva de futuro e estabelecimento de intenções."
     }
   ],
   psychosocial: [
@@ -466,6 +865,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Cidadania",
       description: "Usar a música para expressar a participação e o compromisso com a sociedade. Fortalece o senso de responsabilidade e a ação social."
+    },
+    {
+      id: 11,
+      title: "Música e Mediação de Conflitos",
+      description: "Utilizar improvisação musical para expressar diferentes posições em um conflito e explorar resoluções harmônicas. Desenvolve habilidades de negociação e busca de consenso."
+    },
+    {
+      id: 12,
+      title: "Projetos Musicais Comunitários",
+      description: "Realizar intervenções musicais em espaços comunitários (praças, escolas, hospitais). Fortalece engajamento social e cidadania ativa."
+    },
+    {
+      id: 13,
+      title: "Narrativas Coletivas",
+      description: "Criar canções que contam a história de uma comunidade ou grupo, destacando desafios superados. Desenvolve identidade coletiva e orgulho cultural."
+    },
+    {
+      id: 14,
+      title: "Orquestra de Materiais Reciclados",
+      description: "Construir instrumentos com materiais reciclados e criar performances que abordam questões ambientais. Promove consciência socioambiental e criatividade sustentável."
+    },
+    {
+      id: 15,
+      title: "Música e Encontro Intergeracional",
+      description: "Realizar atividades musicais que conectam diferentes gerações, compartilhando repertórios e experiências. Trabalha integração social ampla e transmissão cultural."
+    },
+    {
+      id: 16,
+      title: "Círculos Restaurativos Musicais",
+      description: "Utilizar estruturas de círculos restaurativos combinados com expressão musical para lidar com danos e conflitos. Desenvolve justiça restaurativa e reconciliação."
+    },
+    {
+      id: 17,
+      title: "Manifestos Musicais",
+      description: "Criar canções que expressam posicionamentos sobre questões sociais importantes para o grupo. Fortalece voz política e capacidade de autodefesa (advocacy)."
+    },
+    {
+      id: 18,
+      title: "Rituais de Passagem",
+      description: "Compor e realizar cerimônias musicais para marcar transições importantes na vida dos participantes. Trabalha integração social de transformações pessoais."
+    },
+    {
+      id: 19,
+      title: "Intercâmbio Musical Cultural",
+      description: "Aprender e ensinar músicas de diferentes culturas, explorando contextos históricos e significados. Promove competência intercultural e apreciação da diversidade."
+    },
+    {
+      id: 20,
+      title: "Música e Memória Social",
+      description: "Recuperar e reinterpretar canções históricas relacionadas a movimentos sociais ou eventos comunitários. Desenvolve consciência histórica e continuidade cultural."
     }
   ],
   intellectual: [
@@ -518,6 +967,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Inovação",
       description: "Usar a música para expressar a criatividade e a capacidade de gerar novas ideias. Fortalece o senso de responsabilidade e a ação social."
+    },
+    {
+      id: 11,
+      title: "Música e Raciocínio Científico",
+      description: "Explorar princípios científicos através da música (acústica, matemática das harmonias, física das ondas sonoras). Desenvolve pensamento analítico e conexões interdisciplinares."
+    },
+    {
+      id: 12,
+      title: "Debates Musicais",
+      description: "Realizar debates sobre temas filosóficos ou científicos, utilizando expressão musical para complementar argumentos verbais. Integra pensamento crítico e expressão artística."
+    },
+    {
+      id: 13,
+      title: "Música e Mnemônica Avançada",
+      description: "Criar estratégias musicais para memorizar informações complexas ou sequenciais. Desenvolve técnicas avançadas de memorização e retenção de conhecimento."
+    },
+    {
+      id: 14,
+      title: "Análise de Estruturas Musicais",
+      description: "Identificar e compreender padrões estruturais em composições musicais (forma sonata, rondó, tema com variações). Trabalha percepção de arquiteturas conceituais."
+    },
+    {
+      id: 15,
+      title: "Música e Lógica",
+      description: "Criar peças musicais que seguem regras lógicas específicas ou representam problemas lógicos. Desenvolve raciocínio dedutivo e pensamento sistemático."
+    },
+    {
+      id: 16,
+      title: "História Musical Contextualizada",
+      description: "Explorar como a música reflete e influencia eventos históricos e movimentos sociais. Promove compreensão da música como documento histórico e agente cultural."
+    },
+    {
+      id: 17,
+      title: "Música e Línguas Estrangeiras",
+      description: "Aprender canções em outros idiomas, explorando vocabulário, pronúncia e aspectos culturais. Trabalha aquisição de linguagem e competência intercultural."
+    },
+    {
+      id: 18,
+      title: "Etnomusicologia Prática",
+      description: "Pesquisar e praticar tradições musicais de diferentes culturas, compreendendo contextos históricos e sociais. Desenvolve pesquisa aplicada e apreciação cultural informada."
+    },
+    {
+      id: 19,
+      title: "Música e Teoria dos Jogos",
+      description: "Criar jogos musicais baseados em princípios da teoria dos jogos (cooperação, competição, estratégia). Trabalha pensamento estratégico e compreensão de sistemas."
+    },
+    {
+      id: 20,
+      title: "Música e Literatura",
+      description: "Explorar conexões entre estruturas musicais e literárias, adaptando obras literárias para expressão musical. Desenvolve pensamento comparativo e síntese interdisciplinar."
     }
   ],
   adaptive: [
@@ -570,6 +1069,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Autonomia",
       description: "Usar a música para expressar a independência e a capacidade de tomar decisões. Fortalece o senso de responsabilidade e a liberdade."
+    },
+    {
+      id: 11,
+      title: "Reestruturação Musical",
+      description: "Transformar músicas associadas a experiências difíceis, modificando elementos para criar novas associações. Desenvolve ressignificação e transformação de narrativas limitantes."
+    },
+    {
+      id: 12,
+      title: "Jam de Superação",
+      description: "Improvisar musicalmente sobre temas de resiliência e superação pessoal. Fortalece identificação de recursos internos e capacidade de adaptação."
+    },
+    {
+      id: 13,
+      title: "Música e Gestão de Mudanças",
+      description: "Criar peças musicais que expressam o processo de adaptação a mudanças significativas. Desenvolve compreensão dos estágios de adaptação e aceitação."
+    },
+    {
+      id: 14,
+      title: "Cartografia Sonora da Resiliência",
+      description: "Mapear a jornada pessoal de resiliência através de uma sequência musical que representa desafios e recursos. Trabalha metacognição sobre processos adaptativos."
+    },
+    {
+      id: 15,
+      title: "Improvisação Adaptativa",
+      description: "Realizar improvisações musicais onde regras e condições mudam subitamente, exigindo adaptação imediata. Desenvolve flexibilidade cognitiva e adaptação a imprevistos."
+    },
+    {
+      id: 16,
+      title: "Círculo de Apoio Musical",
+      description: "Criar canções que podem ser utilizadas como recurso durante momentos de dificuldade. Fortalece estratégias de autocuidado e autorregulação."
+    },
+    {
+      id: 17,
+      title: "Música e Planejamento Adaptativo",
+      description: "Compor músicas que representam diferentes cenários e estratégias de enfrentamento. Trabalha planejamento preventivo e preparação para desafios."
+    },
+    {
+      id: 18,
+      title: "Expansão de Repertório",
+      description: "Explorar sistematicamente gêneros musicais desconhecidos ou inicialmente desconfortáveis. Desenvolve abertura à experiência e tolerância ao novo."
+    },
+    {
+      id: 19,
+      title: "Música e Integração de Perdas",
+      description: "Criar expressões musicais que honram perdas significativas e celebram conexões que permanecem. Trabalha processos de luto e continuidade de significado."
+    },
+    {
+      id: 20,
+      title: "Legado de Aprendizagem",
+      description: "Compor músicas que expressam aprendizagens adquiridas através de experiências desafiadoras. Promove extração de significado e crescimento a partir da adversidade."
     }
   ],
   spiritual: [
@@ -622,6 +1171,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Transcendência",
       description: "Usar a música para expressar a conexão com o divino e a busca pela verdade. Fortalece o senso de responsabilidade e a liberdade."
+    },
+    {
+      id: 11,
+      title: "Música e Meditação Contemplativa",
+      description: "Combinar música com práticas de meditação contemplativa, focando na experiência de transcendência. Desenvolve estados de consciência expandida e conexão com o transcendente."
+    },
+    {
+      id: 12,
+      title: "Mantras Pessoais",
+      description: "Criar mantras personalizados que expressam intenções espirituais significativas para cada participante. Trabalha foco interior e alinhamento com valores profundos."
+    },
+    {
+      id: 13,
+      title: "Canto Harmônico",
+      description: "Praticar técnicas de canto que produzem harmônicos vocais, como o canto difônico. Promove experiência direta de ressonância e harmonia interna."
+    },
+    {
+      id: 14,
+      title: "Círculos de Canto Sagrado",
+      description: "Compartilhar cantos sagrados de diferentes tradições espirituais com atitude de respeito. Desenvolve apreciação da diversidade espiritual e identificação de elementos universais."
+    },
+    {
+      id: 15,
+      title: "Música e Rituais de Intenção",
+      description: "Criar rituais musicais para estabelecer e afirmar intenções espirituais. Trabalha manifestação consciente e alinhamento entre intenção e ação."
+    },
+    {
+      id: 16,
+      title: "Som e Silêncio Sagrado",
+      description: "Explorar a relação entre som e silêncio como expressões complementares do sagrado. Desenvolve apreciação do silêncio como espaço de presença e receptividade."
+    },
+    {
+      id: 17,
+      title: "Música e Textos Inspirados",
+      description: "Musicalizar textos de sabedoria espiritual de diferentes tradições. Promove internalização de ensinamentos através da expressão musical."
+    },
+    {
+      id: 18,
+      title: "Celebração das Estações",
+      description: "Criar músicas que honram os ciclos naturais e as transições sazonais. Trabalha conexão com ritmos naturais e consciência ecológica espiritual."
+    },
+    {
+      id: 19,
+      title: "Improvisação Contemplativa",
+      description: "Realizar improvisação musical a partir de estado meditativo profundo. Desenvolve expressão a partir do silêncio interior e espontaneidade consciente."
+    },
+    {
+      id: 20,
+      title: "Círculo de Bênçãos Musicais",
+      description: "Criar e compartilhar músicas como bênçãos direcionadas a pessoas, comunidades ou situações específicas. Trabalha generosidade espiritual e intencionalidade positiva."
     }
   ],
   neurological: [
@@ -674,6 +1273,56 @@ export const activitiesData = {
       id: 10,
       title: "Música e Potencial Cerebral",
       description: "Usar a música para expressar a crença no potencial do cérebro e a busca pelo conhecimento. Fortalece o senso de responsabilidade e a liberdade."
+    },
+    {
+      id: 11,
+      title: "Música e Integração Hemisférica",
+      description: "Realizar atividades que exigem coordenação entre processamento analítico (hemisfério esquerdo) e holístico (hemisfério direito). Promove integração cerebral e funcionamento neural equilibrado."
+    },
+    {
+      id: 12,
+      title: "Sequenciamento Rítmico Progressivo",
+      description: "Praticar padrões rítmicos de complexidade crescente, com mudanças incrementais. Desenvolve plasticidade neural e formação de conexões sinápticas."
+    },
+    {
+      id: 13,
+      title: "Treinamento Auditivo Específico",
+      description: "Realizar exercícios focados em aspectos específicos da percepção auditiva (discriminação frequencial, localização espacial). Trabalha refinamento de redes neurais auditivas."
+    },
+    {
+      id: 14,
+      title: "Música e Neuroreabilitação",
+      description: "Utilizar atividades musicais terapêuticas específicas para reabilitar funções neurológicas comprometidas. Desenvolve recrutamento de áreas cerebrais alternativas e compensação funcional."
+    },
+    {
+      id: 15,
+      title: "Sincronização Multissensorial",
+      description: "Coordenar estímulos auditivos, visuais e táteis em tarefas musicais integradas. Promove integração sensorial e processamento cerebral multimodal."
+    },
+    {
+      id: 16,
+      title: "Movimentos Cruzados Musicais",
+      description: "Realizar padrões de movimentos que cruzam a linha média do corpo coordenados com música. Desenvolve conexões entre os hemisférios cerebrais e integração bilateral."
+    },
+    {
+      id: 17,
+      title: "Música e Atenção Dividida",
+      description: "Praticar tarefas musicais que exigem atenção simultânea a múltiplos elementos. Trabalha capacidade de processamento paralelo e flexibilidade atencional."
+    },
+    {
+      id: 18,
+      title: "Imaginação Musical Guiada",
+      description: "Realizar visualizações detalhadas de execução musical sem movimento físico. Desenvolve representações neurais e preparação motora."
+    },
+    {
+      id: 19,
+      title: "Música e Memória Procedimental",
+      description: "Praticar sequências motoras musicais que se tornam gradualmente automatizadas. Trabalha consolidação de memória implícita e rotinas motoras."
+    },
+    {
+      id: 20,
+      title: "Entrainment Neurológico",
+      description: "Utilizar estímulos rítmicos precisos para sincronizar processos neurológicos como ondas cerebrais ou padrões motores. Promove regulação de processos neurais através de sincronização externa."
     }
   ],
   identity: [
@@ -726,6 +1375,56 @@ export const activitiesData = {
       id: 10,
       title: "Diálogo Musical Interno",
       description: "Usar instrumentos diferentes para representar vozes internas ou aspectos contraditórios da personalidade, criando um diálogo musical. Facilita a aceitação e integração de aspectos diversos do eu."
+    },
+    {
+      id: 11,
+      title: "Sombras Musicais",
+      description: "Explorar musicalmente aspectos menos reconhecidos ou aceitos da identidade (a 'sombra' junguiana). Desenvolve integração de aspectos negados do self na identidade consciente."
+    },
+    {
+      id: 12,
+      title: "Diálogo de Selves Musicais",
+      description: "Criar 'personagens musicais' representando diferentes facetas da personalidade e promover diálogos entre eles. Trabalha integração de subpersonalidades e autoconhecimento."
+    },
+    {
+      id: 13,
+      title: "Composição de Valores",
+      description: "Compor músicas que expressem os valores centrais que guiam escolhas e comportamentos. Fortalece clareza sobre princípios pessoais e alinhamento identitário."
+    },
+    {
+      id: 14,
+      title: "Reconstrução Narrativa Musical",
+      description: "Reinterpretar eventos biográficos desafiadores através de composição musical, construindo novos significados. Desenvolve agência narrativa e coerência identitária."
+    },
+    {
+      id: 15,
+      title: "Música e Propósito",
+      description: "Explorar musicalmente questões relacionadas a significado, propósito e vocação pessoal. Trabalha construção de sentido existencial como componente identitário."
+    },
+    {
+      id: 16,
+      title: "Representação de Transições",
+      description: "Criar peças musicais que representam importantes transições identitárias na vida. Promove integração de mudanças na continuidade do self."
+    },
+    {
+      id: 17,
+      title: "Musicalização de Contradições",
+      description: "Expressar musicalmente aspectos aparentemente contraditórios da identidade, buscando integração. Desenvolve tolerância à ambiguidade e complexidade identitária."
+    },
+    {
+      id: 18,
+      title: "Revisitação Musical",
+      description: "Reinterpretar músicas significativas de diferentes fases da vida com a sensibilidade atual. Trabalha continuidade e transformação na identidade ao longo do tempo."
+    },
+    {
+      id: 19,
+      title: "Música e Identidade Corporal",
+      description: "Explorar através do movimento e da música a relação com o próprio corpo como aspecto da identidade. Promove integração da identidade corporal no autoconceito."
+    },
+    {
+      id: 20,
+      title: "Legado Musical",
+      description: "Compor uma peça que represente o legado que se deseja deixar, expressando a essência do self. Desenvolve perspectiva gerativa e transcendência do ego."
     }
   ]
 };
