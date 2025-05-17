@@ -96,7 +96,7 @@ BEGIN
     RAISE NOTICE 'Updated column sensory_integration';
   END IF;
 
-  -- alzheimer
+  -- alzheimer (using lowercase 'alzheimer' for consistency)
   SELECT EXISTS (
     SELECT FROM information_schema.columns 
     WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'alzheimer'
@@ -110,17 +110,28 @@ BEGIN
     EXECUTE 'ALTER TABLE public.anamnesis ALTER COLUMN alzheimer SET DEFAULT false';
     RAISE NOTICE 'Updated column alzheimer';
   END IF;
+
+  -- Ensure any uppercase variants are removed to prevent confusion
+  SELECT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'anamnesis' AND column_name = 'Alzheimer'
+  ) INTO column_exists;
+  
+  IF column_exists THEN
+    EXECUTE 'ALTER TABLE public.anamnesis DROP COLUMN "Alzheimer"';
+    RAISE NOTICE 'Removed uppercase Alzheimer column';
+  END IF;
 END $$;
 
--- Force Supabase to refresh the schema cache
+-- Multiple aggressive schema cache refreshes
 DO $$
 BEGIN
-  PERFORM pg_notify('pgrst', 'reload schema');
-  RAISE NOTICE 'Notified PostgREST to reload schema';
+  FOR i IN 1..5 LOOP
+    PERFORM pg_notify('pgrst', 'reload schema');
+    RAISE NOTICE 'Notified PostgREST to reload schema (attempt %)', i;
+    PERFORM pg_sleep(0.5);
+  END LOOP;
 END $$;
-
--- Wait a moment to ensure notification is processed
-SELECT pg_sleep(1);
 
 -- Vacuum analyze the table to update statistics
 VACUUM ANALYZE anamnesis;

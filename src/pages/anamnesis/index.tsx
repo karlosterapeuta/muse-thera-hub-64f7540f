@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +43,7 @@ const knownDatabaseFields = [
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
   'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
   'williams_syndrome', 'depression', 'bipolar_disorder',
-  // Novos campos adicionados
+  // Explicitly list all new fields with lowercase names
   'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
@@ -181,9 +180,24 @@ export default function AnamnesisForm() {
 
   // Filtrar dados para incluir apenas campos conhecidos do banco de dados
   const filterDatabaseFields = (data: Record<string, any>) => {
-    return Object.fromEntries(
-      Object.entries(data).filter(([key]) => knownDatabaseFields.includes(key))
-    );
+    const filteredData: Record<string, any> = {};
+    
+    // First extract only known fields
+    Object.entries(data).forEach(([key, value]) => {
+      if (knownDatabaseFields.includes(key.toLowerCase())) {
+        // Ensure consistent casing for field names
+        const normalizedKey = key.toLowerCase();
+        // Ensure boolean values are properly typed
+        if (typeof value === 'boolean' || value === true || value === false) {
+          filteredData[normalizedKey] = Boolean(value);
+        } else {
+          filteredData[normalizedKey] = value;
+        }
+      }
+    });
+    
+    console.log("Filtered database fields:", filteredData);
+    return filteredData;
   };
 
   const generatePDF = async (patientName: string) => {
@@ -458,7 +472,7 @@ export default function AnamnesisForm() {
     setFormData(newData);
   };
 
-  // New function to save anamnesis without generating PDF
+  // Modified function to save anamnesis with special handling for new fields
   const saveAnamnesis = async () => {
     if (!selectedPatient) {
       toast({
@@ -487,16 +501,27 @@ export default function AnamnesisForm() {
       const filteredData = filterDatabaseFields(formData);
       console.log("Debug - dados filtrados:", filteredData);
       
-      // Preparar dados básicos
-      const baseAnamnesisData = {
+      // Preparar dados básicos - excluindo campos problemáticos para primeira inserção
+      const baseDataFields = knownDatabaseFields.filter(field => 
+        !['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'].includes(field)
+      );
+      
+      const baseAnamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
-        professional_id: professionalId,
-        ...filteredData
+        professional_id: professionalId
       };
+      
+      // Adicionar apenas os campos base
+      Object.entries(filteredData).forEach(([key, value]) => {
+        if (baseDataFields.includes(key)) {
+          baseAnamnesisData[key] = value;
+        }
+      });
       
       console.log("Debug - tentando salvar dados base:", baseAnamnesisData);
 
       let result;
+      let recordId = existingAnamnesisId;
       
       // Determine if we should insert or update
       if (existingAnamnesisId) {
@@ -505,16 +530,53 @@ export default function AnamnesisForm() {
           .from("anamnesis")
           .update(baseAnamnesisData)
           .eq("id", existingAnamnesisId);
+          
+        if (result.error) {
+          console.error("Erro ao atualizar anamnese (dados base):", result.error);
+          throw result.error;
+        }
       } else {
         // Insert new record with base data
         result = await supabase
           .from("anamnesis")
-          .insert(baseAnamnesisData);
+          .insert(baseAnamnesisData)
+          .select();
+          
+        if (result.error) {
+          console.error("Erro ao inserir anamnese (dados base):", result.error);
+          throw result.error;
+        }
+        
+        // Get the ID of the newly created record
+        if (result.data && result.data.length > 0) {
+          recordId = result.data[0].id;
+          setExistingAnamnesisId(recordId);
+        } else {
+          throw new Error("Não foi possível obter o ID do registro criado");
+        }
       }
-
-      if (result.error) {
-        console.error("Erro ao salvar anamnese (dados base):", result.error);
-        throw result.error;
+      
+      if (!recordId) {
+        throw new Error("ID do registro não disponível para atualização de campos adicionais");
+      }
+      
+      // Now update each potentially problematic field separately
+      const newFields = ['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'];
+      
+      for (const field of newFields) {
+        if (field in filteredData) {
+          const updateResult = await supabase
+            .from("anamnesis")
+            .update({ [field]: Boolean(filteredData[field]) })
+            .eq("id", recordId);
+            
+          if (updateResult.error) {
+            console.warn(`Aviso: Não foi possível atualizar o campo ${field}:`, updateResult.error);
+            // Continue with other fields rather than failing completely
+          } else {
+            console.log(`Campo ${field} atualizado com sucesso.`);
+          }
+        }
       }
 
       toast({
@@ -522,13 +584,8 @@ export default function AnamnesisForm() {
         description: "Anamnese salva com sucesso no sistema.",
       });
       
-      // Update the existing anamnesis ID if this is a new record
-      if (!existingAnamnesisId && result.data && result.data[0]?.id) {
-        setExistingAnamnesisId(result.data[0].id);
-      }
-      
       // Recarregar os dados para garantir que estamos usando os valores mais recentes
-      loadPatientAnamnesis();
+      await loadPatientAnamnesis();
       
     } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
@@ -548,6 +605,7 @@ export default function AnamnesisForm() {
     }
   };
 
+  // Modified submit handler with improved error handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -576,42 +634,11 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      console.log("Debug - dados brutos do formulário ao enviar:", formData);
+      // First save the data using our improved method
+      await saveAnamnesis();
       
-      // Filtrar dados para incluir apenas campos conhecidos do banco de dados
-      const filteredData = filterDatabaseFields(formData);
-      console.log("Debug - dados filtrados para salvar:", filteredData);
+      // Only proceed with PDF generation if the save was successful
       
-      // First, save the basic anamnesis data
-      const baseAnamnesisData = {
-        patient_id: selectedPatient,
-        professional_id: professionalId,
-        ...filteredData
-      };
-      
-      console.log("Debug - tentando salvar dados base primeiro:", baseAnamnesisData);
-
-      let result;
-      
-      // Determine if we should insert or update
-      if (existingAnamnesisId) {
-        // Update existing record
-        result = await supabase
-          .from("anamnesis")
-          .update(baseAnamnesisData)
-          .eq("id", existingAnamnesisId);
-      } else {
-        // Insert new record
-        result = await supabase
-          .from("anamnesis")
-          .insert(baseAnamnesisData);
-      }
-
-      if (result.error) {
-        console.error("Erro ao salvar anamnese:", result.error);
-        throw result.error;
-      }
-
       // Find patient data
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (!selectedPatientData) {
@@ -635,10 +662,10 @@ export default function AnamnesisForm() {
         });
       }
     } catch (error: any) {
-      console.error("Erro ao salvar anamnese:", error);
+      console.error("Erro ao processar anamnese:", error);
       
       // More detailed error message
-      let errorMessage = "Não foi possível salvar a anamnese.";
+      let errorMessage = "Não foi possível processar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
       }
