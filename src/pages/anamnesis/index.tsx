@@ -430,94 +430,26 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista completa e atualizada de colunas conhecidas da tabela anamnesis
-      const knownColumns = [
-        // Core fields
-        'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
-        'referral_professional', 'main_clinical_demand',
-        
-        // Musical history
-        'musical_education', 'instrumental_practice', 'body_musical_expression',
-        'vocal_expression', 'choral_activities', 'no_musical_experience',
-        
-        // Behavior
-        'active_musical_listening', 'body_expression', 'sound_responsiveness',
-        'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity',
-        
-        // Sound processing
-        'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response',
-        'active_sound_search', 'specific_sound_aversion', 'sound_source_location',
-        
-        // Musical preferences
-        'children_repertoire', 'rock_genre', 'sacred_gospel', 'brazilian_popular',
-        'country_music', 'classical_music', 'other_musical_genres',
-        
-        // Development
-        'cervical_control', 'crawling_pattern', 'fine_motor_dev',
-        'independent_sitting', 'autonomous_walking', 'broad_motor_dev',
-        
-        // Language
-        'babbling', 'simple_phrases', 'echolalia', 'first_words',
-        'nonverbal_communication', 'verbal_language_absence',
-        
-        // Behavior
-        'visual_contact', 'shared_play', 'stereotyped_behavior',
-        'peer_interaction', 'social_isolation', 'restricted_interests',
-        
-        // Emotional regulation
-        'irritability', 'heteroaggressive', 'emotional_ability',
-        'anxiety', 'frequent_crying', 'low_frustration_tolerance',
-        
-        // Mental disorders with updated Alzheimer field
-        'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
-        'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
-        'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
-        
-        // Health conditions
-        'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'chronic_encephalopathy', 'cerebral_palsy', 'epilepsy', 'williams_syndrome',
-        'fragile_x_syndrome', 'rett_syndrome', 'other_diagnoses',
-        
-        // Therapy with all new fields included
-        'speech_therapy', 'psychological_support', 'psychopedagogical',
-        'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'psychomotricity', 'music_therapy', 'nutrition', 'aba_therapy', 'sensory_integration',
-        
-        // Additional fields
-        'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
-        'therapeutic_goals', 'treatment_approach',
-        
-        // Musical assessment fields
-        'musicalEngagement', 'musicalPreference', 'initialObservations', 'musicalHistory',
-        'therapeuticPotential'
-      ];
-      
-      // Filtrar os dados para incluir apenas colunas conhecidas
-      const cleanedFormData = Object.fromEntries(
-        Object.entries(formData).filter(([key, value]) => {
-          // Incluir apenas colunas conhecidas e valores não nulos
-          return knownColumns.includes(key) && value !== null && value !== undefined;
-        })
-      );
-      
-      // Garantir que temos dados válidos antes de prosseguir
+      // Create a cleaned version of the form data with only valid fields
       const anamnesisData = {
-        ...cleanedFormData,
+        ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
       };
 
+      console.log("Debug - saving anamnesis data:", anamnesisData);
+
       let result;
       
-      // Determinar se deve inserir ou atualizar
+      // Determine if we should insert or update
       if (existingAnamnesisId) {
-        // Atualizar registro existente
+        // Update existing record
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData)
           .eq("id", existingAnamnesisId);
       } else {
-        // Inserir novo registro
+        // Insert new record
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData);
@@ -533,7 +465,7 @@ export default function AnamnesisForm() {
         description: "Anamnese salva com sucesso no sistema.",
       });
       
-      // Atualizar o ID da anamnese existente se for um novo registro
+      // Update the existing anamnesis ID if this is a new record
       if (!existingAnamnesisId && result.data && result.data[0]?.id) {
         setExistingAnamnesisId(result.data[0].id);
       }
@@ -584,98 +516,26 @@ export default function AnamnesisForm() {
     try {
       setIsSubmitting(true);
       
-      // Lista completa e atualizada de colunas conhecidas da tabela anamnesis
-      const knownColumns = [
-        // Core fields
-        'patient_id', 'professional_id', 'legal_guardian', 'family_relationship',
-        'referral_professional', 'main_clinical_demand',
-        
-        // Musical history
-        'musical_education', 'instrumental_practice', 'body_musical_expression',
-        'vocal_expression', 'choral_activities', 'no_musical_experience',
-        
-        // Behavior
-        'active_musical_listening', 'body_expression', 'sound_responsiveness',
-        'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity',
-        
-        // Sound processing
-        'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response',
-        'active_sound_search', 'specific_sound_aversion', 'sound_source_location',
-        
-        // Musical preferences
-        'children_repertoire', 'rock_genre', 'sacred_gospel', 'brazilian_popular',
-        'country_music', 'classical_music', 'other_musical_genres',
-        
-        // Development
-        'cervical_control', 'crawling_pattern', 'fine_motor_dev',
-        'independent_sitting', 'autonomous_walking', 'broad_motor_dev',
-        
-        // Language
-        'babbling', 'simple_phrases', 'echolalia', 'first_words',
-        'nonverbal_communication', 'verbal_language_absence',
-        
-        // Behavior
-        'visual_contact', 'shared_play', 'stereotyped_behavior',
-        'peer_interaction', 'social_isolation', 'restricted_interests',
-        
-        // Emotional regulation
-        'irritability', 'heteroaggressive', 'emotional_ability',
-        'anxiety', 'frequent_crying', 'low_frustration_tolerance',
-        
-        // Mental disorders with updated Alzheimer field
-        'adhd', 'adhd_inattentive', 'adhd_hyperactive', 'oppositional_defiant_disorder',
-        'anxiety_disorders', 'specific_phobia', 'separation_anxiety', 'social_anxiety',
-        'ocd', 'depression', 'bipolar_disorder', 'alzheimer',
-        
-        // Health conditions
-        'autism_spectrum', 'down_syndrome', 'intellectual_disability',
-        'chronic_encephalopathy', 'cerebral_palsy', 'epilepsy', 'williams_syndrome',
-        'fragile_x_syndrome', 'rett_syndrome', 'other_diagnoses',
-        
-        // Therapy with all new fields included
-        'speech_therapy', 'psychological_support', 'psychopedagogical',
-        'occupational_therapy', 'physiotherapy', 'equine_therapy',
-        'psychomotricity', 'music_therapy', 'nutrition', 'aba_therapy', 'sensory_integration',
-        
-        // Additional fields
-        'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
-        'therapeutic_goals', 'treatment_approach',
-        
-        // Musical assessment fields
-        'musicalEngagement', 'musicalPreference', 'initialObservations', 'musicalHistory',
-        'therapeuticPotential'
-      ];
-      
-      // Filtrar os dados para incluir apenas colunas conhecidas
-      const cleanedFormData = Object.fromEntries(
-        Object.entries(formData).filter(([key, value]) => {
-          // Incluir apenas colunas conhecidas e valores não nulos
-          return knownColumns.includes(key) && value !== null && value !== undefined;
-        })
-      );
-      
-      console.log("Dados filtrados para salvar:", cleanedFormData);
-      
-      // Garantir que temos dados válidos antes de prosseguir
+      // Create a cleaned version of the form data with only valid fields
       const anamnesisData = {
-        ...cleanedFormData,
+        ...formData,
         patient_id: selectedPatient,
         professional_id: professionalId,
       };
 
-      console.log("Salvando anamnese com professional_id:", professionalId);
+      console.log("Debug - submitting anamnesis data:", anamnesisData);
 
       let result;
       
-      // Determinar se deve inserir ou atualizar
+      // Determine if we should insert or update
       if (existingAnamnesisId) {
-        // Atualizar registro existente
+        // Update existing record
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData)
           .eq("id", existingAnamnesisId);
       } else {
-        // Inserir novo registro
+        // Insert new record
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData);
@@ -686,13 +546,13 @@ export default function AnamnesisForm() {
         throw result.error;
       }
 
-      // Encontrar dados do paciente
+      // Find patient data
       const selectedPatientData = patients.find(p => p.id === selectedPatient);
       if (!selectedPatientData) {
         throw new Error("Dados do paciente não encontrados");
       }
       
-      // Gerar PDF
+      // Generate PDF
       const pdfGenerated = await generatePDF(selectedPatientData.name);
       
       if (pdfGenerated) {
@@ -711,7 +571,7 @@ export default function AnamnesisForm() {
     } catch (error: any) {
       console.error("Erro ao salvar anamnese:", error);
       
-      // Mensagem de erro mais detalhada
+      // More detailed error message
       let errorMessage = "Não foi possível salvar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
