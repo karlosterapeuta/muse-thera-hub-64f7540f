@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
 import MusicogramCanvas from "./components/MusicogramCanvas";
-import PatientSelector from "./components/PatientSelector";
 import TemplateSelector from "./components/TemplateSelector";
 import { defaultTemplates } from "./data/musicogramData";
 import { 
@@ -55,7 +55,6 @@ export default function MusicogramPage() {
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
-  const [currentPatient, setCurrentPatient] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
 
   // Canvas ref and elements state would be here
@@ -136,7 +135,7 @@ export default function MusicogramPage() {
         const image = canvas.toDataURL("image/png", 1.0);
         const downloadLink = document.createElement("a");
         downloadLink.href = image;
-        downloadLink.download = `musicograma_${currentPatient || 'paciente'}_${new Date().toISOString().split('T')[0]}.png`;
+        downloadLink.download = `musicograma_${new Date().toISOString().split('T')[0]}.png`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
@@ -257,9 +256,10 @@ export default function MusicogramPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Musicograma</h1>
         <div className="flex items-center space-x-2">
-          <PatientSelector 
-            onPatientSelect={setCurrentPatient} 
-            currentPatient={currentPatient}
+          <TemplateSelector 
+            templates={defaultTemplates}
+            selectedTemplate={selectedTemplate}
+            onSelectTemplate={setSelectedTemplate}
           />
         </div>
       </div>
@@ -331,12 +331,6 @@ export default function MusicogramPage() {
         >
           <Download size={18} />
         </Button>
-        <div className="h-6 border-r border-gray-200 mx-1"></div>
-        <TemplateSelector 
-          templates={defaultTemplates}
-          selectedTemplate={selectedTemplate}
-          onSelectTemplate={setSelectedTemplate}
-        />
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 flex-1">
