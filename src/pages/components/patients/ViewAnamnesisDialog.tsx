@@ -359,9 +359,6 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
     element.innerHTML = `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
-          <div style="margin-bottom: 24px;">
-            <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" style="width: 200px; height: auto; margin: 0 auto;">
-          </div>
           <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
             Anamnese Musicoterapêutica
           </h1>
