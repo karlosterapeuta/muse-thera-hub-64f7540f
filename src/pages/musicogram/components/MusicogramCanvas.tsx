@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -367,14 +366,14 @@ export function MusicogramCanvas({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Render guitar fretboard if enabled */}
+      {/* Render guitar fretboard if enabled, but without labels */}
       {showGuitarGrid && (
         <div className="absolute inset-0 z-0 pointer-events-none" style={{ transform: `scale(${zoom})` }}>
           <ChordGrid 
             rows={5} 
             columns={4} 
             color="#222222" 
-            labels={guitarGridLabels}
+            labels={{}} // Empty object for no labels
           />
         </div>
       )}
