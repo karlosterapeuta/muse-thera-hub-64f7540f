@@ -5,6 +5,7 @@ import { fabric } from "fabric";
 import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ChordGrid from "./ChordGrid";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
@@ -18,6 +19,8 @@ interface MusicogramCanvasProps {
   zoom: number;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  showGuitarGrid?: boolean;
+  guitarGridLabels?: { [key: string]: string };
 }
 
 export function MusicogramCanvas({ 
@@ -31,7 +34,9 @@ export function MusicogramCanvas({
   onDeleteElement,
   zoom,
   onDrop,
-  onDragOver
+  onDragOver,
+  showGuitarGrid = true,
+  guitarGridLabels = {}
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -362,7 +367,24 @@ export function MusicogramCanvas({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
+      {/* Render guitar fretboard if enabled */}
+      {showGuitarGrid && (
+        <div className="absolute inset-0 z-0 pointer-events-none" style={{ transform: `scale(${zoom})` }}>
+          <ChordGrid 
+            rows={5} 
+            columns={4} 
+            color="#222222" 
+            labels={guitarGridLabels}
+          />
+        </div>
+      )}
+      
+      <canvas id="musicogram-canvas" style={{ 
+        border: '1px solid #ccc',
+        position: 'relative',
+        zIndex: 1,
+        backgroundColor: 'transparent' 
+      }} />
       
       {/* Delete button for selected element */}
       {selectedElement && (

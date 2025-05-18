@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -47,6 +46,15 @@ const musicalSymbols: InstrumentType[] = [
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
   { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
 ];
+
+// Define guitar chord labels
+const guitarChordLabels = {
+  "0-0": "C", "0-1": "G", "0-2": "D", "0-3": "A",
+  "1-0": "Dm", "1-1": "Am", "1-2": "Em", "1-3": "Bm",
+  "2-0": "F", "2-1": "C", "2-2": "G", "2-3": "D",
+  "3-0": "BbM7", "3-1": "FM7", "3-2": "CM7", "3-3": "GM7",
+  "4-0": "EbM7", "4-1": "BbM7", "4-2": "FM7", "4-3": "CM7"
+};
 
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
@@ -472,6 +480,8 @@ export default function MusicogramPage() {
             zoom={zoom}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            showGuitarGrid={true}
+            guitarGridLabels={guitarChordLabels}
           />
         </div>
       </div>

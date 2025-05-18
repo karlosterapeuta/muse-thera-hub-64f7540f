@@ -52,3 +52,10 @@ export interface PatientMusicogram {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface GuitarChordGrid {
+  rows: number;
+  columns: number;
+  backgroundColor: string;
+  labels?: { [key: string]: string };
+}

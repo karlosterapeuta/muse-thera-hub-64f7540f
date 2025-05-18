@@ -16,7 +16,7 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
   rows = 5, 
   columns = 4, 
   className = '',
-  color = "#333333",
+  color = "#222222", // Fundo escuro por padrão
   labels = {}
 }) => {
   return (
@@ -32,7 +32,7 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
             return (
               <div 
                 key={`cell-${rowIndex}-${colIndex}`} 
-                className="relative border border-black flex items-center justify-center"
+                className="relative border border-gray-600 flex items-center justify-center"
                 style={{ 
                   width: `${100 / columns}%`,
                   height: '100%',
