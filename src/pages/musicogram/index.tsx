@@ -568,6 +568,7 @@ export default function MusicogramPage() {
             showGuitarGrid={true}
             guitarGridLabels={guitarGridLabels}
             onGridCellClick={handleGridCellClick}
+            nextGridPosition={nextPosition}
           />
         </div>
       </div>

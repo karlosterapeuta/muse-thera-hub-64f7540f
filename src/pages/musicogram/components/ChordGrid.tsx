@@ -9,6 +9,7 @@ interface ChordGridProps {
   labels?: { [key: string]: string }; // Format: "row-col": "ChordName"
   isClickable?: boolean;
   onCellClick?: (row: number, col: number) => void;
+  highlightCell?: { row: number, col: number } | null;
 }
 
 /**
@@ -21,7 +22,8 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
   color = "#222222", // Fundo escuro por padrão
   labels = {},
   isClickable = false,
-  onCellClick
+  onCellClick,
+  highlightCell = null
 }) => {
   const handleCellClick = (rowIndex: number, colIndex: number) => {
     if (isClickable && onCellClick) {
@@ -39,10 +41,17 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
             const cellKey = `${rowIndex}-${colIndex}`;
             const label = labels[cellKey];
             
+            // Check if this cell should be highlighted
+            const isHighlighted = highlightCell && 
+                                  highlightCell.row === rowIndex && 
+                                  highlightCell.col === colIndex;
+            
             return (
               <div 
                 key={`cell-${rowIndex}-${colIndex}`} 
-                className={`relative border border-gray-600 flex items-center justify-center ${isClickable ? 'cursor-pointer' : ''}`}
+                className={`relative border border-gray-600 flex items-center justify-center ${isClickable ? 'cursor-pointer' : ''} ${
+                  isHighlighted ? 'ring-2 ring-primary ring-opacity-70' : ''
+                }`}
                 style={{ 
                   width: `${100 / columns}%`,
                   height: '100%',

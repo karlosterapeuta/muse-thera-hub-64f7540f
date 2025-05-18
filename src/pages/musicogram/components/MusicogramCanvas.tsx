@@ -22,6 +22,7 @@ interface MusicogramCanvasProps {
   showGuitarGrid?: boolean;
   guitarGridLabels?: { [key: string]: string };
   onGridCellClick?: (row: number, col: number) => void;
+  nextGridPosition?: { row: number, col: number } | null;
 }
 
 export function MusicogramCanvas({ 
@@ -38,7 +39,8 @@ export function MusicogramCanvas({
   onDragOver,
   showGuitarGrid = true,
   guitarGridLabels = {},
-  onGridCellClick
+  onGridCellClick,
+  nextGridPosition = null
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -388,9 +390,10 @@ export function MusicogramCanvas({
             rows={5} 
             columns={4} 
             color="#222222" 
-            labels={{}} // Empty object for no labels
+            labels={guitarGridLabels || {}} 
             onCellClick={handleGridCellClick}
             isClickable={true}
+            highlightCell={nextGridPosition}
           />
         </div>
       )}
