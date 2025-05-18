@@ -1,24 +1,17 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
-import { UkuleleIcon } from "./components/UkuleleIcon";
-import MusicogramCanvas from "./components/MusicogramCanvas";
 import { defaultTemplates } from "./data/musicogramData";
-import { 
-  Brush, 
-  Eraser, 
-  Trash2, 
-  Save, 
-  Hand, 
-  Download, 
-  ZoomIn, 
-  ZoomOut,
-  Star,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import html2canvas from "html2canvas";
-import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+import html2canvas from "html2canvas";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+// Import our new components
+import MusicogramToolbar from "./components/MusicogramToolbar";
+import InstrumentPalette from "./components/InstrumentPalette";
+import SymbolPalette from "./components/SymbolPalette";
+import MusicogramEditor from "./components/MusicogramEditor";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -57,10 +50,9 @@ export default function MusicogramPage() {
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [zoom, setZoom] = useState(1);
-  const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  // Canvas ref and elements state would be here
+  // Canvas elements state
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
   
   // Track the next position for organized grid placement
@@ -159,7 +151,7 @@ export default function MusicogramPage() {
     }
   };
 
-  // Função para lidar com o início do arrasto (para símbolos e instrumentos)
+  // Function to handle drag start (for symbols and instruments)
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
     const dragData = {
       ...item,
@@ -169,24 +161,22 @@ export default function MusicogramPage() {
     e.dataTransfer.effectAllowed = 'copy';
   };
 
-  // Função para gerenciar o drop no canvas
+  // Function to manage drop on canvas
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
     try {
       const dropData = JSON.parse(e.dataTransfer.getData('application/json'));
       
-      if (!canvasRef.current) return;
-      
-      // Calcular a posição relativa dentro do canvas
-      const rect = canvasRef.current.getBoundingClientRect();
+      // Calculate the relative position within the canvas
+      const rect = e.currentTarget.getBoundingClientRect();
       const x = (e.clientX - rect.left) / zoom;
       const y = (e.clientY - rect.top) / zoom;
       
       let newElement;
       
       if (dropData.type === 'symbol') {
-        // Criar novo elemento simbólico no canvas na posição do drop
+        // Create new symbol element in canvas at drop position
         newElement = {
           id: uuidv4(),
           type: 'element',
@@ -203,10 +193,10 @@ export default function MusicogramPage() {
         
         toast.success("Símbolo adicionado com sucesso!");
       } else if (dropData.type === 'instrument') {
-        // Criar novo elemento de instrumento no canvas na posição do drop
+        // Create new instrument element in canvas at drop position
         let iconContent = "▪"; // Default square shape
         
-        // Adaptar o ícone conforme o tipo de instrumento
+        // Adapt icon according to instrument type
         if (dropData.shape === 'circle') {
           iconContent = "●";
         } else if (dropData.shape === 'triangle') {
@@ -254,7 +244,7 @@ export default function MusicogramPage() {
     setNextPosition({ row, col });
   };
 
-  // Funções para permitir o drop
+  // Functions to allow drop
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -278,7 +268,7 @@ export default function MusicogramPage() {
     setIsDrawingMode(!isDrawingMode);
     setIsErasing(false);
     
-    // Mostrar dica ao mudar para modo de manipulação
+    // Show tip when switching to manipulation mode
     if (isDrawingMode) {
       toast.info("Modo de movimentação livre ativado! Arraste as figuras livremente pelo quadro.");
     }
@@ -321,85 +311,6 @@ export default function MusicogramPage() {
     setZoom(prev => Math.max(prev - 0.1, 0.5));
   };
 
-  // Function to render the instrument shape with NO onClick and drag and drop
-  const renderInstrumentShape = (instrument: InstrumentType, index: number) => {
-    return (
-      <div 
-        key={index} 
-        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-        onClick={() => handleInstrumentSelect(instrument.id)}
-        draggable
-        onDragStart={(e) => handleDragStart(e, instrument, 'instrument')}
-      >
-        <div 
-          className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-md transition-transform duration-200 hover:scale-110"
-          style={{ color: instrument.color }}
-        >
-          {instrument.id === "ukulele" ? (
-            <UkuleleIcon className="w-8 h-8 sm:w-10 sm:h-10" />
-          ) : instrument.shape === "circle" ? (
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full" style={{ backgroundColor: instrument.color }}></div>
-          ) : instrument.shape === "triangle" ? (
-            <div style={{ 
-              width: '0', 
-              height: '0', 
-              borderLeft: isMobile ? '12px solid transparent' : '15px solid transparent',
-              borderRight: isMobile ? '12px solid transparent' : '15px solid transparent',
-              borderBottom: `${isMobile ? '24px' : '30px'} solid ${instrument.color}`
-            }}></div>
-          ) : instrument.shape === "square" ? (
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md" style={{ backgroundColor: instrument.color }}></div>
-          ) : instrument.shape === "hand" ? (
-            <Hand size={isMobile ? 24 : 32} fill={instrument.color} color={instrument.color} />
-          ) : instrument.shape === "footprints" ? (
-            <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" width={isMobile ? "24" : "32"} height={isMobile ? "24" : "32"} fill={instrument.color}>
-                <path d="M9 1c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3zm1.75 7l-2.5 2l1.5 1l-4.75 4.75l2 2l7-7l1.5 1l-2-5l-2.75 1.25z" />
-              </svg>
-            </div>
-          ) : instrument.shape === "silence" ? (
-            <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center opacity-80">
-              <svg viewBox="0 0 24 24" width={isMobile ? "24" : "32"} height={isMobile ? "24" : "32"} fill={instrument.color}>
-                <path d="M12 2c-5.5 0-10 4.5-10 10s4.5 10 10 10s10-4.5 10-10s-4.5-10-10-10zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z" />
-              </svg>
-            </div>
-          ) : null}
-        </div>
-        <span className="text-[10px] sm:text-xs mt-1 text-center">{instrument.name}</span>
-      </div>
-    );
-  };
-
-  // Function to render musical symbols with NO onClick and drag and drop
-  const renderMusicalSymbol = (symbol: InstrumentType, index: number) => {
-    return (
-      <div 
-        key={index} 
-        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-        onClick={() => handleSymbolSelect(symbol)}
-        draggable
-        onDragStart={(e) => handleDragStart(e, symbol, 'symbol')}
-      >
-        <div 
-          className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
-          style={{ color: symbol.color }}
-        >
-          {symbol.iconContent}
-        </div>
-        <span className="text-[10px] sm:text-xs mt-1 text-center">{symbol.name}</span>
-      </div>
-    );
-  };
-
-  // Modified the Star component rendering to pass it as a React component
-  const renderStarIcon = () => {
-    return <div className="hidden md:flex flex-grow items-end justify-center pb-4">
-      <div className="w-20 h-20 md:w-32 md:h-32 opacity-10">
-        <Star />
-      </div>
-    </div>;
-  };
-
   const handleDeleteElement = (elementId: string) => {
     setCanvasElements(prev => prev.filter(el => el.id !== elementId));
   };
@@ -420,138 +331,57 @@ export default function MusicogramPage() {
         <h1 className="text-xl sm:text-2xl font-bold">Musicograma</h1>
       </div>
 
-      <div className="flex flex-wrap gap-1 sm:gap-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
-        <Button
-          variant={isDrawingMode ? "default" : "outline"}
-          size={isMobile ? "sm" : "icon"}
-          onClick={() => {
-            setIsDrawingMode(true);
-            setIsErasing(false);
-          }}
-          title="Modo Desenho"
-        >
-          <Brush size={isMobile ? 16 : 18} />
-        </Button>
-        <Button
-          variant={!isDrawingMode ? "default" : "outline"}
-          size={isMobile ? "sm" : "icon"}
-          onClick={toggleMode}
-          title="Modo Movimentação Livre"
-          className={!isDrawingMode ? "bg-green-500 hover:bg-green-600" : ""}
-        >
-          <Hand size={isMobile ? 16 : 18} />
-        </Button>
-        <Button 
-          variant={isErasing ? "destructive" : "outline"} 
-          size={isMobile ? "sm" : "icon"}
-          onClick={toggleEraser}
-          title="Borracha"
-          disabled={!isDrawingMode}
-        >
-          <Eraser size={isMobile ? 16 : 18} />
-        </Button>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "sm" : "icon"}
-          onClick={clearCanvas}
-          title="Limpar Tudo"
-        >
-          <Trash2 size={isMobile ? 16 : 18} />
-        </Button>
-        <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "sm" : "icon"}
-          onClick={handleZoomIn}
-          title="Ampliar"
-        >
-          <ZoomIn size={isMobile ? 16 : 18} />
-        </Button>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "sm" : "icon"}
-          onClick={handleZoomOut}
-          title="Reduzir"
-        >
-          <ZoomOut size={isMobile ? 16 : 18} />
-        </Button>
-        <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "sm" : "icon"}
-          onClick={saveCanvas}
-          title="Salvar Musicograma"
-        >
-          <Save size={isMobile ? 16 : 18} />
-        </Button>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "sm" : "icon"}
-          onClick={exportAsImage}
-          title="Baixar como Imagem"
-        >
-          <Download size={isMobile ? 16 : 18} />
-        </Button>
-      </div>
+      {/* Toolbar Component */}
+      <MusicogramToolbar 
+        isDrawingMode={isDrawingMode}
+        isErasing={isErasing}
+        onDrawModeToggle={toggleMode}
+        onEraserToggle={toggleEraser}
+        onClearCanvas={clearCanvas}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onSaveCanvas={saveCanvas}
+        onExportImage={exportAsImage}
+      />
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
+        {/* Sidebar with Instruments and Symbols */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
-          <h3 className="font-medium mb-2 sm:mb-3 text-center">Instrumentos</h3>
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-            {defaultInstruments.map((instrument, index) => renderInstrumentShape(instrument, index))}
-          </div>
+          {/* Instrument Palette Component */}
+          <InstrumentPalette 
+            instruments={defaultInstruments}
+            onInstrumentSelect={handleInstrumentSelect}
+            onDragStart={handleDragStart}
+          />
           
           <div className="mt-4 sm:mt-6">
-            <h3 className="font-medium mb-2 sm:mb-3 text-center">Símbolos Musicais</h3>
-            <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-              {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
-            </div>
+            {/* Symbol Palette Component */}
+            <SymbolPalette 
+              symbols={musicalSymbols}
+              onSymbolSelect={handleSymbolSelect}
+              onDragStart={handleDragStart}
+              isDrawingMode={isDrawingMode}
+            />
           </div>
-
-          {/* Status message updated */}
-          <div className="mt-4 p-2 rounded text-center">
-            <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
-              {isDrawingMode 
-                ? "Modo Desenho: Clique nos símbolos para adicionar ao grid" 
-                : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}
-            </div>
-            {!isDrawingMode && (
-              <div className="text-xs text-gray-600 mt-1">
-                Clique e arraste para mover. Use os controles para redimensionar e girar.
-              </div>
-            )}
-            <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Clique em um instrumento ou símbolo para adicionar ao grid automaticamente
-            </div>
-          </div>
-          
-          {renderStarIcon()}
         </div>
         
-        <div 
-          ref={canvasRef} 
-          className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-1 sm:p-2 relative"
+        {/* Musicogram Editor Component */}
+        <MusicogramEditor
+          template={getTemplateById(defaultTemplates[0].id)}
+          activeInstrument={activeInstrument}
+          isErasing={isErasing}
+          isDrawingMode={isDrawingMode}
+          activeColor={activeColor}
+          elements={canvasElements}
+          onUpdateElement={handleUpdateElement}
+          onDeleteElement={handleDeleteElement}
+          zoom={zoom}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-        >
-          <MusicogramCanvas 
-            template={getTemplateById(defaultTemplates[0].id)}
-            activeInstrument={activeInstrument}
-            isErasing={isErasing}
-            isDrawingMode={isDrawingMode}
-            activeColor={activeColor}
-            elements={canvasElements}
-            onUpdateElement={handleUpdateElement}
-            onDeleteElement={handleDeleteElement}
-            zoom={zoom}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            showGuitarGrid={true}
-            guitarGridLabels={guitarGridLabels}
-            onGridCellClick={handleGridCellClick}
-            nextGridPosition={nextPosition}
-          />
-        </div>
+          guitarGridLabels={guitarGridLabels}
+          onGridCellClick={handleGridCellClick}
+          nextPosition={nextPosition}
+        />
       </div>
     </div>
   );

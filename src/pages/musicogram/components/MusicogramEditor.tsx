@@ -1,0 +1,69 @@
+
+import React, { useRef } from "react";
+import MusicogramCanvas from "./MusicogramCanvas";
+import { MusicogramTemplate } from "../types";
+
+interface MusicogramEditorProps {
+  template: MusicogramTemplate;
+  activeInstrument: string | null;
+  isErasing: boolean;
+  isDrawingMode: boolean;
+  activeColor: string;
+  elements: any[];
+  onUpdateElement: (element: any) => void;
+  onDeleteElement: (elementId: string) => void;
+  zoom: number;
+  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  guitarGridLabels: { [key: string]: string };
+  onGridCellClick: (row: number, col: number) => void;
+  nextPosition: { row: number, col: number };
+}
+
+const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
+  template,
+  activeInstrument,
+  isErasing,
+  isDrawingMode,
+  activeColor,
+  elements,
+  onUpdateElement,
+  onDeleteElement,
+  zoom,
+  onDrop,
+  onDragOver,
+  guitarGridLabels,
+  onGridCellClick,
+  nextPosition
+}) => {
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div 
+      ref={canvasRef} 
+      className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-1 sm:p-2 relative"
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+    >
+      <MusicogramCanvas 
+        template={template}
+        activeInstrument={activeInstrument}
+        isErasing={isErasing}
+        isDrawingMode={isDrawingMode}
+        activeColor={activeColor}
+        elements={elements}
+        onUpdateElement={onUpdateElement}
+        onDeleteElement={onDeleteElement}
+        zoom={zoom}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        showGuitarGrid={true}
+        guitarGridLabels={guitarGridLabels}
+        onGridCellClick={onGridCellClick}
+        nextGridPosition={nextPosition}
+      />
+    </div>
+  );
+};
+
+export default MusicogramEditor;
