@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -17,6 +18,7 @@ interface MusicogramCanvasProps {
   zoom: number;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onAddElement: (element: any) => void;
 }
 
 export function MusicogramCanvas({ 
@@ -30,7 +32,8 @@ export function MusicogramCanvas({
   onDeleteElement,
   zoom,
   onDrop,
-  onDragOver
+  onDragOver,
+  onAddElement
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -38,6 +41,73 @@ export function MusicogramCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+
+  // Function to add an element to the center of the canvas
+  const addElementToCenter = () => {
+    if (canvas && (activeInstrument || activeColor)) {
+      // Get canvas dimensions
+      const canvasWidth = canvas.getWidth();
+      const canvasHeight = canvas.getHeight();
+      
+      // Calculate center position
+      const centerX = canvasWidth / 2;
+      const centerY = canvasHeight / 2;
+      
+      // Create new element data
+      let newElement = {
+        id: uuidv4(),
+        type: 'element',
+        x: centerX,
+        y: centerY,
+        color: activeColor,
+        size: 40, // Default size
+        position: { x: centerX, y: centerY },
+        rotation: 0
+      };
+      
+      if (activeInstrument) {
+        // Handle instrument icons
+        let iconContent = "▪"; // Default square shape
+        let shape = 'square';
+        
+        // Determine shape and icon based on active instrument
+        const instrument = elements.find(i => i.instrumentId === activeInstrument);
+        if (instrument) {
+          shape = instrument.shape || 'square';
+          
+          if (shape === 'circle') {
+            iconContent = "●";
+          } else if (shape === 'triangle') {
+            iconContent = "▲";
+          } else if (shape === 'hand') {
+            iconContent = "✋";
+          } else if (shape === 'footprints') {
+            iconContent = "👣";
+          } else if (shape === 'silence') {
+            iconContent = "🤫";
+          } else if (activeInstrument === 'ukulele') {
+            iconContent = "🎸";
+          }
+        }
+        
+        newElement = {
+          ...newElement,
+          shape: shape,
+          iconType: 'instrument',
+          iconContent: iconContent,
+          instrumentId: activeInstrument
+        };
+      } else {
+        // If no active instrument, use a circle with the active color
+        newElement = {
+          ...newElement,
+          shape: 'circle',
+        };
+      }
+      
+      onAddElement(newElement);
+    }
+  };
 
   useEffect(() => {
     const initCanvas = () => {
@@ -190,6 +260,16 @@ export function MusicogramCanvas({
       canvas.renderAll();
     }
   }, [isDrawingMode, canvas]);
+
+  // Add effect to respond to active instrument changes
+  useEffect(() => {
+    if (isDrawingMode && !isErasing && canvas && canvasContainerRef.current) {
+      // Optional: Add a subtle visual cue that the canvas is ready for adding elements
+      canvasContainerRef.current.style.cursor = 'crosshair';
+    } else if (canvasContainerRef.current) {
+      canvasContainerRef.current.style.cursor = 'default';
+    }
+  }, [activeInstrument, activeColor, isDrawingMode, isErasing, canvas]);
 
   const createElement = (element: any) => {
     let fabricElement: fabric.Object | null = null;
@@ -354,12 +434,20 @@ export function MusicogramCanvas({
     }
   };
 
+  // Handle canvas click to add elements in drawing mode
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDrawingMode && !isErasing && (activeInstrument || activeColor)) {
+      addElementToCenter();
+    }
+  };
+
   return (
     <div 
       className="relative w-full h-full overflow-auto"
       ref={canvasContainerRef}
       onDragOver={onDragOver}
       onDrop={onDrop}
+      onClick={handleCanvasClick}
     >
       <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
       
