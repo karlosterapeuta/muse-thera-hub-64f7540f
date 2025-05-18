@@ -317,11 +317,18 @@ export function MusicogramCanvas({
         instrumentId: element.instrumentId
       };
       
-      // Handle eraser mode
+      // Add right-click or long press context menu for mobile
       fabricElement.on('mousedown', (e) => {
         if (isErasing) {
           onDeleteElement(element.id);
           canvas?.remove(fabricElement!);
+        }
+      });
+
+      // Add double-click event to show delete button on element
+      fabricElement.on('mousedblclick', () => {
+        if (!isDrawingMode && fabricElement) {
+          showDeleteButton(fabricElement);
         }
       });
 
@@ -330,6 +337,13 @@ export function MusicogramCanvas({
     }
 
     return fabricElement;
+  };
+
+  // Function to show a delete button directly on the element
+  const showDeleteButton = (element: fabric.Object) => {
+    if (canvas && element && element.data) {
+      setSelectedElement(element);
+    }
   };
 
   const handleDeleteSelected = () => {
@@ -348,14 +362,21 @@ export function MusicogramCanvas({
       onDrop={onDrop}
     >
       <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
+      
+      {/* Delete button for selected element */}
       {selectedElement && (
-        <button
-          className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded z-10"
-          onClick={handleDeleteSelected}
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="absolute top-2 right-2 z-10 flex flex-col gap-2">
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
+            onClick={handleDeleteSelected}
+            title="Excluir figura selecionada"
+          >
+            <Trash2 size={isMobile ? 16 : 18} />
+            <span className={`${isMobile ? 'hidden' : 'inline'}`}>Excluir</span>
+          </button>
+        </div>
       )}
+      
       {!isDrawingMode && (
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
