@@ -16,87 +16,43 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
   rows = 5, 
   columns = 4, 
   className = '',
-  color = "#222222",
+  color = "#333333",
   labels = {}
 }) => {
-  // Create thicker horizontal lines for frets and thinner vertical lines for strings
   return (
     <div className={`relative ${className}`} style={{ width: '100%', height: '100%' }}>
-      {/* Main background - dark color like in the image */}
-      <div 
-        className="absolute inset-0 rounded-md"
-        style={{ backgroundColor: color }}
-      />
-
-      {/* Horizontal lines (frets) */}
-      {Array.from({ length: rows + 1 }).map((_, i) => (
-        <div 
-          key={`fret-${i}`} 
-          className="absolute left-0 right-0"
-          style={{ 
-            height: i === 0 ? '3px' : '2px',  // Thicker line for the nut (top fret)
-            backgroundColor: i === 0 ? '#FFFFFF' : '#9F9EA1',  // White for nut, silver for other frets
-            top: `${(i / rows) * 100}%`,
-            boxShadow: i === 0 ? 'none' : '0 1px 3px rgba(0,0,0,0.3)' // Shadow for metal frets
-          }}
-        />
-      ))}
-
-      {/* Vertical lines (strings) */}
-      {Array.from({ length: columns }).map((_, i) => (
-        <div 
-          key={`string-${i}`} 
-          className="absolute top-0 bottom-0"
-          style={{ 
-            width: `${1 + (i * 0.1)}px`,  // Strings get gradually thicker (bass to treble)
-            backgroundColor: '#D8D8D8',  // Light silver color for strings
-            left: `${((i + 0.5) / columns) * 100}%`,
-            transform: 'translateX(-50%)'
-          }}
-        />
-      ))}
-
-      {/* Chord Labels - larger and positioned in top-left of each cell like in the image */}
-      {Object.entries(labels).map(([position, label]) => {
-        const [rowStr, colStr] = position.split('-');
-        const row = parseInt(rowStr, 10);
-        const col = parseInt(colStr, 10);
-        
-        // Position the label in the top-left of each cell to match the image
-        // Moving it slightly away from the very edge
-        const top = (row / rows) * 100 + 5; // 5% padding from the top edge of cell
-        const left = (col / columns) * 100 + 5; // 5% padding from the left edge of cell
-        
-        return (
-          <div 
-            key={`label-${position}`} 
-            className="absolute font-bold text-white text-lg"
-            style={{
-              top: `${top}%`,
-              left: `${left}%`,
-              textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
-              zIndex: 10
-            }}
-          >
-            {label}
-          </div>
-        );
-      })}
-      
-      {/* Position markers (dots) at traditional fret positions */}
-      {[2, 4].map((position) => (
-        <div 
-          key={`marker-${position}`}
-          className="absolute rounded-full bg-white opacity-50"
-          style={{
-            width: '12px',
-            height: '12px',
-            top: `${((position + 0.5) / rows) * 100}%`,
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 5
-          }}
-        />
+      {/* Create grid of cells */}
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div key={`row-${rowIndex}`} className="flex w-full" style={{ height: `${100 / rows}%` }}>
+          {Array.from({ length: columns }).map((_, colIndex) => {
+            // Get label for this cell if it exists
+            const cellKey = `${rowIndex}-${colIndex}`;
+            const label = labels[cellKey];
+            
+            return (
+              <div 
+                key={`cell-${rowIndex}-${colIndex}`} 
+                className="relative border border-black flex items-center justify-center"
+                style={{ 
+                  width: `${100 / columns}%`,
+                  height: '100%',
+                  backgroundColor: color,
+                }}
+              >
+                {label && (
+                  <span 
+                    className="text-white font-bold text-lg sm:text-xl"
+                    style={{
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+                    }}
+                  >
+                    {label}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
       ))}
     </div>
   );
