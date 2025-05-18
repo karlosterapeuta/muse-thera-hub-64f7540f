@@ -1,8 +1,8 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
 import MusicogramCanvas from "./components/MusicogramCanvas";
-import TemplateSelector from "./components/TemplateSelector";
 import { defaultTemplates } from "./data/musicogramData";
 import { 
   Brush, 
@@ -55,7 +55,6 @@ export default function MusicogramPage() {
   const [isDrawingMode, setIsDrawingMode] = useState(true);
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplates[0].id);
   const [zoom, setZoom] = useState(1);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -345,13 +344,6 @@ export default function MusicogramPage() {
     <div className="flex flex-col h-full space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
         <h1 className="text-xl sm:text-2xl font-bold">Musicograma</h1>
-        <div className="flex items-center space-x-2">
-          <TemplateSelector 
-            templates={defaultTemplates}
-            selectedTemplate={selectedTemplate}
-            onSelectTemplate={setSelectedTemplate}
-          />
-        </div>
       </div>
 
       <div className="flex flex-wrap gap-1 sm:gap-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
@@ -469,7 +461,7 @@ export default function MusicogramPage() {
           onDragOver={handleDragOver}
         >
           <MusicogramCanvas 
-            template={getTemplateById(selectedTemplate)}
+            template={getTemplateById(defaultTemplates[0].id)}
             activeInstrument={activeInstrument}
             isErasing={isErasing}
             isDrawingMode={isDrawingMode}
