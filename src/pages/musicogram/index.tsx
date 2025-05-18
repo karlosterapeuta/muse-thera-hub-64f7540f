@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -181,7 +180,7 @@ export default function MusicogramPage() {
           color: dropData.color,
           size: dropData.size || 40,
           shape: dropData.shape,
-          iconType: 'instrument',
+          iconType: 'symbol', // Change from 'instrument' to 'symbol'
           iconContent: iconContent,
           instrumentId: dropData.id,
           position: { x, y },

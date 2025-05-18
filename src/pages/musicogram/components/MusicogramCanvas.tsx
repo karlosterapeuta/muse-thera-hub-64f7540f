@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -93,7 +94,7 @@ export function MusicogramCanvas({
         newElement = {
           ...newElement,
           shape: elementShape,
-          iconType: 'instrument',
+          iconType: 'symbol', // Change from 'instrument' to 'symbol' to match allowed types
           iconContent: iconContent,
           instrumentId: activeInstrument
         };
