@@ -46,6 +46,7 @@ const musicalSymbols: InstrumentType[] = [
   { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 36 },
   { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 36 },
   { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 36 },
+  { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
   { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
 ];
 
