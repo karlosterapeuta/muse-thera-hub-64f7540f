@@ -22,7 +22,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
   const renderStarIcon = () => {
     return (
       <div className="hidden md:flex flex-grow items-end justify-center pb-4">
-        <div className="w-20 h-20 md:w-32 md:h-32 opacity-10">
+        <div className="w-32 h-32 md:w-40 md:h-40 opacity-10">
           <Star />
         </div>
       </div>
@@ -42,12 +42,12 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
             onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
           >
             <div 
-              className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
+              className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
               style={{ color: symbol.color }}
             >
               {symbol.iconContent}
             </div>
-            <span className="text-[10px] sm:text-xs mt-1 text-center">{symbol.name}</span>
+            <span className="text-xs sm:text-sm mt-1 text-center">{symbol.name}</span>
           </div>
         ))}
       </div>

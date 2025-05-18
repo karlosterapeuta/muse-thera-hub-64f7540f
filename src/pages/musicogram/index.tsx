@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -26,18 +25,18 @@ const defaultInstruments: InstrumentType[] = [
 
 // Define our musical symbols with increased size
 const musicalSymbols: InstrumentType[] = [
-  { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●", size: 36 },
-  { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●", size: 36 },
-  { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●", size: 36 },
-  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○", size: 36 },
-  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N", size: 36 },
-  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~", size: 36 },
-  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 36 },
-  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 36 },
-  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 36 },
-  { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
-  { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
-  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
+  { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●", size: 72 },
+  { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●", size: 72 },
+  { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●", size: 72 },
+  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○", size: 72 },
+  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N", size: 72 },
+  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~", size: 72 },
+  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 72 },
+  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 72 },
+  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 72 },
+  { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 72 },
+  { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 72 },
+  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 72 }
 ];
 
 // Empty guitar grid labels - no chord labels
@@ -90,7 +89,7 @@ export default function MusicogramPage() {
         x: x,
         y: y,
         color: item.color,
-        size: item.size || 36,
+        size: item.size || 72, // Double the size from 36 to 72
         shape: item.shape,
         iconType: item.iconType || 'symbol',
         iconContent: item.iconContent,
@@ -123,7 +122,7 @@ export default function MusicogramPage() {
         x: x,
         y: y,
         color: item.color,
-        size: item.size || 40,
+        size: 80, // Double the size from 40 to 80
         shape: item.shape,
         iconType: 'instrument',
         iconContent: iconContent,
@@ -183,7 +182,7 @@ export default function MusicogramPage() {
           x: x,
           y: y,
           color: dropData.color,
-          size: dropData.size || 36,
+          size: dropData.size || 72, // Double the size
           shape: dropData.shape,
           iconType: dropData.iconType,
           iconContent: dropData.iconContent,
@@ -217,7 +216,7 @@ export default function MusicogramPage() {
           x: x,
           y: y,
           color: dropData.color,
-          size: dropData.size || 40,
+          size: 80, // Double the size
           shape: dropData.shape,
           iconType: 'instrument',
           iconContent: iconContent,

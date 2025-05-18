@@ -48,7 +48,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         }}
         title="Modo Desenho"
       >
-        <Brush size={isMobile ? 16 : 18} />
+        <Brush size={isMobile ? 20 : 24} />
       </Button>
       <Button
         variant={!isDrawingMode ? "default" : "outline"}
@@ -57,7 +57,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         title="Modo Movimentação Livre"
         className={!isDrawingMode ? "bg-green-500 hover:bg-green-600" : ""}
       >
-        <Hand size={isMobile ? 16 : 18} />
+        <Hand size={isMobile ? 20 : 24} />
       </Button>
       <Button 
         variant={isErasing ? "destructive" : "outline"} 
@@ -66,7 +66,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         title="Borracha"
         disabled={!isDrawingMode}
       >
-        <Eraser size={isMobile ? 16 : 18} />
+        <Eraser size={isMobile ? 20 : 24} />
       </Button>
       <Button 
         variant="outline" 
@@ -74,7 +74,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         onClick={onClearCanvas}
         title="Limpar Tudo"
       >
-        <Trash2 size={isMobile ? 16 : 18} />
+        <Trash2 size={isMobile ? 20 : 24} />
       </Button>
       <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
       <Button 
@@ -83,7 +83,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         onClick={onZoomIn}
         title="Ampliar"
       >
-        <ZoomIn size={isMobile ? 16 : 18} />
+        <ZoomIn size={isMobile ? 20 : 24} />
       </Button>
       <Button 
         variant="outline" 
@@ -91,7 +91,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         onClick={onZoomOut}
         title="Reduzir"
       >
-        <ZoomOut size={isMobile ? 16 : 18} />
+        <ZoomOut size={isMobile ? 20 : 24} />
       </Button>
       <div className="h-6 border-r border-gray-200 mx-1 hidden sm:block"></div>
       <Button 
@@ -100,7 +100,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         onClick={onSaveCanvas}
         title="Salvar Musicograma"
       >
-        <Save size={isMobile ? 16 : 18} />
+        <Save size={isMobile ? 20 : 24} />
       </Button>
       <Button 
         variant="outline" 
@@ -108,7 +108,7 @@ const MusicogramToolbar: React.FC<MusicogramToolbarProps> = ({
         onClick={onExportImage}
         title="Baixar como Imagem"
       >
-        <Download size={isMobile ? 16 : 18} />
+        <Download size={isMobile ? 20 : 24} />
       </Button>
     </div>
   );
