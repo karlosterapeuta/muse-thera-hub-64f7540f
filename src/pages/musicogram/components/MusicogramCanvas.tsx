@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -365,7 +364,7 @@ export function MusicogramCanvas({
     }
   };
 
-  // Function to handle grid cell click
+  // Function to handle grid cell click - This is now important for updating the next position
   const handleGridCellClick = (row: number, col: number) => {
     if (onGridCellClick) {
       onGridCellClick(row, col);
@@ -379,7 +378,7 @@ export function MusicogramCanvas({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Render guitar fretboard with clickable cells */}
+      {/* Render guitar fretboard with clickable cells and highlight for next position */}
       {showGuitarGrid && (
         <div 
           ref={gridRef}
