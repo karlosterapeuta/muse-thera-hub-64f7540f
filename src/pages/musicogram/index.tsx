@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -13,14 +14,12 @@ import {
   ZoomIn, 
   ZoomOut,
   Star,
-  Guitar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
-import ChordGrid from "./components/ChordGrid";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -48,25 +47,6 @@ const musicalSymbols: InstrumentType[] = [
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
   { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
 ];
-
-// Default chord labels configuration based on the provided image
-const defaultChordLabels = {
-  "0-0": "BbM7", 
-  "1-0": "BM7", 
-  "2-0": "C#M7", 
-  "3-0": "BM7", 
-  "4-0": "BbM7"
-};
-
-// Add a new guitar fretboard with chord labels that matches the image
-const guitarFretboard: InstrumentType = {
-  id: "guitar-fretboard",
-  name: "Braço do Violão",
-  shape: "grid",
-  color: "#222222",
-  iconType: "grid",
-  size: 60
-};
 
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
@@ -105,7 +85,7 @@ export default function MusicogramPage() {
   };
 
   // Função para lidar com o início do arrasto (para símbolos e instrumentos)
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument' | 'grid') => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
     const dragData = {
       ...item,
       type
@@ -182,24 +162,6 @@ export default function MusicogramPage() {
         };
         
         toast.success("Instrumento adicionado com sucesso!");
-      } else if (dropData.type === 'grid' || dropData.iconType === 'grid') {
-        // Create a new chord grid element at the drop position with the default chord labels
-        newElement = {
-          id: uuidv4(),
-          type: 'element',
-          x: x,
-          y: y,
-          color: "#222222",
-          size: 120, // Make it larger by default
-          shape: "grid",
-          iconType: "grid",
-          iconContent: "",
-          position: { x, y },
-          rotation: 0,
-          gridLabels: defaultChordLabels // Use the default chord labels
-        };
-        
-        toast.success("Braço de violão adicionado com sucesso!");
       }
       
       if (newElement) {
@@ -355,35 +317,13 @@ export default function MusicogramPage() {
     );
   };
 
-  // Render the fretboard component with drag and drop but without the icon
-  const renderFretboardExample = () => {
-    return (
-      <div 
-        className="mb-4 p-2 w-full cursor-grab"
-        draggable
-        onDragStart={(e) => handleDragStart(e, {
-          id: "guitar-fretboard",
-          name: "Braço do Violão",
-          shape: "grid",
-          color: "#222222",
-          iconType: "grid",
-          size: 60
-        }, 'grid')}
-      >
-        <h3 className="font-medium mb-2 text-center">Braço do Violão</h3>
-        <div className="w-full h-32 sm:h-48 rounded-md overflow-hidden">
-          <ChordGrid 
-            rows={5} 
-            columns={4} 
-            color="#222222" 
-            labels={defaultChordLabels} 
-          />
-        </div>
-        <p className="text-xs text-center mt-2 text-gray-600">
-          Arraste para o canvas para adicionar
-        </p>
+  // Modified the Star component rendering to pass it as a React component
+  const renderStarIcon = () => {
+    return <div className="hidden md:flex flex-grow items-end justify-center pb-4">
+      <div className="w-20 h-20 md:w-32 md:h-32 opacity-10">
+        <Star />
       </div>
-    );
+    </div>;
   };
 
   const handleDeleteElement = (elementId: string) => {
@@ -398,35 +338,6 @@ export default function MusicogramPage() {
 
   const getTemplateById = (id: string) => {
     return defaultTemplates.find(template => template.id === id) || defaultTemplates[0];
-  };
-
-  // Modified the Star component rendering to pass it as a React component
-  const renderStarIcon = () => {
-    return <div className="hidden md:flex flex-grow items-end justify-center pb-4">
-      <div className="w-20 h-20 md:w-32 md:h-32 opacity-10">
-        <Star />
-      </div>
-    </div>;
-  };
-
-  const handleFretboardClick = () => {
-    // Add a new fretboard to the canvas in the center
-    const newFretboard = {
-      id: uuidv4(),
-      type: 'element',
-      x: 100,
-      y: 100,
-      color: "#222222",
-      size: 120,
-      shape: "grid",
-      iconType: "grid",
-      position: { x: 100, y: 100 },
-      rotation: 0,
-      gridLabels: defaultChordLabels
-    };
-    
-    setCanvasElements(prev => [...prev, newFretboard]);
-    toast.success("Braço de violão adicionado com sucesso!");
   };
 
   return (
@@ -511,9 +422,6 @@ export default function MusicogramPage() {
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
-          {/* Display the fretboard example directly */}
-          {renderFretboardExample()}
-          
           <h3 className="font-medium mb-2 sm:mb-3 text-center">Instrumentos</h3>
           <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
             {defaultInstruments.map((instrument, index) => renderInstrumentShape(instrument, index))}
@@ -539,7 +447,7 @@ export default function MusicogramPage() {
               </div>
             )}
             <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Arraste o braço de violão ou outros ícones diretamente para o quadro
+              Arraste os ícones diretamente para o quadro
             </div>
           </div>
           

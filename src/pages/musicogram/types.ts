@@ -4,7 +4,7 @@ export interface InstrumentType {
   name: string;
   shape: string;
   color: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument' | 'grid';
+  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
   iconContent?: string;
   size?: number;  // Adicionada propriedade de tamanho opcional
 }
@@ -29,9 +29,8 @@ export interface VisualElement {
   position?: { x: number; y: number };
   rotation?: number;
   label?: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument' | 'grid';
+  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
   iconContent?: string;
-  gridLabels?: { [key: string]: string }; // Property for chord grid labels
 }
 
 export interface MusicogramTemplate {

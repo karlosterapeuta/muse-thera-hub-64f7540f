@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -71,7 +72,6 @@ export function MusicogramCanvas({
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
             iconContent: obj.data.iconContent,
-            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -100,7 +100,6 @@ export function MusicogramCanvas({
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
             iconContent: obj.data.iconContent,
-            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -122,7 +121,6 @@ export function MusicogramCanvas({
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
             iconContent: obj.data.iconContent,
-            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -225,81 +223,6 @@ export function MusicogramCanvas({
         });
         fabricElement = textObj;
       }
-    } else if (element.iconType === 'grid') {
-      // Create a guitar fretboard grid with labels
-      const gridSize = element.size || 120;
-      const cols = 4;
-      const rows = 5;
-      
-      // Get chord grid labels from element or use defaults
-      const gridLabels = element.gridLabels || {};
-      
-      // Create a group to hold all grid cells
-      const fretboard = new fabric.Group([], {
-        left: x,
-        top: y,
-        originX: 'center',
-        originY: 'center',
-        hasControls: !isDrawingMode,
-        hasBorders: !isDrawingMode,
-        lockMovementX: isDrawingMode,
-        lockMovementY: isDrawingMode,
-        angle: element.rotation || 0,
-        selectable: !isDrawingMode,
-        cornerColor: '#5186EC',
-        cornerSize: isMobile ? 8 : 10,
-        cornerStyle: 'circle',
-        transparentCorners: false,
-        borderColor: '#5186EC',
-        borderScaleFactor: 1.5
-      });
-      
-      // Cell dimensions
-      const cellWidth = gridSize / cols;
-      const cellHeight = (gridSize * (rows / cols)) / rows;
-      
-      // Create all cells as in the image
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          // Calculate position for this cell
-          const cellX = (col * cellWidth) - (gridSize / 2) + (cellWidth / 2);
-          const cellY = (row * cellHeight) - (gridSize * (rows / cols) / 2) + (cellHeight / 2);
-          
-          // Create cell rectangle
-          const cell = new fabric.Rect({
-            left: cellX,
-            top: cellY,
-            width: cellWidth,
-            height: cellHeight,
-            fill: element.color || '#333333',
-            stroke: '#000000',
-            strokeWidth: 1,
-            originX: 'center',
-            originY: 'center'
-          });
-          
-          fretboard.addWithUpdate(cell);
-          
-          // Add chord label if it exists for this cell
-          const cellKey = `${row}-${col}`;
-          if (gridLabels[cellKey]) {
-            const labelText = new fabric.Text(gridLabels[cellKey], {
-              left: cellX,
-              top: cellY,
-              fontSize: cellWidth * 0.35,
-              fill: '#FFFFFF',
-              fontWeight: 'bold',
-              originX: 'center',
-              originY: 'center',
-              textAlign: 'center',
-              shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.7)', offsetX: 1, offsetY: 1, blur: 2 }),
-            });
-            fretboard.addWithUpdate(labelText);
-          }
-        }
-      }
-      
-      fabricElement = fretboard;
     } else if (element.shape === 'circle') {
       fabricElement = new fabric.Circle({
         left: x,
@@ -393,7 +316,6 @@ export function MusicogramCanvas({
         iconType: element.iconType,
         iconContent: element.iconContent,
         instrumentId: element.instrumentId,
-        gridLabels: element.gridLabels
       };
       
       // Add right-click or long press context menu for mobile
