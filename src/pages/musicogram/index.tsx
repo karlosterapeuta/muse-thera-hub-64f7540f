@@ -62,6 +62,9 @@ export default function MusicogramPage() {
 
   // Canvas ref and elements state would be here
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
+  
+  // Track the next position for organized grid placement
+  const [nextPosition, setNextPosition] = useState<{ row: number, col: number }>({ row: 0, col: 0 });
 
   const handleInstrumentSelect = (instrumentId: string) => {
     setActiveInstrument(instrumentId);
@@ -175,6 +178,93 @@ export default function MusicogramPage() {
     }
   };
 
+  // Handle grid cell click for organized placement
+  const handleGridCellClick = (row: number, col: number) => {
+    if (!activeSymbol && !activeInstrument) {
+      toast.info("Selecione um instrumento ou símbolo primeiro");
+      return;
+    }
+    
+    const cellSize = isMobile ? 60 : 80;
+    
+    // Calculate cell center position
+    const x = col * cellSize + cellSize / 2;
+    const y = row * cellSize + cellSize / 2;
+    
+    let newElement;
+    
+    if (activeSymbol) {
+      newElement = {
+        id: uuidv4(),
+        type: 'element',
+        x: x,
+        y: y,
+        color: activeSymbol.color,
+        size: activeSymbol.size || 36,
+        shape: activeSymbol.shape,
+        iconType: activeSymbol.iconType,
+        iconContent: activeSymbol.iconContent,
+        position: { x, y },
+        rotation: 0
+      };
+      
+      toast.success("Símbolo adicionado com sucesso!");
+    } else if (activeInstrument) {
+      // Find selected instrument
+      const instrument = defaultInstruments.find(i => i.id === activeInstrument);
+      if (instrument) {
+        let iconContent = "▪"; // Default square shape
+        
+        // Adaptar o ícone conforme o tipo de instrumento
+        if (instrument.shape === 'circle') {
+          iconContent = "●";
+        } else if (instrument.shape === 'triangle') {
+          iconContent = "▲";
+        } else if (instrument.shape === 'hand') {
+          iconContent = "✋";
+        } else if (instrument.shape === 'footprints') {
+          iconContent = "👣";
+        } else if (instrument.shape === 'silence') {
+          iconContent = "🤫";
+        } else if (instrument.id === 'ukulele') {
+          iconContent = "🎸";
+        }
+        
+        newElement = {
+          id: uuidv4(),
+          type: 'element',
+          x: x,
+          y: y,
+          color: instrument.color,
+          size: instrument.size || 40,
+          shape: instrument.shape,
+          iconType: 'instrument',
+          iconContent: iconContent,
+          instrumentId: instrument.id,
+          position: { x, y },
+          rotation: 0
+        };
+        
+        toast.success("Instrumento adicionado com sucesso!");
+      }
+    }
+    
+    if (newElement) {
+      setCanvasElements(prev => [...prev, newElement]);
+      
+      // Update next position for organized flow
+      let nextCol = col + 1;
+      let nextRow = row;
+      
+      if (nextCol >= 4) { // If we reach the end of a row
+        nextCol = 0;
+        nextRow = (nextRow + 1) % 5; // Move to next row, wrap around if needed
+      }
+      
+      setNextPosition({ row: nextRow, col: nextCol });
+    }
+  };
+
   // Funções para permitir o drop
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -191,6 +281,7 @@ export default function MusicogramPage() {
   const clearCanvas = () => {
     if (window.confirm("Tem certeza que deseja limpar o musicograma?")) {
       setCanvasElements([]);
+      setNextPosition({ row: 0, col: 0 }); // Reset position tracking
     }
   };
 
@@ -440,7 +531,7 @@ export default function MusicogramPage() {
           <div className="mt-4 p-2 rounded text-center">
             <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
               {isDrawingMode 
-                ? "Modo Desenho: Arraste símbolos para o quadro" 
+                ? "Modo Desenho: Clique na grade ou arraste símbolos" 
                 : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}
             </div>
             {!isDrawingMode && (
@@ -449,7 +540,7 @@ export default function MusicogramPage() {
               </div>
             )}
             <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Arraste os ícones diretamente para o quadro
+              Clique em um instrumento/símbolo e depois clique na grade
             </div>
           </div>
           
@@ -476,6 +567,7 @@ export default function MusicogramPage() {
             onDragOver={handleDragOver}
             showGuitarGrid={true}
             guitarGridLabels={guitarGridLabels}
+            onGridCellClick={handleGridCellClick}
           />
         </div>
       </div>

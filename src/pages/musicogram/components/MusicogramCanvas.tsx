@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -20,6 +21,7 @@ interface MusicogramCanvasProps {
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   showGuitarGrid?: boolean;
   guitarGridLabels?: { [key: string]: string };
+  onGridCellClick?: (row: number, col: number) => void;
 }
 
 export function MusicogramCanvas({ 
@@ -35,7 +37,8 @@ export function MusicogramCanvas({
   onDrop,
   onDragOver,
   showGuitarGrid = true,
-  guitarGridLabels = {}
+  guitarGridLabels = {},
+  onGridCellClick
 }: MusicogramCanvasProps) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -43,6 +46,7 @@ export function MusicogramCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initCanvas = () => {
@@ -359,6 +363,13 @@ export function MusicogramCanvas({
     }
   };
 
+  // Function to handle grid cell click
+  const handleGridCellClick = (row: number, col: number) => {
+    if (onGridCellClick) {
+      onGridCellClick(row, col);
+    }
+  };
+
   return (
     <div 
       className="relative w-full h-full overflow-auto"
@@ -366,14 +377,20 @@ export function MusicogramCanvas({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Render guitar fretboard if enabled, but without labels */}
+      {/* Render guitar fretboard with clickable cells */}
       {showGuitarGrid && (
-        <div className="absolute inset-0 z-0 pointer-events-none" style={{ transform: `scale(${zoom})` }}>
+        <div 
+          ref={gridRef}
+          className="absolute inset-0 z-0" 
+          style={{ transform: `scale(${zoom})` }}
+        >
           <ChordGrid 
             rows={5} 
             columns={4} 
             color="#222222" 
             labels={{}} // Empty object for no labels
+            onCellClick={handleGridCellClick}
+            isClickable={true}
           />
         </div>
       )}

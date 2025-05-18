@@ -7,6 +7,8 @@ interface ChordGridProps {
   className?: string;
   color?: string;
   labels?: { [key: string]: string }; // Format: "row-col": "ChordName"
+  isClickable?: boolean;
+  onCellClick?: (row: number, col: number) => void;
 }
 
 /**
@@ -17,8 +19,16 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
   columns = 4, 
   className = '',
   color = "#222222", // Fundo escuro por padrão
-  labels = {}
+  labels = {},
+  isClickable = false,
+  onCellClick
 }) => {
+  const handleCellClick = (rowIndex: number, colIndex: number) => {
+    if (isClickable && onCellClick) {
+      onCellClick(rowIndex, colIndex);
+    }
+  };
+
   return (
     <div className={`relative ${className}`} style={{ width: '100%', height: '100%' }}>
       {/* Create grid of cells */}
@@ -32,12 +42,15 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
             return (
               <div 
                 key={`cell-${rowIndex}-${colIndex}`} 
-                className="relative border border-gray-600 flex items-center justify-center"
+                className={`relative border border-gray-600 flex items-center justify-center ${isClickable ? 'cursor-pointer' : ''}`}
                 style={{ 
                   width: `${100 / columns}%`,
                   height: '100%',
                   backgroundColor: color,
                 }}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
+                data-row={rowIndex}
+                data-col={colIndex}
               >
                 {label && (
                   <span 
