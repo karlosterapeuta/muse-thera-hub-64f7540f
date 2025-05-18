@@ -1,10 +1,10 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
 import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useIsMobile } from "@/hooks/use-mobile";
-import ChordGrid from "./ChordGrid";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
@@ -71,7 +71,8 @@ export function MusicogramCanvas({
             position: { x: obj.left || 0, y: obj.top || 0 },
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent
+            iconContent: obj.data.iconContent,
+            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -99,7 +100,8 @@ export function MusicogramCanvas({
             position: { x: obj.left || 0, y: obj.top || 0 },
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent
+            iconContent: obj.data.iconContent,
+            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -120,7 +122,8 @@ export function MusicogramCanvas({
             position: { x: obj.left || 0, y: obj.top || 0 },
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent
+            iconContent: obj.data.iconContent,
+            gridLabels: obj.data.gridLabels
           };
           onUpdateElement(updatedElement);
         }
@@ -224,22 +227,16 @@ export function MusicogramCanvas({
         fabricElement = textObj;
       }
     } else if (element.iconType === 'grid') {
-      // Create a grid pattern for chord charts
+      // Create a guitar fretboard grid with labels
       const gridSize = element.size || 60;
       const cols = 4;
-      const rows = 6;
-      const cellSize = gridSize / Math.max(cols, rows);
+      const rows = 5;
+      const cellSize = gridSize / Math.max(cols, 2);
       
-      // Default chord grid labels
-      const gridLabels = element.gridLabels || {
-        "0-0": "BbM7", 
-        "1-0": "BM7", 
-        "2-0": "C#M7", 
-        "3-0": "BM7", 
-        "4-0": "BbM7"
-      };
+      // Get chord grid labels from element or use defaults
+      const gridLabels = element.gridLabels || {};
       
-      // Create a group to hold all cells and labels
+      // Create a group to hold all cells and labels for the guitar fretboard
       const grid = new fabric.Group([], {
         left: x,
         top: y,
@@ -259,7 +256,7 @@ export function MusicogramCanvas({
         borderScaleFactor: 1.5
       });
       
-      // Create cells for the grid
+      // Create cells for the guitar fretboard grid
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const cell = new fabric.Rect({
@@ -267,7 +264,7 @@ export function MusicogramCanvas({
             top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
             width: cellSize - 2,
             height: cellSize - 2,
-            fill: element.color || '#333333',
+            fill: element.color || '#222222', // Darker color for fretboard
             stroke: '#000000',
             strokeWidth: 1,
             originX: 'center',
@@ -282,10 +279,10 @@ export function MusicogramCanvas({
               left: col * cellSize - (cols * cellSize / 2) + (cellSize / 2),
               top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
               fontSize: cellSize * 0.4,
-              fill: '#FFFFFF',
+              fill: '#FFFFFF', // White text for chord labels
+              fontWeight: 'bold',
               originX: 'center',
               originY: 'center',
-              fontWeight: 'bold'
             });
             grid.addWithUpdate(text);
           }

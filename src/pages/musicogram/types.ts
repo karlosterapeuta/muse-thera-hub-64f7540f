@@ -31,7 +31,7 @@ export interface VisualElement {
   label?: string;
   iconType?: 'svg' | 'symbol' | 'image' | 'instrument' | 'grid';
   iconContent?: string;
-  gridLabels?: { [key: string]: string }; // New property for chord grid labels
+  gridLabels?: { [key: string]: string }; // Property for chord grid labels
 }
 
 export interface MusicogramTemplate {

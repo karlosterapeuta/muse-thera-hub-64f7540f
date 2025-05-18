@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -16,8 +17,7 @@ import {
   MusicIcon,
   Piano,
   Star,
-  CupSoda,
-  LayoutGrid
+  CupSoda
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
@@ -50,7 +50,7 @@ const musicalSymbols: InstrumentType[] = [
   { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
   { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 },
-  { id: "chord-grid", name: "Grade de Acordes", shape: "grid", color: "#333333", iconType: "grid", iconContent: "", size: 60 }
+  { id: "guitar-grid", name: "Braço do Violão", shape: "grid", color: "#222222", iconType: "grid", iconContent: "", size: 60 }
 ];
 
 // Default chord labels configuration based on the provided image
@@ -60,30 +60,6 @@ const defaultChordLabels = {
   "2-0": "C#M7", 
   "3-0": "BM7", 
   "4-0": "BbM7"
-};
-
-// Add this new component for the chord grid
-const ChordGrid = ({ className }: { className?: string }) => {
-  return (
-    <div className={`grid grid-cols-4 gap-[2px] ${className}`}>
-      {Array.from({ length: 24 }).map((_, i) => {
-        const row = Math.floor(i / 4);
-        const col = i % 4;
-        const cellKey = `${row}-${col}`;
-        const label = defaultChordLabels[cellKey];
-        
-        return (
-          <div key={i} className="aspect-square bg-[#333333] border border-black relative">
-            {label && (
-              <div className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">
-                {label}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
 };
 
 export default function MusicogramPage() {
@@ -207,7 +183,7 @@ export default function MusicogramPage() {
           type: 'element',
           x: x,
           y: y,
-          color: "#333333",
+          color: "#222222",
           size: 60,
           shape: "grid",
           iconType: "grid",
@@ -217,7 +193,7 @@ export default function MusicogramPage() {
           gridLabels: defaultChordLabels // Add the chord labels
         };
         
-        toast.success("Grade de acordes adicionada com sucesso!");
+        toast.success("Braço de violão adicionado com sucesso!");
       }
       
       if (newElement) {
@@ -366,8 +342,12 @@ export default function MusicogramPage() {
           className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
           style={{ color: symbol.color }}
         >
-          {symbol.id === 'chord-grid' ? (
-            <ChordGrid className="w-10 h-10" />
+          {symbol.id === 'guitar-grid' ? (
+            <div className="w-10 h-10 grid grid-cols-4 gap-[1px]">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="aspect-square bg-[#222222] border border-black"></div>
+              ))}
+            </div>
           ) : (
             symbol.iconContent
           )}

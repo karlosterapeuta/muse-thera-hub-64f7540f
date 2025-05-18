@@ -10,13 +10,13 @@ interface ChordGridProps {
 }
 
 /**
- * Renders a chord grid with customizable rows and columns and optional chord labels
+ * Renders a chord grid representing a guitar fretboard with customizable rows and columns and chord labels
  */
 export const ChordGrid: React.FC<ChordGridProps> = ({ 
-  rows = 6, 
+  rows = 5, 
   columns = 4, 
   className = '',
-  color = "#333333",
+  color = "#222222",
   labels = {}
 }) => {
   return (
