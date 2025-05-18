@@ -230,7 +230,16 @@ export function MusicogramCanvas({
       const rows = 6;
       const cellSize = gridSize / Math.max(cols, rows);
       
-      // Create a group to hold all cells
+      // Default chord grid labels
+      const gridLabels = element.gridLabels || {
+        "0-0": "BbM7", 
+        "1-0": "BM7", 
+        "2-0": "C#M7", 
+        "3-0": "BM7", 
+        "4-0": "BbM7"
+      };
+      
+      // Create a group to hold all cells and labels
       const grid = new fabric.Group([], {
         left: x,
         top: y,
@@ -265,6 +274,21 @@ export function MusicogramCanvas({
             originY: 'center'
           });
           grid.addWithUpdate(cell);
+          
+          // Add chord label if it exists for this cell
+          const cellKey = `${row}-${col}`;
+          if (gridLabels[cellKey]) {
+            const text = new fabric.Text(gridLabels[cellKey], {
+              left: col * cellSize - (cols * cellSize / 2) + (cellSize / 2),
+              top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
+              fontSize: cellSize * 0.4,
+              fill: '#FFFFFF',
+              originX: 'center',
+              originY: 'center',
+              fontWeight: 'bold'
+            });
+            grid.addWithUpdate(text);
+          }
         }
       }
       
@@ -361,7 +385,8 @@ export function MusicogramCanvas({
         id: element.id,
         iconType: element.iconType,
         iconContent: element.iconContent,
-        instrumentId: element.instrumentId
+        instrumentId: element.instrumentId,
+        gridLabels: element.gridLabels
       };
       
       // Add right-click or long press context menu for mobile

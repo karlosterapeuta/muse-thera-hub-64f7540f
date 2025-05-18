@@ -6,16 +6,18 @@ interface ChordGridProps {
   columns?: number;
   className?: string;
   color?: string;
+  labels?: { [key: string]: string }; // Format: "row-col": "ChordName"
 }
 
 /**
- * Renders a chord grid with customizable rows and columns
+ * Renders a chord grid with customizable rows and columns and optional chord labels
  */
 export const ChordGrid: React.FC<ChordGridProps> = ({ 
   rows = 6, 
   columns = 4, 
   className = '',
-  color = "#333333"
+  color = "#333333",
+  labels = {}
 }) => {
   return (
     <div 
@@ -25,13 +27,26 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
         gridTemplateRows: `repeat(${rows}, 1fr)`
       }}
     >
-      {Array.from({ length: rows * columns }).map((_, i) => (
-        <div 
-          key={i} 
-          className="aspect-square border border-black"
-          style={{ backgroundColor: color }}
-        />
-      ))}
+      {Array.from({ length: rows * columns }).map((_, i) => {
+        const row = Math.floor(i / columns);
+        const col = i % columns;
+        const cellKey = `${row}-${col}`;
+        const label = labels[cellKey];
+        
+        return (
+          <div 
+            key={i} 
+            className="aspect-square border border-black relative"
+            style={{ backgroundColor: color }}
+          >
+            {label && (
+              <div className="absolute inset-0 flex items-center justify-center text-white font-bold">
+                {label}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

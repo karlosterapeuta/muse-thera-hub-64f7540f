@@ -50,16 +50,38 @@ const musicalSymbols: InstrumentType[] = [
   { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
   { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 },
-  { id: "chord-grid", name: "Grade de Acordes", shape: "grid", color: "#000000", iconType: "grid", iconContent: "", size: 60 }
+  { id: "chord-grid", name: "Grade de Acordes", shape: "grid", color: "#333333", iconType: "grid", iconContent: "", size: 60 }
 ];
+
+// Default chord labels configuration based on the provided image
+const defaultChordLabels = {
+  "0-0": "BbM7", 
+  "1-0": "BM7", 
+  "2-0": "C#M7", 
+  "3-0": "BM7", 
+  "4-0": "BbM7"
+};
 
 // Add this new component for the chord grid
 const ChordGrid = ({ className }: { className?: string }) => {
   return (
     <div className={`grid grid-cols-4 gap-[2px] ${className}`}>
-      {Array.from({ length: 24 }).map((_, i) => (
-        <div key={i} className="aspect-square bg-[#333333] border border-black" />
-      ))}
+      {Array.from({ length: 24 }).map((_, i) => {
+        const row = Math.floor(i / 4);
+        const col = i % 4;
+        const cellKey = `${row}-${col}`;
+        const label = defaultChordLabels[cellKey];
+        
+        return (
+          <div key={i} className="aspect-square bg-[#333333] border border-black relative">
+            {label && (
+              <div className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">
+                {label}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -178,20 +200,21 @@ export default function MusicogramPage() {
         };
         
         toast.success("Instrumento adicionado com sucesso!");
-      } else if (dropData.type === 'chord-grid') {
-        // Criar novo elemento de grade de acordes no canvas na posição do drop
+      } else if (dropData.type === 'grid' || dropData.iconType === 'grid') {
+        // Create a new chord grid element at the drop position
         newElement = {
           id: uuidv4(),
           type: 'element',
           x: x,
           y: y,
-          color: "#000000",
+          color: "#333333",
           size: 60,
           shape: "grid",
           iconType: "grid",
           iconContent: "",
           position: { x, y },
-          rotation: 0
+          rotation: 0,
+          gridLabels: defaultChordLabels // Add the chord labels
         };
         
         toast.success("Grade de acordes adicionada com sucesso!");
@@ -337,7 +360,7 @@ export default function MusicogramPage() {
         }`}
         onClick={() => handleSymbolSelect(symbol)}
         draggable
-        onDragStart={(e) => handleDragStart(e, symbol, 'symbol')}
+        onDragStart={(e) => handleDragStart(e, symbol, symbol.iconType === 'grid' ? 'grid' : 'symbol')}
       >
         <div 
           className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
