@@ -12,17 +12,15 @@ import {
   Download, 
   ZoomIn, 
   ZoomOut,
-  Circle,
-  MusicIcon,
-  Piano,
   Star,
-  CupSoda
+  Guitar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ChordGrid from "./components/ChordGrid";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -60,7 +58,7 @@ const defaultChordLabels = {
   "4-0": "BbM7"
 };
 
-// Add a new guitar fretboard with chord labels
+// Add a new guitar fretboard with chord labels that matches the image
 const guitarFretboard: InstrumentType = {
   id: "guitar-fretboard",
   name: "Braço do Violão",
@@ -185,20 +183,20 @@ export default function MusicogramPage() {
         
         toast.success("Instrumento adicionado com sucesso!");
       } else if (dropData.type === 'grid' || dropData.iconType === 'grid') {
-        // Create a new chord grid element at the drop position
+        // Create a new chord grid element at the drop position with the default chord labels
         newElement = {
           id: uuidv4(),
           type: 'element',
           x: x,
           y: y,
           color: "#222222",
-          size: 60,
+          size: 120, // Make it larger by default
           shape: "grid",
           iconType: "grid",
           iconContent: "",
           position: { x, y },
           rotation: 0,
-          gridLabels: defaultChordLabels // Add the chord labels
+          gridLabels: defaultChordLabels // Use the default chord labels
         };
         
         toast.success("Braço de violão adicionado com sucesso!");
@@ -344,23 +342,39 @@ export default function MusicogramPage() {
         }`}
         onClick={() => handleSymbolSelect(symbol)}
         draggable
-        onDragStart={(e) => handleDragStart(e, symbol, symbol.iconType === 'grid' ? 'grid' : 'symbol')}
+        onDragStart={(e) => handleDragStart(e, symbol, 'symbol')}
       >
         <div 
           className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
           style={{ color: symbol.color }}
         >
-          {symbol.id === 'guitar-grid' ? (
-            <div className="w-10 h-10 grid grid-cols-4 gap-[1px]">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="aspect-square bg-[#222222] border border-black"></div>
-              ))}
-            </div>
-          ) : (
-            symbol.iconContent
-          )}
+          {symbol.iconContent}
         </div>
         <span className="text-[10px] sm:text-xs mt-1 text-center">{symbol.name}</span>
+      </div>
+    );
+  };
+
+  // Render the fretboard component for the main view
+  const renderFretboardExample = () => {
+    return (
+      <div 
+        className="mb-4 p-2 w-full cursor-grab"
+        draggable
+        onDragStart={(e) => handleDragStart(e, guitarFretboard, 'grid')}
+      >
+        <h3 className="font-medium mb-2 text-center">Braço do Violão</h3>
+        <div className="w-full h-32 sm:h-48 rounded-md overflow-hidden">
+          <ChordGrid 
+            rows={5} 
+            columns={4} 
+            color="#222222" 
+            labels={defaultChordLabels} 
+          />
+        </div>
+        <p className="text-xs text-center mt-2 text-gray-600">
+          Arraste para o canvas para adicionar
+        </p>
       </div>
     );
   };
@@ -388,8 +402,8 @@ export default function MusicogramPage() {
     </div>;
   };
 
-  // Add a special case for the guitar fretboard
   const handleFretboardClick = () => {
+    // Add a new fretboard to the canvas in the center
     const newFretboard = {
       id: uuidv4(),
       type: 'element',
@@ -490,6 +504,9 @@ export default function MusicogramPage() {
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
+          {/* Exibição do Braço de Violão - destaque principal */}
+          {renderFretboardExample()}
+          
           <h3 className="font-medium mb-2 sm:mb-3 text-center">Instrumentos</h3>
           <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
             {defaultInstruments.map((instrument, index) => renderInstrumentShape(instrument, index))}
@@ -500,19 +517,6 @@ export default function MusicogramPage() {
             <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
               {musicalSymbols.map((symbol, index) => renderMusicalSymbol(symbol, index))}
             </div>
-          </div>
-          
-          <div className="mt-4 p-2 text-center">
-            <button
-              onClick={handleFretboardClick}
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center justify-center gap-2"
-              title="Adicionar Braço de Violão"
-            >
-              <span className="flex items-center justify-center w-5 h-5">
-                🎸
-              </span>
-              <span className="text-sm">Braço de Violão</span>
-            </button>
           </div>
 
           {/* Status message */}
@@ -528,7 +532,7 @@ export default function MusicogramPage() {
               </div>
             )}
             <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Arraste os ícones diretamente para o quadro - agora com movimentação livre!
+              Arraste o braço de violão ou outros ícones diretamente para o quadro
             </div>
           </div>
           

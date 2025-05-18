@@ -22,9 +22,9 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
   // Create thicker horizontal lines for frets and thinner vertical lines for strings
   return (
     <div className={`relative ${className}`} style={{ width: '100%', height: '100%' }}>
-      {/* Main background */}
+      {/* Main background - dark color like in the image */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 rounded-md"
         style={{ backgroundColor: color }}
       />
 
@@ -56,28 +56,25 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
         />
       ))}
 
-      {/* Chord Labels */}
+      {/* Chord Labels - larger and positioned in top-left of each cell like in the image */}
       {Object.entries(labels).map(([position, label]) => {
         const [rowStr, colStr] = position.split('-');
         const row = parseInt(rowStr, 10);
         const col = parseInt(colStr, 10);
         
-        // Position the label in the center of each cell
-        const top = ((row + 0.5) / rows) * 100;
-        const left = ((col + 0.5) / columns) * 100;
+        // Position the label in the top-left of each cell to match the image
+        // Moving it slightly away from the very edge
+        const top = (row / rows) * 100 + 5; // 5% padding from the top edge of cell
+        const left = (col / columns) * 100 + 5; // 5% padding from the left edge of cell
         
         return (
           <div 
             key={`label-${position}`} 
-            className="absolute flex items-center justify-center font-bold text-white text-xs sm:text-sm"
+            className="absolute font-bold text-white text-lg"
             style={{
               top: `${top}%`,
               left: `${left}%`,
-              transform: 'translate(-50%, -50%)',
               textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
-              padding: '2px 4px',
-              borderRadius: '4px',
-              backgroundColor: 'rgba(0,0,0,0.3)',
               zIndex: 10
             }}
           >
@@ -86,7 +83,7 @@ export const ChordGrid: React.FC<ChordGridProps> = ({
         );
       })}
       
-      {/* Position markers (dots) */}
+      {/* Position markers (dots) at traditional fret positions */}
       {[2, 4].map((position) => (
         <div 
           key={`marker-${position}`}
