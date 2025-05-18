@@ -228,8 +228,9 @@ export function MusicogramCanvas({
       const gridSize = element.size || 60;
       const cols = 4;
       const rows = 6;
-      const cellSize = gridSize / cols;
+      const cellSize = gridSize / Math.max(cols, rows);
       
+      // Create a group to hold all cells
       const grid = new fabric.Group([], {
         left: x,
         top: y,
@@ -241,19 +242,27 @@ export function MusicogramCanvas({
         lockMovementY: isDrawingMode,
         angle: element.rotation || 0,
         selectable: !isDrawingMode,
+        cornerColor: '#5186EC',
+        cornerSize: isMobile ? 8 : 10,
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        borderColor: '#5186EC',
+        borderScaleFactor: 1.5
       });
       
       // Create cells for the grid
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const cell = new fabric.Rect({
-            left: col * cellSize - (gridSize / 2) + (cellSize / 2),
-            top: row * cellSize - (gridSize / 3),
+            left: col * cellSize - (cols * cellSize / 2) + (cellSize / 2),
+            top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
             width: cellSize - 2,
             height: cellSize - 2,
-            fill: '#333333',
+            fill: element.color || '#333333',
             stroke: '#000000',
             strokeWidth: 1,
+            originX: 'center',
+            originY: 'center'
           });
           grid.addWithUpdate(cell);
         }
