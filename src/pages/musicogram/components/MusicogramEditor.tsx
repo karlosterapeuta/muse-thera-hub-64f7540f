@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import MusicogramCanvas from "./MusicogramCanvas";
 import { MusicogramTemplate } from "../types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MusicogramEditorProps {
   template: MusicogramTemplate;
@@ -37,11 +38,12 @@ const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
   nextPosition
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   return (
     <div 
       ref={canvasRef} 
-      className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-1 sm:p-2 relative"
+      className={`flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-auto rounded-lg shadow p-1 ${isMobile ? 'p-0' : 'sm:p-2'} relative`}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >

@@ -23,7 +23,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
     return (
       <div className="hidden md:flex flex-grow items-end justify-center pb-4">
         <div className="w-32 h-32 md:w-40 md:h-40 opacity-10">
-          <Star />
+          <Star className="w-full h-full" />
         </div>
       </div>
     );

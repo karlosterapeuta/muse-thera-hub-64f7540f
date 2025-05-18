@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import html2canvas from "html2canvas";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// Import our new components
+// Import our components
 import MusicogramToolbar from "./components/MusicogramToolbar";
 import InstrumentPalette from "./components/InstrumentPalette";
 import SymbolPalette from "./components/SymbolPalette";
@@ -345,7 +345,7 @@ export default function MusicogramPage() {
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
         {/* Sidebar with Instruments and Symbols */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 lg:w-56 overflow-auto">
           {/* Instrument Palette Component */}
           <InstrumentPalette 
             instruments={defaultInstruments}
