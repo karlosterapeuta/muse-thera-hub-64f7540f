@@ -37,252 +37,160 @@ export function MusicogramCanvas({
   const [selectedElement, setSelectedElement] = useState<fabric.Object | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const canvasElRef = useRef<HTMLCanvasElement | null>(null);
   const isMobile = useIsMobile();
-  // Keep track of if component is mounted to prevent state updates after unmount
-  const isMounted = useRef(true);
-  // Add a ref to track if canvas is initialized
-  const isCanvasInitialized = useRef(false);
 
-  // Effect for initializing the canvas
   useEffect(() => {
-    // Set isMounted to true when component mounts
-    isMounted.current = true;
-    
-    // Wait for next frame to ensure DOM is ready
-    const initCanvasTimeout = setTimeout(() => {
-      if (!canvasElRef.current || isCanvasInitialized.current) return;
-      
-      try {
-        // Adjust cell size based on screen size
-        const cellSize = isMobile ? 60 : 80;
-        const newCanvas = new fabric.Canvas(canvasElRef.current, {
-          width: template.columns * cellSize,
-          height: template.rows * cellSize,
-          backgroundColor: '#fff',
-          selection: true, // Enable selection of multiple objects
-          preserveObjectStacking: true, // Keep object stacking order
-        });
+    const initCanvas = () => {
+      // Adjust cell size based on screen size
+      const cellSize = isMobile ? 60 : 80;
+      const newCanvas = new fabric.Canvas('musicogram-canvas', {
+        width: template.columns * cellSize,
+        height: template.rows * cellSize,
+        backgroundColor: '#fff',
+        selection: true, // Enable selection of multiple objects
+        preserveObjectStacking: true, // Keep object stacking order
+      });
 
-        fabricRef.current = newCanvas;
-        isCanvasInitialized.current = true;
-        
-        // Check if component is still mounted before updating state
-        if (isMounted.current) {
-          setCanvas(newCanvas);
-        }
+      fabricRef.current = newCanvas;
+      setCanvas(newCanvas);
 
-        // Handle object moving
-        newCanvas.on('object:moving', (event) => {
-          const obj = event.target;
-          if (obj) {
-            setIsDragging(true);
-            const updatedElement = {
-              id: obj.data.id,
-              x: obj.left || 0,
-              y: obj.top || 0,
-              color: obj.fill as string,
-              size: obj.width || 20,
-              shape: obj.type,
-              type: 'element',
-              position: { x: obj.left || 0, y: obj.top || 0 },
-              rotation: obj.angle || 0,
-              iconType: obj.data.iconType,
-              iconContent: obj.data.iconContent
-            };
-            onUpdateElement(updatedElement);
-          }
-        });
-
-        // Add mouse up handler to reset dragging state
-        newCanvas.on('mouse:up', () => {
-          if (isDragging) {
-            setIsDragging(false);
-          }
-        });
-
-        // Handle object scaling
-        newCanvas.on('object:scaling', (event) => {
-          const obj = event.target;
-          if (obj) {
-            const updatedElement = {
-              id: obj.data.id,
-              x: obj.left || 0,
-              y: obj.top || 0,
-              color: obj.fill as string,
-              size: Math.max(obj.getScaledWidth(), obj.getScaledHeight()) || 20, // Use max dimension for size
-              shape: obj.type,
-              type: 'element',
-              position: { x: obj.left || 0, y: obj.top || 0 },
-              rotation: obj.angle || 0,
-              iconType: obj.data.iconType,
-              iconContent: obj.data.iconContent
-            };
-            onUpdateElement(updatedElement);
-          }
-        });
-
-        // Handle object rotating
-        newCanvas.on('object:rotating', (event) => {
-          const obj = event.target;
-          if (obj) {
-            const updatedElement = {
-              id: obj.data.id,
-              x: obj.left || 0,
-              y: obj.top || 0,
-              color: obj.fill as string,
-              size: obj.width || 20,
-              shape: obj.type,
-              type: 'element',
-              position: { x: obj.left || 0, y: obj.top || 0 },
-              rotation: obj.angle || 0,
-              iconType: obj.data.iconType,
-              iconContent: obj.data.iconContent
-            };
-            onUpdateElement(updatedElement);
-          }
-        });
-
-        // Add mouse events for eraser mode
-        newCanvas.on('mouse:down', (event) => {
-          if (isErasing && isDrawingMode && event.target) {
-            const obj = event.target;
-            if (obj && obj.data && obj.data.id) {
-              onDeleteElement(obj.data.id);
-              newCanvas.remove(obj);
-              newCanvas.renderAll();
-            }
-          }
-        });
-
-        newCanvas.on('selection:created', (event) => {
-          if (isMounted.current) {
-            setSelectedElement(event.target as fabric.Object);
-          }
-        });
-
-        newCanvas.on('selection:updated', (event) => {
-          if (isMounted.current) {
-            setSelectedElement(event.target as fabric.Object);
-          }
-        });
-
-        newCanvas.on('selection:cleared', () => {
-          if (isMounted.current) {
-            setSelectedElement(null);
-          }
-        });
-      } catch (error) {
-        console.error("Error initializing canvas:", error);
-      }
-    }, 100); // Small delay to ensure DOM is ready
-    
-    return () => {
-      // Clear the timeout to prevent memory leaks
-      clearTimeout(initCanvasTimeout);
-      
-      // Set isMounted to false when component unmounts
-      isMounted.current = false;
-      
-      // Safe disposal of the canvas
-      if (fabricRef.current) {
-        try {
-          // Properly clear event handlers first to prevent callbacks
-          fabricRef.current.off();
-          // Then dispose - wrap in try/catch to prevent errors
-          fabricRef.current.dispose();
-        } catch (error) {
-          console.error("Error disposing canvas:", error);
-        }
-        fabricRef.current = null;
-        isCanvasInitialized.current = false;
-      }
-      
-      // Also clear the state reference
-      setCanvas(null);
-    };
-  }, [template, isMobile, isErasing, isDrawingMode, onDeleteElement, onUpdateElement]);
-
-  // Update cursor style based on erasing mode
-  useEffect(() => {
-    if (canvas) {
-      if (isErasing && isDrawingMode) {
-        canvas.defaultCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
-      } else {
-        canvas.defaultCursor = 'default';
-      }
-      
-      // Update objects' cursor based on mode
-      canvas.getObjects().forEach(obj => {
-        if (isErasing && isDrawingMode) {
-          obj.hoverCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
-        } else if (!isDrawingMode) {
-          obj.hoverCursor = 'move';
-        } else {
-          obj.hoverCursor = 'pointer';
+      // Handle object moving
+      newCanvas.on('object:moving', (event) => {
+        const obj = event.target;
+        if (obj) {
+          setIsDragging(true);
+          const updatedElement = {
+            id: obj.data.id,
+            x: obj.left || 0,
+            y: obj.top || 0,
+            color: obj.fill as string,
+            size: obj.width || 20,
+            shape: obj.type,
+            type: 'element',
+            position: { x: obj.left || 0, y: obj.top || 0 },
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
+          };
+          onUpdateElement(updatedElement);
         }
       });
 
-      canvas.renderAll();
+      // Add mouse up handler to reset dragging state
+      newCanvas.on('mouse:up', () => {
+        if (isDragging) {
+          setIsDragging(false);
+        }
+      });
+
+      // Handle object scaling
+      newCanvas.on('object:scaling', (event) => {
+        const obj = event.target;
+        if (obj) {
+          const updatedElement = {
+            id: obj.data.id,
+            x: obj.left || 0,
+            y: obj.top || 0,
+            color: obj.fill as string,
+            size: Math.max(obj.getScaledWidth(), obj.getScaledHeight()) || 20, // Use max dimension for size
+            shape: obj.type,
+            type: 'element',
+            position: { x: obj.left || 0, y: obj.top || 0 },
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
+          };
+          onUpdateElement(updatedElement);
+        }
+      });
+
+      // Handle object rotating
+      newCanvas.on('object:rotating', (event) => {
+        const obj = event.target;
+        if (obj) {
+          const updatedElement = {
+            id: obj.data.id,
+            x: obj.left || 0,
+            y: obj.top || 0,
+            color: obj.fill as string,
+            size: obj.width || 20,
+            shape: obj.type,
+            type: 'element',
+            position: { x: obj.left || 0, y: obj.top || 0 },
+            rotation: obj.angle || 0,
+            iconType: obj.data.iconType,
+            iconContent: obj.data.iconContent
+          };
+          onUpdateElement(updatedElement);
+        }
+      });
+
+      newCanvas.on('selection:created', (event) => {
+        setSelectedElement(event.target as fabric.Object);
+      });
+
+      newCanvas.on('selection:updated', (event) => {
+        setSelectedElement(event.target as fabric.Object);
+      });
+
+      newCanvas.on('selection:cleared', () => {
+        setSelectedElement(null);
+      });
+
+      return newCanvas;
+    };
+
+    if (!canvas) {
+      initCanvas();
     }
-  }, [isErasing, isDrawingMode, canvas]);
+
+    return () => {
+      canvas?.dispose();
+    };
+  }, [template, isMobile]);
 
   useEffect(() => {
     if (fabricRef.current) {
-      try {
-        // Adapt cell size for mobile
-        const cellSize = isMobile ? 60 : 80;
-        fabricRef.current.setZoom(zoom);
-        fabricRef.current.setWidth(template.columns * cellSize * zoom);
-        fabricRef.current.setHeight(template.rows * cellSize * zoom);
-        fabricRef.current.renderAll();
-      } catch (error) {
-        console.error("Error updating canvas dimensions:", error);
-      }
+      // Adapt cell size for mobile
+      const cellSize = isMobile ? 60 : 80;
+      fabricRef.current.setZoom(zoom);
+      fabricRef.current.setWidth(template.columns * cellSize * zoom);
+      fabricRef.current.setHeight(template.rows * cellSize * zoom);
+      fabricRef.current.renderAll();
     }
   }, [zoom, template, isMobile]);
 
-  // Update canvas with elements
   useEffect(() => {
-    if (canvas && isMounted.current) {
-      try {
-        canvas.clear();
-        elements.forEach((element) => {
-          const el = createElement(element);
-          if (el) {
-            canvas.add(el);
-          }
-        });
-      } catch (error) {
-        console.error("Error updating canvas elements:", error);
-      }
+    if (canvas) {
+      canvas.clear();
+      elements.forEach((element) => {
+        const el = createElement(element);
+        if (el) {
+          canvas.add(el);
+        }
+      });
     }
   }, [elements, canvas]);
 
   useEffect(() => {
     if (canvas) {
-      try {
-        canvas.isDrawingMode = isDrawingMode;
-        
-        // Update object interaction based on drawing mode
-        canvas.getObjects().forEach(obj => {
-          // In drawing mode: disable object manipulation
-          // In manipulation mode: enable object manipulation
-          obj.selectable = !isDrawingMode || isErasing;
-          obj.lockMovementX = isDrawingMode;
-          obj.lockMovementY = isDrawingMode;
-          obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
-          obj.hasBorders = !isDrawingMode;
-        });
-        
-        canvas.renderAll();
-      } catch (error) {
-        console.error("Error updating drawing mode:", error);
-      }
+      canvas.isDrawingMode = isDrawingMode;
+      
+      // Update object interaction based on drawing mode
+      canvas.getObjects().forEach(obj => {
+        // In drawing mode: disable object manipulation
+        // In manipulation mode: enable object manipulation
+        obj.selectable = !isDrawingMode;
+        obj.lockMovementX = isDrawingMode;
+        obj.lockMovementY = isDrawingMode;
+        obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
+        obj.hasBorders = !isDrawingMode;
+      });
+      
+      canvas.renderAll();
     }
-  }, [isDrawingMode, isErasing, canvas]);
+  }, [isDrawingMode, canvas]);
 
-  // ... keep existing code (createElement function)
   const createElement = (element: any) => {
     let fabricElement: fabric.Object | null = null;
     const x = element.position?.x || element.x;
@@ -303,7 +211,7 @@ export function MusicogramCanvas({
           lockMovementX: isDrawingMode,
           lockMovementY: isDrawingMode,
           angle: element.rotation || 0,
-          selectable: !isDrawingMode || isErasing,
+          selectable: !isDrawingMode,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
           cornerSize: isMobile ? 8 : 10, // Smaller corners on mobile
@@ -326,7 +234,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode || isErasing,
+        selectable: !isDrawingMode,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -349,7 +257,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode || isErasing,
+        selectable: !isDrawingMode,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -372,7 +280,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode || isErasing,
+        selectable: !isDrawingMode,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -409,21 +317,11 @@ export function MusicogramCanvas({
         instrumentId: element.instrumentId
       };
       
-      // Update cursor for eraser mode
-      if (isErasing && isDrawingMode) {
-        fabricElement.hoverCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
-      } else if (!isDrawingMode) {
-        fabricElement.hoverCursor = 'move';
-      } else {
-        fabricElement.hoverCursor = 'pointer';
-      }
-
-      // Add click handler for eraser mode
-      fabricElement.on('mousedown', () => {
-        if (isErasing && isDrawingMode) {
+      // Add right-click or long press context menu for mobile
+      fabricElement.on('mousedown', (e) => {
+        if (isErasing) {
           onDeleteElement(element.id);
           canvas?.remove(fabricElement!);
-          canvas?.renderAll();
         }
       });
 
@@ -433,6 +331,9 @@ export function MusicogramCanvas({
           showDeleteButton(fabricElement);
         }
       });
+
+      // Set cursor style to move/grab
+      fabricElement.hoverCursor = 'move';
     }
 
     return fabricElement;
@@ -460,8 +361,7 @@ export function MusicogramCanvas({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Use ref for the canvas element */}
-      <canvas id="musicogram-canvas" ref={canvasElRef} style={{ border: '1px solid #ccc' }} />
+      <canvas id="musicogram-canvas" style={{ border: '1px solid #ccc' }} />
       
       {/* Delete button for selected element */}
       {selectedElement && (
@@ -481,15 +381,6 @@ export function MusicogramCanvas({
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
           <span className="text-xs">Modo Movimentação Livre</span>
-        </div>
-      )}
-      
-      {isErasing && isDrawingMode && (
-        <div className="absolute bottom-2 right-2 bg-red-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4L20 11L11 20"/>
-          </svg>
-          <span className="text-xs">Modo Apagar</span>
         </div>
       )}
     </div>
