@@ -40,109 +40,65 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
     );
   };
 
+  const renderSymbolGrid = (symbolList: InstrumentType[]) => {
+    // Adjust columns based on screen size
+    // Mobile: 4 columns for best use of space on small screens
+    // Tablet: 3 columns for better touch targets
+    // Desktop: 2 columns for larger symbols and clearer display
+    return (
+      <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
+        {symbolList.map((symbol, index) => (
+          <div 
+            key={index} 
+            className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+            onClick={() => onSymbolSelect(symbol)}
+            draggable
+            onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
+          >
+            <div 
+              className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
+              style={{ color: symbol.color }}
+            >
+              {symbol.iconContent}
+            </div>
+            <span className="text-xs sm:text-sm mt-1 text-center truncate max-w-full">{symbol.name}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <h3 className="font-medium mb-2 sm:mb-3 text-center">Símbolos Musicais</h3>
       
       <Tabs defaultValue="all" value={symbolCategory} onValueChange={setSymbolCategory} className="w-full">
         <TabsList className="w-full grid grid-cols-4 mb-2">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="shapes">Formas</TabsTrigger>
-          <TabsTrigger value="hands">Gestos</TabsTrigger>
-          <TabsTrigger value="emotions">Emoções</TabsTrigger>
+          <TabsTrigger value="all" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Todos</TabsTrigger>
+          <TabsTrigger value="shapes" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Formas</TabsTrigger>
+          <TabsTrigger value="hands" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Gestos</TabsTrigger>
+          <TabsTrigger value="emotions" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Emoções</TabsTrigger>
         </TabsList>
         
         <TabsContent value="all" className="mt-0">
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-            {categories.all.map((symbol, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-                onClick={() => onSymbolSelect(symbol)}
-                draggable
-                onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
-              >
-                <div 
-                  className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
-                  style={{ color: symbol.color }}
-                >
-                  {symbol.iconContent}
-                </div>
-                <span className="text-xs sm:text-sm mt-1 text-center">{symbol.name}</span>
-              </div>
-            ))}
-          </div>
+          {renderSymbolGrid(categories.all)}
         </TabsContent>
         
         <TabsContent value="shapes" className="mt-0">
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-            {categories.shapes.map((symbol, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-                onClick={() => onSymbolSelect(symbol)}
-                draggable
-                onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
-              >
-                <div 
-                  className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
-                  style={{ color: symbol.color }}
-                >
-                  {symbol.iconContent}
-                </div>
-                <span className="text-xs sm:text-sm mt-1 text-center">{symbol.name}</span>
-              </div>
-            ))}
-          </div>
+          {renderSymbolGrid(categories.shapes)}
         </TabsContent>
         
         <TabsContent value="hands" className="mt-0">
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-            {categories.hands.map((symbol, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-                onClick={() => onSymbolSelect(symbol)}
-                draggable
-                onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
-              >
-                <div 
-                  className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
-                  style={{ color: symbol.color }}
-                >
-                  {symbol.iconContent}
-                </div>
-                <span className="text-xs sm:text-sm mt-1 text-center">{symbol.name}</span>
-              </div>
-            ))}
-          </div>
+          {renderSymbolGrid(categories.hands)}
         </TabsContent>
         
         <TabsContent value="emotions" className="mt-0">
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
-            {categories.emotions.map((symbol, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-                onClick={() => onSymbolSelect(symbol)}
-                draggable
-                onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
-              >
-                <div 
-                  className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
-                  style={{ color: symbol.color }}
-                >
-                  {symbol.iconContent}
-                </div>
-                <span className="text-xs sm:text-sm mt-1 text-center">{symbol.name}</span>
-              </div>
-            ))}
-          </div>
+          {renderSymbolGrid(categories.emotions)}
         </TabsContent>
       </Tabs>
 
       <div className="mt-4 p-2 rounded text-center">
-        <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
+        <div className={`text-xs sm:text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
           {isDrawingMode 
             ? "Modo Desenho: Clique nos símbolos para adicionar ao grid" 
             : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}

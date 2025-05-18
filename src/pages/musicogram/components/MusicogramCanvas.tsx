@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -64,7 +65,7 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Handle object moving
+      // Handle object moving with responsive positioning
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
@@ -206,13 +207,16 @@ export function MusicogramCanvas({
     const x = element.position?.x || element.x;
     const y = element.position?.y || element.y;
     
-    // Handle different element types
+    // Handle different element types with responsive sizes
     if (element.iconType === 'symbol' || element.iconType === 'instrument') {
       if (element.iconContent) {
+        // Adjust size based on device to improve visibility on smaller screens
+        const fontSize = isMobile ? Math.min(element.size || 36, 60) : element.size || 72;
+        
         const textObj = new fabric.Text(element.iconContent, {
           left: x,
           top: y,
-          fontSize: element.size || 36,
+          fontSize: fontSize,
           fill: element.color,
           originX: 'center',
           originY: 'center',
@@ -233,10 +237,13 @@ export function MusicogramCanvas({
         fabricElement = textObj;
       }
     } else if (element.shape === 'circle') {
+      // Adjust size based on device
+      const radius = isMobile ? Math.min((element.size || 40) / 2, 30) : element.size / 2;
+      
       fabricElement = new fabric.Circle({
         left: x,
         top: y,
-        radius: element.size / 2,
+        radius: radius,
         fill: element.color,
         originX: 'center',
         originY: 'center',
@@ -255,11 +262,14 @@ export function MusicogramCanvas({
         borderScaleFactor: 1.5
       });
     } else if (element.shape === 'rect' || element.shape === 'square') {
+      // Adjust size based on device
+      const size = isMobile ? Math.min(element.size || 40, 60) : element.size || 80;
+      
       fabricElement = new fabric.Rect({
         left: x,
         top: y,
-        width: element.size || 40,
-        height: element.shape === 'rect' ? (element.size / 2 || 20) : (element.size || 40),
+        width: size,
+        height: element.shape === 'rect' ? (size / 2) : size,
         fill: element.color,
         originX: 'center',
         originY: 'center',
@@ -278,11 +288,14 @@ export function MusicogramCanvas({
         borderScaleFactor: 1.5
       });
     } else if (element.shape === 'triangle') {
+      // Adjust size based on device
+      const size = isMobile ? Math.min(element.size || 40, 60) : element.size || 80;
+      
       fabricElement = new fabric.Triangle({
         left: x,
         top: y,
-        width: element.size || 40,
-        height: element.size || 40,
+        width: size,
+        height: size,
         fill: element.color,
         originX: 'center',
         originY: 'center',
@@ -303,7 +316,7 @@ export function MusicogramCanvas({
     }
 
     if (fabricElement) {
-      // Ensure elements can be freely transformed
+      // Ensure elements can be freely transformed with appropriate control sizes for touch
       fabricElement.setControlsVisibility({
         mt: true, // top-middle control point
         mb: true, // bottom-middle control point
@@ -335,14 +348,14 @@ export function MusicogramCanvas({
         }
       });
 
-      // Add double-click event to show delete button on element
+      // Add touch-friendly double-tap event to show delete button on element
       fabricElement.on('mousedblclick', () => {
         if (!isDrawingMode && fabricElement) {
           showDeleteButton(fabricElement);
         }
       });
 
-      // Set cursor style to move/grab
+      // Set cursor style to move/grab for better affordance
       fabricElement.hoverCursor = 'move';
     }
 
@@ -373,7 +386,7 @@ export function MusicogramCanvas({
 
   return (
     <div 
-      className="relative w-full h-full overflow-auto"
+      className="relative w-full h-full overflow-auto touch-manipulation"
       ref={canvasContainerRef}
       onDragOver={onDragOver}
       onDrop={onDrop}
@@ -404,24 +417,26 @@ export function MusicogramCanvas({
         backgroundColor: 'transparent' 
       }} />
       
-      {/* Delete button for selected element */}
+      {/* Delete button for selected element - improved for touch */}
       {selectedElement && (
-        <div className="absolute top-2 right-2 z-10 flex flex-col gap-2">
+        <div className={`absolute ${isMobile ? 'top-1 right-1' : 'top-2 right-2'} z-10 flex flex-col gap-2`}>
           <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full flex items-center justify-center touch-manipulation"
             onClick={handleDeleteSelected}
             title="Excluir figura selecionada"
+            style={{ minWidth: isMobile ? '40px' : 'auto', minHeight: isMobile ? '40px' : 'auto' }}
           >
-            <Trash2 size={isMobile ? 16 : 18} />
-            <span className={`${isMobile ? 'hidden' : 'inline'}`}>Excluir</span>
+            <Trash2 size={isMobile ? 20 : 18} />
+            <span className={`${isMobile ? 'hidden' : 'inline ml-1'}`}>Excluir</span>
           </button>
         </div>
       )}
       
+      {/* Mode indicator - improved visibility on mobile */}
       {!isDrawingMode && (
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
-          <span className="text-xs">Modo Movimentação Livre</span>
+          <span className="text-xs sm:text-sm">Modo Movimentação</span>
         </div>
       )}
     </div>

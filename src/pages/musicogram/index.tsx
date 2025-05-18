@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -92,6 +93,7 @@ export default function MusicogramPage() {
 
   // Common function to add element to grid
   const addElementToGrid = (item: InstrumentType, itemType: 'symbol' | 'instrument') => {
+    // Adjust cell size based on device
     const cellSize = isMobile ? 60 : 80;
     
     // Calculate position based on nextPosition
@@ -156,11 +158,13 @@ export default function MusicogramPage() {
     if (newElement) {
       setCanvasElements(prev => [...prev, newElement]);
       
-      // Update next position for organized flow
+      // Update next position for organized flow - with adjustments for different screen sizes
       let nextCol = col + 1;
       let nextRow = row;
       
-      if (nextCol >= 4) { // If we reach the end of a row
+      const maxCols = isMobile ? 3 : 4; // Fewer columns on mobile for better visibility
+      
+      if (nextCol >= maxCols) { // If we reach the end of a row
         nextCol = 0;
         nextRow = (nextRow + 1) % 5; // Move to next row, wrap around if needed
       }
@@ -179,7 +183,7 @@ export default function MusicogramPage() {
     e.dataTransfer.effectAllowed = 'copy';
   };
 
-  // Function to manage drop on canvas
+  // Function to manage drop on canvas with responsive positioning
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
@@ -211,7 +215,7 @@ export default function MusicogramPage() {
         
         toast.success("Símbolo adicionado com sucesso!");
       } else if (dropData.type === 'instrument') {
-        // Create new instrument element in canvas at drop position
+        // Create new instrument element in canvas at drop position - adapted for responsive
         let iconContent = "▪"; // Default square shape
         
         // Adapt icon according to instrument type
@@ -363,7 +367,7 @@ export default function MusicogramPage() {
       />
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
-        {/* Sidebar with Instruments and Symbols */}
+        {/* Sidebar with Instruments and Symbols - now with better responsive sizing */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 lg:w-56 overflow-auto">
           {/* Instrument Palette Component */}
           <InstrumentPalette 
