@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -125,6 +126,18 @@ export function MusicogramCanvas({
         }
       });
 
+      // Add mouse events for eraser mode
+      newCanvas.on('mouse:down', (event) => {
+        if (isErasing && isDrawingMode && event.target) {
+          const obj = event.target;
+          if (obj && obj.data && obj.data.id) {
+            onDeleteElement(obj.data.id);
+            newCanvas.remove(obj);
+            newCanvas.renderAll();
+          }
+        }
+      });
+
       newCanvas.on('selection:created', (event) => {
         setSelectedElement(event.target as fabric.Object);
       });
@@ -147,7 +160,31 @@ export function MusicogramCanvas({
     return () => {
       canvas?.dispose();
     };
-  }, [template, isMobile]);
+  }, [template, isMobile, isErasing, isDrawingMode, onDeleteElement]);
+
+  // Update cursor style based on erasing mode
+  useEffect(() => {
+    if (canvas) {
+      if (isErasing && isDrawingMode) {
+        canvas.defaultCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
+      } else {
+        canvas.defaultCursor = 'default';
+      }
+      
+      // Update objects' cursor based on mode
+      canvas.getObjects().forEach(obj => {
+        if (isErasing && isDrawingMode) {
+          obj.hoverCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
+        } else if (!isDrawingMode) {
+          obj.hoverCursor = 'move';
+        } else {
+          obj.hoverCursor = 'pointer';
+        }
+      });
+
+      canvas.renderAll();
+    }
+  }, [isErasing, isDrawingMode, canvas]);
 
   useEffect(() => {
     if (fabricRef.current) {
@@ -180,7 +217,7 @@ export function MusicogramCanvas({
       canvas.getObjects().forEach(obj => {
         // In drawing mode: disable object manipulation
         // In manipulation mode: enable object manipulation
-        obj.selectable = !isDrawingMode;
+        obj.selectable = !isDrawingMode || isErasing;
         obj.lockMovementX = isDrawingMode;
         obj.lockMovementY = isDrawingMode;
         obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
@@ -189,7 +226,7 @@ export function MusicogramCanvas({
       
       canvas.renderAll();
     }
-  }, [isDrawingMode, canvas]);
+  }, [isDrawingMode, isErasing, canvas]);
 
   const createElement = (element: any) => {
     let fabricElement: fabric.Object | null = null;
@@ -211,7 +248,7 @@ export function MusicogramCanvas({
           lockMovementX: isDrawingMode,
           lockMovementY: isDrawingMode,
           angle: element.rotation || 0,
-          selectable: !isDrawingMode,
+          selectable: !isDrawingMode || isErasing,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
           cornerSize: isMobile ? 8 : 10, // Smaller corners on mobile
@@ -234,7 +271,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode,
+        selectable: !isDrawingMode || isErasing,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -257,7 +294,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode,
+        selectable: !isDrawingMode || isErasing,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -280,7 +317,7 @@ export function MusicogramCanvas({
         hasBorders: !isDrawingMode,
         lockMovementX: isDrawingMode,
         lockMovementY: isDrawingMode,
-        selectable: !isDrawingMode,
+        selectable: !isDrawingMode || isErasing,
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
@@ -317,11 +354,21 @@ export function MusicogramCanvas({
         instrumentId: element.instrumentId
       };
       
-      // Add right-click or long press context menu for mobile
-      fabricElement.on('mousedown', (e) => {
-        if (isErasing) {
+      // Update cursor for eraser mode
+      if (isErasing && isDrawingMode) {
+        fabricElement.hoverCursor = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVR4nO2UQQrCMBBFX6HoCbyh3kBv4A1ceBNXLurShaDewKW0K3ceQI/QQgcmpARtOklKF/3wIWT48/iTSQJKCTQVVEA6QlZtmsscoMI9Hd9zuT8AO+ACXIE94tYF3KzpF6uMg/EUOLX009KwjJV54GoAubcs4pUPDb8BDgaQ3sGaLeKVllmdgL1h+Qsl8qjVnCutAStNWYHZIn7Lvx3RzHO4Z8jyTHdEDqiJjXOgBnLp1zVnCQ8t0tM9KnpKhQAAAABJRU5ErkJggg==), auto';
+      } else if (!isDrawingMode) {
+        fabricElement.hoverCursor = 'move';
+      } else {
+        fabricElement.hoverCursor = 'pointer';
+      }
+
+      // Add click handler for eraser mode
+      fabricElement.on('mousedown', () => {
+        if (isErasing && isDrawingMode) {
           onDeleteElement(element.id);
           canvas?.remove(fabricElement!);
+          canvas?.renderAll();
         }
       });
 
@@ -331,9 +378,6 @@ export function MusicogramCanvas({
           showDeleteButton(fabricElement);
         }
       });
-
-      // Set cursor style to move/grab
-      fabricElement.hoverCursor = 'move';
     }
 
     return fabricElement;
@@ -381,6 +425,15 @@ export function MusicogramCanvas({
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
           <span className="text-xs">Modo Movimentação Livre</span>
+        </div>
+      )}
+      
+      {isErasing && isDrawingMode && (
+        <div className="absolute bottom-2 right-2 bg-red-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4L20 11L11 20"/>
+          </svg>
+          <span className="text-xs">Modo Apagar</span>
         </div>
       )}
     </div>
