@@ -23,15 +23,34 @@ const defaultInstruments: InstrumentType[] = [
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
-// Define our musical symbols with increased size
+// Define our musical symbols with increased size and new hand gestures, body touches, and emotions
 const musicalSymbols: InstrumentType[] = [
+  // Original symbols
   { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●", size: 72 },
   { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●", size: 72 },
   { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●", size: 72 },
   { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○", size: 72 },
   { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N", size: 72 },
   { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~", size: 72 },
+  
+  // Hand gestures
+  { id: "clapping", name: "Palmas", shape: "symbol", color: "#FF9800", iconType: "symbol", iconContent: "👏", size: 72 },
+  { id: "fist", name: "Soco/Punho", shape: "symbol", color: "#E53935", iconType: "symbol", iconContent: "👊", size: 72 },
+  { id: "hand-head", name: "Mão na Cabeça", shape: "symbol", color: "#5D4037", iconType: "symbol", iconContent: "🤦", size: 72 },
+  { id: "hand-shoulder", name: "Mão no Ombro", shape: "symbol", color: "#5D4037", iconType: "symbol", iconContent: "💁", size: 72 },
+  { id: "pointing", name: "Apontando", shape: "symbol", color: "#FFC107", iconType: "symbol", iconContent: "👆", size: 72 },
+  { id: "knock", name: "Toc Toc", shape: "symbol", color: "#795548", iconType: "symbol", iconContent: "🚪👊", size: 72 },
   { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 72 },
+  
+  // Emotions
+  { id: "happy", name: "Feliz", shape: "symbol", color: "#FFD54F", iconType: "symbol", iconContent: "😊", size: 72 },
+  { id: "sad", name: "Triste", shape: "symbol", color: "#90CAF9", iconType: "symbol", iconContent: "😢", size: 72 },
+  { id: "angry", name: "Bravo", shape: "symbol", color: "#EF5350", iconType: "symbol", iconContent: "😠", size: 72 },
+  { id: "surprised", name: "Surpreso", shape: "symbol", color: "#66BB6A", iconType: "symbol", iconContent: "😲", size: 72 },
+  { id: "thinking", name: "Pensativo", shape: "symbol", color: "#78909C", iconType: "symbol", iconContent: "🤔", size: 72 },
+  { id: "love", name: "Amor", shape: "symbol", color: "#EC407A", iconType: "symbol", iconContent: "❤️", size: 72 },
+  
+  // Other symbols (keep existing ones)
   { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 72 },
   { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 72 },
   { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 72 },
