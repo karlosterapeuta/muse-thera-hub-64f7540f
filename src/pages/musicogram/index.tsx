@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -17,7 +16,8 @@ import {
   MusicIcon,
   Piano,
   Star,
-  CupSoda
+  CupSoda,
+  LayoutGrid
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2canvas from "html2canvas";
@@ -49,8 +49,20 @@ const musicalSymbols: InstrumentType[] = [
   { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 36 },
   { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
-  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
+  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 },
+  { id: "chord-grid", name: "Grade de Acordes", shape: "grid", color: "#000000", iconType: "grid", iconContent: "", size: 60 }
 ];
+
+// Add this new component for the chord grid
+const ChordGrid = ({ className }: { className?: string }) => {
+  return (
+    <div className={`grid grid-cols-4 gap-[2px] ${className}`}>
+      {Array.from({ length: 24 }).map((_, i) => (
+        <div key={i} className="aspect-square bg-[#333333] border border-black" />
+      ))}
+    </div>
+  );
+};
 
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
@@ -79,6 +91,7 @@ export default function MusicogramPage() {
     setIsDrawingMode(true);
   };
 
+  // Add a special case for the chord grid
   const handleSymbolSelect = (symbol: InstrumentType) => {
     setActiveSymbol(symbol);
     setActiveInstrument(null);
@@ -165,6 +178,23 @@ export default function MusicogramPage() {
         };
         
         toast.success("Instrumento adicionado com sucesso!");
+      } else if (dropData.type === 'chord-grid') {
+        // Criar novo elemento de grade de acordes no canvas na posição do drop
+        newElement = {
+          id: uuidv4(),
+          type: 'element',
+          x: x,
+          y: y,
+          color: "#000000",
+          size: 60,
+          shape: "grid",
+          iconType: "grid",
+          iconContent: "",
+          position: { x, y },
+          rotation: 0
+        };
+        
+        toast.success("Grade de acordes adicionada com sucesso!");
       }
       
       if (newElement) {
@@ -313,7 +343,11 @@ export default function MusicogramPage() {
           className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-md transition-transform duration-200 hover:scale-110 text-xl sm:text-2xl font-bold"
           style={{ color: symbol.color }}
         >
-          {symbol.iconContent}
+          {symbol.id === 'chord-grid' ? (
+            <ChordGrid className="w-10 h-10" />
+          ) : (
+            symbol.iconContent
+          )}
         </div>
         <span className="text-[10px] sm:text-xs mt-1 text-center">{symbol.name}</span>
       </div>

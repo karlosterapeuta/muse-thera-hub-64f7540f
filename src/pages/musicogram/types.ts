@@ -4,7 +4,7 @@ export interface InstrumentType {
   name: string;
   shape: string;
   color: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
+  iconType?: 'svg' | 'symbol' | 'image' | 'instrument' | 'grid';
   iconContent?: string;
   size?: number;  // Adicionada propriedade de tamanho opcional
 }
@@ -29,7 +29,7 @@ export interface VisualElement {
   position?: { x: number; y: number };
   rotation?: number;
   label?: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
+  iconType?: 'svg' | 'symbol' | 'image' | 'instrument' | 'grid';
   iconContent?: string;
 }
 

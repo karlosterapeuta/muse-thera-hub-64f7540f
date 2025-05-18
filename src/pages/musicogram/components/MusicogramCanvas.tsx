@@ -4,6 +4,7 @@ import { fabric } from "fabric";
 import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ChordGrid from "./ChordGrid";
 
 interface MusicogramCanvasProps {
   template: MusicogramTemplate;
@@ -222,6 +223,43 @@ export function MusicogramCanvas({
         });
         fabricElement = textObj;
       }
+    } else if (element.iconType === 'grid') {
+      // Create a grid pattern for chord charts
+      const gridSize = element.size || 60;
+      const cols = 4;
+      const rows = 6;
+      const cellSize = gridSize / cols;
+      
+      const grid = new fabric.Group([], {
+        left: x,
+        top: y,
+        originX: 'center',
+        originY: 'center',
+        hasControls: !isDrawingMode,
+        hasBorders: !isDrawingMode,
+        lockMovementX: isDrawingMode,
+        lockMovementY: isDrawingMode,
+        angle: element.rotation || 0,
+        selectable: !isDrawingMode,
+      });
+      
+      // Create cells for the grid
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const cell = new fabric.Rect({
+            left: col * cellSize - (gridSize / 2) + (cellSize / 2),
+            top: row * cellSize - (gridSize / 3),
+            width: cellSize - 2,
+            height: cellSize - 2,
+            fill: '#333333',
+            stroke: '#000000',
+            strokeWidth: 1,
+          });
+          grid.addWithUpdate(cell);
+        }
+      }
+      
+      fabricElement = grid;
     } else if (element.shape === 'circle') {
       fabricElement = new fabric.Circle({
         left: x,
