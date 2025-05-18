@@ -41,27 +41,24 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
   };
 
   const renderSymbolGrid = (symbolList: InstrumentType[]) => {
-    // Adjust columns based on screen size
-    // Mobile: 4 columns for best use of space on small screens
-    // Tablet: 3 columns for better touch targets
-    // Desktop: 2 columns for larger symbols and clearer display
+    // Update to display consistently 5 icons per row on all device sizes
     return (
-      <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-2 gap-1 sm:gap-2">
+      <div className="grid grid-cols-5 gap-1 sm:gap-2">
         {symbolList.map((symbol, index) => (
           <div 
             key={index} 
-            className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+            className={`flex flex-col items-center justify-center p-1 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
             onClick={() => onSymbolSelect(symbol)}
             draggable
             onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
           >
             <div 
-              className="flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-md transition-transform duration-200 hover:scale-110 text-3xl sm:text-4xl font-bold"
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-md transition-transform duration-200 hover:scale-110 text-2xl sm:text-3xl md:text-4xl font-bold"
               style={{ color: symbol.color }}
             >
               {symbol.iconContent}
             </div>
-            <span className="text-xs sm:text-sm mt-1 text-center truncate max-w-full">{symbol.name}</span>
+            <span className="text-xs mt-1 text-center truncate w-full">{symbol.name}</span>
           </div>
         ))}
       </div>

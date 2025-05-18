@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -158,11 +157,11 @@ export default function MusicogramPage() {
     if (newElement) {
       setCanvasElements(prev => [...prev, newElement]);
       
-      // Update next position for organized flow - with adjustments for different screen sizes
+      // Update next position for organized flow with 5 columns
       let nextCol = col + 1;
       let nextRow = row;
       
-      const maxCols = isMobile ? 3 : 4; // Fewer columns on mobile for better visibility
+      const maxCols = 5; // Changed to 5 icons per row
       
       if (nextCol >= maxCols) { // If we reach the end of a row
         nextCol = 0;
