@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -228,16 +227,15 @@ export function MusicogramCanvas({
       }
     } else if (element.iconType === 'grid') {
       // Create a guitar fretboard grid with labels
-      const gridSize = element.size || 60;
+      const gridSize = element.size || 120;
       const cols = 4;
       const rows = 5;
-      const cellSize = gridSize / Math.max(cols, 2);
       
       // Get chord grid labels from element or use defaults
       const gridLabels = element.gridLabels || {};
       
-      // Create a group to hold all cells and labels for the guitar fretboard
-      const grid = new fabric.Group([], {
+      // Create a group to hold the fretboard elements
+      const fretboard = new fabric.Group([], {
         left: x,
         top: y,
         originX: 'center',
@@ -256,40 +254,114 @@ export function MusicogramCanvas({
         borderScaleFactor: 1.5
       });
       
-      // Create cells for the guitar fretboard grid
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          const cell = new fabric.Rect({
-            left: col * cellSize - (cols * cellSize / 2) + (cellSize / 2),
-            top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
-            width: cellSize - 2,
-            height: cellSize - 2,
-            fill: element.color || '#222222', // Darker color for fretboard
-            stroke: '#000000',
-            strokeWidth: 1,
-            originX: 'center',
-            originY: 'center'
-          });
-          grid.addWithUpdate(cell);
-          
-          // Add chord label if it exists for this cell
-          const cellKey = `${row}-${col}`;
-          if (gridLabels[cellKey]) {
-            const text = new fabric.Text(gridLabels[cellKey], {
-              left: col * cellSize - (cols * cellSize / 2) + (cellSize / 2),
-              top: row * cellSize - (rows * cellSize / 2) + (cellSize / 2),
-              fontSize: cellSize * 0.4,
-              fill: '#FFFFFF', // White text for chord labels
-              fontWeight: 'bold',
-              originX: 'center',
-              originY: 'center',
-            });
-            grid.addWithUpdate(text);
-          }
-        }
+      // Create the main fretboard background
+      const background = new fabric.Rect({
+        width: gridSize,
+        height: gridSize * (rows / cols),
+        fill: element.color || '#222222',
+        left: 0,
+        top: 0,
+        originX: 'center',
+        originY: 'center',
+      });
+      fretboard.addWithUpdate(background);
+      
+      // Cell size for positioning
+      const cellWidth = gridSize / cols;
+      const cellHeight = (gridSize * (rows / cols)) / rows;
+      
+      // Add horizontal lines (frets)
+      for (let i = 0; i <= rows; i++) {
+        const y = (i * cellHeight) - (gridSize * (rows / cols) / 2);
+        const thickness = i === 0 ? 3 : 2; // Thicker line for the nut (top)
+        
+        const fret = new fabric.Rect({
+          left: 0,
+          top: y,
+          width: gridSize,
+          height: thickness,
+          fill: i === 0 ? '#FFFFFF' : '#9F9EA1', // White for nut, silver for frets
+          originX: 'center',
+          originY: 'center',
+        });
+        
+        fretboard.addWithUpdate(fret);
       }
       
-      fabricElement = grid;
+      // Add vertical lines (strings)
+      for (let i = 0; i < cols; i++) {
+        const x = (i * cellWidth) - (gridSize / 2) + (cellWidth / 2);
+        const thickness = 1 + (i * 0.1); // Strings get gradually thicker
+        
+        const string = new fabric.Rect({
+          left: x,
+          top: 0,
+          width: thickness,
+          height: gridSize * (rows / cols),
+          fill: '#D8D8D8', // Light silver color for strings
+          originX: 'center',
+          originY: 'center',
+        });
+        
+        fretboard.addWithUpdate(string);
+      }
+      
+      // Add position markers (dots) at traditional positions
+      [2, 4].forEach(position => {
+        const markerY = ((position + 0.5) * cellHeight) - (gridSize * (rows / cols) / 2);
+        
+        const marker = new fabric.Circle({
+          left: 0,
+          top: markerY,
+          radius: cellWidth * 0.1,
+          fill: '#FFFFFF',
+          opacity: 0.5,
+          originX: 'center',
+          originY: 'center',
+        });
+        
+        fretboard.addWithUpdate(marker);
+      });
+      
+      // Add chord labels
+      Object.entries(gridLabels).forEach(([position, label]) => {
+        const [rowStr, colStr] = position.split('-');
+        const row = parseInt(rowStr, 10);
+        const col = parseInt(colStr, 10);
+        
+        const x = (col * cellWidth) - (gridSize / 2) + (cellWidth / 2);
+        const y = (row * cellHeight) - (gridSize * (rows / cols) / 2) + (cellHeight / 2);
+        
+        // Add a semi-transparent background for better visibility
+        const labelBg = new fabric.Rect({
+          left: x,
+          top: y,
+          width: cellWidth * 0.8,
+          height: cellHeight * 0.5,
+          fill: 'rgba(0,0,0,0.3)',
+          rx: 4,
+          ry: 4,
+          originX: 'center',
+          originY: 'center',
+        });
+        
+        const labelText = new fabric.Text(label as string, {
+          left: x,
+          top: y,
+          fontSize: cellWidth * 0.3,
+          fill: '#FFFFFF',
+          fontWeight: 'bold',
+          originX: 'center',
+          originY: 'center',
+          textAlign: 'center',
+          shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.7)', offsetX: 1, offsetY: 1, blur: 2 }),
+        });
+        
+        fretboard.addWithUpdate(labelBg);
+        fretboard.addWithUpdate(labelText);
+      });
+      
+      fabricElement = fretboard;
     } else if (element.shape === 'circle') {
       fabricElement = new fabric.Circle({
         left: x,

@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -49,8 +48,7 @@ const musicalSymbols: InstrumentType[] = [
   { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 36 },
   { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 36 },
   { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 36 },
-  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 },
-  { id: "guitar-grid", name: "Braço do Violão", shape: "grid", color: "#222222", iconType: "grid", iconContent: "", size: 60 }
+  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 36 }
 ];
 
 // Default chord labels configuration based on the provided image
@@ -60,6 +58,16 @@ const defaultChordLabels = {
   "2-0": "C#M7", 
   "3-0": "BM7", 
   "4-0": "BbM7"
+};
+
+// Add a new guitar fretboard with chord labels
+const guitarFretboard: InstrumentType = {
+  id: "guitar-fretboard",
+  name: "Braço do Violão",
+  shape: "grid",
+  color: "#222222",
+  iconType: "grid",
+  size: 60
 };
 
 export default function MusicogramPage() {
@@ -380,6 +388,26 @@ export default function MusicogramPage() {
     </div>;
   };
 
+  // Add a special case for the guitar fretboard
+  const handleFretboardClick = () => {
+    const newFretboard = {
+      id: uuidv4(),
+      type: 'element',
+      x: 100,
+      y: 100,
+      color: "#222222",
+      size: 120,
+      shape: "grid",
+      iconType: "grid",
+      position: { x: 100, y: 100 },
+      rotation: 0,
+      gridLabels: defaultChordLabels
+    };
+    
+    setCanvasElements(prev => [...prev, newFretboard]);
+    toast.success("Braço de violão adicionado com sucesso!");
+  };
+
   return (
     <div className="flex flex-col h-full space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
@@ -474,6 +502,19 @@ export default function MusicogramPage() {
             </div>
           </div>
           
+          <div className="mt-4 p-2 text-center">
+            <button
+              onClick={handleFretboardClick}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center justify-center gap-2"
+              title="Adicionar Braço de Violão"
+            >
+              <span className="flex items-center justify-center w-5 h-5">
+                🎸
+              </span>
+              <span className="text-sm">Braço de Violão</span>
+            </button>
+          </div>
+
           {/* Status message */}
           <div className="mt-4 p-2 rounded text-center">
             <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
