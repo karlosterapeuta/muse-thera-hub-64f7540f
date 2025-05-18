@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -54,7 +53,7 @@ export function MusicogramCanvas({
       const centerY = canvasHeight / 2;
       
       // Create new element data
-      let newElement = {
+      let newElement: VisualElement = {
         id: uuidv4(),
         type: 'element',
         x: centerX,
@@ -62,28 +61,29 @@ export function MusicogramCanvas({
         color: activeColor,
         size: 40, // Default size
         position: { x: centerX, y: centerY },
-        rotation: 0
+        rotation: 0,
+        shape: 'square' // Add shape as defined in the VisualElement type
       };
       
       if (activeInstrument) {
         // Handle instrument icons
         let iconContent = "▪"; // Default square shape
-        let shape = 'square';
+        let elementShape = 'square';
         
         // Determine shape and icon based on active instrument
         const instrument = elements.find(i => i.instrumentId === activeInstrument);
         if (instrument) {
-          shape = instrument.shape || 'square';
+          elementShape = instrument.shape || 'square';
           
-          if (shape === 'circle') {
+          if (elementShape === 'circle') {
             iconContent = "●";
-          } else if (shape === 'triangle') {
+          } else if (elementShape === 'triangle') {
             iconContent = "▲";
-          } else if (shape === 'hand') {
+          } else if (elementShape === 'hand') {
             iconContent = "✋";
-          } else if (shape === 'footprints') {
+          } else if (elementShape === 'footprints') {
             iconContent = "👣";
-          } else if (shape === 'silence') {
+          } else if (elementShape === 'silence') {
             iconContent = "🤫";
           } else if (activeInstrument === 'ukulele') {
             iconContent = "🎸";
@@ -92,7 +92,7 @@ export function MusicogramCanvas({
         
         newElement = {
           ...newElement,
-          shape: shape,
+          shape: elementShape,
           iconType: 'instrument',
           iconContent: iconContent,
           instrumentId: activeInstrument
