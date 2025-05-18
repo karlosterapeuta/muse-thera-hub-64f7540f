@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { UkuleleIcon } from "./components/UkuleleIcon";
@@ -81,33 +82,6 @@ export default function MusicogramPage() {
     setIsErasing(false);
     setActiveColor(symbol.color);
     setIsDrawingMode(true);
-    
-    // Add the symbol directly to the canvas when selected
-    addSymbolDirectly(symbol);
-  };
-  
-  // Function to directly add a selected symbol to canvas
-  const addSymbolDirectly = (symbol: InstrumentType) => {
-    // Create new element for the symbol
-    const newElement = {
-      id: uuidv4(),
-      type: 'element',
-      x: canvasRef.current ? (canvasRef.current.clientWidth / 2) : 400,
-      y: canvasRef.current ? (canvasRef.current.clientHeight / 2) : 300,
-      color: symbol.color,
-      size: symbol.size || 36,
-      shape: symbol.shape,
-      iconType: symbol.iconType,
-      iconContent: symbol.iconContent,
-      position: { 
-        x: canvasRef.current ? (canvasRef.current.clientWidth / 2) : 400, 
-        y: canvasRef.current ? (canvasRef.current.clientHeight / 2) : 300 
-      },
-      rotation: 0
-    };
-    
-    toast.success(`${symbol.name} adicionado ao musicograma!`);
-    setCanvasElements(prev => [...prev, newElement]);
   };
 
   // Função para lidar com o início do arrasto (para símbolos e instrumentos)
@@ -180,7 +154,7 @@ export default function MusicogramPage() {
           color: dropData.color,
           size: dropData.size || 40,
           shape: dropData.shape,
-          iconType: 'symbol', // Change from 'instrument' to 'symbol'
+          iconType: 'instrument',
           iconContent: iconContent,
           instrumentId: dropData.id,
           position: { x, y },
@@ -265,19 +239,14 @@ export default function MusicogramPage() {
     setZoom(prev => Math.max(prev - 0.1, 0.5));
   };
 
-  // Function that handles adding elements directly to the canvas
-  const handleAddElement = (newElement: any) => {
-    setCanvasElements(prev => [...prev, newElement]);
-  };
-
-  // Function to render the instrument shape with direct add functionality
+  // Function to render the instrument shape with drag and drop support
   const renderInstrumentShape = (instrument: InstrumentType, index: number) => {
     const isActive = activeInstrument === instrument.id;
     
     return (
       <div 
         key={index} 
-        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg ${
+        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-grab rounded-lg ${
           isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
         }`}
         onClick={() => handleInstrumentSelect(instrument.id)}
@@ -323,14 +292,14 @@ export default function MusicogramPage() {
     );
   };
 
-  // Function to render musical symbols with direct add functionality
+  // Function to render musical symbols with drag and drop
   const renderMusicalSymbol = (symbol: InstrumentType, index: number) => {
     const isActive = activeSymbol?.id === symbol.id;
     
     return (
       <div 
         key={index} 
-        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg ${
+        className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-grab rounded-lg ${
           isActive ? 'bg-primary/20 ring-2 ring-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
         }`}
         onClick={() => handleSymbolSelect(symbol)}
@@ -469,7 +438,7 @@ export default function MusicogramPage() {
           <div className="mt-4 p-2 rounded text-center">
             <div className={`text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
               {isDrawingMode 
-                ? "Modo Desenho: Clique nos símbolos para adicionar no quadro" 
+                ? "Modo Desenho: Arraste símbolos para o quadro" 
                 : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}
             </div>
             {!isDrawingMode && (
@@ -478,7 +447,7 @@ export default function MusicogramPage() {
               </div>
             )}
             <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-              Novo! Clique diretamente nos ícones para adicionar ao quadro!
+              Arraste os ícones diretamente para o quadro - agora com movimentação livre!
             </div>
           </div>
           
@@ -503,7 +472,6 @@ export default function MusicogramPage() {
             zoom={zoom}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            onAddElement={handleAddElement}
           />
         </div>
       </div>

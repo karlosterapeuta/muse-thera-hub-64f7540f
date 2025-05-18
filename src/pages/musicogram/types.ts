@@ -1,10 +1,9 @@
-
 export interface InstrumentType {
   id: string;
   name: string;
   shape: string;
   color: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
+  iconType?: 'svg' | 'symbol' | 'image';
   iconContent?: string;
   size?: number;  // Adicionada propriedade de tamanho opcional
 }
@@ -29,9 +28,8 @@ export interface VisualElement {
   position?: { x: number; y: number };
   rotation?: number;
   label?: string;
-  iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
+  iconType?: 'svg' | 'symbol' | 'image';
   iconContent?: string;
-  instrumentId?: string;
 }
 
 export interface MusicogramTemplate {
