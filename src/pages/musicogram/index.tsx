@@ -123,7 +123,7 @@ export default function MusicogramPage() {
   };
 
   // Função para lidar com o início do arrasto (para símbolos e instrumentos)
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument' | 'grid') => {
     const dragData = {
       ...item,
       type
