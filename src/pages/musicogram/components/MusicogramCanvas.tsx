@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -39,8 +38,13 @@ export function MusicogramCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  // Keep track of if component is mounted to prevent state updates after unmount
+  const isMounted = useRef(true);
 
   useEffect(() => {
+    // Set isMounted to true when component mounts
+    isMounted.current = true;
+    
     const initCanvas = () => {
       // Adjust cell size based on screen size
       const cellSize = isMobile ? 60 : 80;
@@ -53,7 +57,11 @@ export function MusicogramCanvas({
       });
 
       fabricRef.current = newCanvas;
-      setCanvas(newCanvas);
+      
+      // Check if component is still mounted before updating state
+      if (isMounted.current) {
+        setCanvas(newCanvas);
+      }
 
       // Handle object moving
       newCanvas.on('object:moving', (event) => {
@@ -139,15 +147,21 @@ export function MusicogramCanvas({
       });
 
       newCanvas.on('selection:created', (event) => {
-        setSelectedElement(event.target as fabric.Object);
+        if (isMounted.current) {
+          setSelectedElement(event.target as fabric.Object);
+        }
       });
 
       newCanvas.on('selection:updated', (event) => {
-        setSelectedElement(event.target as fabric.Object);
+        if (isMounted.current) {
+          setSelectedElement(event.target as fabric.Object);
+        }
       });
 
       newCanvas.on('selection:cleared', () => {
-        setSelectedElement(null);
+        if (isMounted.current) {
+          setSelectedElement(null);
+        }
       });
 
       return newCanvas;
@@ -158,7 +172,24 @@ export function MusicogramCanvas({
     }
 
     return () => {
-      canvas?.dispose();
+      // Set isMounted to false when component unmounts
+      isMounted.current = false;
+      
+      // Safe disposal of the canvas
+      if (fabricRef.current) {
+        try {
+          // Properly clear event handlers first to prevent callbacks
+          fabricRef.current.off();
+          // Then dispose - wrap in try/catch to prevent errors
+          fabricRef.current.dispose();
+        } catch (error) {
+          console.error("Error disposing canvas:", error);
+        }
+        fabricRef.current = null;
+      }
+      
+      // Also clear the state reference
+      setCanvas(null);
     };
   }, [template, isMobile, isErasing, isDrawingMode, onDeleteElement]);
 
@@ -198,7 +229,7 @@ export function MusicogramCanvas({
   }, [zoom, template, isMobile]);
 
   useEffect(() => {
-    if (canvas) {
+    if (canvas && isMounted.current) {
       canvas.clear();
       elements.forEach((element) => {
         const el = createElement(element);
