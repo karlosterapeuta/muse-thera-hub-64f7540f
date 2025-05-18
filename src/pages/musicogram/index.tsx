@@ -355,13 +355,20 @@ export default function MusicogramPage() {
     );
   };
 
-  // Render the fretboard component for the main view
+  // Render the fretboard component with drag and drop
   const renderFretboardExample = () => {
     return (
       <div 
         className="mb-4 p-2 w-full cursor-grab"
         draggable
-        onDragStart={(e) => handleDragStart(e, guitarFretboard, 'grid')}
+        onDragStart={(e) => handleDragStart(e, {
+          id: "guitar-fretboard",
+          name: "Braço do Violão",
+          shape: "grid",
+          color: "#222222",
+          iconType: "grid",
+          size: 60
+        }, 'grid')}
       >
         <h3 className="font-medium mb-2 text-center">Braço do Violão</h3>
         <div className="w-full h-32 sm:h-48 rounded-md overflow-hidden">
@@ -504,7 +511,7 @@ export default function MusicogramPage() {
       
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1 min-h-[500px]">
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-2 sm:p-3 flex flex-col md:w-48 overflow-auto">
-          {/* Exibição do Braço de Violão - destaque principal */}
+          {/* Display the fretboard example directly */}
           {renderFretboardExample()}
           
           <h3 className="font-medium mb-2 sm:mb-3 text-center">Instrumentos</h3>
