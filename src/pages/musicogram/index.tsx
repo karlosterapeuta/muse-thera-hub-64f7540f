@@ -355,7 +355,7 @@ export default function MusicogramPage() {
     );
   };
 
-  // Render the fretboard component with drag and drop
+  // Render the fretboard component with drag and drop but without the icon
   const renderFretboardExample = () => {
     return (
       <div 
