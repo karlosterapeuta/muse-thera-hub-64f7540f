@@ -68,13 +68,13 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Set up object moving event WITHOUT ANY BOUNDARY CONSTRAINTS
+      // Set up object moving event with NO BOUNDARY CONSTRAINTS WHATSOEVER
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
           
-          // IMPORTANT: No constraints at all - allow objects to be moved freely
+          // Allow completely free movement - no restrictions
           const updatedElement = {
             id: obj.data?.id,
             x: obj.left || 0,
@@ -338,20 +338,20 @@ export function MusicogramCanvas({
     }
 
     if (fabricElement) {
-      // Improve touch interaction and dragging behavior
+      // Enable all movement controls for free movement
       fabricElement.setControlsVisibility({
-        mt: true, // top-middle control point
-        mb: true, // bottom-middle control point
-        ml: true, // middle-left control point
-        mr: true, // middle-right control point
-        tl: true, // top-left control point
-        tr: true, // top-right control point
-        bl: true, // bottom-left control point
-        br: true, // bottom-right control point
+        mt: true,  // top-middle control point
+        mb: true,  // bottom-middle control point
+        ml: true,  // middle-left control point
+        mr: true,  // middle-right control point
+        tl: true,  // top-left control point
+        tr: true,  // top-right control point
+        bl: true,  // bottom-left control point
+        br: true,  // bottom-right control point
         mtr: true, // middle-top-rotation control point
       });
       
-      // Make objects freely movable - no constraints
+      // Ensure objects are freely movable everywhere - even outside canvas boundaries
       fabricElement.setCoords();
       
       // Store element data for reference

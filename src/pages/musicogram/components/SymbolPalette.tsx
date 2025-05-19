@@ -47,7 +47,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
         {symbolList.map((symbol, index) => (
           <div 
             key={index} 
-            className={`flex flex-col items-center justify-center p-1 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+            className={`flex flex-col items-center justify-center p-1 transition-all cursor-grab rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
             onClick={() => onSymbolSelect(symbol)}
             draggable="true" 
             onDragStart={(e) => {
@@ -57,7 +57,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
             }}
             onDragEnd={(e) => {
               // Reset cursor style when drag ends
-              e.currentTarget.style.cursor = 'pointer';
+              e.currentTarget.style.cursor = 'grab';
             }}
           >
             <div 
@@ -110,7 +110,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
         </div>
         {!isDrawingMode && (
           <div className="text-xs text-gray-600 mt-1">
-            Clique e arraste os símbolos para qualquer lugar do quadro! Movimente sem restrições de posição.
+            Clique e arraste as figuras para qualquer lugar do quadro! Sem restrições de posição.
           </div>
         )}
         <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">

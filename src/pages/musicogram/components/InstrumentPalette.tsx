@@ -25,10 +25,18 @@ const InstrumentPalette: React.FC<InstrumentPaletteProps> = ({
         {instruments.map((instrument, index) => (
           <div 
             key={index} 
-            className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+            className={`flex flex-col items-center justify-center p-1 sm:p-2 transition-all cursor-grab rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
             onClick={() => onInstrumentSelect(instrument.id)}
             draggable
-            onDragStart={(e) => onDragStart(e, instrument, 'instrument')}
+            onDragStart={(e) => {
+              // Set cursor style to grabbing when dragging starts
+              e.currentTarget.style.cursor = 'grabbing';
+              onDragStart(e, instrument, 'instrument');
+            }}
+            onDragEnd={(e) => {
+              // Reset cursor style when drag ends
+              e.currentTarget.style.cursor = 'grab';
+            }}
           >
             <div 
               className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-md transition-transform duration-200 hover:scale-110"
