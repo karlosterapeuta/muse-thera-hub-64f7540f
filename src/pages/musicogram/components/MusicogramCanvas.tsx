@@ -68,14 +68,13 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Set up object moving event - IMPORTANT: No boundary constraints
+      // Set up object moving event WITHOUT ANY BOUNDARY CONSTRAINTS
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
           
-          // Update element position WITHOUT any boundary constraints
-          // Remove any code that limits the position
+          // IMPORTANT: No constraints at all - allow objects to be moved freely
           const updatedElement = {
             id: obj.data?.id,
             x: obj.left || 0,
