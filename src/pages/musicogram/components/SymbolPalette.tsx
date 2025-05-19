@@ -121,15 +121,15 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
         <div className={`text-xs sm:text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
           {isDrawingMode 
             ? "Modo Desenho: Clique nos símbolos para adicionar ao grid" 
-            : "Modo Movimentação Livre: Arraste e gire as figuras livremente"}
+            : "Modo Movimentação Livre: Arraste e gire as figuras sem restrições"}
         </div>
         {!isDrawingMode && (
           <div className="text-xs text-gray-600 mt-1">
-            Clique e arraste as figuras para qualquer lugar do quadro! Sem restrições de posição.
+            Clique e arraste as figuras para <strong>QUALQUER</strong> lugar do quadro! Sem limites de posição.
           </div>
         )}
         <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-          Clique em um instrumento ou símbolo para adicionar ao grid automaticamente
+          Adicione quantas figuras quiser ao quadro e mova-as livremente para qualquer posição!
         </div>
       </div>
 

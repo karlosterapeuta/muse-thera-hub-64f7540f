@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -91,12 +90,13 @@ export default function MusicogramPage() {
     addElementToGrid(symbol, 'symbol');
   };
 
-  // Common function to add element to grid
+  // Modified to allow unlimited placement of elements
   const addElementToGrid = (item: InstrumentType, itemType: 'symbol' | 'instrument') => {
     // Adjust cell size based on device
     const cellSize = isMobile ? 60 : 80;
     
-    // Calculate position based on nextPosition
+    // Calculate position based on nextPosition, but now it's just a suggestion
+    // as elements can be moved freely anywhere
     const { row, col } = nextPosition;
     const x = col * cellSize + cellSize / 2;
     const y = row * cellSize + cellSize / 2;
@@ -110,7 +110,7 @@ export default function MusicogramPage() {
         x: x,
         y: y,
         color: item.color,
-        size: item.size || 72, // Double the size from 36 to 72
+        size: item.size || 72,
         shape: item.shape,
         iconType: item.iconType || 'symbol',
         iconContent: item.iconContent,
@@ -143,7 +143,7 @@ export default function MusicogramPage() {
         x: x,
         y: y,
         color: item.color,
-        size: 80, // Double the size from 40 to 80
+        size: 80,
         shape: item.shape,
         iconType: 'instrument',
         iconContent: iconContent,
@@ -159,12 +159,13 @@ export default function MusicogramPage() {
       setCanvasElements(prev => [...prev, newElement]);
       
       // Update next position for organized flow with 5 columns
+      // But remember users can now move elements anywhere
       let nextCol = col + 1;
       let nextRow = row;
       
-      const maxCols = 5; // Changed to 5 icons per row
+      const maxCols = 5;
       
-      if (nextCol >= maxCols) { // If we reach the end of a row
+      if (nextCol >= maxCols) {
         nextCol = 0;
         nextRow = (nextRow + 1) % 5; // Move to next row, wrap around if needed
       }
@@ -173,24 +174,14 @@ export default function MusicogramPage() {
     }
   };
 
-  // Function to handle drag start (for symbols and instruments)
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
-    const dragData = {
-      ...item,
-      type
-    };
-    e.dataTransfer.setData('application/json', JSON.stringify(dragData));
-    e.dataTransfer.effectAllowed = 'copy';
-  };
-
-  // Function to manage drop on canvas with responsive positioning
+  // Function to handle drag and drop with completely unrestricted placement
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
     try {
       const dropData = JSON.parse(e.dataTransfer.getData('application/json'));
       
-      // Calculate the relative position within the canvas
+      // Calculate the drop position relative to the canvas - no restrictions
       const rect = e.currentTarget.getBoundingClientRect();
       const x = (e.clientX - rect.left) / zoom;
       const y = (e.clientY - rect.top) / zoom;
@@ -198,14 +189,14 @@ export default function MusicogramPage() {
       let newElement;
       
       if (dropData.type === 'symbol') {
-        // Create new symbol element in canvas at drop position
+        // Create new symbol element at exact drop position
         newElement = {
           id: uuidv4(),
           type: 'element',
           x: x,
           y: y,
           color: dropData.color,
-          size: dropData.size || 72, // Double the size
+          size: dropData.size || 72,
           shape: dropData.shape,
           iconType: dropData.iconType,
           iconContent: dropData.iconContent,
@@ -215,7 +206,7 @@ export default function MusicogramPage() {
         
         toast.success("Símbolo adicionado com sucesso!");
       } else if (dropData.type === 'instrument') {
-        // Create new instrument element in canvas at drop position - adapted for responsive
+        // Create new instrument element at exact drop position
         let iconContent = "▪"; // Default square shape
         
         // Adapt icon according to instrument type
@@ -239,7 +230,7 @@ export default function MusicogramPage() {
           x: x,
           y: y,
           color: dropData.color,
-          size: 80, // Double the size
+          size: 80,
           shape: dropData.shape,
           iconType: 'instrument',
           iconContent: iconContent,

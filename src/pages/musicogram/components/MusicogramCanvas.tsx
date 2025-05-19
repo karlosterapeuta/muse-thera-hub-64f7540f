@@ -68,13 +68,14 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Set up object moving event with NO BOUNDARY CONSTRAINTS WHATSOEVER
+      // Set up object moving event with COMPLETELY UNRESTRICTED MOVEMENT
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
           
-          // Allow completely free movement - no restrictions
+          // Allow completely free movement - no restrictions at all
+          // Objects can be moved anywhere, even outside canvas boundaries
           const updatedElement = {
             id: obj.data?.id,
             x: obj.left || 0,
@@ -351,7 +352,8 @@ export function MusicogramCanvas({
         mtr: true, // middle-top-rotation control point
       });
       
-      // Ensure objects are freely movable everywhere - even outside canvas boundaries
+      // IMPORTANT: Remove all boundary checking to allow objects to be moved freely
+      // This ensures objects can be placed anywhere, even outside the grid/canvas
       fabricElement.setCoords();
       
       // Store element data for reference
