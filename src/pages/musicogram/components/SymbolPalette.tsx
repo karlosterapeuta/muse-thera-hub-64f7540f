@@ -41,7 +41,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
   };
 
   const renderSymbolGrid = (symbolList: InstrumentType[]) => {
-    // Update to display consistently 5 icons per row on all device sizes
+    // Display consistently 5 icons per row on all device sizes
     return (
       <div className="grid grid-cols-5 gap-1 sm:gap-2">
         {symbolList.map((symbol, index) => (
@@ -49,11 +49,19 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
             key={index} 
             className={`flex flex-col items-center justify-center p-1 transition-all cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
             onClick={() => onSymbolSelect(symbol)}
-            draggable
-            onDragStart={(e) => onDragStart(e, symbol, 'symbol')}
+            draggable="true" 
+            onDragStart={(e) => {
+              // Set cursor style to grabbing when dragging starts
+              e.currentTarget.style.cursor = 'grabbing';
+              onDragStart(e, symbol, 'symbol');
+            }}
+            onDragEnd={(e) => {
+              // Reset cursor style when drag ends
+              e.currentTarget.style.cursor = 'pointer';
+            }}
           >
             <div 
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-md transition-transform duration-200 hover:scale-110 text-2xl sm:text-3xl md:text-4xl font-bold"
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-md transition-transform duration-200 hover:scale-110 text-2xl sm:text-3xl md:text-4xl font-bold cursor-grab" 
               style={{ color: symbol.color }}
             >
               {symbol.iconContent}
