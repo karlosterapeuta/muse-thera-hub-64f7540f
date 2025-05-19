@@ -76,6 +76,18 @@ export default function MusicogramPage() {
   // Track the next position for organized grid placement
   const [nextPosition, setNextPosition] = useState<{ row: number, col: number }>({ row: 0, col: 0 });
 
+  // Add the missing handleDragStart function
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
+    // Store drag data for the drop handler to use
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      ...item,
+      type: type
+    }));
+    
+    // Set the drag effect to copy
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   // Modified to directly place instrument in grid when clicked
   const handleInstrumentSelect = (instrumentId: string) => {
     // Find selected instrument
