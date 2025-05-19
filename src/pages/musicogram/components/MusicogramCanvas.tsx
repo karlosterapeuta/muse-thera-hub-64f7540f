@@ -75,6 +75,7 @@ export function MusicogramCanvas({
           setIsDragging(true);
           
           // Update element position WITHOUT any boundary constraints
+          // Remove any code that limits the position
           const updatedElement = {
             id: obj.data?.id,
             x: obj.left || 0,
@@ -245,7 +246,7 @@ export function MusicogramCanvas({
           selectable: !isDrawingMode,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
-          cornerSize: isMobile ? 18 : 20, // Larger corners for better touch
+          cornerSize: isMobile ? 24 : 28, // Larger corners for better touch
           cornerStyle: 'circle',
           transparentCorners: false,
           borderColor: '#5186EC',
@@ -277,7 +278,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 18 : 20,
+        cornerSize: isMobile ? 24 : 28,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -303,7 +304,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 18 : 20,
+        cornerSize: isMobile ? 24 : 28,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -329,7 +330,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 18 : 20,
+        cornerSize: isMobile ? 24 : 28,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -467,4 +468,3 @@ export function MusicogramCanvas({
 }
 
 export default MusicogramCanvas;
-

@@ -65,7 +65,7 @@ const guitarGridLabels = {};
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
   const [isErasing, setIsErasing] = useState(false);
-  const [isDrawingMode, setIsDrawingMode] = useState(false); // Changed to false to enable free movement by default
+  const [isDrawingMode, setIsDrawingMode] = useState(false); // Set to false by default to enable free movement
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [zoom, setZoom] = useState(1);
