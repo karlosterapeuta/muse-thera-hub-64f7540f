@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -64,7 +65,7 @@ const guitarGridLabels = {};
 export default function MusicogramPage() {
   const [activeInstrument, setActiveInstrument] = useState<string | null>(null);
   const [isErasing, setIsErasing] = useState(false);
-  const [isDrawingMode, setIsDrawingMode] = useState(true);
+  const [isDrawingMode, setIsDrawingMode] = useState(false); // Changed to false to enable free movement by default
   const [activeColor, setActiveColor] = useState<string>("#FF5252");
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [zoom, setZoom] = useState(1);

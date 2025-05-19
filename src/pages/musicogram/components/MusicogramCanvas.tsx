@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -68,34 +67,13 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Add a boundary container to contain objects within canvas
+      // Set up default interaction parameters - IMPORTANT: remove boundary constraints
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
           
-          // Calculate boundaries with padding
-          const padding = 0;
-          let left = obj.left || 0;
-          let top = obj.top || 0;
-          const objWidth = obj.getScaledWidth() || 0;
-          const objHeight = obj.getScaledHeight() || 0;
-          
-          // Enforce left/right boundaries with smooth transition
-          if (left < padding) {
-            obj.set({ left: padding });
-          } else if (left > canvasWidth - objWidth - padding) {
-            obj.set({ left: canvasWidth - objWidth - padding });
-          }
-          
-          // Enforce top/bottom boundaries with smooth transition
-          if (top < padding) {
-            obj.set({ top: padding });
-          } else if (top > canvasHeight - objHeight - padding) {
-            obj.set({ top: canvasHeight - objHeight - padding });
-          }
-          
-          // Update element position with smooth animation
+          // Update element position without boundary constraints
           const updatedElement = {
             id: obj.data.id,
             x: obj.left || 0,
@@ -120,7 +98,7 @@ export function MusicogramCanvas({
         }
       });
 
-      // Handle object scaling with boundary constraints
+      // Handle object scaling
       newCanvas.on('object:scaling', (event) => {
         const obj = event.target;
         if (obj) {
@@ -128,15 +106,6 @@ export function MusicogramCanvas({
           const scaledHeight = obj.getScaledHeight() || 0;
           const objLeft = obj.left || 0;
           const objTop = obj.top || 0;
-          
-          // Prevent scaling beyond canvas boundaries
-          if (objLeft + scaledWidth > canvasWidth) {
-            obj.scaleX = (canvasWidth - objLeft) / (obj.width || 1);
-          }
-          
-          if (objTop + scaledHeight > canvasHeight) {
-            obj.scaleY = (canvasHeight - objTop) / (obj.height || 1);
-          }
           
           const updatedElement = {
             id: obj.data.id,
@@ -227,7 +196,7 @@ export function MusicogramCanvas({
     if (canvas) {
       canvas.isDrawingMode = isDrawingMode;
       
-      // Update object interaction based on drawing mode
+      // Set free movement properties for all objects
       canvas.getObjects().forEach(obj => {
         // In drawing mode: disable object manipulation
         // In manipulation mode: enable object manipulation
@@ -247,7 +216,7 @@ export function MusicogramCanvas({
     const x = element.position?.x || element.x;
     const y = element.position?.y || element.y;
     
-    // Handle different element types with responsive sizes
+    // Create different element types based on their properties
     if (element.iconType === 'symbol' || element.iconType === 'instrument') {
       if (element.iconContent) {
         // Adjust size based on device to improve visibility on smaller screens
@@ -268,11 +237,11 @@ export function MusicogramCanvas({
           selectable: !isDrawingMode,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
-          cornerSize: isMobile ? 8 : 10, // Smaller corners on mobile
+          cornerSize: isMobile ? 12 : 14, // Larger corners for better touch
           cornerStyle: 'circle',
           transparentCorners: false,
           borderColor: '#5186EC',
-          borderScaleFactor: 1.5,
+          borderScaleFactor: 2,
           // Add smooth animation for dragging
           padding: 10,
           snapAngle: 45, // Snap rotation to 45-degree increments for better usability
@@ -300,11 +269,11 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 8 : 10,
+        cornerSize: isMobile ? 12 : 14,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
-        borderScaleFactor: 1.5
+        borderScaleFactor: 2
       });
     } else if (element.shape === 'rect' || element.shape === 'square') {
       // Adjust size based on device
@@ -326,11 +295,11 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 8 : 10,
+        cornerSize: isMobile ? 12 : 14,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
-        borderScaleFactor: 1.5
+        borderScaleFactor: 2
       });
     } else if (element.shape === 'triangle') {
       // Adjust size based on device
@@ -352,16 +321,16 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 8 : 10,
+        cornerSize: isMobile ? 12 : 14,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
-        borderScaleFactor: 1.5
+        borderScaleFactor: 2
       });
     }
 
     if (fabricElement) {
-      // Add smooth movement and improved drag behavior
+      // Improve touch interaction and dragging behavior
       fabricElement.setControlsVisibility({
         mt: true, // top-middle control point
         mb: true, // bottom-middle control point
@@ -374,10 +343,10 @@ export function MusicogramCanvas({
         mtr: true, // middle-top-rotation control point
       });
       
-      // Improve touch interaction
+      // Enable freedom of movement
       fabricElement.lockScalingFlip = true;
       
-      // Enable smooth drag with improved feedback
+      // Store element data for reference
       fabricElement.data = { 
         id: element.id,
         iconType: element.iconType,
@@ -482,7 +451,7 @@ export function MusicogramCanvas({
       {!isDrawingMode && (
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
-          <span className="text-xs sm:text-sm">Modo Movimentação</span>
+          <span className="text-xs sm:text-sm">Modo Movimentação Livre</span>
         </div>
       )}
     </div>
