@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -67,15 +68,15 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Set up default interaction parameters - IMPORTANT: remove boundary constraints
+      // Set up object moving event - IMPORTANT: No boundary constraints
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
           
-          // Update element position without boundary constraints
+          // Update element position WITHOUT any boundary constraints
           const updatedElement = {
-            id: obj.data.id,
+            id: obj.data?.id,
             x: obj.left || 0,
             y: obj.top || 0,
             color: obj.fill as string,
@@ -84,8 +85,8 @@ export function MusicogramCanvas({
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
             rotation: obj.angle || 0,
-            iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent,
+            iconType: obj.data?.iconType,
+            iconContent: obj.data?.iconContent,
           };
           onUpdateElement(updatedElement);
         }
@@ -108,7 +109,7 @@ export function MusicogramCanvas({
           const objTop = obj.top || 0;
           
           const updatedElement = {
-            id: obj.data.id,
+            id: obj.data?.id,
             x: objLeft,
             y: objTop,
             color: obj.fill as string,
@@ -117,8 +118,8 @@ export function MusicogramCanvas({
             type: 'element',
             position: { x: objLeft, y: objTop },
             rotation: obj.angle || 0,
-            iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent,
+            iconType: obj.data?.iconType,
+            iconContent: obj.data?.iconContent,
           };
           onUpdateElement(updatedElement);
         }
@@ -129,7 +130,7 @@ export function MusicogramCanvas({
         const obj = event.target;
         if (obj) {
           const updatedElement = {
-            id: obj.data.id,
+            id: obj.data?.id,
             x: obj.left || 0,
             y: obj.top || 0,
             color: obj.fill as string,
@@ -138,8 +139,8 @@ export function MusicogramCanvas({
             type: 'element',
             position: { x: obj.left || 0, y: obj.top || 0 },
             rotation: obj.angle || 0,
-            iconType: obj.data.iconType,
-            iconContent: obj.data.iconContent,
+            iconType: obj.data?.iconType,
+            iconContent: obj.data?.iconContent,
           };
           onUpdateElement(updatedElement);
         }
@@ -165,7 +166,14 @@ export function MusicogramCanvas({
     }
 
     return () => {
-      canvas?.dispose();
+      if (fabricRef.current) {
+        // Use try-catch to prevent errors during cleanup
+        try {
+          fabricRef.current.dispose();
+        } catch (error) {
+          console.error("Error disposing canvas:", error);
+        }
+      }
     };
   }, [template, isMobile]);
 
@@ -237,7 +245,7 @@ export function MusicogramCanvas({
           selectable: !isDrawingMode,
           // Enable controls for better interaction
           cornerColor: '#5186EC',
-          cornerSize: isMobile ? 12 : 14, // Larger corners for better touch
+          cornerSize: isMobile ? 18 : 20, // Larger corners for better touch
           cornerStyle: 'circle',
           transparentCorners: false,
           borderColor: '#5186EC',
@@ -269,7 +277,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 12 : 14,
+        cornerSize: isMobile ? 18 : 20,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -295,7 +303,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 12 : 14,
+        cornerSize: isMobile ? 18 : 20,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -321,7 +329,7 @@ export function MusicogramCanvas({
         angle: element.rotation || 0,
         // Enable controls for better interaction
         cornerColor: '#5186EC',
-        cornerSize: isMobile ? 12 : 14,
+        cornerSize: isMobile ? 18 : 20,
         cornerStyle: 'circle',
         transparentCorners: false,
         borderColor: '#5186EC',
@@ -343,8 +351,8 @@ export function MusicogramCanvas({
         mtr: true, // middle-top-rotation control point
       });
       
-      // Enable freedom of movement
-      fabricElement.lockScalingFlip = true;
+      // Make objects freely movable - no constraints
+      fabricElement.setCoords();
       
       // Store element data for reference
       fabricElement.data = { 
@@ -459,3 +467,4 @@ export function MusicogramCanvas({
 }
 
 export default MusicogramCanvas;
+

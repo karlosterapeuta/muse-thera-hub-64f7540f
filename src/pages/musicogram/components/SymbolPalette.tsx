@@ -110,7 +110,7 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
         </div>
         {!isDrawingMode && (
           <div className="text-xs text-gray-600 mt-1">
-            Clique, arraste e gire os símbolos conforme desejar. Move livremente em qualquer direção!
+            Clique e arraste os símbolos para qualquer lugar! Movimente livremente sem restrições de posição.
           </div>
         )}
         <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
