@@ -60,7 +60,7 @@ const InstrumentPalette: React.FC<InstrumentPaletteProps> = ({
                 <Hand size={isMobile ? 48 : 64} fill={instrument.color} color={instrument.color} />
               ) : instrument.shape === "footprints" ? (
                 <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" width={isMobile ? "48" : "64"} height={isMobile ? "48" : "64"} fill={instrument.color}>
+                  <svg viewBox="0 0 24 24" width={isMobile ? "48" : "64"} height={isMobile ? "48" : "64"} fill="#8FD28E">
                     <path d="M9 1c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3zm1.75 7l-2.5 2l1.5 1l-4.75 4.75l2 2l7-7l1.5 1l-2-5l-2.75 1.25z" />
                   </svg>
                 </div>

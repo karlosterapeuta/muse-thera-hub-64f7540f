@@ -26,8 +26,23 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
     all: symbols,
     shapes: symbols.filter(s => ["circle-black", "circle-red", "circle-blue", "circle-group", "waves"].includes(s.id)),
     hands: symbols.filter(s => ["clapping", "fist", "hand-head", "hand-shoulder", "pointing", "knock", "hand"].includes(s.id)),
-    emotions: symbols.filter(s => ["happy", "sad", "angry", "surprised", "thinking", "love", "face"].includes(s.id)),
-    objects: symbols.filter(s => ["tree", "cup", "plastic-cup", "no-symbol", "note"].includes(s.id))
+    emotions: symbols.filter(s => ["happy", "sad", "angry", "surprised", "thinking", "love", "face"].includes(s.id))
+  };
+
+  // Update the happy symbol color to yellow
+  const modifiedSymbols = symbols.map(symbol => {
+    if (symbol.id === "happy") {
+      return { ...symbol, color: "#FEF7CD" };
+    }
+    return symbol;
+  });
+
+  // Update the categories to use the modified symbols
+  const updatedCategories = {
+    all: modifiedSymbols,
+    shapes: modifiedSymbols.filter(s => ["circle-black", "circle-red", "circle-blue", "circle-group", "waves"].includes(s.id)),
+    hands: modifiedSymbols.filter(s => ["clapping", "fist", "hand-head", "hand-shoulder", "pointing", "knock", "hand"].includes(s.id)),
+    emotions: modifiedSymbols.filter(s => ["happy", "sad", "angry", "surprised", "thinking", "love", "face"].includes(s.id))
   };
 
   const renderStarIcon = () => {
@@ -86,19 +101,19 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
         </TabsList>
         
         <TabsContent value="all" className="mt-0">
-          {renderSymbolGrid(categories.all)}
+          {renderSymbolGrid(updatedCategories.all)}
         </TabsContent>
         
         <TabsContent value="shapes" className="mt-0">
-          {renderSymbolGrid(categories.shapes)}
+          {renderSymbolGrid(updatedCategories.shapes)}
         </TabsContent>
         
         <TabsContent value="hands" className="mt-0">
-          {renderSymbolGrid(categories.hands)}
+          {renderSymbolGrid(updatedCategories.hands)}
         </TabsContent>
         
         <TabsContent value="emotions" className="mt-0">
-          {renderSymbolGrid(categories.emotions)}
+          {renderSymbolGrid(updatedCategories.emotions)}
         </TabsContent>
       </Tabs>
 
