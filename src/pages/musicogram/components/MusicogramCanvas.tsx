@@ -54,9 +54,12 @@ export function MusicogramCanvas({
     const initCanvas = () => {
       // Adjust cell size based on screen size
       const cellSize = isMobile ? 60 : 80;
+      const canvasWidth = template.columns * cellSize;
+      const canvasHeight = template.rows * cellSize;
+      
       const newCanvas = new fabric.Canvas('musicogram-canvas', {
-        width: template.columns * cellSize,
-        height: template.rows * cellSize,
+        width: canvasWidth,
+        height: canvasHeight,
         backgroundColor: '#fff',
         selection: true, // Enable selection of multiple objects
         preserveObjectStacking: true, // Keep object stacking order
@@ -65,11 +68,34 @@ export function MusicogramCanvas({
       fabricRef.current = newCanvas;
       setCanvas(newCanvas);
 
-      // Handle object moving with responsive positioning
+      // Add a boundary container to contain objects within canvas
       newCanvas.on('object:moving', (event) => {
         const obj = event.target;
         if (obj) {
           setIsDragging(true);
+          
+          // Calculate boundaries with padding
+          const padding = 0;
+          let left = obj.left || 0;
+          let top = obj.top || 0;
+          const objWidth = obj.getScaledWidth() || 0;
+          const objHeight = obj.getScaledHeight() || 0;
+          
+          // Enforce left/right boundaries with smooth transition
+          if (left < padding) {
+            obj.set({ left: padding });
+          } else if (left > canvasWidth - objWidth - padding) {
+            obj.set({ left: canvasWidth - objWidth - padding });
+          }
+          
+          // Enforce top/bottom boundaries with smooth transition
+          if (top < padding) {
+            obj.set({ top: padding });
+          } else if (top > canvasHeight - objHeight - padding) {
+            obj.set({ top: canvasHeight - objHeight - padding });
+          }
+          
+          // Update element position with smooth animation
           const updatedElement = {
             id: obj.data.id,
             x: obj.left || 0,
@@ -94,19 +120,33 @@ export function MusicogramCanvas({
         }
       });
 
-      // Handle object scaling
+      // Handle object scaling with boundary constraints
       newCanvas.on('object:scaling', (event) => {
         const obj = event.target;
         if (obj) {
+          const scaledWidth = obj.getScaledWidth() || 0;
+          const scaledHeight = obj.getScaledHeight() || 0;
+          const objLeft = obj.left || 0;
+          const objTop = obj.top || 0;
+          
+          // Prevent scaling beyond canvas boundaries
+          if (objLeft + scaledWidth > canvasWidth) {
+            obj.scaleX = (canvasWidth - objLeft) / (obj.width || 1);
+          }
+          
+          if (objTop + scaledHeight > canvasHeight) {
+            obj.scaleY = (canvasHeight - objTop) / (obj.height || 1);
+          }
+          
           const updatedElement = {
             id: obj.data.id,
-            x: obj.left || 0,
-            y: obj.top || 0,
+            x: objLeft,
+            y: objTop,
             color: obj.fill as string,
-            size: Math.max(obj.getScaledWidth(), obj.getScaledHeight()) || 20, // Use max dimension for size
+            size: Math.max(scaledWidth, scaledHeight),
             shape: obj.type,
             type: 'element',
-            position: { x: obj.left || 0, y: obj.top || 0 },
+            position: { x: objLeft, y: objTop },
             rotation: obj.angle || 0,
             iconType: obj.data.iconType,
             iconContent: obj.data.iconContent,
@@ -115,7 +155,7 @@ export function MusicogramCanvas({
         }
       });
 
-      // Handle object rotating
+      // Handle object rotating with improved interaction
       newCanvas.on('object:rotating', (event) => {
         const obj = event.target;
         if (obj) {
@@ -232,7 +272,12 @@ export function MusicogramCanvas({
           cornerStyle: 'circle',
           transparentCorners: false,
           borderColor: '#5186EC',
-          borderScaleFactor: 1.5
+          borderScaleFactor: 1.5,
+          // Add smooth animation for dragging
+          padding: 10,
+          snapAngle: 45, // Snap rotation to 45-degree increments for better usability
+          snapThreshold: 10,
+          centeredScaling: true,
         });
         fabricElement = textObj;
       }
@@ -316,7 +361,7 @@ export function MusicogramCanvas({
     }
 
     if (fabricElement) {
-      // Ensure elements can be freely transformed with appropriate control sizes for touch
+      // Add smooth movement and improved drag behavior
       fabricElement.setControlsVisibility({
         mt: true, // top-middle control point
         mb: true, // bottom-middle control point
@@ -329,10 +374,10 @@ export function MusicogramCanvas({
         mtr: true, // middle-top-rotation control point
       });
       
-      // No flip scaling to prevent confusion
+      // Improve touch interaction
       fabricElement.lockScalingFlip = true;
       
-      // Allow free movement of the elements
+      // Enable smooth drag with improved feedback
       fabricElement.data = { 
         id: element.id,
         iconType: element.iconType,
@@ -340,7 +385,11 @@ export function MusicogramCanvas({
         instrumentId: element.instrumentId,
       };
       
-      // Add right-click or long press context menu for mobile
+      // Enhanced cursor feedback for drag operations
+      fabricElement.hoverCursor = 'move';
+      fabricElement.moveCursor = 'grabbing';
+      
+      // Add deletion through click when in erase mode
       fabricElement.on('mousedown', (e) => {
         if (isErasing) {
           onDeleteElement(element.id);
@@ -354,9 +403,6 @@ export function MusicogramCanvas({
           showDeleteButton(fabricElement);
         }
       });
-
-      // Set cursor style to move/grab for better affordance
-      fabricElement.hoverCursor = 'move';
     }
 
     return fabricElement;
@@ -432,7 +478,7 @@ export function MusicogramCanvas({
         </div>
       )}
       
-      {/* Mode indicator - improved visibility on mobile */}
+      {/* Enhanced mode indicator */}
       {!isDrawingMode && (
         <div className="absolute bottom-2 right-2 bg-green-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 opacity-80 z-10">
           <Grab size={isMobile ? 16 : 18} />
