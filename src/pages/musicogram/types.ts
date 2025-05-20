@@ -6,7 +6,7 @@ export interface InstrumentType {
   color: string;
   iconType?: 'svg' | 'symbol' | 'image' | 'instrument';
   iconContent?: string;
-  size?: number;  // Adicionada propriedade de tamanho opcional
+  size?: number;
 }
 
 export interface MusicElement {
@@ -42,6 +42,16 @@ export interface MusicogramTemplate {
   description?: string;
   background?: string;
   elements?: VisualElement[];
+}
+
+export interface StudyTemplate {
+  id: string;
+  name: string;
+  rows: number;
+  columns: number;
+  description: string;
+  previewContent?: string;
+  elements: VisualElement[];
 }
 
 export interface PatientMusicogram {

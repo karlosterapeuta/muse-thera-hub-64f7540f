@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from "react";
-import { MusicogramTemplate, VisualElement } from "../types";
+import { MusicogramTemplate, VisualElement, StudyTemplate } from "../types";
 import { fabric } from "fabric";
 import { Trash2, Grab } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -7,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import ChordGrid from "./ChordGrid";
 
 interface MusicogramCanvasProps {
-  template: MusicogramTemplate;
+  template: MusicogramTemplate | StudyTemplate;
   activeInstrument: string | null;
   isErasing: boolean;
   isDrawingMode: boolean;
@@ -52,19 +53,20 @@ export function MusicogramCanvas({
 
   useEffect(() => {
     const initCanvas = () => {
-      // Adjust cell size based on screen size
-      const cellSize = isMobile ? 60 : 80;
-      const canvasWidth = template.columns * cellSize;
-      const canvasHeight = template.rows * cellSize;
-      
-      // Check if canvas element exists
-      const canvasEl = document.getElementById('musicogram-canvas');
-      if (!canvasEl) {
-        console.error("Canvas element not found");
-        return null;
-      }
-      
       try {
+        // Adjust cell size based on screen size
+        const cellSize = isMobile ? 60 : 80;
+        const canvasWidth = template.columns * cellSize;
+        const canvasHeight = template.rows * cellSize;
+        
+        // Check if canvas element exists
+        const canvasEl = document.getElementById('musicogram-canvas');
+        if (!canvasEl) {
+          console.error("Canvas element not found");
+          return null;
+        }
+        
+        // Initialize Fabric canvas with proper error handling
         const newCanvas = new fabric.Canvas('musicogram-canvas', {
           width: canvasWidth,
           height: canvasHeight,
@@ -72,6 +74,11 @@ export function MusicogramCanvas({
           selection: true, // Enable selection of multiple objects
           preserveObjectStacking: true, // Keep object stacking order
         });
+
+        if (!newCanvas) {
+          console.error("Failed to create fabric canvas");
+          return null;
+        }
 
         fabricRef.current = newCanvas;
         canvasInitializedRef.current = true;
@@ -83,7 +90,6 @@ export function MusicogramCanvas({
             setIsDragging(true);
             
             // Allow completely free movement - no restrictions at all
-            // Objects can be moved anywhere, even outside canvas boundaries
             const updatedElement = {
               id: obj.data?.id,
               x: obj.left || 0,
@@ -221,6 +227,7 @@ export function MusicogramCanvas({
             canvas.add(el);
           }
         });
+        canvas.renderAll();
       } catch (error) {
         console.error("Error updating canvas elements:", error);
       }
@@ -258,36 +265,61 @@ export function MusicogramCanvas({
     // Create different element types based on their properties
     if (element.iconType === 'symbol' || element.iconType === 'instrument') {
       if (element.iconContent) {
-        // Adjust size based on device to improve visibility on smaller screens
-        const fontSize = isMobile ? Math.min(element.size || 36, 60) : element.size || 72;
-        
-        const textObj = new fabric.Text(element.iconContent, {
-          left: x,
-          top: y,
-          fontSize: fontSize,
-          fill: element.color,
-          originX: 'center',
-          originY: 'center',
-          hasControls: !isDrawingMode,
-          hasBorders: !isDrawingMode,
-          lockMovementX: isDrawingMode,
-          lockMovementY: isDrawingMode,
-          angle: element.rotation || 0,
-          selectable: !isDrawingMode,
-          // Enable controls for better interaction
-          cornerColor: '#5186EC',
-          cornerSize: isMobile ? 24 : 28, // Larger corners for better touch
-          cornerStyle: 'circle',
-          transparentCorners: false,
-          borderColor: '#5186EC',
-          borderScaleFactor: 2,
-          // Add smooth animation for dragging
-          padding: 10,
-          snapAngle: 45, // Snap rotation to 45-degree increments for better usability
-          snapThreshold: 10,
-          centeredScaling: true,
-        });
-        fabricElement = textObj;
+        // Special case for the spiral symbol '@'
+        if (element.iconContent === '@') {
+          // Create a custom path for a spiral
+          const path = new fabric.Path(
+            'M 10,10 C 20,20 40,20 50,10 C 60,0 60,-20 50,-30 C 40,-40 20,-40 10,-30 C 0,-20 0,0 10,10 z',
+            {
+              left: x,
+              top: y,
+              fill: 'transparent',
+              stroke: element.color || '#000000',
+              strokeWidth: 2,
+              scale: (element.size || 60) / 60,
+              originX: 'center',
+              originY: 'center',
+              hasControls: !isDrawingMode,
+              hasBorders: !isDrawingMode,
+              lockMovementX: isDrawingMode,
+              lockMovementY: isDrawingMode,
+              angle: element.rotation || 0,
+              selectable: !isDrawingMode
+            }
+          );
+          fabricElement = path;
+        } else {
+          // Adjust size based on device to improve visibility on smaller screens
+          const fontSize = isMobile ? Math.min(element.size || 36, 60) : element.size || 72;
+          
+          const textObj = new fabric.Text(element.iconContent, {
+            left: x,
+            top: y,
+            fontSize: fontSize,
+            fill: element.color,
+            originX: 'center',
+            originY: 'center',
+            hasControls: !isDrawingMode,
+            hasBorders: !isDrawingMode,
+            lockMovementX: isDrawingMode,
+            lockMovementY: isDrawingMode,
+            angle: element.rotation || 0,
+            selectable: !isDrawingMode,
+            // Enable controls for better interaction
+            cornerColor: '#5186EC',
+            cornerSize: isMobile ? 24 : 28, // Larger corners for better touch
+            cornerStyle: 'circle',
+            transparentCorners: false,
+            borderColor: '#5186EC',
+            borderScaleFactor: 2,
+            // Add smooth animation for dragging
+            padding: 10,
+            snapAngle: 45, // Snap rotation to 45-degree increments for better usability
+            snapThreshold: 10,
+            centeredScaling: true,
+          });
+          fabricElement = textObj;
+        }
       }
     } else if (element.shape === 'circle') {
       // Adjust size based on device
@@ -399,7 +431,7 @@ export function MusicogramCanvas({
       fabricElement.moveCursor = 'grabbing';
       
       // Add deletion through click when in erase mode
-      fabricElement.on('mousedown', (e) => {
+      fabricElement.on('mousedown', () => {
         if (isErasing) {
           onDeleteElement(element.id);
           canvas?.remove(fabricElement!);

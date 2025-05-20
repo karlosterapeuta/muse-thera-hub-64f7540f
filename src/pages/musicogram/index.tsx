@@ -1,7 +1,6 @@
 
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
-import { defaultTemplates } from "./data/musicogramData";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import html2canvas from "html2canvas";
@@ -12,7 +11,8 @@ import MusicogramToolbar from "./components/MusicogramToolbar";
 import InstrumentPalette from "./components/InstrumentPalette";
 import SymbolPalette from "./components/SymbolPalette";
 import MusicogramEditor from "./components/MusicogramEditor";
-import TemplateSelector from "./components/TemplateSelector";
+import StudyTemplates from "./components/StudyTemplates";
+import { musicStudyTemplates } from "./data/studyTemplates";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -21,7 +21,7 @@ const defaultInstruments: InstrumentType[] = [
   { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
   { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" },
   { id: "hands", name: "Palmas", shape: "hand", color: "#FF9800" },
-  { id: "feet", name: "Pés", shape: "footprints", color: "#8FD28E" }, // Updated to light green
+  { id: "feet", name: "Pés", shape: "footprints", color: "#8FD28E" },
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
@@ -31,33 +31,19 @@ const musicalSymbols: InstrumentType[] = [
   { id: "circle-black", name: "Círculo", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "●", size: 72 },
   { id: "circle-red", name: "Círculo Vermelho", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "●", size: 72 },
   { id: "circle-blue", name: "Círculo Azul", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "●", size: 72 },
-  { id: "circle-group", name: "Grupo de Círculos", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "○○○", size: 72 },
-  { id: "note", name: "Nota N", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "N", size: 72 },
-  { id: "waves", name: "Ondas", shape: "symbol", color: "#0000FF", iconType: "symbol", iconContent: "~", size: 72 },
+  
+  // Lines and shapes for musicogram studies
+  { id: "vertical-bar", name: "Barra Vertical", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "|", size: 72 },
+  { id: "spiral", name: "Espiral", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "@", size: 72 },
+  { id: "square", name: "Quadrado", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "□", size: 72 },
+  { id: "repeat-end", name: "Repetição", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: ":||", size: 72 },
   
   // Hand gestures
   { id: "clapping", name: "Palmas", shape: "symbol", color: "#FF9800", iconType: "symbol", iconContent: "👏", size: 72 },
   { id: "fist", name: "Soco/Punho", shape: "symbol", color: "#E53935", iconType: "symbol", iconContent: "👊", size: 72 },
   { id: "hand-head", name: "Mão na Cabeça", shape: "symbol", color: "#5D4037", iconType: "symbol", iconContent: "🤦", size: 72 },
   { id: "hand-shoulder", name: "Mão no Ombro", shape: "symbol", color: "#5D4037", iconType: "symbol", iconContent: "💁", size: 72 },
-  { id: "pointing", name: "Apontando", shape: "symbol", color: "#FFC107", iconType: "symbol", iconContent: "👆", size: 72 },
-  { id: "knock", name: "Toc Toc", shape: "symbol", color: "#795548", iconType: "symbol", iconContent: "🚪👊", size: 72 },
-  { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 72 },
-  
-  // Emotions
-  { id: "happy", name: "Feliz", shape: "symbol", color: "#FEF7CD", iconType: "symbol", iconContent: "😊", size: 72 }, // Updated to yellow
-  { id: "sad", name: "Triste", shape: "symbol", color: "#90CAF9", iconType: "symbol", iconContent: "😢", size: 72 },
-  { id: "angry", name: "Bravo", shape: "symbol", color: "#EF5350", iconType: "symbol", iconContent: "😠", size: 72 },
-  { id: "surprised", name: "Surpreso", shape: "symbol", color: "#66BB6A", iconType: "symbol", iconContent: "😲", size: 72 },
-  { id: "thinking", name: "Pensativo", shape: "symbol", color: "#78909C", iconType: "symbol", iconContent: "🤔", size: 72 },
-  { id: "love", name: "Amor", shape: "symbol", color: "#EC407A", iconType: "symbol", iconContent: "❤️", size: 72 },
-  
-  // Other symbols (keep existing ones)
-  { id: "tree", name: "Árvore", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "🌳", size: 72 },
-  { id: "face", name: "Rosto", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "☺", size: 72 },
-  { id: "cup", name: "Copo", shape: "symbol", color: "#6B4226", iconType: "symbol", iconContent: "☕", size: 72 },
-  { id: "plastic-cup", name: "Copo de Plástico", shape: "symbol", color: "#1E88E5", iconType: "symbol", iconContent: "🥤", size: 72 },
-  { id: "no-symbol", name: "Proibido", shape: "symbol", color: "#FF0000", iconType: "symbol", iconContent: "⊘", size: 72 }
+  { id: "pointing", name: "Apontando", shape: "symbol", color: "#FFC107", iconType: "symbol", iconContent: "👆", size: 72 }
 ];
 
 // Empty guitar grid labels - no chord labels
@@ -72,8 +58,8 @@ export default function MusicogramPage() {
   const [zoom, setZoom] = useState(1);
   const isMobile = useIsMobile();
   
-  // Selected template state - set the new visual-rhythm template as default
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("visual-rhythm");
+  // Selected template state - set the first study template as default
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("estudo1-2");
 
   // Canvas elements state
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
@@ -366,7 +352,7 @@ export default function MusicogramPage() {
       
       setCanvasElements(elementsWithNewIds);
       setNextPosition({ row: 0, col: 0 }); // Reset next position
-      toast.success(`Template "${template.name}" carregado com sucesso!`);
+      toast.success(`Estudo "${template.name}" carregado com sucesso!`);
     } else {
       // If no elements, just clear the canvas
       setCanvasElements([]);
@@ -375,7 +361,7 @@ export default function MusicogramPage() {
   };
 
   const getTemplateById = (id: string) => {
-    return defaultTemplates.find(template => template.id === id) || defaultTemplates[0];
+    return musicStudyTemplates.find(template => template.id === id) || musicStudyTemplates[0];
   };
 
   return (
@@ -383,10 +369,10 @@ export default function MusicogramPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
         <h1 className="text-xl sm:text-2xl font-bold">Musicograma</h1>
         
-        {/* Add Template Selector Component */}
+        {/* Add Study Templates Component */}
         <div className="flex space-x-2 items-center">
-          <TemplateSelector 
-            templates={defaultTemplates}
+          <StudyTemplates 
+            templates={musicStudyTemplates}
             selectedTemplate={selectedTemplateId}
             onSelectTemplate={handleTemplateSelect}
           />

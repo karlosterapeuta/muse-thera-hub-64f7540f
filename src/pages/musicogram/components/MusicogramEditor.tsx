@@ -1,11 +1,11 @@
 
 import React, { useRef } from "react";
 import MusicogramCanvas from "./MusicogramCanvas";
-import { MusicogramTemplate } from "../types";
+import { MusicogramTemplate, StudyTemplate } from "../types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MusicogramEditorProps {
-  template: MusicogramTemplate;
+  template: MusicogramTemplate | StudyTemplate;
   activeInstrument: string | null;
   isErasing: boolean;
   isDrawingMode: boolean;
@@ -16,9 +16,9 @@ interface MusicogramEditorProps {
   zoom: number;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
-  guitarGridLabels: { [key: string]: string };
-  onGridCellClick: (row: number, col: number) => void;
-  nextPosition: { row: number, col: number };
+  guitarGridLabels?: { [key: string]: string };
+  onGridCellClick?: (row: number, col: number) => void;
+  nextPosition?: { row: number, col: number } | null;
 }
 
 const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
@@ -33,7 +33,7 @@ const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
   zoom,
   onDrop,
   onDragOver,
-  guitarGridLabels,
+  guitarGridLabels = {},
   onGridCellClick,
   nextPosition
 }) => {
@@ -47,23 +47,32 @@ const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
-      <MusicogramCanvas 
-        template={template}
-        activeInstrument={activeInstrument}
-        isErasing={isErasing}
-        isDrawingMode={isDrawingMode}
-        activeColor={activeColor}
-        elements={elements}
-        onUpdateElement={onUpdateElement}
-        onDeleteElement={onDeleteElement}
-        zoom={zoom}
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        showGuitarGrid={true}
-        guitarGridLabels={guitarGridLabels}
-        onGridCellClick={onGridCellClick}
-        nextGridPosition={nextPosition}
-      />
+      <div className="w-full h-full relative">
+        {/* Optional study template name display */}
+        {'previewContent' in template && (
+          <div className="absolute top-2 left-2 bg-white/80 dark:bg-gray-800/80 px-3 py-1 rounded-md z-10">
+            <span className="text-sm font-medium">{template.name}</span>
+          </div>
+        )}
+        
+        <MusicogramCanvas 
+          template={template}
+          activeInstrument={activeInstrument}
+          isErasing={isErasing}
+          isDrawingMode={isDrawingMode}
+          activeColor={activeColor}
+          elements={elements}
+          onUpdateElement={onUpdateElement}
+          onDeleteElement={onDeleteElement}
+          zoom={zoom}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          showGuitarGrid={false} // No guitar grid for study templates
+          guitarGridLabels={guitarGridLabels}
+          onGridCellClick={onGridCellClick}
+          nextGridPosition={nextPosition}
+        />
+      </div>
     </div>
   );
 };
