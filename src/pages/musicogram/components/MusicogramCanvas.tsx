@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { MusicogramTemplate, VisualElement } from "../types";
 import { fabric } from "fabric";
@@ -49,6 +48,7 @@ export function MusicogramCanvas({
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const gridRef = useRef<HTMLDivElement>(null);
+  const canvasInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
     const initCanvas = () => {
@@ -57,113 +57,129 @@ export function MusicogramCanvas({
       const canvasWidth = template.columns * cellSize;
       const canvasHeight = template.rows * cellSize;
       
-      const newCanvas = new fabric.Canvas('musicogram-canvas', {
-        width: canvasWidth,
-        height: canvasHeight,
-        backgroundColor: '#fff',
-        selection: true, // Enable selection of multiple objects
-        preserveObjectStacking: true, // Keep object stacking order
-      });
+      // Check if canvas element exists
+      const canvasEl = document.getElementById('musicogram-canvas');
+      if (!canvasEl) {
+        console.error("Canvas element not found");
+        return null;
+      }
+      
+      try {
+        const newCanvas = new fabric.Canvas('musicogram-canvas', {
+          width: canvasWidth,
+          height: canvasHeight,
+          backgroundColor: '#fff',
+          selection: true, // Enable selection of multiple objects
+          preserveObjectStacking: true, // Keep object stacking order
+        });
 
-      fabricRef.current = newCanvas;
-      setCanvas(newCanvas);
+        fabricRef.current = newCanvas;
+        canvasInitializedRef.current = true;
+        
+        // Set up object moving event with COMPLETELY UNRESTRICTED MOVEMENT
+        newCanvas.on('object:moving', (event) => {
+          const obj = event.target;
+          if (obj) {
+            setIsDragging(true);
+            
+            // Allow completely free movement - no restrictions at all
+            // Objects can be moved anywhere, even outside canvas boundaries
+            const updatedElement = {
+              id: obj.data?.id,
+              x: obj.left || 0,
+              y: obj.top || 0,
+              color: obj.fill as string,
+              size: obj.width || 20,
+              shape: obj.type,
+              type: 'element',
+              position: { x: obj.left || 0, y: obj.top || 0 },
+              rotation: obj.angle || 0,
+              iconType: obj.data?.iconType,
+              iconContent: obj.data?.iconContent,
+            };
+            onUpdateElement(updatedElement);
+          }
+        });
 
-      // Set up object moving event with COMPLETELY UNRESTRICTED MOVEMENT
-      newCanvas.on('object:moving', (event) => {
-        const obj = event.target;
-        if (obj) {
-          setIsDragging(true);
-          
-          // Allow completely free movement - no restrictions at all
-          // Objects can be moved anywhere, even outside canvas boundaries
-          const updatedElement = {
-            id: obj.data?.id,
-            x: obj.left || 0,
-            y: obj.top || 0,
-            color: obj.fill as string,
-            size: obj.width || 20,
-            shape: obj.type,
-            type: 'element',
-            position: { x: obj.left || 0, y: obj.top || 0 },
-            rotation: obj.angle || 0,
-            iconType: obj.data?.iconType,
-            iconContent: obj.data?.iconContent,
-          };
-          onUpdateElement(updatedElement);
-        }
-      });
+        // Add mouse up handler to reset dragging state
+        newCanvas.on('mouse:up', () => {
+          if (isDragging) {
+            setIsDragging(false);
+          }
+        });
 
-      // Add mouse up handler to reset dragging state
-      newCanvas.on('mouse:up', () => {
-        if (isDragging) {
-          setIsDragging(false);
-        }
-      });
+        // Handle object scaling
+        newCanvas.on('object:scaling', (event) => {
+          const obj = event.target;
+          if (obj) {
+            const scaledWidth = obj.getScaledWidth() || 0;
+            const scaledHeight = obj.getScaledHeight() || 0;
+            const objLeft = obj.left || 0;
+            const objTop = obj.top || 0;
+            
+            const updatedElement = {
+              id: obj.data?.id,
+              x: objLeft,
+              y: objTop,
+              color: obj.fill as string,
+              size: Math.max(scaledWidth, scaledHeight),
+              shape: obj.type,
+              type: 'element',
+              position: { x: objLeft, y: objTop },
+              rotation: obj.angle || 0,
+              iconType: obj.data?.iconType,
+              iconContent: obj.data?.iconContent,
+            };
+            onUpdateElement(updatedElement);
+          }
+        });
 
-      // Handle object scaling
-      newCanvas.on('object:scaling', (event) => {
-        const obj = event.target;
-        if (obj) {
-          const scaledWidth = obj.getScaledWidth() || 0;
-          const scaledHeight = obj.getScaledHeight() || 0;
-          const objLeft = obj.left || 0;
-          const objTop = obj.top || 0;
-          
-          const updatedElement = {
-            id: obj.data?.id,
-            x: objLeft,
-            y: objTop,
-            color: obj.fill as string,
-            size: Math.max(scaledWidth, scaledHeight),
-            shape: obj.type,
-            type: 'element',
-            position: { x: objLeft, y: objTop },
-            rotation: obj.angle || 0,
-            iconType: obj.data?.iconType,
-            iconContent: obj.data?.iconContent,
-          };
-          onUpdateElement(updatedElement);
-        }
-      });
+        // Handle object rotating with improved interaction
+        newCanvas.on('object:rotating', (event) => {
+          const obj = event.target;
+          if (obj) {
+            const updatedElement = {
+              id: obj.data?.id,
+              x: obj.left || 0,
+              y: obj.top || 0,
+              color: obj.fill as string,
+              size: obj.width || 20,
+              shape: obj.type,
+              type: 'element',
+              position: { x: obj.left || 0, y: obj.top || 0 },
+              rotation: obj.angle || 0,
+              iconType: obj.data?.iconType,
+              iconContent: obj.data?.iconContent,
+            };
+            onUpdateElement(updatedElement);
+          }
+        });
 
-      // Handle object rotating with improved interaction
-      newCanvas.on('object:rotating', (event) => {
-        const obj = event.target;
-        if (obj) {
-          const updatedElement = {
-            id: obj.data?.id,
-            x: obj.left || 0,
-            y: obj.top || 0,
-            color: obj.fill as string,
-            size: obj.width || 20,
-            shape: obj.type,
-            type: 'element',
-            position: { x: obj.left || 0, y: obj.top || 0 },
-            rotation: obj.angle || 0,
-            iconType: obj.data?.iconType,
-            iconContent: obj.data?.iconContent,
-          };
-          onUpdateElement(updatedElement);
-        }
-      });
+        newCanvas.on('selection:created', (event) => {
+          setSelectedElement(event.target as fabric.Object);
+        });
 
-      newCanvas.on('selection:created', (event) => {
-        setSelectedElement(event.target as fabric.Object);
-      });
+        newCanvas.on('selection:updated', (event) => {
+          setSelectedElement(event.target as fabric.Object);
+        });
 
-      newCanvas.on('selection:updated', (event) => {
-        setSelectedElement(event.target as fabric.Object);
-      });
-
-      newCanvas.on('selection:cleared', () => {
-        setSelectedElement(null);
-      });
-
-      return newCanvas;
+        newCanvas.on('selection:cleared', () => {
+          setSelectedElement(null);
+        });
+        
+        return newCanvas;
+      } catch (error) {
+        console.error("Error initializing canvas:", error);
+        return null;
+      }
     };
 
-    if (!canvas) {
-      initCanvas();
+    // Only initialize if not already done
+    if (!canvas && !fabricRef.current) {
+      const newCanvas = initCanvas();
+      if (newCanvas) {
+        setCanvas(newCanvas);
+      }
     }
 
     return () => {
@@ -171,6 +187,8 @@ export function MusicogramCanvas({
         // Use try-catch to prevent errors during cleanup
         try {
           fabricRef.current.dispose();
+          fabricRef.current = null;
+          canvasInitializedRef.current = false;
         } catch (error) {
           console.error("Error disposing canvas:", error);
         }
@@ -179,44 +197,56 @@ export function MusicogramCanvas({
   }, [template, isMobile]);
 
   useEffect(() => {
-    if (fabricRef.current) {
-      // Adapt cell size for mobile
-      const cellSize = isMobile ? 60 : 80;
-      fabricRef.current.setZoom(zoom);
-      fabricRef.current.setWidth(template.columns * cellSize * zoom);
-      fabricRef.current.setHeight(template.rows * cellSize * zoom);
-      fabricRef.current.renderAll();
+    if (fabricRef.current && canvasInitializedRef.current) {
+      try {
+        // Adapt cell size for mobile
+        const cellSize = isMobile ? 60 : 80;
+        fabricRef.current.setZoom(zoom);
+        fabricRef.current.setWidth(template.columns * cellSize * zoom);
+        fabricRef.current.setHeight(template.rows * cellSize * zoom);
+        fabricRef.current.renderAll();
+      } catch (error) {
+        console.error("Error updating canvas dimensions:", error);
+      }
     }
   }, [zoom, template, isMobile]);
 
   useEffect(() => {
-    if (canvas) {
-      canvas.clear();
-      elements.forEach((element) => {
-        const el = createElement(element);
-        if (el) {
-          canvas.add(el);
-        }
-      });
+    if (canvas && canvasInitializedRef.current) {
+      try {
+        canvas.clear();
+        elements.forEach((element) => {
+          const el = createElement(element);
+          if (el) {
+            canvas.add(el);
+          }
+        });
+      } catch (error) {
+        console.error("Error updating canvas elements:", error);
+      }
     }
   }, [elements, canvas]);
 
   useEffect(() => {
-    if (canvas) {
-      canvas.isDrawingMode = isDrawingMode;
-      
-      // Set free movement properties for all objects
-      canvas.getObjects().forEach(obj => {
-        // In drawing mode: disable object manipulation
-        // In manipulation mode: enable object manipulation
-        obj.selectable = !isDrawingMode;
-        obj.lockMovementX = isDrawingMode;
-        obj.lockMovementY = isDrawingMode;
-        obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
-        obj.hasBorders = !isDrawingMode;
-      });
-      
-      canvas.renderAll();
+    if (canvas && canvasInitializedRef.current) {
+      try {
+        canvas.isDrawingMode = isDrawingMode;
+        
+        // Set free movement properties for all objects
+        canvas.getObjects().forEach(obj => {
+          // In drawing mode: disable object manipulation
+          // In manipulation mode: enable object manipulation
+          obj.selectable = !isDrawingMode;
+          obj.lockMovementX = isDrawingMode;
+          obj.lockMovementY = isDrawingMode;
+          obj.hasControls = !isDrawingMode; // Controls for resizing/rotating
+          obj.hasBorders = !isDrawingMode;
+        });
+        
+        canvas.renderAll();
+      } catch (error) {
+        console.error("Error updating drawing mode:", error);
+      }
     }
   }, [isDrawingMode, canvas]);
 
