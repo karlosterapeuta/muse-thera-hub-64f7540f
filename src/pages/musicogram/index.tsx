@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { InstrumentType } from "./types";
 import { defaultTemplates } from "./data/musicogramData";
@@ -11,6 +12,7 @@ import MusicogramToolbar from "./components/MusicogramToolbar";
 import InstrumentPalette from "./components/InstrumentPalette";
 import SymbolPalette from "./components/SymbolPalette";
 import MusicogramEditor from "./components/MusicogramEditor";
+import TemplateSelector from "./components/TemplateSelector";
 
 const defaultInstruments: InstrumentType[] = [
   { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
@@ -19,7 +21,7 @@ const defaultInstruments: InstrumentType[] = [
   { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
   { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" },
   { id: "hands", name: "Palmas", shape: "hand", color: "#FF9800" },
-  { id: "feet", name: "Pés", shape: "footprints", color: "#4CAF50" },
+  { id: "feet", name: "Pés", shape: "footprints", color: "#8FD28E" }, // Updated to light green
   { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
 ];
 
@@ -43,7 +45,7 @@ const musicalSymbols: InstrumentType[] = [
   { id: "hand", name: "Mão", shape: "symbol", color: "#000000", iconType: "symbol", iconContent: "✋", size: 72 },
   
   // Emotions
-  { id: "happy", name: "Feliz", shape: "symbol", color: "#FFD54F", iconType: "symbol", iconContent: "😊", size: 72 },
+  { id: "happy", name: "Feliz", shape: "symbol", color: "#FEF7CD", iconType: "symbol", iconContent: "😊", size: 72 }, // Updated to yellow
   { id: "sad", name: "Triste", shape: "symbol", color: "#90CAF9", iconType: "symbol", iconContent: "😢", size: 72 },
   { id: "angry", name: "Bravo", shape: "symbol", color: "#EF5350", iconType: "symbol", iconContent: "😠", size: 72 },
   { id: "surprised", name: "Surpreso", shape: "symbol", color: "#66BB6A", iconType: "symbol", iconContent: "😲", size: 72 },
@@ -69,6 +71,9 @@ export default function MusicogramPage() {
   const [activeSymbol, setActiveSymbol] = useState<InstrumentType | null>(null);
   const [zoom, setZoom] = useState(1);
   const isMobile = useIsMobile();
+  
+  // Selected template state
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(defaultTemplates[0].id);
 
   // Canvas elements state
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
@@ -346,6 +351,29 @@ export default function MusicogramPage() {
     );
   };
 
+  // Handle template selection
+  const handleTemplateSelect = (templateId: string) => {
+    const template = getTemplateById(templateId);
+    setSelectedTemplateId(templateId);
+    
+    // If the template has predefined elements, load them
+    if (template && template.elements && template.elements.length > 0) {
+      // Add unique IDs to make sure they're unique in our system
+      const elementsWithNewIds = template.elements.map(element => ({
+        ...element,
+        id: uuidv4()
+      }));
+      
+      setCanvasElements(elementsWithNewIds);
+      setNextPosition({ row: 0, col: 0 }); // Reset next position
+      toast.success(`Template "${template.name}" carregado com sucesso!`);
+    } else {
+      // If no elements, just clear the canvas
+      setCanvasElements([]);
+      toast.info(`Template vazio "${template.name}" selecionado.`);
+    }
+  };
+
   const getTemplateById = (id: string) => {
     return defaultTemplates.find(template => template.id === id) || defaultTemplates[0];
   };
@@ -354,6 +382,15 @@ export default function MusicogramPage() {
     <div className="flex flex-col h-full space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
         <h1 className="text-xl sm:text-2xl font-bold">Musicograma</h1>
+        
+        {/* Add Template Selector Component */}
+        <div className="flex space-x-2 items-center">
+          <TemplateSelector 
+            templates={defaultTemplates}
+            selectedTemplate={selectedTemplateId}
+            onSelectTemplate={handleTemplateSelect}
+          />
+        </div>
       </div>
 
       {/* Toolbar Component */}
@@ -392,7 +429,7 @@ export default function MusicogramPage() {
         
         {/* Musicogram Editor Component */}
         <MusicogramEditor
-          template={getTemplateById(defaultTemplates[0].id)}
+          template={getTemplateById(selectedTemplateId)}
           activeInstrument={activeInstrument}
           isErasing={isErasing}
           isDrawingMode={isDrawingMode}
