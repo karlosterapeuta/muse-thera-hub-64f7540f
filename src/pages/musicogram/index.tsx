@@ -72,8 +72,8 @@ export default function MusicogramPage() {
   const [zoom, setZoom] = useState(1);
   const isMobile = useIsMobile();
   
-  // Selected template state
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(defaultTemplates[0].id);
+  // Selected template state - set the new visual-rhythm template as default
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("visual-rhythm");
 
   // Canvas elements state
   const [canvasElements, setCanvasElements] = useState<any[]>([]);
