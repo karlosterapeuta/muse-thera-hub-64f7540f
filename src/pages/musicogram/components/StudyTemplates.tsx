@@ -48,17 +48,25 @@ export function StudyTemplates({ templates, selectedTemplate, onSelectTemplate }
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
             {templates.map(template => (
               <Card key={template.id} className="overflow-hidden">
-                <div 
-                  className="w-full h-32 p-3 flex items-center justify-center bg-white"
-                >
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    {template.previewContent && (
-                      <div 
-                        className="text-3xl font-bold text-center"
-                        dangerouslySetInnerHTML={{ __html: template.previewContent }}
+                <div className="w-full h-32 p-3 flex items-center justify-center bg-white">
+                  {template.imageUrl ? (
+                    <div className="h-24 w-full relative">
+                      <img 
+                        src={template.imageUrl}
+                        alt={template.name}
+                        className="object-contain w-full h-full"
                       />
-                    )}
-                  </div>
+                    </div>
+                  ) : template.previewContent ? (
+                    <div 
+                      className="text-3xl font-bold text-center"
+                      dangerouslySetInnerHTML={{ __html: template.previewContent }}
+                    />
+                  ) : (
+                    <div className="text-2xl font-bold">
+                      {template.name}
+                    </div>
+                  )}
                 </div>
                 <CardContent className="pt-4">
                   <h3 className="font-semibold">{template.name}</h3>
@@ -66,13 +74,13 @@ export function StudyTemplates({ templates, selectedTemplate, onSelectTemplate }
                 </CardContent>
                 <CardFooter>
                   <Button 
-                    variant="default" 
+                    variant={selectedTemplate === template.id ? "secondary" : "default"}
                     size="sm" 
                     className="w-full"
                     onClick={() => handleSelect(template)}
                   >
                     <Plus className="h-4 w-4 mr-1" />
-                    Usar Este Estudo
+                    {selectedTemplate === template.id ? "Selecionado" : "Usar Este Estudo"}
                   </Button>
                 </CardFooter>
               </Card>

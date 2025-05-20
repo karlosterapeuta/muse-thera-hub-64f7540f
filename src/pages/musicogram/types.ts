@@ -51,6 +51,7 @@ export interface StudyTemplate {
   columns: number;
   description: string;
   previewContent?: string;
+  imageUrl?: string;
   elements: VisualElement[];
 }
 
