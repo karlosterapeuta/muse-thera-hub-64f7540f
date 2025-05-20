@@ -13,6 +13,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Music, FileDown, Plus } from "lucide-react";
 import { StudyTemplate } from "../types";
+import { toast } from "sonner";
 
 interface StudyTemplatesProps {
   templates: StudyTemplate[];
@@ -26,7 +27,13 @@ export function StudyTemplates({ templates, selectedTemplate, onSelectTemplate }
   const handleSelect = (template: StudyTemplate) => {
     onSelectTemplate(template.id);
     setIsOpen(false);
+    toast.success(`Estudo "${template.name}" selecionado com sucesso!`);
   };
+  
+  // Debug the template data
+  React.useEffect(() => {
+    console.log("Templates in StudyTemplates:", templates);
+  }, [templates]);
   
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -55,6 +62,11 @@ export function StudyTemplates({ templates, selectedTemplate, onSelectTemplate }
                         src={template.imageUrl}
                         alt={template.name}
                         className="object-contain w-full h-full"
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${template.imageUrl}`);
+                          e.currentTarget.src = "/placeholder.svg";
+                          e.currentTarget.alt = "Image not available";
+                        }}
                       />
                     </div>
                   ) : template.previewContent ? (
