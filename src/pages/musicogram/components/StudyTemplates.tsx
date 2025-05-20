@@ -5,7 +5,8 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -38,6 +39,9 @@ export function StudyTemplates({ templates, selectedTemplate, onSelectTemplate }
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>Estudos Musicogramas</DialogTitle>
+          <DialogDescription>
+            Selecione um dos estudos musicais abaixo para trabalhar.
+          </DialogDescription>
         </DialogHeader>
         
         <ScrollArea className="h-[500px] mt-4">

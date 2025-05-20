@@ -40,6 +40,12 @@ const MusicogramEditor: React.FC<MusicogramEditorProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
+  // Make sure template is defined before rendering
+  if (!template) {
+    console.error("Template is undefined in MusicogramEditor");
+    return <div className="p-4">Erro ao carregar template</div>;
+  }
+
   return (
     <div 
       ref={canvasRef} 

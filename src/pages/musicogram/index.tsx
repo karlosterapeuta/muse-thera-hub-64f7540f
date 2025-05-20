@@ -1,5 +1,4 @@
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { InstrumentType } from "./types";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -13,17 +12,6 @@ import SymbolPalette from "./components/SymbolPalette";
 import MusicogramEditor from "./components/MusicogramEditor";
 import StudyTemplates from "./components/StudyTemplates";
 import { musicStudyTemplates } from "./data/studyTemplates";
-
-const defaultInstruments: InstrumentType[] = [
-  { id: "ukulele", name: "Violão", shape: "square", color: "#FF5252" },
-  { id: "triangle", name: "Triângulo", shape: "triangle", color: "#7E69AB" },
-  { id: "drum", name: "Tambor", shape: "circle", color: "#1E88E5" },
-  { id: "tambourine", name: "Pandeiro", shape: "circle", color: "#FFFFFF" },
-  { id: "rattle", name: "Chocalho", shape: "square", color: "#FFC107" },
-  { id: "hands", name: "Palmas", shape: "hand", color: "#FF9800" },
-  { id: "feet", name: "Pés", shape: "footprints", color: "#8FD28E" },
-  { id: "silence", name: "Silêncio", shape: "silence", color: "#E91E63" }
-];
 
 // Define our musical symbols with increased size and new hand gestures, body touches, and emotions
 const musicalSymbols: InstrumentType[] = [
@@ -66,6 +54,13 @@ export default function MusicogramPage() {
   
   // Track the next position for organized grid placement
   const [nextPosition, setNextPosition] = useState<{ row: number, col: number }>({ row: 0, col: 0 });
+
+  // Debug useEffect to check templates
+  useEffect(() => {
+    console.log("Available templates:", musicStudyTemplates.map(t => t.id));
+    console.log("Selected template ID:", selectedTemplateId);
+    console.log("Selected template:", getTemplateById(selectedTemplateId));
+  }, [selectedTemplateId]);
 
   // Add the missing handleDragStart function
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: InstrumentType, type: 'symbol' | 'instrument') => {
@@ -337,10 +332,25 @@ export default function MusicogramPage() {
     );
   };
 
-  // Handle template selection
+  // Modified to get template by ID or return default if not found
+  const getTemplateById = (id: string) => {
+    const foundTemplate = musicStudyTemplates.find(template => template.id === id);
+    if (!foundTemplate) {
+      console.warn(`Template with ID ${id} not found. Falling back to default.`);
+      return musicStudyTemplates[0]; // Fallback to first template
+    }
+    return foundTemplate;
+  };
+
+  // Handle template selection - with improved error handling
   const handleTemplateSelect = (templateId: string) => {
     const template = getTemplateById(templateId);
     setSelectedTemplateId(templateId);
+    
+    if (!template) {
+      toast.error(`Erro ao carregar template: ${templateId}`);
+      return;
+    }
     
     // If the template has predefined elements, load them
     if (template && template.elements && template.elements.length > 0) {
@@ -358,10 +368,6 @@ export default function MusicogramPage() {
       setCanvasElements([]);
       toast.info(`Template vazio "${template.name}" selecionado.`);
     }
-  };
-
-  const getTemplateById = (id: string) => {
-    return musicStudyTemplates.find(template => template.id === id) || musicStudyTemplates[0];
   };
 
   return (
@@ -413,23 +419,29 @@ export default function MusicogramPage() {
           </div>
         </div>
         
-        {/* Musicogram Editor Component */}
-        <MusicogramEditor
-          template={getTemplateById(selectedTemplateId)}
-          activeInstrument={activeInstrument}
-          isErasing={isErasing}
-          isDrawingMode={isDrawingMode}
-          activeColor={activeColor}
-          elements={canvasElements}
-          onUpdateElement={handleUpdateElement}
-          onDeleteElement={handleDeleteElement}
-          zoom={zoom}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          guitarGridLabels={guitarGridLabels}
-          onGridCellClick={handleGridCellClick}
-          nextPosition={nextPosition}
-        />
+        {/* Musicogram Editor Component - with error handling for template */}
+        {getTemplateById(selectedTemplateId) ? (
+          <MusicogramEditor
+            template={getTemplateById(selectedTemplateId)}
+            activeInstrument={activeInstrument}
+            isErasing={isErasing}
+            isDrawingMode={isDrawingMode}
+            activeColor={activeColor}
+            elements={canvasElements}
+            onUpdateElement={handleUpdateElement}
+            onDeleteElement={handleDeleteElement}
+            zoom={zoom}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            guitarGridLabels={guitarGridLabels}
+            onGridCellClick={handleGridCellClick}
+            nextPosition={nextPosition}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+            <p>Erro ao carregar o template. Por favor, selecione outro estudo.</p>
+          </div>
+        )}
       </div>
     </div>
   );
