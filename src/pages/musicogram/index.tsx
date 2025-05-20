@@ -12,6 +12,8 @@ import SymbolPalette from "./components/SymbolPalette";
 import MusicogramEditor from "./components/MusicogramEditor";
 import StudyTemplates from "./components/StudyTemplates";
 import { musicStudyTemplates } from "./data/studyTemplates";
+// Import the default instruments
+import { defaultInstruments } from "./data/instrumentData";
 
 // Define our musical symbols with increased size and new hand gestures, body touches, and emotions
 const musicalSymbols: InstrumentType[] = [
