@@ -158,11 +158,11 @@ export const defaultTemplates: MusicogramTemplate[] = [
       // Third row
       { id: "15", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "16", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
+      { id: "17", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
       { id: "18", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "19", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "21", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "20", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "21", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' }
     ]
   },
   {
@@ -223,18 +223,14 @@ export const defaultTemplates: MusicogramTemplate[] = [
       { id: "13", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "14", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "15", type: "element", x: 600, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 680, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 680, y: 120 }, rotation: 0 },
       
       // Third row - similar to second row
-      { id: "17", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "18", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "19", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "20", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "21", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "22", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "23", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "24", type: "element", x: 600, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "25", type: "element", x: 680, y: 200, color: "#000000", size: 60, shape: "square", position: { x: 680, y: 200 }, rotation: 0 }
+      { id: "16", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "17", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "18", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "19", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "20", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
+      { id: "21", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
     ]
   },
   {
@@ -280,4 +276,7 @@ export const defaultTemplates: MusicogramTemplate[] = [
       { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "8", type: "element", x: 600, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
       { id: "9", type: "element", x: 680, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 680, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 760, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 760, y: 40 }, rotation: 0, iconType
+      { id: "10", type: "element", x: 760, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 760, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' }
+    ]
+  }
+];
