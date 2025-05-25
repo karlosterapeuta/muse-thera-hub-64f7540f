@@ -68,7 +68,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <div className="w-full max-w-md bg-blue-600 p-8 sm:p-8 lg:p-10 rounded-lg min-h-[600px] sm:min-h-[450px]">
+    <div className="w-full max-w-lg bg-blue-600 p-8 sm:p-8 lg:p-10 rounded-lg min-h-[600px] sm:min-h-[450px]">
       <div className="mb-10 sm:mb-10">
         <h2 className="text-3xl sm:text-3xl font-semibold text-white mb-4">Acesso ao MuseTera</h2>
         <p className="text-lg sm:text-lg text-blue-100">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
