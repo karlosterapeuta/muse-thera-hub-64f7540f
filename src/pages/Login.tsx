@@ -7,6 +7,7 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { supabase } from "@/integrations/supabase/client";
+import { X } from "lucide-react";
 
 interface HashParams {
   [key: string]: string;
@@ -125,10 +126,10 @@ export default function Login() {
 
   if (isProcessingToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-blue-600">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-white">Carregando...</p>
         </div>
       </div>
     );
@@ -163,64 +164,59 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex">
+    <div className="min-h-screen bg-blue-600 flex">
+      {/* Header with logo and close button */}
+      <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-6 z-10">
+        <div className="flex items-center">
+          <svg className="h-8 w-auto text-white" viewBox="0 0 120 40" fill="currentColor">
+            <text x="10" y="28" className="text-lg font-bold tracking-wider">MUSETERAS</text>
+          </svg>
+        </div>
+        <button className="text-white hover:text-gray-200">
+          <X size={24} />
+        </button>
+      </div>
+
       {/* Left side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 pt-24">
+        <div className="bg-white rounded-lg shadow-xl p-12 w-full max-w-md">
           {renderForm()}
         </div>
       </div>
 
       {/* Right side - Welcome Section */}
-      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 bg-white relative">
-        <div className="text-center max-w-2xl">
-          {/* Header */}
-          <h1 className="text-4xl font-bold text-blue-600 mb-4">
-            Seja bem-vindo ao MuseTera!
-          </h1>
-          <p className="text-gray-600 text-lg mb-12">
-            A solução mais completa e segura em musicoterapia<br />
-            e serviços terapêuticos.
-          </p>
-          
-          {/* Security Shield Icon */}
-          <div className="absolute top-8 right-8">
-            <div className="w-20 h-20 bg-blue-600 rounded-lg flex items-center justify-center">
-              <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
-              </svg>
-            </div>
-            <span className="text-blue-600 text-2xl font-bold">$</span>
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 text-white">
+        <div className="text-center max-w-lg">
+          <div className="mb-12">
+            <h1 className="text-5xl font-bold mb-6 leading-tight">
+              Seja bem-vindo ao MuseTera!
+            </h1>
+            <p className="text-xl opacity-90 leading-relaxed">
+              A solução mais completa e segura em musicoterapia e serviços terapêuticos.
+            </p>
           </div>
-
-          {/* Devices Section */}
+          
           <div className="relative">
-            {/* Laptop */}
-            <div className="relative mx-auto" style={{ width: '400px', height: '250px' }}>
-              <div className="absolute inset-0 bg-gray-800 rounded-t-lg" style={{ height: '85%' }}>
-                <div className="p-4 h-full bg-white rounded-t-lg m-2">
-                  <img 
-                    src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
-                    alt="MuseTera Dashboard"
-                    className="w-full h-full object-cover rounded"
-                  />
-                </div>
+            {/* Financial security icon */}
+            <div className="w-32 h-32 mx-auto mb-8 relative">
+              <div className="w-full h-full bg-white/20 rounded-full flex items-center justify-center">
+                <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <text x="12" y="10" textAnchor="middle" className="text-xs font-bold fill-current">$</text>
+                </svg>
               </div>
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gray-800 rounded-b-lg"></div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-700 rounded-full"></div>
+              {/* Blue decorative elements */}
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400 rounded-full opacity-60"></div>
+              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-blue-400 rounded-full opacity-40"></div>
             </div>
-
-            {/* Mobile Phone */}
-            <div className="absolute -bottom-12 -right-8" style={{ width: '120px', height: '200px' }}>
-              <div className="w-full h-full bg-blue-600 rounded-3xl p-2">
-                <div className="w-full h-full bg-white rounded-2xl p-2">
-                  <img 
-                    src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
-                    alt="MuseTera Mobile"
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                </div>
-              </div>
+            
+            {/* Mockup devices */}
+            <div className="relative">
+              <img
+                src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
+                alt="MuseTera Platform Preview"
+                className="mx-auto max-w-full h-auto opacity-90"
+              />
             </div>
           </div>
         </div>

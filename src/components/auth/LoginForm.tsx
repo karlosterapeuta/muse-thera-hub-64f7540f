@@ -84,7 +84,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
             placeholder="seu@email.com"
             required
           />
@@ -100,7 +100,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
               placeholder="••••••••"
               required
             />
@@ -114,7 +114,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={onSwitchToPasswordReset}
@@ -126,14 +126,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
 
         <Button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-md transition-colors"
+          className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-medium text-base rounded-md transition-colors"
           disabled={isLoading}
         >
           {isLoading ? "Carregando..." : "Acessar conta"}
         </Button>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">Ainda não possui uma conta?</p>
+        <div className="mt-8 text-center">
+          <p className="text-gray-600 mb-4">Ainda não possui uma conta?</p>
           <button
             type="button"
             onClick={onSwitchToRegister}
