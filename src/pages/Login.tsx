@@ -215,8 +215,8 @@ export default function Login() {
               <div className="w-full h-full bg-blue-600 rounded-3xl p-2">
                 <div className="w-full h-full bg-white rounded-2xl p-2">
                   <img 
-                    src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
-                    alt="MuseTera Mobile"
+                    src="/lovable-uploads/15b4ca10-5cbc-4d61-9bee-554568a4352d.png"
+                    alt="Atividades Musicoterapêuticas"
                     className="w-full h-full object-cover rounded-xl"
                   />
                 </div>
