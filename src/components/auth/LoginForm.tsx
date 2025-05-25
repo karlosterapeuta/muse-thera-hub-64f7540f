@@ -68,15 +68,15 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <div className="w-full max-w-md bg-blue-600 p-6 sm:p-8 lg:p-10 rounded-lg min-h-[500px] sm:min-h-[450px]">
-      <div className="mb-8 sm:mb-10">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Acesso ao MuseTera</h2>
-        <p className="text-base sm:text-lg text-blue-100">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
+    <div className="w-full max-w-md bg-blue-600 p-8 sm:p-8 lg:p-10 rounded-lg min-h-[600px] sm:min-h-[450px]">
+      <div className="mb-10 sm:mb-10">
+        <h2 className="text-3xl sm:text-3xl font-semibold text-white mb-4">Acesso ao MuseTera</h2>
+        <p className="text-lg sm:text-lg text-blue-100">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-6 sm:space-y-8">
+      <form onSubmit={handleLogin} className="space-y-8 sm:space-y-8">
         <div>
-          <label htmlFor="email" className="block text-base font-medium text-white mb-3">
+          <label htmlFor="email" className="block text-lg font-medium text-white mb-4">
             Email
           </label>
           <Input
@@ -84,14 +84,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-base sm:text-lg"
+            className="w-full px-5 sm:px-5 py-4 sm:py-4 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-lg sm:text-lg"
             placeholder="seu@email.com"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-base font-medium text-white mb-3">
+          <label htmlFor="password" className="block text-lg font-medium text-white mb-4">
             Senha
           </label>
           <div className="relative">
@@ -100,16 +100,16 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 sm:px-5 py-3 sm:py-4 pr-12 sm:pr-14 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-base sm:text-lg"
+              className="w-full px-5 sm:px-5 py-4 sm:py-4 pr-14 sm:pr-14 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-lg sm:text-lg"
               placeholder="••••••••"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-4 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
             </button>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
           <button
             type="button"
             onClick={onSwitchToPasswordReset}
-            className="text-sm sm:text-base text-blue-100 hover:text-white"
+            className="text-base sm:text-base text-blue-100 hover:text-white"
           >
             Esqueci minha senha
           </button>
@@ -126,18 +126,18 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
 
         <Button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 sm:py-4 px-4 rounded-md transition-colors text-base sm:text-lg"
+          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-4 sm:py-4 px-4 rounded-md transition-colors text-lg sm:text-lg"
           disabled={isLoading}
         >
           {isLoading ? "Carregando..." : "Acessar conta"}
         </Button>
 
-        <div className="mt-6 sm:mt-8 text-center">
-          <p className="text-sm sm:text-base text-blue-100">Ainda não possui uma conta?</p>
+        <div className="mt-8 sm:mt-8 text-center">
+          <p className="text-base sm:text-base text-blue-100">Ainda não possui uma conta?</p>
           <button
             type="button"
             onClick={onSwitchToRegister}
-            className="text-base sm:text-lg text-white hover:text-blue-100 font-medium"
+            className="text-lg sm:text-lg text-white hover:text-blue-100 font-medium"
           >
             Criar uma conta
           </button>
