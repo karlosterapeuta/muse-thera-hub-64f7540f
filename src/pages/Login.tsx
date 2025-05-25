@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -199,8 +200,8 @@ export default function Login() {
               <div className="absolute inset-0 bg-gray-800 rounded-t-lg" style={{ height: '85%' }}>
                 <div className="p-4 h-full bg-white rounded-t-lg m-2">
                   <img 
-                    src="/lovable-uploads/1348d6f9-1270-4ad5-9dff-9ab07c0e92b1.png"
-                    alt="MuseTera Dashboard"
+                    src="/lovable-uploads/f063cdb1-310e-48c3-8765-3ede078ec8c1.png"
+                    alt="Processos Musicoterapêuticos"
                     className="w-full h-full object-cover rounded"
                   />
                 </div>
