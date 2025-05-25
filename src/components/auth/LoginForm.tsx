@@ -17,7 +17,6 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -26,7 +25,6 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
     setIsLoading(true);
 
     try {
-      // 1. Primeiro tenta fazer o login normalmente
       const result = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -34,7 +32,6 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
       
       if (result.error) throw result.error;
       
-      // 2. Se o login for bem-sucedido, verifica o status do usuário
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('status')
@@ -43,9 +40,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
       
       if (profileError) throw profileError;
       
-      // 3. Se o usuário estiver inativo, faz logout e mostra uma mensagem
       if (profile.status !== 'active') {
-        // Faz logout imediatamente
         await supabase.auth.signOut();
         
         toast({
@@ -56,7 +51,6 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
         return;
       }
       
-      // 4. Se tudo estiver ok, continua o login normalmente
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao MuseTera!",
@@ -74,25 +68,30 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-      <div className="space-y-4">
+    <div className="w-full max-w-md">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Acesso ao MuseTera</h2>
+        <p className="text-gray-600">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
+      </div>
+
+      <form onSubmit={handleLogin} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-base font-medium text-gray-700">
-            E-mail
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email
           </label>
           <Input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 text-base"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="seu@email.com"
             required
           />
         </div>
 
-        <div className="relative">
-          <label htmlFor="password" className="block text-base font-medium text-gray-700">
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
             Senha
           </label>
           <div className="relative">
@@ -101,60 +100,49 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 text-base"
-              placeholder="********"
+              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="••••••••"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-          />
-          <label htmlFor="remember-me" className="ml-2 block text-base text-gray-700">
-            Lembrar-me
-          </label>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onSwitchToPasswordReset}
+            className="text-sm text-blue-600 hover:text-blue-700"
+          >
+            Esqueci minha senha
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onSwitchToPasswordReset}
-          className="text-base text-primary hover:text-primary/80"
-        >
-          Recuperar senha
-        </button>
-      </div>
 
-      <Button
-        type="submit"
-        className="w-full bg-primary hover:bg-primary/90 text-base py-6"
-        disabled={isLoading}
-      >
-        {isLoading ? "Carregando..." : "Entrar"}
-      </Button>
-
-      <div className="text-center space-y-2">
-        <button
-          type="button"
-          onClick={onSwitchToRegister}
-          className="text-base text-primary hover:text-primary/80"
+        <Button
+          type="submit"
+          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-md transition-colors"
+          disabled={isLoading}
         >
-          Não tem uma conta? Registre-se
-        </button>
-      </div>
-    </form>
+          {isLoading ? "Carregando..." : "Acessar conta"}
+        </Button>
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">Ainda não possui uma conta?</p>
+          <button
+            type="button"
+            onClick={onSwitchToRegister}
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Criar uma conta
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

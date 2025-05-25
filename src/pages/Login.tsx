@@ -2,14 +2,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import AuthHeader from "@/components/auth/AuthHeader";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { supabase } from "@/integrations/supabase/client";
 
-// Interface para parâmetros de hash para evitar erros de TypeScript
 interface HashParams {
   [key: string]: string;
   access_token?: string;
@@ -30,16 +28,13 @@ export default function Login() {
   useEffect(() => {
     const handlePasswordReset = async () => {
       try {
-        // Debug: Registrar URL completa para solução de problemas
         console.log("URL atual:", window.location.href);
         console.log("Hash:", window.location.hash);
         console.log("Parâmetros de pesquisa:", window.location.search);
         
-        // Verificar se temos um hash com um token de acesso ou erro
         if (window.location.hash) {
           console.log("Hash encontrado na URL");
           
-          // Analisar parâmetros de hash
           const hashParams: HashParams = {};
           const hash = window.location.hash.substring(1);
           
@@ -52,22 +47,18 @@ export default function Login() {
           
           console.log("Parâmetros de hash analisados:", hashParams);
           
-          // Verificar se é um tipo de recuperação
           if (hashParams.type === 'recovery') {
             console.log("Este é um fluxo de recuperação de senha");
             
             try {
-              // Verificar se temos o token de acesso
               if (hashParams.access_token) {
                 console.log("Token de acesso encontrado, configurando sessão");
                 
-                // Configurar a sessão com os parâmetros
                 await supabase.auth.setSession({
                   access_token: hashParams.access_token,
                   refresh_token: hashParams.refresh_token || '',
                 });
                 
-                // Definir o formulário para o modo de nova senha
                 setIsSettingNewPassword(true);
                 
                 toast({
@@ -91,11 +82,9 @@ export default function Login() {
               });
             }
           } else if (hashParams.type === 'signup') {
-            // Esta é uma confirmação de inscrição
             console.log("Este é um fluxo de confirmação de inscrição");
             
             try {
-              // Se tivermos o token de acesso, o usuário confirmou seu email
               if (hashParams.access_token) {
                 toast({
                   title: "Cadastro confirmado!",
@@ -108,7 +97,6 @@ export default function Login() {
           }
         }
         
-        // Verificar parâmetros de consulta para 'type=recovery'
         const searchParams = new URLSearchParams(window.location.search);
         const resetType = searchParams.get('type');
         
@@ -116,7 +104,6 @@ export default function Login() {
           setIsResettingPassword(true);
         }
         
-        // Tratar erro de token expirado ou inválido dos parâmetros de consulta
         const errorCode = searchParams.get('error');
         const errorDescription = searchParams.get('error_description');
         
@@ -129,7 +116,6 @@ export default function Login() {
           });
         }
       } finally {
-        // Marcar processamento como concluído independentemente do resultado
         setIsProcessingToken(false);
       }
     };
@@ -137,7 +123,6 @@ export default function Login() {
     handlePasswordReset();
   }, [location, toast]);
 
-  // Aguardar o processamento do token antes de renderizar o formulário correto
   if (isProcessingToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -149,35 +134,10 @@ export default function Login() {
     );
   }
 
-  const getHeaderContent = () => {
-    if (isSettingNewPassword) {
-      return {
-        title: "Definir Nova Senha",
-        description: "Digite sua nova senha abaixo:"
-      };
-    } else if (isResettingPassword) {
-      return {
-        title: "Recuperar Senha",
-        description: "Digite seu email para receber o link de recuperação"
-      };
-    } else if (isRegistering) {
-      return {
-        title: "Registro",
-        description: "Crie sua conta para acessar o sistema"
-      };
-    } else {
-      return {
-        title: "Login",
-        description: "Sistema Para Musicoterapeutas"
-      };
-    }
-  };
-
   const renderForm = () => {
     if (isSettingNewPassword) {
       return <NewPasswordForm onSuccessCallback={() => {
         setIsSettingNewPassword(false);
-        // Limpar hash da URL após definir nova senha
         window.history.replaceState(null, '', window.location.pathname);
       }} />;
     } else if (isResettingPassword) {
@@ -202,13 +162,41 @@ export default function Login() {
     }
   };
 
-  const { title, description } = getHeaderContent();
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8">
-        <AuthHeader title={title} description={description} />
-        {renderForm()}
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex">
+      {/* Left side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+          {renderForm()}
+        </div>
+      </div>
+
+      {/* Right side - Welcome Section */}
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 text-white">
+        <div className="text-center max-w-md">
+          <div className="mb-8">
+            <img
+              src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
+              alt="MuseTera Logo"
+              className="mx-auto h-24 w-24 mb-4"
+            />
+            <h1 className="text-4xl font-bold mb-4">Seja bem-vindo ao MuseTera!</h1>
+            <p className="text-xl opacity-90">
+              A solução mais completa e segura em musicoterapia e serviços terapêuticos.
+            </p>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </div>
+            <p className="text-sm opacity-80">
+              Plataforma segura e confiável para profissionais da musicoterapia
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
