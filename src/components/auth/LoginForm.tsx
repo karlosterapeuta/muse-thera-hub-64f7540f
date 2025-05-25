@@ -68,15 +68,15 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md bg-blue-600 p-8 rounded-lg">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Acesso ao MuseTera</h2>
-        <p className="text-gray-600">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
+        <h2 className="text-2xl font-semibold text-white mb-2">Acesso ao MuseTera</h2>
+        <p className="text-blue-100">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
             Email
           </label>
           <Input
@@ -84,14 +84,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white"
             placeholder="seu@email.com"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
             Senha
           </label>
           <div className="relative">
@@ -100,7 +100,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 pr-12 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white"
               placeholder="••••••••"
               required
             />
@@ -118,7 +118,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
           <button
             type="button"
             onClick={onSwitchToPasswordReset}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-sm text-blue-100 hover:text-white"
           >
             Esqueci minha senha
           </button>
@@ -133,11 +133,11 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
         </Button>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-600">Ainda não possui uma conta?</p>
+          <p className="text-blue-100">Ainda não possui uma conta?</p>
           <button
             type="button"
             onClick={onSwitchToRegister}
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="text-white hover:text-blue-100 font-medium"
           >
             Criar uma conta
           </button>
