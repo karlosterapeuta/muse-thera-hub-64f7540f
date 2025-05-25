@@ -163,7 +163,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex">
       {/* Left side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
@@ -172,29 +172,56 @@ export default function Login() {
       </div>
 
       {/* Right side - Welcome Section */}
-      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 text-white">
-        <div className="text-center max-w-md">
-          <div className="mb-8">
-            <img
-              src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
-              alt="MuseTera Logo"
-              className="mx-auto h-24 w-24 mb-4"
-            />
-            <h1 className="text-4xl font-bold mb-4">Seja bem-vindo ao MuseTera!</h1>
-            <p className="text-xl opacity-90">
-              A solução mais completa e segura em musicoterapia e serviços terapêuticos.
-            </p>
-          </div>
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 bg-white relative">
+        <div className="text-center max-w-2xl">
+          {/* Header */}
+          <h1 className="text-4xl font-bold text-blue-600 mb-4">
+            Seja bem-vindo ao MuseTera!
+          </h1>
+          <p className="text-gray-600 text-lg mb-12">
+            A solução mais completa e segura em musicoterapia<br />
+            e serviços terapêuticos.
+          </p>
           
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          {/* Security Shield Icon */}
+          <div className="absolute top-8 right-8">
+            <div className="w-20 h-20 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
               </svg>
             </div>
-            <p className="text-sm opacity-80">
-              Plataforma segura e confiável para profissionais da musicoterapia
-            </p>
+            <span className="text-blue-600 text-2xl font-bold">$</span>
+          </div>
+
+          {/* Devices Section */}
+          <div className="relative">
+            {/* Laptop */}
+            <div className="relative mx-auto" style={{ width: '400px', height: '250px' }}>
+              <div className="absolute inset-0 bg-gray-800 rounded-t-lg" style={{ height: '85%' }}>
+                <div className="p-4 h-full bg-white rounded-t-lg m-2">
+                  <img 
+                    src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
+                    alt="MuseTera Dashboard"
+                    className="w-full h-full object-cover rounded"
+                  />
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gray-800 rounded-b-lg"></div>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-700 rounded-full"></div>
+            </div>
+
+            {/* Mobile Phone */}
+            <div className="absolute -bottom-12 -right-8" style={{ width: '120px', height: '200px' }}>
+              <div className="w-full h-full bg-blue-600 rounded-3xl p-2">
+                <div className="w-full h-full bg-white rounded-2xl p-2">
+                  <img 
+                    src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
+                    alt="MuseTera Mobile"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
