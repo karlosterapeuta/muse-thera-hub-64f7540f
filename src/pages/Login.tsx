@@ -215,7 +215,7 @@ export default function Login() {
               <div className="w-full h-full bg-blue-600 rounded-3xl p-2">
                 <div className="w-full h-full bg-white rounded-2xl p-2">
                   <img 
-                    src="/lovable-uploads/15b4ca10-5cbc-4d61-9bee-554568a4352d.png"
+                    src="/lovable-uploads/97952175-ee1b-403e-afb8-96f9556133c6.png"
                     alt="Atividades Musicoterapêuticas"
                     className="w-full h-full object-cover rounded-xl"
                   />
