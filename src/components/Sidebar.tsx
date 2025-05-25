@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -30,6 +29,7 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
+  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -55,6 +55,19 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },
     (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: Key, text: "Códigos de Convite", path: "/invite-codes" },
   ].filter(Boolean);
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate("/login");
+      onNavigate?.();
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      // Even if there's an error, redirect to login
+      navigate("/login");
+      onNavigate?.();
+    }
+  };
 
   return (
     <div
@@ -111,10 +124,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
             "w-full justify-center text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors",
             !collapsed && "justify-start"
           )}
-          onClick={async () => {
-            await supabase.auth.signOut();
-            onNavigate?.();
-          }}
+          onClick={handleLogout}
         >
           <LogOut size={20} />
           {!collapsed && <span className="ml-3">Sair do Sistema</span>}
