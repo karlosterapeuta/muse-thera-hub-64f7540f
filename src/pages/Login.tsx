@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -174,35 +175,40 @@ export default function Login() {
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 bg-white relative">
         <div className="text-center max-w-2xl">
           {/* Header */}
-          <h1 className="text-4xl font-bold text-blue-600 mb-4">
-            Seja bem-vindo ao MuseTera!
-          </h1>
-          <p className="text-gray-600 text-lg mb-12">
-            A solução mais completa e segura em musicoterapia<br />
-            e serviços terapêuticos.
-          </p>
+          <div className="mb-12">
+            <h1 className="text-4xl xl:text-5xl font-bold text-blue-600 mb-6">
+              Seja bem-vindo ao MuseTera!
+            </h1>
+            <p className="text-gray-600 text-lg xl:text-xl leading-relaxed">
+              A solução mais completa e segura em musicoterapia<br />
+              e serviços terapêuticos.
+            </p>
+          </div>
 
-          {/* Devices Section */}
-          <div className="relative">
-            {/* Laptop */}
-            <div className="relative mx-auto" style={{ width: '400px', height: '250px' }}>
-              <div className="absolute inset-0 bg-gray-800 rounded-t-lg" style={{ height: '85%' }}>
-                <div className="p-4 h-full bg-white rounded-t-lg m-2">
+          {/* Devices Section with better organization */}
+          <div className="relative flex items-center justify-center">
+            {/* Main Laptop Display */}
+            <div className="relative z-10">
+              <div className="bg-gray-800 rounded-t-xl p-3 shadow-2xl" style={{ width: '450px', height: '280px' }}>
+                <div className="bg-white rounded-lg h-full p-4 overflow-hidden">
                   <img 
                     src="/lovable-uploads/f063cdb1-310e-48c3-8765-3ede078ec8c1.png"
                     alt="Processos Musicoterapêuticos"
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full object-cover rounded-md"
                   />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gray-800 rounded-b-lg"></div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-700 rounded-full"></div>
+              {/* Laptop base */}
+              <div className="relative">
+                <div className="bg-gray-800 h-6 rounded-b-xl mx-auto" style={{ width: '460px' }}></div>
+                <div className="bg-gray-700 h-3 rounded-full mx-auto mt-1" style={{ width: '120px' }}></div>
+              </div>
             </div>
 
-            {/* Mobile Phone */}
-            <div className="absolute -bottom-12 -right-8" style={{ width: '120px', height: '200px' }}>
-              <div className="w-full h-full bg-blue-600 rounded-3xl p-2">
-                <div className="w-full h-full bg-white rounded-2xl p-2">
+            {/* Mobile Phone positioned better */}
+            <div className="absolute -bottom-8 -right-16 z-20 transform rotate-12">
+              <div className="bg-blue-600 rounded-3xl p-3 shadow-xl" style={{ width: '140px', height: '240px' }}>
+                <div className="bg-white rounded-2xl h-full p-3 overflow-hidden">
                   <img 
                     src="/lovable-uploads/97952175-ee1b-403e-afb8-96f9556133c6.png"
                     alt="Atividades Musicoterapêuticas"
@@ -210,6 +216,46 @@ export default function Login() {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Tablet positioned on the left */}
+            <div className="absolute -bottom-4 -left-20 z-15 transform -rotate-6">
+              <div className="bg-gray-300 rounded-2xl p-2 shadow-lg" style={{ width: '180px', height: '240px' }}>
+                <div className="bg-white rounded-xl h-full p-3 overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                    <div className="text-center text-blue-600">
+                      <div className="text-2xl mb-2">🎵</div>
+                      <div className="text-sm font-medium">MuseTera</div>
+                      <div className="text-xs">Mobile App</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Features highlights */}
+          <div className="mt-16 grid grid-cols-3 gap-6 text-center">
+            <div className="p-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-blue-600 text-xl">🎼</span>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Processos</h3>
+              <p className="text-sm text-gray-600">Completos</p>
+            </div>
+            <div className="p-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-green-600 text-xl">👥</span>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Pacientes</h3>
+              <p className="text-sm text-gray-600">Organizados</p>
+            </div>
+            <div className="p-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-purple-600 text-xl">📊</span>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Relatórios</h3>
+              <p className="text-sm text-gray-600">Detalhados</p>
             </div>
           </div>
         </div>
