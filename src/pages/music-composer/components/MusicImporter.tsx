@@ -16,13 +16,25 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface Note {
+  id: string;
+  pitch: string;
+  duration: number;
+  position: { x: number; y: number };
+  color: string;
+  shape: string;
+  timestamp: number;
+}
+
 interface ImportedSong {
   id: string;
   name: string;
   duration: string;
-  notes: any[];
+  notes: Note[];
   difficulty: number;
   category: string;
+  tempo?: number;
+  pattern?: string[];
   previewUrl?: string;
 }
 
@@ -39,61 +51,128 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { toast } = useToast();
 
+  // Função para obter cor da nota
+  const getColorForNote = (pitch: string) => {
+    const colorMap: { [key: string]: string } = {
+      'C': '#FF0000',  // Vermelho - Dó
+      'D': '#FF6600',  // Laranja - Ré  
+      'E': '#FFFF00',  // Amarelo - Mi
+      'F': '#00CC00',  // Verde - Fá
+      'G': '#0099FF',  // Azul claro - Sol
+      'A': '#6600FF',  // Roxo - Lá
+      'B': '#FF1493'   // Rosa - Si
+    };
+    return colorMap[pitch] || '#888888';
+  };
+
+  // Função para obter forma da nota
+  const getShapeForNote = (pitch: string) => {
+    const shapeMap: { [key: string]: string } = {
+      'C': 'circle',
+      'D': 'square', 
+      'E': 'triangle',
+      'F': 'diamond',
+      'G': 'hexagon',
+      'A': 'triangle-up',
+      'B': 'circle-outline'
+    };
+    return shapeMap[pitch] || 'circle';
+  };
+
+  // Função para gerar notas estruturadas
+  const generateNotesFromPattern = (pattern: string[], startX = 150, startY = 140) => {
+    return pattern.map((pitch, index) => ({
+      id: `note-${Date.now()}-${index}`,
+      pitch,
+      duration: 1,
+      position: { x: startX + (index * 80), y: startY },
+      color: getColorForNote(pitch),
+      shape: getShapeForNote(pitch),
+      timestamp: index
+    }));
+  };
+
   // Biblioteca de exercícios pré-definidos
   const predefinedExercises: ImportedSong[] = [
     {
       id: "ex1",
       name: "🔴 Primeiro Dó",
       duration: "0:30",
-      notes: [
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 0 },
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 1 },
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 2 }
-      ],
+      notes: generateNotesFromPattern(["C", "C", "C", "C"]),
       difficulty: 1,
-      category: "iniciante"
+      category: "iniciante",
+      tempo: 80,
+      pattern: ["C", "C", "C", "C"]
     },
     {
       id: "ex2", 
       name: "🌈 Escala Colorida",
       duration: "1:00",
-      notes: [
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 0 },
-        { pitch: "D", color: "#FF6600", shape: "square", timestamp: 1 },
-        { pitch: "E", color: "#FFFF00", shape: "triangle", timestamp: 2 },
-        { pitch: "F", color: "#00CC00", shape: "diamond", timestamp: 3 },
-        { pitch: "G", color: "#0099FF", shape: "hexagon", timestamp: 4 }
-      ],
+      notes: generateNotesFromPattern(["C", "D", "E", "F", "G"]),
       difficulty: 2,
-      category: "intermediario"
+      category: "intermediario",
+      tempo: 90,
+      pattern: ["C", "D", "E", "F", "G"]
     },
     {
       id: "ex3",
       name: "🎵 Brilha Brilha Estrelinha",
       duration: "2:00",
-      notes: [
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 0 },
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 1 },
-        { pitch: "G", color: "#0099FF", shape: "hexagon", timestamp: 2 },
-        { pitch: "G", color: "#0099FF", shape: "hexagon", timestamp: 3 },
-        { pitch: "A", color: "#6600FF", shape: "triangle-up", timestamp: 4 },
-        { pitch: "A", color: "#6600FF", shape: "triangle-up", timestamp: 5 },
-        { pitch: "G", color: "#0099FF", shape: "hexagon", timestamp: 6 }
-      ],
+      notes: generateNotesFromPattern(["C", "C", "G", "G", "A", "A", "G"]),
       difficulty: 2,
-      category: "infantil"
+      category: "infantil",
+      tempo: 100,
+      pattern: ["C", "C", "G", "G", "A", "A", "G"]
     },
     {
       id: "ex4",
       name: "🎹 Acordes Básicos",
       duration: "1:30",
-      notes: [
-        { pitch: "C", color: "#FF0000", shape: "circle", timestamp: 0 },
-        { pitch: "E", color: "#FFFF00", shape: "triangle", timestamp: 0.5 },
-        { pitch: "G", color: "#0099FF", shape: "hexagon", timestamp: 1 }
-      ],
+      notes: generateNotesFromPattern(["C", "E", "G"]),
       difficulty: 3,
-      category: "avancado"
+      category: "avancado",
+      tempo: 120,
+      pattern: ["C", "E", "G"]
+    },
+    {
+      id: "ex5",
+      name: "🟠 Descobrindo o RÉ",
+      duration: "0:45",
+      notes: generateNotesFromPattern(["D", "D", "D", "D", "D"]),
+      difficulty: 1,
+      category: "iniciante",
+      tempo: 85,
+      pattern: ["D", "D", "D", "D", "D"]
+    },
+    {
+      id: "ex6",
+      name: "🎶 Melodia Simples",
+      duration: "1:15",
+      notes: generateNotesFromPattern(["C", "D", "E", "E", "D", "C"]),
+      difficulty: 2,
+      category: "intermediario",
+      tempo: 95,
+      pattern: ["C", "D", "E", "E", "D", "C"]
+    },
+    {
+      id: "ex7",
+      name: "🎪 Parabéns para Você",
+      duration: "2:30",
+      notes: generateNotesFromPattern(["C", "C", "D", "C", "F", "E"]),
+      difficulty: 2,
+      category: "infantil",
+      tempo: 110,
+      pattern: ["C", "C", "D", "C", "F", "E"]
+    },
+    {
+      id: "ex8",
+      name: "🌟 Estrela da Manhã",
+      duration: "1:45",
+      notes: generateNotesFromPattern(["G", "E", "E", "F", "D", "D", "C"]),
+      difficulty: 3,
+      category: "avancado",
+      tempo: 105,
+      pattern: ["G", "E", "E", "F", "D", "D", "C"]
     }
   ];
 
@@ -109,14 +188,17 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Simular processamento de arquivo MIDI ou JSON
+    // Simular processamento de arquivo
+    const randomPattern = ["C", "D", "E", "F", "G"];
     const newSong: ImportedSong = {
       id: Date.now().toString(),
       name: file.name.replace(/\.[^/.]+$/, ""),
-      duration: "2:30", // Duração simulada
-      notes: [], // Notas processadas do arquivo
+      duration: "2:30",
+      notes: generateNotesFromPattern(randomPattern),
       difficulty: Math.floor(Math.random() * 3) + 1,
-      category: "importado"
+      category: "importado",
+      tempo: 120,
+      pattern: randomPattern
     };
 
     setImportedSongs(prev => [...prev, newSong]);
@@ -128,18 +210,20 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
   }, [toast]);
 
   const handleLoadSong = (song: ImportedSong) => {
+    console.log("Carregando música:", song);
     onImportSong(song);
     toast({
       title: "🎼 Música carregada!",
-      description: `${song.name} está pronta para ser tocada.`,
+      description: `${song.name} está pronta para ser tocada no compositor.`,
     });
   };
 
   const handleLoadExerciseLocal = (exercise: ImportedSong) => {
+    console.log("Carregando exercício:", exercise);
     onLoadExercise(exercise);
     toast({
       title: "📝 Exercício carregado!",
-      description: `${exercise.name} está pronto para praticar.`,
+      description: `${exercise.name} está pronto para praticar no compositor.`,
     });
   };
 
@@ -252,6 +336,11 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
                     <span className="font-bold">{exercise.notes.length}</span>
                   </div>
 
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">🎼 Tempo:</span>
+                    <span className="font-bold">{exercise.tempo} BPM</span>
+                  </div>
+
                   <div className="flex space-x-1">
                     {exercise.notes.slice(0, 5).map((note, idx) => (
                       <div
@@ -284,6 +373,12 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
                       size="sm"
                       variant="outline"
                       className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                      onClick={() => {
+                        toast({
+                          title: "🔍 Prévia do Exercício",
+                          description: `${exercise.name}: ${exercise.pattern?.join(' → ') || 'Sequência musical'}`,
+                        });
+                      }}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -318,6 +413,11 @@ const MusicImporter: React.FC<MusicImporterProps> = ({
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">⏱️ Duração:</span>
                       <span className="font-bold">{song.duration}</span>
+                    </div>
+
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">🎵 Notas:</span>
+                      <span className="font-bold">{song.notes.length}</span>
                     </div>
 
                     <div className="flex space-x-2 pt-2">

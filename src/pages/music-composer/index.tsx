@@ -346,8 +346,10 @@ const MusicComposer = () => {
   };
 
   const handleLessonSelect = (lesson: any) => {
+    console.log("Selecionando lição:", lesson);
+    
     // Carregar lição como composição atual
-    const lessonNotes = lesson.pattern.map((pitch: string, index: number) => ({
+    const lessonNotes = lesson.pattern ? lesson.pattern.map((pitch: string, index: number) => ({
       id: `lesson-${Date.now()}-${index}`,
       pitch,
       duration: 1,
@@ -355,7 +357,7 @@ const MusicComposer = () => {
       color: getColorForNote(pitch),
       shape: getShapeForNote(pitch),
       timestamp: index
-    }));
+    })) : lesson.notes || [];
 
     setNotes(lessonNotes);
     setCurrentLesson(lesson);
@@ -382,10 +384,25 @@ const MusicComposer = () => {
   };
 
   const handleImportSong = (song: any) => {
+    console.log("Importando música:", song);
+    
+    // Carregar as notas da música
     setNotes(song.notes || []);
+    
+    // Configurar o tempo se disponível
+    if (song.tempo) {
+      setTempo(song.tempo);
+    }
+    
+    // Limpar lição atual se existir
+    setCurrentLesson(null);
+    
+    // Mudar para a aba do compositor
+    setActiveTab("compose");
+    
     toast({
-      title: "🎵 Música importada!",
-      description: `${song.name} foi carregada com sucesso.`,
+      title: "🎵 Música importada com sucesso!",
+      description: `${song.name} foi carregada no compositor. Use os controles para reproduzir.`,
     });
   };
 
