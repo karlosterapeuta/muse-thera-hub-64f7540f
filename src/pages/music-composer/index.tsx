@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EducationalKeyboard from "./components/EducationalKeyboard";
 import EducationalStaff from "./components/EducationalStaff";
-import EducationalControls from "./components/EducationalControls";
+import TopToolbar from "./components/TopToolbar";
 import ColoredNotesSystem from "./components/ColoredNotesSystem";
 import LessonSystem from "./components/LessonSystem";
 import VisualTimeline from "./components/VisualTimeline";
@@ -426,9 +426,37 @@ const MusicComposer = () => {
     <div className={`h-screen flex flex-col ${
       accessibilitySettings.highContrast 
         ? 'bg-black text-white' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
+        : 'bg-gray-100'
     }`} style={{ fontSize: accessibilitySettings.largeText ? '18px' : '14px' }}>
       
+      {/* Top Toolbar */}
+      <TopToolbar
+        isPlaying={isPlaying}
+        isPaused={isPaused}
+        isMuted={isMuted}
+        volume={volume}
+        tempo={tempo}
+        timeSignature={timeSignature}
+        currentBeat={currentBeat}
+        totalBeats={parseInt(timeSignature.split('/')[0])}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        onStop={handleStop}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+        onMute={handleMute}
+        onVolumeChange={setVolume}
+        onTempoChange={setTempo}
+        onTimeSignatureChange={setTimeSignature}
+        onSave={handleSave}
+        onLoad={handleLoad}
+        onClear={handleClearAll}
+        selectedColor={selectedColor}
+        selectedShape={selectedShape}
+        onColorSelect={setSelectedColor}
+        onShapeSelect={setSelectedShape}
+      />
+
       {/* Navigation Tabs */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -494,39 +522,6 @@ const MusicComposer = () => {
                 </div>
               </div>
             )}
-
-            <div className="space-y-4">
-              <EducationalControls
-                isPlaying={isPlaying}
-                isPaused={isPaused}
-                isMuted={isMuted}
-                volume={volume}
-                tempo={tempo}
-                timeSignature={timeSignature}
-                onPlay={handlePlay}
-                onPause={handlePause}
-                onStop={handleStop}
-                onPrevious={handlePrevious}
-                onNext={handleNext}
-                onMute={handleMute}
-                onVolumeChange={setVolume}
-                onTempoChange={setTempo}
-                onTimeSignatureChange={setTimeSignature}
-                onSave={handleSave}
-                onLoad={handleLoad}
-                onClear={handleClearAll}
-                currentBeat={currentBeat}
-                totalBeats={parseInt(timeSignature.split('/')[0])}
-              />
-              
-              <ColoredNotesSystem
-                selectedColor={selectedColor}
-                selectedShape={selectedShape}
-                onColorSelect={setSelectedColor}
-                onShapeSelect={setSelectedShape}
-                onEraseAll={handleEraseAll}
-              />
-            </div>
 
             <div className="flex-1 flex flex-col space-y-4">
               
