@@ -20,17 +20,15 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-              {navItems.map(({ to, page }) => (
-                <Route key={to} path={to} element={page} />
-              ))}
-              <Route path="/bell-hero" element={<BellHero />} />
-              <Route path="/xylophone-hero" element={<XylophoneHero />} />
-            </Routes>
-          </Suspense>
-        </Layout>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            {navItems.map(({ to, page }) => (
+              <Route key={to} path={to} element={<Layout>{page}</Layout>} />
+            ))}
+            <Route path="/bell-hero" element={<Layout><BellHero /></Layout>} />
+            <Route path="/xylophone-hero" element={<Layout><XylophoneHero /></Layout>} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -114,7 +114,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     if (hitNote) {
       // Acertou!
-      const precision = Math.abs(note.y - 500);
+      const precision = Math.abs(hitNote.y - 500);
       let points = 100;
       let feedback = "Good!";
 
