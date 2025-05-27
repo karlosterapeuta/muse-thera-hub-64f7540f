@@ -25,13 +25,13 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [notes, setNotes] = useState<Note[]>([]);
-  const [currentTime, setCurrentTime] = useState(0);
   const [speed, setSpeed] = useState(2);
   const [hitZoneHeight] = useState(80);
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const gameStartTimeRef = useRef<number>(0);
+  const lastUpdateTimeRef = useRef<number>(0);
 
   // Configuração das lanes (faixas) baseada no instrumento
   const lanes = instrumentType === "bell" ? [
@@ -60,22 +60,22 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     { color: "#9933CC", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
-  // Gerar padrão de notas mais consistente
+  // Gerar padrão de notas
   const generateNotes = useCallback(() => {
     const newNotes: Note[] = [];
     const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol (acordes maiores)
+      [0, 2, 4], // Dó, Mi, Sol
       [1, 3, 5], // Ré, Fá, Lá
       [0, 1, 2], // Sequência simples
       [4, 5, 6], // Notas agudas
       [2, 4, 6], // Saltos
-      [0, 3, 6], // Acordes de sétima
+      [0, 3, 6], // Acordes
     ];
 
     let noteId = 0;
-    for (let i = 0; i < 30; i++) { // Mais notas para sessão mais longa
+    for (let i = 0; i < 20; i++) {
       const pattern = patterns[i % patterns.length];
-      const baseTime = i * 3000; // 3 segundos entre padrões
+      const baseTime = i * 4000; // 4 segundos entre padrões
       
       pattern.forEach((laneIndex, noteIndex) => {
         if (laneIndex < lanes.length) {
@@ -84,9 +84,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             lane: laneIndex,
             color: lanes[laneIndex].color,
             frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + noteIndex * 800, // 800ms entre notas do padrão
+            startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
             duration: 600,
-            y: -80 // Começar mais acima da tela
+            y: -100 // Começar acima da tela
           });
         }
       });
@@ -96,52 +96,67 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setNotes(newNotes);
   }, [instrumentType, lanes]);
 
-  // Atualizar posição das notas com base no tempo real
+  // Atualizar posição das notas
   const updateNotes = useCallback(() => {
     if (!isPlaying) return;
 
-    const currentTime = Date.now() - gameStartTimeRef.current;
+    const now = Date.now();
+    const currentGameTime = now - gameStartTimeRef.current;
     
     setNotes(prevNotes => 
       prevNotes
         .map(note => {
           // Calcular posição baseada no tempo
-          const noteAge = currentTime - note.startTime;
-          const newY = (noteAge / 10) * speed; // Velocidade ajustável
+          const noteAge = currentGameTime - note.startTime;
+          const newY = noteAge * speed * 0.1; // Velocidade controlada
           return {
             ...note,
             y: newY
           };
         })
-        .filter(note => note.y < 700) // Remove notas que saíram da tela
+        .filter(note => note.y < 600) // Remove notas que saíram da tela
     );
 
+    // Remover notas que passaram da zona de acerto e perderam
+    setNotes(prevNotes => {
+      const missedNotes = prevNotes.filter(note => note.y > 500);
+      if (missedNotes.length > 0 && combo > 0) {
+        setCombo(0);
+        toast("Notas perdidas! Combo resetado", { duration: 1000 });
+      }
+      return prevNotes.filter(note => note.y <= 500);
+    });
+
+    lastUpdateTimeRef.current = now;
     animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed]);
+  }, [isPlaying, speed, combo]);
 
   // Detectar teclas pressionadas
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    const lane = lanes.find(l => l.key === event.key);
-    if (!lane || !isPlaying) return;
+    if (!isPlaying) return;
 
-    event.preventDefault(); // Prevenir ações padrão do browser
+    const keyPressed = event.key;
+    const lane = lanes.find(l => l.key === keyPressed);
+    if (!lane) return;
+
+    event.preventDefault();
 
     const laneIndex = lanes.indexOf(lane);
-    const hitZoneTop = 420 - hitZoneHeight / 2; // Zona de acerto centralizada
-    const hitZoneBottom = 420 + hitZoneHeight / 2;
+    const hitZoneTop = 350; // Posição da zona de acerto
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
-    console.log(`Key pressed: ${event.key}, Lane: ${laneIndex}`);
+    console.log(`Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
 
-    // Verificar se há uma nota na zona de acerto
+    // Verificar se há uma nota na zona de acerto para esta lane
     const hitNote = notes.find(note => 
       note.lane === laneIndex && 
-      note.y >= hitZoneTop && 
-      note.y <= hitZoneBottom
+      note.y >= hitZoneTop - 50 && 
+      note.y <= hitZoneBottom + 50
     );
 
     if (hitNote) {
       // Acertou!
-      const precision = Math.abs(hitNote.y - 420);
+      const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
       let points = 100;
       let feedback = "Good!";
 
@@ -153,7 +168,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         feedback = "Great!";
       }
 
-      const finalPoints = points * Math.max(1, combo);
+      const finalPoints = points * Math.max(1, combo + 1);
       setScore(prev => prev + finalPoints);
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
@@ -198,17 +213,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     if (!isPlaying) {
       generateNotes();
       gameStartTimeRef.current = Date.now();
-      setCurrentTime(0);
+      lastUpdateTimeRef.current = Date.now();
       console.log(`Starting ${instrumentType} game`);
-      updateNotes();
+      setIsPlaying(true);
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      setIsPlaying(false);
       console.log(`Pausing ${instrumentType} game`);
     }
-    setIsPlaying(!isPlaying);
   };
+
+  // Iniciar animação quando o jogo começar
+  useEffect(() => {
+    if (isPlaying) {
+      updateNotes();
+    }
+  }, [isPlaying, updateNotes]);
 
   // Resetar o jogo
   const resetGame = () => {
@@ -220,8 +242,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setCombo(0);
     setMaxCombo(0);
     setNotes([]);
-    setCurrentTime(0);
     gameStartTimeRef.current = 0;
+    lastUpdateTimeRef.current = 0;
     console.log(`Game reset for ${instrumentType}`);
   };
 
@@ -329,7 +351,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         <div
           className="absolute w-full border-4 border-yellow-400 bg-yellow-400/30 shadow-lg"
           style={{
-            top: `${420 - hitZoneHeight / 2}px`,
+            top: "350px",
             height: `${hitZoneHeight}px`,
           }}
         >
@@ -358,10 +380,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           </div>
         ))}
 
-        {/* Linha de referência no centro */}
+        {/* Linha de referência */}
         <div
           className="absolute w-full border-t-4 border-yellow-400 opacity-50"
-          style={{ top: "420px" }}
+          style={{ top: "380px" }}
         />
       </div>
     </div>
