@@ -59,13 +59,13 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/login");
       onNavigate?.();
+      window.location.href = '/';
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
       // Even if there's an error, redirect to login
-      navigate("/login");
       onNavigate?.();
+      window.location.href = '/';
     }
   };
 
