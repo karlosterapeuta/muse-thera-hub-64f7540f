@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -30,7 +31,6 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
-  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -58,14 +58,31 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      console.log("Iniciando logout...");
+      
+      // Clear any local storage data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Erro ao fazer logout:", error);
+      } else {
+        console.log("Logout realizado com sucesso");
+      }
+      
+      // Call onNavigate if provided
       onNavigate?.();
-      window.location.href = '/';
+      
+      // Force redirect to login page
+      window.location.replace('/login');
     } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      console.error("Erro durante o logout:", error);
       // Even if there's an error, redirect to login
       onNavigate?.();
-      window.location.href = '/';
+      window.location.replace('/login');
     }
   };
 
