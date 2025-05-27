@@ -457,10 +457,21 @@ const MusicComposer = () => {
         onShapeSelect={setSelectedShape}
       />
 
-      {/* Navigation Tabs */}
-      <div className="p-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur">
+      {/* Hero Section with Piano */}
+      <div className="bg-white shadow-lg p-4">
+        <EducationalKeyboard
+          onNotePlay={handleNotePlay}
+          onNoteAdd={handleAddNote}
+          selectedColor={selectedColor}
+          isRecording={true}
+          highlightedNote={highlightedNote}
+        />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 p-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur mb-2">
             <TabsTrigger 
               value="compose" 
               className="text-sm font-bold"
@@ -498,10 +509,10 @@ const MusicComposer = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Compose Tab */}
-          <TabsContent value="compose" className="space-y-4">
+          {/* Compose Tab - Staff Writing Area */}
+          <TabsContent value="compose" className="h-full">
             {currentLesson && (
-              <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-xl border-2 border-purple-300">
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-3 rounded-xl border-2 border-purple-300 mb-2">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-bold text-purple-800">🎯 Lição Ativa: {currentLesson.title}</h3>
@@ -523,35 +534,22 @@ const MusicComposer = () => {
               </div>
             )}
 
-            <div className="flex-1 flex flex-col space-y-4">
-              
-              <div className="bg-white rounded-xl shadow-lg p-4">
-                <EducationalKeyboard
-                  onNotePlay={handleNotePlay}
-                  onNoteAdd={handleAddNote}
-                  selectedColor={selectedColor}
-                  isRecording={true}
-                  highlightedNote={highlightedNote}
-                />
-              </div>
-
-              <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
-                <EducationalStaff
-                  notes={notes}
-                  onAddNote={handleAddNote}
-                  playbackPosition={playbackPosition}
-                  isPlaying={isPlaying}
-                  timeSignature={timeSignature}
-                  highlightedNote={highlightedNote}
-                  selectedColor={selectedColor}
-                  selectedShape={selectedShape}
-                />
-              </div>
+            <div className="bg-white rounded-xl shadow-lg h-full overflow-hidden">
+              <EducationalStaff
+                notes={notes}
+                onAddNote={handleAddNote}
+                playbackPosition={playbackPosition}
+                isPlaying={isPlaying}
+                timeSignature={timeSignature}
+                highlightedNote={highlightedNote}
+                selectedColor={selectedColor}
+                selectedShape={selectedShape}
+              />
             </div>
           </TabsContent>
 
-          {/* Lessons Tab */}
-          <TabsContent value="lessons">
+          {/* Other Tabs */}
+          <TabsContent value="lessons" className="h-full">
             <LessonSystem
               onLessonSelect={handleLessonSelect}
               currentProgress={Math.floor((completedLessons.length / 6) * 100)}
@@ -561,16 +559,14 @@ const MusicComposer = () => {
             />
           </TabsContent>
 
-          {/* Library Tab */}
-          <TabsContent value="library">
+          <TabsContent value="library" className="h-full">
             <MusicImporter
               onImportSong={handleImportSong}
               onLoadExercise={handleLessonSelect}
             />
           </TabsContent>
 
-          {/* Timeline Tab */}
-          <TabsContent value="timeline">
+          <TabsContent value="timeline" className="h-full">
             <VisualTimeline
               notes={notes}
               isPlaying={isPlaying}
@@ -584,8 +580,7 @@ const MusicComposer = () => {
             />
           </TabsContent>
 
-          {/* Accessibility Tab */}
-          <TabsContent value="accessibility">
+          <TabsContent value="accessibility" className="h-full">
             <AccessibilityPanel
               settings={accessibilitySettings}
               onSettingsChange={setAccessibilitySettings}
