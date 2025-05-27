@@ -332,6 +332,9 @@ export default function Evaluation() {
             evaluatorName={userName}
             evaluatorEmail={userEmail}
             radarData={domainScores}
+            selectedParameters={selections}
+            overallScore={overallScore}
+            evaluationDomains={evaluationDomains}
           />
         </div>
       );
