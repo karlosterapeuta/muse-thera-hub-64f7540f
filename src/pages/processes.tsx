@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import {
   ClipboardList,
@@ -23,13 +24,13 @@ export default function Processes() {
       title: "Avaliação",
       description: "Avaliação das necessidades e potencialidades musicoterapêuticas",
       icon: FileText,
-      path: "/processos/avaliacao"
+      path: "/evaluation"
     },
     {
       title: "Plano Terapêutico",
       description: "Definição dos objetivos e estratégias de tratamento",
       icon: Edit,
-      path: "/processos/plano"
+      path: "/treatment-plan"
     },
     {
       title: "Intervenção",
@@ -41,13 +42,13 @@ export default function Processes() {
       title: "Reavaliação",
       description: "Análise do progresso e ajustes no tratamento",
       icon: ChartBar,
-      path: "/processos/reavaliacao"
+      path: "/reevaluation"
     },
     {
       title: "Relatório",
       description: "Documentação e registro dos resultados",
       icon: Edit,
-      path: "/processos/relatorio"
+      path: "/processes/reports"
     },
   ];
 

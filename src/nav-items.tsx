@@ -13,6 +13,12 @@ const BinaralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
 const Finance = lazy(() => import("./pages/finance"));
 const Users = lazy(() => import("./pages/users"));
 const InviteCodes = lazy(() => import("./pages/InviteCodes"));
+const Anamnesis = lazy(() => import("./pages/anamnesis"));
+const Evaluation = lazy(() => import("./pages/evaluation"));
+const TreatmentPlan = lazy(() => import("./pages/treatment-plan"));
+const Intervention = lazy(() => import("./pages/intervention"));
+const Reevaluation = lazy(() => import("./pages/reevaluation"));
+const ProcessReports = lazy(() => import("./pages/processes/reports"));
 
 export const navItems = [
   { to: "/", page: <Dashboard /> },
@@ -27,4 +33,10 @@ export const navItems = [
   { to: "/finance", page: <Finance /> },
   { to: "/users", page: <Users /> },
   { to: "/invite-codes", page: <InviteCodes /> },
+  { to: "/anamnesis", page: <Anamnesis /> },
+  { to: "/evaluation", page: <Evaluation /> },
+  { to: "/treatment-plan", page: <TreatmentPlan /> },
+  { to: "/intervention", page: <Intervention /> },
+  { to: "/reevaluation", page: <Reevaluation /> },
+  { to: "/processes/reports", page: <ProcessReports /> },
 ];
