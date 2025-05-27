@@ -52,30 +52,30 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 
   return (
     <div className="bg-white">
-      {/* First Page - Header and All Charts */}
-      <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
+      {/* Página 1 - Header e Gráficos Resumidos */}
+      <div className="p-6" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
         {/* Header Section */}
-        <div className="border-b-2 border-gray-200 pb-6 mb-8">
-          <div className="flex justify-center mb-6">
+        <div className="border-b-2 border-gray-200 pb-4 mb-6">
+          <div className="flex justify-center mb-4">
             <img 
               src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
               alt="Logo" 
-              style={{ width: '40px', height: 'auto' }} 
+              style={{ width: '35px', height: 'auto' }} 
             />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-blue-600 mb-3">
+            <h1 className="text-xl font-bold text-blue-600 mb-2">
               Resultados da Avaliação TEA
             </h1>
-            <h2 className="text-lg text-gray-700 mb-2">
+            <h2 className="text-base text-gray-700 mb-1">
               Paciente: {patientName || 'Não informado'}
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-2">
               Data da Avaliação: {new Date().toLocaleDateString('pt-BR')}
             </p>
             {overallScore && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-lg font-semibold text-blue-800">
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <p className="text-base font-semibold text-blue-800">
                   Pontuação Total: {overallScore.raw}/{overallScore.max} ({overallScore.percentage}%)
                 </p>
               </div>
@@ -83,18 +83,18 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-2 gap-8 mb-8">
+        {/* Charts Section - Compacto */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
           {/* Radar Chart */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
+          <Card className="p-4">
+            <h3 className="text-base font-semibold mb-3 text-center text-gray-800">
               Perfil de Habilidades por Domínio
             </h3>
-            <div className="flex justify-center items-center h-[280px]">
+            <div className="flex justify-center items-center h-[220px]">
               {radarData && (
-                <RadarChart width={280} height={280} data={radarData}>
+                <RadarChart width={240} height={220} data={radarData}>
                   <PolarGrid strokeDasharray="3 3" />
-                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 11 }} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 10 }} />
                   <Radar
                     name="Perfil"
                     dataKey="value"
@@ -108,19 +108,19 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </Card>
 
           {/* Pie Chart */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
+          <Card className="p-4">
+            <h3 className="text-base font-semibold mb-3 text-center text-gray-800">
               Desenvolvimento Geral
             </h3>
             <div className="flex flex-col items-center">
-              <div className="h-[280px] flex items-center justify-center">
-                <PieChart width={280} height={280}>
+              <div className="h-[220px] flex items-center justify-center">
+                <PieChart width={240} height={220}>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={70}
+                    innerRadius={40}
+                    outerRadius={60}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -130,14 +130,14 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                   </Pie>
                 </PieChart>
               </div>
-              <div className="flex justify-center gap-6 mt-2">
+              <div className="flex justify-center gap-4 mt-1">
                 {pieData.map((entry: any, index: number) => (
-                  <div key={index} className="flex items-center gap-2">
+                  <div key={index} className="flex items-center gap-1">
                     <div
-                      className="w-4 h-4 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: COLORS[index] }}
                     />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-xs text-gray-600">
                       {entry.name} ({entry.value}%)
                     </span>
                   </div>
@@ -147,24 +147,33 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </Card>
         </div>
 
-        {/* Bar Chart Section */}
+        {/* Footer Página 1 */}
+        <div className="border-t-2 border-gray-200 mt-6 pt-4 text-center">
+          <p className="text-sm text-gray-500">Página 1/3</p>
+        </div>
+      </div>
+
+      {/* Página 2 - Gráfico de Barras Detalhado */}
+      <div className="p-6" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
+        <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
+          Desempenho Detalhado por Categoria
+        </h2>
+        
+        {/* Bar Chart Section - Página completa */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-6 text-center text-gray-800">
-            Desempenho Detalhado por Categoria
-          </h3>
-          <div className="h-[380px] w-full flex justify-center">
+          <div className="h-[850px] w-full flex justify-center">
             <BarChart
-              width={700}
-              height={380}
+              width={720}
+              height={850}
               data={categoryData}
-              margin={{ top: 20, right: 30, left: 30, bottom: 70 }}
+              margin={{ top: 20, right: 30, left: 30, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="name"
                 angle={-45}
                 textAnchor="end"
-                height={70}
+                height={100}
                 tick={{ fill: '#4B5563', fontSize: 11 }}
               />
               <YAxis domain={[0, 100]} tick={{ fill: '#4B5563' }} />
@@ -181,32 +190,32 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </div>
         </Card>
 
-        {/* First Page Footer */}
-        <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-500">Página 1/2</p>
+        {/* Footer Página 2 */}
+        <div className="border-t-2 border-gray-200 mt-6 pt-4 text-center">
+          <p className="text-sm text-gray-500">Página 2/3</p>
         </div>
       </div>
 
-      {/* Second Page - Detailed Parameters */}
-      <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
-        <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
+      {/* Página 3 - Parâmetros Detalhados */}
+      <div className="p-6" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
+        <h2 className="text-lg font-bold mb-4 text-center text-gray-800">
           Detalhamento dos Parâmetros Avaliados
         </h2>
 
         {evaluationDomains && evaluationDomains.map((domain, domainIndex) => (
-          <div key={domainIndex} className="mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-blue-700 flex items-center gap-2">
-              <span className="text-xl">{domain.icon}</span>
+          <div key={domainIndex} className="mb-6">
+            <h3 className="text-base font-semibold mb-3 text-blue-700 flex items-center gap-2">
+              <span className="text-lg">{domain.icon}</span>
               {domain.title}
             </h3>
             
             {domain.subdomains.map((subdomain: any, subdomainIndex: number) => (
-              <div key={subdomainIndex} className="mb-6 ml-4">
-                <h4 className="text-base font-medium mb-3 text-gray-700 border-l-4 border-blue-300 pl-3">
+              <div key={subdomainIndex} className="mb-4 ml-3">
+                <h4 className="text-sm font-medium mb-2 text-gray-700 border-l-3 border-blue-300 pl-2">
                   {subdomain.title}
                 </h4>
                 
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-1">
                   {subdomain.parameters.map((parameter: string, paramIndex: number) => {
                     const key = `${domain.title}-${subdomain.title}-${parameter}`;
                     const selectedValue = selectedParameters?.[key];
@@ -217,17 +226,17 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                                 selectedValue === "independente" ? 4 : null;
                     
                     return (
-                      <div key={paramIndex} className="flex justify-between items-center p-2 bg-gray-50 rounded text-sm">
+                      <div key={paramIndex} className="flex justify-between items-center p-1.5 bg-gray-50 rounded text-xs">
                         <span className="flex-1 text-gray-700">{parameter}</span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                           {score !== null ? (
                             <>
                               <div 
-                                className="w-3 h-3 rounded-full"
+                                className="w-2.5 h-2.5 rounded-full"
                                 style={{ backgroundColor: getScoreColor(score) }}
                               />
                               <span 
-                                className="font-medium text-xs px-2 py-1 rounded"
+                                className="font-medium text-xs px-1.5 py-0.5 rounded"
                                 style={{ 
                                   backgroundColor: getScoreColor(score) + '20',
                                   color: getScoreColor(score)
@@ -249,48 +258,48 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </div>
         ))}
 
-        {/* Legend */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-semibold mb-3 text-gray-800">Legenda dos Níveis de Desenvolvimento:</h4>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <span>Ausente (0) - Habilidade não demonstrada</span>
+        {/* Legend - Compacta */}
+        <div className="mt-6 p-3 bg-gray-50 rounded-lg">
+          <h4 className="font-semibold mb-2 text-gray-800 text-sm">Legenda dos Níveis:</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+              <span>Ausente (0)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-              <span>Emergente (1) - Início do desenvolvimento</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
+              <span>Emergente (1)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-              <span>Inconsistente (2) - Demonstrada ocasionalmente</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <span>Inconsistente (2)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <span>Consistente (3) - Demonstrada regularmente</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+              <span>Consistente (3)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span>Independente (4) - Totalmente desenvolvida</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              <span>Independente (4)</span>
             </div>
           </div>
         </div>
 
-        {/* Second Page Footer */}
-        <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-500 mb-1">
+        {/* Footer Final */}
+        <div className="border-t-2 border-gray-200 mt-6 pt-4 text-center">
+          <p className="text-xs text-gray-500 mb-1">
             Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
           </p>
-          <p className="text-sm text-gray-500 mb-1">
+          <p className="text-xs text-gray-500 mb-1">
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
-          <p className="text-sm text-gray-500 mb-1">
+          <p className="text-xs text-gray-500 mb-1">
             Musicoterapeuta: {evaluatorName || 'Não informado'}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs text-gray-500">
             Email: {evaluatorEmail || 'Não informado'}
           </p>
-          <p className="text-sm text-gray-500 mt-2">Página 2/2</p>
+          <p className="text-sm text-gray-500 mt-2">Página 3/3</p>
         </div>
       </div>
     </div>
