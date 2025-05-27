@@ -783,7 +783,7 @@ export default function ActivitiesPage() {
   ];
 
   const handleCategoryClick = (categoryName: string) => {
-    navigate(`/activities/${categoryName.toLowerCase()}`);
+    navigate(`/activities/category/${categoryName.toLowerCase()}`);
     setCategoriesDialogOpen(false);
   };
 
@@ -874,7 +874,7 @@ export default function ActivitiesPage() {
                     {category.name === "Adaptive" && "Promoção de resiliência e adaptabilidade"}
                     {category.name === "Spiritual" && "Conexão com valores transcendentes"}
                     {category.name === "Identity" && "Desenvolvimento de identidade pessoal"}
-                    {category.name === "Neurological" && "Estímulo ao desenvolvimento cerebral"}
+                    {category.name === "Neurological" && "Estimulação ao desenvolvimento cerebral"}
                   </p>
                 </div>
               </div>
