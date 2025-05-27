@@ -13,7 +13,10 @@ import {
   Save,
   FolderOpen,
   RotateCcw,
-  Settings
+  Settings,
+  Home,
+  FileText,
+  Music
 } from "lucide-react";
 
 interface TopToolbarProps {
@@ -94,216 +97,203 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
   const timeSignatures = ["2/4", "3/4", "4/4", "6/8"];
 
   return (
-    <div className="bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 border-b-2 border-gray-600 p-3">
-      <div className="flex items-center justify-between">
+    <div className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 border-b border-gray-500 p-2">
+      <div className="flex items-center justify-between gap-2">
         
-        {/* Left Section - File Operations */}
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1 bg-gray-600 rounded-lg p-1">
+        {/* Left Section - Main Tools */}
+        <div className="flex items-center gap-1">
+          {/* File Operations */}
+          <div className="flex items-center gap-1 bg-gray-500/50 rounded p-1">
             <Button
               size="sm"
               variant="ghost"
               onClick={onSave}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
+              className="text-white hover:bg-gray-400 h-7 w-7 p-0"
               title="Salvar"
             >
-              <Save className="w-4 h-4" />
+              <Save className="w-3 h-3" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
               onClick={onLoad}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
+              className="text-white hover:bg-gray-400 h-7 w-7 p-0"
               title="Carregar"
             >
-              <FolderOpen className="w-4 h-4" />
+              <FolderOpen className="w-3 h-3" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
               onClick={onClear}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
-              title="Limpar Tudo"
+              className="text-white hover:bg-gray-400 h-7 w-7 p-0"
+              title="Limpar"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3 h-3" />
             </Button>
           </div>
 
-          <Separator orientation="vertical" className="h-8 bg-gray-500" />
-
           {/* Time Signature */}
-          <div className="flex items-center space-x-1">
-            <span className="text-white text-xs font-bold">Compasso:</span>
-            <select
-              value={timeSignature}
-              onChange={(e) => onTimeSignatureChange(e.target.value)}
-              className="bg-gray-600 text-white text-sm rounded px-2 py-1 border border-gray-500"
-            >
-              {timeSignatures.map(ts => (
-                <option key={ts} value={ts}>{ts}</option>
-              ))}
-            </select>
+          <div className="bg-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+            {timeSignature.split('/')[0]}
+          </div>
+          <div className="bg-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+            {timeSignature.split('/')[1]}
+          </div>
+
+          {/* Tempo Circle */}
+          <div className="bg-red-500 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold text-white border-2 border-red-600">
+            {Math.round(tempo/10)}
           </div>
 
           {/* Metronome Visual */}
-          <div className="flex items-center space-x-1">
-            <span className="text-white text-xs font-bold">Tempo:</span>
-            <div className="flex space-x-1">
-              {Array.from({ length: totalBeats }, (_, i) => (
-                <div
-                  key={i}
-                  className={`w-3 h-3 rounded-full border-2 ${
-                    i + 1 === currentBeat && isPlaying
-                      ? "bg-red-500 border-red-300 animate-pulse"
-                      : "bg-gray-600 border-gray-400"
-                  }`}
-                />
-              ))}
-            </div>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalBeats }, (_, i) => (
+              <div
+                key={i}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
+                  i + 1 === currentBeat && isPlaying
+                    ? "bg-green-500 border-green-300 text-white"
+                    : "bg-gray-300 border-gray-400 text-gray-700"
+                }`}
+              >
+                {i + 1}
+              </div>
+            ))}
           </div>
+
+          {/* Note Tools */}
+          <div className="flex items-center gap-1">
+            {noteShapes.map((shape) => (
+              <button
+                key={shape.shape}
+                onClick={() => onShapeSelect(shape.shape)}
+                className={`w-6 h-6 flex items-center justify-center text-white rounded border-2 transition-all ${
+                  selectedShape === shape.shape
+                    ? "border-white bg-blue-600"
+                    : "border-gray-400 hover:border-gray-200 bg-gray-600"
+                }`}
+                title={shape.name}
+              >
+                <span className="text-xs">{shape.symbol}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Color Picker */}
+          <div className="flex items-center gap-1">
+            {noteColors.map((note) => (
+              <button
+                key={note.color}
+                onClick={() => onColorSelect(note.color)}
+                className={`w-6 h-6 rounded-full border-2 transition-all ${
+                  selectedColor === note.color
+                    ? "border-white scale-110"
+                    : "border-gray-400 hover:border-gray-200"
+                }`}
+                style={{ backgroundColor: note.color }}
+                title={`${note.name} (${note.note})`}
+              />
+            ))}
+          </div>
+
+          <div className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">X</div>
         </div>
 
         {/* Center Section - Playback Controls */}
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1 bg-gray-600 rounded-lg p-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onPrevious}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
-              title="Anterior"
-            >
-              <SkipBack className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={isPlaying ? onPause : onPlay}
-              className={`h-8 w-8 p-0 ${
-                isPlaying 
-                  ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
-                  : "bg-green-600 hover:bg-green-700 text-white"
-              }`}
-              title={isPlaying ? "Pausar" : "Reproduzir"}
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onStop}
-              className="text-white hover:bg-gray-500 bg-red-600 hover:bg-red-700 h-8 w-8 p-0"
-              title="Parar"
-            >
-              <Square className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onNext}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
-              title="Próximo"
-            >
-              <SkipForward className="w-4 h-4" />
-            </Button>
-          </div>
-
-          <Separator orientation="vertical" className="h-8 bg-gray-500" />
-
-          {/* Volume Control */}
-          <div className="flex items-center space-x-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onMute}
-              className="text-white hover:bg-gray-500 h-8 w-8 p-0"
-              title={isMuted ? "Ativar Som" : "Silenciar"}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              onChange={(e) => onVolumeChange(Number(e.target.value))}
-              className="w-16 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-              title={`Volume: ${volume}%`}
-            />
-            <span className="text-white text-xs w-8">{volume}%</span>
-          </div>
-
-          {/* Tempo Control */}
-          <div className="flex items-center space-x-2">
-            <span className="text-white text-xs font-bold">BPM:</span>
-            <input
-              type="range"
-              min="60"
-              max="200"
-              value={tempo}
-              onChange={(e) => onTempoChange(Number(e.target.value))}
-              className="w-16 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-              title={`Tempo: ${tempo} BPM`}
-            />
-            <span className="text-white text-xs w-8">{tempo}</span>
-          </div>
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onPrevious}
+            className="text-white hover:bg-gray-500 h-8 w-8 p-0 bg-gray-600 rounded-full"
+            title="Anterior"
+          >
+            <SkipBack className="w-4 h-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={isPlaying ? onPause : onPlay}
+            className={`h-8 w-8 p-0 rounded-full ${
+              isPlaying 
+                ? "bg-yellow-500 hover:bg-yellow-600 text-white" 
+                : "bg-green-500 hover:bg-green-600 text-white"
+            }`}
+            title={isPlaying ? "Pausar" : "Reproduzir"}
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onStop}
+            className="text-white hover:bg-gray-500 h-8 w-8 p-0 bg-gray-600 rounded-full"
+            title="Parar"
+          >
+            <Square className="w-4 h-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onNext}
+            className="text-white hover:bg-gray-500 h-8 w-8 p-0 bg-gray-600 rounded-full"
+            title="Próximo"
+          >
+            <SkipForward className="w-4 h-4" />
+          </Button>
         </div>
 
-        {/* Right Section - Note Tools */}
-        <div className="flex items-center space-x-2">
-          {/* Color Picker */}
-          <div className="flex items-center space-x-1">
-            <span className="text-white text-xs font-bold">Cores:</span>
-            <div className="flex space-x-1 bg-gray-600 rounded-lg p-1">
-              {noteColors.map((note) => (
-                <button
-                  key={note.color}
-                  onClick={() => onColorSelect(note.color)}
-                  className={`w-6 h-6 rounded-full border-2 transition-all ${
-                    selectedColor === note.color
-                      ? "border-white scale-110"
-                      : "border-gray-400 hover:border-gray-200"
-                  }`}
-                  style={{ backgroundColor: note.color }}
-                  title={`${note.name} (${note.note})`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <Separator orientation="vertical" className="h-8 bg-gray-500" />
-
-          {/* Shape Picker */}
-          <div className="flex items-center space-x-1">
-            <span className="text-white text-xs font-bold">Formas:</span>
-            <div className="flex space-x-1 bg-gray-600 rounded-lg p-1">
-              {noteShapes.map((shape) => (
-                <button
-                  key={shape.shape}
-                  onClick={() => onShapeSelect(shape.shape)}
-                  className={`w-6 h-6 flex items-center justify-center text-white rounded border-2 transition-all ${
-                    selectedShape === shape.shape
-                      ? "border-white bg-blue-600 scale-110"
-                      : "border-gray-400 hover:border-gray-200 hover:bg-gray-500"
-                  }`}
-                  title={shape.name}
-                >
-                  <span className="text-sm">{shape.symbol}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Separator orientation="vertical" className="h-8 bg-gray-500" />
+        {/* Right Section - Additional Tools */}
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-white hover:bg-gray-500 h-7 w-7 p-0 bg-orange-500 rounded"
+            title="Configurações"
+          >
+            <Music className="w-3 h-3" />
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-white hover:bg-gray-500 h-7 w-7 p-0 bg-blue-500 rounded"
+            title="Ondas"
+          >
+            <div className="w-3 h-3 bg-white rounded-full"></div>
+          </Button>
 
           <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-gray-500 h-8 w-8 p-0"
-            title="Configurações"
+            className="text-white hover:bg-gray-500 h-7 w-7 p-0 bg-gray-600 rounded"
+            title="Home"
           >
-            <Settings className="w-4 h-4" />
+            <Home className="w-3 h-3" />
           </Button>
+
+          {/* Volume Control */}
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onMute}
+              className="text-white hover:bg-gray-500 h-7 w-7 p-0 bg-gray-600 rounded"
+              title={isMuted ? "Ativar Som" : "Silenciar"}
+            >
+              {isMuted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <div className="w-6 h-6 bg-gray-600 rounded flex items-center justify-center">
+              <FileText className="w-3 h-3 text-white" />
+            </div>
+            <div className="w-6 h-6 bg-gray-600 rounded flex items-center justify-center">
+              <Settings className="w-3 h-3 text-white" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
