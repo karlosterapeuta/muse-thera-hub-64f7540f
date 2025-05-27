@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -32,6 +31,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   const animationRef = useRef<number>();
   const gameStartTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
+  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
 
   // Configuração das lanes (faixas) baseada no instrumento
   const lanes = instrumentType === "bell" ? [
@@ -59,6 +59,78 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     { color: "#0000FF", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
     { color: "#9933CC", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
+
+  // Função para iniciar música de fundo
+  const startBackgroundMusic = useCallback(() => {
+    try {
+      // Criar um áudio sintético animado para o jogo
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Criar osciladores para uma melodia de fundo simples
+      const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(audioContext.currentTime + startTime);
+        oscillator.stop(audioContext.currentTime + startTime + duration);
+      };
+
+      // Melodia simples e animada
+      const melody = [
+        { freq: 523.25, time: 0, duration: 0.5 },    // C5
+        { freq: 587.33, time: 0.5, duration: 0.5 },  // D5
+        { freq: 659.25, time: 1, duration: 0.5 },    // E5
+        { freq: 523.25, time: 1.5, duration: 0.5 },  // C5
+        { freq: 587.33, time: 2, duration: 0.5 },    // D5
+        { freq: 659.25, time: 2.5, duration: 0.5 },  // E5
+        { freq: 783.99, time: 3, duration: 1 },      // G5
+        { freq: 659.25, time: 4, duration: 0.5 },    // E5
+        { freq: 587.33, time: 4.5, duration: 0.5 },  // D5
+        { freq: 523.25, time: 5, duration: 1 },      // C5
+      ];
+
+      // Tocar a melodia
+      melody.forEach(note => {
+        playBackgroundTone(note.freq, note.time, note.duration);
+      });
+
+      // Repetir a melodia a cada 6 segundos
+      const interval = setInterval(() => {
+        if (isPlaying) {
+          melody.forEach(note => {
+            playBackgroundTone(note.freq, note.time, note.duration);
+          });
+        } else {
+          clearInterval(interval);
+        }
+      }, 6000);
+
+      console.log(`🎵 Background music started for ${instrumentType}`);
+      
+    } catch (error) {
+      console.error("Error starting background music:", error);
+    }
+  }, [instrumentType, isPlaying]);
+
+  // Parar música de fundo
+  const stopBackgroundMusic = useCallback(() => {
+    if (backgroundMusicRef.current) {
+      backgroundMusicRef.current.pause();
+      backgroundMusicRef.current.currentTime = 0;
+      backgroundMusicRef.current = null;
+    }
+    console.log("🎵 Background music stopped");
+  }, []);
 
   // Gerar padrão de notas
   const generateNotes = useCallback(() => {
@@ -214,12 +286,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       generateNotes();
       gameStartTimeRef.current = Date.now();
       lastUpdateTimeRef.current = Date.now();
-      console.log(`Starting ${instrumentType} game`);
+      startBackgroundMusic(); // Iniciar música de fundo
+      console.log(`Starting ${instrumentType} game with background music`);
       setIsPlaying(true);
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      stopBackgroundMusic(); // Parar música de fundo
       setIsPlaying(false);
       console.log(`Pausing ${instrumentType} game`);
     }
@@ -237,6 +311,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
+    stopBackgroundMusic(); // Parar música de fundo
     setIsPlaying(false);
     setScore(0);
     setCombo(0);
@@ -253,8 +328,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      stopBackgroundMusic();
     };
-  }, []);
+  }, [stopBackgroundMusic]);
 
   const getInstrumentTitle = () => {
     switch (instrumentType) {
