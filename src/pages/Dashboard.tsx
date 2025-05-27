@@ -36,16 +36,30 @@ export default function Dashboard() {
   };
 
   const handleLogout = async () => {
+    console.log("Logout button clicked");
     try {
+      console.log("Attempting to sign out...");
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
       
+      if (error) {
+        console.error("Supabase signOut error:", error);
+        throw error;
+      }
+      
+      console.log("Logout successful, showing toast");
       toast({
         title: "Logout realizado com sucesso",
         description: "Você foi desconectado da sua conta.",
       });
       
+      console.log("Navigating to login page");
       navigate("/login");
+      
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 100);
+      
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
       toast({
@@ -205,6 +219,7 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               className="bg-white/80 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all duration-200 shadow-sm"
+              type="button"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sair
