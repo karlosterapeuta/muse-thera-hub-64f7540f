@@ -1,10 +1,15 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EducationalKeyboard from "./components/EducationalKeyboard";
 import EducationalStaff from "./components/EducationalStaff";
 import EducationalControls from "./components/EducationalControls";
 import ColoredNotesSystem from "./components/ColoredNotesSystem";
+import LessonSystem from "./components/LessonSystem";
+import VisualTimeline from "./components/VisualTimeline";
+import MusicImporter from "./components/MusicImporter";
+import AccessibilityPanel from "./components/AccessibilityPanel";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Note {
   id: string;
@@ -38,7 +43,22 @@ const MusicComposer = () => {
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [currentBeat, setCurrentBeat] = useState(1);
   const [highlightedNote, setHighlightedNote] = useState<string | undefined>();
-  
+  const [activeTab, setActiveTab] = useState("compose");
+  const [accessibilitySettings, setAccessibilitySettings] = useState({
+    highContrast: false,
+    largeText: false,
+    slowAnimations: false,
+    soundFeedback: true,
+    vibration: false,
+    voiceNarration: false,
+    simplifiedInterface: false,
+    colorBlindMode: "none",
+    textSize: 16,
+    soundVolume: 70,
+    animationSpeed: 100,
+    buttonSize: 48
+  });
+
   const { toast } = useToast();
   const audioContextRef = useRef<AudioContext | null>(null);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -311,86 +331,218 @@ const MusicComposer = () => {
     playNote(frequency, note, color, 0.6);
   };
 
+  const handleLessonSelect = (lesson: any) => {
+    // Carregar lição como composição atual
+    const lessonNotes = lesson.pattern.map((pitch: string, index: number) => ({
+      id: `lesson-${Date.now()}-${index}`,
+      pitch,
+      duration: 1,
+      position: { x: 150 + (index * 60), y: 140 },
+      color: getColorForNote(pitch),
+      shape: getShapeForNote(pitch),
+      timestamp: index
+    }));
+
+    setNotes(lessonNotes);
+    toast({
+      title: "🎓 Lição carregada!",
+      description: `${lesson.title} está pronta para praticar.`,
+    });
+  };
+
+  const handleImportSong = (song: any) => {
+    setNotes(song.notes || []);
+    toast({
+      title: "🎵 Música importada!",
+      description: `${song.name} foi carregada com sucesso.`,
+    });
+  };
+
+  const getColorForNote = (pitch: string) => {
+    const colorMap: { [key: string]: string } = {
+      'C': '#FF0000', 'D': '#FF6600', 'E': '#FFFF00', 'F': '#00CC00',
+      'G': '#0099FF', 'A': '#6600FF', 'B': '#FF1493'
+    };
+    return colorMap[pitch] || '#888888';
+  };
+
+  const getShapeForNote = (pitch: string) => {
+    const shapeMap: { [key: string]: string } = {
+      'C': 'circle', 'D': 'square', 'E': 'triangle', 'F': 'diamond',
+      'G': 'hexagon', 'A': 'triangle-up', 'B': 'circle-outline'
+    };
+    return shapeMap[pitch] || 'circle';
+  };
+
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className={`h-screen flex flex-col ${
+      accessibilitySettings.highContrast 
+        ? 'bg-black text-white' 
+        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
+    }`} style={{ fontSize: accessibilitySettings.largeText ? '18px' : '14px' }}>
       
-      {/* Controles Superiores */}
-      <div className="p-4 space-y-4">
-        <EducationalControls
-          isPlaying={isPlaying}
-          isPaused={isPaused}
-          isMuted={isMuted}
-          volume={volume}
-          tempo={tempo}
-          timeSignature={timeSignature}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStop={handleStop}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          onMute={handleMute}
-          onVolumeChange={setVolume}
-          onTempoChange={setTempo}
-          onTimeSignatureChange={setTimeSignature}
-          onSave={handleSave}
-          onLoad={handleLoad}
-          onClear={handleClearAll}
-          currentBeat={currentBeat}
-          totalBeats={parseInt(timeSignature.split('/')[0])}
-        />
-        
-        <ColoredNotesSystem
-          selectedColor={selectedColor}
-          selectedShape={selectedShape}
-          onColorSelect={setSelectedColor}
-          onShapeSelect={setSelectedShape}
-          onEraseAll={handleEraseAll}
-        />
+      {/* Navigation Tabs */}
+      <div className="p-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur">
+            <TabsTrigger 
+              value="compose" 
+              className="text-sm font-bold"
+              style={{ minHeight: `${accessibilitySettings.buttonSize}px` }}
+            >
+              🎹 Compor
+            </TabsTrigger>
+            <TabsTrigger 
+              value="lessons"
+              className="text-sm font-bold"
+              style={{ minHeight: `${accessibilitySettings.buttonSize}px` }}
+            >
+              📚 Lições
+            </TabsTrigger>
+            <TabsTrigger 
+              value="library"
+              className="text-sm font-bold" 
+              style={{ minHeight: `${accessibilitySettings.buttonSize}px` }}
+            >
+              📁 Biblioteca
+            </TabsTrigger>
+            <TabsTrigger 
+              value="timeline"
+              className="text-sm font-bold"
+              style={{ minHeight: `${accessibilitySettings.buttonSize}px` }}
+            >
+              ⏱️ Timeline
+            </TabsTrigger>
+            <TabsTrigger 
+              value="accessibility"
+              className="text-sm font-bold"
+              style={{ minHeight: `${accessibilitySettings.buttonSize}px` }}
+            >
+              ♿ Acessibilidade
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Compose Tab */}
+          <TabsContent value="compose" className="space-y-4">
+            <div className="space-y-4">
+              <EducationalControls
+                isPlaying={isPlaying}
+                isPaused={isPaused}
+                isMuted={isMuted}
+                volume={volume}
+                tempo={tempo}
+                timeSignature={timeSignature}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onStop={handleStop}
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+                onMute={handleMute}
+                onVolumeChange={setVolume}
+                onTempoChange={setTempo}
+                onTimeSignatureChange={setTimeSignature}
+                onSave={handleSave}
+                onLoad={handleLoad}
+                onClear={handleClearAll}
+                currentBeat={currentBeat}
+                totalBeats={parseInt(timeSignature.split('/')[0])}
+              />
+              
+              <ColoredNotesSystem
+                selectedColor={selectedColor}
+                selectedShape={selectedShape}
+                onColorSelect={setSelectedColor}
+                onShapeSelect={setSelectedShape}
+                onEraseAll={handleEraseAll}
+              />
+            </div>
+
+            <div className="flex-1 flex flex-col space-y-4">
+              
+              <div className="bg-white rounded-xl shadow-lg p-4">
+                <EducationalKeyboard
+                  onNotePlay={handleNotePlay}
+                  onNoteAdd={handleAddNote}
+                  selectedColor={selectedColor}
+                  isRecording={true}
+                  highlightedNote={highlightedNote}
+                />
+              </div>
+
+              <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
+                <EducationalStaff
+                  notes={notes}
+                  onAddNote={handleAddNote}
+                  playbackPosition={playbackPosition}
+                  isPlaying={isPlaying}
+                  timeSignature={timeSignature}
+                  highlightedNote={highlightedNote}
+                  selectedColor={selectedColor}
+                  selectedShape={selectedShape}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Lessons Tab */}
+          <TabsContent value="lessons">
+            <LessonSystem
+              onLessonSelect={handleLessonSelect}
+              currentProgress={Math.floor((notes.length / 10) * 100)}
+              onStartLesson={() => setActiveTab("compose")}
+            />
+          </TabsContent>
+
+          {/* Library Tab */}
+          <TabsContent value="library">
+            <MusicImporter
+              onImportSong={handleImportSong}
+              onLoadExercise={handleLessonSelect}
+            />
+          </TabsContent>
+
+          {/* Timeline Tab */}
+          <TabsContent value="timeline">
+            <VisualTimeline
+              notes={notes}
+              isPlaying={isPlaying}
+              currentPosition={playbackPosition}
+              duration={notes.length}
+              onSeek={setPlaybackPosition}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onStop={handleStop}
+              tempo={tempo}
+            />
+          </TabsContent>
+
+          {/* Accessibility Tab */}
+          <TabsContent value="accessibility">
+            <AccessibilityPanel
+              settings={accessibilitySettings}
+              onSettingsChange={setAccessibilitySettings}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* Área Principal */}
-      <div className="flex-1 flex flex-col space-y-4 px-4">
-        
-        {/* Teclado Virtual */}
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <EducationalKeyboard
-            onNotePlay={handleNotePlay}
-            onNoteAdd={handleAddNote}
-            selectedColor={selectedColor}
-            isRecording={true}
-            highlightedNote={highlightedNote}
-          />
-        </div>
-
-        {/* Partitura Musical */}
-        <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
-          <EducationalStaff
-            notes={notes}
-            onAddNote={handleAddNote}
-            playbackPosition={playbackPosition}
-            isPlaying={isPlaying}
-            timeSignature={timeSignature}
-            highlightedNote={highlightedNote}
-            selectedColor={selectedColor}
-            selectedShape={selectedShape}
-          />
-        </div>
-      </div>
-
-      {/* Barra de Status */}
+      {/* Status Bar */}
       <div className="bg-white border-t border-gray-200 p-3 flex items-center justify-between text-sm">
         <div className="flex items-center space-x-6">
           <span className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span>Piano Educativo TEA</span>
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span>🎼 Piano Educativo TEA</span>
           </span>
           <span>🎵 Notas: {notes.length}</span>
           <span>⏱️ Tempo: {tempo} BPM</span>
           <span>🎼 Compasso: {timeSignature}</span>
+          {accessibilitySettings.simplifiedInterface && (
+            <span className="text-blue-600 font-bold">♿ Modo Simplificado</span>
+          )}
         </div>
         
         <div className="flex items-center space-x-4">
-          <span className="text-purple-600 font-semibold">Software Educacional Musical</span>
+          <span className="text-purple-600 font-semibold">Software Educacional Musical Inclusivo</span>
           <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse"></div>
         </div>
       </div>
