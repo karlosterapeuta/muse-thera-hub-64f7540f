@@ -35,7 +35,9 @@ export default function Dashboard() {
     return recentMonths;
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log("Logout button clicked");
     try {
       console.log("Attempting to sign out...");
