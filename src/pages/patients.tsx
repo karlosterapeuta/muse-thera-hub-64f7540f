@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +31,8 @@ import {
   Search, 
   UserRoundPlus,
   Loader2,
-  FileText
+  Users,
+  Sparkles
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -316,165 +316,244 @@ export default function PatientsPage() {
   };
 
   return (
-    <div className="container mx-auto py-4 md:py-6">
-      <Card className="shadow-md">
-        <CardHeader className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 pb-3 bg-gradient-to-r from-purple-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-t-lg p-4 md:p-6">
-          <div>
-            <CardTitle className="text-xl md:text-2xl font-bold">Pacientes</CardTitle>
-            <CardDescription className="text-sm md:text-base">
-              Gerencie seus pacientes
-            </CardDescription>
-          </div>
-          <Button 
-            onClick={() => setIsAddDialogOpen(true)} 
-            size={isMobile ? "sm" : "default"}
-            className="bg-primary hover:bg-primary/90 text-white transition-all w-full md:w-auto"
-          >
-            <UserRoundPlus className="h-4 w-4 mr-2" />
-            {isMobile ? "Novo" : "Novo Paciente"}
-          </Button>
-        </CardHeader>
-        <CardContent className="p-3 md:p-6">
-          <div className="mb-4 flex items-center space-x-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md">
-            <Search className="h-4 w-4 text-gray-500 ml-2" />
-            <Input
-              type="search"
-              placeholder="Buscar paciente..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-          </div>
-          
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="container mx-auto py-4 md:py-8 space-y-8 animate-fadeIn">
+        {/* Hero Section */}
+        <div className="text-center space-y-6 mb-12">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-3xl rounded-full"></div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-2xl">
+              <Users className="h-10 w-10 text-white" />
             </div>
-          ) : (
-            <>
-              {isMobile ? (
-                <div className="space-y-3">
-                  {filteredPatients.length > 0 ? (
-                    filteredPatients.map((patient) => (
-                      <PatientCard
-                        key={patient.id}
-                        patient={patient}
-                        onEdit={() => handleEditClick(patient)}
-                        onDelete={() => handleDeletePatient(patient)}
-                        onViewAnamnesis={() => handleViewAnamnesis(patient)}
-                        onEditAnamnesis={() => handleEditAnamnesis(patient)}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center text-gray-500 py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
-                      Nenhum paciente encontrado.
-                    </div>
-                  )}
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Pacientes
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Gerencie seus pacientes com facilidade e organize todo o processo terapêutico
+            </p>
+          </div>
+        </div>
+
+        {/* Main Card with enhanced design */}
+        <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
+          {/* Header with gradient background */}
+          <CardHeader className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 border-b border-gray-100">
+            <div className="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent"></div>
+            <div className="relative flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-lg">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
-              ) : (
-                <PatientList
-                  patients={filteredPatients}
-                  onEdit={handleEditClick}
-                  onDelete={handleDeletePatient}
-                  onViewAnamnesis={handleViewAnamnesis}
-                  onEditAnamnesis={handleEditAnamnesis}
+                <div>
+                  <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    Gerenciar Pacientes
+                  </CardTitle>
+                  <CardDescription className="text-base md:text-lg text-gray-600">
+                    Organize e acompanhe seus pacientes
+                  </CardDescription>
+                </div>
+              </div>
+              <Button 
+                onClick={() => setIsAddDialogOpen(true)} 
+                size={isMobile ? "default" : "lg"}
+                className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full md:w-auto"
+              >
+                <UserRoundPlus className="h-5 w-5 mr-2" />
+                <Sparkles className="h-4 w-4 mr-1" />
+                {isMobile ? "Novo Paciente" : "Adicionar Paciente"}
+              </Button>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-6 md:p-8">
+            {/* Enhanced Search Bar */}
+            <div className="mb-8">
+              <div className="relative max-w-md mx-auto">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-xl rounded-2xl"></div>
+                <div className="relative flex items-center bg-white/90 backdrop-blur-sm border-2 border-gray-100 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-primary/30">
+                  <Search className="h-5 w-5 text-gray-400 mr-3" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar paciente por nome ou responsável..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 placeholder-gray-400 text-base"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Content Area */}
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 space-y-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-purple-500/30 blur-2xl rounded-full"></div>
+                  <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/30 border-t-primary shadow-lg"></div>
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-xl font-semibold text-gray-700">Carregando pacientes...</h3>
+                  <p className="text-gray-500">Aguarde um momento</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {isMobile ? (
+                  <div className="space-y-4">
+                    {filteredPatients.length > 0 ? (
+                      filteredPatients.map((patient, index) => (
+                        <div 
+                          key={patient.id}
+                          className="animate-fadeIn"
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <PatientCard
+                            patient={patient}
+                            onEdit={() => handleEditClick(patient)}
+                            onDelete={() => handleDeletePatient(patient)}
+                            onViewAnamnesis={() => handleViewAnamnesis(patient)}
+                            onEditAnamnesis={() => handleEditAnamnesis(patient)}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-16 space-y-6">
+                        <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto">
+                          <Users className="h-12 w-12 text-gray-400" />
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-semibold text-gray-600">Nenhum paciente encontrado</h3>
+                          <p className="text-gray-500">Comece adicionando seu primeiro paciente</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-100 overflow-hidden shadow-lg">
+                    <PatientList
+                      patients={filteredPatients}
+                      onEdit={handleEditClick}
+                      onDelete={handleDeletePatient}
+                      onViewAnamnesis={handleViewAnamnesis}
+                      onEditAnamnesis={handleEditAnamnesis}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+
+          {/* Enhanced Footer */}
+          <CardFooter className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-t border-gray-100 p-6">
+            <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    disabled={patients.length === 0}
+                    className="w-full md:w-auto bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Excluir Todos os Pacientes
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="border-0 shadow-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-xl font-bold text-gray-800">Tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-600 text-base">
+                      Esta ação irá excluir todos os pacientes permanentemente e não
+                      poderá ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="hover:bg-gray-100">Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        setShowDeleteConfirm(true);
+                        handleDeleteAllPatients();
+                      }}
+                      className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
+                    >
+                      Excluir Todos
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              
+              <div className="flex items-center space-x-3 text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-gradient-to-r from-primary to-purple-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">
+                    {patients.length} paciente{patients.length !== 1 ? 's' : ''} cadastrado{patients.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardFooter>
+        </Card>
+
+        {/* Dialogs - keeping existing dialog structure */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
+            <DialogHeader className="p-4 sm:p-0">
+              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                Adicionar Paciente
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Crie um novo paciente para iniciar o processo terapêutico.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-4 pb-4 sm:p-0">
+              <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
+            <DialogHeader className="p-4 sm:p-0">
+              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                Editar Paciente
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Atualize as informações do paciente.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-4 pb-4 sm:p-0">
+              {patientToEdit && (
+                <EditPatientDialog 
+                  patient={patientToEdit} 
+                  loadPatients={loadPatients} 
+                  closeModal={() => setIsEditDialogOpen(false)}
                 />
               )}
-            </>
-          )}
-        </CardContent>
-        <CardFooter className="flex flex-col md:flex-row justify-between items-center p-4 border-t bg-gray-50 dark:bg-gray-800 rounded-b-lg gap-3 md:gap-0">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                disabled={patients.length === 0}
-                className="w-full md:w-auto order-2 md:order-1"
-              >
-                Excluir Todos os Pacientes
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação irá excluir todos os pacientes permanentemente e não
-                  poderá ser desfeita.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    setShowDeleteConfirm(true);
-                    handleDeleteAllPatients();
-                  }}
-                >
-                  Excluir Todos
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <div className="text-sm text-gray-500 order-1 md:order-2">
-            {patients.length} paciente{patients.length !== 1 ? 's' : ''}
-          </div>
-        </CardFooter>
-      </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] p-0 sm:p-6">
-          <DialogHeader className="p-4 sm:p-0">
-            <DialogTitle>Adicionar Paciente</DialogTitle>
-            <DialogDescription>
-              Crie um novo paciente para iniciar o processo.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-4 pb-4 sm:p-0">
-            <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] p-0 sm:p-6">
-          <DialogHeader className="p-4 sm:p-0">
-            <DialogTitle>Editar Paciente</DialogTitle>
-            <DialogDescription>
-              Atualize as informações do paciente.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-4 pb-4 sm:p-0">
-            {patientToEdit && (
-              <EditPatientDialog 
-                patient={patientToEdit} 
-                loadPatients={loadPatients} 
-                closeModal={() => setIsEditDialogOpen(false)}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isViewAnamnesisOpen} onOpenChange={setIsViewAnamnesisOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 sm:p-6">
-          <DialogHeader className="p-4 sm:p-0">
-            <DialogTitle>Anamnese</DialogTitle>
-            <DialogDescription>
-              Visualize a anamnese do paciente.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-4 pb-4 sm:p-0">
-            {selectedPatient && (
-              <ViewAnamnesisDialog 
-                patient={selectedPatient} 
-                closeModal={() => setIsViewAnamnesisOpen(false)}
-                onEdit={handleAnamnesisEdit}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isViewAnamnesisOpen} onOpenChange={setIsViewAnamnesisOpen}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 sm:p-6 border-0 shadow-2xl">
+            <DialogHeader className="p-4 sm:p-0">
+              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                Anamnese
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Visualize a anamnese do paciente.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-4 pb-4 sm:p-0">
+              {selectedPatient && (
+                <ViewAnamnesisDialog 
+                  patient={selectedPatient} 
+                  closeModal={() => setIsViewAnamnesisOpen(false)}
+                  onEdit={handleAnamnesisEdit}
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }
