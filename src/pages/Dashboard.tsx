@@ -35,38 +35,32 @@ export default function Dashboard() {
     return recentMonths;
   };
 
-  const handleLogout = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("Logout button clicked");
+  const handleLogout = async () => {
     try {
-      console.log("Attempting to sign out...");
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error("Supabase signOut error:", error);
-        throw error;
+        console.error("Erro no logout:", error);
+        toast({
+          title: "Erro ao fazer logout",
+          description: "Ocorreu um erro ao tentar desconectar.",
+          variant: "destructive",
+        });
+        return;
       }
       
-      console.log("Logout successful, showing toast");
       toast({
-        title: "Logout realizado com sucesso",
-        description: "Você foi desconectado da sua conta.",
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
       });
       
-      console.log("Navigating to login page");
-      navigate("/login");
-      
-      // Force page reload to ensure clean state
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 100);
+      navigate("/login", { replace: true });
       
     } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      console.error("Erro inesperado:", error);
       toast({
         title: "Erro ao fazer logout",
-        description: "Ocorreu um erro ao tentar desconectar. Tente novamente.",
+        description: "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
     }
@@ -221,7 +215,6 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               className="bg-white/80 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all duration-200 shadow-sm"
-              type="button"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sair
