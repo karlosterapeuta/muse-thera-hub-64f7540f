@@ -261,21 +261,21 @@ const EducationalStaff: React.FC<EducationalStaffProps> = ({
     
     // Map to pitch names (including ledger lines)
     const pitchMap: { [key: number]: string } = {
-      -3: 'C2',  // Above staff
-      -2: 'B1',
-      -1: 'A1',
-      0: 'G1',   // Top line
-      1: 'F1',
-      2: 'E1',   // Second line
-      3: 'D1',
-      4: 'C1',   // Third line
-      5: 'B',
-      6: 'A',    // Fourth line
-      7: 'G',
-      8: 'F',    // Bottom line
-      9: 'E',
-      10: 'D',   // Below staff
-      11: 'C'
+      [-3]: 'C2',  // Above staff
+      [-2]: 'B1',
+      [-1]: 'A1',
+      [0]: 'G1',   // Top line
+      [1]: 'F1',
+      [2]: 'E1',   // Second line
+      [3]: 'D1',
+      [4]: 'C1',   // Third line
+      [5]: 'B',
+      [6]: 'A',    // Fourth line
+      [7]: 'G',
+      [8]: 'F',    // Bottom line
+      [9]: 'E',
+      [10]: 'D',   // Below staff
+      [11]: 'C'
     };
 
     return pitchMap[lineIndex] || 'C';
