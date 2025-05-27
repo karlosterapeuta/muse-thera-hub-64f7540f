@@ -1,4 +1,3 @@
-
 // Map of note keys to their frequencies in Hz
 const noteFrequencies: Record<string, number> = {
   "C↓": 261.63, // Low C (Dó)
@@ -96,8 +95,8 @@ let backgroundAudioElement: HTMLAudioElement | null = null;
 let audioContext: AudioContext | null = null;
 
 /**
- * Plays a sound for a given note
- * @param noteKey The key of the note to play
+ * Plays a sound for a given note with enhanced audio for TEA-Hero
+ * @param noteKey The key of the note to play or frequency in Hz
  */
 export const playNoteSound = (noteKey: string) => {
   try {
@@ -106,43 +105,79 @@ export const playNoteSound = (noteKey: string) => {
     
     // Create oscillator for tone generation
     const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sine';
     
-    // Get the frequency for the note
-    const frequency = noteFrequencies[noteKey] || 440; // Default to A 440Hz if not found
+    // Determine the wave type based on the input
+    let frequency: number;
+    let waveType: OscillatorType = 'sine';
+    
+    if (noteKey.includes('Hz')) {
+      // Extract frequency from string like "440Hz"
+      frequency = parseFloat(noteKey.replace('Hz', ''));
+      
+      // Use different wave types for different frequency ranges to simulate instruments
+      if (frequency < 300) {
+        waveType = 'sine'; // Lower frequencies with sine wave (bell-like)
+      } else if (frequency < 600) {
+        waveType = 'triangle'; // Mid frequencies with triangle (xylophone-like)
+      } else {
+        waveType = 'square'; // Higher frequencies with square (more percussive)
+      }
+    } else {
+      // Get the frequency for the note from the map
+      frequency = noteFrequencies[noteKey] || 440; // Default to A 440Hz if not found
+    }
+    
+    oscillator.type = waveType;
     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
     
-    // Create a gain node for volume control
+    // Create a gain node for volume control with envelope
     const gainNode = audioContext.createGain();
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Start at 30% volume
     
-    // Fade out the sound
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.8);
+    // Create an ADSR envelope for more realistic instrument sound
+    const attackTime = 0.01;
+    const decayTime = 0.1;
+    const sustainLevel = 0.3;
+    const releaseTime = 0.4;
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.6, audioContext.currentTime + attackTime); // Attack
+    gainNode.gain.exponentialRampToValueAtTime(sustainLevel, audioContext.currentTime + attackTime + decayTime); // Decay
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime); // Release
+    
+    // Add some reverb-like effect with a delay
+    const delayNode = audioContext.createDelay();
+    const delayGain = audioContext.createGain();
+    delayNode.delayTime.value = 0.1;
+    delayGain.gain.value = 0.2;
     
     // Connect the nodes
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
+    // Add delay effect
+    gainNode.connect(delayNode);
+    delayNode.connect(delayGain);
+    delayGain.connect(audioContext.destination);
+    
     // Track the audio nodes
-    activeAudioNodes.push(oscillator);
-    activeAudioNodes.push(gainNode);
+    activeAudioNodes.push(oscillator, gainNode, delayNode, delayGain);
     
     // Start and stop the oscillator
+    const totalDuration = attackTime + decayTime + releaseTime;
     oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.8);
+    oscillator.stop(audioContext.currentTime + totalDuration);
+    
+    console.log(`Playing ${noteKey} at ${frequency}Hz with ${waveType} wave`);
     
     // Clean up nodes after they're done
     oscillator.onended = () => {
       // Remove from active nodes list
-      const oscillatorIndex = activeAudioNodes.indexOf(oscillator);
-      if (oscillatorIndex !== -1) {
-        activeAudioNodes.splice(oscillatorIndex, 1);
-      }
-      
-      const gainIndex = activeAudioNodes.indexOf(gainNode);
-      if (gainIndex !== -1) {
-        activeAudioNodes.splice(gainIndex, 1);
-      }
+      [oscillator, gainNode, delayNode, delayGain].forEach(node => {
+        const index = activeAudioNodes.indexOf(node);
+        if (index !== -1) {
+          activeAudioNodes.splice(index, 1);
+        }
+      });
       
       // Close audio context to free up resources
       if (audioContext.state !== 'closed') {
@@ -153,6 +188,12 @@ export const playNoteSound = (noteKey: string) => {
     };
   } catch (error) {
     console.error("Error playing note sound:", error);
+    // Fallback: try a simple beep
+    try {
+      generateFallbackTone(500, parseFloat(noteKey.replace('Hz', '')) || 440);
+    } catch (fallbackError) {
+      console.error("Fallback sound also failed:", fallbackError);
+    }
   }
 };
 

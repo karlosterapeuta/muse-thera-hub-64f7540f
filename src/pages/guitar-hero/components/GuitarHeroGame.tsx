@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface Note {
   id: string;
@@ -30,7 +31,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-  const { toast } = useToast();
+  const gameStartTimeRef = useRef<number>(0);
 
   // Configuração das lanes (faixas) baseada no instrumento
   const lanes = instrumentType === "bell" ? [
@@ -59,58 +60,77 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     { color: "#9933CC", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
-  // Gerar padrão de notas simples
-  const generateNotes = () => {
+  // Gerar padrão de notas mais consistente
+  const generateNotes = useCallback(() => {
     const newNotes: Note[] = [];
     const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol
+      [0, 2, 4], // Dó, Mi, Sol (acordes maiores)
       [1, 3, 5], // Ré, Fá, Lá
-      [0, 1, 2, 3], // Sequência simples
+      [0, 1, 2], // Sequência simples
       [4, 5, 6], // Notas agudas
+      [2, 4, 6], // Saltos
+      [0, 3, 6], // Acordes de sétima
     ];
 
-    for (let i = 0; i < 20; i++) {
+    let noteId = 0;
+    for (let i = 0; i < 30; i++) { // Mais notas para sessão mais longa
       const pattern = patterns[i % patterns.length];
+      const baseTime = i * 3000; // 3 segundos entre padrões
+      
       pattern.forEach((laneIndex, noteIndex) => {
-        newNotes.push({
-          id: `note-${i}-${noteIndex}`,
-          lane: laneIndex,
-          color: lanes[laneIndex].color,
-          frequency: lanes[laneIndex].frequency,
-          startTime: i * 2000 + noteIndex * 500,
-          duration: 400,
-          y: -50
-        });
+        if (laneIndex < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: laneIndex,
+            color: lanes[laneIndex].color,
+            frequency: lanes[laneIndex].frequency,
+            startTime: baseTime + noteIndex * 800, // 800ms entre notas do padrão
+            duration: 600,
+            y: -80 // Começar mais acima da tela
+          });
+        }
       });
     }
 
+    console.log(`Generated ${newNotes.length} notes for ${instrumentType}`);
     setNotes(newNotes);
-  };
+  }, [instrumentType, lanes]);
 
-  // Atualizar posição das notas
-  const updateNotes = () => {
+  // Atualizar posição das notas com base no tempo real
+  const updateNotes = useCallback(() => {
     if (!isPlaying) return;
 
-    setCurrentTime(prev => prev + 16);
+    const currentTime = Date.now() - gameStartTimeRef.current;
     
     setNotes(prevNotes => 
-      prevNotes.map(note => ({
-        ...note,
-        y: note.y + speed
-      })).filter(note => note.y < 600) // Remove notas que saíram da tela
+      prevNotes
+        .map(note => {
+          // Calcular posição baseada no tempo
+          const noteAge = currentTime - note.startTime;
+          const newY = (noteAge / 10) * speed; // Velocidade ajustável
+          return {
+            ...note,
+            y: newY
+          };
+        })
+        .filter(note => note.y < 700) // Remove notas que saíram da tela
     );
 
     animationRef.current = requestAnimationFrame(updateNotes);
-  };
+  }, [isPlaying, speed]);
 
   // Detectar teclas pressionadas
-  const handleKeyPress = (event: KeyboardEvent) => {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const lane = lanes.find(l => l.key === event.key);
     if (!lane || !isPlaying) return;
 
+    event.preventDefault(); // Prevenir ações padrão do browser
+
     const laneIndex = lanes.indexOf(lane);
-    const hitZoneTop = 500 - hitZoneHeight / 2;
-    const hitZoneBottom = 500 + hitZoneHeight / 2;
+    const hitZoneTop = 420 - hitZoneHeight / 2; // Zona de acerto centralizada
+    const hitZoneBottom = 420 + hitZoneHeight / 2;
+
+    console.log(`Key pressed: ${event.key}, Lane: ${laneIndex}`);
 
     // Verificar se há uma nota na zona de acerto
     const hitNote = notes.find(note => 
@@ -121,19 +141,20 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     if (hitNote) {
       // Acertou!
-      const precision = Math.abs(hitNote.y - 500);
+      const precision = Math.abs(hitNote.y - 420);
       let points = 100;
       let feedback = "Good!";
 
-      if (precision < 10) {
-        points = 200;
+      if (precision < 15) {
+        points = 300;
         feedback = "Perfect!";
-      } else if (precision < 20) {
-        points = 150;
+      } else if (precision < 30) {
+        points = 200;
         feedback = "Great!";
       }
 
-      setScore(prev => prev + points * (combo + 1));
+      const finalPoints = points * Math.max(1, combo);
+      setScore(prev => prev + finalPoints);
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
@@ -141,40 +162,50 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       onNotePlay(lane.frequency, lane.color);
 
       // Feedback visual
-      toast({
-        title: feedback,
-        description: `+${points * (combo + 1)} pontos`,
+      toast(`${feedback} +${finalPoints} pontos`, {
+        duration: 1000,
       });
 
       // Remover a nota acertada
       setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
+      
+      console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
     } else {
       // Errou ou tocou sem nota
-      setCombo(0);
+      if (combo > 0) {
+        setCombo(0);
+        toast("Miss! Combo perdido", {
+          duration: 1000,
+        });
+      }
       
       // Ainda toca o som para feedback
       onNotePlay(lane.frequency, lane.color);
+      console.log(`Missed note in lane ${laneIndex}`);
     }
-  };
+  }, [lanes, isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
 
   // Gerenciar eventos de teclado
   useEffect(() => {
     if (isPlaying) {
-      window.addEventListener('keydown', handleKeyPress);
-      return () => window.removeEventListener('keydown', handleKeyPress);
+      document.addEventListener('keydown', handleKeyPress);
+      return () => document.removeEventListener('keydown', handleKeyPress);
     }
-  }, [isPlaying, notes, combo]);
+  }, [isPlaying, handleKeyPress]);
 
   // Iniciar/pausar o jogo
   const togglePlay = () => {
     if (!isPlaying) {
       generateNotes();
+      gameStartTimeRef.current = Date.now();
       setCurrentTime(0);
+      console.log(`Starting ${instrumentType} game`);
       updateNotes();
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      console.log(`Pausing ${instrumentType} game`);
     }
     setIsPlaying(!isPlaying);
   };
@@ -190,6 +221,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setMaxCombo(0);
     setNotes([]);
     setCurrentTime(0);
+    gameStartTimeRef.current = 0;
+    console.log(`Game reset for ${instrumentType}`);
   };
 
   // Cleanup
@@ -211,7 +244,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-black">
       {/* Header com controles e pontuação */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
         <div className="flex justify-between items-center mb-4">
@@ -237,11 +270,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           </div>
           <div>
             <div className="text-sm opacity-80">Combo</div>
-            <div className="text-xl font-bold">{combo}x</div>
+            <div className="text-xl font-bold text-yellow-300">{combo}x</div>
           </div>
           <div>
             <div className="text-sm opacity-80">Max Combo</div>
-            <div className="text-xl font-bold">{maxCombo}x</div>
+            <div className="text-xl font-bold text-orange-300">{maxCombo}x</div>
           </div>
           <div>
             <div className="text-sm opacity-80">Velocidade</div>
@@ -251,9 +284,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       </div>
 
       {/* Instruções */}
-      <div className="bg-blue-50 p-3 text-center">
-        <p className="text-sm text-blue-800">
-          Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona de acerto!
+      <div className="bg-blue-600 p-3 text-center text-white">
+        <p className="text-sm">
+          Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
         </p>
       </div>
 
@@ -261,7 +294,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       <div 
         ref={gameRef}
         className="flex-1 relative bg-gradient-to-b from-gray-900 to-black overflow-hidden"
-        style={{ height: "600px" }}
+        style={{ height: "500px" }}
       >
         {/* Lanes (faixas) */}
         {lanes.map((lane, index) => (
@@ -272,21 +305,21 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
               left: `${(index / lanes.length) * 100}%`,
               width: `${100 / lanes.length}%`,
               height: "100%",
-              backgroundColor: `${lane.color}20`
+              backgroundColor: `${lane.color}15`
             }}
           >
             {/* Indicador da nota na parte inferior */}
             <div
-              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50"
+              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg"
               style={{
-                height: "60px",
+                height: "70px",
                 backgroundColor: lane.color,
               }}
             >
               <div className="text-center">
-                <div className="text-xs">{lane.key}</div>
-                <div className="text-lg">{lane.symbol}</div>
-                <div className="text-xs">{lane.name}</div>
+                <div className="text-xs font-bold">{lane.key}</div>
+                <div className="text-2xl">{lane.symbol}</div>
+                <div className="text-xs font-bold">{lane.name}</div>
               </div>
             </div>
           </div>
@@ -294,14 +327,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
         {/* Zona de acerto */}
         <div
-          className="absolute w-full border-2 border-yellow-400 bg-yellow-400/20"
+          className="absolute w-full border-4 border-yellow-400 bg-yellow-400/30 shadow-lg"
           style={{
-            top: `${500 - hitZoneHeight / 2}px`,
+            top: `${420 - hitZoneHeight / 2}px`,
             height: `${hitZoneHeight}px`,
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-yellow-400 font-bold text-lg">ZONA DE ACERTO</div>
+            <div className="text-yellow-400 font-bold text-lg animate-pulse">ZONA DE ACERTO</div>
           </div>
         </div>
 
@@ -309,24 +342,26 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         {notes.map((note) => (
           <div
             key={note.id}
-            className="absolute rounded-lg border-2 border-white shadow-lg flex items-center justify-center text-white font-bold"
+            className="absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform"
             style={{
-              left: `${(note.lane / lanes.length) * 100 + 10}%`,
-              width: `${100 / lanes.length - 20}%`,
+              left: `${(note.lane / lanes.length) * 100 + 1}%`,
+              width: `${100 / lanes.length - 2}%`,
               top: `${note.y}px`,
-              height: "40px",
+              height: "50px",
               backgroundColor: note.color,
-              transform: "translateX(-50%)",
+              boxShadow: `0 0 20px ${note.color}50`,
             }}
           >
-            {lanes[note.lane].symbol}
+            <div className="text-center">
+              <div className="text-lg">{lanes[note.lane].symbol}</div>
+            </div>
           </div>
         ))}
 
         {/* Linha de referência no centro */}
         <div
-          className="absolute w-full border-t-4 border-yellow-400"
-          style={{ top: "500px" }}
+          className="absolute w-full border-t-4 border-yellow-400 opacity-50"
+          style={{ top: "420px" }}
         />
       </div>
     </div>
