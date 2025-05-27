@@ -52,7 +52,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 
   return (
     <div className="bg-white">
-      {/* First Page - Header and Charts */}
+      {/* First Page - Header and All Charts */}
       <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
         {/* Header Section */}
         <div className="border-b-2 border-gray-200 pb-6 mb-8">
@@ -84,17 +84,17 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8 mb-8">
           {/* Radar Chart */}
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
               Perfil de Habilidades por Domínio
             </h3>
-            <div className="flex justify-center items-center h-[300px]">
+            <div className="flex justify-center items-center h-[280px]">
               {radarData && (
-                <RadarChart width={300} height={300} data={radarData}>
+                <RadarChart width={280} height={280} data={radarData}>
                   <PolarGrid strokeDasharray="3 3" />
-                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 12 }} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 11 }} />
                   <Radar
                     name="Perfil"
                     dataKey="value"
@@ -113,14 +113,14 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
               Desenvolvimento Geral
             </h3>
             <div className="flex flex-col items-center">
-              <div className="h-[300px] flex items-center justify-center">
-                <PieChart width={300} height={300}>
+              <div className="h-[280px] flex items-center justify-center">
+                <PieChart width={280} height={280}>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
+                    innerRadius={50}
+                    outerRadius={70}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -130,7 +130,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                   </Pie>
                 </PieChart>
               </div>
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex justify-center gap-6 mt-2">
                 {pieData.map((entry: any, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <div
@@ -147,22 +147,15 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </Card>
         </div>
 
-        {/* First Page Footer */}
-        <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-500">Página 1/3</p>
-        </div>
-      </div>
-
-      {/* Second Page - Bar Chart */}
-      <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
+        {/* Bar Chart Section */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-6 text-center text-gray-800">
-            Desempenho por Categoria
+            Desempenho Detalhado por Categoria
           </h3>
-          <div className="h-[500px] w-full flex justify-center">
+          <div className="h-[380px] w-full flex justify-center">
             <BarChart
               width={700}
-              height={500}
+              height={380}
               data={categoryData}
               margin={{ top: 20, right: 30, left: 30, bottom: 70 }}
             >
@@ -172,7 +165,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                 angle={-45}
                 textAnchor="end"
                 height={70}
-                tick={{ fill: '#4B5563', fontSize: 12 }}
+                tick={{ fill: '#4B5563', fontSize: 11 }}
               />
               <YAxis domain={[0, 100]} tick={{ fill: '#4B5563' }} />
               <Bar dataKey="value" fill="#6D28D9">
@@ -188,12 +181,13 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </div>
         </Card>
 
+        {/* First Page Footer */}
         <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-500">Página 2/3</p>
+          <p className="text-sm text-gray-500">Página 1/2</p>
         </div>
       </div>
 
-      {/* Third Page - Detailed Parameters */}
+      {/* Second Page - Detailed Parameters */}
       <div className="p-8" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', minHeight: '1050px' }}>
         <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
           Detalhamento dos Parâmetros Avaliados
@@ -282,7 +276,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           </div>
         </div>
 
-        {/* Third Page Footer */}
+        {/* Second Page Footer */}
         <div className="border-t-2 border-gray-200 mt-8 pt-6 text-center">
           <p className="text-sm text-gray-500 mb-1">
             Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
@@ -296,7 +290,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <p className="text-sm text-gray-500">
             Email: {evaluatorEmail || 'Não informado'}
           </p>
-          <p className="text-sm text-gray-500 mt-2">Página 3/3</p>
+          <p className="text-sm text-gray-500 mt-2">Página 2/2</p>
         </div>
       </div>
     </div>
