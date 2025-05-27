@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,8 +20,9 @@ const TeaHero = () => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
 
-  // Lista de músicas disponíveis
+  // Lista expandida de músicas disponíveis
   const songs: Song[] = [
+    // Músicas Fáceis - Sino
     {
       id: "twinkle-bell",
       title: "Brilha, Brilha Estrelinha",
@@ -30,22 +30,6 @@ const TeaHero = () => {
       difficulty: "Fácil",
       instrument: "bell",
       color: "bg-red-100 border-red-200"
-    },
-    {
-      id: "happy-birthday-xylophone",
-      title: "Parabéns para Você",
-      artist: "Tradicional",
-      difficulty: "Fácil",
-      instrument: "xylophone",
-      color: "bg-blue-100 border-blue-200"
-    },
-    {
-      id: "scale-keyboard",
-      title: "Escala de Dó Maior",
-      artist: "Exercício Musical",
-      difficulty: "Fácil",
-      instrument: "keyboard",
-      color: "bg-green-100 border-green-200"
     },
     {
       id: "mary-lamb-bell",
@@ -56,21 +40,83 @@ const TeaHero = () => {
       color: "bg-red-100 border-red-200"
     },
     {
-      id: "ode-joy-xylophone",
-      title: "Ode à Alegria",
-      artist: "Beethoven",
-      difficulty: "Médio",
+      id: "old-macdonald-bell",
+      title: "Old MacDonald",
+      artist: "Tradicional",
+      difficulty: "Fácil",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    {
+      id: "row-boat-bell",
+      title: "Row Your Boat",
+      artist: "Infantil",
+      difficulty: "Fácil",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    
+    // Músicas Fáceis - Xilofone
+    {
+      id: "happy-birthday-xylophone",
+      title: "Parabéns para Você",
+      artist: "Tradicional",
+      difficulty: "Fácil",
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200"
     },
     {
-      id: "fur-elise-keyboard",
-      title: "Para Elisa",
-      artist: "Beethoven",
-      difficulty: "Difícil",
+      id: "london-bridge-xylophone",
+      title: "London Bridge",
+      artist: "Tradicional Inglesa",
+      difficulty: "Fácil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "jingle-bells-xylophone",
+      title: "Jingle Bells",
+      artist: "Tradicional de Natal",
+      difficulty: "Fácil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "twinkle-xylophone",
+      title: "Brilha Estrelinha",
+      artist: "Versão Xilofone",
+      difficulty: "Fácil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+
+    // Músicas Fáceis - Teclado
+    {
+      id: "scale-keyboard",
+      title: "Escala de Dó Maior",
+      artist: "Exercício Musical",
+      difficulty: "Fácil",
       instrument: "keyboard",
       color: "bg-green-100 border-green-200"
     },
+    {
+      id: "chopsticks-keyboard",
+      title: "Chopsticks",
+      artist: "Tradicional Piano",
+      difficulty: "Fácil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "hot-cross-keyboard",
+      title: "Hot Cross Buns",
+      artist: "Tradicional",
+      difficulty: "Fácil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+
+    // Músicas Médias - Sino
     {
       id: "frere-jacques-bell",
       title: "Frère Jacques",
@@ -80,12 +126,200 @@ const TeaHero = () => {
       color: "bg-red-100 border-red-200"
     },
     {
+      id: "amazing-grace-bell",
+      title: "Amazing Grace",
+      artist: "Hino Tradicional",
+      difficulty: "Médio",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    {
+      id: "greensleeves-bell",
+      title: "Greensleeves",
+      artist: "Tradicional Inglesa",
+      difficulty: "Médio",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    {
+      id: "scarborough-bell",
+      title: "Scarborough Fair",
+      artist: "Balada Tradicional",
+      difficulty: "Médio",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+
+    // Músicas Médias - Xilofone
+    {
+      id: "ode-joy-xylophone",
+      title: "Ode à Alegria",
+      artist: "Beethoven",
+      difficulty: "Médio",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "danny-boy-xylophone",
+      title: "Danny Boy",
+      artist: "Tradicional Irlandesa",
+      difficulty: "Médio",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "auld-lang-xylophone",
+      title: "Auld Lang Syne",
+      artist: "Tradicional Escocesa",
+      difficulty: "Médio",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "swan-lake-xylophone",
+      title: "Tema do Lago dos Cisnes",
+      artist: "Tchaikovsky",
+      difficulty: "Médio",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+
+    // Músicas Médias - Teclado
+    {
+      id: "moonlight-keyboard",
+      title: "Sonata ao Luar (Tema)",
+      artist: "Beethoven",
+      difficulty: "Médio",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "canon-d-keyboard",
+      title: "Cânone em Ré",
+      artist: "Pachelbel",
+      difficulty: "Médio",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "bach-minuet-keyboard",
+      title: "Minueto em Sol",
+      artist: "Bach",
+      difficulty: "Médio",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+
+    // Músicas Difíceis - Sino
+    {
+      id: "william-tell-bell",
+      title: "Guilherme Tell",
+      artist: "Rossini",
+      difficulty: "Difícil",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    {
+      id: "flight-bumblebee-bell",
+      title: "Voo do Besouro",
+      artist: "Rimsky-Korsakov",
+      difficulty: "Difícil",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+
+    // Músicas Difíceis - Xilofone
+    {
       id: "canon-xylophone",
       title: "Cânone em Ré",
       artist: "Pachelbel",
       difficulty: "Difícil",
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "turkish-march-xylophone",
+      title: "Marcha Turca",
+      artist: "Mozart",
+      difficulty: "Difícil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "spring-vivaldi-xylophone",
+      title: "Primavera (As Quatro Estações)",
+      artist: "Vivaldi",
+      difficulty: "Difícil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+
+    // Músicas Difíceis - Teclado
+    {
+      id: "fur-elise-keyboard",
+      title: "Para Elisa",
+      artist: "Beethoven",
+      difficulty: "Difícil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "claire-de-lune-keyboard",
+      title: "Claire de Lune",
+      artist: "Debussy",
+      difficulty: "Difícil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "invention-1-keyboard",
+      title: "Invenção No. 1",
+      artist: "Bach",
+      difficulty: "Difícil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "chopin-minute-keyboard",
+      title: "Valsa do Minuto",
+      artist: "Chopin",
+      difficulty: "Difícil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+
+    // Músicas Brasileiras - Mix de instrumentos
+    {
+      id: "asa-branca-bell",
+      title: "Asa Branca",
+      artist: "Luiz Gonzaga",
+      difficulty: "Médio",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
+    },
+    {
+      id: "aquarela-xylophone",
+      title: "Aquarela",
+      artist: "Toquinho",
+      difficulty: "Fácil",
+      instrument: "xylophone",
+      color: "bg-blue-100 border-blue-200"
+    },
+    {
+      id: "garota-ipanema-keyboard",
+      title: "Garota de Ipanema",
+      artist: "Tom Jobim",
+      difficulty: "Difícil",
+      instrument: "keyboard",
+      color: "bg-green-100 border-green-200"
+    },
+    {
+      id: "ciranda-cirandinha-bell",
+      title: "Ciranda, Cirandinha",
+      artist: "Folclore Brasileiro",
+      difficulty: "Fácil",
+      instrument: "bell",
+      color: "bg-red-100 border-red-200"
     }
   ];
 
@@ -159,7 +393,7 @@ const TeaHero = () => {
             TEA-Hero 🎵
           </h1>
           <p className="text-lg text-gray-600">
-            Escolha uma música para começar a jogar!
+            Escolha uma música para começar a jogar! ({songs.length} músicas disponíveis)
           </p>
         </div>
 
