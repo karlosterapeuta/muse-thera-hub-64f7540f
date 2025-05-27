@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,12 @@ import {
   ChevronLeft,
   Key,
   UsersRound,
-  Music,
   Bell,
   DollarSign,
   ListChecks,
   Waves,
   LayoutGrid,
+  Piano,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -46,7 +47,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Users, text: "Pacientes", path: "/patients" },
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
-    { icon: Music, text: "Fala Mágica", path: "/songs" },
+    { icon: Piano, text: "Compositor Musical", path: "/music-composer" },
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
     { icon: LayoutGrid, text: "Musicograma", path: "/musicogram" },

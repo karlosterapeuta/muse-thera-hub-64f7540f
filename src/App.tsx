@@ -32,6 +32,7 @@ import FinancialReports from "./pages/finance/reports";
 import ActivitiesPage from "./pages/activities";
 import ActivityCategoryPage from "./pages/activities/category";
 import MusicogramPage from "./pages/musicogram";
+import MusicComposer from "./pages/music-composer";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import "./App.css";
 
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
       {
         path: "/musicogram",
         element: <MusicogramPage />,
+      },
+      {
+        path: "/music-composer",
+        element: <MusicComposer />,
       },
       {
         path: "/finance",
