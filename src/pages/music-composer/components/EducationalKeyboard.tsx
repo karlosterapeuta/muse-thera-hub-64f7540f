@@ -17,21 +17,23 @@ const EducationalKeyboard: React.FC<EducationalKeyboardProps> = ({
   highlightedNote
 }) => {
   const [pressedKey, setPressedKey] = useState<string | null>(null);
+  const [draggedNote, setDraggedNote] = useState<string | null>(null);
 
+  // Sistema educacional de notas com cores e formas específicas
   const keys = [
-    { note: "C", frequency: 261.63, color: "#FF0000", isBlack: false },
-    { note: "C#", frequency: 277.18, color: "#800000", isBlack: true },
-    { note: "D", frequency: 293.66, color: "#FF9900", isBlack: false },
-    { note: "D#", frequency: 311.13, color: "#804C00", isBlack: true },
-    { note: "E", frequency: 329.63, color: "#FFFF00", isBlack: false },
-    { note: "F", frequency: 349.23, color: "#00FF00", isBlack: false },
-    { note: "F#", frequency: 369.99, color: "#008000", isBlack: true },
-    { note: "G", frequency: 392.00, color: "#0099FF", isBlack: false },
-    { note: "G#", frequency: 415.30, color: "#004C80", isBlack: true },
-    { note: "A", frequency: 440.00, color: "#0000FF", isBlack: false },
-    { note: "A#", frequency: 466.16, color: "#000080", isBlack: true },
-    { note: "B", frequency: 493.88, color: "#9900FF", isBlack: false },
-    { note: "C2", frequency: 523.25, color: "#FF6699", isBlack: false }
+    { note: "C", pitch: "Dó", frequency: 261.63, color: "#FF0000", shape: "●", isBlack: false },
+    { note: "C#", pitch: "Dó#", frequency: 277.18, color: "#800000", shape: "●", isBlack: true },
+    { note: "D", pitch: "Ré", frequency: 293.66, color: "#FF6600", shape: "■", isBlack: false },
+    { note: "D#", pitch: "Ré#", frequency: 311.13, color: "#CC4400", shape: "■", isBlack: true },
+    { note: "E", pitch: "Mi", frequency: 329.63, color: "#FFFF00", shape: "▲", isBlack: false },
+    { note: "F", pitch: "Fá", frequency: 349.23, color: "#00CC00", shape: "◆", isBlack: false },
+    { note: "F#", pitch: "Fá#", frequency: 369.99, color: "#008800", shape: "◆", isBlack: true },
+    { note: "G", pitch: "Sol", frequency: 392.00, color: "#0099FF", shape: "⬣", isBlack: false },
+    { note: "G#", pitch: "Sol#", frequency: 415.30, color: "#0066CC", shape: "⬣", isBlack: true },
+    { note: "A", pitch: "Lá", frequency: 440.00, color: "#6600FF", shape: "🔺", isBlack: false },
+    { note: "A#", pitch: "Lá#", frequency: 466.16, color: "#4400CC", shape: "🔺", isBlack: true },
+    { note: "B", pitch: "Si", frequency: 493.88, color: "#FF1493", shape: "◉", isBlack: false },
+    { note: "C2", pitch: "Dó⁸", frequency: 523.25, color: "#FF0000", shape: "●", isBlack: false }
   ];
 
   const whiteKeys = keys.filter(key => !key.isBlack);
@@ -41,19 +43,33 @@ const EducationalKeyboard: React.FC<EducationalKeyboardProps> = ({
     setPressedKey(key.note);
     onNotePlay(key.frequency, key.note, key.color);
     
-    // Feedback visual por 200ms
-    setTimeout(() => setPressedKey(null), 200);
+    // Feedback visual por 300ms
+    setTimeout(() => setPressedKey(null), 300);
     
     if (isRecording) {
       const position = {
-        x: Math.random() * 800 + 100,
-        y: Math.random() * 200 + 150
+        x: Math.random() * 600 + 150,
+        y: Math.random() * 120 + 140
       };
       onNoteAdd(key.note, position);
     }
   };
 
-  // Suporte a teclado físico
+  const handleDragStart = (key: any, event: React.DragEvent) => {
+    setDraggedNote(key.note);
+    event.dataTransfer.setData('note', JSON.stringify({
+      note: key.note,
+      pitch: key.pitch,
+      color: key.color,
+      shape: key.shape
+    }));
+  };
+
+  const handleDragEnd = () => {
+    setDraggedNote(null);
+  };
+
+  // Suporte a teclado físico melhorado
   useEffect(() => {
     const keyMap: { [key: string]: any } = {
       'a': whiteKeys[0], // C
@@ -74,6 +90,7 @@ const EducationalKeyboard: React.FC<EducationalKeyboardProps> = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = keyMap[event.key.toLowerCase()];
       if (key && pressedKey !== key.note) {
+        event.preventDefault();
         handleKeyPress(key);
       }
     };
@@ -83,82 +100,149 @@ const EducationalKeyboard: React.FC<EducationalKeyboardProps> = ({
   }, [pressedKey]);
 
   return (
-    <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl">
-      {/* Indicadores de notas coloridas */}
-      <div className="flex justify-center mb-4 space-x-2">
+    <div className="bg-gradient-to-b from-gray-800 via-gray-900 to-black p-6 rounded-2xl shadow-2xl border-4 border-gray-600">
+      
+      {/* Header educativo */}
+      <div className="text-center mb-4">
+        <h3 className="text-2xl font-bold text-white mb-2">🎹 Piano Educativo Colorido</h3>
+        <p className="text-gray-300 text-sm">Cada nota tem sua cor e forma • Arraste para a partitura!</p>
+      </div>
+
+      {/* Indicadores de notas coloridas com formas */}
+      <div className="flex justify-center mb-6 flex-wrap gap-2">
         {whiteKeys.map((key, index) => (
           <div
             key={key.note}
-            className={`w-12 h-12 rounded-full border-4 border-white flex items-center justify-center text-sm font-bold shadow-lg transition-all ${
-              highlightedNote === key.note ? "animate-pulse scale-110 ring-4 ring-yellow-400" : ""
+            className={`flex flex-col items-center p-2 rounded-xl border-3 border-white transition-all transform ${
+              highlightedNote === key.note || pressedKey === key.note
+                ? "animate-pulse scale-110 shadow-lg shadow-yellow-400/50" 
+                : "hover:scale-105"
             }`}
-            style={{ backgroundColor: key.color, color: 'white' }}
+            style={{ 
+              backgroundColor: key.color,
+              boxShadow: highlightedNote === key.note ? `0 0 20px ${key.color}` : undefined
+            }}
           >
-            {key.note}
+            <div className="text-2xl text-white font-bold drop-shadow-lg">{key.shape}</div>
+            <div className="text-white text-sm font-bold">{key.pitch}</div>
+            <div className="text-white text-xs opacity-80">{key.note}</div>
           </div>
         ))}
       </div>
 
-      {/* Piano */}
-      <div className="relative">
+      {/* Piano Visual */}
+      <div className="relative bg-black rounded-xl p-4 shadow-inner">
+        
         {/* Teclas brancas */}
-        <div className="flex">
+        <div className="flex justify-center">
           {whiteKeys.map((key, index) => (
             <button
               key={key.note}
-              className={`w-16 h-40 border-2 border-gray-400 flex flex-col items-center justify-end pb-4 font-bold text-lg transition-all transform ${
+              draggable
+              className={`relative w-16 h-48 border-2 border-gray-400 flex flex-col items-center justify-end pb-4 font-bold text-lg transition-all transform cursor-pointer ${
                 pressedKey === key.note || highlightedNote === key.note
                   ? "scale-95 shadow-inner" 
-                  : "hover:scale-105 shadow-lg"
+                  : "hover:scale-105 shadow-xl"
               } ${
-                index === 0 ? "rounded-l-lg" : 
-                index === whiteKeys.length - 1 ? "rounded-r-lg" : ""
+                index === 0 ? "rounded-l-xl" : 
+                index === whiteKeys.length - 1 ? "rounded-r-xl" : ""
               }`}
               style={{
-                backgroundColor: pressedKey === key.note || highlightedNote === key.note ? key.color : 'white',
+                backgroundColor: pressedKey === key.note || highlightedNote === key.note 
+                  ? key.color 
+                  : '#FFFFFF',
+                borderColor: key.color,
+                borderWidth: highlightedNote === key.note ? '4px' : '2px',
                 color: pressedKey === key.note || highlightedNote === key.note ? 'white' : key.color,
-                borderColor: key.color
+                boxShadow: highlightedNote === key.note 
+                  ? `0 0 15px ${key.color}, inset 0 0 15px rgba(255,255,255,0.2)` 
+                  : undefined
               }}
               onMouseDown={() => handleKeyPress(key)}
               onTouchStart={() => handleKeyPress(key)}
+              onDragStart={(e) => handleDragStart(key, e)}
+              onDragEnd={handleDragEnd}
+              title={`${key.pitch} (${key.note}) - Arraste para a partitura!`}
             >
-              <div className="text-xs mb-1">●</div>
-              {key.note}
+              <div className="text-3xl mb-2 drop-shadow-lg">{key.shape}</div>
+              <div className="text-sm font-bold">{key.pitch}</div>
+              <div className="text-xs opacity-70">{key.note}</div>
+              
+              {/* Indicador de drag */}
+              {draggedNote === key.note && (
+                <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold animate-bounce">
+                  📌
+                </div>
+              )}
             </button>
           ))}
         </div>
 
         {/* Teclas pretas */}
-        <div className="absolute top-0 left-0 flex">
+        <div className="absolute top-4 left-4 flex justify-center w-full">
           {blackKeys.map((key, index) => {
-            const positions = ['8%', '24%', '56%', '72%', '88%'];
+            const positions = ['12%', '20%', '36%', '44%', '52%'];
             return (
               <button
                 key={key.note}
-                className={`w-10 h-24 rounded-b-lg text-white text-sm font-bold flex flex-col items-center justify-end pb-2 transition-all transform ${
+                draggable
+                className={`absolute w-12 h-32 rounded-b-xl text-white text-sm font-bold flex flex-col items-center justify-end pb-3 transition-all transform cursor-pointer ${
                   pressedKey === key.note || highlightedNote === key.note
                     ? "scale-95 shadow-inner" 
-                    : "hover:scale-105 shadow-lg"
+                    : "hover:scale-105 shadow-xl"
                 }`}
                 style={{
-                  backgroundColor: pressedKey === key.note || highlightedNote === key.note ? key.color : '#2D3748',
+                  backgroundColor: pressedKey === key.note || highlightedNote === key.note 
+                    ? key.color 
+                    : '#1A1A1A',
                   left: positions[index],
-                  position: 'absolute'
+                  border: highlightedNote === key.note 
+                    ? `3px solid ${key.color}` 
+                    : '1px solid #333',
+                  boxShadow: highlightedNote === key.note 
+                    ? `0 0 12px ${key.color}` 
+                    : undefined
                 }}
                 onMouseDown={() => handleKeyPress(key)}
                 onTouchStart={() => handleKeyPress(key)}
+                onDragStart={(e) => handleDragStart(key, e)}
+                onDragEnd={handleDragEnd}
+                title={`${key.pitch} (${key.note}) - Arraste para a partitura!`}
               >
-                <div className="text-xs mb-1">●</div>
-                {key.note}
+                <div className="text-lg mb-1">{key.shape}</div>
+                <div className="text-xs">{key.pitch}</div>
+                
+                {/* Indicador de drag */}
+                {draggedNote === key.note && (
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-1 py-0.5 rounded-full font-bold animate-bounce">
+                    📌
+                  </div>
+                )}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Instruções */}
-      <div className="mt-4 text-center text-white text-sm">
-        <p>🎹 Clique nas teclas ou use o teclado: A S D F G H J K (brancas) | W E T Y U (pretas)</p>
+      {/* Instruções melhoradas */}
+      <div className="mt-6 text-center space-y-2">
+        <div className="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold">
+          🎹 COMO USAR
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+          <div className="bg-green-600 text-white px-3 py-2 rounded-lg">
+            🖱️ <strong>CLIQUE:</strong> Toque a nota
+          </div>
+          <div className="bg-purple-600 text-white px-3 py-2 rounded-lg">
+            🔤 <strong>TECLADO:</strong> A-S-D-F-G-H-J-K
+          </div>
+          <div className="bg-orange-600 text-white px-3 py-2 rounded-lg">
+            📌 <strong>ARRASTE:</strong> Para a partitura
+          </div>
+        </div>
+        <div className="text-gray-300 text-xs">
+          ⚫ Teclas pretas: W-E-T-Y-U | 🎵 Modo gravação: {isRecording ? 'ATIVO' : 'INATIVO'}
+        </div>
       </div>
     </div>
   );
