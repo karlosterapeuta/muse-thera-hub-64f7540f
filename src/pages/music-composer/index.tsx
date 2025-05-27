@@ -1,29 +1,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { 
-  Play, 
-  Pause, 
-  Square, 
-  SkipBack, 
-  SkipForward,
-  Volume2,
-  VolumeX,
-  Save,
-  FolderOpen,
-  Download,
-  Upload,
-  Trash2,
-  Settings,
-  Info,
-  Home
-} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import PianoKeyboard from "./components/PianoKeyboard";
-import MusicalStaff from "./components/MusicalStaff";
-import ToolBar from "./components/ToolBar";
-import ColoredNotes from "./components/ColoredNotes";
+import EducationalKeyboard from "./components/EducationalKeyboard";
+import EducationalStaff from "./components/EducationalStaff";
+import EducationalControls from "./components/EducationalControls";
+import ColoredNotesSystem from "./components/ColoredNotesSystem";
 
 interface Note {
   id: string;
@@ -31,6 +12,7 @@ interface Note {
   duration: number;
   position: { x: number; y: number };
   color: string;
+  shape: string;
   timestamp: number;
 }
 
@@ -49,16 +31,30 @@ const MusicComposer = () => {
   const [volume, setVolume] = useState(70);
   const [tempo, setTempo] = useState(120);
   const [timeSignature, setTimeSignature] = useState("4/4");
-  const [selectedTool, setSelectedTool] = useState("note");
   const [selectedColor, setSelectedColor] = useState("#FF0000");
-  const [selectedDuration, setSelectedDuration] = useState("quarter");
+  const [selectedShape, setSelectedShape] = useState("circle");
   const [notes, setNotes] = useState<Note[]>([]);
   const [currentComposition, setCurrentComposition] = useState<Composition | null>(null);
   const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [currentBeat, setCurrentBeat] = useState(1);
+  const [highlightedNote, setHighlightedNote] = useState<string | undefined>();
   
   const { toast } = useToast();
   const audioContextRef = useRef<AudioContext | null>(null);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const beatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Mapeamento de cores para frequências
+  const colorToFrequency: { [key: string]: { frequency: number; note: string } } = {
+    "#FF0000": { frequency: 261.63, note: "C" },  // Vermelho - Dó
+    "#FF9900": { frequency: 293.66, note: "D" },  // Laranja - Ré
+    "#FFFF00": { frequency: 329.63, note: "E" },  // Amarelo - Mi
+    "#00FF00": { frequency: 349.23, note: "F" },  // Verde - Fá
+    "#0099FF": { frequency: 392.00, note: "G" },  // Azul claro - Sol
+    "#0000FF": { frequency: 440.00, note: "A" },  // Azul - Lá
+    "#9900FF": { frequency: 493.88, note: "B" },  // Roxo - Si
+    "#FF6699": { frequency: 523.25, note: "C2" }  // Rosa - Dó agudo
+  };
 
   useEffect(() => {
     // Initialize audio context
@@ -67,88 +63,207 @@ const MusicComposer = () => {
     }
 
     return () => {
-      if (playIntervalRef.current) {
-        clearInterval(playIntervalRef.current);
-      }
+      if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+      if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
     };
   }, []);
 
-  const playNote = (frequency: number, duration: number = 0.5) => {
+  const playNote = (frequency: number, note: string, color: string, duration: number = 0.8) => {
     if (!audioContextRef.current || isMuted) return;
 
-    const oscillator = audioContextRef.current.createOscillator();
-    const gainNode = audioContextRef.current.createGain();
+    try {
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
+      const filterNode = audioContextRef.current.createBiquadFilter();
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContextRef.current.destination);
+      // Configurar filtro para som mais suave
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(2000, audioContextRef.current.currentTime);
 
-    oscillator.frequency.setValueAtTime(frequency, audioContextRef.current.currentTime);
-    oscillator.type = 'sine';
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
 
-    gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-    gainNode.gain.linearRampToValueAtTime(volume / 100, audioContextRef.current.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + duration);
+      oscillator.frequency.setValueAtTime(frequency, audioContextRef.current.currentTime);
+      oscillator.type = 'sine';
 
-    oscillator.start(audioContextRef.current.currentTime);
-    oscillator.stop(audioContextRef.current.currentTime + duration);
+      // Envelope ADSR mais suave
+      const currentTime = audioContextRef.current.currentTime;
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume / 100 * 0.3, currentTime + 0.05); // Attack
+      gainNode.gain.linearRampToValueAtTime(volume / 100 * 0.2, currentTime + 0.2); // Decay
+      gainNode.gain.linearRampToValueAtTime(volume / 100 * 0.15, currentTime + duration - 0.2); // Sustain
+      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration); // Release
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+
+      // Feedback visual
+      setHighlightedNote(note);
+      setTimeout(() => setHighlightedNote(undefined), duration * 1000);
+
+    } catch (error) {
+      console.error("Erro ao reproduzir nota:", error);
+    }
   };
 
   const handlePlay = () => {
+    if (notes.length === 0) {
+      toast({
+        title: "Nenhuma nota encontrada",
+        description: "Adicione algumas notas na partitura antes de reproduzir.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (isPaused) {
       setIsPaused(false);
       setIsPlaying(true);
     } else {
       setIsPlaying(true);
       setPlaybackPosition(0);
+      setCurrentBeat(1);
     }
 
-    // Start playback interval
+    // Intervalo de reprodução das notas
     playIntervalRef.current = setInterval(() => {
-      setPlaybackPosition(prev => prev + 1);
+      setPlaybackPosition(prev => {
+        const nextPos = prev + 1;
+        if (nextPos >= notes.length) {
+          handleStop();
+          return 0;
+        }
+        
+        // Reproduzir a nota atual
+        const currentNote = notes[nextPos % notes.length];
+        const colorInfo = colorToFrequency[currentNote.color];
+        if (colorInfo) {
+          playNote(colorInfo.frequency, colorInfo.note, currentNote.color);
+        }
+        
+        return nextPos;
+      });
+    }, (60 / tempo) * 1000);
+
+    // Intervalo do metrônomo
+    beatIntervalRef.current = setInterval(() => {
+      setCurrentBeat(prev => {
+        const beats = parseInt(timeSignature.split('/')[0]);
+        return prev >= beats ? 1 : prev + 1;
+      });
     }, (60 / tempo) * 1000);
 
     toast({
-      title: "Reprodução iniciada",
-      description: "A composição está sendo reproduzida.",
+      title: "🎵 Reprodução iniciada",
+      description: "Acompanhe a música na partitura colorida!",
     });
   };
 
   const handlePause = () => {
     setIsPlaying(false);
     setIsPaused(true);
-    if (playIntervalRef.current) {
-      clearInterval(playIntervalRef.current);
-    }
+    if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+    if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
+    
+    toast({
+      title: "⏸️ Música pausada",
+      description: "Clique em play para continuar.",
+    });
   };
 
   const handleStop = () => {
     setIsPlaying(false);
     setIsPaused(false);
     setPlaybackPosition(0);
-    if (playIntervalRef.current) {
-      clearInterval(playIntervalRef.current);
-    }
+    setCurrentBeat(1);
+    setHighlightedNote(undefined);
+    
+    if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+    if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
+    
+    toast({
+      title: "⏹️ Reprodução parada",
+      description: "Música reiniciada para o início.",
+    });
+  };
+
+  const handlePrevious = () => {
+    setPlaybackPosition(prev => Math.max(0, prev - 1));
+    toast({
+      title: "⏮️ Nota anterior",
+      description: "Voltou uma nota na sequência.",
+    });
+  };
+
+  const handleNext = () => {
+    setPlaybackPosition(prev => Math.min(notes.length - 1, prev + 1));
+    toast({
+      title: "⏭️ Próxima nota",
+      description: "Avançou uma nota na sequência.",
+    });
+  };
+
+  const handleMute = () => {
+    setIsMuted(!isMuted);
+    toast({
+      title: isMuted ? "🔊 Som ativado" : "🔇 Som desativado",
+      description: isMuted ? "Agora você pode ouvir as notas!" : "Som silenciado.",
+    });
   };
 
   const handleSave = () => {
+    if (notes.length === 0) {
+      toast({
+        title: "Nada para salvar",
+        description: "Adicione algumas notas antes de salvar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const composition: Composition = {
       id: Date.now().toString(),
-      name: `Composição ${new Date().toLocaleDateString()}`,
+      name: `Música Educativa ${new Date().toLocaleDateString()}`,
       notes,
       tempo,
       timeSignature
     };
 
-    // Save to localStorage
-    const savedCompositions = JSON.parse(localStorage.getItem('musicCompositions') || '[]');
+    const savedCompositions = JSON.parse(localStorage.getItem('educationalCompositions') || '[]');
     savedCompositions.push(composition);
-    localStorage.setItem('musicCompositions', JSON.stringify(savedCompositions));
+    localStorage.setItem('educationalCompositions', JSON.stringify(savedCompositions));
 
     setCurrentComposition(composition);
 
     toast({
-      title: "Composição salva",
-      description: "Sua composição foi salva com sucesso!",
+      title: "💾 Música salva!",
+      description: "Sua composição educativa foi salva com sucesso!",
+    });
+  };
+
+  const handleLoad = () => {
+    const savedCompositions = JSON.parse(localStorage.getItem('educationalCompositions') || '[]');
+    
+    if (savedCompositions.length === 0) {
+      toast({
+        title: "Nenhuma música salva",
+        description: "Crie e salve uma música primeiro!",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Carregar a última composição salva
+    const lastComposition = savedCompositions[savedCompositions.length - 1];
+    setNotes(lastComposition.notes);
+    setTempo(lastComposition.tempo);
+    setTimeSignature(lastComposition.timeSignature);
+    setCurrentComposition(lastComposition);
+
+    toast({
+      title: "📂 Música carregada!",
+      description: `Carregada: ${lastComposition.name}`,
     });
   };
 
@@ -156,143 +271,127 @@ const MusicComposer = () => {
     const newNote: Note = {
       id: Date.now().toString(),
       pitch,
-      duration: getDurationValue(selectedDuration),
+      duration: 1,
       position,
       color: selectedColor,
+      shape: selectedShape,
       timestamp: Date.now()
     };
 
     setNotes(prev => [...prev, newNote]);
-  };
-
-  const getDurationValue = (duration: string): number => {
-    switch (duration) {
-      case 'whole': return 4;
-      case 'half': return 2;
-      case 'quarter': return 1;
-      case 'eighth': return 0.5;
-      case 'sixteenth': return 0.25;
-      default: return 1;
+    
+    // Reproduzir a nota adicionada
+    const colorInfo = colorToFrequency[selectedColor];
+    if (colorInfo) {
+      playNote(colorInfo.frequency, colorInfo.note, selectedColor, 0.5);
     }
+
+    toast({
+      title: "🎵 Nota adicionada!",
+      description: `Adicionada: ${pitch} (${colorInfo?.note || 'Nota'})`,
+    });
   };
 
   const handleClearAll = () => {
     setNotes([]);
     setCurrentComposition(null);
+    handleStop();
+    
     toast({
-      title: "Composição limpa",
-      description: "Todas as notas foram removidas.",
+      title: "🗑️ Tudo limpo!",
+      description: "Todas as notas foram removidas da partitura.",
     });
   };
 
+  const handleEraseAll = () => {
+    handleClearAll();
+  };
+
+  const handleNotePlay = (frequency: number, note: string, color: string) => {
+    playNote(frequency, note, color, 0.6);
+  };
+
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-blue-900 to-blue-700 text-white">
-      {/* Top Toolbar */}
-      <div className="bg-gray-800 border-b border-gray-600 p-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700">
-              <Home size={20} />
-            </Button>
-            <div className="bg-orange-500 rounded-full p-2">
-              <Info size={16} className="text-white" />
-            </div>
-            <div className="bg-green-600 rounded-full p-2">
-              <span className="text-white text-sm font-bold">4/4</span>
-            </div>
-          </div>
-
-          <ToolBar
-            selectedTool={selectedTool}
-            onToolSelect={setSelectedTool}
-            selectedDuration={selectedDuration}
-            onDurationSelect={setSelectedDuration}
-          />
-
-          <ColoredNotes
-            selectedColor={selectedColor}
-            onColorSelect={setSelectedColor}
-          />
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={isPlaying ? handlePause : handlePlay}
-              className="text-white hover:bg-gray-700"
-            >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleStop}
-              className="text-white hover:bg-gray-700"
-            >
-              <Square size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMuted(!isMuted)}
-              className="text-white hover:bg-gray-700"
-            >
-              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSave}
-              className="text-white hover:bg-gray-700"
-            >
-              <Save size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClearAll}
-              className="text-white hover:bg-gray-700"
-            >
-              <Trash2 size={20} />
-            </Button>
-          </div>
-        </div>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      
+      {/* Controles Superiores */}
+      <div className="p-4 space-y-4">
+        <EducationalControls
+          isPlaying={isPlaying}
+          isPaused={isPaused}
+          isMuted={isMuted}
+          volume={volume}
+          tempo={tempo}
+          timeSignature={timeSignature}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onStop={handleStop}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          onMute={handleMute}
+          onVolumeChange={setVolume}
+          onTempoChange={setTempo}
+          onTimeSignatureChange={setTimeSignature}
+          onSave={handleSave}
+          onLoad={handleLoad}
+          onClear={handleClearAll}
+          currentBeat={currentBeat}
+          totalBeats={parseInt(timeSignature.split('/')[0])}
+        />
+        
+        <ColoredNotesSystem
+          selectedColor={selectedColor}
+          selectedShape={selectedShape}
+          onColorSelect={setSelectedColor}
+          onShapeSelect={setSelectedShape}
+          onEraseAll={handleEraseAll}
+        />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Musical Staff */}
-        <div className="flex-1 bg-white">
-          <MusicalStaff
+      {/* Área Principal */}
+      <div className="flex-1 flex flex-col space-y-4 px-4">
+        
+        {/* Teclado Virtual */}
+        <div className="bg-white rounded-xl shadow-lg p-4">
+          <EducationalKeyboard
+            onNotePlay={handleNotePlay}
+            onNoteAdd={handleAddNote}
+            selectedColor={selectedColor}
+            isRecording={true}
+            highlightedNote={highlightedNote}
+          />
+        </div>
+
+        {/* Partitura Musical */}
+        <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
+          <EducationalStaff
             notes={notes}
             onAddNote={handleAddNote}
             playbackPosition={playbackPosition}
             isPlaying={isPlaying}
             timeSignature={timeSignature}
-          />
-        </div>
-
-        {/* Piano Keyboard */}
-        <div className="bg-gray-900 p-4">
-          <PianoKeyboard
-            onNotePlay={playNote}
-            onNoteAdd={handleAddNote}
+            highlightedNote={highlightedNote}
             selectedColor={selectedColor}
-            isRecording={selectedTool === 'note'}
+            selectedShape={selectedShape}
           />
         </div>
       </div>
 
-      {/* Bottom Status Bar */}
-      <div className="bg-blue-600 p-2 flex items-center justify-between text-sm">
-        <div className="flex items-center space-x-4">
-          <span>Tempo: {tempo} BPM</span>
-          <span>Compasso: {timeSignature}</span>
-          <span>Notas: {notes.length}</span>
+      {/* Barra de Status */}
+      <div className="bg-white border-t border-gray-200 p-3 flex items-center justify-between text-sm">
+        <div className="flex items-center space-x-6">
+          <span className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span>Piano Educativo TEA</span>
+          </span>
+          <span>🎵 Notas: {notes.length}</span>
+          <span>⏱️ Tempo: {tempo} BPM</span>
+          <span>🎼 Compasso: {timeSignature}</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <span>Software</span>
-          <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+        
+        <div className="flex items-center space-x-4">
+          <span className="text-purple-600 font-semibold">Software Educacional Musical</span>
+          <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse"></div>
         </div>
       </div>
     </div>
