@@ -58,6 +58,8 @@ const MusicComposer = () => {
     animationSpeed: 100,
     buttonSize: 48
   });
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [currentLesson, setCurrentLesson] = useState<any>(null);
 
   const { toast } = useToast();
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -80,6 +82,12 @@ const MusicComposer = () => {
     // Initialize audio context
     if (typeof window !== 'undefined') {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+
+    // Load completed lessons from localStorage
+    const saved = localStorage.getItem('completedLessons');
+    if (saved) {
+      setCompletedLessons(JSON.parse(saved));
     }
 
     return () => {
@@ -152,6 +160,12 @@ const MusicComposer = () => {
         const nextPos = prev + 1;
         if (nextPos >= notes.length) {
           handleStop();
+          
+          // Se estiver em uma lição, marcar como completa
+          if (currentLesson) {
+            handleLessonComplete(currentLesson.id, 3);
+          }
+          
           return 0;
         }
         
@@ -176,7 +190,7 @@ const MusicComposer = () => {
 
     toast({
       title: "🎵 Reprodução iniciada",
-      description: "Acompanhe a música na partitura colorida!",
+      description: currentLesson ? "Acompanhe a lição na partitura colorida!" : "Acompanhe a música na partitura colorida!",
     });
   };
 
@@ -337,17 +351,34 @@ const MusicComposer = () => {
       id: `lesson-${Date.now()}-${index}`,
       pitch,
       duration: 1,
-      position: { x: 150 + (index * 60), y: 140 },
+      position: { x: 150 + (index * 80), y: 140 },
       color: getColorForNote(pitch),
       shape: getShapeForNote(pitch),
       timestamp: index
     }));
 
     setNotes(lessonNotes);
+    setCurrentLesson(lesson);
+    setTempo(lesson.tempo || 120);
+    
     toast({
       title: "🎓 Lição carregada!",
       description: `${lesson.title} está pronta para praticar.`,
     });
+  };
+
+  const handleLessonComplete = (lessonId: string, stars: number) => {
+    const newCompleted = [...completedLessons];
+    if (!newCompleted.includes(lessonId)) {
+      newCompleted.push(lessonId);
+      setCompletedLessons(newCompleted);
+      localStorage.setItem('completedLessons', JSON.stringify(newCompleted));
+      
+      toast({
+        title: "🎉 Lição Concluída!",
+        description: `Parabéns! Você ganhou ${stars} estrelas!`,
+      });
+    }
   };
 
   const handleImportSong = (song: any) => {
@@ -424,6 +455,29 @@ const MusicComposer = () => {
 
           {/* Compose Tab */}
           <TabsContent value="compose" className="space-y-4">
+            {currentLesson && (
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-xl border-2 border-purple-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-purple-800">🎯 Lição Ativa: {currentLesson.title}</h3>
+                    <p className="text-purple-600 text-sm">{currentLesson.description}</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentLesson(null);
+                      setNotes([]);
+                      toast({ title: "Lição cancelada", description: "Voltando ao modo livre." });
+                    }}
+                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                  >
+                    Sair da Lição
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-4">
               <EducationalControls
                 isPlaying={isPlaying}
@@ -488,8 +542,10 @@ const MusicComposer = () => {
           <TabsContent value="lessons">
             <LessonSystem
               onLessonSelect={handleLessonSelect}
-              currentProgress={Math.floor((notes.length / 10) * 100)}
+              currentProgress={Math.floor((completedLessons.length / 6) * 100)}
               onStartLesson={() => setActiveTab("compose")}
+              completedLessons={completedLessons}
+              onLessonComplete={handleLessonComplete}
             />
           </TabsContent>
 
@@ -536,6 +592,10 @@ const MusicComposer = () => {
           <span>🎵 Notas: {notes.length}</span>
           <span>⏱️ Tempo: {tempo} BPM</span>
           <span>🎼 Compasso: {timeSignature}</span>
+          {currentLesson && (
+            <span className="text-purple-600 font-bold">🎯 Lição: {currentLesson.title}</span>
+          )}
+          <span className="text-green-600 font-bold">📚 Completas: {completedLessons.length}/6</span>
           {accessibilitySettings.simplifiedInterface && (
             <span className="text-blue-600 font-bold">♿ Modo Simplificado</span>
           )}
