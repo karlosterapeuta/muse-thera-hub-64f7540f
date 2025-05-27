@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 
 interface Note {
@@ -151,24 +150,16 @@ const EducationalStaff: React.FC<EducationalStaffProps> = ({
       ctx.stroke();
     }
 
-    // Draw notes
+    // Draw notes WITHOUT stems - apenas as formas geométricas
     notes.forEach((note, index) => {
       const x = note.position.x;
       const y = note.position.y;
 
-      // Draw note with shape
+      // Draw note shape only (sem haste)
       ctx.fillStyle = note.color;
       ctx.font = 'bold 24px Arial';
       ctx.textAlign = 'center';
       ctx.fillText(getShapeSymbol(note.shape), x, y + 8);
-
-      // Draw note stem
-      ctx.strokeStyle = note.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x + 12, y);
-      ctx.lineTo(x + 12, y - 35);
-      ctx.stroke();
 
       // Highlight if currently playing
       if (isPlaying && index === playbackPosition % notes.length) {
