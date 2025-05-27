@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import {
   DollarSign,
   ListChecks,
   Waves,
-  LayoutGrid,
+  Guitar,
   Piano,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,9 +47,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
     { icon: Piano, text: "Compositor Musical", path: "/music-composer" },
-    { icon: Bell, text: "Sinos Musicais", path: "/musical-bells" },
+    { icon: Bell, text: "Sino-Hero", path: "/bell-hero" },
+    { icon: Guitar, text: "Xilofone-Hero", path: "/xylophone-hero" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
-    { icon: LayoutGrid, text: "Musicograma", path: "/musicogram" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },
     // Show Users menu for specific users or admins
     (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users" },

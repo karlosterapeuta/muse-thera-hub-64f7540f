@@ -1,182 +1,39 @@
 
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import ResetPassword from "./pages/ResetPassword";
-import Dashboard from "./pages/Dashboard";
-import Professional from "./pages/Professional";
-import Processes from "./pages/processes";
-import Evaluation from "./pages/evaluation";
-import AnamnesisForm from "./pages/anamnesis";
-import Patients from "./pages/patients";
-import TreatmentPlanForm from "./pages/treatment-plan";
-import InterventionForm from "./pages/intervention";
-import ReevaluationForm from "./pages/reevaluation";
-import ReportPage from "./pages/processes/report";
-import ReportsPage from "./pages/processes/reports";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
-import InviteCodes from "./pages/InviteCodes";
-import Users from "./pages/users";
-import HawkinsScale from "./pages/hawkins";
-import SongsPage from "./pages/songs";
-import MusicalBells from "./pages/musical-bells";
-import BinauralFrequencies from "./pages/binaural-frequencies";
-import FinanceDashboard from "./pages/finance";
-import FinancialRecords from "./pages/finance/records";
-import ClinicsManagement from "./pages/finance/clinics";
-import FinancialReports from "./pages/finance/reports";
-import ActivitiesPage from "./pages/activities";
-import ActivityCategoryPage from "./pages/activities/category";
-import MusicogramPage from "./pages/musicogram";
-import MusicComposer from "./pages/music-composer";
-import AuthStatusChecker from "./components/auth/AuthStatusChecker";
-import "./App.css";
+
+// Lazy load pages for better performance
+const BellHero = lazy(() => import("./pages/bell-hero"));
+const XylophoneHero = lazy(() => import("./pages/xylophone-hero"));
 
 const queryClient = new QueryClient();
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Navigate to="/login" replace />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/reset-password",
-    element: <ResetPassword />,
-  },
-  {
-    element: (
-      <>
-        <Layout />
-        <AuthStatusChecker />
-      </>
-    ),
-    children: [
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "/professional",
-        element: <Professional />,
-      },
-      {
-        path: "/patients",
-        element: <Patients />,
-      },
-      {
-        path: "/processes",
-        element: <Processes />,
-      },
-      {
-        path: "/processos/avaliacao",
-        element: <Evaluation />,
-      },
-      {
-        path: "/anamnesis",
-        element: <AnamnesisForm />,
-      },
-      {
-        path: "/processos/plano",
-        element: <TreatmentPlanForm />,
-      },
-      {
-        path: "/intervention",
-        element: <InterventionForm />,
-      },
-      {
-        path: "/processos/reavaliacao",
-        element: <ReevaluationForm />,
-      },
-      {
-        path: "/processos/relatorios",
-        element: <ReportsPage />,
-      },
-      {
-        path: "/processos/relatorio",
-        element: <ReportPage />,
-      },
-      {
-        path: "/invite-codes",
-        element: <InviteCodes />,
-      },
-      {
-        path: "/users",
-        element: <Users />,
-      },
-      {
-        path: "/hawkins",
-        element: <HawkinsScale />,
-      },
-      {
-        path: "/activities",
-        element: <ActivitiesPage />,
-      },
-      {
-        path: "/activities/:categoryId",
-        element: <ActivityCategoryPage />,
-      },
-      {
-        path: "/songs",
-        element: <SongsPage />,
-      },
-      {
-        path: "/musical-bells",
-        element: <MusicalBells />,
-      },
-      {
-        path: "/binaural-frequencies",
-        element: <BinauralFrequencies />,
-      },
-      {
-        path: "/musicogram",
-        element: <MusicogramPage />,
-      },
-      {
-        path: "/music-composer",
-        element: <MusicComposer />,
-      },
-      {
-        path: "/finance",
-        element: <FinanceDashboard />,
-      },
-      {
-        path: "/finance/records",
-        element: <FinancialRecords />,
-      },
-      {
-        path: "/finance/clinics",
-        element: <ClinicsManagement />,
-      },
-      {
-        path: "/finance/reports",
-        element: <FinancialReports />,
-      },
-    ],
-  },
-  {
-    path: "*",
-    element: <NotFound />,
-  },
-]);
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Layout>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              {navItems.map(({ to, page }) => (
+                <Route key={to} path={to} element={page} />
+              ))}
+              <Route path="/bell-hero" element={<BellHero />} />
+              <Route path="/xylophone-hero" element={<XylophoneHero />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
