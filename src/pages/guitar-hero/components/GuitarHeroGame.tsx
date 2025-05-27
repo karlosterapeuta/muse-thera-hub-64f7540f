@@ -40,24 +40,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
     { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
     { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
-    { color: "#6600FF", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
-    { color: "#FF1493", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
   ] : instrumentType === "xylophone" ? [
     { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
     { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
     { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
     { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
     { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
-    { color: "#9C27B0", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
-    { color: "#E91E63", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
+    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
+    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
   ] : [
     { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
     { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
     { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
     { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
     { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
-    { color: "#0000FF", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
-    { color: "#9933CC", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
   // Função para iniciar música de fundo
