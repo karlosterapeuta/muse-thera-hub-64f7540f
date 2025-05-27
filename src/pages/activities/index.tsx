@@ -152,7 +152,7 @@ export default function ActivitiesPage() {
     },
     {
       id: 5,
- title: "Canção das Forças Internas",
+      title: "Canção das Forças Internas",
       description: "Compor uma canção sobre recursos internos para lidar com emoções difíceis. Fortalece resiliência emocional e estratégias de enfrentamento."
     },
     {
@@ -828,6 +828,7 @@ export default function ActivitiesPage() {
                 {category.name === "Intellectual" && "Atividades para estimulação do raciocínio, análise e funções cognitivas superiores."}
                 {category.name === "Adaptive" && "Atividades para promoção de resiliência e adaptabilidade."}
                 {category.name === "Spiritual" && "Atividades para conexão com valores espirituais e transcendentes."}
+                {category.name === "Identity" && "Atividades para desenvolvimento de identidade pessoal."}
                 {category.name === "Neurological" && "Atividades para estimulação e desenvolvimento cerebral."}
               </div>
             </CardContent>
@@ -872,6 +873,7 @@ export default function ActivitiesPage() {
                     {category.name === "Intellectual" && "Estimulação do raciocínio e análise"}
                     {category.name === "Adaptive" && "Promoção de resiliência e adaptabilidade"}
                     {category.name === "Spiritual" && "Conexão com valores transcendentes"}
+                    {category.name === "Identity" && "Desenvolvimento de identidade pessoal"}
                     {category.name === "Neurological" && "Estímulo ao desenvolvimento cerebral"}
                   </p>
                 </div>
