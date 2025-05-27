@@ -8,6 +8,7 @@ const Patients = lazy(() => import("./pages/patients"));
 const Processes = lazy(() => import("./pages/processes"));
 const Activities = lazy(() => import("./pages/activities"));
 const MusicComposer = lazy(() => import("./pages/music-composer"));
+const TeaHero = lazy(() => import("./pages/tea-hero"));
 const BinaralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
 const Finance = lazy(() => import("./pages/finance"));
 const Users = lazy(() => import("./pages/users"));
@@ -21,6 +22,7 @@ export const navItems = [
   { to: "/processes", page: <Processes /> },
   { to: "/activities", page: <Activities /> },
   { to: "/music-composer", page: <MusicComposer /> },
+  { to: "/tea-hero", page: <TeaHero /> },
   { to: "/binaural-frequencies", page: <BinaralFrequencies /> },
   { to: "/finance", page: <Finance /> },
   { to: "/users", page: <Users /> },

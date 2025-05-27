@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, Volume2 } from "lucide-react";
+import { Play, Pause, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Note {
@@ -15,7 +14,7 @@ interface Note {
 }
 
 interface GuitarHeroGameProps {
-  instrumentType: "bell" | "xylophone";
+  instrumentType: "bell" | "xylophone" | "keyboard";
   onNotePlay: (frequency: number, color: string) => void;
 }
 
@@ -35,21 +34,29 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
   // Configuração das lanes (faixas) baseada no instrumento
   const lanes = instrumentType === "bell" ? [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1" },
-    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3" },
-    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4" },
-    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5" },
-    { color: "#6600FF", frequency: 440.00, name: "Lá", key: "6" },
-    { color: "#FF1493", frequency: 493.88, name: "Si", key: "7" },
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
+    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
+    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
+    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
+    { color: "#6600FF", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
+    { color: "#FF1493", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
+  ] : instrumentType === "xylophone" ? [
+    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
+    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
+    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
+    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
+    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
+    { color: "#9C27B0", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
+    { color: "#E91E63", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
   ] : [
-    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1" },
-    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2" },
-    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3" },
-    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4" },
-    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5" },
-    { color: "#9C27B0", frequency: 880.00, name: "Lá", key: "6" },
-    { color: "#E91E63", frequency: 987.77, name: "Si", key: "7" },
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
+    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
+    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
+    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
+    { color: "#0000FF", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
+    { color: "#9933CC", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
   // Gerar padrão de notas simples
@@ -194,13 +201,22 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     };
   }, []);
 
+  const getInstrumentTitle = () => {
+    switch (instrumentType) {
+      case "bell": return "🔔 Sino-Hero";
+      case "xylophone": return "🎵 Xilofone-Hero";
+      case "keyboard": return "🎹 Teclado-Hero";
+      default: return "TEA-Hero";
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header com controles e pontuação */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">
-            {instrumentType === "bell" ? "🔔 Sino-Hero" : "🎵 Xilofone-Hero"}
+            {getInstrumentTitle()}
           </h1>
           <div className="flex gap-2">
             <Button onClick={togglePlay} variant="secondary" size="sm">
@@ -269,7 +285,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             >
               <div className="text-center">
                 <div className="text-xs">{lane.key}</div>
-                <div className="text-sm">{lane.name}</div>
+                <div className="text-lg">{lane.symbol}</div>
+                <div className="text-xs">{lane.name}</div>
               </div>
             </div>
           </div>
@@ -292,7 +309,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         {notes.map((note) => (
           <div
             key={note.id}
-            className="absolute rounded-lg border-2 border-white shadow-lg"
+            className="absolute rounded-lg border-2 border-white shadow-lg flex items-center justify-center text-white font-bold"
             style={{
               left: `${(note.lane / lanes.length) * 100 + 10}%`,
               width: `${100 / lanes.length - 20}%`,
@@ -301,7 +318,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
               backgroundColor: note.color,
               transform: "translateX(-50%)",
             }}
-          />
+          >
+            {lanes[note.lane].symbol}
+          </div>
         ))}
 
         {/* Linha de referência no centro */}

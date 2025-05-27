@@ -16,6 +16,7 @@ import {
   Waves,
   Guitar,
   Piano,
+  Music,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -47,8 +48,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: FileText, text: "Processos", path: "/processes" },
     { icon: ListChecks, text: "Atividades", path: "/activities" },
     { icon: Piano, text: "Compositor Musical", path: "/music-composer" },
-    { icon: Bell, text: "Sino-Hero", path: "/bell-hero" },
-    { icon: Guitar, text: "Xilofone-Hero", path: "/xylophone-hero" },
+    { icon: Music, text: "TEA-Hero", path: "/tea-hero" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies" },
     { icon: DollarSign, text: "Financeiro", path: "/finance" },
     // Show Users menu for specific users or admins

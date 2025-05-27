@@ -8,10 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
 
-// Lazy load pages for better performance
-const BellHero = lazy(() => import("./pages/bell-hero"));
-const XylophoneHero = lazy(() => import("./pages/xylophone-hero"));
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,8 +21,6 @@ const App = () => (
             {navItems.map(({ to, page }) => (
               <Route key={to} path={to} element={<Layout>{page}</Layout>} />
             ))}
-            <Route path="/bell-hero" element={<Layout><BellHero /></Layout>} />
-            <Route path="/xylophone-hero" element={<Layout><XylophoneHero /></Layout>} />
           </Routes>
         </Suspense>
       </BrowserRouter>
