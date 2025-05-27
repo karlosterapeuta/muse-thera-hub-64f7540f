@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
 
-export default function Layout() {
+interface LayoutProps {
+  children?: React.ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -53,7 +57,7 @@ export default function Layout() {
             <ThemeToggle />
           </div>
           <div className="max-w-7xl mx-auto">
-            <Outlet />
+            {children || <Outlet />}
           </div>
         </main>
       </div>
