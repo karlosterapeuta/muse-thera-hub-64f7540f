@@ -741,6 +741,555 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
+    } else if (songId === "hot-cross-keyboard") {
+      // Melodia completa e corrigida de "Hot Cross Buns"
+      const hotCrossBunsMelody = [
+        // Primeira frase: "Hot cross buns"
+        { note: 2, time: 0 },     // Mi - "Hot"
+        { note: 1, time: 600 },   // Ré - "cross"
+        { note: 0, time: 1200 },  // Dó - "buns"
+        
+        // Segunda frase: "Hot cross buns"
+        { note: 2, time: 2000 },  // Mi - "Hot"
+        { note: 1, time: 2600 },  // Ré - "cross"
+        { note: 0, time: 3200 },  // Dó - "buns"
+        
+        // Terceira frase: "One a penny, two a penny"
+        { note: 0, time: 4200 },  // Dó - "One"
+        { note: 0, time: 4500 },  // Dó - "a"
+        { note: 0, time: 4800 },  // Dó - "pen"
+        { note: 0, time: 5100 },  // Dó - "ny"
+        
+        { note: 1, time: 5600 },  // Ré - "two"
+        { note: 1, time: 5900 },  // Ré - "a"
+        { note: 1, time: 6200 },  // Ré - "pen"
+        { note: 1, time: 6500 },  // Ré - "ny"
+        
+        // Quarta frase: "Hot cross buns"
+        { note: 2, time: 7400 },  // Mi - "Hot"
+        { note: 1, time: 8000 },  // Ré - "cross"
+        { note: 0, time: 8600 },  // Dó - "buns"
+        
+        // Repetição completa
+        { note: 2, time: 10000 }, // Mi - "Hot"
+        { note: 1, time: 10600 }, // Ré - "cross"
+        { note: 0, time: 11200 }, // Dó - "buns"
+        
+        { note: 2, time: 12000 }, // Mi - "Hot"
+        { note: 1, time: 12600 }, // Ré - "cross"
+        { note: 0, time: 13200 }, // Dó - "buns"
+        
+        { note: 0, time: 14200 }, // Dó - "One"
+        { note: 0, time: 14500 }, // Dó - "a"
+        { note: 0, time: 14800 }, // Dó - "pen"
+        { note: 0, time: 15100 }, // Dó - "ny"
+        
+        { note: 1, time: 15600 }, // Ré - "two"
+        { note: 1, time: 15900 }, // Ré - "a"
+        { note: 1, time: 16200 }, // Ré - "pen"
+        { note: 1, time: 16500 }, // Ré - "ny"
+        
+        { note: 2, time: 17400 }, // Mi - "Hot"
+        { note: 1, time: 18000 }, // Ré - "cross"
+        { note: 0, time: 18600 }, // Dó - "buns" (final)
+      ];
+
+      hotCrossBunsMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "frere-jacques-bell") {
+      // Melodia completa e corrigida de "Frère Jacques"
+      const frereJacquesMelody = [
+        // Primeira frase: "Frère Jacques, Frère Jacques"
+        { note: 0, time: 0 },     // Dó - "Frè"
+        { note: 1, time: 500 },   // Ré - "re"
+        { note: 2, time: 1000 },  // Mi - "Jac"
+        { note: 0, time: 1500 },  // Dó - "ques"
+        
+        { note: 0, time: 2200 },  // Dó - "Frè"
+        { note: 1, time: 2700 },  // Ré - "re"
+        { note: 2, time: 3200 },  // Mi - "Jac"
+        { note: 0, time: 3700 },  // Dó - "ques"
+        
+        // Segunda frase: "Dormez-vous? Dormez-vous?"
+        { note: 2, time: 4400 },  // Mi - "Dor"
+        { note: 3, time: 4900 },  // Fá - "mez"
+        { note: 4, time: 5400 },  // Sol - "vous?"
+        
+        { note: 2, time: 6300 },  // Mi - "Dor"
+        { note: 3, time: 6800 },  // Fá - "mez"
+        { note: 4, time: 7300 },  // Sol - "vous?"
+        
+        // Terceira frase: "Sonnez les matines, sonnez les matines"
+        { note: 4, time: 8200 },  // Sol - "Son"
+        { note: 5, time: 8500 },  // Lá - "nez"
+        { note: 4, time: 8800 },  // Sol - "les"
+        { note: 3, time: 9100 },  // Fá - "ma"
+        { note: 2, time: 9400 },  // Mi - "ti"
+        { note: 0, time: 9700 },  // Dó - "nes"
+        
+        { note: 4, time: 10600 }, // Sol - "Son"
+        { note: 5, time: 10900 }, // Lá - "nez"
+        { note: 4, time: 11200 }, // Sol - "les"
+        { note: 3, time: 11500 }, // Fá - "ma"
+        { note: 2, time: 11800 }, // Mi - "ti"
+        { note: 0, time: 12100 }, // Dó - "nes"
+        
+        // Quarta frase: "Ding dong ding, ding dong ding"
+        { note: 0, time: 13000 }, // Dó - "Ding"
+        { note: 4, time: 13400 }, // Sol - "dong"
+        { note: 0, time: 13800 }, // Dó - "ding"
+        
+        { note: 0, time: 14700 }, // Dó - "Ding"
+        { note: 4, time: 15100 }, // Sol - "dong"
+        { note: 0, time: 15500 }, // Dó - "ding"
+        
+        // Repetição instrumental
+        { note: 0, time: 16500 }, // Dó
+        { note: 1, time: 17000 }, // Ré
+        { note: 2, time: 17500 }, // Mi
+        { note: 3, time: 18000 }, // Fá
+        { note: 4, time: 18500 }, // Sol
+        { note: 0, time: 19000 }, // Dó (final)
+      ];
+
+      frereJacquesMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "amazing-grace-bell") {
+      // Melodia completa e corrigida de "Amazing Grace"
+      const amazingGraceMelody = [
+        // Primeira frase: "Amazing grace, how sweet the sound"
+        { note: 0, time: 0 },     // Dó - "A"
+        { note: 3, time: 800 },   // Fá - "ma"
+        { note: 4, time: 1600 },  // Sol - "zing"
+        { note: 2, time: 2400 },  // Mi - "grace"
+        
+        { note: 4, time: 3600 },  // Sol - "how"
+        { note: 4, time: 4200 },  // Sol - "sweet"
+        { note: 3, time: 4800 },  // Fá - "the"
+        { note: 1, time: 5400 },  // Ré - "sound"
+        
+        // Segunda frase: "That saved a wretch like me"
+        { note: 0, time: 6800 },  // Dó - "That"
+        { note: 3, time: 7600 },  // Fá - "saved"
+        { note: 4, time: 8400 },  // Sol - "a"
+        { note: 2, time: 9200 },  // Mi - "wretch"
+        
+        { note: 4, time: 10400 }, // Sol - "like"
+        { note: 3, time: 11200 }, // Fá - "me"
+        
+        // Terceira frase: "I once was lost, but now am found"
+        { note: 5, time: 12800 }, // Lá - "I"
+        { note: 4, time: 13400 }, // Sol - "once"
+        { note: 3, time: 14000 }, // Fá - "was"
+        { note: 1, time: 14600 }, // Ré - "lost"
+        
+        { note: 0, time: 16000 }, // Dó - "but"
+        { note: 3, time: 16800 }, // Fá - "now"
+        { note: 4, time: 17600 }, // Sol - "am"
+        { note: 2, time: 18400 }, // Mi - "found"
+        
+        // Quarta frase: "Was blind but now I see"
+        { note: 4, time: 19800 }, // Sol - "Was"
+        { note: 3, time: 20600 }, // Fá - "blind"
+        { note: 1, time: 21400 }, // Ré - "but"
+        { note: 0, time: 22200 }, // Dó - "now"
+        
+        { note: 3, time: 23600 }, // Fá - "I"
+        { note: 2, time: 24400 }, // Mi - "see"
+        { note: 0, time: 25200 }, // Dó (final)
+        
+        // Segunda estrofe: "'Twas grace that taught my heart to fear"
+        { note: 0, time: 27000 }, // Dó - "'Twas"
+        { note: 3, time: 27800 }, // Fá - "grace"
+        { note: 4, time: 28600 }, // Sol - "that"
+        { note: 2, time: 29400 }, // Mi - "taught"
+        
+        { note: 4, time: 30600 }, // Sol - "my"
+        { note: 4, time: 31200 }, // Sol - "heart"
+        { note: 3, time: 31800 }, // Fá - "to"
+        { note: 1, time: 32400 }, // Ré - "fear"
+        
+        // "And grace my fears relieved"
+        { note: 0, time: 33800 }, // Dó - "And"
+        { note: 3, time: 34600 }, // Fá - "grace"
+        { note: 4, time: 35400 }, // Sol - "my"
+        { note: 2, time: 36200 }, // Mi - "fears"
+        
+        { note: 4, time: 37400 }, // Sol - "re"
+        { note: 3, time: 38200 }, // Fá - "lieved"
+        
+        // "How precious did that grace appear"
+        { note: 5, time: 39800 }, // Lá - "How"
+        { note: 4, time: 40400 }, // Sol - "pre"
+        { note: 3, time: 41000 }, // Fá - "cious"
+        { note: 1, time: 41600 }, // Ré - "did"
+        
+        { note: 0, time: 43000 }, // Dó - "that"
+        { note: 3, time: 43800 }, // Fá - "grace"
+        { note: 4, time: 44600 }, // Sol - "ap"
+        { note: 2, time: 45400 }, // Mi - "pear"
+        
+        // "The hour I first believed"
+        { note: 4, time: 46800 }, // Sol - "The"
+        { note: 3, time: 47600 }, // Fá - "hour"
+        { note: 1, time: 48400 }, // Ré - "I"
+        { note: 0, time: 49200 }, // Dó - "first"
+        
+        { note: 3, time: 50600 }, // Fá - "be"
+        { note: 2, time: 51400 }, // Mi - "lieved"
+        { note: 0, time: 52200 }, // Dó (final)
+      ];
+
+      amazingGraceMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "greensleeves-bell") {
+      // Melodia completa e corrigida de "Greensleeves"
+      const greenslevesMelody = [
+        // Primeira frase: "Alas, my love, you do me wrong"
+        { note: 5, time: 0 },     // Lá - "A"
+        { note: 0, time: 1200 },  // Dó - "las"
+        { note: 1, time: 1800 },  // Ré - "my"
+        { note: 2, time: 2400 },  // Mi - "love"
+        { note: 3, time: 3600 },  // Fá - "you"
+        { note: 2, time: 4400 },  // Mi - "do"
+        { note: 1, time: 5200 },  // Ré - "me"
+        { note: 6, time: 6400 },  // Si - "wrong"
+        
+        // Segunda frase: "To cast me off discourteously"
+        { note: 4, time: 8000 },  // Sol - "To"
+        { note: 5, time: 9200 },  // Lá - "cast"
+        { note: 6, time: 10000 }, // Si - "me"
+        { note: 0, time: 10800 }, // Dó - "off"
+        { note: 6, time: 12000 }, // Si - "dis"
+        { note: 5, time: 12800 }, // Lá - "cour"
+        { note: 4, time: 13600 }, // Sol - "te"
+        { note: 3, time: 14800 }, // Fá - "ous"
+        { note: 2, time: 15600 }, // Mi - "ly"
+        
+        // Terceira frase: "And I have loved you oh so long"
+        { note: 5, time: 17200 }, // Lá - "And"
+        { note: 0, time: 18400 }, // Dó - "I"
+        { note: 1, time: 19000 }, // Ré - "have"
+        { note: 2, time: 19600 }, // Mi - "loved"
+        { note: 3, time: 20800 }, // Fá - "you"
+        { note: 2, time: 21600 }, // Mi - "oh"
+        { note: 1, time: 22400 }, // Ré - "so"
+        { note: 6, time: 23600 }, // Si - "long"
+        
+        // Quarta frase: "Delighting in your company"
+        { note: 4, time: 25200 }, // Sol - "De"
+        { note: 5, time: 26400 }, // Lá - "light"
+        { note: 6, time: 27200 }, // Si - "ing"
+        { note: 0, time: 28000 }, // Dó - "in"
+        { note: 6, time: 29200 }, // Si - "your"
+        { note: 5, time: 30000 }, // Lá - "com"
+        { note: 4, time: 30800 }, // Sol - "pa"
+        { note: 2, time: 32400 }, // Mi - "ny"
+        
+        // Refrão: "Greensleeves was all my joy"
+        { note: 4, time: 34000 }, // Sol - "Green"
+        { note: 2, time: 35200 }, // Mi - "sleeves"
+        { note: 3, time: 36000 }, // Fá - "was"
+        { note: 4, time: 36800 }, // Sol - "all"
+        { note: 5, time: 37600 }, // Lá - "my"
+        { note: 3, time: 38800 }, // Fá - "joy"
+        
+        // "Greensleeves was my delight"
+        { note: 4, time: 40400 }, // Sol - "Green"
+        { note: 2, time: 41600 }, // Mi - "sleeves"
+        { note: 3, time: 42400 }, // Fá - "was"
+        { note: 4, time: 43200 }, // Sol - "my"
+        { note: 5, time: 44000 }, // Lá - "de"
+        { note: 1, time: 45200 }, // Ré - "light"
+        
+        // "Greensleeves was my heart of gold"
+        { note: 4, time: 46800 }, // Sol - "Green"
+        { note: 2, time: 48000 }, // Mi - "sleeves"
+        { note: 3, time: 48800 }, // Fá - "was"
+        { note: 4, time: 49600 }, // Sol - "my"
+        { note: 5, time: 50400 }, // Lá - "heart"
+        { note: 6, time: 51200 }, // Si - "of"
+        { note: 0, time: 52000 }, // Dó - "gold"
+        
+        // "And who but my lady Greensleeves"
+        { note: 6, time: 53600 }, // Si - "And"
+        { note: 5, time: 54400 }, // Lá - "who"
+        { note: 4, time: 55200 }, // Sol - "but"
+        { note: 3, time: 56000 }, // Fá - "my"
+        { note: 2, time: 56800 }, // Mi - "la"
+        { note: 1, time: 57600 }, // Ré - "dy"
+        { note: 0, time: 58400 }, // Dó - "Green"
+        { note: 2, time: 59600 }, // Mi - "sleeves" (final)
+      ];
+
+      greenslevesMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "scarborough-bell") {
+      // Melodia completa e corrigida de "Scarborough Fair"
+      const scarboroughFairMelody = [
+        // Primeira frase: "Are you going to Scarborough Fair?"
+        { note: 1, time: 0 },     // Ré - "Are"
+        { note: 1, time: 800 },   // Ré - "you"
+        { note: 5, time: 1600 },  // Lá - "go"
+        { note: 5, time: 2400 },  // Lá - "ing"
+        { note: 4, time: 3200 },  // Sol - "to"
+        { note: 2, time: 4000 },  // Mi - "Scar"
+        { note: 1, time: 4800 },  // Ré - "bo"
+        { note: 0, time: 5600 },  // Dó - "rough"
+        { note: 1, time: 6400 },  // Ré - "Fair?"
+        
+        // Segunda frase: "Parsley, sage, rosemary, and thyme"
+        { note: 5, time: 8000 },  // Lá - "Pars"
+        { note: 4, time: 8800 },  // Sol - "ley"
+        { note: 2, time: 9600 },  // Mi - "sage"
+        { note: 1, time: 10400 }, // Ré - "rose"
+        { note: 4, time: 11200 }, // Sol - "ma"
+        { note: 3, time: 12000 }, // Fá - "ry"
+        { note: 2, time: 12800 }, // Mi - "and"
+        { note: 1, time: 13600 }, // Ré - "thyme"
+        
+        // Terceira frase: "Remember me to one who lives there"
+        { note: 1, time: 15200 }, // Ré - "Re"
+        { note: 5, time: 16000 }, // Lá - "mem"
+        { note: 5, time: 16800 }, // Lá - "ber"
+        { note: 4, time: 17600 }, // Sol - "me"
+        { note: 2, time: 18400 }, // Mi - "to"
+        { note: 1, time: 19200 }, // Ré - "one"
+        { note: 0, time: 20000 }, // Dó - "who"
+        { note: 1, time: 20800 }, // Ré - "lives"
+        { note: 2, time: 21600 }, // Mi - "there"
+        
+        // Quarta frase: "She once was a true love of mine"
+        { note: 4, time: 23200 }, // Sol - "She"
+        { note: 2, time: 24000 }, // Mi - "once"
+        { note: 1, time: 24800 }, // Ré - "was"
+        { note: 5, time: 25600 }, // Lá - "a"
+        { note: 4, time: 26400 }, // Sol - "true"
+        { note: 2, time: 27200 }, // Mi - "love"
+        { note: 1, time: 28000 }, // Ré - "of"
+        { note: 1, time: 28800 }, // Ré - "mine"
+        
+        // Segunda estrofe: "Tell her to make me a cambric shirt"
+        { note: 1, time: 30400 }, // Ré - "Tell"
+        { note: 1, time: 31200 }, // Ré - "her"
+        { note: 5, time: 32000 }, // Lá - "to"
+        { note: 5, time: 32800 }, // Lá - "make"
+        { note: 4, time: 33600 }, // Sol - "me"
+        { note: 2, time: 34400 }, // Mi - "a"
+        { note: 1, time: 35200 }, // Ré - "cam"
+        { note: 0, time: 36000 }, // Dó - "bric"
+        { note: 1, time: 36800 }, // Ré - "shirt"
+        
+        // Refrão: "Parsley, sage, rosemary, and thyme"
+        { note: 5, time: 38400 }, // Lá - "Pars"
+        { note: 4, time: 39200 }, // Sol - "ley"
+        { note: 2, time: 40000 }, // Mi - "sage"
+        { note: 1, time: 40800 }, // Ré - "rose"
+        { note: 4, time: 41600 }, // Sol - "ma"
+        { note: 3, time: 42400 }, // Fá - "ry"
+        { note: 2, time: 43200 }, // Mi - "and"
+        { note: 1, time: 44000 }, // Ré - "thyme"
+        
+        // "Without no seams nor needle work"
+        { note: 1, time: 45600 }, // Ré - "With"
+        { note: 5, time: 46400 }, // Lá - "out"
+        { note: 5, time: 47200 }, // Lá - "no"
+        { note: 4, time: 48000 }, // Sol - "seams"
+        { note: 2, time: 48800 }, // Mi - "nor"
+        { note: 1, time: 49600 }, // Ré - "nee"
+        { note: 0, time: 50400 }, // Dó - "dle"
+        { note: 1, time: 51200 }, // Ré - "work"
+        
+        // "Then she'll be a true love of mine"
+        { note: 4, time: 52800 }, // Sol - "Then"
+        { note: 2, time: 53600 }, // Mi - "she'll"
+        { note: 1, time: 54400 }, // Ré - "be"
+        { note: 5, time: 55200 }, // Lá - "a"
+        { note: 4, time: 56000 }, // Sol - "true"
+        { note: 2, time: 56800 }, // Mi - "love"
+        { note: 1, time: 57600 }, // Ré - "of"
+        { note: 1, time: 58400 }, // Ré - "mine"
+        
+        // Final instrumental
+        { note: 5, time: 60000 }, // Lá
+        { note: 4, time: 60800 }, // Sol
+        { note: 2, time: 61600 }, // Mi
+        { note: 1, time: 62400 }, // Ré (final)
+      ];
+
+      scarboroughFairMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "ode-joy-xylophone") {
+      // Melodia completa e corrigida de "Ode à Alegria" (Beethoven)
+      const odeToJoyMelody = [
+        // Primeira frase: tema principal
+        { note: 2, time: 0 },     // Mi - 
+        { note: 2, time: 600 },   // Mi - 
+        { note: 3, time: 1200 },  // Fá - 
+        { note: 4, time: 1800 },  // Sol - 
+        { note: 4, time: 2400 },  // Sol - 
+        { note: 3, time: 3000 },  // Fá - 
+        { note: 2, time: 3600 },  // Mi - 
+        { note: 1, time: 4200 },  // Ré - 
+        
+        // Segunda frase
+        { note: 0, time: 4800 },  // Dó - 
+        { note: 0, time: 5400 },  // Dó - 
+        { note: 1, time: 6000 },  // Ré - 
+        { note: 2, time: 6600 },  // Mi - 
+        { note: 2, time: 7200 },  // Mi - (sustentado)
+        { note: 1, time: 7800 },  // Ré - 
+        { note: 1, time: 8400 },  // Ré - (sustentado)
+        
+        // Repetição da primeira frase
+        { note: 2, time: 9600 },  // Mi - 
+        { note: 2, time: 10200 }, // Mi - 
+        { note: 3, time: 10800 }, // Fá - 
+        { note: 4, time: 11400 }, // Sol - 
+        { note: 4, time: 12000 }, // Sol - 
+        { note: 3, time: 12600 }, // Fá - 
+        { note: 2, time: 13200 }, // Mi - 
+        { note: 1, time: 13800 }, // Ré - 
+        
+        // Quarta frase (resolução)
+        { note: 0, time: 14400 }, // Dó - 
+        { note: 0, time: 15000 }, // Dó - 
+        { note: 1, time: 15600 }, // Ré - 
+        { note: 2, time: 16200 }, // Mi - 
+        { note: 1, time: 16800 }, // Ré - (sustentado)
+        { note: 0, time: 17400 }, // Dó - 
+        { note: 0, time: 18000 }, // Dó - (sustentado)
+        
+        // Segunda seção - desenvolvimento
+        { note: 1, time: 19200 }, // Ré - 
+        { note: 1, time: 19800 }, // Ré - 
+        { note: 2, time: 20400 }, // Mi - 
+        { note: 0, time: 21000 }, // Dó - 
+        { note: 1, time: 21600 }, // Ré - 
+        { note: 2, time: 22200 }, // Mi - 
+        { note: 3, time: 22800 }, // Fá - 
+        { note: 2, time: 23400 }, // Mi - 
+        
+        // Continuação do desenvolvimento
+        { note: 0, time: 24000 }, // Dó - 
+        { note: 1, time: 24600 }, // Ré - 
+        { note: 2, time: 25200 }, // Mi - 
+        { note: 3, time: 25800 }, // Fá - 
+        { note: 2, time: 26400 }, // Mi - 
+        { note: 1, time: 27000 }, // Ré - 
+        { note: 0, time: 27600 }, // Dó - 
+        { note: 1, time: 28200 }, // Ré - 
+        
+        // Retorno ao tema principal (terceira vez)
+        { note: 2, time: 28800 }, // Mi - 
+        { note: 2, time: 29400 }, // Mi - 
+        { note: 3, time: 30000 }, // Fá - 
+        { note: 4, time: 30600 }, // Sol - 
+        { note: 4, time: 31200 }, // Sol - 
+        { note: 3, time: 31800 }, // Fá - 
+        { note: 2, time: 32400 }, // Mi - 
+        { note: 1, time: 33000 }, // Ré - 
+        
+        // Final grandioso
+        { note: 0, time: 33600 }, // Dó - 
+        { note: 0, time: 34200 }, // Dó - 
+        { note: 1, time: 34800 }, // Ré - 
+        { note: 2, time: 35400 }, // Mi - 
+        { note: 1, time: 36000 }, // Ré - 
+        { note: 0, time: 36600 }, // Dó - 
+        { note: 0, time: 37200 }, // Dó - 
+        
+        // Coda (final extendido)
+        { note: 2, time: 38400 }, // Mi - 
+        { note: 3, time: 39000 }, // Fá - 
+        { note: 4, time: 39600 }, // Sol - 
+        { note: 2, time: 40200 }, // Mi - 
+        { note: 0, time: 40800 }, // Dó - 
+        { note: 4, time: 41400 }, // Sol - 
+        { note: 2, time: 42000 }, // Mi - 
+        { note: 0, time: 42600 }, // Dó (final majestoso)
+      ];
+
+      odeToJoyMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
     } else {
       // Gerar padrão genérico para outras músicas
       const patterns = [
