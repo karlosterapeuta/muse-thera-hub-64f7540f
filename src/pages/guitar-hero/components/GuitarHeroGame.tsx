@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
@@ -418,12 +417,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     };
   }, []);
 
-  // Handle speed change
-  const handleSpeedChange = (newSpeed: number[]) => {
-    setSpeed(newSpeed[0]);
-    console.log(`Speed changed to: ${newSpeed[0]}x`);
-  };
-
   const getInstrumentTitle = () => {
     switch (instrumentType) {
       case "bell": return "🔔 Sino-Hero";
@@ -454,7 +447,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-4 gap-4 text-center mb-4">
+        <div className="grid grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-sm opacity-80">Pontuação</div>
             <div className="text-xl font-bold">{score.toLocaleString()}</div>
@@ -471,36 +464,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             <div className="text-sm opacity-80">Velocidade</div>
             <div className="text-xl font-bold">{speed}x</div>
           </div>
-        </div>
-
-        {/* Speed Control */}
-        <div className="bg-white/10 rounded-lg p-3">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-white">
-              Velocidade: {speed}x
-            </label>
-            <span className="text-xs text-white/70">
-              0.5x - 5x
-            </span>
-          </div>
-          <Slider
-            value={[speed]}
-            onValueChange={handleSpeedChange}
-            min={0.5}
-            max={5}
-            step={0.5}
-            className="w-full"
-            disabled={isPlaying}
-          />
-          <div className="flex justify-between text-xs text-white/60 mt-1">
-            <span>Lento</span>
-            <span>Rápido</span>
-          </div>
-          {isPlaying && (
-            <p className="text-xs text-yellow-300 mt-1">
-              ⚠️ Pause o jogo para ajustar a velocidade
-            </p>
-          )}
         </div>
       </div>
 
