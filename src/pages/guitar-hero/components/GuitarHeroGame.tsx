@@ -130,133 +130,159 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         }
       });
     } else if (songId === "mary-lamb-bell") {
-      // Melodia completa de "Mary Had a Little Lamb"
-      // Com todos os versos e repetições
-      
+      // Melodia completa e corrigida de "Mary Had a Little Lamb"
       const maryLambMelody = [
-        // Verso 1: "Mary had a little lamb"
+        // Verso 1: "Mary had a little lamb" (mais devagar)
         { note: 2, time: 0 },     // Mi - "Ma"
-        { note: 1, time: 600 },   // Ré - "ry"
-        { note: 0, time: 1200 },  // Dó - "had"
-        { note: 1, time: 1800 },  // Ré - "a"
-        { note: 2, time: 2400 },  // Mi - "lit"
-        { note: 2, time: 3000 },  // Mi - "tle"
-        { note: 2, time: 3600 },  // Mi - "lamb"
+        { note: 1, time: 500 },   // Ré - "ry"
+        { note: 0, time: 1000 },  // Dó - "had"
+        { note: 1, time: 1500 },  // Ré - "a"
+        { note: 2, time: 2000 },  // Mi - "lit"
+        { note: 2, time: 2500 },  // Mi - "tle"
+        { note: 2, time: 3000 },  // Mi - "lamb"
         
-        // "little lamb, little lamb"
-        { note: 1, time: 4800 },  // Ré - "lit"
-        { note: 1, time: 5400 },  // Ré - "tle"
-        { note: 1, time: 6000 },  // Ré - "lamb"
+        // Pausa
+        { note: 1, time: 4000 },  // Ré - "lit"
+        { note: 1, time: 4500 },  // Ré - "tle"
+        { note: 1, time: 5000 },  // Ré - "lamb"
         
-        { note: 2, time: 7200 },  // Mi - "lit"
-        { note: 4, time: 7800 },  // Sol - "tle"
-        { note: 4, time: 8400 },  // Sol - "lamb"
+        // Pausa
+        { note: 2, time: 6000 },  // Mi - "lit"
+        { note: 4, time: 6500 },  // Sol - "tle"
+        { note: 4, time: 7000 },  // Sol - "lamb"
         
-        // "Mary had a little lamb"
-        { note: 2, time: 9600 },  // Mi - "Ma"
-        { note: 1, time: 10200 }, // Ré - "ry"
-        { note: 0, time: 10800 }, // Dó - "had"
-        { note: 1, time: 11400 }, // Ré - "a"
-        { note: 2, time: 12000 }, // Mi - "lit"
-        { note: 2, time: 12600 }, // Mi - "tle"
-        { note: 2, time: 13200 }, // Mi - "lamb"
+        // "Mary had a little lamb" (repetição)
+        { note: 2, time: 8000 },  // Mi - "Ma"
+        { note: 1, time: 8500 },  // Ré - "ry"
+        { note: 0, time: 9000 },  // Dó - "had"
+        { note: 1, time: 9500 },  // Ré - "a"
+        { note: 2, time: 10000 }, // Mi - "lit"
+        { note: 2, time: 10500 }, // Mi - "tle"
+        { note: 2, time: 11000 }, // Mi - "lamb"
         
         // "Its fleece was white as snow"
-        { note: 2, time: 14400 }, // Mi - "Its"
-        { note: 1, time: 15000 }, // Ré - "fleece"
-        { note: 1, time: 15600 }, // Ré - "was"
-        { note: 2, time: 16200 }, // Mi - "white"
-        { note: 1, time: 16800 }, // Ré - "as"
-        { note: 0, time: 17400 }, // Dó - "snow"
-        
-        // Pausa instrumental
-        { note: 0, time: 19000 },
-        { note: 2, time: 19600 },
-        { note: 4, time: 20200 },
+        { note: 2, time: 12000 }, // Mi - "Its"
+        { note: 1, time: 12500 }, // Ré - "fleece"
+        { note: 1, time: 13000 }, // Ré - "was"
+        { note: 2, time: 13500 }, // Mi - "white"
+        { note: 1, time: 14000 }, // Ré - "as"
+        { note: 0, time: 14500 }, // Dó - "snow"
         
         // Verso 2: "And everywhere that Mary went"
-        { note: 2, time: 21600 }, // Mi - "And"
-        { note: 1, time: 22200 }, // Ré - "ev"
-        { note: 0, time: 22800 }, // Dó - "ery"
-        { note: 1, time: 23400 }, // Ré - "where"
-        { note: 2, time: 24000 }, // Mi - "that"
-        { note: 2, time: 24600 }, // Mi - "Ma"
-        { note: 2, time: 25200 }, // Mi - "ry"
+        { note: 2, time: 16000 }, // Mi - "And"
+        { note: 1, time: 16500 }, // Ré - "ev"
+        { note: 0, time: 17000 }, // Dó - "ery"
+        { note: 1, time: 17500 }, // Ré - "where"
+        { note: 2, time: 18000 }, // Mi - "that"
+        { note: 2, time: 18500 }, // Mi - "Ma"
+        { note: 2, time: 19000 }, // Mi - "ry"
         
         // "Mary went, Mary went"
-        { note: 1, time: 26400 }, // Ré - "Ma"
-        { note: 1, time: 27000 }, // Ré - "ry"
-        { note: 1, time: 27600 }, // Ré - "went"
+        { note: 1, time: 20000 }, // Ré - "Ma"
+        { note: 1, time: 20500 }, // Ré - "ry"
+        { note: 1, time: 21000 }, // Ré - "went"
         
-        { note: 2, time: 28800 }, // Mi - "Ma"
-        { note: 4, time: 29400 }, // Sol - "ry"
-        { note: 4, time: 30000 }, // Sol - "went"
+        { note: 2, time: 22000 }, // Mi - "Ma"
+        { note: 4, time: 22500 }, // Sol - "ry"
+        { note: 4, time: 23000 }, // Sol - "went"
         
         // "Everywhere that Mary went"
-        { note: 2, time: 31200 }, // Mi - "Ev"
-        { note: 1, time: 31800 }, // Ré - "ery"
-        { note: 0, time: 32400 }, // Dó - "where"
-        { note: 1, time: 33000 }, // Ré - "that"
-        { note: 2, time: 33600 }, // Mi - "Ma"
-        { note: 2, time: 34200 }, // Mi - "ry"
-        { note: 2, time: 34800 }, // Mi - "went"
+        { note: 2, time: 24000 }, // Mi - "Ev"
+        { note: 1, time: 24500 }, // Ré - "ery"
+        { note: 0, time: 25000 }, // Dó - "where"
+        { note: 1, time: 25500 }, // Ré - "that"
+        { note: 2, time: 26000 }, // Mi - "Ma"
+        { note: 2, time: 26500 }, // Mi - "ry"
+        { note: 2, time: 27000 }, // Mi - "went"
         
         // "The lamb was sure to go"
-        { note: 2, time: 36000 }, // Mi - "The"
-        { note: 1, time: 36600 }, // Ré - "lamb"
-        { note: 1, time: 37200 }, // Ré - "was"
-        { note: 2, time: 37800 }, // Mi - "sure"
-        { note: 1, time: 38400 }, // Ré - "to"
-        { note: 0, time: 39000 }, // Dó - "go"
-        
-        // Interlúdio
-        { note: 4, time: 40800 },
-        { note: 2, time: 41400 },
-        { note: 0, time: 42000 },
+        { note: 2, time: 28000 }, // Mi - "The"
+        { note: 1, time: 28500 }, // Ré - "lamb"
+        { note: 1, time: 29000 }, // Ré - "was"
+        { note: 2, time: 29500 }, // Mi - "sure"
+        { note: 1, time: 30000 }, // Ré - "to"
+        { note: 0, time: 30500 }, // Dó - "go"
         
         // Verso 3: "It followed her to school one day"
-        { note: 2, time: 43200 }, // Mi - "It"
-        { note: 1, time: 43800 }, // Ré - "fol"
-        { note: 0, time: 44400 }, // Dó - "lowed"
-        { note: 1, time: 45000 }, // Ré - "her"
-        { note: 2, time: 45600 }, // Mi - "to"
-        { note: 2, time: 46200 }, // Mi - "school"
-        { note: 2, time: 46800 }, // Mi - "one"
+        { note: 2, time: 32000 }, // Mi - "It"
+        { note: 1, time: 32500 }, // Ré - "fol"
+        { note: 0, time: 33000 }, // Dó - "lowed"
+        { note: 1, time: 33500 }, // Ré - "her"
+        { note: 2, time: 34000 }, // Mi - "to"
+        { note: 2, time: 34500 }, // Mi - "school"
+        { note: 2, time: 35000 }, // Mi - "one"
+        { note: 1, time: 35500 }, // Ré - "day"
         
         // "school one day, school one day"
-        { note: 1, time: 48000 }, // Ré - "school"
-        { note: 1, time: 48600 }, // Ré - "one"
-        { note: 1, time: 49200 }, // Ré - "day"
+        { note: 1, time: 36500 }, // Ré - "school"
+        { note: 1, time: 37000 }, // Ré - "one"
+        { note: 1, time: 37500 }, // Ré - "day"
         
-        { note: 2, time: 50400 }, // Mi - "school"
-        { note: 4, time: 51000 }, // Sol - "one"
-        { note: 4, time: 51600 }, // Sol - "day"
+        { note: 2, time: 38500 }, // Mi - "school"
+        { note: 4, time: 39000 }, // Sol - "one"
+        { note: 4, time: 39500 }, // Sol - "day"
         
         // "It followed her to school one day"
-        { note: 2, time: 52800 }, // Mi - "It"
-        { note: 1, time: 53400 }, // Ré - "fol"
-        { note: 0, time: 54000 }, // Dó - "lowed"
-        { note: 1, time: 54600 }, // Ré - "her"
-        { note: 2, time: 55200 }, // Mi - "to"
-        { note: 2, time: 55800 }, // Mi - "school"
-        { note: 2, time: 56400 }, // Mi - "one"
+        { note: 2, time: 40500 }, // Mi - "It"
+        { note: 1, time: 41000 }, // Ré - "fol"
+        { note: 0, time: 41500 }, // Dó - "lowed"
+        { note: 1, time: 42000 }, // Ré - "her"
+        { note: 2, time: 42500 }, // Mi - "to"
+        { note: 2, time: 43000 }, // Mi - "school"
+        { note: 2, time: 43500 }, // Mi - "one"
+        { note: 1, time: 44000 }, // Ré - "day"
         
         // "Which was against the rule"
-        { note: 2, time: 57600 }, // Mi - "Which"
-        { note: 1, time: 58200 }, // Ré - "was"
-        { note: 1, time: 58800 }, // Ré - "a"
-        { note: 2, time: 59400 }, // Mi - "gainst"
-        { note: 1, time: 60000 }, // Ré - "the"
-        { note: 0, time: 60600 }, // Dó - "rule"
+        { note: 2, time: 45000 }, // Mi - "Which"
+        { note: 1, time: 45500 }, // Ré - "was"
+        { note: 1, time: 46000 }, // Ré - "a"
+        { note: 2, time: 46500 }, // Mi - "gainst"
+        { note: 1, time: 47000 }, // Ré - "the"
+        { note: 0, time: 47500 }, // Dó - "rule"
         
-        // Final instrumental
-        { note: 0, time: 62400 },
-        { note: 2, time: 63000 },
-        { note: 4, time: 63600 },
-        { note: 6, time: 64200 }, // Si
-        { note: 4, time: 64800 }, // Sol
-        { note: 2, time: 65400 }, // Mi
-        { note: 0, time: 66000 }, // Dó (final)
+        // Verso final: "It made the children laugh and play"
+        { note: 2, time: 49000 }, // Mi - "It"
+        { note: 1, time: 49500 }, // Ré - "made"
+        { note: 0, time: 50000 }, // Dó - "the"
+        { note: 1, time: 50500 }, // Ré - "chil"
+        { note: 2, time: 51000 }, // Mi - "dren"
+        { note: 2, time: 51500 }, // Mi - "laugh"
+        { note: 2, time: 52000 }, // Mi - "and"
+        { note: 1, time: 52500 }, // Ré - "play"
+        
+        // "laugh and play, laugh and play"
+        { note: 1, time: 53500 }, // Ré - "laugh"
+        { note: 1, time: 54000 }, // Ré - "and"
+        { note: 1, time: 54500 }, // Ré - "play"
+        
+        { note: 2, time: 55500 }, // Mi - "laugh"
+        { note: 4, time: 56000 }, // Sol - "and"
+        { note: 4, time: 56500 }, // Sol - "play"
+        
+        // "It made the children laugh and play"
+        { note: 2, time: 57500 }, // Mi - "It"
+        { note: 1, time: 58000 }, // Ré - "made"
+        { note: 0, time: 58500 }, // Dó - "the"
+        { note: 1, time: 59000 }, // Ré - "chil"
+        { note: 2, time: 59500 }, // Mi - "dren"
+        { note: 2, time: 60000 }, // Mi - "laugh"
+        { note: 2, time: 60500 }, // Mi - "and"
+        { note: 1, time: 61000 }, // Ré - "play"
+        
+        // "To see a lamb at school"
+        { note: 2, time: 62000 }, // Mi - "To"
+        { note: 1, time: 62500 }, // Ré - "see"
+        { note: 1, time: 63000 }, // Ré - "a"
+        { note: 2, time: 63500 }, // Mi - "lamb"
+        { note: 1, time: 64000 }, // Ré - "at"
+        { note: 0, time: 64500 }, // Dó - "school"
+        
+        // Final instrumental com escala descendente
+        { note: 4, time: 66000 }, // Sol
+        { note: 3, time: 66500 }, // Fá
+        { note: 2, time: 67000 }, // Mi
+        { note: 1, time: 67500 }, // Ré
+        { note: 0, time: 68000 }, // Dó (final)
       ];
 
       maryLambMelody.forEach((noteData, index) => {
@@ -267,7 +293,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 500,
+            duration: 400,
             y: -100,
             hasPlayed: false,
             isHit: false
