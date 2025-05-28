@@ -88,281 +88,254 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     };
 
     if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
-      // Brilha, Brilha Estrelinha - Dó Dó Sol Sol Lá Lá Sol Fá Fá Mi Mi Ré Ré Dó
+      // Brilha, Brilha Estrelinha - Música completa com repetições
       const twinkleMelody = [
-        { note: 0, time: 0 },     // Dó
-        { note: 0, time: 500 },   // Dó
-        { note: 4, time: 1000 },  // Sol
-        { note: 4, time: 1500 },  // Sol
-        { note: 5, time: 2000 },  // Lá
-        { note: 5, time: 2500 },  // Lá
-        { note: 4, time: 3000 },  // Sol
-        { note: 3, time: 4000 },  // Fá
-        { note: 3, time: 4500 },  // Fá
-        { note: 2, time: 5000 },  // Mi
-        { note: 2, time: 5500 },  // Mi
-        { note: 1, time: 6000 },  // Ré
-        { note: 1, time: 6500 },  // Ré
-        { note: 0, time: 7000 },  // Dó
+        // Primeira parte: Dó Dó Sol Sol Lá Lá Sol
+        { note: 0, time: 0 }, { note: 0, time: 600 }, { note: 4, time: 1200 }, { note: 4, time: 1800 },
+        { note: 5, time: 2400 }, { note: 5, time: 3000 }, { note: 4, time: 3600 },
+        // Segunda parte: Fá Fá Mi Mi Ré Ré Dó
+        { note: 3, time: 4800 }, { note: 3, time: 5400 }, { note: 2, time: 6000 }, { note: 2, time: 6600 },
+        { note: 1, time: 7200 }, { note: 1, time: 7800 }, { note: 0, time: 8400 },
+        // Terceira parte: Sol Sol Fá Fá Mi Mi Ré
+        { note: 4, time: 10200 }, { note: 4, time: 10800 }, { note: 3, time: 11400 }, { note: 3, time: 12000 },
+        { note: 2, time: 12600 }, { note: 2, time: 13200 }, { note: 1, time: 13800 },
+        // Quarta parte: Sol Sol Fá Fá Mi Mi Ré
+        { note: 4, time: 15600 }, { note: 4, time: 16200 }, { note: 3, time: 16800 }, { note: 3, time: 17400 },
+        { note: 2, time: 18000 }, { note: 2, time: 18600 }, { note: 1, time: 19200 },
+        // Final: Dó Dó Sol Sol Lá Lá Sol
+        { note: 0, time: 21000 }, { note: 0, time: 21600 }, { note: 4, time: 22200 }, { note: 4, time: 22800 },
+        { note: 5, time: 23400 }, { note: 5, time: 24000 }, { note: 4, time: 24600 },
+        // Fá Fá Mi Mi Ré Ré Dó
+        { note: 3, time: 25800 }, { note: 3, time: 26400 }, { note: 2, time: 27000 }, { note: 2, time: 27600 },
+        { note: 1, time: 28200 }, { note: 1, time: 28800 }, { note: 0, time: 29400 }
       ];
-      twinkleMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      twinkleMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "mary-lamb-bell") {
-      // Mary Had a Little Lamb - Mi Ré Dó Ré Mi Mi Mi Ré Ré Ré Mi Sol Sol
+      // Mary Had a Little Lamb - Música completa
       const maryMelody = [
-        { note: 2, time: 0 },     // Mi
-        { note: 1, time: 500 },   // Ré
-        { note: 0, time: 1000 },  // Dó
-        { note: 1, time: 1500 },  // Ré
-        { note: 2, time: 2000 },  // Mi
-        { note: 2, time: 2500 },  // Mi
-        { note: 2, time: 3000 },  // Mi
-        { note: 1, time: 4000 },  // Ré
-        { note: 1, time: 4500 },  // Ré
-        { note: 1, time: 5000 },  // Ré
-        { note: 2, time: 5500 },  // Mi
-        { note: 4, time: 6000 },  // Sol
-        { note: 4, time: 6500 },  // Sol
+        // Mi Ré Dó Ré Mi Mi Mi
+        { note: 2, time: 0 }, { note: 1, time: 600 }, { note: 0, time: 1200 }, { note: 1, time: 1800 },
+        { note: 2, time: 2400 }, { note: 2, time: 3000 }, { note: 2, time: 3600 },
+        // Ré Ré Ré Mi Sol Sol
+        { note: 1, time: 4800 }, { note: 1, time: 5400 }, { note: 1, time: 6000 },
+        { note: 2, time: 6600 }, { note: 4, time: 7200 }, { note: 4, time: 7800 },
+        // Mi Ré Dó Ré Mi Mi Mi
+        { note: 2, time: 9000 }, { note: 1, time: 9600 }, { note: 0, time: 10200 }, { note: 1, time: 10800 },
+        { note: 2, time: 11400 }, { note: 2, time: 12000 }, { note: 2, time: 12600 },
+        // Mi Ré Ré Mi Ré Dó
+        { note: 2, time: 13800 }, { note: 1, time: 14400 }, { note: 1, time: 15000 },
+        { note: 2, time: 15600 }, { note: 1, time: 16200 }, { note: 0, time: 16800 }
       ];
-      maryMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      maryMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "old-macdonald-bell") {
-      // Old MacDonald - Sol Sol Sol Ré Mi Mi Ré
+      // Old MacDonald - Música completa com E-I-E-I-O
       const macdonaldMelody = [
-        { note: 4, time: 0 },     // Sol
-        { note: 4, time: 500 },   // Sol
-        { note: 4, time: 1000 },  // Sol
-        { note: 1, time: 1500 },  // Ré
-        { note: 2, time: 2000 },  // Mi
-        { note: 2, time: 2500 },  // Mi
-        { note: 1, time: 3000 },  // Ré
-        { note: 4, time: 4000 },  // Sol
-        { note: 4, time: 4500 },  // Sol
-        { note: 4, time: 5000 },  // Sol
-        { note: 1, time: 5500 },  // Ré
-        { note: 2, time: 6000 },  // Mi
-        { note: 2, time: 6500 },  // Mi
-        { note: 1, time: 7000 },  // Ré
+        // Old MacDonald had a farm
+        { note: 0, time: 0 }, { note: 0, time: 600 }, { note: 0, time: 1200 }, { note: 4, time: 1800 },
+        { note: 4, time: 2400 }, { note: 4, time: 3000 }, { note: 4, time: 3600 },
+        // E-I-E-I-O
+        { note: 2, time: 4800 }, { note: 1, time: 5400 }, { note: 2, time: 6000 }, { note: 1, time: 6600 }, { note: 0, time: 7200 },
+        // And on his farm he had some cows
+        { note: 4, time: 8400 }, { note: 4, time: 9000 }, { note: 4, time: 9600 }, { note: 2, time: 10200 },
+        { note: 2, time: 10800 }, { note: 2, time: 11400 }, { note: 0, time: 12000 },
+        // E-I-E-I-O
+        { note: 2, time: 13200 }, { note: 1, time: 13800 }, { note: 2, time: 14400 }, { note: 1, time: 15000 }, { note: 0, time: 15600 },
+        // With a moo-moo here
+        { note: 0, time: 16800 }, { note: 0, time: 17400 }, { note: 4, time: 18000 },
+        // And a moo-moo there
+        { note: 0, time: 19200 }, { note: 0, time: 19800 }, { note: 4, time: 20400 },
+        // Here a moo, there a moo, everywhere a moo-moo
+        { note: 0, time: 21600 }, { note: 4, time: 22200 }, { note: 0, time: 22800 }, { note: 4, time: 23400 },
+        { note: 2, time: 24000 }, { note: 0, time: 24600 }, { note: 4, time: 25200 }
       ];
-      macdonaldMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      macdonaldMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "row-boat-bell") {
-      // Row Your Boat - Dó Dó Dó Ré Mi Mi Ré Mi Fá Sol
+      // Row Your Boat - Música completa com todas as estrofes
       const rowBoatMelody = [
-        { note: 0, time: 0 },     // Dó
-        { note: 0, time: 500 },   // Dó
-        { note: 0, time: 1000 },  // Dó
-        { note: 1, time: 1500 },  // Ré
-        { note: 2, time: 2000 },  // Mi
-        { note: 2, time: 3000 },  // Mi
-        { note: 1, time: 3500 },  // Ré
-        { note: 2, time: 4000 },  // Mi
-        { note: 3, time: 4500 },  // Fá
-        { note: 4, time: 5000 },  // Sol
+        // Row, row, row your boat
+        { note: 0, time: 0 }, { note: 0, time: 800 }, { note: 0, time: 1600 }, { note: 1, time: 2400 }, { note: 2, time: 3200 },
+        // Gently down the stream
+        { note: 2, time: 4800 }, { note: 1, time: 5600 }, { note: 2, time: 6400 }, { note: 3, time: 7200 }, { note: 4, time: 8000 },
+        // Merrily, merrily, merrily, merrily
+        { note: 4, time: 9600 }, { note: 4, time: 10000 }, { note: 4, time: 10400 }, { note: 4, time: 10800 },
+        { note: 4, time: 11200 }, { note: 4, time: 11600 }, { note: 4, time: 12000 }, { note: 4, time: 12400 },
+        // Life is but a dream
+        { note: 3, time: 12800 }, { note: 2, time: 13600 }, { note: 1, time: 14400 }, { note: 0, time: 15200 },
+        // Repetição
+        { note: 0, time: 16800 }, { note: 0, time: 17600 }, { note: 0, time: 18400 }, { note: 1, time: 19200 }, { note: 2, time: 20000 },
+        { note: 2, time: 21600 }, { note: 1, time: 22400 }, { note: 2, time: 23200 }, { note: 3, time: 24000 }, { note: 4, time: 24800 }
       ];
-      rowBoatMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      rowBoatMelody.forEach(({ note, time }) => addNote(note, time, 600));
     }
 
     else if (songId === "happy-birthday-xylophone") {
-      // Parabéns para Você - Dó Dó Ré Dó Fá Mi Dó Dó Ré Dó Sol Fá
+      // Parabéns para Você - Música completa
       const birthdayMelody = [
-        { note: 0, time: 0 },     // Dó
-        { note: 0, time: 300 },   // Dó
-        { note: 1, time: 600 },   // Ré
-        { note: 0, time: 1200 },  // Dó
-        { note: 3, time: 1800 },  // Fá
-        { note: 2, time: 2400 },  // Mi
-        { note: 0, time: 3600 },  // Dó
-        { note: 0, time: 3900 },  // Dó
-        { note: 1, time: 4200 },  // Ré
-        { note: 0, time: 4800 },  // Dó
-        { note: 4, time: 5400 },  // Sol
-        { note: 3, time: 6000 },  // Fá
+        // Parabéns pra você
+        { note: 0, time: 0 }, { note: 0, time: 600 }, { note: 1, time: 1200 }, { note: 0, time: 2400 },
+        { note: 3, time: 3600 }, { note: 2, time: 4800 },
+        // Parabéns pra você
+        { note: 0, time: 7200 }, { note: 0, time: 7800 }, { note: 1, time: 8400 }, { note: 0, time: 9600 },
+        { note: 4, time: 10800 }, { note: 3, time: 12000 },
+        // Parabéns querido(a)
+        { note: 0, time: 14400 }, { note: 0, time: 15000 }, { note: 5, time: 15600 }, { note: 2, time: 16800 },
+        { note: 3, time: 18000 }, { note: 2, time: 19200 },
+        // Parabéns pra você
+        { note: 6, time: 21600 }, { note: 6, time: 22200 }, { note: 5, time: 22800 }, { note: 2, time: 24000 },
+        { note: 4, time: 25200 }, { note: 3, time: 26400 }
       ];
-      birthdayMelody.forEach(({ note, time }) => addNote(note, time, 500));
+      birthdayMelody.forEach(({ note, time }) => addNote(note, time, 800));
     }
 
     else if (songId === "london-bridge-xylophone") {
-      // London Bridge - Sol Lá Sol Fá Mi Fá Sol
+      // London Bridge - Música completa
       const londonMelody = [
-        { note: 4, time: 0 },     // Sol
-        { note: 5, time: 500 },   // Lá
-        { note: 4, time: 1000 },  // Sol
-        { note: 3, time: 1500 },  // Fá
-        { note: 2, time: 2000 },  // Mi
-        { note: 3, time: 2500 },  // Fá
-        { note: 4, time: 3000 },  // Sol
-        { note: 1, time: 3500 },  // Ré
-        { note: 2, time: 4000 },  // Mi
-        { note: 3, time: 4500 },  // Fá
-        { note: 4, time: 5000 },  // Sol
-        { note: 5, time: 5500 },  // Lá
-        { note: 4, time: 6000 },  // Sol
-        { note: 3, time: 6500 },  // Fá
-        { note: 2, time: 7000 },  // Mi
-        { note: 3, time: 7500 },  // Fá
-        { note: 4, time: 8000 },  // Sol
+        // London Bridge is falling down
+        { note: 4, time: 0 }, { note: 5, time: 600 }, { note: 4, time: 1200 }, { note: 3, time: 1800 },
+        { note: 2, time: 2400 }, { note: 3, time: 3000 }, { note: 4, time: 3600 },
+        // Falling down, falling down
+        { note: 3, time: 4800 }, { note: 2, time: 5400 }, { note: 3, time: 6000 }, { note: 2, time: 6600 }, { note: 3, time: 7200 },
+        { note: 3, time: 7800 }, { note: 2, time: 8400 }, { note: 3, time: 9000 },
+        // London Bridge is falling down
+        { note: 4, time: 10200 }, { note: 5, time: 10800 }, { note: 4, time: 11400 }, { note: 3, time: 12000 },
+        { note: 2, time: 12600 }, { note: 3, time: 13200 }, { note: 4, time: 13800 },
+        // My fair lady
+        { note: 3, time: 15000 }, { note: 2, time: 15600 }, { note: 1, time: 16200 }, { note: 0, time: 16800 }
       ];
-      londonMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      londonMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "jingle-bells-xylophone") {
-      // Jingle Bells - Mi Mi Mi Mi Mi Mi Mi Sol Dó Ré Mi
+      // Jingle Bells - Música completa
       const jingleMelody = [
-        { note: 2, time: 0 },     // Mi
-        { note: 2, time: 500 },   // Mi
-        { note: 2, time: 1000 },  // Mi
-        { note: 2, time: 2000 },  // Mi
-        { note: 2, time: 2500 },  // Mi
-        { note: 2, time: 3000 },  // Mi
-        { note: 2, time: 4000 },  // Mi
-        { note: 4, time: 4500 },  // Sol
-        { note: 0, time: 5000 },  // Dó
-        { note: 1, time: 5500 },  // Ré
-        { note: 2, time: 6000 },  // Mi
-        { note: 3, time: 7000 },  // Fá
-        { note: 3, time: 7500 },  // Fá
-        { note: 3, time: 8000 },  // Fá
-        { note: 3, time: 8500 },  // Fá
-        { note: 3, time: 9000 },  // Fá
-        { note: 2, time: 9500 },  // Mi
-        { note: 2, time: 10000 }, // Mi
-        { note: 2, time: 10500 }, // Mi
-        { note: 2, time: 11000 }, // Mi
-        { note: 1, time: 11500 }, // Ré
-        { note: 1, time: 12000 }, // Ré
-        { note: 2, time: 12500 }, // Mi
-        { note: 1, time: 13000 }, // Ré
-        { note: 4, time: 14000 }, // Sol
+        // Jingle bells, jingle bells
+        { note: 2, time: 0 }, { note: 2, time: 600 }, { note: 2, time: 1200 },
+        { note: 2, time: 2400 }, { note: 2, time: 3000 }, { note: 2, time: 3600 },
+        // Jingle all the way
+        { note: 2, time: 4800 }, { note: 4, time: 5400 }, { note: 0, time: 6000 }, { note: 1, time: 6600 }, { note: 2, time: 7200 },
+        // Oh what fun it is to ride
+        { note: 3, time: 9000 }, { note: 3, time: 9600 }, { note: 3, time: 10200 }, { note: 3, time: 10800 },
+        { note: 3, time: 11400 }, { note: 2, time: 12000 }, { note: 2, time: 12600 },
+        // In a one-horse open sleigh
+        { note: 2, time: 13200 }, { note: 2, time: 13800 }, { note: 1, time: 14400 }, { note: 1, time: 15000 },
+        { note: 2, time: 15600 }, { note: 1, time: 16200 }, { note: 4, time: 16800 },
+        // Repetição do refrão
+        { note: 2, time: 18600 }, { note: 2, time: 19200 }, { note: 2, time: 19800 },
+        { note: 2, time: 21000 }, { note: 2, time: 21600 }, { note: 2, time: 22200 },
+        { note: 2, time: 23400 }, { note: 4, time: 24000 }, { note: 0, time: 24600 }, { note: 1, time: 25200 }, { note: 2, time: 25800 }
       ];
-      jingleMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      jingleMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "chopsticks-keyboard") {
-      // Chopsticks - Fá Sol Lá Sol Fá Mi Ré Dó
+      // Chopsticks - Música completa
       const chopsticksMelody = [
-        { note: 3, time: 0 },     // Fá
-        { note: 4, time: 500 },   // Sol
-        { note: 5, time: 1000 },  // Lá
-        { note: 4, time: 1500 },  // Sol
-        { note: 3, time: 2000 },  // Fá
-        { note: 2, time: 2500 },  // Mi
-        { note: 1, time: 3000 },  // Ré
-        { note: 0, time: 3500 },  // Dó
-        { note: 3, time: 4000 },  // Fá
-        { note: 4, time: 4500 },  // Sol
-        { note: 5, time: 5000 },  // Lá
-        { note: 4, time: 5500 },  // Sol
-        { note: 3, time: 6000 },  // Fá
-        { note: 2, time: 6500 },  // Mi
-        { note: 1, time: 7000 },  // Ré
-        { note: 0, time: 7500 },  // Dó
+        // Primeira seção
+        { note: 3, time: 0 }, { note: 4, time: 600 }, { note: 5, time: 1200 }, { note: 4, time: 1800 },
+        { note: 3, time: 2400 }, { note: 2, time: 3000 }, { note: 1, time: 3600 }, { note: 0, time: 4200 },
+        // Segunda seção
+        { note: 2, time: 5400 }, { note: 3, time: 6000 }, { note: 4, time: 6600 }, { note: 3, time: 7200 },
+        { note: 2, time: 7800 }, { note: 1, time: 8400 }, { note: 0, time: 9000 },
+        // Terceira seção - variação
+        { note: 4, time: 10200 }, { note: 5, time: 10800 }, { note: 6, time: 11400 }, { note: 5, time: 12000 },
+        { note: 4, time: 12600 }, { note: 3, time: 13200 }, { note: 2, time: 13800 }, { note: 1, time: 14400 },
+        // Final
+        { note: 0, time: 15600 }, { note: 2, time: 16200 }, { note: 4, time: 16800 }, { note: 0, time: 17400 }
       ];
-      chopsticksMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      chopsticksMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "hot-cross-keyboard") {
-      // Hot Cross Buns - Mi Ré Dó Mi Ré Dó Dó Dó Dó Dó Ré Ré Ré Ré Mi Ré Dó
+      // Hot Cross Buns - Música completa
       const hotCrossMelody = [
-        { note: 2, time: 0 },     // Mi
-        { note: 1, time: 500 },   // Ré
-        { note: 0, time: 1000 },  // Dó
-        { note: 2, time: 2000 },  // Mi
-        { note: 1, time: 2500 },  // Ré
-        { note: 0, time: 3000 },  // Dó
-        { note: 0, time: 4000 },  // Dó
-        { note: 0, time: 4250 },  // Dó
-        { note: 0, time: 4500 },  // Dó
-        { note: 0, time: 4750 },  // Dó
-        { note: 1, time: 5000 },  // Ré
-        { note: 1, time: 5250 },  // Ré
-        { note: 1, time: 5500 },  // Ré
-        { note: 1, time: 5750 },  // Ré
-        { note: 2, time: 6000 },  // Mi
-        { note: 1, time: 6500 },  // Ré
-        { note: 0, time: 7000 },  // Dó
+        // Hot cross buns
+        { note: 2, time: 0 }, { note: 1, time: 800 }, { note: 0, time: 1600 },
+        // Hot cross buns
+        { note: 2, time: 3200 }, { note: 1, time: 4000 }, { note: 0, time: 4800 },
+        // One a penny, two a penny
+        { note: 0, time: 6400 }, { note: 0, time: 6800 }, { note: 0, time: 7200 }, { note: 0, time: 7600 },
+        { note: 1, time: 8000 }, { note: 1, time: 8400 }, { note: 1, time: 8800 }, { note: 1, time: 9200 },
+        // Hot cross buns
+        { note: 2, time: 9600 }, { note: 1, time: 10400 }, { note: 0, time: 11200 },
+        // Repetição
+        { note: 2, time: 12800 }, { note: 1, time: 13600 }, { note: 0, time: 14400 },
+        { note: 2, time: 16000 }, { note: 1, time: 16800 }, { note: 0, time: 17600 }
       ];
-      hotCrossMelody.forEach(({ note, time }) => addNote(note, time, 200));
+      hotCrossMelody.forEach(({ note, time }) => addNote(note, time, 600));
     }
 
     else if (songId === "frere-jacques-bell") {
-      // Frère Jacques - Dó Ré Mi Dó Dó Ré Mi Dó Mi Fá Sol Mi Fá Sol
+      // Frère Jacques - Música completa (canon)
       const frereMelody = [
-        { note: 0, time: 0 },     // Dó
-        { note: 1, time: 500 },   // Ré
-        { note: 2, time: 1000 },  // Mi
-        { note: 0, time: 1500 },  // Dó
-        { note: 0, time: 2000 },  // Dó
-        { note: 1, time: 2500 },  // Ré
-        { note: 2, time: 3000 },  // Mi
-        { note: 0, time: 3500 },  // Dó
-        { note: 2, time: 4000 },  // Mi
-        { note: 3, time: 4500 },  // Fá
-        { note: 4, time: 5000 },  // Sol
-        { note: 2, time: 6000 },  // Mi
-        { note: 3, time: 6500 },  // Fá
-        { note: 4, time: 7000 },  // Sol
-        { note: 4, time: 8000 },  // Sol
-        { note: 5, time: 8250 },  // Lá
-        { note: 4, time: 8500 },  // Sol
-        { note: 3, time: 8750 },  // Fá
-        { note: 2, time: 9000 },  // Mi
-        { note: 0, time: 9500 },  // Dó
-        { note: 4, time: 10000 }, // Sol
-        { note: 5, time: 10250 }, // Lá
-        { note: 4, time: 10500 }, // Sol
-        { note: 3, time: 10750 }, // Fá
-        { note: 2, time: 11000 }, // Mi
-        { note: 0, time: 11500 }, // Dó
+        // Frère Jacques, Frère Jacques
+        { note: 0, time: 0 }, { note: 1, time: 600 }, { note: 2, time: 1200 }, { note: 0, time: 1800 },
+        { note: 0, time: 2400 }, { note: 1, time: 3000 }, { note: 2, time: 3600 }, { note: 0, time: 4200 },
+        // Dormez-vous? Dormez-vous?
+        { note: 2, time: 4800 }, { note: 3, time: 5400 }, { note: 4, time: 6000 },
+        { note: 2, time: 7200 }, { note: 3, time: 7800 }, { note: 4, time: 8400 },
+        // Sonnez les matines, sonnez les matines
+        { note: 4, time: 9000 }, { note: 5, time: 9300 }, { note: 4, time: 9600 }, { note: 3, time: 9900 },
+        { note: 2, time: 10200 }, { note: 0, time: 10800 },
+        { note: 4, time: 11400 }, { note: 5, time: 11700 }, { note: 4, time: 12000 }, { note: 3, time: 12300 },
+        { note: 2, time: 12600 }, { note: 0, time: 13200 },
+        // Din, dan, don. Din, dan, don.
+        { note: 0, time: 13800 }, { note: 1, time: 14400 }, { note: 0, time: 15000 },
+        { note: 0, time: 16200 }, { note: 1, time: 16800 }, { note: 0, time: 17400 }
       ];
-      frereMelody.forEach(({ note, time }) => addNote(note, time, 400));
+      frereMelody.forEach(({ note, time }) => addNote(note, time, 500));
     }
 
     else if (songId === "amazing-grace-bell") {
-      // Amazing Grace - Sol Dó Mi Dó Mi Ré Dó Lá Sol
+      // Amazing Grace - Música completa
       const amazingMelody = [
-        { note: 4, time: 0 },     // Sol
-        { note: 0, time: 1000 },  // Dó
-        { note: 2, time: 2000 },  // Mi
-        { note: 0, time: 3000 },  // Dó
-        { note: 2, time: 4000 },  // Mi
-        { note: 1, time: 5000 },  // Ré
-        { note: 0, time: 6000 },  // Dó
-        { note: 5, time: 7000 },  // Lá
-        { note: 4, time: 8000 },  // Sol
-        { note: 0, time: 10000 }, // Dó
-        { note: 2, time: 11000 }, // Mi
-        { note: 4, time: 12000 }, // Sol
-        { note: 2, time: 13000 }, // Mi
-        { note: 1, time: 14000 }, // Ré
-        { note: 0, time: 15000 }, // Dó
+        // Amazing grace, how sweet the sound
+        { note: 0, time: 0 }, { note: 2, time: 1000 }, { note: 4, time: 2000 }, { note: 2, time: 3500 },
+        { note: 4, time: 5000 }, { note: 5, time: 6500 }, { note: 4, time: 8000 },
+        // That saved a wretch like me
+        { note: 2, time: 10000 }, { note: 0, time: 11500 }, { note: 2, time: 13000 }, { note: 0, time: 14500 },
+        // I once was lost, but now am found
+        { note: 0, time: 16500 }, { note: 2, time: 17500 }, { note: 4, time: 18500 }, { note: 2, time: 20000 },
+        { note: 4, time: 21500 }, { note: 5, time: 23000 }, { note: 4, time: 24500 },
+        // Was blind but now I see
+        { note: 2, time: 26500 }, { note: 0, time: 28000 }, { note: 1, time: 29500 }, { note: 0, time: 31000 }
       ];
-      amazingMelody.forEach(({ note, time }) => addNote(note, time, 800));
+      amazingMelody.forEach(({ note, time }) => addNote(note, time, 1200));
     }
 
     else if (songId === "greensleeves-bell") {
-      // Greensleeves - Lá Dó Ré Mi Fá Mi Ré Dó
+      // Greensleeves - Música completa
       const greenslevesMelody = [
-        { note: 5, time: 0 },     // Lá
-        { note: 0, time: 800 },   // Dó
-        { note: 1, time: 1600 },  // Ré
-        { note: 2, time: 2400 },  // Mi
-        { note: 3, time: 3200 },  // Fá
-        { note: 2, time: 4000 },  // Mi
-        { note: 1, time: 4800 },  // Ré
-        { note: 0, time: 5600 },  // Dó
-        { note: 5, time: 6400 },  // Lá
-        { note: 4, time: 7200 },  // Sol
-        { note: 3, time: 8000 },  // Fá
-        { note: 2, time: 8800 },  // Mi
-        { note: 1, time: 9600 },  // Ré
-        { note: 0, time: 10400 }, // Dó
-        { note: 5, time: 11200 }, // Lá
+        // Alas my love you do me wrong
+        { note: 5, time: 0 }, { note: 0, time: 1000 }, { note: 1, time: 2000 }, { note: 2, time: 3000 },
+        { note: 3, time: 4000 }, { note: 2, time: 5000 }, { note: 1, time: 6000 }, { note: 0, time: 7000 },
+        // To cast me off discourteously
+        { note: 5, time: 8000 }, { note: 4, time: 9000 }, { note: 3, time: 10000 }, { note: 2, time: 11000 },
+        { note: 1, time: 12000 }, { note: 0, time: 13000 },
+        // For I have loved you oh so long
+        { note: 5, time: 15000 }, { note: 0, time: 16000 }, { note: 1, time: 17000 }, { note: 2, time: 18000 },
+        { note: 3, time: 19000 }, { note: 2, time: 20000 }, { note: 1, time: 21000 }, { note: 0, time: 22000 },
+        // Delighting in your company
+        { note: 5, time: 23000 }, { note: 4, time: 24000 }, { note: 3, time: 25000 }, { note: 1, time: 26000 },
+        { note: 0, time: 27000 },
+        // Greensleeves was all my joy
+        { note: 4, time: 29000 }, { note: 5, time: 30000 }, { note: 6, time: 31000 }, { note: 5, time: 32000 },
+        { note: 4, time: 33000 }, { note: 2, time: 34000 }, { note: 3, time: 35000 },
+        // Greensleeves was my delight
+        { note: 4, time: 36000 }, { note: 5, time: 37000 }, { note: 6, time: 38000 }, { note: 5, time: 39000 },
+        { note: 4, time: 40000 }, { note: 2, time: 41000 }, { note: 1, time: 42000 },
+        // Greensleeves was my heart of gold
+        { note: 5, time: 43000 }, { note: 0, time: 44000 }, { note: 1, time: 45000 }, { note: 2, time: 46000 },
+        { note: 3, time: 47000 }, { note: 2, time: 48000 }, { note: 1, time: 49000 }, { note: 0, time: 50000 },
+        // And who but my lady Greensleeves
+        { note: 5, time: 51000 }, { note: 4, time: 52000 }, { note: 3, time: 53000 }, { note: 1, time: 54000 }, { note: 0, time: 55000 }
       ];
-      greenslevesMelody.forEach(({ note, time }) => addNote(note, time, 600));
+      greenslevesMelody.forEach(({ note, time }) => addNote(note, time, 800));
     }
 
     else if (songId === "scarborough-bell") {
