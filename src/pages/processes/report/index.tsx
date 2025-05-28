@@ -37,7 +37,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import html2pdf from "html2pdf.js";
 import { IndividualSessionForm } from "./components/IndividualSessionForm";
 import { GroupSessionForm } from "./components/GroupSessionForm";
@@ -525,6 +525,9 @@ export default function ReportForm() {
       if (!user) {
         throw new Error("Usuário não autenticado");
       }
+
+      // Ensure professional exists before saving report
+      await ensureProfessionalExists(user.id, user.email || "");
       
       const { error } = await supabase
         .from("reports")
@@ -555,6 +558,49 @@ export default function ReportForm() {
         description: "Não foi possível salvar o relatório.",
       });
       return false;
+    }
+  };
+
+  const ensureProfessionalExists = async (userId: string, userEmail: string) => {
+    try {
+      // Check if professional exists
+      const { data: existingProfessional, error: checkError } = await supabase
+        .from('professionals')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Error checking professional:', checkError);
+        throw checkError;
+      }
+
+      if (!existingProfessional) {
+        // Create professional record
+        const { data: newProfessional, error: createError } = await supabase
+          .from('professionals')
+          .insert({
+            user_id: userId,
+            name: formatNameFromEmail(userEmail),
+            email: userEmail,
+            phone: '',
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          console.error('Error creating professional:', createError);
+          throw createError;
+        }
+
+        console.log('Professional created:', newProfessional);
+        return newProfessional.id;
+      }
+
+      return existingProfessional.id;
+    } catch (error) {
+      console.error('Error ensuring professional exists:', error);
+      throw error;
     }
   };
 
