@@ -129,6 +129,160 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
+    } else if (songId === "row-boat-bell") {
+      // Melodia completa e corrigida de "Row, Row, Row Your Boat"
+      const rowBoatMelody = [
+        // "Row, row, row your boat"
+        { note: 0, time: 0 },     // Dó - "Row"
+        { note: 0, time: 600 },   // Dó - "row"
+        { note: 0, time: 1200 },  // Dó - "row"
+        { note: 1, time: 1800 },  // Ré - "your"
+        { note: 2, time: 2400 },  // Mi - "boat"
+        
+        // "Gently down the stream"
+        { note: 2, time: 3200 },  // Mi - "Gent"
+        { note: 1, time: 3800 },  // Ré - "ly"
+        { note: 2, time: 4400 },  // Mi - "down"
+        { note: 3, time: 5000 },  // Fá - "the"
+        { note: 4, time: 5600 },  // Sol - "stream"
+        
+        // "Merrily, merrily, merrily, merrily"
+        { note: 4, time: 6800 },  // Sol - "Mer"
+        { note: 3, time: 7100 },  // Fá - "ri"
+        { note: 2, time: 7400 },  // Mi - "ly"
+        { note: 1, time: 7700 },  // Ré - "mer"
+        { note: 4, time: 8000 },  // Sol - "ri"
+        { note: 3, time: 8300 },  // Fá - "ly"
+        { note: 2, time: 8600 },  // Mi - "mer"
+        { note: 1, time: 8900 },  // Ré - "ri"
+        { note: 4, time: 9200 },  // Sol - "ly"
+        { note: 3, time: 9500 },  // Fá - "mer"
+        { note: 2, time: 9800 },  // Mi - "ri"
+        { note: 1, time: 10100 }, // Ré - "ly"
+        
+        // "Life is but a dream"
+        { note: 0, time: 11000 }, // Dó - "Life"
+        { note: 1, time: 11600 }, // Ré - "is"
+        { note: 2, time: 12200 }, // Mi - "but"
+        { note: 1, time: 12800 }, // Ré - "a"
+        { note: 0, time: 13400 }, // Dó - "dream"
+        
+        // Segunda estrofe: "Row, row, row your boat"
+        { note: 0, time: 15000 }, // Dó - "Row"
+        { note: 0, time: 15600 }, // Dó - "row"
+        { note: 0, time: 16200 }, // Dó - "row"
+        { note: 1, time: 16800 }, // Ré - "your"
+        { note: 2, time: 17400 }, // Mi - "boat"
+        
+        // "Gently down the stream"
+        { note: 2, time: 18200 }, // Mi - "Gent"
+        { note: 1, time: 18800 }, // Ré - "ly"
+        { note: 2, time: 19400 }, // Mi - "down"
+        { note: 3, time: 20000 }, // Fá - "the"
+        { note: 4, time: 20600 }, // Sol - "stream"
+        
+        // "If you see a crocodile"
+        { note: 4, time: 21800 }, // Sol - "If"
+        { note: 4, time: 22200 }, // Sol - "you"
+        { note: 3, time: 22600 }, // Fá - "see"
+        { note: 2, time: 23000 }, // Mi - "a"
+        { note: 1, time: 23400 }, // Ré - "cro"
+        { note: 2, time: 23800 }, // Mi - "co"
+        { note: 3, time: 24200 }, // Fá - "dile"
+        
+        // "Don't forget to scream!"
+        { note: 4, time: 25000 }, // Sol - "Don't"
+        { note: 3, time: 25400 }, // Fá - "for"
+        { note: 2, time: 25800 }, // Mi - "get"
+        { note: 1, time: 26200 }, // Ré - "to"
+        { note: 0, time: 26600 }, // Dó - "scream!"
+        
+        // Terceira estrofe: "Row, row, row your boat"
+        { note: 0, time: 28200 }, // Dó - "Row"
+        { note: 0, time: 28800 }, // Dó - "row"
+        { note: 0, time: 29400 }, // Dó - "row"
+        { note: 1, time: 30000 }, // Ré - "your"
+        { note: 2, time: 30600 }, // Mi - "boat"
+        
+        // "Gently to and fro"
+        { note: 2, time: 31400 }, // Mi - "Gent"
+        { note: 1, time: 32000 }, // Ré - "ly"
+        { note: 2, time: 32600 }, // Mi - "to"
+        { note: 3, time: 33200 }, // Fá - "and"
+        { note: 4, time: 33800 }, // Sol - "fro"
+        
+        // "If you see a polar bear"
+        { note: 4, time: 35000 }, // Sol - "If"
+        { note: 4, time: 35400 }, // Sol - "you"
+        { note: 3, time: 35800 }, // Fá - "see"
+        { note: 2, time: 36200 }, // Mi - "a"
+        { note: 1, time: 36600 }, // Ré - "po"
+        { note: 2, time: 37000 }, // Mi - "lar"
+        { note: 3, time: 37400 }, // Fá - "bear"
+        
+        // "Don't forget to go!"
+        { note: 4, time: 38200 }, // Sol - "Don't"
+        { note: 3, time: 38600 }, // Fá - "for"
+        { note: 2, time: 39000 }, // Mi - "get"
+        { note: 1, time: 39400 }, // Ré - "to"
+        { note: 0, time: 39800 }, // Dó - "go!"
+        
+        // Final: "Row, row, row your boat" (mais devagar)
+        { note: 0, time: 41400 }, // Dó - "Row"
+        { note: 0, time: 42200 }, // Dó - "row"
+        { note: 0, time: 43000 }, // Dó - "row"
+        { note: 1, time: 43800 }, // Ré - "your"
+        { note: 2, time: 44600 }, // Mi - "boat"
+        
+        // "Gently down the stream"
+        { note: 2, time: 45800 }, // Mi - "Gent"
+        { note: 1, time: 46600 }, // Ré - "ly"
+        { note: 2, time: 47400 }, // Mi - "down"
+        { note: 3, time: 48200 }, // Fá - "the"
+        { note: 4, time: 49000 }, // Sol - "stream"
+        
+        // "Merrily, merrily, merrily, merrily" (final)
+        { note: 4, time: 50500 }, // Sol - "Mer"
+        { note: 3, time: 50900 }, // Fá - "ri"
+        { note: 2, time: 51300 }, // Mi - "ly"
+        { note: 1, time: 51700 }, // Ré - "mer"
+        { note: 4, time: 52100 }, // Sol - "ri"
+        { note: 3, time: 52500 }, // Fá - "ly"
+        { note: 2, time: 52900 }, // Mi - "mer"
+        { note: 1, time: 53300 }, // Ré - "ri"
+        { note: 4, time: 53700 }, // Sol - "ly"
+        { note: 3, time: 54100 }, // Fá - "mer"
+        { note: 2, time: 54500 }, // Mi - "ri"
+        { note: 1, time: 54900 }, // Ré - "ly"
+        
+        // "Life is but a dream" (final)
+        { note: 0, time: 56000 }, // Dó - "Life"
+        { note: 1, time: 56800 }, // Ré - "is"
+        { note: 2, time: 57600 }, // Mi - "but"
+        { note: 1, time: 58400 }, // Ré - "a"
+        { note: 0, time: 59200 }, // Dó - "dream"
+        
+        // Coda instrumental
+        { note: 2, time: 60500 }, // Mi
+        { note: 1, time: 61000 }, // Ré
+        { note: 0, time: 61500 }, // Dó (final)
+      ];
+
+      rowBoatMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
     } else if (songId === "mary-lamb-bell") {
       // Melodia completa e corrigida de "Mary Had a Little Lamb"
       const maryLambMelody = [
@@ -587,7 +741,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
-    // Verificar se a nota está na zona de acerto
     if (noteToHit.y >= hitZoneTop - 50 && noteToHit.y <= hitZoneBottom + 50) {
       const precision = Math.abs(noteToHit.y - (hitZoneTop + hitZoneHeight / 2));
       let points = 100;
@@ -607,14 +760,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       setMaxCombo(prev => Math.max(prev, combo + 1));
       setHitNotes(prev => prev + 1);
 
-      // Tocar o som da nota
       onNotePlay(noteToHit.frequency, noteToHit.color);
 
       toast(`${feedback} +${finalPoints} pontos`, {
         duration: 1000,
       });
 
-      // Marcar a nota como acertada
       setNotes(prevNotes => 
         prevNotes.map(note => 
           note.id === noteId ? { ...note, isHit: true } : note
@@ -623,7 +774,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
       console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
     } else {
-      // Nota clicada fora da zona de acerto
       if (combo > 0) {
         setCombo(0);
         toast("Miss! Combo perdido", {
@@ -631,7 +781,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         });
       }
       
-      // Ainda tocar o som da nota mesmo que seja miss
       onNotePlay(noteToHit.frequency, noteToHit.color);
       console.log(`Missed note: clicked outside hit zone`);
     }
@@ -657,7 +806,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         };
       });
 
-      // Verificar notas perdidas (que passaram da tela sem serem acertadas)
       const missedNotes = updatedNotes.filter(note => 
         note.y > 500 && !note.isHit && !note.hasPlayed
       );
@@ -673,13 +821,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         }
       }
 
-      // Verificar se todas as notas terminaram (fim da música)
       const visibleNotes = updatedNotes.filter(note => note.y <= 500);
       if (visibleNotes.length === 0 && updatedNotes.length > 0 && !gameEnded) {
         setGameEnded(true);
         setIsPlaying(false);
         
-        // Mostrar pontuação final
         const accuracy = totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 0;
         toast(`🎉 Música concluída! Pontuação: ${score} | Precisão: ${accuracy}% | Max Combo: ${maxCombo}x`, {
           duration: 5000,
