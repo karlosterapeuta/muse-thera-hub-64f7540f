@@ -1,1435 +1,1723 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { playNoteSound } from "@/utils/audioUtils";
+import { Play, Pause, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 
 interface Note {
-  note: string;
-  time: number;
+  id: string;
+  lane: number;
   color: string;
+  frequency: number;
+  startTime: number;
+  duration: number;
+  y: number;
+  hasPlayed?: boolean;
+  isHit?: boolean;
 }
 
 interface GuitarHeroGameProps {
   instrumentType: "bell" | "xylophone" | "keyboard";
   onNotePlay: (frequency: number, color: string) => void;
-  songId: string;
+  songId?: string;
 }
 
-const GuitarHeroGame = ({ instrumentType, onNotePlay, songId }: GuitarHeroGameProps) => {
-  const [gameStarted, setGameStarted] = useState(false);
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay, songId }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [notes, setNotes] = useState<Note[]>([]);
-  const [activeNotes, setActiveNotes] = useState<Note[]>([]);
-  const [gameOver, setGameOver] = useState(false);
-  const [accuracy, setAccuracy] = useState(0);
+  const [speed, setSpeed] = useState(2);
+  const [hitZoneHeight] = useState(80);
+  const [gameEnded, setGameEnded] = useState(false);
   const [totalNotes, setTotalNotes] = useState(0);
   const [hitNotes, setHitNotes] = useState(0);
-  const [missedNotes, setMissedNotes] = useState(0);
-  const [perfectHits, setPerfectHits] = useState(0);
-  const [goodHits, setGoodHits] = useState(0);
-  const [okayHits, setOkayHits] = useState(0);
-  const [lastFeedback, setLastFeedback] = useState("");
-  const [feedbackColor, setFeedbackColor] = useState("");
-  const [countdownValue, setCountdownValue] = useState(3);
-  const [isCountingDown, setIsCountingDown] = useState(false);
-
-  const gameAreaRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
-  const notesRef = useRef<Note[]>([]);
-  const activeNotesRef = useRef<Note[]>([]);
+  
+  const gameRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
   const gameStartTimeRef = useRef<number>(0);
+  const lastUpdateTimeRef = useRef<number>(0);
+  const pauseTimeRef = useRef<number>(0);
+  const totalPausedTimeRef = useRef<number>(0);
 
-  const getSongNotes = (songId: string): Note[] => {
-    const songPatterns: Record<string, Note[]> = {
-      // Músicas Fáceis - Sino
-      "twinkle-bell": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "C4", time: 2000, color: "#991b1b" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "A4", time: 5000, color: "#f59e0b" },
-        { note: "A4", time: 6000, color: "#f59e0b" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "E4", time: 10000, color: "#dc2626" },
-        { note: "E4", time: 11000, color: "#dc2626" },
-        { note: "D4", time: 12000, color: "#b91c1c" },
-        { note: "D4", time: 13000, color: "#b91c1c" },
-        { note: "C4", time: 14000, color: "#991b1b" }
-      ],
-      "mary-lamb-bell": [
-        { note: "E4", time: 1000, color: "#dc2626" },
-        { note: "D4", time: 2000, color: "#b91c1c" },
-        { note: "C4", time: 3000, color: "#991b1b" },
-        { note: "D4", time: 4000, color: "#b91c1c" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "E4", time: 7000, color: "#dc2626" },
-        { note: "D4", time: 8000, color: "#b91c1c" },
-        { note: "D4", time: 9000, color: "#b91c1c" },
-        { note: "D4", time: 10000, color: "#b91c1c" },
-        { note: "E4", time: 11000, color: "#dc2626" },
-        { note: "G4", time: 12000, color: "#22c55e" },
-        { note: "G4", time: 13000, color: "#22c55e" }
-      ],
-      "old-macdonald-bell": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "D4", time: 4000, color: "#b91c1c" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "D4", time: 7000, color: "#b91c1c" },
-        { note: "B3", time: 8000, color: "#7f1d1d" },
-        { note: "B3", time: 9000, color: "#7f1d1d" },
-        { note: "A3", time: 10000, color: "#450a0a" },
-        { note: "A3", time: 11000, color: "#450a0a" },
-        { note: "G4", time: 12000, color: "#22c55e" }
-      ],
-      "row-boat-bell": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "E4", time: 2000, color: "#dc2626" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "C4", time: 4000, color: "#991b1b" },
-        { note: "F4", time: 4500, color: "#ef4444" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "D4", time: 5500, color: "#b91c1c" },
-        { note: "C4", time: 6000, color: "#991b1b" }
-      ],
+  // Configuração das lanes (faixas) baseada no instrumento
+  const lanes = instrumentType === "bell" ? [
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
+    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
+    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
+    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
+  ] : instrumentType === "xylophone" ? [
+    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
+    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
+    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
+    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
+    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
+    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
+    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
+  ] : [
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
+    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
+    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
+    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
+  ];
+
+  // Função para gerar as notas da música específica
+  const generateSpecificSongNotes = useCallback((songId: string) => {
+    const newNotes: Note[] = [];
+    let noteId = 0;
+
+    // Notas para "Brilha, Brilha Estrelinha" (Twinkle, Twinkle, Little Star)
+    if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
+      const twinkleMelody = [
+        { note: 0, time: 0 },     // Dó - "Bri"
+        { note: 0, time: 800 },   // Dó - "lha"
+        { note: 4, time: 1600 },  // Sol - "bri"
+        { note: 4, time: 2400 },  // Sol - "lha"
+        { note: 5, time: 3200 },  // Lá - "es"
+        { note: 5, time: 4000 },  // Lá - "tre"
+        { note: 4, time: 4800 },  // Sol - "li" (pausa mais longa)
+        
+        { note: 3, time: 6000 },  // Fá - "Co"
+        { note: 3, time: 6800 },  // Fá - "mo"
+        { note: 2, time: 7600 },  // Mi - "eu"
+        { note: 2, time: 8400 },  // Mi - "que"
+        { note: 1, time: 9200 },  // Ré - "ro"
+        { note: 1, time: 10000 }, // Ré - "sa"
+        { note: 0, time: 10800 }, // Dó - "ber" (pausa mais longa)
+        
+        { note: 4, time: 12400 }, // Sol - "O"
+        { note: 4, time: 13200 }, // Sol - "que"
+        { note: 3, time: 14000 }, // Fá - "vo"
+        { note: 3, time: 14800 }, // Fá - "cê"
+        { note: 2, time: 15600 }, // Mi - "é"
+        { note: 2, time: 16400 }, // Mi - "de"
+        { note: 1, time: 17200 }, // Ré - "ver"
+        { note: 1, time: 18000 }, // Ré - "da" 
+        { note: 0, time: 18800 }, // Dó - "de" (final)
+        
+        { note: 0, time: 20400 }, // Dó - "Bri"
+        { note: 0, time: 21200 }, // Dó - "lha"
+        { note: 4, time: 22000 }, // Sol - "bri"
+        { note: 4, time: 22800 }, // Sol - "lha"
+        { note: 5, time: 23600 }, // Lá - "es"
+        { note: 5, time: 24400 }, // Lá - "tre"
+        { note: 4, time: 25200 }, // Sol - "li" (final)
+      ];
+
+      twinkleMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "london-bridge-xylophone") {
+      // Melodia completa e corrigida de "London Bridge Is Falling Down"
+      const londonBridgeMelody = [
+        // Primeira estrofe: "London Bridge is falling down"
+        { note: 4, time: 0 },     // Sol - "Lon"
+        { note: 5, time: 500 },   // Lá - "don"
+        { note: 4, time: 1000 },  // Sol - "Bridge"
+        { note: 3, time: 1500 },  // Fá - "is"
+        { note: 4, time: 2000 },  // Sol - "fall"
+        { note: 3, time: 2500 },  // Fá - "ing"
+        { note: 2, time: 3000 },  // Mi - "down"
+        
+        // Repetição: "falling down, falling down"
+        { note: 3, time: 4000 },  // Fá - "fall"
+        { note: 2, time: 4500 },  // Mi - "ing"
+        { note: 1, time: 5000 },  // Ré - "down"
+        
+        { note: 3, time: 6000 },  // Fá - "fall"
+        { note: 2, time: 6500 },  // Mi - "ing"
+        { note: 1, time: 7000 },  // Ré - "down"
+        
+        // Final da primeira estrofe: "London Bridge is falling down"
+        { note: 4, time: 8000 },  // Sol - "Lon"
+        { note: 5, time: 8500 },  // Lá - "don"
+        { note: 4, time: 9000 },  // Sol - "Bridge"
+        { note: 3, time: 9500 },  // Fá - "is"
+        { note: 4, time: 10000 }, // Sol - "fall"
+        { note: 3, time: 10500 }, // Fá - "ing"
+        { note: 2, time: 11000 }, // Mi - "down"
+        
+        // "My fair lady"
+        { note: 1, time: 12000 }, // Ré - "My"
+        { note: 0, time: 12500 }, // Dó - "fair"
+        { note: 1, time: 13000 }, // Ré - "la"
+        { note: 2, time: 13500 }, // Mi - "dy"
+        
+        // Segunda estrofe: "Take the key and lock her up"
+        { note: 4, time: 15000 }, // Sol - "Take"
+        { note: 5, time: 15500 }, // Lá - "the"
+        { note: 4, time: 16000 }, // Sol - "key"
+        { note: 3, time: 16500 }, // Fá - "and"
+        { note: 4, time: 17000 }, // Sol - "lock"
+        { note: 3, time: 17500 }, // Fá - "her"
+        { note: 2, time: 18000 }, // Mi - "up"
+        
+        // Repetição: "lock her up, lock her up"
+        { note: 3, time: 19000 }, // Fá - "lock"
+        { note: 2, time: 19500 }, // Mi - "her"
+        { note: 1, time: 20000 }, // Ré - "up"
+        
+        { note: 3, time: 21000 }, // Fá - "lock"
+        { note: 2, time: 21500 }, // Mi - "her"
+        { note: 1, time: 22000 }, // Ré - "up"
+        
+        // Final da segunda estrofe: "Take the key and lock her up"
+        { note: 4, time: 23000 }, // Sol - "Take"
+        { note: 5, time: 23500 }, // Lá - "the"
+        { note: 4, time: 24000 }, // Sol - "key"
+        { note: 3, time: 24500 }, // Fá - "and"
+        { note: 4, time: 25000 }, // Sol - "lock"
+        { note: 3, time: 25500 }, // Fá - "her"
+        { note: 2, time: 26000 }, // Mi - "up"
+        
+        // "My fair lady"
+        { note: 1, time: 27000 }, // Ré - "My"
+        { note: 0, time: 27500 }, // Dó - "fair"
+        { note: 1, time: 28000 }, // Ré - "la"
+        { note: 2, time: 28500 }, // Mi - "dy"
+        
+        // Terceira estrofe: "Build it up with wood and clay"
+        { note: 4, time: 30000 }, // Sol - "Build"
+        { note: 5, time: 30500 }, // Lá - "it"
+        { note: 4, time: 31000 }, // Sol - "up"
+        { note: 3, time: 31500 }, // Fá - "with"
+        { note: 4, time: 32000 }, // Sol - "wood"
+        { note: 3, time: 32500 }, // Fá - "and"
+        { note: 2, time: 33000 }, // Mi - "clay"
+        
+        // Repetição: "wood and clay, wood and clay"
+        { note: 3, time: 34000 }, // Fá - "wood"
+        { note: 2, time: 34500 }, // Mi - "and"
+        { note: 1, time: 35000 }, // Ré - "clay"
+        
+        { note: 3, time: 36000 }, // Fá - "wood"
+        { note: 2, time: 36500 }, // Mi - "and"
+        { note: 1, time: 37000 }, // Ré - "clay"
+        
+        // Final da terceira estrofe: "Build it up with wood and clay"
+        { note: 4, time: 38000 }, // Sol - "Build"
+        { note: 5, time: 38500 }, // Lá - "it"
+        { note: 4, time: 39000 }, // Sol - "up"
+        { note: 3, time: 39500 }, // Fá - "with"
+        { note: 4, time: 40000 }, // Sol - "wood"
+        { note: 3, time: 40500 }, // Fá - "and"
+        { note: 2, time: 41000 }, // Mi - "clay"
+        
+        // "My fair lady"
+        { note: 1, time: 42000 }, // Ré - "My"
+        { note: 0, time: 42500 }, // Dó - "fair"
+        { note: 1, time: 43000 }, // Ré - "la"
+        { note: 2, time: 43500 }, // Mi - "dy"
+        
+        // Quarta estrofe: "Wood and clay will wash away"
+        { note: 4, time: 45000 }, // Sol - "Wood"
+        { note: 5, time: 45500 }, // Lá - "and"
+        { note: 4, time: 46000 }, // Sol - "clay"
+        { note: 3, time: 46500 }, // Fá - "will"
+        { note: 4, time: 47000 }, // Sol - "wash"
+        { note: 3, time: 47500 }, // Fá - "a"
+        { note: 2, time: 48000 }, // Mi - "way"
+        
+        // Repetição: "wash away, wash away"
+        { note: 3, time: 49000 }, // Fá - "wash"
+        { note: 2, time: 49500 }, // Mi - "a"
+        { note: 1, time: 50000 }, // Ré - "way"
+        
+        { note: 3, time: 51000 }, // Fá - "wash"
+        { note: 2, time: 51500 }, // Mi - "a"
+        { note: 1, time: 52000 }, // Ré - "way"
+        
+        // Final da quarta estrofe: "Wood and clay will wash away"
+        { note: 4, time: 53000 }, // Sol - "Wood"
+        { note: 5, time: 53500 }, // Lá - "and"
+        { note: 4, time: 54000 }, // Sol - "clay"
+        { note: 3, time: 54500 }, // Fá - "will"
+        { note: 4, time: 55000 }, // Sol - "wash"
+        { note: 3, time: 55500 }, // Fá - "a"
+        { note: 2, time: 56000 }, // Mi - "way"
+        
+        // "My fair lady"
+        { note: 1, time: 57000 }, // Ré - "My"
+        { note: 0, time: 57500 }, // Dó - "fair"
+        { note: 1, time: 58000 }, // Ré - "la"
+        { note: 2, time: 58500 }, // Mi - "dy"
+        
+        // Quinta estrofe: "Build it up with bricks and mortar"
+        { note: 4, time: 60000 }, // Sol - "Build"
+        { note: 5, time: 60500 }, // Lá - "it"
+        { note: 4, time: 61000 }, // Sol - "up"
+        { note: 3, time: 61500 }, // Fá - "with"
+        { note: 4, time: 62000 }, // Sol - "bricks"
+        { note: 3, time: 62500 }, // Fá - "and"
+        { note: 2, time: 63000 }, // Mi - "mor"
+        { note: 1, time: 63500 }, // Ré - "tar"
+        
+        // Repetição: "bricks and mortar, bricks and mortar"
+        { note: 3, time: 64500 }, // Fá - "bricks"
+        { note: 2, time: 65000 }, // Mi - "and"
+        { note: 1, time: 65500 }, // Ré - "mor"
+        { note: 0, time: 66000 }, // Dó - "tar"
+        
+        { note: 3, time: 67000 }, // Fá - "bricks"
+        { note: 2, time: 67500 }, // Mi - "and"
+        { note: 1, time: 68000 }, // Ré - "mor"
+        { note: 0, time: 68500 }, // Dó - "tar"
+        
+        // Final da quinta estrofe: "Build it up with bricks and mortar"
+        { note: 4, time: 69500 }, // Sol - "Build"
+        { note: 5, time: 70000 }, // Lá - "it"
+        { note: 4, time: 70500 }, // Sol - "up"
+        { note: 3, time: 71000 }, // Fá - "with"
+        { note: 4, time: 71500 }, // Sol - "bricks"
+        { note: 3, time: 72000 }, // Fá - "and"
+        { note: 2, time: 72500 }, // Mi - "mor"
+        { note: 1, time: 73000 }, // Ré - "tar"
+        
+        // "My fair lady" (final)
+        { note: 1, time: 74000 }, // Ré - "My"
+        { note: 0, time: 74500 }, // Dó - "fair"
+        { note: 1, time: 75000 }, // Ré - "la"
+        { note: 2, time: 75500 }, // Mi - "dy"
+        
+        // Final instrumental
+        { note: 4, time: 77000 }, // Sol
+        { note: 3, time: 77500 }, // Fá
+        { note: 2, time: 78000 }, // Mi
+        { note: 1, time: 78500 }, // Ré
+        { note: 0, time: 79000 }, // Dó (final)
+      ];
+
+      londonBridgeMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "row-boat-bell") {
+      // Melodia completa e corrigida de "Row, Row, Row Your Boat"
+      const rowBoatMelody = [
+        { note: 0, time: 0 },     // Dó - "Row"
+        { note: 0, time: 600 },   // Dó - "row"
+        { note: 0, time: 1200 },  // Dó - "row"
+        { note: 1, time: 1800 },  // Ré - "your"
+        { note: 2, time: 2400 },  // Mi - "boat"
+        
+        { note: 2, time: 3200 },  // Mi - "Gent"
+        { note: 1, time: 3800 },  // Ré - "ly"
+        { note: 2, time: 4400 },  // Mi - "down"
+        { note: 3, time: 5000 },  // Fá - "the"
+        { note: 4, time: 5600 },  // Sol - "stream"
+        
+        { note: 4, time: 6800 },  // Sol - "Mer"
+        { note: 3, time: 7100 },  // Fá - "ri"
+        { note: 2, time: 7400 },  // Mi - "ly"
+        { note: 1, time: 7700 },  // Ré - "mer"
+        { note: 4, time: 8000 },  // Sol - "ri"
+        { note: 3, time: 8300 },  // Fá - "ly"
+        { note: 2, time: 8600 },  // Mi - "mer"
+        { note: 1, time: 8900 },  // Ré - "ri"
+        { note: 4, time: 9200 },  // Sol - "ly"
+        { note: 3, time: 9500 },  // Fá - "mer"
+        { note: 2, time: 9800 },  // Mi - "ri"
+        { note: 1, time: 10100 }, // Ré - "ly"
+        
+        { note: 0, time: 11000 }, // Dó - "Life"
+        { note: 1, time: 11600 }, // Ré - "is"
+        { note: 2, time: 12200 }, // Mi - "but"
+        { note: 1, time: 12800 }, // Ré - "a"
+        { note: 0, time: 13400 }, // Dó - "dream"
+        
+        { note: 0, time: 15000 }, // Dó - "Row"
+        { note: 0, time: 15600 }, // Dó - "row"
+        { note: 0, time: 16200 }, // Dó - "row"
+        { note: 1, time: 16800 }, // Ré - "your"
+        { note: 2, time: 17400 }, // Mi - "boat"
+        
+        { note: 2, time: 18200 }, // Mi - "Gent"
+        { note: 1, time: 18800 }, // Ré - "ly"
+        { note: 2, time: 19400 }, // Mi - "down"
+        { note: 3, time: 20000 }, // Fá - "the"
+        { note: 4, time: 20600 }, // Sol - "stream"
+        
+        { note: 4, time: 21800 }, // Sol - "If"
+        { note: 4, time: 22200 }, // Sol - "you"
+        { note: 3, time: 22600 }, // Fá - "see"
+        { note: 2, time: 23000 }, // Mi - "a"
+        { note: 1, time: 23400 }, // Ré - "cro"
+        { note: 2, time: 23800 }, // Mi - "co"
+        { note: 3, time: 24200 }, // Fá - "dile"
+        
+        { note: 4, time: 25000 }, // Sol - "Don't"
+        { note: 3, time: 25400 }, // Fá - "for"
+        { note: 2, time: 25800 }, // Mi - "get"
+        { note: 1, time: 26200 }, // Ré - "to"
+        { note: 0, time: 26600 }, // Dó - "scream!"
+        
+        { note: 0, time: 28200 }, // Dó - "Row"
+        { note: 0, time: 28800 }, // Dó - "row"
+        { note: 0, time: 29400 }, // Dó - "row"
+        { note: 1, time: 30000 }, // Ré - "your"
+        { note: 2, time: 30600 }, // Mi - "boat"
+        
+        { note: 2, time: 31400 }, // Mi - "Gent"
+        { note: 1, time: 32000 }, // Ré - "ly"
+        { note: 2, time: 32600 }, // Mi - "to"
+        { note: 3, time: 33200 }, // Fá - "and"
+        { note: 4, time: 33800 }, // Sol - "fro"
+        
+        { note: 4, time: 35000 }, // Sol - "If"
+        { note: 4, time: 35400 }, // Sol - "you"
+        { note: 3, time: 35800 }, // Fá - "see"
+        { note: 2, time: 36200 }, // Mi - "a"
+        { note: 1, time: 36600 }, // Ré - "po"
+        { note: 2, time: 37000 }, // Mi - "lar"
+        { note: 3, time: 37400 }, // Fá - "bear"
+        
+        { note: 4, time: 38200 }, // Sol - "Don't"
+        { note: 3, time: 38600 }, // Fá - "for"
+        { note: 2, time: 39000 }, // Mi - "get"
+        { note: 1, time: 39400 }, // Ré - "to"
+        { note: 0, time: 39800 }, // Dó - "go!"
+        
+        { note: 0, time: 41400 }, // Dó - "Row"
+        { note: 0, time: 42200 }, // Dó - "row"
+        { note: 0, time: 43000 }, // Dó - "row"
+        { note: 1, time: 43800 }, // Ré - "your"
+        { note: 2, time: 44600 }, // Mi - "boat"
+        
+        { note: 2, time: 45800 }, // Mi - "Gent"
+        { note: 1, time: 46600 }, // Ré - "ly"
+        { note: 2, time: 47400 }, // Mi - "down"
+        { note: 3, time: 48200 }, // Fá - "the"
+        { note: 4, time: 49000 }, // Sol - "stream"
+        
+        { note: 4, time: 50500 }, // Sol - "Mer"
+        { note: 3, time: 50900 }, // Fá - "ri"
+        { note: 2, time: 51300 }, // Mi - "ly"
+        { note: 1, time: 51700 }, // Ré - "mer"
+        { note: 4, time: 52100 }, // Sol - "ri"
+        { note: 3, time: 52500 }, // Fá - "ly"
+        { note: 2, time: 52900 }, // Mi - "mer"
+        { note: 1, time: 53300 }, // Ré - "ri"
+        { note: 4, time: 53700 }, // Sol - "ly"
+        { note: 3, time: 54100 }, // Fá - "mer"
+        { note: 2, time: 54500 }, // Mi - "ri"
+        { note: 1, time: 54900 }, // Ré - "ly"
+        
+        { note: 0, time: 56000 }, // Dó - "Life"
+        { note: 1, time: 56800 }, // Ré - "is"
+        { note: 2, time: 57600 }, // Mi - "but"
+        { note: 1, time: 58400 }, // Ré - "a"
+        { note: 0, time: 59200 }, // Dó - "dream"
+        
+        { note: 2, time: 60500 }, // Mi
+        { note: 1, time: 61000 }, // Ré
+        { note: 0, time: 61500 }, // Dó (final)
+      ];
+
+      rowBoatMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "happy-birthday-xylophone") {
+      // Melodia completa e corrigida de "Parabéns para Você"
+      const happyBirthdayMelody = [
+        { note: 0, time: 0 },     // Dó - "Pa"
+        { note: 0, time: 500 },   // Dó - "ra"
+        { note: 1, time: 1000 },  // Ré - "béns"
+        { note: 0, time: 1500 },  // Dó - "pra"
+        { note: 3, time: 2000 },  // Fá - "vo"
+        { note: 2, time: 2500 },  // Mi - "cê"
+        
+        { note: 0, time: 4000 },  // Dó - "Pa"
+        { note: 0, time: 4500 },  // Dó - "ra"
+        { note: 1, time: 5000 },  // Ré - "béns"
+        { note: 0, time: 5500 },  // Dó - "pra"
+        { note: 4, time: 6000 },  // Sol - "vo"
+        { note: 3, time: 6500 },  // Fá - "cê"
+        
+        { note: 0, time: 8000 },  // Dó - "Pa"
+        { note: 0, time: 8500 },  // Dó - "ra"
+        { note: 0, time: 9000 },  // Dó - "béns"
+        { note: 5, time: 9500 },  // Lá - "que"
+        { note: 3, time: 10000 }, // Fá - "ri"
+        { note: 2, time: 10500 }, // Mi - "do"
+        { note: 1, time: 11000 }, // Ré - "a"
+        { note: 0, time: 11500 }, // Dó - "migo"
+        
+        { note: 6, time: 13000 }, // Si - "Pa"
+        { note: 6, time: 13500 }, // Si - "ra"
+        { note: 5, time: 14000 }, // Lá - "béns"
+        { note: 3, time: 14500 }, // Fá - "pra"
+        { note: 4, time: 15000 }, // Sol - "vo"
+        { note: 3, time: 15500 }, // Fá - "cê"
+        
+        { note: 0, time: 17000 }, // Dó - "Pa"
+        { note: 0, time: 17500 }, // Dó - "ra"
+        { note: 1, time: 18000 }, // Ré - "béns"
+        { note: 0, time: 18500 }, // Dó - "pra"
+        { note: 3, time: 19000 }, // Fá - "vo"
+        { note: 2, time: 19500 }, // Mi - "cê"
+        
+        { note: 0, time: 21000 }, // Dó - "Pa"
+        { note: 0, time: 21500 }, // Dó - "ra"
+        { note: 1, time: 22000 }, // Ré - "béns"
+        { note: 0, time: 22500 }, // Dó - "pra"
+        { note: 4, time: 23000 }, // Sol - "vo"
+        { note: 3, time: 23500 }, // Fá - "cê"
+        
+        { note: 0, time: 25000 }, // Dó - "Pa"
+        { note: 0, time: 25500 }, // Dó - "ra"
+        { note: 0, time: 26000 }, // Dó - "béns"
+        { note: 5, time: 26500 }, // Lá - "que"
+        { note: 3, time: 27000 }, // Fá - "ri"
+        { note: 2, time: 27500 }, // Mi - "do"
+        { note: 1, time: 28000 }, // Ré - "a"
+        { note: 0, time: 28500 }, // Dó - "migo"
+        
+        { note: 6, time: 30000 }, // Si - "Pa"
+        { note: 6, time: 30500 }, // Si - "ra"
+        { note: 5, time: 31000 }, // Lá - "béns"
+        { note: 3, time: 31500 }, // Fá - "pra"
+        { note: 4, time: 32000 }, // Sol - "vo"
+        { note: 3, time: 32500 }, // Fá - "cê"
+        
+        { note: 0, time: 34000 }, // Dó - "Mui"
+        { note: 1, time: 34500 }, // Ré - "tas"
+        { note: 2, time: 35000 }, // Mi - "fe"
+        { note: 3, time: 35500 }, // Fá - "li"
+        { note: 4, time: 36000 }, // Sol - "ci"
+        { note: 5, time: 36500 }, // Lá - "da"
+        { note: 6, time: 37000 }, // Si - "des"
+        
+        { note: 5, time: 38000 }, // Lá - "Mui"
+        { note: 4, time: 38500 }, // Sol - "tos"
+        { note: 3, time: 39000 }, // Fá - "a"
+        { note: 2, time: 39500 }, // Mi - "nos"
+        { note: 1, time: 40000 }, // Ré - "de"
+        { note: 0, time: 40500 }, // Dó - "vi"
+        { note: 4, time: 41000 }, // Sol - "da"
+        
+        { note: 0, time: 42500 }, // Dó - "Que"
+        { note: 0, time: 43000 }, // Dó - "Deus"
+        { note: 1, time: 43500 }, // Ré - "te"
+        { note: 2, time: 44000 }, // Mi - "a"
+        { note: 3, time: 44500 }, // Fá - "ben"
+        { note: 4, time: 45000 }, // Sol - "ço"
+        { note: 5, time: 45500 }, // Lá - "e"
+        
+        { note: 6, time: 46500 }, // Si - "E"
+        { note: 5, time: 47000 }, // Lá - "te"
+        { note: 4, time: 47500 }, // Sol - "guar"
+        { note: 3, time: 48000 }, // Fá - "de"
+        { note: 2, time: 48500 }, // Mi - "sem"
+        { note: 1, time: 49000 }, // Ré - "pre"
+        { note: 0, time: 49500 }, // Dó - "!!"
+        
+        { note: 4, time: 51000 }, // Sol
+        { note: 3, time: 51500 }, // Fá
+        { note: 2, time: 52000 }, // Mi
+        { note: 1, time: 52500 }, // Ré
+        { note: 0, time: 53000 }, // Dó (final)
+      ];
+
+      happyBirthdayMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "jingle-bells-xylophone") {
+      // Melodia completa de "Jingle Bells"
+      const jingleBellsMelody = [
+        // "Jingle bells, jingle bells"
+        { note: 2, time: 0 },     // Mi - "Jin"
+        { note: 2, time: 400 },   // Mi - "gle"
+        { note: 2, time: 800 },   // Mi - "bells"
+        
+        { note: 2, time: 1600 },  // Mi - "jin"
+        { note: 2, time: 2000 },  // Mi - "gle"
+        { note: 2, time: 2400 },  // Mi - "bells"
+        
+        // "Jingle all the way"
+        { note: 2, time: 3200 },  // Mi - "jin"
+        { note: 4, time: 3600 },  // Sol - "gle"
+        { note: 0, time: 4000 },  // Dó - "all"
+        { note: 1, time: 4400 },  // Ré - "the"
+        { note: 2, time: 4800 },  // Mi - "way"
+        
+        // "Oh what fun it is to ride"
+        { note: 3, time: 6000 },  // Fá - "Oh"
+        { note: 3, time: 6400 },  // Fá - "what"
+        { note: 3, time: 6800 },  // Fá - "fun"
+        { note: 3, time: 7200 },  // Fá - "it"
+        { note: 3, time: 7600 },  // Fá - "is"
+        { note: 2, time: 8000 },  // Mi - "to"
+        { note: 2, time: 8400 },  // Mi - "ride"
+        
+        // "In a one-horse open sleigh"
+        { note: 2, time: 9200 },  // Mi - "in"
+        { note: 1, time: 9600 },  // Ré - "a"
+        { note: 1, time: 10000 }, // Ré - "one"
+        { note: 2, time: 10400 }, // Mi - "horse"
+        { note: 1, time: 10800 }, // Ré - "o"
+        { note: 4, time: 11200 }, // Sol - "pen"
+        { note: 0, time: 11600 }, // Dó - "sleigh"
+        
+        // Segunda parte: "Jingle bells, jingle bells"
+        { note: 2, time: 13000 }, // Mi - "Jin"
+        { note: 2, time: 13400 }, // Mi - "gle"
+        { note: 2, time: 13800 }, // Mi - "bells"
+        
+        { note: 2, time: 14600 }, // Mi - "jin"
+        { note: 2, time: 15000 }, // Mi - "gle"
+        { note: 2, time: 15400 }, // Mi - "bells"
+        
+        // "Jingle all the way"
+        { note: 2, time: 16200 }, // Mi - "jin"
+        { note: 4, time: 16600 }, // Sol - "gle"
+        { note: 0, time: 17000 }, // Dó - "all"
+        { note: 1, time: 17400 }, // Ré - "the"
+        { note: 2, time: 17800 }, // Mi - "way"
+        
+        // "Oh what fun it is to ride"
+        { note: 3, time: 19000 }, // Fá - "Oh"
+        { note: 3, time: 19400 }, // Fá - "what"
+        { note: 3, time: 19800 }, // Fá - "fun"
+        { note: 3, time: 20200 }, // Fá - "it"
+        { note: 3, time: 20600 }, // Fá - "is"
+        { note: 2, time: 21000 }, // Mi - "to"
+        { note: 2, time: 21400 }, // Mi - "ride"
+        
+        // "In a one-horse open sleigh"
+        { note: 2, time: 22200 }, // Mi - "in"
+        { note: 1, time: 22600 }, // Ré - "a"
+        { note: 1, time: 23000 }, // Ré - "one"
+        { note: 2, time: 23400 }, // Mi - "horse"
+        { note: 1, time: 23800 }, // Ré - "o"
+        { note: 4, time: 24200 }, // Sol - "pen"
+        { note: 0, time: 24600 }, // Dó - "sleigh"
+        
+        // Final instrumental
+        { note: 4, time: 26000 }, // Sol
+        { note: 3, time: 26400 }, // Fá
+        { note: 2, time: 26800 }, // Mi
+        { note: 1, time: 27200 }, // Ré
+        { note: 0, time: 27600 }, // Dó (final)
+      ];
+
+      jingleBellsMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 350,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "chopsticks-keyboard") {
+      // Melodia completa de "Chopsticks"
+      const chopsticksMelody = [
+        // Primeira parte - Mão direita alternando
+        { note: 3, time: 0 },     // Fá
+        { note: 4, time: 500 },   // Sol
+        { note: 5, time: 1000 },  // Lá
+        { note: 4, time: 1500 },  // Sol
+        { note: 3, time: 2000 },  // Fá
+        { note: 4, time: 2500 },  // Sol
+        { note: 5, time: 3000 },  // Lá
+        { note: 4, time: 3500 },  // Sol
+        
+        // Segunda parte - Variação
+        { note: 3, time: 4000 },  // Fá
+        { note: 5, time: 4500 },  // Lá
+        { note: 3, time: 5000 },  // Fá
+        { note: 5, time: 5500 },  // Lá
+        { note: 3, time: 6000 },  // Fá
+        { note: 5, time: 6500 },  // Lá
+        { note: 3, time: 7000 },  // Fá
+        { note: 5, time: 7500 },  // Lá
+        
+        // Terceira parte - Descida
+        { note: 6, time: 8000 },  // Si
+        { note: 5, time: 8500 },  // Lá
+        { note: 4, time: 9000 },  // Sol
+        { note: 3, time: 9500 },  // Fá
+        { note: 2, time: 10000 }, // Mi
+        { note: 1, time: 10500 }, // Ré
+        { note: 0, time: 11000 }, // Dó
+        
+        // Quarta parte - Subida
+        { note: 0, time: 12000 }, // Dó
+        { note: 1, time: 12500 }, // Ré
+        { note: 2, time: 13000 }, // Mi
+        { note: 3, time: 13500 }, // Fá
+        { note: 4, time: 14000 }, // Sol
+        { note: 5, time: 14500 }, // Lá
+        { note: 6, time: 15000 }, // Si
+        
+        // Repetição da primeira parte
+        { note: 3, time: 16000 }, // Fá
+        { note: 4, time: 16500 }, // Sol
+        { note: 5, time: 17000 }, // Lá
+        { note: 4, time: 17500 }, // Sol
+        { note: 3, time: 18000 }, // Fá
+        { note: 4, time: 18500 }, // Sol
+        { note: 5, time: 19000 }, // Lá
+        { note: 4, time: 19500 }, // Sol
+        
+        // Final
+        { note: 3, time: 20000 }, // Fá
+        { note: 2, time: 20500 }, // Mi
+        { note: 1, time: 21000 }, // Ré
+        { note: 0, time: 21500 }, // Dó (final)
+      ];
+
+      chopsticksMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 450,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "hot-cross-keyboard") {
+      // Melodia completa e corrigida de "Hot Cross Buns"
+      const hotCrossBunsMelody = [
+        // Primeira frase: "Hot cross buns"
+        { note: 2, time: 0 },     // Mi - "Hot"
+        { note: 1, time: 600 },   // Ré - "cross"
+        { note: 0, time: 1200 },  // Dó - "buns"
+        
+        // Segunda frase: "Hot cross buns"
+        { note: 2, time: 2000 },  // Mi - "Hot"
+        { note: 1, time: 2600 },  // Ré - "cross"
+        { note: 0, time: 3200 },  // Dó - "buns"
+        
+        // Terceira frase: "One a penny, two a penny"
+        { note: 0, time: 4200 },  // Dó - "One"
+        { note: 0, time: 4500 },  // Dó - "a"
+        { note: 0, time: 4800 },  // Dó - "pen"
+        { note: 0, time: 5100 },  // Dó - "ny"
+        
+        { note: 1, time: 5600 },  // Ré - "two"
+        { note: 1, time: 5900 },  // Ré - "a"
+        { note: 1, time: 6200 },  // Ré - "pen"
+        { note: 1, time: 6500 },  // Ré - "ny"
+        
+        // Quarta frase: "Hot cross buns"
+        { note: 2, time: 7400 },  // Mi - "Hot"
+        { note: 1, time: 8000 },  // Ré - "cross"
+        { note: 0, time: 8600 },  // Dó - "buns"
+        
+        // Repetição completa
+        { note: 2, time: 10000 }, // Mi - "Hot"
+        { note: 1, time: 10600 }, // Ré - "cross"
+        { note: 0, time: 11200 }, // Dó - "buns"
+        
+        { note: 2, time: 12000 }, // Mi - "Hot"
+        { note: 1, time: 12600 }, // Ré - "cross"
+        { note: 0, time: 13200 }, // Dó - "buns"
+        
+        { note: 0, time: 14200 }, // Dó - "One"
+        { note: 0, time: 14500 }, // Dó - "a"
+        { note: 0, time: 14800 }, // Dó - "pen"
+        { note: 0, time: 15100 }, // Dó - "ny"
+        
+        { note: 1, time: 15600 }, // Ré - "two"
+        { note: 1, time: 15900 }, // Ré - "a"
+        { note: 1, time: 16200 }, // Ré - "pen"
+        { note: 1, time: 16500 }, // Ré - "ny"
+        
+        { note: 2, time: 17400 }, // Mi - "Hot"
+        { note: 1, time: 18000 }, // Ré - "cross"
+        { note: 0, time: 18600 }, // Dó - "buns" (final)
+      ];
+
+      hotCrossBunsMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "frere-jacques-bell") {
+      // Melodia completa e corrigida de "Frère Jacques"
+      const frereJacquesMelody = [
+        // Primeira frase: "Frère Jacques, Frère Jacques"
+        { note: 0, time: 0 },     // Dó - "Frè"
+        { note: 1, time: 500 },   // Ré - "re"
+        { note: 2, time: 1000 },  // Mi - "Jac"
+        { note: 0, time: 1500 },  // Dó - "ques"
+        
+        { note: 0, time: 2200 },  // Dó - "Frè"
+        { note: 1, time: 2700 },  // Ré - "re"
+        { note: 2, time: 3200 },  // Mi - "Jac"
+        { note: 0, time: 3700 },  // Dó - "ques"
+        
+        // Segunda frase: "Dormez-vous? Dormez-vous?"
+        { note: 2, time: 4400 },  // Mi - "Dor"
+        { note: 3, time: 4900 },  // Fá - "mez"
+        { note: 4, time: 5400 },  // Sol - "vous?"
+        
+        { note: 2, time: 6300 },  // Mi - "Dor"
+        { note: 3, time: 6800 },  // Fá - "mez"
+        { note: 4, time: 7300 },  // Sol - "vous?"
+        
+        // Terceira frase: "Sonnez les matines, sonnez les matines"
+        { note: 4, time: 8200 },  // Sol - "Son"
+        { note: 5, time: 8500 },  // Lá - "nez"
+        { note: 4, time: 8800 },  // Sol - "les"
+        { note: 3, time: 9100 },  // Fá - "ma"
+        { note: 2, time: 9400 },  // Mi - "ti"
+        { note: 0, time: 9700 },  // Dó - "nes"
+        
+        { note: 4, time: 10600 }, // Sol - "Son"
+        { note: 5, time: 10900 }, // Lá - "nez"
+        { note: 4, time: 11200 }, // Sol - "les"
+        { note: 3, time: 11500 }, // Fá - "ma"
+        { note: 2, time: 11800 }, // Mi - "ti"
+        { note: 0, time: 12100 }, // Dó - "nes"
+        
+        // Quarta frase: "Ding dong ding, ding dong ding"
+        { note: 0, time: 13000 }, // Dó - "Ding"
+        { note: 4, time: 13400 }, // Sol - "dong"
+        { note: 0, time: 13800 }, // Dó - "ding"
+        
+        { note: 0, time: 14700 }, // Dó - "Ding"
+        { note: 4, time: 15100 }, // Sol - "dong"
+        { note: 0, time: 15500 }, // Dó - "ding"
+        
+        // Repetição instrumental
+        { note: 0, time: 16500 }, // Dó
+        { note: 1, time: 17000 }, // Ré
+        { note: 2, time: 17500 }, // Mi
+        { note: 3, time: 18000 }, // Fá
+        { note: 4, time: 18500 }, // Sol
+        { note: 0, time: 19000 }, // Dó (final)
+      ];
+
+      frereJacquesMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "amazing-grace-bell") {
+      // Melodia completa e corrigida de "Amazing Grace"
+      const amazingGraceMelody = [
+        // Primeira frase: "Amazing grace, how sweet the sound"
+        { note: 0, time: 0 },     // Dó - "A"
+        { note: 3, time: 800 },   // Fá - "ma"
+        { note: 4, time: 1600 },  // Sol - "zing"
+        { note: 2, time: 2400 },  // Mi - "grace"
+        
+        { note: 4, time: 3600 },  // Sol - "how"
+        { note: 4, time: 4200 },  // Sol - "sweet"
+        { note: 3, time: 4800 },  // Fá - "the"
+        { note: 1, time: 5400 },  // Ré - "sound"
+        
+        // Segunda frase: "That saved a wretch like me"
+        { note: 0, time: 6800 },  // Dó - "That"
+        { note: 3, time: 7600 },  // Fá - "saved"
+        { note: 4, time: 8400 },  // Sol - "a"
+        { note: 2, time: 9200 },  // Mi - "wretch"
+        
+        { note: 4, time: 10400 }, // Sol - "like"
+        { note: 3, time: 11200 }, // Fá - "me"
+        
+        // Terceira frase: "I once was lost, but now am found"
+        { note: 5, time: 12800 }, // Lá - "I"
+        { note: 4, time: 13400 }, // Sol - "once"
+        { note: 3, time: 14000 }, // Fá - "was"
+        { note: 1, time: 14600 }, // Ré - "lost"
+        
+        { note: 0, time: 16000 }, // Dó - "but"
+        { note: 3, time: 16800 }, // Fá - "now"
+        { note: 4, time: 17600 }, // Sol - "am"
+        { note: 2, time: 18400 }, // Mi - "found"
+        
+        // Quarta frase: "Was blind but now I see"
+        { note: 4, time: 19800 }, // Sol - "Was"
+        { note: 3, time: 20600 }, // Fá - "blind"
+        { note: 1, time: 21400 }, // Ré - "but"
+        { note: 0, time: 22200 }, // Dó - "now"
+        
+        { note: 3, time: 23600 }, // Fá - "I"
+        { note: 2, time: 24400 }, // Mi - "see"
+        { note: 0, time: 25200 }, // Dó (final)
+        
+        // Segunda estrofe: "'Twas grace that taught my heart to fear"
+        { note: 0, time: 27000 }, // Dó - "'Twas"
+        { note: 3, time: 27800 }, // Fá - "grace"
+        { note: 4, time: 28600 }, // Sol - "that"
+        { note: 2, time: 29400 }, // Mi - "taught"
+        
+        { note: 4, time: 30600 }, // Sol - "my"
+        { note: 4, time: 31200 }, // Sol - "heart"
+        { note: 3, time: 31800 }, // Fá - "to"
+        { note: 1, time: 32400 }, // Ré - "fear"
+        
+        // "And grace my fears relieved"
+        { note: 0, time: 33800 }, // Dó - "And"
+        { note: 3, time: 34600 }, // Fá - "grace"
+        { note: 4, time: 35400 }, // Sol - "my"
+        { note: 2, time: 36200 }, // Mi - "fears"
+        
+        { note: 4, time: 37400 }, // Sol - "re"
+        { note: 3, time: 38200 }, // Fá - "lieved"
+        
+        // "How precious did that grace appear"
+        { note: 5, time: 39800 }, // Lá - "How"
+        { note: 4, time: 40400 }, // Sol - "pre"
+        { note: 3, time: 41000 }, // Fá - "cious"
+        { note: 1, time: 41600 }, // Ré - "did"
+        
+        { note: 0, time: 43000 }, // Dó - "that"
+        { note: 3, time: 43800 }, // Fá - "grace"
+        { note: 4, time: 44600 }, // Sol - "ap"
+        { note: 2, time: 45400 }, // Mi - "pear"
+        
+        // "The hour I first believed"
+        { note: 4, time: 46800 }, // Sol - "The"
+        { note: 3, time: 47600 }, // Fá - "hour"
+        { note: 1, time: 48400 }, // Ré - "I"
+        { note: 0, time: 49200 }, // Dó - "first"
+        
+        { note: 3, time: 50600 }, // Fá - "be"
+        { note: 2, time: 51400 }, // Mi - "lieved"
+        { note: 0, time: 52200 }, // Dó (final)
+      ];
+
+      amazingGraceMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "greensleeves-bell") {
+      // Melodia completa e corrigida de "Greensleeves"
+      const greenslevesMelody = [
+        // Primeira frase: "Alas, my love, you do me wrong"
+        { note: 5, time: 0 },     // Lá - "A"
+        { note: 0, time: 1200 },  // Dó - "las"
+        { note: 1, time: 1800 },  // Ré - "my"
+        { note: 2, time: 2400 },  // Mi - "love"
+        { note: 3, time: 3600 },  // Fá - "you"
+        { note: 2, time: 4400 },  // Mi - "do"
+        { note: 1, time: 5200 },  // Ré - "me"
+        { note: 6, time: 6400 },  // Si - "wrong"
+        
+        // Segunda frase: "To cast me off discourteously"
+        { note: 4, time: 8000 },  // Sol - "To"
+        { note: 5, time: 9200 },  // Lá - "cast"
+        { note: 6, time: 10000 }, // Si - "me"
+        { note: 0, time: 10800 }, // Dó - "off"
+        { note: 6, time: 12000 }, // Si - "dis"
+        { note: 5, time: 12800 }, // Lá - "cour"
+        { note: 4, time: 13600 }, // Sol - "te"
+        { note: 3, time: 14800 }, // Fá - "ous"
+        { note: 2, time: 15600 }, // Mi - "ly"
+        
+        // Terceira frase: "And I have loved you oh so long"
+        { note: 5, time: 17200 }, // Lá - "And"
+        { note: 0, time: 18400 }, // Dó - "I"
+        { note: 1, time: 19000 }, // Ré - "have"
+        { note: 2, time: 19600 }, // Mi - "loved"
+        { note: 3, time: 20800 }, // Fá - "you"
+        { note: 2, time: 21600 }, // Mi - "oh"
+        { note: 1, time: 22400 }, // Ré - "so"
+        { note: 6, time: 23600 }, // Si - "long"
+        
+        // Quarta frase: "Delighting in your company"
+        { note: 4, time: 25200 }, // Sol - "De"
+        { note: 5, time: 26400 }, // Lá - "light"
+        { note: 6, time: 27200 }, // Si - "ing"
+        { note: 0, time: 28000 }, // Dó - "in"
+        { note: 6, time: 29200 }, // Si - "your"
+        { note: 5, time: 30000 }, // Lá - "com"
+        { note: 4, time: 30800 }, // Sol - "pa"
+        { note: 2, time: 32400 }, // Mi - "ny"
+        
+        // Refrão: "Greensleeves was all my joy"
+        { note: 4, time: 34000 }, // Sol - "Green"
+        { note: 2, time: 35200 }, // Mi - "sleeves"
+        { note: 3, time: 36000 }, // Fá - "was"
+        { note: 4, time: 36800 }, // Sol - "all"
+        { note: 5, time: 37600 }, // Lá - "my"
+        { note: 3, time: 38800 }, // Fá - "joy"
+        
+        // "Greensleeves was my delight"
+        { note: 4, time: 40400 }, // Sol - "Green"
+        { note: 2, time: 41600 }, // Mi - "sleeves"
+        { note: 3, time: 42400 }, // Fá - "was"
+        { note: 4, time: 43200 }, // Sol - "my"
+        { note: 5, time: 44000 }, // Lá - "de"
+        { note: 1, time: 45200 }, // Ré - "light"
+        
+        // "Greensleeves was my heart of gold"
+        { note: 4, time: 46800 }, // Sol - "Green"
+        { note: 2, time: 48000 }, // Mi - "sleeves"
+        { note: 3, time: 48800 }, // Fá - "was"
+        { note: 4, time: 49600 }, // Sol - "my"
+        { note: 5, time: 50400 }, // Lá - "heart"
+        { note: 6, time: 51200 }, // Si - "of"
+        { note: 0, time: 52000 }, // Dó - "gold"
+        
+        // "And who but my lady Greensleeves"
+        { note: 6, time: 53600 }, // Si - "And"
+        { note: 5, time: 54400 }, // Lá - "who"
+        { note: 4, time: 55200 }, // Sol - "but"
+        { note: 3, time: 56000 }, // Fá - "my"
+        { note: 2, time: 56800 }, // Mi - "la"
+        { note: 1, time: 57600 }, // Ré - "dy"
+        { note: 0, time: 58400 }, // Dó - "Green"
+        { note: 2, time: 59600 }, // Mi - "sleeves" (final)
+      ];
+
+      greenslevesMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "scarborough-bell") {
+      // Melodia completa e corrigida de "Scarborough Fair"
+      const scarboroughFairMelody = [
+        // Primeira frase: "Are you going to Scarborough Fair?"
+        { note: 1, time: 0 },     // Ré - "Are"
+        { note: 1, time: 800 },   // Ré - "you"
+        { note: 5, time: 1600 },  // Lá - "go"
+        { note: 5, time: 2400 },  // Lá - "ing"
+        { note: 4, time: 3200 },  // Sol - "to"
+        { note: 2, time: 4000 },  // Mi - "Scar"
+        { note: 1, time: 4800 },  // Ré - "bo"
+        { note: 0, time: 5600 },  // Dó - "rough"
+        { note: 1, time: 6400 },  // Ré - "Fair?"
+        
+        // Segunda frase: "Parsley, sage, rosemary, and thyme"
+        { note: 5, time: 8000 },  // Lá - "Pars"
+        { note: 4, time: 8800 },  // Sol - "ley"
+        { note: 2, time: 9600 },  // Mi - "sage"
+        { note: 1, time: 10400 }, // Ré - "rose"
+        { note: 4, time: 11200 }, // Sol - "ma"
+        { note: 3, time: 12000 }, // Fá - "ry"
+        { note: 2, time: 12800 }, // Mi - "and"
+        { note: 1, time: 13600 }, // Ré - "thyme"
+        
+        // Terceira frase: "Remember me to one who lives there"
+        { note: 1, time: 15200 }, // Ré - "Re"
+        { note: 5, time: 16000 }, // Lá - "mem"
+        { note: 5, time: 16800 }, // Lá - "ber"
+        { note: 4, time: 17600 }, // Sol - "me"
+        { note: 2, time: 18400 }, // Mi - "to"
+        { note: 1, time: 19200 }, // Ré - "one"
+        { note: 0, time: 20000 }, // Dó - "who"
+        { note: 1, time: 20800 }, // Ré - "lives"
+        { note: 2, time: 21600 }, // Mi - "there"
+        
+        // Quarta frase: "She once was a true love of mine"
+        { note: 4, time: 23200 }, // Sol - "She"
+        { note: 2, time: 24000 }, // Mi - "once"
+        { note: 1, time: 24800 }, // Ré - "was"
+        { note: 5, time: 25600 }, // Lá - "a"
+        { note: 4, time: 26400 }, // Sol - "true"
+        { note: 2, time: 27200 }, // Mi - "love"
+        { note: 1, time: 28000 }, // Ré - "of"
+        { note: 1, time: 28800 }, // Ré - "mine"
+        
+        // Segunda estrofe: "Tell her to make me a cambric shirt"
+        { note: 1, time: 30400 }, // Ré - "Tell"
+        { note: 1, time: 31200 }, // Ré - "her"
+        { note: 5, time: 32000 }, // Lá - "to"
+        { note: 5, time: 32800 }, // Lá - "make"
+        { note: 4, time: 33600 }, // Sol - "me"
+        { note: 2, time: 34400 }, // Mi - "a"
+        { note: 1, time: 35200 }, // Ré - "cam"
+        { note: 0, time: 36000 }, // Dó - "bric"
+        { note: 1, time: 36800 }, // Ré - "shirt"
+        
+        // Refrão: "Parsley, sage, rosemary, and thyme"
+        { note: 5, time: 38400 }, // Lá - "Pars"
+        { note: 4, time: 39200 }, // Sol - "ley"
+        { note: 2, time: 40000 }, // Mi - "sage"
+        { note: 1, time: 40800 }, // Ré - "rose"
+        { note: 4, time: 41600 }, // Sol - "ma"
+        { note: 3, time: 42400 }, // Fá - "ry"
+        { note: 2, time: 43200 }, // Mi - "and"
+        { note: 1, time: 44000 }, // Ré - "thyme"
+        
+        // "Without no seams nor needle work"
+        { note: 1, time: 45600 }, // Ré - "With"
+        { note: 5, time: 46400 }, // Lá - "out"
+        { note: 5, time: 47200 }, // Lá - "no"
+        { note: 4, time: 48000 }, // Sol - "seams"
+        { note: 2, time: 48800 }, // Mi - "nor"
+        { note: 1, time: 49600 }, // Ré - "nee"
+        { note: 0, time: 50400 }, // Dó - "dle"
+        { note: 1, time: 51200 }, // Ré - "work"
+        
+        // "Then she'll be a true love of mine"
+        { note: 4, time: 52800 }, // Sol - "Then"
+        { note: 2, time: 53600 }, // Mi - "she'll"
+        { note: 1, time: 54400 }, // Ré - "be"
+        { note: 5, time: 55200 }, // Lá - "a"
+        { note: 4, time: 56000 }, // Sol - "true"
+        { note: 2, time: 56800 }, // Mi - "love"
+        { note: 1, time: 57600 }, // Ré - "of"
+        { note: 1, time: 58400 }, // Ré - "mine"
+        
+        // Final instrumental
+        { note: 5, time: 60000 }, // Lá
+        { note: 4, time: 60800 }, // Sol
+        { note: 2, time: 61600 }, // Mi
+        { note: 1, time: 62400 }, // Ré (final)
+      ];
+
+      scarboroughFairMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "ode-joy-xylophone") {
+      // Melodia completa e corrigida de "Ode à Alegria" (Beethoven)
+      const odeToJoyMelody = [
+        // Primeira frase: tema principal
+        { note: 2, time: 0 },     // Mi - 
+        { note: 2, time: 600 },   // Mi - 
+        { note: 3, time: 1200 },  // Fá - 
+        { note: 4, time: 1800 },  // Sol - 
+        { note: 4, time: 2400 },  // Sol - 
+        { note: 3, time: 3000 },  // Fá - 
+        { note: 2, time: 3600 },  // Mi - 
+        { note: 1, time: 4200 },  // Ré - 
+        
+        // Segunda frase
+        { note: 0, time: 4800 },  // Dó - 
+        { note: 0, time: 5400 },  // Dó - 
+        { note: 1, time: 6000 },  // Ré - 
+        { note: 2, time: 6600 },  // Mi - 
+        { note: 2, time: 7200 },  // Mi - (sustentado)
+        { note: 1, time: 7800 },  // Ré - 
+        { note: 1, time: 8400 },  // Ré - (sustentado)
+        
+        // Repetição da primeira frase
+        { note: 2, time: 9600 },  // Mi - 
+        { note: 2, time: 10200 }, // Mi - 
+        { note: 3, time: 10800 }, // Fá - 
+        { note: 4, time: 11400 }, // Sol - 
+        { note: 4, time: 12000 }, // Sol - 
+        { note: 3, time: 12600 }, // Fá - 
+        { note: 2, time: 13200 }, // Mi - 
+        { note: 1, time: 13800 }, // Ré - 
+        
+        // Quarta frase (resolução)
+        { note: 0, time: 14400 }, // Dó - 
+        { note: 0, time: 15000 }, // Dó - 
+        { note: 1, time: 15600 }, // Ré - 
+        { note: 2, time: 16200 }, // Mi - 
+        { note: 1, time: 16800 }, // Ré - (sustentado)
+        { note: 0, time: 17400 }, // Dó - 
+        { note: 0, time: 18000 }, // Dó - (sustentado)
+        
+        // Segunda seção - desenvolvimento
+        { note: 1, time: 19200 }, // Ré - 
+        { note: 1, time: 19800 }, // Ré - 
+        { note: 2, time: 20400 }, // Mi - 
+        { note: 0, time: 21000 }, // Dó - 
+        { note: 1, time: 21600 }, // Ré - 
+        { note: 2, time: 22200 }, // Mi - 
+        { note: 3, time: 22800 }, // Fá - 
+        { note: 2, time: 23400 }, // Mi - 
+        
+        // Continuação do desenvolvimento
+        { note: 0, time: 24000 }, // Dó - 
+        { note: 1, time: 24600 }, // Ré - 
+        { note: 2, time: 25200 }, // Mi - 
+        { note: 3, time: 25800 }, // Fá - 
+        { note: 2, time: 26400 }, // Mi - 
+        { note: 1, time: 27000 }, // Ré - 
+        { note: 0, time: 27600 }, // Dó - 
+        { note: 1, time: 28200 }, // Ré - 
+        
+        // Retorno ao tema principal (terceira vez)
+        { note: 2, time: 28800 }, // Mi - 
+        { note: 2, time: 29400 }, // Mi - 
+        { note: 3, time: 30000 }, // Fá - 
+        { note: 4, time: 30600 }, // Sol - 
+        { note: 4, time: 31200 }, // Sol - 
+        { note: 3, time: 31800 }, // Fá - 
+        { note: 2, time: 32400 }, // Mi - 
+        { note: 1, time: 33000 }, // Ré - 
+        
+        // Final grandioso
+        { note: 0, time: 33600 }, // Dó - 
+        { note: 0, time: 34200 }, // Dó - 
+        { note: 1, time: 34800 }, // Ré - 
+        { note: 2, time: 35400 }, // Mi - 
+        { note: 1, time: 36000 }, // Ré - 
+        { note: 0, time: 36600 }, // Dó - 
+        { note: 0, time: 37200 }, // Dó - 
+        
+        // Coda (final extendido)
+        { note: 2, time: 38400 }, // Mi - 
+        { note: 3, time: 39000 }, // Fá - 
+        { note: 4, time: 39600 }, // Sol - 
+        { note: 2, time: 40200 }, // Mi - 
+        { note: 0, time: 40800 }, // Dó - 
+        { note: 4, time: 41400 }, // Sol - 
+        { note: 2, time: 42000 }, // Mi - 
+        { note: 0, time: 42600 }, // Dó (final majestoso)
+      ];
+
+      odeToJoyMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else {
+      // Gerar padrão genérico para outras músicas
+      const patterns = [
+        [0, 2, 4], // Dó, Mi, Sol
+        [1, 3, 5], // Ré, Fá, Lá
+        [0, 1, 2], // Sequência simples
+        [4, 5, 6], // Notas agudas
+        [2, 4, 6], // Saltos
+        [0, 3, 6], // Acordes
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        const pattern = patterns[i % patterns.length];
+        const baseTime = i * 4000;
+        
+        pattern.forEach((laneIndex, noteIndex) => {
+          if (laneIndex < lanes.length) {
+            newNotes.push({
+              id: `note-${noteId++}`,
+              lane: laneIndex,
+              color: lanes[laneIndex].color,
+              frequency: lanes[laneIndex].frequency,
+              startTime: baseTime + noteIndex * 1000,
+              duration: 600,
+              y: -100,
+              hasPlayed: false,
+              isHit: false
+            });
+          }
+        });
+      }
+    }
+
+    console.log(`Generated ${newNotes.length} notes for song: ${songId || 'generic'}`);
+    setTotalNotes(newNotes.length);
+    setNotes(newNotes);
+  }, [lanes]);
+
+  // Gerar padrão de notas
+  const generateNotes = useCallback(() => {
+    if (songId) {
+      generateSpecificSongNotes(songId);
+    } else {
+      generateSpecificSongNotes('generic');
+    }
+  }, [songId, generateSpecificSongNotes]);
+
+  // Função para clicar em uma nota
+  const handleNoteClick = useCallback((noteId: string) => {
+    if (!isPlaying) return;
+
+    const noteToHit = notes.find(note => note.id === noteId);
+    if (!noteToHit || noteToHit.isHit) return;
+
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
+
+    if (noteToHit.y >= hitZoneTop - 50 && noteToHit.y <= hitZoneBottom + 50) {
+      const precision = Math.abs(noteToHit.y - (hitZoneTop + hitZoneHeight / 2));
+      let points = 100;
+      let feedback = "Good!";
+
+      if (precision < 15) {
+        points = 300;
+        feedback = "Perfect!";
+      } else if (precision < 30) {
+        points = 200;
+        feedback = "Great!";
+      }
+
+      const finalPoints = points * Math.max(1, combo + 1);
+      setScore(prev => prev + finalPoints);
+      setCombo(prev => prev + 1);
+      setMaxCombo(prev => Math.max(prev, combo + 1));
+      setHitNotes(prev => prev + 1);
+
+      onNotePlay(noteToHit.frequency, noteToHit.color);
+
+      toast(`${feedback} +${finalPoints} pontos`, {
+        duration: 1000,
+      });
+
+      setNotes(prevNotes => 
+        prevNotes.map(note => 
+          note.id === noteId ? { ...note, isHit: true } : note
+        )
+      );
+
+      console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
+    } else {
+      if (combo > 0) {
+        setCombo(0);
+        toast("Miss! Combo perdido", {
+          duration: 1000,
+        });
+      }
       
-      // Músicas Fáceis - Xilofone
-      "happy-birthday-xylophone": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "C4", time: 1500, color: "#991b1b" },
-        { note: "D4", time: 2000, color: "#b91c1c" },
-        { note: "C4", time: 2500, color: "#991b1b" },
-        { note: "F4", time: 3000, color: "#ef4444" },
-        { note: "E4", time: 3500, color: "#dc2626" },
-        { note: "C4", time: 4500, color: "#991b1b" },
-        { note: "C4", time: 5000, color: "#991b1b" },
-        { note: "D4", time: 5500, color: "#b91c1c" },
-        { note: "C4", time: 6000, color: "#991b1b" },
-        { note: "G4", time: 6500, color: "#22c55e" },
-        { note: "F4", time: 7000, color: "#ef4444" },
-        { note: "C4", time: 8000, color: "#991b1b" },
-        { note: "C4", time: 8500, color: "#991b1b" },
-        { note: "C5", time: 9000, color: "#3b82f6" },
-        { note: "A4", time: 9500, color: "#f59e0b" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "E4", time: 10500, color: "#dc2626" },
-        { note: "D4", time: 11000, color: "#b91c1c" },
-        { note: "A4", time: 12000, color: "#f59e0b" },
-        { note: "A4", time: 12500, color: "#f59e0b" },
-        { note: "F4", time: 13000, color: "#ef4444" },
-        { note: "G4", time: 13500, color: "#22c55e" },
-        { note: "F4", time: 14000, color: "#ef4444" }
-      ],
-      "london-bridge-xylophone": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "A4", time: 1500, color: "#f59e0b" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "F4", time: 3500, color: "#ef4444" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "D4", time: 4500, color: "#b91c1c" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "F4", time: 5500, color: "#ef4444" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "F4", time: 6500, color: "#ef4444" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "E4", time: 9500, color: "#dc2626" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "G4", time: 10500, color: "#22c55e" },
-        { note: "D4", time: 11000, color: "#b91c1c" },
-        { note: "G4", time: 11500, color: "#22c55e" },
-        { note: "E4", time: 12000, color: "#dc2626" },
-        { note: "C4", time: 12500, color: "#991b1b" }
-      ],
-      "jingle-bells-xylophone": [
-        { note: "E4", time: 1000, color: "#dc2626" },
-        { note: "E4", time: 1500, color: "#dc2626" },
-        { note: "E4", time: 2000, color: "#dc2626" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "E4", time: 3500, color: "#dc2626" },
-        { note: "E4", time: 4000, color: "#dc2626" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "G4", time: 5500, color: "#22c55e" },
-        { note: "C4", time: 6000, color: "#991b1b" },
-        { note: "D4", time: 6500, color: "#b91c1c" },
-        { note: "E4", time: 7000, color: "#dc2626" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "F4", time: 8500, color: "#ef4444" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "E4", time: 10500, color: "#dc2626" },
-        { note: "E4", time: 11000, color: "#dc2626" },
-        { note: "E4", time: 11500, color: "#dc2626" },
-        { note: "E4", time: 12000, color: "#dc2626" },
-        { note: "D4", time: 12500, color: "#b91c1c" },
-        { note: "D4", time: 13000, color: "#b91c1c" },
-        { note: "E4", time: 13500, color: "#dc2626" },
-        { note: "D4", time: 14000, color: "#b91c1c" },
-        { note: "G4", time: 14500, color: "#22c55e" }
-      ],
-      "twinkle-xylophone": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "C4", time: 2000, color: "#991b1b" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "A4", time: 5000, color: "#f59e0b" },
-        { note: "A4", time: 6000, color: "#f59e0b" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "E4", time: 10000, color: "#dc2626" },
-        { note: "E4", time: 11000, color: "#dc2626" },
-        { note: "D4", time: 12000, color: "#b91c1c" },
-        { note: "D4", time: 13000, color: "#b91c1c" },
-        { note: "C4", time: 14000, color: "#991b1b" }
-      ],
+      onNotePlay(noteToHit.frequency, noteToHit.color);
+      console.log(`Missed note: clicked outside hit zone`);
+    }
+  }, [isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
 
-      // Músicas Fáceis - Teclado
-      "scale-keyboard": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 2000, color: "#b91c1c" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "F4", time: 4000, color: "#ef4444" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "A4", time: 6000, color: "#f59e0b" },
-        { note: "B4", time: 7000, color: "#6366f1" },
-        { note: "C5", time: 8000, color: "#3b82f6" },
-        { note: "B4", time: 9000, color: "#6366f1" },
-        { note: "A4", time: 10000, color: "#f59e0b" },
-        { note: "G4", time: 11000, color: "#22c55e" },
-        { note: "F4", time: 12000, color: "#ef4444" },
-        { note: "E4", time: 13000, color: "#dc2626" },
-        { note: "D4", time: 14000, color: "#b91c1c" },
-        { note: "C4", time: 15000, color: "#991b1b" }
-      ],
-      "chopsticks-keyboard": [
-        { note: "E4", time: 1000, color: "#dc2626" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "C4", time: 2000, color: "#991b1b" },
-        { note: "D4", time: 2500, color: "#b91c1c" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "E4", time: 3500, color: "#dc2626" },
-        { note: "E4", time: 4000, color: "#dc2626" },
-        { note: "D4", time: 4500, color: "#b91c1c" },
-        { note: "D4", time: 5000, color: "#b91c1c" },
-        { note: "D4", time: 5500, color: "#b91c1c" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "G4", time: 6500, color: "#22c55e" },
-        { note: "G4", time: 7000, color: "#22c55e" }
-      ],
-      "hot-cross-keyboard": [
-        { note: "B4", time: 1000, color: "#6366f1" },
-        { note: "A4", time: 1500, color: "#f59e0b" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "B4", time: 3000, color: "#6366f1" },
-        { note: "A4", time: 3500, color: "#f59e0b" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "G4", time: 5500, color: "#22c55e" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "G4", time: 6500, color: "#22c55e" },
-        { note: "A4", time: 7000, color: "#f59e0b" },
-        { note: "A4", time: 7500, color: "#f59e0b" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        { note: "A4", time: 8500, color: "#f59e0b" },
-        { note: "B4", time: 9000, color: "#6366f1" },
-        { note: "A4", time: 9500, color: "#f59e0b" },
-        { note: "G4", time: 10000, color: "#22c55e" }
-      ],
+  // Atualizar posição das notas
+  const updateNotes = useCallback(() => {
+    if (!isPlaying) return;
 
-      // Músicas Médias - Sino
-      "frere-jacques-bell": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "E4", time: 2000, color: "#dc2626" },
-        { note: "C4", time: 2500, color: "#991b1b" },
-        { note: "C4", time: 3000, color: "#991b1b" },
-        { note: "D4", time: 3500, color: "#b91c1c" },
-        { note: "E4", time: 4000, color: "#dc2626" },
-        { note: "C4", time: 4500, color: "#991b1b" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "F4", time: 5500, color: "#ef4444" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "E4", time: 6500, color: "#dc2626" },
-        { note: "F4", time: 7000, color: "#ef4444" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "G4", time: 8000, color: "#22c55e" },
-        { note: "A4", time: 8500, color: "#f59e0b" },
-        { note: "G4", time: 9000, color: "#22c55e" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        { note: "E4", time: 10000, color: "#dc2626" },
-        { note: "C4", time: 10500, color: "#991b1b" },
-        { note: "G4", time: 11000, color: "#22c55e" },
-        { note: "A4", time: 11500, color: "#f59e0b" },
-        { note: "G4", time: 12000, color: "#22c55e" },
-        { note: "F4", time: 12500, color: "#ef4444" },
-        { note: "E4", time: 13000, color: "#dc2626" },
-        { note: "C4", time: 13500, color: "#991b1b" },
-        { note: "C4", time: 14000, color: "#991b1b" },
-        { note: "G3", time: 14500, color: "#166534" },
-        { note: "C4", time: 15000, color: "#991b1b" }
-      ],
-      "amazing-grace-bell": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "C5", time: 2000, color: "#3b82f6" },
-        { note: "E5", time: 3000, color: "#ec4899" },
-        { note: "C5", time: 4000, color: "#3b82f6" },
-        { note: "E5", time: 5000, color: "#ec4899" },
-        { note: "D5", time: 6000, color: "#8b5cf6" },
-        { note: "C5", time: 7000, color: "#3b82f6" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        { note: "G4", time: 9000, color: "#22c55e" },
-        { note: "C5", time: 10000, color: "#3b82f6" },
-        { note: "E5", time: 11000, color: "#ec4899" },
-        { note: "C5", time: 12000, color: "#3b82f6" },
-        { note: "D5", time: 13000, color: "#8b5cf6" },
-        { note: "C5", time: 14000, color: "#3b82f6" }
-      ],
-      "greensleeves-bell": [
-        { note: "A4", time: 1000, color: "#f59e0b" },
-        { note: "C5", time: 1500, color: "#3b82f6" },
-        { note: "D5", time: 2000, color: "#8b5cf6" },
-        { note: "E5", time: 2500, color: "#ec4899" },
-        { note: "F5", time: 3000, color: "#f97316" },
-        { note: "E5", time: 3500, color: "#ec4899" },
-        { note: "D5", time: 4000, color: "#8b5cf6" },
-        { note: "B4", time: 4500, color: "#6366f1" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "A4", time: 5500, color: "#f59e0b" },
-        { note: "B4", time: 6000, color: "#6366f1" },
-        { note: "C5", time: 6500, color: "#3b82f6" },
-        { note: "A4", time: 7000, color: "#f59e0b" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "E4", time: 8000, color: "#dc2626" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "A4", time: 9000, color: "#f59e0b" }
-      ],
-      "scarborough-bell": [
-        { note: "D4", time: 1000, color: "#b91c1c" },
-        { note: "F4", time: 1500, color: "#ef4444" },
-        { note: "D4", time: 2000, color: "#b91c1c" },
-        { note: "A4", time: 2500, color: "#f59e0b" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "A4", time: 3500, color: "#f59e0b" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "E4", time: 4500, color: "#dc2626" },
-        { note: "D4", time: 5000, color: "#b91c1c" },
-        { note: "F4", time: 5500, color: "#ef4444" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "A4", time: 6500, color: "#f59e0b" },
-        { note: "F4", time: 7000, color: "#ef4444" },
-        { note: "D4", time: 7500, color: "#b91c1c" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "D4", time: 9500, color: "#b91c1c" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "E4", time: 10500, color: "#dc2626" },
-        { note: "D4", time: 11000, color: "#b91c1c" }
-      ],
+    const now = Date.now();
+    const currentGameTime = now - gameStartTimeRef.current - totalPausedTimeRef.current;
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
+    
+    setNotes(prevNotes => {
+      const updatedNotes = prevNotes.map(note => {
+        const noteAge = currentGameTime - note.startTime;
+        const newY = noteAge * speed * 0.1;
+        
+        return {
+          ...note,
+          y: newY
+        };
+      });
 
-      // Músicas Médias - Xilofone
-      "ode-joy-xylophone": [
-        { note: "E4", time: 1000, color: "#dc2626" },
-        { note: "E4", time: 1500, color: "#dc2626" },
-        { note: "F4", time: 2000, color: "#ef4444" },
-        { note: "G4", time: 2500, color: "#22c55e" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "F4", time: 3500, color: "#ef4444" },
-        { note: "E4", time: 4000, color: "#dc2626" },
-        { note: "D4", time: 4500, color: "#b91c1c" },
-        { note: "C4", time: 5000, color: "#991b1b" },
-        { note: "C4", time: 5500, color: "#991b1b" },
-        { note: "D4", time: 6000, color: "#b91c1c" },
-        { note: "E4", time: 6500, color: "#dc2626" },
-        { note: "E4", time: 7000, color: "#dc2626" },
-        { note: "D4", time: 7500, color: "#b91c1c" },
-        { note: "D4", time: 8000, color: "#b91c1c" },
-        { note: "E4", time: 9000, color: "#dc2626" },
-        { note: "E4", time: 9500, color: "#dc2626" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "G4", time: 10500, color: "#22c55e" },
-        { note: "G4", time: 11000, color: "#22c55e" },
-        { note: "F4", time: 11500, color: "#ef4444" },
-        { note: "E4", time: 12000, color: "#dc2626" },
-        { note: "D4", time: 12500, color: "#b91c1c" },
-        { note: "C4", time: 13000, color: "#991b1b" },
-        { note: "C4", time: 13500, color: "#991b1b" },
-        { note: "D4", time: 14000, color: "#b91c1c" },
-        { note: "E4", time: 14500, color: "#dc2626" },
-        { note: "D4", time: 15000, color: "#b91c1c" },
-        { note: "C4", time: 15500, color: "#991b1b" },
-        { note: "C4", time: 16000, color: "#991b1b" }
-      ],
-      "danny-boy-xylophone": [
-        // Verse 1: "Oh Danny boy, the pipes, the pipes are calling"
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "C5", time: 1500, color: "#3b82f6" },
-        { note: "C5", time: 2000, color: "#3b82f6" },
-        { note: "A4", time: 2500, color: "#f59e0b" },
-        { note: "A4", time: 3000, color: "#f59e0b" },
-        { note: "F4", time: 3500, color: "#ef4444" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "A4", time: 4500, color: "#f59e0b" },
-        { note: "C5", time: 5000, color: "#3b82f6" },
+      const missedNotes = updatedNotes.filter(note => 
+        note.y > 500 && !note.isHit && !note.hasPlayed
+      );
+      
+      if (missedNotes.length > 0) {
+        missedNotes.forEach(note => {
+          note.hasPlayed = true;
+        });
         
-        // "From glen to glen, and down the mountain side"
-        { note: "C5", time: 6000, color: "#3b82f6" },
-        { note: "A4", time: 6500, color: "#f59e0b" },
-        { note: "A4", time: 7000, color: "#f59e0b" },
-        { note: "F4", time: 7500, color: "#ef4444" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "A4", time: 9000, color: "#f59e0b" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        
-        // Chorus continuation
-        { note: "G4", time: 10500, color: "#22c55e" },
-        { note: "C5", time: 11000, color: "#3b82f6" },
-        { note: "D5", time: 11500, color: "#8b5cf6" },
-        { note: "C5", time: 12000, color: "#3b82f6" },
-        { note: "A4", time: 12500, color: "#f59e0b" },
-        { note: "F4", time: 13000, color: "#ef4444" },
-        { note: "G4", time: 13500, color: "#22c55e" },
-        { note: "C5", time: 14000, color: "#3b82f6" }
-      ],
-      "auld-lang-xylophone": [
-        // "Should auld acquaintance be forgot"
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "C5", time: 1500, color: "#3b82f6" },
-        { note: "C5", time: 2000, color: "#3b82f6" },
-        { note: "C5", time: 2500, color: "#3b82f6" },
-        { note: "E5", time: 3000, color: "#ec4899" },
-        { note: "D5", time: 3500, color: "#8b5cf6" },
-        { note: "C5", time: 4000, color: "#3b82f6" },
-        { note: "D5", time: 4500, color: "#8b5cf6" },
-        
-        // "And never brought to mind"
-        { note: "E5", time: 5500, color: "#ec4899" },
-        { note: "E5", time: 6000, color: "#ec4899" },
-        { note: "E5", time: 6500, color: "#ec4899" },
-        { note: "G5", time: 7000, color: "#10b981" },
-        { note: "E5", time: 7500, color: "#ec4899" },
-        { note: "D5", time: 8000, color: "#8b5cf6" },
-        { note: "C5", time: 8500, color: "#3b82f6" },
-        
-        // "Should auld acquaintance be forgot"
-        { note: "G4", time: 9500, color: "#22c55e" },
-        { note: "C5", time: 10000, color: "#3b82f6" },
-        { note: "C5", time: 10500, color: "#3b82f6" },
-        { note: "C5", time: 11000, color: "#3b82f6" },
-        { note: "E5", time: 11500, color: "#ec4899" },
-        { note: "D5", time: 12000, color: "#8b5cf6" },
-        { note: "C5", time: 12500, color: "#3b82f6" },
-        
-        // "And days of auld lang syne"
-        { note: "A4", time: 13500, color: "#f59e0b" },
-        { note: "A4", time: 14000, color: "#f59e0b" },
-        { note: "G4", time: 14500, color: "#22c55e" },
-        { note: "A4", time: 15000, color: "#f59e0b" },
-        { note: "C5", time: 15500, color: "#3b82f6" },
-        { note: "G4", time: 16000, color: "#22c55e" }
-      ],
-      "swan-lake-xylophone": [
-        // Iconic opening theme
-        { note: "A4", time: 1000, color: "#f59e0b" },
-        { note: "G4", time: 1500, color: "#22c55e" },
-        { note: "F4", time: 2000, color: "#ef4444" },
-        { note: "E4", time: 2500, color: "#dc2626" },
-        { note: "F4", time: 3000, color: "#ef4444" },
-        { note: "G4", time: 3500, color: "#22c55e" },
-        { note: "A4", time: 4000, color: "#f59e0b" },
-        { note: "A4", time: 5000, color: "#f59e0b" },
-        
-        // Second phrase
-        { note: "A4", time: 6000, color: "#f59e0b" },
-        { note: "G4", time: 6500, color: "#22c55e" },
-        { note: "F4", time: 7000, color: "#ef4444" },
-        { note: "E4", time: 7500, color: "#dc2626" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "A4", time: 9000, color: "#f59e0b" },
-        { note: "A4", time: 10000, color: "#f59e0b" },
-        
-        // Development
-        { note: "C5", time: 11000, color: "#3b82f6" },
-        { note: "B4", time: 11500, color: "#6366f1" },
-        { note: "A4", time: 12000, color: "#f59e0b" },
-        { note: "G4", time: 12500, color: "#22c55e" },
-        { note: "F4", time: 13000, color: "#ef4444" },
-        { note: "E4", time: 13500, color: "#dc2626" },
-        { note: "D4", time: 14000, color: "#b91c1c" },
-        { note: "C4", time: 14500, color: "#991b1b" },
-        { note: "A4", time: 15000, color: "#f59e0b" }
-      ],
+        if (combo > 0) {
+          setCombo(0);
+          toast("Notas perdidas! Combo resetado", { duration: 1000 });
+        }
+      }
 
-      // Músicas Médias - Teclado
-      "moonlight-keyboard": [
-        // Opening triplet pattern
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "E4", time: 1200, color: "#dc2626" },
-        { note: "G4", time: 1400, color: "#22c55e" },
-        { note: "C5", time: 1600, color: "#3b82f6" },
-        { note: "E4", time: 1800, color: "#dc2626" },
-        { note: "G4", time: 2000, color: "#22c55e" },
+      const visibleNotes = updatedNotes.filter(note => note.y <= 500);
+      if (visibleNotes.length === 0 && updatedNotes.length > 0 && !gameEnded) {
+        setGameEnded(true);
+        setIsPlaying(false);
         
-        { note: "C4", time: 2400, color: "#991b1b" },
-        { note: "E4", time: 2600, color: "#dc2626" },
-        { note: "G4", time: 2800, color: "#22c55e" },
-        { note: "C5", time: 3000, color: "#3b82f6" },
-        { note: "E4", time: 3200, color: "#dc2626" },
-        { note: "G4", time: 3400, color: "#22c55e" },
+        const accuracy = totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 0;
+        toast(`🎉 Música concluída! Pontuação: ${score} | Precisão: ${accuracy}% | Max Combo: ${maxCombo}x`, {
+          duration: 5000,
+        });
         
-        // Melody enters
-        { note: "B4", time: 4000, color: "#6366f1" },
-        { note: "C5", time: 4800, color: "#3b82f6" },
-        { note: "D5", time: 5600, color: "#8b5cf6" },
-        { note: "C5", time: 6400, color: "#3b82f6" },
-        { note: "B4", time: 7200, color: "#6366f1" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        
-        // Continuation
-        { note: "G4", time: 9000, color: "#22c55e" },
-        { note: "A4", time: 9800, color: "#f59e0b" },
-        { note: "B4", time: 10600, color: "#6366f1" },
-        { note: "C5", time: 11400, color: "#3b82f6" },
-        { note: "B4", time: 12200, color: "#6366f1" },
-        { note: "A4", time: 13000, color: "#f59e0b" },
-        { note: "G4", time: 14000, color: "#22c55e" }
-      ],
-      "canon-d-keyboard": [
-        // Bass line foundation
-        { note: "D4", time: 1000, color: "#b91c1c" },
-        { note: "A4", time: 2000, color: "#f59e0b" },
-        { note: "B4", time: 3000, color: "#6366f1" },
-        { note: "F4", time: 4000, color: "#ef4444" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "D4", time: 6000, color: "#b91c1c" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        
-        // First canon voice
-        { note: "D5", time: 9000, color: "#8b5cf6" },
-        { note: "C5", time: 9500, color: "#3b82f6" },
-        { note: "B4", time: 10000, color: "#6366f1" },
-        { note: "A4", time: 10500, color: "#f59e0b" },
-        { note: "B4", time: 11000, color: "#6366f1" },
-        { note: "C5", time: 11500, color: "#3b82f6" },
-        { note: "D5", time: 12000, color: "#8b5cf6" },
-        { note: "A4", time: 12500, color: "#f59e0b" },
-        
-        // Development
-        { note: "B4", time: 13000, color: "#6366f1" },
-        { note: "G4", time: 13500, color: "#22c55e" },
-        { note: "A4", time: 14000, color: "#f59e0b" },
-        { note: "F4", time: 14500, color: "#ef4444" },
-        { note: "G4", time: 15000, color: "#22c55e" },
-        { note: "D4", time: 15500, color: "#b91c1c" },
-        { note: "A4", time: 16000, color: "#f59e0b" },
-        { note: "D5", time: 16500, color: "#8b5cf6" }
-      ],
-      "bach-minuet-keyboard": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "A4", time: 2500, color: "#f59e0b" },
-        { note: "B4", time: 3000, color: "#6366f1" },
-        { note: "C5", time: 3500, color: "#3b82f6" },
-        { note: "D5", time: 4000, color: "#8b5cf6" },
-        { note: "G4", time: 4500, color: "#22c55e" },
-        { note: "A4", time: 5000, color: "#f59e0b" },
-        { note: "D4", time: 5500, color: "#b91c1c" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "B4", time: 6500, color: "#6366f1" },
-        { note: "A4", time: 7000, color: "#f59e0b" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "F4", time: 8000, color: "#ef4444" },
-        { note: "G4", time: 8500, color: "#22c55e" },
-        { note: "A4", time: 9000, color: "#f59e0b" },
-        { note: "D4", time: 9500, color: "#b91c1c" },
-        { note: "E4", time: 10000, color: "#dc2626" },
-        { note: "F4", time: 10500, color: "#ef4444" },
-        { note: "G4", time: 11000, color: "#22c55e" },
-        { note: "A4", time: 11500, color: "#f59e0b" },
-        { note: "B4", time: 12000, color: "#6366f1" },
-        { note: "G4", time: 12500, color: "#22c55e" },
-        { note: "B4", time: 13000, color: "#6366f1" },
-        { note: "A4", time: 13500, color: "#f59e0b" },
-        { note: "G4", time: 14000, color: "#22c55e" }
-      ],
+        console.log(`Game ended! Final score: ${score}, Accuracy: ${accuracy}%, Max combo: ${maxCombo}`);
+      }
 
-      // Músicas Difíceis - Sino
-      "william-tell-bell": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "G4", time: 1250, color: "#22c55e" },
-        { note: "G4", time: 1500, color: "#22c55e" },
-        { note: "G4", time: 1750, color: "#22c55e" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "E4", time: 2250, color: "#dc2626" },
-        { note: "C4", time: 2500, color: "#991b1b" },
-        { note: "E4", time: 2750, color: "#dc2626" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "G4", time: 3250, color: "#22c55e" },
-        { note: "G4", time: 3500, color: "#22c55e" },
-        { note: "E4", time: 3750, color: "#dc2626" },
-        { note: "C4", time: 4000, color: "#991b1b" },
-        { note: "E4", time: 4250, color: "#dc2626" },
-        { note: "G4", time: 4500, color: "#22c55e" },
-        { note: "G4", time: 4750, color: "#22c55e" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "A4", time: 5250, color: "#f59e0b" },
-        { note: "B4", time: 5500, color: "#6366f1" },
-        { note: "C5", time: 5750, color: "#3b82f6" },
-        { note: "D5", time: 6000, color: "#8b5cf6" },
-        { note: "C5", time: 6250, color: "#3b82f6" },
-        { note: "B4", time: 6500, color: "#6366f1" },
-        { note: "A4", time: 6750, color: "#f59e0b" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "A4", time: 7250, color: "#f59e0b" },
-        { note: "B4", time: 7500, color: "#6366f1" },
-        { note: "G4", time: 7750, color: "#22c55e" },
-        { note: "A4", time: 8000, color: "#f59e0b" },
-        { note: "G4", time: 8250, color: "#22c55e" },
-        { note: "F4", time: 8500, color: "#ef4444" },
-        { note: "E4", time: 8750, color: "#dc2626" },
-        { note: "D4", time: 9000, color: "#b91c1c" },
-        { note: "C4", time: 9250, color: "#991b1b" }
-      ],
-      "flight-bumblebee-bell": [
-        { note: "E4", time: 500, color: "#dc2626" },
-        { note: "D4", time: 600, color: "#b91c1c" },
-        { note: "E4", time: 700, color: "#dc2626" },
-        { note: "F4", time: 800, color: "#ef4444" },
-        { note: "E4", time: 900, color: "#dc2626" },
-        { note: "D4", time: 1000, color: "#b91c1c" },
-        { note: "C4", time: 1100, color: "#991b1b" },
-        { note: "B3", time: 1200, color: "#7f1d1d" },
-        { note: "C4", time: 1300, color: "#991b1b" },
-        { note: "D4", time: 1400, color: "#b91c1c" },
-        { note: "C4", time: 1500, color: "#991b1b" },
-        { note: "B3", time: 1600, color: "#7f1d1d" },
-        { note: "A3", time: 1700, color: "#450a0a" },
-        { note: "G3", time: 1800, color: "#166534" },
-        { note: "A3", time: 1900, color: "#450a0a" },
-        { note: "B3", time: 2000, color: "#7f1d1d" },
-        { note: "A3", time: 2100, color: "#450a0a" },
-        { note: "G3", time: 2200, color: "#166534" },
-        { note: "F3", time: 2300, color: "#9f1239" },
-        { note: "E3", time: 2400, color: "#881337" },
-        { note: "F3", time: 2500, color: "#9f1239" },
-        { note: "G3", time: 2600, color: "#166534" },
-        { note: "F3", time: 2700, color: "#9f1239" },
-        { note: "E3", time: 2800, color: "#881337" },
-        { note: "D3", time: 2900, color: "#701a75" },
-        { note: "C3", time: 3000, color: "#581c87" },
-        { note: "D3", time: 3100, color: "#701a75" },
-        { note: "E3", time: 3200, color: "#881337" },
-        { note: "D3", time: 3300, color: "#701a75" },
-        { note: "C3", time: 3400, color: "#581c87" },
-        { note: "B2", time: 3500, color: "#4c1d95" },
-        { note: "A2", time: 3600, color: "#312e81" },
-        { note: "B2", time: 3700, color: "#4c1d95" },
-        { note: "C3", time: 3800, color: "#581c87" },
-        { note: "D3", time: 3900, color: "#701a75" },
-        { note: "E3", time: 4000, color: "#881337" },
-        { note: "F3", time: 4100, color: "#9f1239" },
-        { note: "G3", time: 4200, color: "#166534" },
-        { note: "A3", time: 4300, color: "#450a0a" },
-        { note: "B3", time: 4400, color: "#7f1d1d" },
-        { note: "C4", time: 4500, color: "#991b1b" },
-        { note: "D4", time: 4600, color: "#b91c1c" },
-        { note: "E4", time: 4700, color: "#dc2626" },
-        { note: "F4", time: 4800, color: "#ef4444" },
-        { note: "G4", time: 4900, color: "#22c55e" },
-        { note: "A4", time: 5000, color: "#f59e0b" }
-      ],
+      return updatedNotes.filter(note => note.y <= 500);
+    });
 
-      // Músicas Difíceis - Xilofone
-      "canon-xylophone": [
-        { note: "D4", time: 1000, color: "#b91c1c" },
-        { note: "A4", time: 1500, color: "#f59e0b" },
-        { note: "B4", time: 2000, color: "#6366f1" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "D4", time: 3500, color: "#b91c1c" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "A4", time: 4500, color: "#f59e0b" },
-        { note: "D5", time: 5000, color: "#8b5cf6" },
-        { note: "C5", time: 5500, color: "#3b82f6" },
-        { note: "B4", time: 6000, color: "#6366f1" },
-        { note: "A4", time: 6500, color: "#f59e0b" },
-        { note: "B4", time: 7000, color: "#6366f1" },
-        { note: "C5", time: 7500, color: "#3b82f6" },
-        { note: "D5", time: 8000, color: "#8b5cf6" },
-        { note: "C5", time: 8500, color: "#3b82f6" },
-        { note: "B4", time: 9000, color: "#6366f1" },
-        { note: "A4", time: 9500, color: "#f59e0b" },
-        { note: "G4", time: 10000, color: "#22c55e" },
-        { note: "F4", time: 10500, color: "#ef4444" },
-        { note: "E4", time: 11000, color: "#dc2626" },
-        { note: "D4", time: 11500, color: "#b91c1c" },
-        { note: "E4", time: 12000, color: "#dc2626" },
-        { note: "F4", time: 12500, color: "#ef4444" },
-        { note: "G4", time: 13000, color: "#22c55e" },
-        { note: "A4", time: 13500, color: "#f59e0b" },
-        { note: "B4", time: 14000, color: "#6366f1" },
-        { note: "G4", time: 14500, color: "#22c55e" },
-        { note: "A4", time: 15000, color: "#f59e0b" },
-        { note: "F4", time: 15500, color: "#ef4444" },
-        { note: "G4", time: 16000, color: "#22c55e" },
-        { note: "E4", time: 16500, color: "#dc2626" },
-        { note: "F4", time: 17000, color: "#ef4444" },
-        { note: "D4", time: 17500, color: "#b91c1c" },
-        { note: "E4", time: 18000, color: "#dc2626" },
-        { note: "C4", time: 18500, color: "#991b1b" },
-        { note: "D4", time: 19000, color: "#b91c1c" }
-      ],
-      "turkish-march-xylophone": [
-        // Opening theme - Rondo Alla Turca
-        { note: "B4", time: 500, color: "#6366f1" },
-        { note: "A4", time: 750, color: "#f59e0b" },
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "A4", time: 1250, color: "#f59e0b" },
-        { note: "C5", time: 1500, color: "#3b82f6" },
-        { note: "C5", time: 1750, color: "#3b82f6" },
-        { note: "C5", time: 2000, color: "#3b82f6" },
-        
-        { note: "B4", time: 2500, color: "#6366f1" },
-        { note: "A4", time: 2750, color: "#f59e0b" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "A4", time: 3250, color: "#f59e0b" },
-        { note: "B4", time: 3500, color: "#6366f1" },
-        { note: "B4", time: 3750, color: "#6366f1" },
-        { note: "B4", time: 4000, color: "#6366f1" },
-        
-        // Second phrase
-        { note: "B4", time: 4500, color: "#6366f1" },
-        { note: "A4", time: 4750, color: "#f59e0b" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "A4", time: 5250, color: "#f59e0b" },
-        { note: "C5", time: 5500, color: "#3b82f6" },
-        { note: "C5", time: 5750, color: "#3b82f6" },
-        { note: "C5", time: 6000, color: "#3b82f6" },
-        
-        { note: "B4", time: 6500, color: "#6366f1" },
-        { note: "A4", time: 6750, color: "#f59e0b" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "A4", time: 7250, color: "#f59e0b" },
-        { note: "A4", time: 7500, color: "#f59e0b" },
-        
-        // Fast section
-        { note: "D5", time: 8000, color: "#8b5cf6" },
-        { note: "C5", time: 8200, color: "#3b82f6" },
-        { note: "B4", time: 8400, color: "#6366f1" },
-        { note: "A4", time: 8600, color: "#f59e0b" },
-        { note: "G4", time: 8800, color: "#22c55e" },
-        { note: "F4", time: 9000, color: "#ef4444" },
-        { note: "E4", time: 9200, color: "#dc2626" },
-        { note: "D4", time: 9400, color: "#b91c1c" },
-        
-        { note: "E4", time: 9800, color: "#dc2626" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "G4", time: 10200, color: "#22c55e" },
-        { note: "A4", time: 10400, color: "#f59e0b" },
-        { note: "B4", time: 10600, color: "#6366f1" },
-        { note: "C5", time: 10800, color: "#3b82f6" },
-        { note: "D5", time: 11000, color: "#8b5cf6" },
-        { note: "E5", time: 11200, color: "#ec4899" }
-      ],
-      "spring-vivaldi-xylophone": [
-        // Spring opening - Allegro
-        { note: "E5", time: 500, color: "#ec4899" },
-        { note: "E5", time: 750, color: "#ec4899" },
-        { note: "E5", time: 1000, color: "#ec4899" },
-        { note: "E5", time: 1250, color: "#ec4899" },
-        { note: "E5", time: 1500, color: "#ec4899" },
-        { note: "D5", time: 1750, color: "#8b5cf6" },
-        { note: "C5", time: 2000, color: "#3b82f6" },
-        { note: "B4", time: 2250, color: "#6366f1" },
-        
-        // Bird song motif
-        { note: "A4", time: 2750, color: "#f59e0b" },
-        { note: "B4", time: 3000, color: "#6366f1" },
-        { note: "C5", time: 3250, color: "#3b82f6" },
-        { note: "D5", time: 3500, color: "#8b5cf6" },
-        { note: "E5", time: 3750, color: "#ec4899" },
-        { note: "D5", time: 4000, color: "#8b5cf6" },
-        { note: "C5", time: 4250, color: "#3b82f6" },
-        { note: "B4", time: 4500, color: "#6366f1" },
-        
-        // Spring celebration
-        { note: "C5", time: 5000, color: "#3b82f6" },
-        { note: "B4", time: 5200, color: "#6366f1" },
-        { note: "A4", time: 5400, color: "#f59e0b" },
-        { note: "G4", time: 5600, color: "#22c55e" },
-        { note: "F4", time: 5800, color: "#ef4444" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "A4", time: 6200, color: "#f59e0b" },
-        { note: "B4", time: 6400, color: "#6366f1" },
-        
-        // Flowing melody
-        { note: "C5", time: 6800, color: "#3b82f6" },
-        { note: "D5", time: 7000, color: "#8b5cf6" },
-        { note: "E5", time: 7200, color: "#ec4899" },
-        { note: "F5", time: 7400, color: "#f97316" },
-        { note: "G5", time: 7600, color: "#10b981" },
-        { note: "F5", time: 7800, color: "#f97316" },
-        { note: "E5", time: 8000, color: "#ec4899" },
-        { note: "D5", time: 8200, color: "#8b5cf6" },
-        
-        // Nature sounds
-        { note: "E5", time: 8600, color: "#ec4899" },
-        { note: "E5", time: 8800, color: "#ec4899" },
-        { note: "D5", time: 9000, color: "#8b5cf6" },
-        { note: "C5", time: 9200, color: "#3b82f6" },
-        { note: "B4", time: 9400, color: "#6366f1" },
-        { note: "A4", time: 9600, color: "#f59e0b" },
-        { note: "G4", time: 9800, color: "#22c55e" },
-        { note: "A4", time: 10000, color: "#f59e0b" },
-        
-        // Finale
-        { note: "B4", time: 10400, color: "#6366f1" },
-        { note: "C5", time: 10600, color: "#3b82f6" },
-        { note: "D5", time: 10800, color: "#8b5cf6" },
-        { note: "E5", time: 11000, color: "#ec4899" },
-        { note: "F5", time: 11200, color: "#f97316" },
-        { note: "E5", time: 11400, color: "#ec4899" },
-        { note: "D5", time: 11600, color: "#8b5cf6" },
-        { note: "C5", time: 11800, color: "#3b82f6" },
-        { note: "E5", time: 12000, color: "#ec4899" }
-      ],
+    lastUpdateTimeRef.current = now;
+    animationRef.current = requestAnimationFrame(updateNotes);
+  }, [isPlaying, speed, combo, hitZoneHeight, gameEnded, score, totalNotes, hitNotes, maxCombo]);
 
-      // Músicas Difíceis - Teclado
-      "fur-elise-keyboard": [
-        { note: "E5", time: 1000, color: "#ec4899" },
-        { note: "D5", time: 1250, color: "#8b5cf6" },
-        { note: "E5", time: 1500, color: "#ec4899" },
-        { note: "D5", time: 1750, color: "#8b5cf6" },
-        { note: "E5", time: 2000, color: "#ec4899" },
-        { note: "B4", time: 2250, color: "#6366f1" },
-        { note: "D5", time: 2500, color: "#8b5cf6" },
-        { note: "C5", time: 2750, color: "#3b82f6" },
-        { note: "A4", time: 3000, color: "#f59e0b" },
-        { note: "C4", time: 3500, color: "#991b1b" },
-        { note: "E4", time: 3750, color: "#dc2626" },
-        { note: "A4", time: 4000, color: "#f59e0b" },
-        { note: "B4", time: 4250, color: "#6366f1" },
-        { note: "E4", time: 4750, color: "#dc2626" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "B4", time: 5250, color: "#6366f1" },
-        { note: "C5", time: 5500, color: "#3b82f6" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "E5", time: 6250, color: "#ec4899" },
-        { note: "D5", time: 6500, color: "#8b5cf6" },
-        { note: "E5", time: 6750, color: "#ec4899" },
-        { note: "D5", time: 7000, color: "#8b5cf6" },
-        { note: "E5", time: 7250, color: "#ec4899" },
-        { note: "B4", time: 7500, color: "#6366f1" },
-        { note: "D5", time: 7750, color: "#8b5cf6" },
-        { note: "C5", time: 8000, color: "#3b82f6" },
-        { note: "A4", time: 8250, color: "#f59e0b" }
-      ],
-      "claire-de-lune-keyboard": [
-        { note: "D4", time: 1000, color: "#b91c1c" },
-        { note: "F4", time: 1500, color: "#ef4444" },
-        { note: "A4", time: 2000, color: "#f59e0b" },
-        { note: "C5", time: 2500, color: "#3b82f6" },
-        { note: "D5", time: 3000, color: "#8b5cf6" },
-        { note: "E5", time: 3500, color: "#ec4899" },
-        { note: "F5", time: 4000, color: "#f97316" },
-        { note: "G5", time: 4500, color: "#10b981" },
-        { note: "E5", time: 5000, color: "#ec4899" },
-        { note: "C5", time: 5500, color: "#3b82f6" },
-        { note: "A4", time: 6000, color: "#f59e0b" },
-        { note: "B4", time: 6500, color: "#6366f1" },
-        { note: "C5", time: 7000, color: "#3b82f6" },
-        { note: "D5", time: 7500, color: "#8b5cf6" },
-        { note: "C5", time: 8000, color: "#3b82f6" },
-        { note: "B4", time: 8500, color: "#6366f1" },
-        { note: "A4", time: 9000, color: "#f59e0b" },
-        { note: "G4", time: 9500, color: "#22c55e" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "E4", time: 10500, color: "#dc2626" },
-        { note: "D4", time: 11000, color: "#b91c1c" },
-        { note: "E4", time: 11500, color: "#dc2626" },
-        { note: "F4", time: 12000, color: "#ef4444" },
-        { note: "G4", time: 12500, color: "#22c55e" },
-        { note: "A4", time: 13000, color: "#f59e0b" },
-        { note: "B4", time: 13500, color: "#6366f1" },
-        { note: "C5", time: 14000, color: "#3b82f6" },
-        { note: "D5", time: 14500, color: "#8b5cf6" }
-      ],
-      "invention-1-keyboard": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 1250, color: "#b91c1c" },
-        { note: "E4", time: 1500, color: "#dc2626" },
-        { note: "F4", time: 1750, color: "#ef4444" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "A4", time: 2250, color: "#f59e0b" },
-        { note: "G4", time: 2500, color: "#22c55e" },
-        { note: "F4", time: 2750, color: "#ef4444" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "D4", time: 3250, color: "#b91c1c" },
-        { note: "C4", time: 3500, color: "#991b1b" },
-        { note: "B3", time: 3750, color: "#7f1d1d" },
-        { note: "C4", time: 4000, color: "#991b1b" },
-        { note: "E4", time: 4250, color: "#dc2626" },
-        { note: "G4", time: 4500, color: "#22c55e" },
-        { note: "C5", time: 4750, color: "#3b82f6" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "A4", time: 5250, color: "#f59e0b" },
-        { note: "B4", time: 5500, color: "#6366f1" },
-        { note: "C5", time: 5750, color: "#3b82f6" },
-        { note: "D5", time: 6000, color: "#8b5cf6" },
-        { note: "E5", time: 6250, color: "#ec4899" },
-        { note: "D5", time: 6500, color: "#8b5cf6" },
-        { note: "C5", time: 6750, color: "#3b82f6" },
-        { note: "B4", time: 7000, color: "#6366f1" },
-        { note: "A4", time: 7250, color: "#f59e0b" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "F4", time: 7750, color: "#ef4444" },
-        { note: "G4", time: 8000, color: "#22c55e" },
-        { note: "B4", time: 8250, color: "#6366f1" },
-        { note: "D5", time: 8500, color: "#8b5cf6" },
-        { note: "F5", time: 8750, color: "#f97316" },
-        { note: "E5", time: 9000, color: "#ec4899" },
-        { note: "D5", time: 9250, color: "#8b5cf6" },
-        { note: "C5", time: 9500, color: "#3b82f6" },
-        { note: "B4", time: 9750, color: "#6366f1" },
-        { note: "A4", time: 10000, color: "#f59e0b" },
-        { note: "G4", time: 10250, color: "#22c55e" },
-        { note: "F4", time: 10500, color: "#ef4444" },
-        { note: "E4", time: 10750, color: "#dc2626" },
-        { note: "D4", time: 11000, color: "#b91c1c" },
-        { note: "C4", time: 11250, color: "#991b1b" }
-      ],
-      "chopin-minute-keyboard": [
-        { note: "D5", time: 1000, color: "#8b5cf6" },
-        { note: "C5", time: 1200, color: "#3b82f6" },
-        { note: "B4", time: 1400, color: "#6366f1" },
-        { note: "A4", time: 1600, color: "#f59e0b" },
-        { note: "G4", time: 1800, color: "#22c55e" },
-        { note: "F4", time: 2000, color: "#ef4444" },
-        { note: "E4", time: 2200, color: "#dc2626" },
-        { note: "D4", time: 2400, color: "#b91c1c" },
-        { note: "C4", time: 2600, color: "#991b1b" },
-        { note: "D4", time: 2800, color: "#b91c1c" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "F4", time: 3200, color: "#ef4444" },
-        { note: "G4", time: 3400, color: "#22c55e" },
-        { note: "A4", time: 3600, color: "#f59e0b" },
-        { note: "B4", time: 3800, color: "#6366f1" },
-        { note: "C5", time: 4000, color: "#3b82f6" },
-        { note: "D5", time: 4200, color: "#8b5cf6" },
-        { note: "E5", time: 4400, color: "#ec4899" },
-        { note: "F5", time: 4600, color: "#f97316" },
-        { note: "G5", time: 4800, color: "#10b981" },
-        { note: "A5", time: 5000, color: "#0ea5e9" },
-        { note: "G5", time: 5200, color: "#10b981" },
-        { note: "F5", time: 5400, color: "#f97316" },
-        { note: "E5", time: 5600, color: "#ec4899" },
-        { note: "D5", time: 5800, color: "#8b5cf6" },
-        { note: "C5", time: 6000, color: "#3b82f6" },
-        { note: "B4", time: 6200, color: "#6366f1" },
-        { note: "A4", time: 6400, color: "#f59e0b" },
-        { note: "G4", time: 6600, color: "#22c55e" },
-        { note: "F4", time: 6800, color: "#ef4444" },
-        { note: "E4", time: 7000, color: "#dc2626" },
-        { note: "D4", time: 7200, color: "#b91c1c" }
-      ],
+  // Detectar teclas pressionadas
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (!isPlaying) return;
 
-      // Músicas Brasileiras - Mix de instrumentos
-      "asa-branca-bell": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "A4", time: 1500, color: "#f59e0b" },
-        { note: "B4", time: 2000, color: "#6366f1" },
-        { note: "B4", time: 2500, color: "#6366f1" },
-        { note: "A4", time: 3000, color: "#f59e0b" },
-        { note: "G4", time: 3500, color: "#22c55e" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "E4", time: 4500, color: "#dc2626" },
-        { note: "E4", time: 5000, color: "#dc2626" },
-        { note: "G4", time: 5500, color: "#22c55e" },
-        { note: "G4", time: 6000, color: "#22c55e" },
-        { note: "F4", time: 6500, color: "#ef4444" },
-        { note: "E4", time: 7000, color: "#dc2626" },
-        { note: "D4", time: 7500, color: "#b91c1c" },
-        { note: "C4", time: 8000, color: "#991b1b" },
-        { note: "D4", time: 8500, color: "#b91c1c" },
-        { note: "E4", time: 9000, color: "#dc2626" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        { note: "G4", time: 10000, color: "#22c55e" },
-        { note: "G4", time: 10500, color: "#22c55e" },
-        { note: "A4", time: 11000, color: "#f59e0b" },
-        { note: "G4", time: 11500, color: "#22c55e" },
-        { note: "F4", time: 12000, color: "#ef4444" },
-        { note: "E4", time: 12500, color: "#dc2626" },
-        { note: "D4", time: 13000, color: "#b91c1c" },
-        { note: "C4", time: 13500, color: "#991b1b" }
-      ],
-      "aquarela-xylophone": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "E4", time: 2000, color: "#dc2626" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "G4", time: 3500, color: "#22c55e" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "A4", time: 4500, color: "#f59e0b" },
-        { note: "G4", time: 5000, color: "#22c55e" },
-        { note: "F4", time: 5500, color: "#ef4444" },
-        { note: "E4", time: 6000, color: "#dc2626" },
-        { note: "D4", time: 6500, color: "#b91c1c" },
-        { note: "C4", time: 7000, color: "#991b1b" },
-        { note: "C4", time: 7500, color: "#991b1b" },
-        { note: "C4", time: 8000, color: "#991b1b" },
-        { note: "D4", time: 8500, color: "#b91c1c" },
-        { note: "E4", time: 9000, color: "#dc2626" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        { note: "G4", time: 10000, color: "#22c55e" },
-        { note: "G4", time: 10500, color: "#22c55e" },
-        { note: "G4", time: 11000, color: "#22c55e" },
-        { note: "A4", time: 11500, color: "#f59e0b" },
-        { note: "G4", time: 12000, color: "#22c55e" },
-        { note: "F4", time: 12500, color: "#ef4444" },
-        { note: "E4", time: 13000, color: "#dc2626" },
-        { note: "D4", time: 13500, color: "#b91c1c" },
-        { note: "C4", time: 14000, color: "#991b1b" }
-      ],
-      "garota-ipanema-keyboard": [
-        { note: "G4", time: 1000, color: "#22c55e" },
-        { note: "F4", time: 1500, color: "#ef4444" },
-        { note: "G4", time: 2000, color: "#22c55e" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "E4", time: 3000, color: "#dc2626" },
-        { note: "D4", time: 3500, color: "#b91c1c" },
-        { note: "C4", time: 4000, color: "#991b1b" },
-        { note: "B3", time: 4500, color: "#7f1d1d" },
-        { note: "A3", time: 5000, color: "#450a0a" },
-        { note: "G3", time: 5500, color: "#166534" },
-        { note: "F3", time: 6000, color: "#9f1239" },
-        { note: "G3", time: 6500, color: "#166534" },
-        { note: "A3", time: 7000, color: "#450a0a" },
-        { note: "B3", time: 7500, color: "#7f1d1d" },
-        { note: "C4", time: 8000, color: "#991b1b" },
-        { note: "D4", time: 8500, color: "#b91c1c" },
-        { note: "E4", time: 9000, color: "#dc2626" },
-        { note: "F4", time: 9500, color: "#ef4444" },
-        { note: "G4", time: 10000, color: "#22c55e" },
-        { note: "A4", time: 10500, color: "#f59e0b" },
-        { note: "B4", time: 11000, color: "#6366f1" },
-        { note: "C5", time: 11500, color: "#3b82f6" },
-        { note: "D5", time: 12000, color: "#8b5cf6" },
-        { note: "C5", time: 12500, color: "#3b82f6" },
-        { note: "B4", time: 13000, color: "#6366f1" },
-        { note: "A4", time: 13500, color: "#f59e0b" },
-        { note: "G4", time: 14000, color: "#22c55e" }
-      ],
-      "ciranda-cirandinha-bell": [
-        { note: "C4", time: 1000, color: "#991b1b" },
-        { note: "D4", time: 1500, color: "#b91c1c" },
-        { note: "E4", time: 2000, color: "#dc2626" },
-        { note: "F4", time: 2500, color: "#ef4444" },
-        { note: "G4", time: 3000, color: "#22c55e" },
-        { note: "G4", time: 3500, color: "#22c55e" },
-        { note: "G4", time: 4000, color: "#22c55e" },
-        { note: "C4", time: 4500, color: "#991b1b" },
-        { note: "D4", time: 5000, color: "#b91c1c" },
-        { note: "E4", time: 5500, color: "#dc2626" },
-        { note: "F4", time: 6000, color: "#ef4444" },
-        { note: "G4", time: 6500, color: "#22c55e" },
-        { note: "G4", time: 7000, color: "#22c55e" },
-        { note: "G4", time: 7500, color: "#22c55e" },
-        { note: "C5", time: 8000, color: "#3b82f6" },
-        { note: "B4", time: 8500, color: "#6366f1" },
-        { note: "A4", time: 9000, color: "#f59e0b" },
-        { note: "G4", time: 9500, color: "#22c55e" },
-        { note: "F4", time: 10000, color: "#ef4444" },
-        { note: "E4", time: 10500, color: "#dc2626" },
-        { note: "D4", time: 11000, color: "#b91c1c" },
-        { note: "C4", time: 11500, color: "#991b1b" }
-      ]
-    };
+    const keyPressed = event.key;
+    const lane = lanes.find(l => l.key === keyPressed);
+    if (!lane) return;
 
-    return songPatterns[songId] || [];
+    event.preventDefault();
+
+    const laneIndex = lanes.indexOf(lane);
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
+
+    const hitNote = notes.find(note => 
+      note.lane === laneIndex && 
+      note.y >= hitZoneTop - 50 && 
+      note.y <= hitZoneBottom + 50 &&
+      !note.isHit
+    );
+
+    if (hitNote) {
+      handleNoteClick(hitNote.id);
+    } else {
+      if (combo > 0) {
+        setCombo(0);
+        toast("Miss! Combo perdido", {
+          duration: 1000,
+        });
+      }
+      
+      onNotePlay(lane.frequency, lane.color);
+      console.log(`Missed note in lane ${laneIndex}`);
+    }
+  }, [lanes, isPlaying, notes, combo, hitZoneHeight, handleNoteClick, onNotePlay]);
+
+  // Gerenciar eventos de teclado
+  useEffect(() => {
+    if (isPlaying) {
+      document.addEventListener('keydown', handleKeyPress);
+      return () => document.removeEventListener('keydown', handleKeyPress);
+    }
+  }, [isPlaying, handleKeyPress]);
+
+  // Iniciar/pausar o jogo
+  const togglePlay = () => {
+    if (!isPlaying) {
+      // Iniciar o jogo
+      if (notes.length === 0) {
+        generateNotes();
+      }
+      
+      const now = Date.now();
+      if (gameStartTimeRef.current === 0) {
+        // Primeiro início do jogo
+        gameStartTimeRef.current = now;
+        totalPausedTimeRef.current = 0;
+      } else {
+        // Retomando do pause
+        const pausedDuration = now - pauseTimeRef.current;
+        totalPausedTimeRef.current += pausedDuration;
+      }
+      
+      lastUpdateTimeRef.current = now;
+      console.log(`Starting/Resuming ${instrumentType} game`);
+      setIsPlaying(true);
+      setGameEnded(false);
+    } else {
+      // Pausar o jogo
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      pauseTimeRef.current = Date.now();
+      setIsPlaying(false);
+      console.log(`Pausing ${instrumentType} game`);
+    }
   };
 
-  const getNoteFrequency = (note: string): number => {
-    const noteMap: Record<string, number> = {
-      "C3": 130.81, "C#3": 138.59, "D3": 146.83, "D#3": 155.56, "E3": 164.81, "F3": 174.61,
-      "F#3": 185.00, "G3": 196.00, "G#3": 207.65, "A3": 220.00, "A#3": 233.08, "B3": 246.94,
-      "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63, "F4": 349.23,
-      "F#4": 369.99, "G4": 392.00, "G#4": 415.30, "A4": 440.00, "A#4": 466.16, "B4": 493.88,
-      "C5": 523.25, "C#5": 554.37, "D5": 587.33, "D#5": 622.25, "E5": 659.25, "F5": 698.46,
-      "F#5": 739.99, "G5": 783.99, "G#5": 830.61, "A5": 880.00, "A#5": 932.33, "B5": 987.77
-    };
-    return noteMap[note] || 440;
-  };
+  // Iniciar animação quando o jogo começar
+  useEffect(() => {
+    if (isPlaying) {
+      updateNotes();
+    }
+  }, [isPlaying, updateNotes]);
 
-  const getKeyForNote = (note: string): string => {
-    const noteToKey: Record<string, string> = {
-      "C4": "1", "D4": "2", "E4": "3", "F4": "4", "G4": "5", "A4": "6", "B4": "7",
-      "C5": "1", "D5": "2", "E5": "3", "F5": "4", "G5": "5", "A5": "6", "B5": "7",
-      "C3": "1", "D3": "2", "E3": "3", "F3": "4", "G3": "5", "A3": "6", "B3": "7"
-    };
-    return noteToKey[note] || "";
-  };
-
-  const startGame = () => {
-    setGameStarted(true);
+  // Resetar o jogo
+  const resetGame = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    setIsPlaying(false);
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
     setHitNotes(0);
-    setMissedNotes(0);
-    setPerfectHits(0);
-    setGoodHits(0);
-    setOkayHits(0);
-    setAccuracy(0);
-    setGameOver(false);
-    setIsCountingDown(true);
-    setCountdownValue(3);
-
-    const songNotes = getSongNotes(songId);
-    setTotalNotes(songNotes.length);
-    setNotes(songNotes);
-    notesRef.current = songNotes;
-    activeNotesRef.current = [];
-    setActiveNotes([]);
-
-    const countdownInterval = setInterval(() => {
-      setCountdownValue((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          setIsCountingDown(false);
-          gameStartTimeRef.current = Date.now();
-          requestAnimationFrame(gameLoop);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    setTotalNotes(0);
+    setGameEnded(false);
+    setNotes([]);
+    gameStartTimeRef.current = 0;
+    lastUpdateTimeRef.current = 0;
+    pauseTimeRef.current = 0;
+    totalPausedTimeRef.current = 0;
+    console.log(`Game reset for ${instrumentType}`);
   };
 
-  const gameLoop = (timestamp: number) => {
-    if (!gameStarted || gameOver) return;
-
-    const currentTime = Date.now() - gameStartTimeRef.current;
-    
-    // Check for new notes to add
-    const newActiveNotes = [...activeNotesRef.current];
-    const remainingNotes = notesRef.current.filter(note => {
-      if (note.time <= currentTime + 3000 && note.time > currentTime - 1000) {
-        if (!newActiveNotes.some(activeNote => activeNote === note)) {
-          newActiveNotes.push(note);
-        }
-        return false;
-      }
-      return true;
-    });
-
-    // Update notes that are now active
-    notesRef.current = remainingNotes;
-    activeNotesRef.current = newActiveNotes;
-    setActiveNotes(newActiveNotes);
-
-    // Check for missed notes
-    const stillActiveNotes = newActiveNotes.filter(note => {
-      const notePosition = ((currentTime - note.time) / 3000) * 100;
-      if (notePosition > 100) {
-        setMissedNotes(prev => prev + 1);
-        setCombo(0);
-        showFeedback("Errou!", "#ef4444");
-        return false;
-      }
-      return true;
-    });
-
-    activeNotesRef.current = stillActiveNotes;
-    setActiveNotes(stillActiveNotes);
-
-    // Update accuracy
-    const totalAttempted = hitNotes + missedNotes;
-    if (totalAttempted > 0) {
-      setAccuracy(Math.round((hitNotes / totalAttempted) * 100));
-    }
-
-    // Check if game is over
-    if (remainingNotes.length === 0 && stillActiveNotes.length === 0) {
-      setGameOver(true);
-      return;
-    }
-
-    animationRef.current = requestAnimationFrame(gameLoop);
-  };
-
-  const handleKeyPress = (key: string) => {
-    if (!gameStarted || gameOver || isCountingDown) return;
-
-    const currentTime = Date.now() - gameStartTimeRef.current;
-    
-    // Find the closest note that matches this key
-    const keyNotes = activeNotesRef.current.filter(note => getKeyForNote(note.note) === key);
-    
-    if (keyNotes.length > 0) {
-      // Sort by how close they are to the target zone (100% position)
-      keyNotes.sort((a, b) => {
-        const posA = Math.abs(((currentTime - a.time) / 3000) * 100 - 100);
-        const posB = Math.abs(((currentTime - b.time) / 3000) * 100 - 100);
-        return posA - posB;
-      });
-      
-      const closestNote = keyNotes[0];
-      const notePosition = ((currentTime - closestNote.time) / 3000) * 100;
-      const accuracy = Math.abs(notePosition - 100);
-      
-      // Remove the note from active notes
-      activeNotesRef.current = activeNotesRef.current.filter(note => note !== closestNote);
-      setActiveNotes(activeNotesRef.current);
-      
-      // Play the note sound
-      const frequency = getNoteFrequency(closestNote.note);
-      onNotePlay(frequency, closestNote.color);
-      
-      // Score based on accuracy
-      let points = 0;
-      if (accuracy < 5) {
-        points = 100;
-        setPerfectHits(prev => prev + 1);
-        showFeedback("Perfeito!", "#10b981");
-      } else if (accuracy < 10) {
-        points = 75;
-        setGoodHits(prev => prev + 1);
-        showFeedback("Ótimo!", "#3b82f6");
-      } else if (accuracy < 15) {
-        points = 50;
-        setOkayHits(prev => prev + 1);
-        showFeedback("Bom!", "#f59e0b");
-      } else {
-        points = 25;
-        showFeedback("Ok!", "#8b5cf6");
-      }
-      
-      setScore(prev => prev + points);
-      setHitNotes(prev => prev + 1);
-      setCombo(prev => prev + 1);
-      setMaxCombo(prev => Math.max(prev, combo + 1));
-    }
-  };
-
-  const showFeedback = (text: string, color: string) => {
-    setLastFeedback(text);
-    setFeedbackColor(color);
-    
-    setTimeout(() => {
-      setLastFeedback("");
-    }, 1000);
-  };
-
+  // Cleanup
   useEffect(() => {
-    if (gameStarted && !isCountingDown && !gameOver) {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key >= "1" && e.key <= "7") {
-          handleKeyPress(e.key);
-        }
-      };
-      
-      window.addEventListener("keydown", handleKeyDown);
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    }
-  }, [gameStarted, isCountingDown, gameOver]);
-
-  useEffect(() => {
-    startGame();
-    
     return () => {
-      cancelAnimationFrame(animationRef.current);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [songId]);
+  }, []);
 
-  const getInstrumentName = () => {
+  const getInstrumentTitle = () => {
     switch (instrumentType) {
-      case "bell": return "Sino";
-      case "xylophone": return "Xilofone";
-      case "keyboard": return "Teclado";
-      default: return "Instrumento";
+      case "bell": return "🔔 Sino-Hero";
+      case "xylophone": return "🎵 Xilofone-Hero";
+      case "keyboard": return "🎹 Teclado-Hero";
+      default: return "TEA-Hero";
     }
-  };
-
-  const renderKeys = () => {
-    const keys = [
-      { key: "1", note: "C", color: "#991b1b" },
-      { key: "2", note: "D", color: "#b91c1c" },
-      { key: "3", note: "E", color: "#dc2626" },
-      { key: "4", note: "F", color: "#ef4444" },
-      { key: "5", note: "G", color: "#22c55e" },
-      { key: "6", note: "A", color: "#f59e0b" },
-      { key: "7", note: "B", color: "#6366f1" }
-    ];
-
-    return (
-      <div className="flex justify-center space-x-1 mt-4">
-        {keys.map((k) => (
-          <div
-            key={k.key}
-            className={`w-12 h-16 flex flex-col items-center justify-center rounded-md border-2 border-gray-300 cursor-pointer`}
-            style={{ backgroundColor: k.color + "33" }}
-            onClick={() => handleKeyPress(k.key)}
-          >
-            <div className="text-lg font-bold">{k.key}</div>
-            <div className="text-xs">{k.note}</div>
-          </div>
-        ))}
-      </div>
-    );
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {isCountingDown ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-9xl font-bold text-purple-600 animate-pulse">
-            {countdownValue}
-          </div>
-        </div>
-      ) : gameOver ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
-          <h2 className="text-3xl font-bold mb-6">Fim de Jogo!</h2>
-          
-          <Card className="w-full max-w-md p-6">
-            <div className="text-center mb-6">
-              <div className="text-4xl font-bold text-purple-600 mb-2">{score}</div>
-              <div className="text-gray-500">Pontuação Final</div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-500">{accuracy}%</div>
-                <div className="text-gray-500">Precisão</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-500">{maxCombo}x</div>
-                <div className="text-gray-500">Combo Máximo</div>
-              </div>
-            </div>
-            
-            <div className="space-y-2 mb-6">
-              <div className="flex justify-between">
-                <span>Notas Perfeitas:</span>
-                <span className="font-bold text-green-500">{perfectHits}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Notas Ótimas:</span>
-                <span className="font-bold text-blue-500">{goodHits}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Notas Boas:</span>
-                <span className="font-bold text-yellow-500">{okayHits}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Notas Erradas:</span>
-                <span className="font-bold text-red-500">{missedNotes}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Total de Notas:</span>
-                <span className="font-bold">{totalNotes}</span>
-              </div>
-            </div>
-            
-            <Button onClick={startGame} className="w-full">
-              Jogar Novamente
+    <div className="flex flex-col h-full bg-black">
+      {/* Header com controles e pontuação */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">
+            {getInstrumentTitle()}
+          </h1>
+          <div className="flex gap-2">
+            <Button onClick={togglePlay} variant="secondary" size="sm">
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {isPlaying ? "Pausar" : "Jogar"}
             </Button>
-          </Card>
-        </div>
-      ) : (
-        <div className="flex-1 flex flex-col" ref={gameAreaRef}>
-          <div className="bg-gray-100 p-4 flex justify-between items-center">
-            <div>
-              <div className="text-sm text-gray-500">{getInstrumentName()}</div>
-              <div className="font-bold text-xl">{score} pontos</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-gray-500">Combo</div>
-              <div className="font-bold text-xl">{combo}x</div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500">Precisão</div>
-              <div className="font-bold text-xl">{accuracy}%</div>
-            </div>
+            <Button onClick={resetGame} variant="secondary" size="sm">
+              <RotateCcw className="w-4 h-4" />
+              Reset
+            </Button>
           </div>
-          
-          <div className="relative flex-1 bg-gray-900 overflow-hidden">
-            {/* Target zone */}
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-yellow-500 bg-opacity-30 border-t-2 border-b-2 border-yellow-400 z-10"></div>
-            
-            {/* Notes */}
-            {activeNotes.map((note, index) => {
-              const currentTime = Date.now() - gameStartTimeRef.current;
-              const notePosition = ((currentTime - note.time) / 3000) * 100;
-              const key = getKeyForNote(note.note);
-              
-              return (
-                <div
-                  key={`${note.note}-${note.time}-${index}`}
-                  className="absolute h-14 w-10 rounded-md flex items-center justify-center text-white font-bold border-2"
-                  style={{
-                    backgroundColor: note.color,
-                    borderColor: note.color,
-                    bottom: `${notePosition}%`,
-                    left: `calc(${(parseInt(key) - 1) * (100 / 7)}% + ${(100 / 14)}% - 20px)`,
-                    transform: 'translateX(-50%)',
-                    transition: 'bottom 0.1s linear'
-                  }}
-                >
-                  {key}
-                </div>
-              );
-            })}
-            
-            {/* Feedback text */}
-            {lastFeedback && (
-              <div 
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-bold animate-bounce"
-                style={{ color: feedbackColor }}
-              >
-                {lastFeedback}
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-5 gap-4 text-center">
+          <div>
+            <div className="text-sm opacity-80">Pontuação</div>
+            <div className="text-xl font-bold">{score.toLocaleString()}</div>
+          </div>
+          <div>
+            <div className="text-sm opacity-80">Combo</div>
+            <div className="text-xl font-bold text-yellow-300">{combo}x</div>
+          </div>
+          <div>
+            <div className="text-sm opacity-80">Max Combo</div>
+            <div className="text-xl font-bold text-orange-300">{maxCombo}x</div>
+          </div>
+          <div>
+            <div className="text-sm opacity-80">Acertos</div>
+            <div className="text-xl font-bold text-green-300">{hitNotes}/{totalNotes}</div>
+          </div>
+          <div>
+            <div className="text-sm opacity-80">Velocidade</div>
+            <div className="text-xl font-bold">{speed}x</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Instruções */}
+      <div className="bg-blue-600 p-3 text-center text-white">
+        <p className="text-sm">
+          Use as teclas <strong>1-7</strong> ou <strong>clique nas notas</strong> quando elas passarem pela zona dourada!
+        </p>
+      </div>
+
+      {/* Game Area */}
+      <div 
+        ref={gameRef}
+        className="flex-1 relative bg-gradient-to-b from-gray-900 to-black overflow-hidden"
+        style={{ height: "500px" }}
+      >
+        {/* Lanes (faixas) */}
+        {lanes.map((lane, index) => (
+          <div
+            key={index}
+            className="absolute border-r border-gray-600"
+            style={{
+              left: `${(index / lanes.length) * 100}%`,
+              width: `${100 / lanes.length}%`,
+              height: "100%",
+              backgroundColor: `${lane.color}15`
+            }}
+          >
+            {/* Indicador da nota na parte inferior */}
+            <div
+              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg cursor-pointer hover:opacity-80 transition-opacity"
+              style={{
+                height: "70px",
+                backgroundColor: lane.color,
+              }}
+              onClick={() => onNotePlay(lane.frequency, lane.color)}
+            >
+              <div className="text-center">
+                <div className="text-xs font-bold">{lane.key}</div>
+                <div className="text-2xl">{lane.symbol}</div>
+                <div className="text-xs font-bold">{lane.name}</div>
               </div>
-            )}
-            
-            {/* Lane dividers */}
-            <div className="absolute inset-0 flex">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div 
-                  key={i} 
-                  className="border-l border-gray-700 h-full" 
-                  style={{ width: `${100 / 7}%` }}
-                />
-              ))}
             </div>
           </div>
-          
-          {renderKeys()}
+        ))}
+
+        {/* Zona de acerto */}
+        <div
+          className="absolute w-full border-4 border-yellow-400 bg-yellow-400/30 shadow-lg"
+          style={{
+            top: "350px",
+            height: `${hitZoneHeight}px`,
+          }}
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-yellow-400 font-bold text-lg animate-pulse">ZONA DE ACERTO</div>
+          </div>
         </div>
-      )}
+
+        {/* Notas em queda */}
+        {notes.map((note) => (
+          <div
+            key={note.id}
+            className={`absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-all cursor-pointer hover:scale-110 ${
+              note.isHit ? 'opacity-50 bg-green-500' : ''
+            }`}
+            style={{
+              left: `${(note.lane / lanes.length) * 100 + 1}%`,
+              width: `${100 / lanes.length - 2}%`,
+              top: `${note.y}px`,
+              height: "50px",
+              backgroundColor: note.isHit ? '#22c55e' : note.color,
+              boxShadow: `0 0 20px ${note.isHit ? '#22c55e50' : note.color + '50'}`,
+            }}
+            onClick={() => handleNoteClick(note.id)}
+          >
+            <div className="text-center">
+              <div className="text-lg">{note.isHit ? '✓' : lanes[note.lane].symbol}</div>
+            </div>
+          </div>
+        ))}
+
+        {/* Linha de referência */}
+        <div
+          className="absolute w-full border-t-4 border-yellow-400 opacity-50"
+          style={{ top: "380px" }}
+        />
+
+        {/* Mensagem de fim de jogo */}
+        {gameEnded && (
+          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">🎉 Parabéns!</h2>
+              <div className="space-y-2 text-gray-700">
+                <p><strong>Pontuação Final:</strong> {score.toLocaleString()}</p>
+                <p><strong>Precisão:</strong> {totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 0}%</p>
+                <p><strong>Acertos:</strong> {hitNotes}/{totalNotes}</p>
+                <p><strong>Combo Máximo:</strong> {maxCombo}x</p>
+              </div>
+              <Button onClick={resetGame} className="mt-4">
+                Jogar Novamente
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
