@@ -574,6 +574,173 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
+    } else if (songId === "jingle-bells-xylophone") {
+      // Melodia completa de "Jingle Bells"
+      const jingleBellsMelody = [
+        // "Jingle bells, jingle bells"
+        { note: 2, time: 0 },     // Mi - "Jin"
+        { note: 2, time: 400 },   // Mi - "gle"
+        { note: 2, time: 800 },   // Mi - "bells"
+        
+        { note: 2, time: 1600 },  // Mi - "jin"
+        { note: 2, time: 2000 },  // Mi - "gle"
+        { note: 2, time: 2400 },  // Mi - "bells"
+        
+        // "Jingle all the way"
+        { note: 2, time: 3200 },  // Mi - "jin"
+        { note: 4, time: 3600 },  // Sol - "gle"
+        { note: 0, time: 4000 },  // Dó - "all"
+        { note: 1, time: 4400 },  // Ré - "the"
+        { note: 2, time: 4800 },  // Mi - "way"
+        
+        // "Oh what fun it is to ride"
+        { note: 3, time: 6000 },  // Fá - "Oh"
+        { note: 3, time: 6400 },  // Fá - "what"
+        { note: 3, time: 6800 },  // Fá - "fun"
+        { note: 3, time: 7200 },  // Fá - "it"
+        { note: 3, time: 7600 },  // Fá - "is"
+        { note: 2, time: 8000 },  // Mi - "to"
+        { note: 2, time: 8400 },  // Mi - "ride"
+        
+        // "In a one-horse open sleigh"
+        { note: 2, time: 9200 },  // Mi - "in"
+        { note: 1, time: 9600 },  // Ré - "a"
+        { note: 1, time: 10000 }, // Ré - "one"
+        { note: 2, time: 10400 }, // Mi - "horse"
+        { note: 1, time: 10800 }, // Ré - "o"
+        { note: 4, time: 11200 }, // Sol - "pen"
+        { note: 0, time: 11600 }, // Dó - "sleigh"
+        
+        // Segunda parte: "Jingle bells, jingle bells"
+        { note: 2, time: 13000 }, // Mi - "Jin"
+        { note: 2, time: 13400 }, // Mi - "gle"
+        { note: 2, time: 13800 }, // Mi - "bells"
+        
+        { note: 2, time: 14600 }, // Mi - "jin"
+        { note: 2, time: 15000 }, // Mi - "gle"
+        { note: 2, time: 15400 }, // Mi - "bells"
+        
+        // "Jingle all the way"
+        { note: 2, time: 16200 }, // Mi - "jin"
+        { note: 4, time: 16600 }, // Sol - "gle"
+        { note: 0, time: 17000 }, // Dó - "all"
+        { note: 1, time: 17400 }, // Ré - "the"
+        { note: 2, time: 17800 }, // Mi - "way"
+        
+        // "Oh what fun it is to ride"
+        { note: 3, time: 19000 }, // Fá - "Oh"
+        { note: 3, time: 19400 }, // Fá - "what"
+        { note: 3, time: 19800 }, // Fá - "fun"
+        { note: 3, time: 20200 }, // Fá - "it"
+        { note: 3, time: 20600 }, // Fá - "is"
+        { note: 2, time: 21000 }, // Mi - "to"
+        { note: 2, time: 21400 }, // Mi - "ride"
+        
+        // "In a one-horse open sleigh"
+        { note: 2, time: 22200 }, // Mi - "in"
+        { note: 1, time: 22600 }, // Ré - "a"
+        { note: 1, time: 23000 }, // Ré - "one"
+        { note: 2, time: 23400 }, // Mi - "horse"
+        { note: 1, time: 23800 }, // Ré - "o"
+        { note: 4, time: 24200 }, // Sol - "pen"
+        { note: 0, time: 24600 }, // Dó - "sleigh"
+        
+        // Final instrumental
+        { note: 4, time: 26000 }, // Sol
+        { note: 3, time: 26400 }, // Fá
+        { note: 2, time: 26800 }, // Mi
+        { note: 1, time: 27200 }, // Ré
+        { note: 0, time: 27600 }, // Dó (final)
+      ];
+
+      jingleBellsMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 350,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "chopsticks-keyboard") {
+      // Melodia completa de "Chopsticks"
+      const chopsticksMelody = [
+        // Primeira parte - Mão direita alternando
+        { note: 3, time: 0 },     // Fá
+        { note: 4, time: 500 },   // Sol
+        { note: 5, time: 1000 },  // Lá
+        { note: 4, time: 1500 },  // Sol
+        { note: 3, time: 2000 },  // Fá
+        { note: 4, time: 2500 },  // Sol
+        { note: 5, time: 3000 },  // Lá
+        { note: 4, time: 3500 },  // Sol
+        
+        // Segunda parte - Variação
+        { note: 3, time: 4000 },  // Fá
+        { note: 5, time: 4500 },  // Lá
+        { note: 3, time: 5000 },  // Fá
+        { note: 5, time: 5500 },  // Lá
+        { note: 3, time: 6000 },  // Fá
+        { note: 5, time: 6500 },  // Lá
+        { note: 3, time: 7000 },  // Fá
+        { note: 5, time: 7500 },  // Lá
+        
+        // Terceira parte - Descida
+        { note: 6, time: 8000 },  // Si
+        { note: 5, time: 8500 },  // Lá
+        { note: 4, time: 9000 },  // Sol
+        { note: 3, time: 9500 },  // Fá
+        { note: 2, time: 10000 }, // Mi
+        { note: 1, time: 10500 }, // Ré
+        { note: 0, time: 11000 }, // Dó
+        
+        // Quarta parte - Subida
+        { note: 0, time: 12000 }, // Dó
+        { note: 1, time: 12500 }, // Ré
+        { note: 2, time: 13000 }, // Mi
+        { note: 3, time: 13500 }, // Fá
+        { note: 4, time: 14000 }, // Sol
+        { note: 5, time: 14500 }, // Lá
+        { note: 6, time: 15000 }, // Si
+        
+        // Repetição da primeira parte
+        { note: 3, time: 16000 }, // Fá
+        { note: 4, time: 16500 }, // Sol
+        { note: 5, time: 17000 }, // Lá
+        { note: 4, time: 17500 }, // Sol
+        { note: 3, time: 18000 }, // Fá
+        { note: 4, time: 18500 }, // Sol
+        { note: 5, time: 19000 }, // Lá
+        { note: 4, time: 19500 }, // Sol
+        
+        // Final
+        { note: 3, time: 20000 }, // Fá
+        { note: 2, time: 20500 }, // Mi
+        { note: 1, time: 21000 }, // Ré
+        { note: 0, time: 21500 }, // Dó (final)
+      ];
+
+      chopsticksMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 450,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
     } else {
       // Gerar padrão genérico para outras músicas
       const patterns = [
