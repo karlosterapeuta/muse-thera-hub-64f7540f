@@ -75,7 +75,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     // Notas para "Brilha, Brilha Estrelinha" (Twinkle, Twinkle, Little Star)
     if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
       const twinkleMelody = [
-        // "Brilha, brilha estrelinha"
         { note: 0, time: 0 },     // Dó - "Bri"
         { note: 0, time: 800 },   // Dó - "lha"
         { note: 4, time: 1600 },  // Sol - "bri"
@@ -84,7 +83,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 5, time: 4000 },  // Lá - "tre"
         { note: 4, time: 4800 },  // Sol - "li" (pausa mais longa)
         
-        // "Como eu quero saber"
         { note: 3, time: 6000 },  // Fá - "Co"
         { note: 3, time: 6800 },  // Fá - "mo"
         { note: 2, time: 7600 },  // Mi - "eu"
@@ -93,7 +91,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 10000 }, // Ré - "sa"
         { note: 0, time: 10800 }, // Dó - "ber" (pausa mais longa)
         
-        // "O que você é de verdade"
         { note: 4, time: 12400 }, // Sol - "O"
         { note: 4, time: 13200 }, // Sol - "que"
         { note: 3, time: 14000 }, // Fá - "vo"
@@ -104,7 +101,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 18000 }, // Ré - "da" 
         { note: 0, time: 18800 }, // Dó - "de" (final)
         
-        // "Brilha, brilha estrelinha" (repetição)
         { note: 0, time: 20400 }, // Dó - "Bri"
         { note: 0, time: 21200 }, // Dó - "lha"
         { note: 4, time: 22000 }, // Sol - "bri"
@@ -132,21 +128,18 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     } else if (songId === "row-boat-bell") {
       // Melodia completa e corrigida de "Row, Row, Row Your Boat"
       const rowBoatMelody = [
-        // "Row, row, row your boat"
         { note: 0, time: 0 },     // Dó - "Row"
         { note: 0, time: 600 },   // Dó - "row"
         { note: 0, time: 1200 },  // Dó - "row"
         { note: 1, time: 1800 },  // Ré - "your"
         { note: 2, time: 2400 },  // Mi - "boat"
         
-        // "Gently down the stream"
         { note: 2, time: 3200 },  // Mi - "Gent"
         { note: 1, time: 3800 },  // Ré - "ly"
         { note: 2, time: 4400 },  // Mi - "down"
         { note: 3, time: 5000 },  // Fá - "the"
         { note: 4, time: 5600 },  // Sol - "stream"
         
-        // "Merrily, merrily, merrily, merrily"
         { note: 4, time: 6800 },  // Sol - "Mer"
         { note: 3, time: 7100 },  // Fá - "ri"
         { note: 2, time: 7400 },  // Mi - "ly"
@@ -160,28 +153,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 9800 },  // Mi - "ri"
         { note: 1, time: 10100 }, // Ré - "ly"
         
-        // "Life is but a dream"
         { note: 0, time: 11000 }, // Dó - "Life"
         { note: 1, time: 11600 }, // Ré - "is"
         { note: 2, time: 12200 }, // Mi - "but"
         { note: 1, time: 12800 }, // Ré - "a"
         { note: 0, time: 13400 }, // Dó - "dream"
         
-        // Segunda estrofe: "Row, row, row your boat"
         { note: 0, time: 15000 }, // Dó - "Row"
         { note: 0, time: 15600 }, // Dó - "row"
         { note: 0, time: 16200 }, // Dó - "row"
         { note: 1, time: 16800 }, // Ré - "your"
         { note: 2, time: 17400 }, // Mi - "boat"
         
-        // "Gently down the stream"
         { note: 2, time: 18200 }, // Mi - "Gent"
         { note: 1, time: 18800 }, // Ré - "ly"
         { note: 2, time: 19400 }, // Mi - "down"
         { note: 3, time: 20000 }, // Fá - "the"
         { note: 4, time: 20600 }, // Sol - "stream"
         
-        // "If you see a crocodile"
         { note: 4, time: 21800 }, // Sol - "If"
         { note: 4, time: 22200 }, // Sol - "you"
         { note: 3, time: 22600 }, // Fá - "see"
@@ -190,28 +179,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 23800 }, // Mi - "co"
         { note: 3, time: 24200 }, // Fá - "dile"
         
-        // "Don't forget to scream!"
         { note: 4, time: 25000 }, // Sol - "Don't"
         { note: 3, time: 25400 }, // Fá - "for"
         { note: 2, time: 25800 }, // Mi - "get"
         { note: 1, time: 26200 }, // Ré - "to"
         { note: 0, time: 26600 }, // Dó - "scream!"
         
-        // Terceira estrofe: "Row, row, row your boat"
         { note: 0, time: 28200 }, // Dó - "Row"
         { note: 0, time: 28800 }, // Dó - "row"
         { note: 0, time: 29400 }, // Dó - "row"
         { note: 1, time: 30000 }, // Ré - "your"
         { note: 2, time: 30600 }, // Mi - "boat"
         
-        // "Gently to and fro"
         { note: 2, time: 31400 }, // Mi - "Gent"
         { note: 1, time: 32000 }, // Ré - "ly"
         { note: 2, time: 32600 }, // Mi - "to"
         { note: 3, time: 33200 }, // Fá - "and"
         { note: 4, time: 33800 }, // Sol - "fro"
         
-        // "If you see a polar bear"
         { note: 4, time: 35000 }, // Sol - "If"
         { note: 4, time: 35400 }, // Sol - "you"
         { note: 3, time: 35800 }, // Fá - "see"
@@ -220,28 +205,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 37000 }, // Mi - "lar"
         { note: 3, time: 37400 }, // Fá - "bear"
         
-        // "Don't forget to go!"
         { note: 4, time: 38200 }, // Sol - "Don't"
         { note: 3, time: 38600 }, // Fá - "for"
         { note: 2, time: 39000 }, // Mi - "get"
         { note: 1, time: 39400 }, // Ré - "to"
         { note: 0, time: 39800 }, // Dó - "go!"
         
-        // Final: "Row, row, row your boat" (mais devagar)
         { note: 0, time: 41400 }, // Dó - "Row"
         { note: 0, time: 42200 }, // Dó - "row"
         { note: 0, time: 43000 }, // Dó - "row"
         { note: 1, time: 43800 }, // Ré - "your"
         { note: 2, time: 44600 }, // Mi - "boat"
         
-        // "Gently down the stream"
         { note: 2, time: 45800 }, // Mi - "Gent"
         { note: 1, time: 46600 }, // Ré - "ly"
         { note: 2, time: 47400 }, // Mi - "down"
         { note: 3, time: 48200 }, // Fá - "the"
         { note: 4, time: 49000 }, // Sol - "stream"
         
-        // "Merrily, merrily, merrily, merrily" (final)
         { note: 4, time: 50500 }, // Sol - "Mer"
         { note: 3, time: 50900 }, // Fá - "ri"
         { note: 2, time: 51300 }, // Mi - "ly"
@@ -255,20 +236,18 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 54500 }, // Mi - "ri"
         { note: 1, time: 54900 }, // Ré - "ly"
         
-        // "Life is but a dream" (final)
         { note: 0, time: 56000 }, // Dó - "Life"
         { note: 1, time: 56800 }, // Ré - "is"
         { note: 2, time: 57600 }, // Mi - "but"
         { note: 1, time: 58400 }, // Ré - "a"
         { note: 0, time: 59200 }, // Dó - "dream"
         
-        // Coda instrumental
         { note: 2, time: 60500 }, // Mi
         { note: 1, time: 61000 }, // Ré
         { note: 0, time: 61500 }, // Dó (final)
       ];
 
-      rowBoatMelody.forEach((noteData, index) => {
+      happyBirthdayMelody.forEach((noteData, index) => {
         if (noteData.note < lanes.length) {
           newNotes.push({
             id: `note-${noteId++}`,
@@ -276,7 +255,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 500,
+            duration: 400,
             y: -100,
             hasPlayed: false,
             isHit: false
@@ -286,7 +265,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     } else if (songId === "mary-lamb-bell") {
       // Melodia completa e corrigida de "Mary Had a Little Lamb"
       const maryLambMelody = [
-        // Verso 1: "Mary had a little lamb" (mais devagar)
         { note: 2, time: 0 },     // Mi - "Ma"
         { note: 1, time: 500 },   // Ré - "ry"
         { note: 0, time: 1000 },  // Dó - "had"
@@ -295,17 +273,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 2500 },  // Mi - "tle"
         { note: 2, time: 3000 },  // Mi - "lamb"
         
-        // Pausa
         { note: 1, time: 4000 },  // Ré - "lit"
         { note: 1, time: 4500 },  // Ré - "tle"
         { note: 1, time: 5000 },  // Ré - "lamb"
         
-        // Pausa
         { note: 2, time: 6000 },  // Mi - "lit"
         { note: 4, time: 6500 },  // Sol - "tle"
         { note: 4, time: 7000 },  // Sol - "lamb"
         
-        // "Mary had a little lamb" (repetição)
         { note: 2, time: 8000 },  // Mi - "Ma"
         { note: 1, time: 8500 },  // Ré - "ry"
         { note: 0, time: 9000 },  // Dó - "had"
@@ -314,7 +289,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 10500 }, // Mi - "tle"
         { note: 2, time: 11000 }, // Mi - "lamb"
         
-        // "Its fleece was white as snow"
         { note: 2, time: 12000 }, // Mi - "Its"
         { note: 1, time: 12500 }, // Ré - "fleece"
         { note: 1, time: 13000 }, // Ré - "was"
@@ -322,7 +296,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 14000 }, // Ré - "as"
         { note: 0, time: 14500 }, // Dó - "snow"
         
-        // Verso 2: "And everywhere that Mary went"
         { note: 2, time: 16000 }, // Mi - "And"
         { note: 1, time: 16500 }, // Ré - "ev"
         { note: 0, time: 17000 }, // Dó - "ery"
@@ -331,7 +304,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 18500 }, // Mi - "Ma"
         { note: 2, time: 19000 }, // Mi - "ry"
         
-        // "Mary went, Mary went"
         { note: 1, time: 20000 }, // Ré - "Ma"
         { note: 1, time: 20500 }, // Ré - "ry"
         { note: 1, time: 21000 }, // Ré - "went"
@@ -340,7 +312,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 4, time: 22500 }, // Sol - "ry"
         { note: 4, time: 23000 }, // Sol - "went"
         
-        // "Everywhere that Mary went"
         { note: 2, time: 24000 }, // Mi - "Ev"
         { note: 1, time: 24500 }, // Ré - "ery"
         { note: 0, time: 25000 }, // Dó - "where"
@@ -349,7 +320,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 26500 }, // Mi - "ry"
         { note: 2, time: 27000 }, // Mi - "went"
         
-        // "The lamb was sure to go"
         { note: 2, time: 28000 }, // Mi - "The"
         { note: 1, time: 28500 }, // Ré - "lamb"
         { note: 1, time: 29000 }, // Ré - "was"
@@ -357,7 +327,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 30000 }, // Ré - "to"
         { note: 0, time: 30500 }, // Dó - "go"
         
-        // Verso 3: "It followed her to school one day"
         { note: 2, time: 32000 }, // Mi - "It"
         { note: 1, time: 32500 }, // Ré - "fol"
         { note: 0, time: 33000 }, // Dó - "lowed"
@@ -367,7 +336,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 35000 }, // Mi - "one"
         { note: 1, time: 35500 }, // Ré - "day"
         
-        // "school one day, school one day"
         { note: 1, time: 36500 }, // Ré - "school"
         { note: 1, time: 37000 }, // Ré - "one"
         { note: 1, time: 37500 }, // Ré - "day"
@@ -376,7 +344,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 4, time: 39000 }, // Sol - "one"
         { note: 4, time: 39500 }, // Sol - "day"
         
-        // "It followed her to school one day"
         { note: 2, time: 40500 }, // Mi - "It"
         { note: 1, time: 41000 }, // Ré - "fol"
         { note: 0, time: 41500 }, // Dó - "lowed"
@@ -386,7 +353,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 43500 }, // Mi - "one"
         { note: 1, time: 44000 }, // Ré - "day"
         
-        // "Which was against the rule"
         { note: 2, time: 45000 }, // Mi - "Which"
         { note: 1, time: 45500 }, // Ré - "was"
         { note: 1, time: 46000 }, // Ré - "a"
@@ -394,7 +360,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 47000 }, // Ré - "the"
         { note: 0, time: 47500 }, // Dó - "rule"
         
-        // Verso final: "It made the children laugh and play"
         { note: 2, time: 49000 }, // Mi - "It"
         { note: 1, time: 49500 }, // Ré - "made"
         { note: 0, time: 50000 }, // Dó - "the"
@@ -404,7 +369,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 52000 }, // Mi - "and"
         { note: 1, time: 52500 }, // Ré - "play"
         
-        // "laugh and play, laugh and play"
         { note: 1, time: 53500 }, // Ré - "laugh"
         { note: 1, time: 54000 }, // Ré - "and"
         { note: 1, time: 54500 }, // Ré - "play"
@@ -413,7 +377,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 4, time: 56000 }, // Sol - "and"
         { note: 4, time: 56500 }, // Sol - "play"
         
-        // "It made the children laugh and play"
         { note: 2, time: 57500 }, // Mi - "It"
         { note: 1, time: 58000 }, // Ré - "made"
         { note: 0, time: 58500 }, // Dó - "the"
@@ -423,15 +386,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 60500 }, // Mi - "and"
         { note: 1, time: 61000 }, // Ré - "play"
         
-        // "To see a lamb at school"
-        { note: 2, time: 62000 }, // Mi - "To"
-        { note: 1, time: 62500 }, // Ré - "see"
-        { note: 1, time: 63000 }, // Ré - "a"
-        { note: 2, time: 63500 }, // Mi - "lamb"
-        { note: 1, time: 64000 }, // Ré - "at"
-        { note: 0, time: 64500 }, // Dó - "school"
-        
-        // Final instrumental com escala descendente
         { note: 4, time: 66000 }, // Sol
         { note: 3, time: 66500 }, // Fá
         { note: 2, time: 67000 }, // Mi
@@ -457,7 +411,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     } else if (songId === "old-macdonald-bell") {
       // Melodia completa e corrigida de "Old MacDonald Had a Farm"
       const oldMacDonaldMelody = [
-        // "Old MacDonald had a farm"
         { note: 4, time: 0 },     // Sol - "Old"
         { note: 4, time: 500 },   // Sol - "Mac"
         { note: 4, time: 1000 },  // Sol - "Don"
@@ -466,14 +419,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 2500 },  // Mi - "a"
         { note: 1, time: 3000 },  // Ré - "farm"
         
-        // "E-I-E-I-O"
         { note: 6, time: 4000 },  // Si - "E"
         { note: 6, time: 4500 },  // Si - "I"
         { note: 6, time: 5000 },  // Si - "E"
         { note: 6, time: 5500 },  // Si - "I"
         { note: 4, time: 6000 },  // Sol - "O"
         
-        // "And on his farm he had some cows"
         { note: 4, time: 7000 },  // Sol - "And"
         { note: 4, time: 7500 },  // Sol - "on"
         { note: 4, time: 8000 },  // Sol - "his"
@@ -483,28 +434,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 10000 }, // Ré - "some"
         { note: 0, time: 10500 }, // Dó - "cows"
         
-        // "E-I-E-I-O"
         { note: 6, time: 11500 }, // Si - "E"
         { note: 6, time: 12000 }, // Si - "I"
         { note: 6, time: 12500 }, // Si - "E"
         { note: 6, time: 13000 }, // Si - "I"
         { note: 4, time: 13500 }, // Sol - "O"
         
-        // "With a moo-moo here"
         { note: 0, time: 14500 }, // Dó - "With"
         { note: 0, time: 15000 }, // Dó - "a"
         { note: 4, time: 15500 }, // Sol - "moo"
         { note: 4, time: 16000 }, // Sol - "moo"
         { note: 0, time: 16500 }, // Dó - "here"
         
-        // "And a moo-moo there"
         { note: 2, time: 17000 }, // Mi - "And"
         { note: 2, time: 17500 }, // Mi - "a"
         { note: 4, time: 18000 }, // Sol - "moo"
         { note: 4, time: 18500 }, // Sol - "moo"
         { note: 2, time: 19000 }, // Mi - "there"
         
-        // "Here a moo, there a moo"
         { note: 0, time: 19500 }, // Dó - "Here"
         { note: 0, time: 20000 }, // Dó - "a"
         { note: 4, time: 20300 }, // Sol - "moo"
@@ -512,7 +459,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 20900 }, // Mi - "a"
         { note: 4, time: 21200 }, // Sol - "moo"
         
-        // "Everywhere a moo-moo"
         { note: 0, time: 21700 }, // Dó - "Ev"
         { note: 2, time: 22000 }, // Mi - "ery"
         { note: 4, time: 22300 }, // Sol - "where"
@@ -520,7 +466,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 4, time: 22900 }, // Sol - "moo"
         { note: 4, time: 23200 }, // Sol - "moo"
         
-        // "Old MacDonald had a farm"
         { note: 4, time: 24000 }, // Sol - "Old"
         { note: 4, time: 24500 }, // Sol - "Mac"
         { note: 4, time: 25000 }, // Sol - "Don"
@@ -529,14 +474,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 26500 }, // Mi - "a"
         { note: 1, time: 27000 }, // Ré - "farm"
         
-        // "E-I-E-I-O"
         { note: 6, time: 28000 }, // Si - "E"
         { note: 6, time: 28500 }, // Si - "I"
         { note: 6, time: 29000 }, // Si - "E"
         { note: 6, time: 29500 }, // Si - "I"
         { note: 4, time: 30000 }, // Sol - "O"
         
-        // SEGUNDO VERSO - "And on his farm he had some pigs"
         { note: 4, time: 31000 }, // Sol - "And"
         { note: 4, time: 31500 }, // Sol - "on"
         { note: 4, time: 32000 }, // Sol - "his"
@@ -546,28 +489,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 34000 }, // Ré - "some"
         { note: 0, time: 34500 }, // Dó - "pigs"
         
-        // "E-I-E-I-O"
         { note: 6, time: 35500 }, // Si - "E"
         { note: 6, time: 36000 }, // Si - "I"
         { note: 6, time: 36500 }, // Si - "E"
         { note: 6, time: 37000 }, // Si - "I"
         { note: 4, time: 37500 }, // Sol - "O"
         
-        // "With an oink-oink here"
         { note: 0, time: 38500 }, // Dó - "With"
         { note: 0, time: 39000 }, // Dó - "an"
         { note: 3, time: 39500 }, // Fá - "oink"
         { note: 3, time: 40000 }, // Fá - "oink"
         { note: 0, time: 40500 }, // Dó - "here"
         
-        // "And an oink-oink there"
         { note: 2, time: 41000 }, // Mi - "And"
         { note: 2, time: 41500 }, // Mi - "an"
         { note: 3, time: 42000 }, // Fá - "oink"
         { note: 3, time: 42500 }, // Fá - "oink"
         { note: 2, time: 43000 }, // Mi - "there"
         
-        // "Here an oink, there an oink"
         { note: 0, time: 43500 }, // Dó - "Here"
         { note: 0, time: 44000 }, // Dó - "an"
         { note: 3, time: 44300 }, // Fá - "oink"
@@ -575,7 +514,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 44900 }, // Mi - "an"
         { note: 3, time: 45200 }, // Fá - "oink"
         
-        // "Everywhere an oink-oink"
         { note: 0, time: 45700 }, // Dó - "Ev"
         { note: 2, time: 46000 }, // Mi - "ery"
         { note: 4, time: 46300 }, // Sol - "where"
@@ -583,7 +521,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 3, time: 46900 }, // Fá - "oink"
         { note: 3, time: 47200 }, // Fá - "oink"
         
-        // "Old MacDonald had a farm"
         { note: 4, time: 48000 }, // Sol - "Old"
         { note: 4, time: 48500 }, // Sol - "Mac"
         { note: 4, time: 49000 }, // Sol - "Don"
@@ -592,14 +529,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 50500 }, // Mi - "a"
         { note: 1, time: 51000 }, // Ré - "farm"
         
-        // "E-I-E-I-O"
         { note: 6, time: 52000 }, // Si - "E"
         { note: 6, time: 52500 }, // Si - "I"
         { note: 6, time: 53000 }, // Si - "E"
         { note: 6, time: 53500 }, // Si - "I"
         { note: 4, time: 54000 }, // Sol - "O"
         
-        // TERCEIRO VERSO - "And on his farm he had some ducks"
         { note: 4, time: 55000 }, // Sol - "And"
         { note: 4, time: 55500 }, // Sol - "on"
         { note: 4, time: 56000 }, // Sol - "his"
@@ -609,36 +544,31 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 58000 }, // Ré - "some"
         { note: 0, time: 58500 }, // Dó - "ducks"
         
-        // "E-I-E-I-O"
         { note: 6, time: 59500 }, // Si - "E"
         { note: 6, time: 60000 }, // Si - "I"
         { note: 6, time: 60500 }, // Si - "E"
         { note: 6, time: 61000 }, // Si - "I"
         { note: 4, time: 61500 }, // Sol - "O"
         
-        // "With a quack-quack here"
         { note: 0, time: 62500 }, // Dó - "With"
         { note: 0, time: 63000 }, // Dó - "a"
         { note: 5, time: 63500 }, // Lá - "quack"
         { note: 5, time: 64000 }, // Lá - "quack"
         { note: 0, time: 64500 }, // Dó - "here"
         
-        // "And a quack-quack there"
         { note: 2, time: 65000 }, // Mi - "And"
         { note: 2, time: 65500 }, // Mi - "a"
         { note: 5, time: 66000 }, // Lá - "quack"
         { note: 5, time: 66500 }, // Lá - "quack"
         { note: 2, time: 67000 }, // Mi - "there"
         
-        // "Here a quack, there a quack"
         { note: 0, time: 67500 }, // Dó - "Here"
-        { note: 0, time: 68000 }, // Dó - "a"
+        { note: 0, time: 68000 }, // Dó - "an"
         { note: 5, time: 68300 }, // Lá - "quack"
         { note: 2, time: 68600 }, // Mi - "there"
         { note: 2, time: 68900 }, // Mi - "a"
         { note: 5, time: 69200 }, // Lá - "quack"
         
-        // "Everywhere a quack-quack"
         { note: 0, time: 69700 }, // Dó - "Ev"
         { note: 2, time: 70000 }, // Mi - "ery"
         { note: 4, time: 70300 }, // Sol - "where"
@@ -646,7 +576,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 5, time: 70900 }, // Lá - "quack"
         { note: 5, time: 71200 }, // Lá - "quack"
         
-        // "Old MacDonald had a farm" (final)
         { note: 4, time: 72000 }, // Sol - "Old"
         { note: 4, time: 72500 }, // Sol - "Mac"
         { note: 4, time: 73000 }, // Sol - "Don"
@@ -655,14 +584,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 74500 }, // Mi - "a"
         { note: 1, time: 75000 }, // Ré - "farm"
         
-        // "E-I-E-I-O" (final)
         { note: 6, time: 76000 }, // Si - "E"
         { note: 6, time: 76500 }, // Si - "I"
         { note: 6, time: 77000 }, // Si - "E"
         { note: 6, time: 77500 }, // Si - "I"
         { note: 4, time: 78000 }, // Sol - "O"
         
-        // Final instrumental
         { note: 4, time: 79000 }, // Sol
         { note: 2, time: 79500 }, // Mi
         { note: 1, time: 80000 }, // Ré
