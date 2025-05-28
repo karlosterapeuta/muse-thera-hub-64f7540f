@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -12,6 +13,7 @@ interface Note {
   duration: number;
   y: number;
   hasPlayed?: boolean;
+  isHit?: boolean;
 }
 
 interface GuitarHeroGameProps {
@@ -28,6 +30,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   const [notes, setNotes] = useState<Note[]>([]);
   const [speed, setSpeed] = useState(2);
   const [hitZoneHeight] = useState(80);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [totalNotes, setTotalNotes] = useState(0);
+  const [hitNotes, setHitNotes] = useState(0);
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
@@ -63,77 +68,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
-  // Função para iniciar música de fundo
-  const startBackgroundMusic = useCallback(() => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
-        
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.start(audioContext.currentTime + startTime);
-        oscillator.stop(audioContext.currentTime + startTime + duration);
-      };
-
-      const melody = [
-        { freq: 523.25, time: 0, duration: 0.5 },
-        { freq: 587.33, time: 0.5, duration: 0.5 },
-        { freq: 659.25, time: 1, duration: 0.5 },
-        { freq: 523.25, time: 1.5, duration: 0.5 },
-        { freq: 587.33, time: 2, duration: 0.5 },
-        { freq: 659.25, time: 2.5, duration: 0.5 },
-        { freq: 783.99, time: 3, duration: 1 },
-        { freq: 659.25, time: 4, duration: 0.5 },
-        { freq: 587.33, time: 4.5, duration: 0.5 },
-        { freq: 523.25, time: 5, duration: 1 },
-      ];
-
-      melody.forEach(note => {
-        playBackgroundTone(note.freq, note.time, note.duration);
-      });
-
-      const interval = setInterval(() => {
-        if (isPlaying) {
-          melody.forEach(note => {
-            playBackgroundTone(note.freq, note.time, note.duration);
-          });
-        } else {
-          clearInterval(interval);
-        }
-      }, 6000);
-
-      console.log(`🎵 Background music started for ${instrumentType}`);
-      
-    } catch (error) {
-      console.error("Error starting background music:", error);
-    }
-  }, [instrumentType, isPlaying]);
-
-  // Parar música de fundo
-  const stopBackgroundMusic = useCallback(() => {
-    // Background music is now handled by audio context, no need for refs
-    console.log("🎵 Background music stopped");
-  }, []);
-
   // Função para gerar as notas da música específica
   const generateSpecificSongNotes = useCallback((songId: string) => {
     const newNotes: Note[] = [];
     let noteId = 0;
 
     // Notas para "Brilha, Brilha Estrelinha" (Twinkle, Twinkle, Little Star)
-    // Dó Dó Sol Sol Lá Lá Sol - Fá Fá Mi Mi Ré Ré Dó
-    // Notas mapeadas para os índices das lanes: 0=Dó, 1=Ré, 2=Mi, 3=Fá, 4=Sol, 5=Lá, 6=Si
     if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
       const twinkleMelody = [
         // "Brilha, brilha estrelinha"
@@ -185,7 +125,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             startTime: noteData.time,
             duration: 600,
             y: -100,
-            hasPlayed: false
+            hasPlayed: false,
+            isHit: false
           });
         }
       });
@@ -214,7 +155,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
               startTime: baseTime + noteIndex * 1000,
               duration: 600,
               y: -100,
-              hasPlayed: false
+              hasPlayed: false,
+              isHit: false
             });
           }
         });
@@ -222,6 +164,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     }
 
     console.log(`Generated ${newNotes.length} notes for song: ${songId || 'generic'}`);
+    setTotalNotes(newNotes.length);
     setNotes(newNotes);
   }, [lanes]);
 
@@ -234,77 +177,19 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     }
   }, [songId, generateSpecificSongNotes]);
 
-  // Atualizar posição das notas e tocar automaticamente
-  const updateNotes = useCallback(() => {
+  // Função para clicar em uma nota
+  const handleNoteClick = useCallback((noteId: string) => {
     if (!isPlaying) return;
 
-    const now = Date.now();
-    const currentGameTime = now - gameStartTimeRef.current - totalPausedTimeRef.current;
-    const hitZoneTop = 350;
-    const hitZoneBottom = hitZoneTop + hitZoneHeight;
-    
-    setNotes(prevNotes => 
-      prevNotes
-        .map(note => {
-          const noteAge = currentGameTime - note.startTime;
-          const newY = noteAge * speed * 0.1;
-          
-          if (!note.hasPlayed && newY >= hitZoneTop && newY <= hitZoneBottom + 20) {
-            console.log(`🎵 Auto-playing note: ${lanes[note.lane].name} at ${note.frequency}Hz`);
-            onNotePlay(note.frequency, note.color);
-            
-            return {
-              ...note,
-              y: newY,
-              hasPlayed: true
-            };
-          }
-          
-          return {
-            ...note,
-            y: newY
-          };
-        })
-        .filter(note => note.y < 600)
-    );
+    const noteToHit = notes.find(note => note.id === noteId);
+    if (!noteToHit || noteToHit.isHit) return;
 
-    setNotes(prevNotes => {
-      const missedNotes = prevNotes.filter(note => note.y > 500 && !note.hasPlayed);
-      if (missedNotes.length > 0 && combo > 0) {
-        setCombo(0);
-        toast("Notas perdidas! Combo resetado", { duration: 1000 });
-      }
-      return prevNotes.filter(note => note.y <= 500);
-    });
-
-    lastUpdateTimeRef.current = now;
-    animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed, combo, hitZoneHeight, lanes, onNotePlay]);
-
-  // Detectar teclas pressionadas
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (!isPlaying) return;
-
-    const keyPressed = event.key;
-    const lane = lanes.find(l => l.key === keyPressed);
-    if (!lane) return;
-
-    event.preventDefault();
-
-    const laneIndex = lanes.indexOf(lane);
     const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
-    console.log(`Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
-
-    const hitNote = notes.find(note => 
-      note.lane === laneIndex && 
-      note.y >= hitZoneTop - 50 && 
-      note.y <= hitZoneBottom + 50
-    );
-
-    if (hitNote) {
-      const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
+    // Verificar se a nota está na zona de acerto
+    if (noteToHit.y >= hitZoneTop - 50 && noteToHit.y <= hitZoneBottom + 50) {
+      const precision = Math.abs(noteToHit.y - (hitZoneTop + hitZoneHeight / 2));
       let points = 100;
       let feedback = "Good!";
 
@@ -320,16 +205,119 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       setScore(prev => prev + finalPoints);
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
+      setHitNotes(prev => prev + 1);
 
-      onNotePlay(lane.frequency, lane.color);
+      // Tocar o som da nota
+      onNotePlay(noteToHit.frequency, noteToHit.color);
 
       toast(`${feedback} +${finalPoints} pontos`, {
         duration: 1000,
       });
 
-      setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
-      
+      // Marcar a nota como acertada
+      setNotes(prevNotes => 
+        prevNotes.map(note => 
+          note.id === noteId ? { ...note, isHit: true } : note
+        )
+      );
+
       console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
+    } else {
+      // Nota clicada fora da zona de acerto
+      if (combo > 0) {
+        setCombo(0);
+        toast("Miss! Combo perdido", {
+          duration: 1000,
+        });
+      }
+      
+      // Ainda tocar o som da nota mesmo que seja miss
+      onNotePlay(noteToHit.frequency, noteToHit.color);
+      console.log(`Missed note: clicked outside hit zone`);
+    }
+  }, [isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
+
+  // Atualizar posição das notas
+  const updateNotes = useCallback(() => {
+    if (!isPlaying) return;
+
+    const now = Date.now();
+    const currentGameTime = now - gameStartTimeRef.current - totalPausedTimeRef.current;
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
+    
+    setNotes(prevNotes => {
+      const updatedNotes = prevNotes.map(note => {
+        const noteAge = currentGameTime - note.startTime;
+        const newY = noteAge * speed * 0.1;
+        
+        return {
+          ...note,
+          y: newY
+        };
+      });
+
+      // Verificar notas perdidas (que passaram da tela sem serem acertadas)
+      const missedNotes = updatedNotes.filter(note => 
+        note.y > 500 && !note.isHit && !note.hasPlayed
+      );
+      
+      if (missedNotes.length > 0) {
+        missedNotes.forEach(note => {
+          note.hasPlayed = true;
+        });
+        
+        if (combo > 0) {
+          setCombo(0);
+          toast("Notas perdidas! Combo resetado", { duration: 1000 });
+        }
+      }
+
+      // Verificar se todas as notas terminaram (fim da música)
+      const visibleNotes = updatedNotes.filter(note => note.y <= 500);
+      if (visibleNotes.length === 0 && updatedNotes.length > 0 && !gameEnded) {
+        setGameEnded(true);
+        setIsPlaying(false);
+        
+        // Mostrar pontuação final
+        const accuracy = totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 0;
+        toast(`🎉 Música concluída! Pontuação: ${score} | Precisão: ${accuracy}% | Max Combo: ${maxCombo}x`, {
+          duration: 5000,
+        });
+        
+        console.log(`Game ended! Final score: ${score}, Accuracy: ${accuracy}%, Max combo: ${maxCombo}`);
+      }
+
+      return updatedNotes.filter(note => note.y <= 500);
+    });
+
+    lastUpdateTimeRef.current = now;
+    animationRef.current = requestAnimationFrame(updateNotes);
+  }, [isPlaying, speed, combo, hitZoneHeight, gameEnded, score, totalNotes, hitNotes, maxCombo]);
+
+  // Detectar teclas pressionadas
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (!isPlaying) return;
+
+    const keyPressed = event.key;
+    const lane = lanes.find(l => l.key === keyPressed);
+    if (!lane) return;
+
+    event.preventDefault();
+
+    const laneIndex = lanes.indexOf(lane);
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
+
+    const hitNote = notes.find(note => 
+      note.lane === laneIndex && 
+      note.y >= hitZoneTop - 50 && 
+      note.y <= hitZoneBottom + 50 &&
+      !note.isHit
+    );
+
+    if (hitNote) {
+      handleNoteClick(hitNote.id);
     } else {
       if (combo > 0) {
         setCombo(0);
@@ -341,7 +329,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       onNotePlay(lane.frequency, lane.color);
       console.log(`Missed note in lane ${laneIndex}`);
     }
-  }, [lanes, isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
+  }, [lanes, isPlaying, notes, combo, hitZoneHeight, handleNoteClick, onNotePlay]);
 
   // Gerenciar eventos de teclado
   useEffect(() => {
@@ -373,6 +361,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       lastUpdateTimeRef.current = now;
       console.log(`Starting/Resuming ${instrumentType} game`);
       setIsPlaying(true);
+      setGameEnded(false);
     } else {
       // Pausar o jogo
       if (animationRef.current) {
@@ -400,6 +389,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
+    setHitNotes(0);
+    setTotalNotes(0);
+    setGameEnded(false);
     setNotes([]);
     gameStartTimeRef.current = 0;
     lastUpdateTimeRef.current = 0;
@@ -447,7 +439,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-5 gap-4 text-center">
           <div>
             <div className="text-sm opacity-80">Pontuação</div>
             <div className="text-xl font-bold">{score.toLocaleString()}</div>
@@ -461,6 +453,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             <div className="text-xl font-bold text-orange-300">{maxCombo}x</div>
           </div>
           <div>
+            <div className="text-sm opacity-80">Acertos</div>
+            <div className="text-xl font-bold text-green-300">{hitNotes}/{totalNotes}</div>
+          </div>
+          <div>
             <div className="text-sm opacity-80">Velocidade</div>
             <div className="text-xl font-bold">{speed}x</div>
           </div>
@@ -470,7 +466,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       {/* Instruções */}
       <div className="bg-blue-600 p-3 text-center text-white">
         <p className="text-sm">
-          Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
+          Use as teclas <strong>1-7</strong> ou <strong>clique nas notas</strong> quando elas passarem pela zona dourada!
         </p>
       </div>
 
@@ -494,11 +490,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           >
             {/* Indicador da nota na parte inferior */}
             <div
-              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg"
+              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg cursor-pointer hover:opacity-80 transition-opacity"
               style={{
                 height: "70px",
                 backgroundColor: lane.color,
               }}
+              onClick={() => onNotePlay(lane.frequency, lane.color)}
             >
               <div className="text-center">
                 <div className="text-xs font-bold">{lane.key}</div>
@@ -526,18 +523,21 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         {notes.map((note) => (
           <div
             key={note.id}
-            className={`absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform ${note.hasPlayed ? 'opacity-50' : ''}`}
+            className={`absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-all cursor-pointer hover:scale-110 ${
+              note.isHit ? 'opacity-50 bg-green-500' : ''
+            }`}
             style={{
               left: `${(note.lane / lanes.length) * 100 + 1}%`,
               width: `${100 / lanes.length - 2}%`,
               top: `${note.y}px`,
               height: "50px",
-              backgroundColor: note.color,
-              boxShadow: `0 0 20px ${note.color}50`,
+              backgroundColor: note.isHit ? '#22c55e' : note.color,
+              boxShadow: `0 0 20px ${note.isHit ? '#22c55e50' : note.color + '50'}`,
             }}
+            onClick={() => handleNoteClick(note.id)}
           >
             <div className="text-center">
-              <div className="text-lg">{lanes[note.lane].symbol}</div>
+              <div className="text-lg">{note.isHit ? '✓' : lanes[note.lane].symbol}</div>
             </div>
           </div>
         ))}
@@ -547,6 +547,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           className="absolute w-full border-t-4 border-yellow-400 opacity-50"
           style={{ top: "380px" }}
         />
+
+        {/* Mensagem de fim de jogo */}
+        {gameEnded && (
+          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">🎉 Parabéns!</h2>
+              <div className="space-y-2 text-gray-700">
+                <p><strong>Pontuação Final:</strong> {score.toLocaleString()}</p>
+                <p><strong>Precisão:</strong> {totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 0}%</p>
+                <p><strong>Acertos:</strong> {hitNotes}/{totalNotes}</p>
+                <p><strong>Combo Máximo:</strong> {maxCombo}x</p>
+              </div>
+              <Button onClick={resetGame} className="mt-4">
+                Jogar Novamente
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
