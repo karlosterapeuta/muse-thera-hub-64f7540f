@@ -17,7 +17,6 @@ const BellHero = () => {
       <GuitarHeroGame 
         instrumentType="bell" 
         onNotePlay={handleNotePlay}
-        songId="twinkle-bell"
       />
     </div>
   );
