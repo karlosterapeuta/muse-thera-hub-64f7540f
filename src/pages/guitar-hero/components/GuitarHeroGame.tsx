@@ -72,44 +72,53 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     if (songId === "fur-elise-keyboard") {
       const furEliseMelody = [
-        { note: 2, time: 0 },
-        { note: 1, time: 400 },
-        { note: 2, time: 800 },
-        { note: 1, time: 1200 },
-        { note: 2, time: 1600 },
-        { note: 6, time: 2000 },
-        { note: 1, time: 2400 },
-        { note: 0, time: 2800 },
-        { note: 5, time: 3200 },
-        { note: 0, time: 4000 },
-        { note: 2, time: 4400 },
-        { note: 5, time: 4800 },
-        { note: 6, time: 5200 },
-        { note: 2, time: 5600 },
-        { note: 4, time: 6000 },
-        { note: 6, time: 6400 },
-        { note: 0, time: 6800 },
-        { note: 2, time: 7200 },
-        { note: 1, time: 7600 },
-        { note: 2, time: 8000 },
-        { note: 1, time: 8400 },
-        { note: 2, time: 8800 },
-        { note: 6, time: 9200 },
-        { note: 1, time: 9600 },
-        { note: 0, time: 10000 },
-        { note: 5, time: 10400 },
-        { note: 0, time: 10800 },
-        { note: 2, time: 11200 },
-        { note: 5, time: 11600 },
-        { note: 6, time: 12000 },
-        { note: 0, time: 12400 },
-        { note: 1, time: 12800 },
-        { note: 4, time: 13600 },
-        { note: 3, time: 14000 },
-        { note: 2, time: 14400 },
-        { note: 1, time: 14800 },
-        { note: 0, time: 15200 },
-        { note: 5, time: 15600 },
+        // Tema principal famoso - "ta ta ta ta ta..."
+        { note: 2, time: 0 },     // Mi
+        { note: 1, time: 400 },   // Ré#
+        { note: 2, time: 800 },   // Mi
+        { note: 1, time: 1200 },  // Ré#
+        { note: 2, time: 1600 },  // Mi
+        { note: 6, time: 2000 },  // Si
+        { note: 1, time: 2400 },  // Ré
+        { note: 0, time: 2800 },  // Dó
+        
+        // Continuação da primeira frase
+        { note: 5, time: 3600 },  // Lá
+        { note: 0, time: 4800 },  // Dó
+        { note: 2, time: 5200 },  // Mi
+        { note: 5, time: 5600 },  // Lá
+        { note: 6, time: 6000 },  // Si
+        
+        // Repetição do tema
+        { note: 2, time: 7200 },  // Mi
+        { note: 4, time: 7600 },  // Sol#
+        { note: 6, time: 8000 },  // Si
+        { note: 0, time: 8400 },  // Dó
+        
+        // Segunda parte
+        { note: 2, time: 9600 },  // Mi
+        { note: 1, time: 10000 }, // Ré#
+        { note: 2, time: 10400 }, // Mi
+        { note: 1, time: 10800 }, // Ré#
+        { note: 2, time: 11200 }, // Mi
+        { note: 6, time: 11600 }, // Si
+        { note: 1, time: 12000 }, // Ré
+        { note: 0, time: 12400 }, // Dó
+        
+        // Final da melodia principal
+        { note: 5, time: 13200 }, // Lá
+        { note: 0, time: 14400 }, // Dó
+        { note: 2, time: 14800 }, // Mi
+        { note: 5, time: 15200 }, // Lá
+        { note: 6, time: 15600 }, // Si
+        { note: 0, time: 16800 }, // Dó
+        { note: 1, time: 17200 }, // Ré
+        { note: 4, time: 18400 }, // Sol
+        { note: 3, time: 18800 }, // Fá
+        { note: 2, time: 19200 }, // Mi
+        { note: 1, time: 19600 }, // Ré
+        { note: 0, time: 20000 }, // Dó
+        { note: 5, time: 20400 }, // Lá (final)
       ];
 
       furEliseMelody.forEach((noteData) => {
@@ -129,38 +138,45 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "claire-de-lune-keyboard") {
       const claireDeLuneMelody = [
-        { note: 1, time: 0 },
-        { note: 3, time: 800 },
-        { note: 5, time: 1600 },
-        { note: 4, time: 2400 },
-        { note: 3, time: 3200 },
-        { note: 2, time: 4000 },
-        { note: 1, time: 4800 },
-        { note: 0, time: 5600 },
-        { note: 2, time: 6400 },
-        { note: 4, time: 7200 },
-        { note: 6, time: 8000 },
-        { note: 5, time: 8800 },
-        { note: 4, time: 9600 },
-        { note: 3, time: 10400 },
-        { note: 2, time: 11200 },
-        { note: 1, time: 12000 },
-        { note: 0, time: 12800 },
-        { note: 2, time: 13600 },
-        { note: 4, time: 14400 },
-        { note: 6, time: 15200 },
-        { note: 5, time: 16000 },
-        { note: 4, time: 16800 },
-        { note: 3, time: 17600 },
-        { note: 2, time: 18400 },
-        { note: 1, time: 19200 },
-        { note: 0, time: 20000 },
-        { note: 2, time: 20800 },
-        { note: 4, time: 21600 },
-        { note: 3, time: 22400 },
-        { note: 2, time: 23200 },
-        { note: 1, time: 24000 },
-        { note: 0, time: 24800 },
+        // Início suave e contemplativo
+        { note: 1, time: 0 },     // Ré
+        { note: 3, time: 1000 },  // Fá
+        { note: 5, time: 2000 },  // Lá
+        { note: 4, time: 3000 },  // Sol
+        { note: 3, time: 4000 },  // Fá
+        { note: 2, time: 5000 },  // Mi
+        { note: 1, time: 6000 },  // Ré
+        { note: 0, time: 7000 },  // Dó
+        
+        // Desenvolvimento melódico
+        { note: 2, time: 8000 },  // Mi
+        { note: 4, time: 9000 },  // Sol
+        { note: 6, time: 10000 }, // Si
+        { note: 5, time: 11000 }, // Lá
+        { note: 4, time: 12000 }, // Sol
+        { note: 3, time: 13000 }, // Fá
+        { note: 2, time: 14000 }, // Mi
+        { note: 1, time: 15000 }, // Ré
+        
+        // Clímax suave
+        { note: 0, time: 16000 }, // Dó
+        { note: 2, time: 17000 }, // Mi
+        { note: 4, time: 18000 }, // Sol
+        { note: 6, time: 19000 }, // Si
+        { note: 5, time: 20000 }, // Lá
+        { note: 4, time: 21000 }, // Sol
+        { note: 3, time: 22000 }, // Fá
+        { note: 2, time: 23000 }, // Mi
+        
+        // Resolução tranquila
+        { note: 1, time: 24000 }, // Ré
+        { note: 0, time: 25000 }, // Dó
+        { note: 2, time: 26000 }, // Mi
+        { note: 4, time: 27000 }, // Sol
+        { note: 3, time: 28000 }, // Fá
+        { note: 2, time: 29000 }, // Mi
+        { note: 1, time: 30000 }, // Ré
+        { note: 0, time: 31000 }, // Dó (final)
       ];
 
       claireDeLuneMelody.forEach((noteData) => {
@@ -171,7 +187,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 700,
+            duration: 900,
             y: -100,
             hasPlayed: false,
             isHit: false
@@ -180,44 +196,61 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "invention-1-keyboard") {
       const invention1Melody = [
-        { note: 0, time: 0 },
-        { note: 1, time: 300 },
-        { note: 2, time: 600 },
-        { note: 3, time: 900 },
-        { note: 4, time: 1200 },
-        { note: 5, time: 1500 },
-        { note: 6, time: 1800 },
-        { note: 0, time: 2100 },
-        { note: 4, time: 2400 },
-        { note: 5, time: 2700 },
-        { note: 6, time: 3000 },
-        { note: 0, time: 3300 },
-        { note: 1, time: 3600 },
-        { note: 2, time: 3900 },
-        { note: 3, time: 4200 },
-        { note: 4, time: 4500 },
-        { note: 2, time: 4800 },
-        { note: 3, time: 5100 },
-        { note: 4, time: 5400 },
-        { note: 5, time: 5700 },
-        { note: 6, time: 6000 },
-        { note: 0, time: 6300 },
-        { note: 1, time: 6600 },
-        { note: 2, time: 6900 },
-        { note: 6, time: 7200 },
-        { note: 0, time: 9600 },
-        { note: 2, time: 9900 },
-        { note: 4, time: 10200 },
-        { note: 6, time: 10500 },
-        { note: 1, time: 10800 },
-        { note: 3, time: 11100 },
-        { note: 5, time: 11400 },
-        { note: 0, time: 11700 },
-        { note: 4, time: 12000 },
-        { note: 3, time: 12300 },
-        { note: 2, time: 12600 },
-        { note: 1, time: 12900 },
-        { note: 0, time: 13200 },
+        // Tema principal de Bach - contraponto
+        { note: 0, time: 0 },     // Dó
+        { note: 1, time: 250 },   // Ré
+        { note: 2, time: 500 },   // Mi
+        { note: 3, time: 750 },   // Fá
+        { note: 4, time: 1000 },  // Sol
+        { note: 5, time: 1250 },  // Lá
+        { note: 6, time: 1500 },  // Si
+        { note: 0, time: 1750 },  // Dó
+        
+        // Inversão do tema
+        { note: 4, time: 2000 },  // Sol
+        { note: 5, time: 2250 },  // Lá
+        { note: 6, time: 2500 },  // Si
+        { note: 0, time: 2750 },  // Dó
+        { note: 1, time: 3000 },  // Ré
+        { note: 2, time: 3250 },  // Mi
+        { note: 3, time: 3500 },  // Fá
+        { note: 4, time: 3750 },  // Sol
+        
+        // Desenvolvimento polifônico
+        { note: 2, time: 4000 },  // Mi
+        { note: 3, time: 4250 },  // Fá
+        { note: 4, time: 4500 },  // Sol
+        { note: 5, time: 4750 },  // Lá
+        { note: 6, time: 5000 },  // Si
+        { note: 0, time: 5250 },  // Dó
+        { note: 1, time: 5500 },  // Ré
+        { note: 2, time: 5750 },  // Mi
+        
+        // Sequência descendente
+        { note: 6, time: 6000 },  // Si
+        { note: 5, time: 6250 },  // Lá
+        { note: 4, time: 6500 },  // Sol
+        { note: 3, time: 6750 },  // Fá
+        { note: 2, time: 7000 },  // Mi
+        { note: 1, time: 7250 },  // Ré
+        { note: 0, time: 7500 },  // Dó
+        
+        // Episódio de desenvolvimento
+        { note: 0, time: 8000 },  // Dó
+        { note: 2, time: 8250 },  // Mi
+        { note: 4, time: 8500 },  // Sol
+        { note: 6, time: 8750 },  // Si
+        { note: 1, time: 9000 },  // Ré
+        { note: 3, time: 9250 },  // Fá
+        { note: 5, time: 9500 },  // Lá
+        { note: 0, time: 9750 },  // Dó
+        
+        // Final virtuosístico
+        { note: 4, time: 10000 }, // Sol
+        { note: 3, time: 10250 }, // Fá
+        { note: 2, time: 10500 }, // Mi
+        { note: 1, time: 10750 }, // Ré
+        { note: 0, time: 11000 }, // Dó (final)
       ];
 
       invention1Melody.forEach((noteData) => {
@@ -228,7 +261,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 250,
+            duration: 200,
             y: -100,
             hasPlayed: false,
             isHit: false
@@ -237,67 +270,74 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "chopin-minute-keyboard") {
       const minuteWaltzMelody = [
-        { note: 4, time: 0 },
-        { note: 5, time: 200 },
-        { note: 6, time: 400 },
-        { note: 0, time: 600 },
-        { note: 1, time: 800 },
-        { note: 2, time: 1000 },
-        { note: 3, time: 1200 },
-        { note: 4, time: 1400 },
-        { note: 6, time: 1600 },
-        { note: 5, time: 1800 },
-        { note: 4, time: 2000 },
-        { note: 3, time: 2200 },
-        { note: 2, time: 2400 },
-        { note: 1, time: 2600 },
-        { note: 0, time: 2800 },
-        { note: 6, time: 3000 },
-        { note: 5, time: 3200 },
-        { note: 4, time: 3400 },
-        { note: 3, time: 3600 },
-        { note: 2, time: 3800 },
-        { note: 1, time: 4000 },
-        { note: 0, time: 4200 },
-        { note: 4, time: 4400 },
-        { note: 5, time: 4600 },
-        { note: 6, time: 4800 },
-        { note: 0, time: 5000 },
-        { note: 1, time: 5200 },
-        { note: 2, time: 5400 },
-        { note: 3, time: 5600 },
-        { note: 4, time: 5800 },
-        { note: 5, time: 6000 },
-        { note: 6, time: 6200 },
-        { note: 0, time: 6400 },
-        { note: 1, time: 6600 },
-        { note: 2, time: 6800 },
-        { note: 3, time: 7000 },
-        { note: 4, time: 7200 },
-        { note: 5, time: 7400 },
-        { note: 6, time: 7600 },
-        { note: 0, time: 7800 },
-        { note: 1, time: 8000 },
-        { note: 2, time: 8200 },
-        { note: 3, time: 8400 },
-        { note: 4, time: 8600 },
-        { note: 5, time: 8800 },
-        { note: 6, time: 9000 },
-        { note: 0, time: 9200 },
-        { note: 1, time: 9400 },
-        { note: 2, time: 9600 },
-        { note: 3, time: 9800 },
-        { note: 4, time: 10000 },
-        { note: 5, time: 10200 },
-        { note: 6, time: 10400 },
-        { note: 0, time: 10600 },
-        { note: 1, time: 10800 },
-        { note: 2, time: 11000 },
-        { note: 3, time: 11200 },
-        { note: 4, time: 11400 },
-        { note: 5, time: 11600 },
-        { note: 6, time: 11800 },
-        { note: 0, time: 12000 },
+        // Tema principal da Valsa do Minuto - rápido e elegante
+        { note: 4, time: 0 },     // Sol
+        { note: 5, time: 150 },   // Lá
+        { note: 6, time: 300 },   // Si
+        { note: 0, time: 450 },   // Dó
+        { note: 1, time: 600 },   // Ré
+        { note: 2, time: 750 },   // Mi
+        { note: 3, time: 900 },   // Fá
+        { note: 4, time: 1050 },  // Sol
+        
+        // Continuação virtuosística
+        { note: 6, time: 1200 },  // Si
+        { note: 5, time: 1350 },  // Lá
+        { note: 4, time: 1500 },  // Sol
+        { note: 3, time: 1650 },  // Fá
+        { note: 2, time: 1800 },  // Mi
+        { note: 1, time: 1950 },  // Ré
+        { note: 0, time: 2100 },  // Dó
+        { note: 6, time: 2250 },  // Si
+        
+        // Desenvolvimento brilhante
+        { note: 5, time: 2400 },  // Lá
+        { note: 4, time: 2550 },  // Sol
+        { note: 3, time: 2700 },  // Fá
+        { note: 2, time: 2850 },  // Mi
+        { note: 1, time: 3000 },  // Ré
+        { note: 0, time: 3150 },  // Dó
+        { note: 4, time: 3300 },  // Sol
+        { note: 5, time: 3450 },  // Lá
+        
+        // Sequência ascendente
+        { note: 6, time: 3600 },  // Si
+        { note: 0, time: 3750 },  // Dó
+        { note: 1, time: 3900 },  // Ré
+        { note: 2, time: 4050 },  // Mi
+        { note: 3, time: 4200 },  // Fá
+        { note: 4, time: 4350 },  // Sol
+        { note: 5, time: 4500 },  // Lá
+        { note: 6, time: 4650 },  // Si
+        
+        // Clímax velocíssimo
+        { note: 0, time: 4800 },  // Dó
+        { note: 1, time: 4950 },  // Ré
+        { note: 2, time: 5100 },  // Mi
+        { note: 3, time: 5250 },  // Fá
+        { note: 4, time: 5400 },  // Sol
+        { note: 5, time: 5550 },  // Lá
+        { note: 6, time: 5700 },  // Si
+        { note: 0, time: 5850 },  // Dó
+        
+        // Variação melódica
+        { note: 1, time: 6000 },  // Ré
+        { note: 2, time: 6150 },  // Mi
+        { note: 3, time: 6300 },  // Fá
+        { note: 4, time: 6450 },  // Sol
+        { note: 5, time: 6600 },  // Lá
+        { note: 6, time: 6750 },  // Si
+        { note: 0, time: 6900 },  // Dó
+        { note: 1, time: 7050 },  // Ré
+        
+        // Resolução elegante
+        { note: 2, time: 7200 },  // Mi
+        { note: 3, time: 7350 },  // Fá
+        { note: 4, time: 7500 },  // Sol
+        { note: 5, time: 7650 },  // Lá
+        { note: 6, time: 7800 },  // Si
+        { note: 0, time: 7950 },  // Dó
+        { note: 4, time: 8100 },  // Sol (final)
       ];
 
       minuteWaltzMelody.forEach((noteData) => {
@@ -308,7 +348,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 150,
+            duration: 120,
             y: -100,
             hasPlayed: false,
             isHit: false
@@ -317,46 +357,70 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "asa-branca-bell") {
       const asaBrancaMelody = [
-        { note: 4, time: 0 },
-        { note: 4, time: 600 },
-        { note: 4, time: 1000 },
-        { note: 3, time: 1400 },
-        { note: 2, time: 1800 },
-        { note: 3, time: 2200 },
-        { note: 4, time: 2600 },
-        { note: 5, time: 3000 },
-        { note: 4, time: 3400 },
-        { note: 3, time: 3800 },
-        { note: 2, time: 4200 },
-        { note: 3, time: 4600 },
-        { note: 4, time: 5000 },
-        { note: 4, time: 5400 },
-        { note: 4, time: 5800 },
-        { note: 3, time: 6200 },
-        { note: 2, time: 6600 },
-        { note: 1, time: 7000 },
-        { note: 0, time: 7400 },
-        { note: 4, time: 7800 },
-        { note: 4, time: 8200 },
-        { note: 4, time: 8600 },
-        { note: 3, time: 9000 },
-        { note: 2, time: 9400 },
-        { note: 1, time: 9800 },
-        { note: 0, time: 10200 },
-        { note: 4, time: 10600 },
-        { note: 4, time: 11000 },
-        { note: 4, time: 11400 },
-        { note: 3, time: 11800 },
-        { note: 2, time: 12200 },
-        { note: 1, time: 12600 },
-        { note: 0, time: 13000 },
-        { note: 4, time: 13400 },
-        { note: 4, time: 13800 },
-        { note: 4, time: 14200 },
-        { note: 3, time: 14600 },
-        { note: 2, time: 15000 },
-        { note: 1, time: 15400 },
-        { note: 0, time: 15800 },
+        // "Quando olhei a terra ardendo"
+        { note: 4, time: 0 },     // Sol - "Quan"
+        { note: 4, time: 600 },   // Sol - "do"
+        { note: 4, time: 1200 },  // Sol - "o"
+        { note: 3, time: 1800 },  // Fá - "lhei"
+        { note: 2, time: 2400 },  // Mi - "a"
+        { note: 3, time: 3000 },  // Fá - "ter"
+        { note: 4, time: 3600 },  // Sol - "ra"
+        { note: 5, time: 4200 },  // Lá - "ar"
+        { note: 4, time: 4800 },  // Sol - "den"
+        { note: 3, time: 5400 },  // Fá - "do"
+        
+        // "Qual fogueira de São João"
+        { note: 2, time: 6600 },  // Mi - "Qual"
+        { note: 3, time: 7200 },  // Fá - "fo"
+        { note: 4, time: 7800 },  // Sol - "guei"
+        { note: 4, time: 8400 },  // Sol - "ra"
+        { note: 4, time: 9000 },  // Sol - "de"
+        { note: 3, time: 9600 },  // Fá - "São"
+        { note: 2, time: 10200 }, // Mi - "Jo"
+        { note: 1, time: 10800 }, // Ré - "ão"
+        { note: 0, time: 11400 }, // Dó
+        
+        // "Eu perguntei a Deus do céu"
+        { note: 4, time: 12600 }, // Sol - "Eu"
+        { note: 4, time: 13200 }, // Sol - "per"
+        { note: 4, time: 13800 }, // Sol - "gun"
+        { note: 3, time: 14400 }, // Fá - "tei"
+        { note: 2, time: 15000 }, // Mi - "a"
+        { note: 1, time: 15600 }, // Ré - "Deus"
+        { note: 0, time: 16200 }, // Dó - "do"
+        { note: 4, time: 16800 }, // Sol - "céu"
+        
+        // "Ai por que tamanha judiação"
+        { note: 4, time: 18000 }, // Sol - "Ai"
+        { note: 4, time: 18600 }, // Sol - "por"
+        { note: 4, time: 19200 }, // Sol - "que"
+        { note: 3, time: 19800 }, // Fá - "ta"
+        { note: 2, time: 20400 }, // Mi - "ma"
+        { note: 1, time: 21000 }, // Ré - "nha"
+        { note: 0, time: 21600 }, // Dó - "ju"
+        { note: 4, time: 22200 }, // Sol - "di"
+        { note: 4, time: 22800 }, // Sol - "a"
+        { note: 3, time: 23400 }, // Fá - "ção"
+        
+        // Refrão: "Até mesmo a asa branca"
+        { note: 5, time: 24600 }, // Lá - "A"
+        { note: 4, time: 25200 }, // Sol - "té"
+        { note: 3, time: 25800 }, // Fá - "mes"
+        { note: 2, time: 26400 }, // Mi - "mo"
+        { note: 1, time: 27000 }, // Ré - "a"
+        { note: 0, time: 27600 }, // Dó - "a"
+        { note: 2, time: 28200 }, // Mi - "sa"
+        { note: 3, time: 28800 }, // Fá - "bran"
+        { note: 4, time: 29400 }, // Sol - "ca"
+        
+        // "Bateu asas do sertão"
+        { note: 2, time: 30600 }, // Mi - "Ba"
+        { note: 1, time: 31200 }, // Ré - "teu"
+        { note: 0, time: 31800 }, // Dó - "a"
+        { note: 1, time: 32400 }, // Ré - "sas"
+        { note: 2, time: 33000 }, // Mi - "do"
+        { note: 1, time: 33600 }, // Ré - "ser"
+        { note: 0, time: 34200 }, // Dó - "tão"
       ];
 
       asaBrancaMelody.forEach((noteData) => {
@@ -376,36 +440,80 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "aquarela-xylophone") {
       const aquarelaMelody = [
-        { note: 0, time: 0 },
-        { note: 2, time: 400 },
-        { note: 4, time: 800 },
-        { note: 2, time: 1200 },
-        { note: 3, time: 1600 },
-        { note: 4, time: 2000 },
-        { note: 5, time: 2400 },
-        { note: 4, time: 2800 },
-        { note: 3, time: 3200 },
-        { note: 2, time: 3600 },
-        { note: 1, time: 4000 },
-        { note: 2, time: 4400 },
-        { note: 4, time: 4800 },
-        { note: 3, time: 5200 },
-        { note: 2, time: 5600 },
-        { note: 0, time: 6000 },
-        { note: 2, time: 6800 },
-        { note: 4, time: 7200 },
-        { note: 5, time: 7600 },
-        { note: 4, time: 8000 },
-        { note: 3, time: 8400 },
-        { note: 4, time: 8800 },
-        { note: 5, time: 9200 },
-        { note: 6, time: 9600 },
-        { note: 5, time: 10000 },
-        { note: 4, time: 10400 },
-        { note: 3, time: 10800 },
-        { note: 2, time: 11200 },
-        { note: 1, time: 11600 },
-        { note: 0, time: 12000 },
+        // "Numa folha qualquer eu desenho um sol amarelo"
+        { note: 0, time: 0 },     // Dó - "Nu"
+        { note: 2, time: 500 },   // Mi - "ma"
+        { note: 4, time: 1000 },  // Sol - "fo"
+        { note: 2, time: 1500 },  // Mi - "lha"
+        { note: 3, time: 2000 },  // Fá - "qual"
+        { note: 4, time: 2500 },  // Sol - "quer"
+        { note: 5, time: 3000 },  // Lá - "eu"
+        { note: 4, time: 3500 },  // Sol - "de"
+        { note: 3, time: 4000 },  // Fá - "se"
+        { note: 2, time: 4500 },  // Mi - "nho"
+        { note: 1, time: 5000 },  // Ré - "um"
+        { note: 2, time: 5500 },  // Mi - "sol"
+        { note: 4, time: 6000 },  // Sol - "a"
+        { note: 3, time: 6500 },  // Fá - "ma"
+        { note: 2, time: 7000 },  // Mi - "re"
+        { note: 0, time: 7500 },  // Dó - "lo"
+        
+        // "E com cinco ou seis retas é fácil fazer um castelo"
+        { note: 2, time: 8500 },  // Mi - "E"
+        { note: 4, time: 9000 },  // Sol - "com"
+        { note: 5, time: 9500 },  // Lá - "cin"
+        { note: 4, time: 10000 }, // Sol - "co"
+        { note: 3, time: 10500 }, // Fá - "ou"
+        { note: 4, time: 11000 }, // Sol - "seis"
+        { note: 5, time: 11500 }, // Lá - "re"
+        { note: 6, time: 12000 }, // Si - "tas"
+        { note: 5, time: 12500 }, // Lá - "é"
+        { note: 4, time: 13000 }, // Sol - "fá"
+        { note: 3, time: 13500 }, // Fá - "cil"
+        { note: 2, time: 14000 }, // Mi - "fa"
+        { note: 1, time: 14500 }, // Ré - "zer"
+        { note: 0, time: 15000 }, // Dó - "um"
+        { note: 2, time: 15500 }, // Mi - "cas"
+        { note: 1, time: 16000 }, // Ré - "te"
+        { note: 0, time: 16500 }, // Dó - "lo"
+        
+        // "Corro o lápis em torno da mão e me dou uma luva"
+        { note: 0, time: 18000 }, // Dó - "Cor"
+        { note: 2, time: 18500 }, // Mi - "ro"
+        { note: 4, time: 19000 }, // Sol - "o"
+        { note: 3, time: 19500 }, // Fá - "lá"
+        { note: 2, time: 20000 }, // Mi - "pis"
+        { note: 4, time: 20500 }, // Sol - "em"
+        { note: 5, time: 21000 }, // Lá - "tor"
+        { note: 4, time: 21500 }, // Sol - "no"
+        { note: 3, time: 22000 }, // Fá - "da"
+        { note: 2, time: 22500 }, // Mi - "mão"
+        { note: 1, time: 23000 }, // Ré - "e"
+        { note: 2, time: 23500 }, // Mi - "me"
+        { note: 4, time: 24000 }, // Sol - "dou"
+        { note: 3, time: 24500 }, // Fá - "u"
+        { note: 2, time: 25000 }, // Mi - "ma"
+        { note: 1, time: 25500 }, // Ré - "lu"
+        { note: 0, time: 26000 }, // Dó - "va"
+        
+        // "E se faço chover, com dois riscos tenho um guarda-chuva"
+        { note: 2, time: 27500 }, // Mi - "E"
+        { note: 4, time: 28000 }, // Sol - "se"
+        { note: 6, time: 28500 }, // Si - "fa"
+        { note: 5, time: 29000 }, // Lá - "ço"
+        { note: 4, time: 29500 }, // Sol - "cho"
+        { note: 3, time: 30000 }, // Fá - "ver"
+        { note: 2, time: 30500 }, // Mi - "com"
+        { note: 1, time: 31000 }, // Ré - "dois"
+        { note: 0, time: 31500 }, // Dó - "ris"
+        { note: 2, time: 32000 }, // Mi - "cos"
+        { note: 4, time: 32500 }, // Sol - "te"
+        { note: 3, time: 33000 }, // Fá - "nho"
+        { note: 2, time: 33500 }, // Mi - "um"
+        { note: 1, time: 34000 }, // Ré - "guar"
+        { note: 0, time: 34500 }, // Dó - "da"
+        { note: 2, time: 35000 }, // Mi - "chu"
+        { note: 0, time: 35500 }, // Dó - "va"
       ];
 
       aquarelaMelody.forEach((noteData) => {
@@ -416,7 +524,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 350,
+            duration: 400,
             y: -100,
             hasPlayed: false,
             isHit: false
@@ -425,36 +533,76 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     } else if (songId === "ciranda-cirandinha-bell") {
       const cirandaMelody = [
-        { note: 0, time: 0 },
-        { note: 2, time: 400 },
-        { note: 4, time: 800 },
-        { note: 0, time: 1200 },
-        { note: 2, time: 1600 },
-        { note: 4, time: 2000 },
-        { note: 4, time: 2400 },
-        { note: 5, time: 2800 },
-        { note: 4, time: 3200 },
-        { note: 3, time: 3600 },
-        { note: 2, time: 4000 },
-        { note: 1, time: 4400 },
-        { note: 2, time: 4800 },
-        { note: 0, time: 5200 },
-        { note: 0, time: 5600 },
-        { note: 2, time: 6000 },
-        { note: 4, time: 6400 },
-        { note: 5, time: 6800 },
-        { note: 4, time: 7200 },
-        { note: 3, time: 7600 },
-        { note: 2, time: 8000 },
-        { note: 1, time: 8400 },
-        { note: 0, time: 8800 },
-        { note: 4, time: 9200 },
-        { note: 5, time: 9600 },
-        { note: 4, time: 10000 },
-        { note: 3, time: 10400 },
-        { note: 2, time: 10800 },
-        { note: 1, time: 11200 },
-        { note: 0, time: 11600 },
+        // "Ciranda, cirandinha, vamos todos cirandar"
+        { note: 0, time: 0 },     // Dó - "Ci"
+        { note: 2, time: 500 },   // Mi - "ran"
+        { note: 4, time: 1000 },  // Sol - "da"
+        { note: 0, time: 1500 },  // Dó - "ci"
+        { note: 2, time: 2000 },  // Mi - "ran"
+        { note: 4, time: 2500 },  // Sol - "di"
+        { note: 4, time: 3000 },  // Sol - "nha"
+        { note: 5, time: 3500 },  // Lá - "va"
+        { note: 4, time: 4000 },  // Sol - "mos"
+        { note: 3, time: 4500 },  // Fá - "to"
+        { note: 2, time: 5000 },  // Mi - "dos"
+        { note: 1, time: 5500 },  // Ré - "ci"
+        { note: 2, time: 6000 },  // Mi - "ran"
+        { note: 0, time: 6500 },  // Dó - "dar"
+        
+        // "Vamos dar a meia volta, volta e meia vamos dar"
+        { note: 0, time: 7500 },  // Dó - "Va"
+        { note: 2, time: 8000 },  // Mi - "mos"
+        { note: 4, time: 8500 },  // Sol - "dar"
+        { note: 5, time: 9000 },  // Lá - "a"
+        { note: 4, time: 9500 },  // Sol - "mei"
+        { note: 3, time: 10000 }, // Fá - "a"
+        { note: 2, time: 10500 }, // Mi - "vol"
+        { note: 1, time: 11000 }, // Ré - "ta"
+        { note: 0, time: 11500 }, // Dó - "vol"
+        { note: 4, time: 12000 }, // Sol - "ta"
+        { note: 5, time: 12500 }, // Lá - "e"
+        { note: 4, time: 13000 }, // Sol - "mei"
+        { note: 3, time: 13500 }, // Fá - "a"
+        { note: 2, time: 14000 }, // Mi - "va"
+        { note: 1, time: 14500 }, // Ré - "mos"
+        { note: 0, time: 15000 }, // Dó - "dar"
+        
+        // "O anel que tu me deste era vidro e se quebrou"
+        { note: 2, time: 16500 }, // Mi - "O"
+        { note: 4, time: 17000 }, // Sol - "a"
+        { note: 6, time: 17500 }, // Si - "nel"
+        { note: 5, time: 18000 }, // Lá - "que"
+        { note: 4, time: 18500 }, // Sol - "tu"
+        { note: 3, time: 19000 }, // Fá - "me"
+        { note: 2, time: 19500 }, // Mi - "des"
+        { note: 1, time: 20000 }, // Ré - "te"
+        { note: 0, time: 20500 }, // Dó - "e"
+        { note: 2, time: 21000 }, // Mi - "ra"
+        { note: 4, time: 21500 }, // Sol - "vi"
+        { note: 3, time: 22000 }, // Fá - "dro"
+        { note: 2, time: 22500 }, // Mi - "e"
+        { note: 1, time: 23000 }, // Ré - "se"
+        { note: 0, time: 23500 }, // Dó - "que"
+        { note: 2, time: 24000 }, // Mi - "brou"
+        
+        // "O amor que tu me tinhas era pouco e se acabou"
+        { note: 0, time: 25500 }, // Dó - "O"
+        { note: 2, time: 26000 }, // Mi - "a"
+        { note: 4, time: 26500 }, // Sol - "mor"
+        { note: 5, time: 27000 }, // Lá - "que"
+        { note: 4, time: 27500 }, // Sol - "tu"
+        { note: 3, time: 28000 }, // Fá - "me"
+        { note: 2, time: 28500 }, // Mi - "ti"
+        { note: 1, time: 29000 }, // Ré - "nhas"
+        { note: 0, time: 29500 }, // Dó - "e"
+        { note: 2, time: 30000 }, // Mi - "ra"
+        { note: 4, time: 30500 }, // Sol - "pou"
+        { note: 3, time: 31000 }, // Fá - "co"
+        { note: 2, time: 31500 }, // Mi - "e"
+        { note: 1, time: 32000 }, // Ré - "se"
+        { note: 0, time: 32500 }, // Dó - "a"
+        { note: 2, time: 33000 }, // Mi - "ca"
+        { note: 0, time: 33500 }, // Dó - "bou"
       ];
 
       cirandaMelody.forEach((noteData) => {
@@ -465,7 +613,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             color: lanes[noteData.note].color,
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
-            duration: 350,
+            duration: 400,
             y: -100,
             hasPlayed: false,
             isHit: false
