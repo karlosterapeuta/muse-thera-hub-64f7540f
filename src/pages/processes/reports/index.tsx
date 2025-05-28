@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
-import { PlusIcon, EyeIcon, FileTextIcon, CalendarIcon, UserIcon } from "lucide-react";
+import { PlusIcon, EyeIcon, FileTextIcon, CalendarIcon, UserIcon, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -24,6 +23,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 
 type Report = {
@@ -129,57 +139,123 @@ const ReportViewer = ({ report }: { report: Report }) => {
   );
 };
 
+const DeleteReportDialog = ({ report, onDelete }: { report: Report; onDelete: () => void }) => {
+  const { toast } = useToast();
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from("reports")
+        .delete()
+        .eq("id", report.id);
+
+      if (error) {
+        console.error("Erro ao excluir relatório:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Relatório excluído com sucesso.",
+      });
+
+      onDelete();
+    } catch (error) {
+      console.error("Erro ao excluir relatório:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível excluir o relatório.",
+      });
+    }
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600 transition-colors">
+          <Trash className="h-4 w-4 mr-1" />
+          Excluir
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+          <AlertDialogDescription>
+            Tem certeza que deseja excluir este relatório? Esta ação não pode ser desfeita.
+            <div className="mt-2 p-2 bg-gray-50 rounded">
+              <strong>Paciente:</strong> {report.patient?.name || 'N/A'}<br />
+              <strong>Tipo:</strong> {reportTypeLabels[report.type] || report.type}<br />
+              <strong>Data:</strong> {format(new Date(report.created_at), "dd/MM/yyyy", { locale: ptBR })}
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            Excluir
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
 export default function ReportsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadReports() {
-      try {
-        setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          throw new Error("Usuário não autenticado");
-        }
-
-        const { data, error } = await supabase
-          .from("reports")
-          .select(`
-            id,
-            type,
-            created_at,
-            content,
-            patient:patients!inner (
-              name,
-              professional_id
-            )
-          `)
-          .eq('patient.professional_id', user.id)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Erro ao carregar relatórios:", error);
-          throw error;
-        }
-
-        console.log("Relatórios carregados:", data);
-        setReports(data as Report[] || []);
-      } catch (error) {
-        console.error("Erro ao carregar relatórios:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar relatórios",
-          description: "Não foi possível carregar a lista de relatórios",
-        });
-      } finally {
-        setIsLoading(false);
+  const loadReports = async () => {
+    try {
+      setIsLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("Usuário não autenticado");
       }
-    }
 
+      const { data, error } = await supabase
+        .from("reports")
+        .select(`
+          id,
+          type,
+          created_at,
+          content,
+          patient:patients!inner (
+            name,
+            professional_id
+          )
+        `)
+        .eq('patient.professional_id', user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao carregar relatórios:", error);
+        throw error;
+      }
+
+      console.log("Relatórios carregados:", data);
+      setReports(data as Report[] || []);
+    } catch (error) {
+      console.error("Erro ao carregar relatórios:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar relatórios",
+        description: "Não foi possível carregar a lista de relatórios",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadReports();
   }, [toast]);
+
+  const handleDeleteReport = () => {
+    loadReports(); // Reload reports after deletion
+  };
 
   if (isLoading) {
     return (
@@ -300,7 +376,10 @@ export default function ReportsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <ReportViewer report={report} />
+                        <div className="flex justify-end gap-2">
+                          <ReportViewer report={report} />
+                          <DeleteReportDialog report={report} onDelete={handleDeleteReport} />
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
