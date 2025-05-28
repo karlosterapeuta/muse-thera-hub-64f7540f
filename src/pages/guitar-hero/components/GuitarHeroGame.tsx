@@ -11,6 +11,7 @@ interface Note {
   startTime: number;
   duration: number;
   y: number;
+  hasPlayed?: boolean; // Adicionar flag para controlar se a nota já foi tocada
 }
 
 interface GuitarHeroGameProps {
@@ -158,7 +159,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             frequency: lanes[laneIndex].frequency,
             startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
             duration: 600,
-            y: -100 // Começar acima da tela
+            y: -100, // Começar acima da tela
+            hasPlayed: false
           });
         }
       });
