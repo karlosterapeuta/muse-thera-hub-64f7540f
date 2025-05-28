@@ -521,12 +521,18 @@ export default function ReportForm() {
     try {
       console.log("Salvando relatório com dados:", data);
       
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
       const { error } = await supabase
         .from("reports")
         .insert({
           patient_id: data.patient_id,
-          type: data.type,
-          content: data.content,
+          professional_id: user.id,
+          type: data.type as any,
+          content: data.content as any,
           created_at: new Date().toISOString(),
         });
 
