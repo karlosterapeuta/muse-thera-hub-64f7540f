@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
-import { Download, Save, FileText, List } from "lucide-react";
+import { Download, Save } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import SavedAnamnesisView from "./components/SavedAnamnesisView";
 
 type Patient = {
   id: string;
@@ -58,7 +57,6 @@ export default function AnamnesisForm() {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentView, setCurrentView] = useState<'form' | 'saved'>('form');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -653,13 +651,20 @@ export default function AnamnesisForm() {
       if (pdfGenerated) {
         toast({
           title: "Sucesso!",
-          description: "Anamnese salva e PDF gerado com sucesso.",
+          description: "Anamnese registrada e PDF gerado com sucesso.",
+        });
+        navigate("/processes");
+      } else {
+        toast({
+          title: "Atenção",
+          description: "Anamnese salva, mas houve um problema ao gerar o PDF.",
+          variant: "destructive",
         });
       }
-      
     } catch (error: any) {
       console.error("Erro ao processar anamnese:", error);
       
+      // More detailed error message
       let errorMessage = "Não foi possível processar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
@@ -675,124 +680,79 @@ export default function AnamnesisForm() {
     }
   };
 
-  // Handle save only (without PDF generation)
-  const handleSaveOnly = async () => {
-    if (!selectedPatient) {
-      toast({
-        title: "Atenção",
-        description: "Por favor, selecione um paciente.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!professionalId) {
-      toast({
-        title: "Erro",
-        description: "ID do profissional não encontrado.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isSubmitting) {
-      return; // Prevent multiple submissions
-    }
-
-    await saveAnamnesis();
-  };
-
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4 space-y-6 max-w-4xl">
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-          <span className="ml-3 text-lg text-gray-600">Carregando...</span>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4 space-y-6 max-w-4xl">
-      {/* Navigation Buttons */}
-      <div className="flex justify-center gap-4 mb-6">
-        <Button 
-          onClick={() => setCurrentView('form')}
-          variant={currentView === 'form' ? 'default' : 'outline'}
-          className="flex items-center gap-2"
-        >
-          <FileText className="h-4 w-4" />
-          Nova Anamnese
-        </Button>
-        <Button 
-          onClick={() => setCurrentView('saved')}
-          variant={currentView === 'saved' ? 'default' : 'outline'}
-          className="flex items-center gap-2"
-        >
-          <List className="h-4 w-4" />
-          Anamneses Salvas
-        </Button>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Anamnese Musicoterapêutica</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <PatientSelect
+              patients={patients}
+              selectedPatient={selectedPatient}
+              onSelect={setSelectedPatient}
+            />
+            
+            <InitialEvaluationForm
+              content={formData}
+              onChange={updateFormData}
+            />
 
-      {currentView === 'saved' ? (
-        <SavedAnamnesisView />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Anamnese Musicoterapêutica</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <PatientSelect
-                patients={patients}
-                selectedPatient={selectedPatient}
-                onPatientSelect={setSelectedPatient}
-                isLoading={isLoading}
-              />
-              
-              {selectedPatient && (
-                <>
-                  {existingAnamnesisId && (
-                    <Alert>
-                      <AlertTitle>Anamnese existente encontrada</AlertTitle>
-                      <AlertDescription>
-                        Este paciente já possui uma anamnese cadastrada. Você pode editá-la ou criar uma nova.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <InitialEvaluationForm
-                    formData={formData}
-                    updateFormData={updateFormData}
-                  />
-                  
-                  <div className="flex justify-end space-x-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleSaveOnly}
-                      disabled={isSubmitting}
-                      className="w-32"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      {isSubmitting ? "Salvando..." : "Salvar"}
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-32"
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      {isSubmitting ? "Processando..." : "Salvar e Gerar PDF"}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-      )}
+            <div className="flex justify-end space-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/processes")}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isSubmitting}
+                onClick={saveAnamnesis}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2" />
+                    Salvar
+                  </>
+                )}
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2" />
+                    Salvar e Baixar PDF
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
