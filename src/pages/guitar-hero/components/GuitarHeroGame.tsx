@@ -70,7 +70,537 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     const newNotes: Note[] = [];
     let noteId = 0;
 
-    if (songId === "fur-elise-keyboard") {
+    // Função auxiliar para adicionar nota
+    const addNote = (note: number, time: number, duration: number = 500) => {
+      if (note < lanes.length) {
+        newNotes.push({
+          id: `note-${noteId++}`,
+          lane: note,
+          color: lanes[note].color,
+          frequency: lanes[note].frequency,
+          startTime: time,
+          duration,
+          y: -100,
+          hasPlayed: false,
+          isHit: false
+        });
+      }
+    };
+
+    if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
+      // Brilha, Brilha Estrelinha - Dó Dó Sol Sol Lá Lá Sol Fá Fá Mi Mi Ré Ré Dó
+      const twinkleMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 0, time: 500 },   // Dó
+        { note: 4, time: 1000 },  // Sol
+        { note: 4, time: 1500 },  // Sol
+        { note: 5, time: 2000 },  // Lá
+        { note: 5, time: 2500 },  // Lá
+        { note: 4, time: 3000 },  // Sol
+        { note: 3, time: 4000 },  // Fá
+        { note: 3, time: 4500 },  // Fá
+        { note: 2, time: 5000 },  // Mi
+        { note: 2, time: 5500 },  // Mi
+        { note: 1, time: 6000 },  // Ré
+        { note: 1, time: 6500 },  // Ré
+        { note: 0, time: 7000 },  // Dó
+      ];
+      twinkleMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "mary-lamb-bell") {
+      // Mary Had a Little Lamb - Mi Ré Dó Ré Mi Mi Mi Ré Ré Ré Mi Sol Sol
+      const maryMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 1, time: 500 },   // Ré
+        { note: 0, time: 1000 },  // Dó
+        { note: 1, time: 1500 },  // Ré
+        { note: 2, time: 2000 },  // Mi
+        { note: 2, time: 2500 },  // Mi
+        { note: 2, time: 3000 },  // Mi
+        { note: 1, time: 4000 },  // Ré
+        { note: 1, time: 4500 },  // Ré
+        { note: 1, time: 5000 },  // Ré
+        { note: 2, time: 5500 },  // Mi
+        { note: 4, time: 6000 },  // Sol
+        { note: 4, time: 6500 },  // Sol
+      ];
+      maryMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "old-macdonald-bell") {
+      // Old MacDonald - Sol Sol Sol Ré Mi Mi Ré
+      const macdonaldMelody = [
+        { note: 4, time: 0 },     // Sol
+        { note: 4, time: 500 },   // Sol
+        { note: 4, time: 1000 },  // Sol
+        { note: 1, time: 1500 },  // Ré
+        { note: 2, time: 2000 },  // Mi
+        { note: 2, time: 2500 },  // Mi
+        { note: 1, time: 3000 },  // Ré
+        { note: 4, time: 4000 },  // Sol
+        { note: 4, time: 4500 },  // Sol
+        { note: 4, time: 5000 },  // Sol
+        { note: 1, time: 5500 },  // Ré
+        { note: 2, time: 6000 },  // Mi
+        { note: 2, time: 6500 },  // Mi
+        { note: 1, time: 7000 },  // Ré
+      ];
+      macdonaldMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "row-boat-bell") {
+      // Row Your Boat - Dó Dó Dó Ré Mi Mi Ré Mi Fá Sol
+      const rowBoatMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 0, time: 500 },   // Dó
+        { note: 0, time: 1000 },  // Dó
+        { note: 1, time: 1500 },  // Ré
+        { note: 2, time: 2000 },  // Mi
+        { note: 2, time: 3000 },  // Mi
+        { note: 1, time: 3500 },  // Ré
+        { note: 2, time: 4000 },  // Mi
+        { note: 3, time: 4500 },  // Fá
+        { note: 4, time: 5000 },  // Sol
+      ];
+      rowBoatMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "happy-birthday-xylophone") {
+      // Parabéns para Você - Dó Dó Ré Dó Fá Mi Dó Dó Ré Dó Sol Fá
+      const birthdayMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 0, time: 300 },   // Dó
+        { note: 1, time: 600 },   // Ré
+        { note: 0, time: 1200 },  // Dó
+        { note: 3, time: 1800 },  // Fá
+        { note: 2, time: 2400 },  // Mi
+        { note: 0, time: 3600 },  // Dó
+        { note: 0, time: 3900 },  // Dó
+        { note: 1, time: 4200 },  // Ré
+        { note: 0, time: 4800 },  // Dó
+        { note: 4, time: 5400 },  // Sol
+        { note: 3, time: 6000 },  // Fá
+      ];
+      birthdayMelody.forEach(({ note, time }) => addNote(note, time, 500));
+    }
+
+    else if (songId === "london-bridge-xylophone") {
+      // London Bridge - Sol Lá Sol Fá Mi Fá Sol
+      const londonMelody = [
+        { note: 4, time: 0 },     // Sol
+        { note: 5, time: 500 },   // Lá
+        { note: 4, time: 1000 },  // Sol
+        { note: 3, time: 1500 },  // Fá
+        { note: 2, time: 2000 },  // Mi
+        { note: 3, time: 2500 },  // Fá
+        { note: 4, time: 3000 },  // Sol
+        { note: 1, time: 3500 },  // Ré
+        { note: 2, time: 4000 },  // Mi
+        { note: 3, time: 4500 },  // Fá
+        { note: 4, time: 5000 },  // Sol
+        { note: 5, time: 5500 },  // Lá
+        { note: 4, time: 6000 },  // Sol
+        { note: 3, time: 6500 },  // Fá
+        { note: 2, time: 7000 },  // Mi
+        { note: 3, time: 7500 },  // Fá
+        { note: 4, time: 8000 },  // Sol
+      ];
+      londonMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "jingle-bells-xylophone") {
+      // Jingle Bells - Mi Mi Mi Mi Mi Mi Mi Sol Dó Ré Mi
+      const jingleMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 2, time: 500 },   // Mi
+        { note: 2, time: 1000 },  // Mi
+        { note: 2, time: 2000 },  // Mi
+        { note: 2, time: 2500 },  // Mi
+        { note: 2, time: 3000 },  // Mi
+        { note: 2, time: 4000 },  // Mi
+        { note: 4, time: 4500 },  // Sol
+        { note: 0, time: 5000 },  // Dó
+        { note: 1, time: 5500 },  // Ré
+        { note: 2, time: 6000 },  // Mi
+        { note: 3, time: 7000 },  // Fá
+        { note: 3, time: 7500 },  // Fá
+        { note: 3, time: 8000 },  // Fá
+        { note: 3, time: 8500 },  // Fá
+        { note: 3, time: 9000 },  // Fá
+        { note: 2, time: 9500 },  // Mi
+        { note: 2, time: 10000 }, // Mi
+        { note: 2, time: 10500 }, // Mi
+        { note: 2, time: 11000 }, // Mi
+        { note: 1, time: 11500 }, // Ré
+        { note: 1, time: 12000 }, // Ré
+        { note: 2, time: 12500 }, // Mi
+        { note: 1, time: 13000 }, // Ré
+        { note: 4, time: 14000 }, // Sol
+      ];
+      jingleMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "chopsticks-keyboard") {
+      // Chopsticks - Fá Sol Lá Sol Fá Mi Ré Dó
+      const chopsticksMelody = [
+        { note: 3, time: 0 },     // Fá
+        { note: 4, time: 500 },   // Sol
+        { note: 5, time: 1000 },  // Lá
+        { note: 4, time: 1500 },  // Sol
+        { note: 3, time: 2000 },  // Fá
+        { note: 2, time: 2500 },  // Mi
+        { note: 1, time: 3000 },  // Ré
+        { note: 0, time: 3500 },  // Dó
+        { note: 3, time: 4000 },  // Fá
+        { note: 4, time: 4500 },  // Sol
+        { note: 5, time: 5000 },  // Lá
+        { note: 4, time: 5500 },  // Sol
+        { note: 3, time: 6000 },  // Fá
+        { note: 2, time: 6500 },  // Mi
+        { note: 1, time: 7000 },  // Ré
+        { note: 0, time: 7500 },  // Dó
+      ];
+      chopsticksMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "hot-cross-keyboard") {
+      // Hot Cross Buns - Mi Ré Dó Mi Ré Dó Dó Dó Dó Dó Ré Ré Ré Ré Mi Ré Dó
+      const hotCrossMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 1, time: 500 },   // Ré
+        { note: 0, time: 1000 },  // Dó
+        { note: 2, time: 2000 },  // Mi
+        { note: 1, time: 2500 },  // Ré
+        { note: 0, time: 3000 },  // Dó
+        { note: 0, time: 4000 },  // Dó
+        { note: 0, time: 4250 },  // Dó
+        { note: 0, time: 4500 },  // Dó
+        { note: 0, time: 4750 },  // Dó
+        { note: 1, time: 5000 },  // Ré
+        { note: 1, time: 5250 },  // Ré
+        { note: 1, time: 5500 },  // Ré
+        { note: 1, time: 5750 },  // Ré
+        { note: 2, time: 6000 },  // Mi
+        { note: 1, time: 6500 },  // Ré
+        { note: 0, time: 7000 },  // Dó
+      ];
+      hotCrossMelody.forEach(({ note, time }) => addNote(note, time, 200));
+    }
+
+    else if (songId === "frere-jacques-bell") {
+      // Frère Jacques - Dó Ré Mi Dó Dó Ré Mi Dó Mi Fá Sol Mi Fá Sol
+      const frereMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 1, time: 500 },   // Ré
+        { note: 2, time: 1000 },  // Mi
+        { note: 0, time: 1500 },  // Dó
+        { note: 0, time: 2000 },  // Dó
+        { note: 1, time: 2500 },  // Ré
+        { note: 2, time: 3000 },  // Mi
+        { note: 0, time: 3500 },  // Dó
+        { note: 2, time: 4000 },  // Mi
+        { note: 3, time: 4500 },  // Fá
+        { note: 4, time: 5000 },  // Sol
+        { note: 2, time: 6000 },  // Mi
+        { note: 3, time: 6500 },  // Fá
+        { note: 4, time: 7000 },  // Sol
+        { note: 4, time: 8000 },  // Sol
+        { note: 5, time: 8250 },  // Lá
+        { note: 4, time: 8500 },  // Sol
+        { note: 3, time: 8750 },  // Fá
+        { note: 2, time: 9000 },  // Mi
+        { note: 0, time: 9500 },  // Dó
+        { note: 4, time: 10000 }, // Sol
+        { note: 5, time: 10250 }, // Lá
+        { note: 4, time: 10500 }, // Sol
+        { note: 3, time: 10750 }, // Fá
+        { note: 2, time: 11000 }, // Mi
+        { note: 0, time: 11500 }, // Dó
+      ];
+      frereMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "amazing-grace-bell") {
+      // Amazing Grace - Sol Dó Mi Dó Mi Ré Dó Lá Sol
+      const amazingMelody = [
+        { note: 4, time: 0 },     // Sol
+        { note: 0, time: 1000 },  // Dó
+        { note: 2, time: 2000 },  // Mi
+        { note: 0, time: 3000 },  // Dó
+        { note: 2, time: 4000 },  // Mi
+        { note: 1, time: 5000 },  // Ré
+        { note: 0, time: 6000 },  // Dó
+        { note: 5, time: 7000 },  // Lá
+        { note: 4, time: 8000 },  // Sol
+        { note: 0, time: 10000 }, // Dó
+        { note: 2, time: 11000 }, // Mi
+        { note: 4, time: 12000 }, // Sol
+        { note: 2, time: 13000 }, // Mi
+        { note: 1, time: 14000 }, // Ré
+        { note: 0, time: 15000 }, // Dó
+      ];
+      amazingMelody.forEach(({ note, time }) => addNote(note, time, 800));
+    }
+
+    else if (songId === "greensleeves-bell") {
+      // Greensleeves - Lá Dó Ré Mi Fá Mi Ré Dó
+      const greenslevesMelody = [
+        { note: 5, time: 0 },     // Lá
+        { note: 0, time: 800 },   // Dó
+        { note: 1, time: 1600 },  // Ré
+        { note: 2, time: 2400 },  // Mi
+        { note: 3, time: 3200 },  // Fá
+        { note: 2, time: 4000 },  // Mi
+        { note: 1, time: 4800 },  // Ré
+        { note: 0, time: 5600 },  // Dó
+        { note: 5, time: 6400 },  // Lá
+        { note: 4, time: 7200 },  // Sol
+        { note: 3, time: 8000 },  // Fá
+        { note: 2, time: 8800 },  // Mi
+        { note: 1, time: 9600 },  // Ré
+        { note: 0, time: 10400 }, // Dó
+        { note: 5, time: 11200 }, // Lá
+      ];
+      greenslevesMelody.forEach(({ note, time }) => addNote(note, time, 600));
+    }
+
+    else if (songId === "scarborough-bell") {
+      // Scarborough Fair - Ré Mi Fá Sol Lá Sol Fá Mi Ré
+      const scarboroughMelody = [
+        { note: 1, time: 0 },     // Ré
+        { note: 2, time: 800 },   // Mi
+        { note: 3, time: 1600 },  // Fá
+        { note: 4, time: 2400 },  // Sol
+        { note: 5, time: 3200 },  // Lá
+        { note: 4, time: 4000 },  // Sol
+        { note: 3, time: 4800 },  // Fá
+        { note: 2, time: 5600 },  // Mi
+        { note: 1, time: 6400 },  // Ré
+        { note: 0, time: 7200 },  // Dó
+        { note: 1, time: 8000 },  // Ré
+        { note: 2, time: 8800 },  // Mi
+        { note: 3, time: 9600 },  // Fá
+        { note: 2, time: 10400 }, // Mi
+        { note: 1, time: 11200 }, // Ré
+      ];
+      scarboroughMelody.forEach(({ note, time }) => addNote(note, time, 700));
+    }
+
+    else if (songId === "ode-joy-xylophone") {
+      // Ode à Alegria - Mi Mi Fá Sol Sol Fá Mi Ré Dó Dó Ré Mi Mi Ré Ré
+      const odeMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 2, time: 500 },   // Mi
+        { note: 3, time: 1000 },  // Fá
+        { note: 4, time: 1500 },  // Sol
+        { note: 4, time: 2000 },  // Sol
+        { note: 3, time: 2500 },  // Fá
+        { note: 2, time: 3000 },  // Mi
+        { note: 1, time: 3500 },  // Ré
+        { note: 0, time: 4000 },  // Dó
+        { note: 0, time: 4500 },  // Dó
+        { note: 1, time: 5000 },  // Ré
+        { note: 2, time: 5500 },  // Mi
+        { note: 2, time: 6000 },  // Mi
+        { note: 1, time: 6750 },  // Ré
+        { note: 1, time: 7500 },  // Ré
+        { note: 2, time: 8500 },  // Mi
+        { note: 2, time: 9000 },  // Mi
+        { note: 3, time: 9500 },  // Fá
+        { note: 4, time: 10000 }, // Sol
+        { note: 4, time: 10500 }, // Sol
+        { note: 3, time: 11000 }, // Fá
+        { note: 2, time: 11500 }, // Mi
+        { note: 1, time: 12000 }, // Ré
+        { note: 0, time: 12500 }, // Dó
+        { note: 0, time: 13000 }, // Dó
+        { note: 1, time: 13500 }, // Ré
+        { note: 2, time: 14000 }, // Mi
+        { note: 1, time: 14500 }, // Ré
+        { note: 0, time: 15250 }, // Dó
+        { note: 0, time: 16000 }, // Dó
+      ];
+      odeMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "danny-boy-xylophone") {
+      // Danny Boy - Sol Dó Mi Sol Lá Sol Mi Dó
+      const dannyMelody = [
+        { note: 4, time: 0 },     // Sol
+        { note: 0, time: 1000 },  // Dó
+        { note: 2, time: 2000 },  // Mi
+        { note: 4, time: 3000 },  // Sol
+        { note: 5, time: 4000 },  // Lá
+        { note: 4, time: 5000 },  // Sol
+        { note: 2, time: 6000 },  // Mi
+        { note: 0, time: 7000 },  // Dó
+        { note: 1, time: 8000 },  // Ré
+        { note: 2, time: 9000 },  // Mi
+        { note: 3, time: 10000 }, // Fá
+        { note: 4, time: 11000 }, // Sol
+        { note: 5, time: 12000 }, // Lá
+        { note: 6, time: 13000 }, // Si
+        { note: 5, time: 14000 }, // Lá
+        { note: 4, time: 15000 }, // Sol
+        { note: 2, time: 16000 }, // Mi
+        { note: 0, time: 17000 }, // Dó
+      ];
+      dannyMelody.forEach(({ note, time }) => addNote(note, time, 800));
+    }
+
+    else if (songId === "auld-lang-xylophone") {
+      // Auld Lang Syne - Dó Fá Fá Fá Sol Lá Fá Sol Mi Mi
+      const auldMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 3, time: 1000 },  // Fá
+        { note: 3, time: 2000 },  // Fá
+        { note: 3, time: 3000 },  // Fá
+        { note: 4, time: 4000 },  // Sol
+        { note: 5, time: 5000 },  // Lá
+        { note: 3, time: 6000 },  // Fá
+        { note: 4, time: 7000 },  // Sol
+        { note: 2, time: 8000 },  // Mi
+        { note: 2, time: 9000 },  // Mi
+        { note: 3, time: 10000 }, // Fá
+        { note: 2, time: 11000 }, // Mi
+        { note: 1, time: 12000 }, // Ré
+        { note: 0, time: 13000 }, // Dó
+        { note: 3, time: 14000 }, // Fá
+        { note: 4, time: 15000 }, // Sol
+        { note: 5, time: 16000 }, // Lá
+      ];
+      auldMelody.forEach(({ note, time }) => addNote(note, time, 800));
+    }
+
+    else if (songId === "swan-lake-xylophone") {
+      // Tema do Lago dos Cisnes - Mi Ré Dó Ré Mi Fá Sol Lá
+      const swanMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 1, time: 800 },   // Ré
+        { note: 0, time: 1600 },  // Dó
+        { note: 1, time: 2400 },  // Ré
+        { note: 2, time: 3200 },  // Mi
+        { note: 3, time: 4000 },  // Fá
+        { note: 4, time: 4800 },  // Sol
+        { note: 5, time: 5600 },  // Lá
+        { note: 6, time: 6400 },  // Si
+        { note: 5, time: 7200 },  // Lá
+        { note: 4, time: 8000 },  // Sol
+        { note: 3, time: 8800 },  // Fá
+        { note: 2, time: 9600 },  // Mi
+        { note: 1, time: 10400 }, // Ré
+        { note: 0, time: 11200 }, // Dó
+        { note: 2, time: 12000 }, // Mi
+        { note: 4, time: 12800 }, // Sol
+        { note: 2, time: 13600 }, // Mi
+        { note: 0, time: 14400 }, // Dó
+      ];
+      swanMelody.forEach(({ note, time }) => addNote(note, time, 600));
+    }
+
+    else if (songId === "moonlight-keyboard") {
+      // Sonata ao Luar (Tema) - Dó# Ré# Mi Fá# Sol# Lá# Si
+      const moonlightMelody = [
+        { note: 0, time: 0 },     // Dó
+        { note: 1, time: 1500 },  // Ré
+        { note: 2, time: 3000 },  // Mi
+        { note: 0, time: 4500 },  // Dó
+        { note: 3, time: 6000 },  // Fá
+        { note: 2, time: 7500 },  // Mi
+        { note: 1, time: 9000 },  // Ré
+        { note: 0, time: 10500 }, // Dó
+        { note: 4, time: 12000 }, // Sol
+        { note: 3, time: 13500 }, // Fá
+        { note: 2, time: 15000 }, // Mi
+        { note: 1, time: 16500 }, // Ré
+        { note: 0, time: 18000 }, // Dó
+      ];
+      moonlightMelody.forEach(({ note, time }) => addNote(note, time, 1200));
+    }
+
+    else if (songId === "canon-d-keyboard" || songId === "canon-xylophone") {
+      // Cânone em Ré - Ré Lá Si Fá# Sol Ré Sol Lá
+      const canonMelody = [
+        { note: 1, time: 0 },     // Ré
+        { note: 5, time: 1000 },  // Lá
+        { note: 6, time: 2000 },  // Si
+        { note: 3, time: 3000 },  // Fá
+        { note: 4, time: 4000 },  // Sol
+        { note: 1, time: 5000 },  // Ré
+        { note: 4, time: 6000 },  // Sol
+        { note: 5, time: 7000 },  // Lá
+        { note: 1, time: 8000 },  // Ré
+        { note: 3, time: 9000 },  // Fá
+        { note: 4, time: 10000 }, // Sol
+        { note: 1, time: 11000 }, // Ré
+        { note: 4, time: 12000 }, // Sol
+        { note: 3, time: 13000 }, // Fá
+        { note: 2, time: 14000 }, // Mi
+        { note: 1, time: 15000 }, // Ré
+      ];
+      canonMelody.forEach(({ note, time }) => addNote(note, time, 800));
+    }
+
+    else if (songId === "turkish-march-xylophone") {
+      // Marcha Turca - Si Lá Sol# Lá Dó Si Lá
+      const turkishMelody = [
+        { note: 6, time: 0 },     // Si
+        { note: 5, time: 300 },   // Lá
+        { note: 4, time: 600 },   // Sol
+        { note: 5, time: 900 },   // Lá
+        { note: 0, time: 1200 },  // Dó
+        { note: 6, time: 1500 },  // Si
+        { note: 5, time: 1800 },  // Lá
+        { note: 4, time: 2100 },  // Sol
+        { note: 3, time: 2400 },  // Fá
+        { note: 2, time: 2700 },  // Mi
+        { note: 1, time: 3000 },  // Ré
+        { note: 0, time: 3300 },  // Dó
+        { note: 6, time: 3600 },  // Si
+        { note: 5, time: 3900 },  // Lá
+        { note: 4, time: 4200 },  // Sol
+        { note: 5, time: 4500 },  // Lá
+        { note: 6, time: 4800 },  // Si
+        { note: 0, time: 5100 },  // Dó
+        { note: 1, time: 5400 },  // Ré
+        { note: 2, time: 5700 },  // Mi
+        { note: 3, time: 6000 },  // Fá
+        { note: 4, time: 6300 },  // Sol
+        { note: 5, time: 6600 },  // Lá
+      ];
+      turkishMelody.forEach(({ note, time }) => addNote(note, time, 250));
+    }
+
+    else if (songId === "spring-vivaldi-xylophone") {
+      // Primavera (As Quatro Estações) - Mi Sol# Si Mi Sol# Si Mi
+      const springMelody = [
+        { note: 2, time: 0 },     // Mi
+        { note: 4, time: 500 },   // Sol
+        { note: 6, time: 1000 },  // Si
+        { note: 2, time: 1500 },  // Mi
+        { note: 4, time: 2000 },  // Sol
+        { note: 6, time: 2500 },  // Si
+        { note: 2, time: 3000 },  // Mi
+        { note: 3, time: 3500 },  // Fá
+        { note: 4, time: 4000 },  // Sol
+        { note: 5, time: 4500 },  // Lá
+        { note: 6, time: 5000 },  // Si
+        { note: 5, time: 5500 },  // Lá
+        { note: 4, time: 6000 },  // Sol
+        { note: 3, time: 6500 },  // Fá
+        { note: 2, time: 7000 },  // Mi
+        { note: 1, time: 7500 },  // Ré
+        { note: 0, time: 8000 },  // Dó
+        { note: 2, time: 8500 },  // Mi
+        { note: 4, time: 9000 },  // Sol
+        { note: 6, time: 9500 },  // Si
+        { note: 2, time: 10000 }, // Mi
+      ];
+      springMelody.forEach(({ note, time }) => addNote(note, time, 400));
+    }
+
+    else if (songId === "fur-elise-keyboard") {
       const furEliseMelody = [
         { note: 2, time: 0 },     // Mi
         { note: 1, time: 500 },   // Ré#
@@ -95,20 +625,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 0, time: 12500 }, // Dó
         { note: 5, time: 13000 }, // Lá
       ];
-
       furEliseMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 400,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 400);
         }
       });
     } else if (songId === "claire-de-lune-keyboard") {
@@ -131,20 +650,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 18000 }, // Ré
         { note: 0, time: 19200 }, // Dó
       ];
-
       claireDeLuneMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 1000,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 1000);
         }
       });
     } else if (songId === "invention-1-keyboard") {
@@ -171,20 +679,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 6, time: 5700 },  // Si
         { note: 0, time: 6000 },  // Dó
       ];
-
       invention1Melody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 250,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 250);
         }
       });
     } else if (songId === "chopin-minute-keyboard") {
@@ -212,20 +709,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 4000 },  // Ré
         { note: 2, time: 4200 },  // Mi
       ];
-
       minuteWaltzMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 150,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 150);
         }
       });
     } else if (songId === "asa-branca-bell") {
@@ -248,20 +734,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 1, time: 12000 }, // Ré
         { note: 0, time: 12800 }, // Dó
       ];
-
       asaBrancaMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 600,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 600);
         }
       });
     } else if (songId === "aquarela-xylophone") {
@@ -283,20 +758,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 8400 },  // Mi
         { note: 0, time: 9000 },  // Dó
       ];
-
       aquarelaMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 500,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 500);
         }
       });
     } else if (songId === "ciranda-cirandinha-bell") {
@@ -316,23 +780,13 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 2, time: 7200 },  // Mi
         { note: 0, time: 7800 },  // Dó
       ];
-
       cirandaMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 500,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
+          addNote(noteData.note, noteData.time, 500);
         }
       });
     } else {
+      // Padrão genérico para músicas não específicas
       const patterns = [
         [0, 2, 4],
         [1, 3, 5],
@@ -348,17 +802,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         
         pattern.forEach((laneIndex, noteIndex) => {
           if (laneIndex < lanes.length) {
-            newNotes.push({
-              id: `note-${noteId++}`,
-              lane: laneIndex,
-              color: lanes[laneIndex].color,
-              frequency: lanes[laneIndex].frequency,
-              startTime: baseTime + noteIndex * 1000,
-              duration: 600,
-              y: -100,
-              hasPlayed: false,
-              isHit: false
-            });
+            addNote(laneIndex, baseTime + noteIndex * 1000, 600);
           }
         });
       }
