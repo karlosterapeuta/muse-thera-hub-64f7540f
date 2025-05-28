@@ -126,11 +126,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
   // Parar música de fundo
   const stopBackgroundMusic = useCallback(() => {
-    if (backgroundMusicRef.current) {
-      backgroundMusicRef.current.pause();
-      backgroundMusicRef.current.currentTime = 0;
-      backgroundMusicRef.current = null;
-    }
+    // Background music is now handled by audio context, no need for refs
     console.log("🎵 Background music stopped");
   }, []);
 
