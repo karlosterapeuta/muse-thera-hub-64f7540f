@@ -70,199 +70,49 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     const newNotes: Note[] = [];
     let noteId = 0;
 
-    if (songId === "danny-boy-xylophone") {
-      const dannyBoyMelody = [
-        { note: 0, time: 0 }, { note: 2, time: 800 }, { note: 4, time: 1400 }, { note: 4, time: 2200 },
-        { note: 3, time: 3000 }, { note: 2, time: 3600 }, { note: 1, time: 4400 }, { note: 2, time: 5000 },
-        { note: 4, time: 5800 }, { note: 3, time: 6600 }, { note: 2, time: 7400 }, { note: 0, time: 8800 },
-        { note: 2, time: 9600 }, { note: 4, time: 10400 }, { note: 4, time: 11200 }, { note: 3, time: 12000 },
-        { note: 2, time: 12800 }, { note: 1, time: 13600 }, { note: 2, time: 14400 }, { note: 3, time: 15200 },
-        { note: 0, time: 16000 }, { note: 0, time: 17600 }, { note: 2, time: 18400 }, { note: 4, time: 19200 },
-        { note: 4, time: 20000 }, { note: 3, time: 20800 }, { note: 2, time: 21600 }, { note: 1, time: 22400 },
-        { note: 2, time: 23200 }, { note: 4, time: 24000 }, { note: 3, time: 24800 }, { note: 2, time: 25600 },
-        { note: 5, time: 27200 }, { note: 4, time: 28000 }, { note: 3, time: 28800 }, { note: 2, time: 29600 },
-        { note: 1, time: 30400 }, { note: 0, time: 31200 }, { note: 2, time: 32000 }, { note: 3, time: 32800 },
-        { note: 4, time: 33600 }, { note: 2, time: 34400 }, { note: 0, time: 36000 }, { note: 2, time: 36800 },
-        { note: 4, time: 37600 }, { note: 4, time: 38400 }, { note: 3, time: 39200 }, { note: 2, time: 40000 },
-        { note: 1, time: 40800 }, { note: 2, time: 41600 }, { note: 4, time: 42400 }, { note: 3, time: 43200 },
-        { note: 2, time: 44000 }, { note: 0, time: 45600 }, { note: 2, time: 46400 }, { note: 4, time: 47200 },
-        { note: 4, time: 48000 }, { note: 3, time: 48800 }, { note: 2, time: 49600 }, { note: 1, time: 50400 },
-        { note: 2, time: 51200 }, { note: 3, time: 52000 }, { note: 0, time: 52800 }, { note: 5, time: 54400 },
-        { note: 4, time: 55200 }, { note: 3, time: 56000 }, { note: 2, time: 56800 }, { note: 1, time: 57600 },
-        { note: 0, time: 58400 }, { note: 2, time: 59200 }, { note: 3, time: 60000 }, { note: 4, time: 60800 },
-        { note: 2, time: 61600 }, { note: 0, time: 62400 }, { note: 0, time: 64000 }, { note: 2, time: 64800 },
-        { note: 4, time: 65600 }, { note: 4, time: 66400 }, { note: 3, time: 67200 }, { note: 2, time: 68000 },
-        { note: 1, time: 68800 }, { note: 2, time: 69600 }, { note: 4, time: 70400 }, { note: 3, time: 71200 },
-        { note: 2, time: 72000 }, { note: 0, time: 72800 }
+    if (songId === "fur-elise-keyboard") {
+      const furEliseMelody = [
+        { note: 2, time: 0 },
+        { note: 1, time: 400 },
+        { note: 2, time: 800 },
+        { note: 1, time: 1200 },
+        { note: 2, time: 1600 },
+        { note: 6, time: 2000 },
+        { note: 1, time: 2400 },
+        { note: 0, time: 2800 },
+        { note: 5, time: 3200 },
+        { note: 0, time: 4000 },
+        { note: 2, time: 4400 },
+        { note: 5, time: 4800 },
+        { note: 6, time: 5200 },
+        { note: 2, time: 5600 },
+        { note: 4, time: 6000 },
+        { note: 6, time: 6400 },
+        { note: 0, time: 6800 },
+        { note: 2, time: 7200 },
+        { note: 1, time: 7600 },
+        { note: 2, time: 8000 },
+        { note: 1, time: 8400 },
+        { note: 2, time: 8800 },
+        { note: 6, time: 9200 },
+        { note: 1, time: 9600 },
+        { note: 0, time: 10000 },
+        { note: 5, time: 10400 },
+        { note: 0, time: 10800 },
+        { note: 2, time: 11200 },
+        { note: 5, time: 11600 },
+        { note: 6, time: 12000 },
+        { note: 0, time: 12400 },
+        { note: 1, time: 12800 },
+        { note: 4, time: 13600 },
+        { note: 3, time: 14000 },
+        { note: 2, time: 14400 },
+        { note: 1, time: 14800 },
+        { note: 0, time: 15200 },
+        { note: 5, time: 15600 },
       ];
 
-      dannyBoyMelody.forEach((noteData) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 600,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "auld-lang-xylophone") {
-      const auldLangSyneMelody = [
-        { note: 0, time: 0 }, { note: 3, time: 800 }, { note: 3, time: 1600 }, { note: 3, time: 2200 },
-        { note: 4, time: 2800 }, { note: 5, time: 3600 }, { note: 3, time: 4400 }, { note: 1, time: 5200 },
-        { note: 3, time: 6400 }, { note: 3, time: 7200 }, { note: 4, time: 8000 }, { note: 5, time: 8800 },
-        { note: 6, time: 9600 }, { note: 5, time: 10400 }, { note: 0, time: 12000 }, { note: 3, time: 12800 },
-        { note: 3, time: 13600 }, { note: 3, time: 14200 }, { note: 4, time: 14800 }, { note: 5, time: 15600 },
-        { note: 3, time: 16400 }, { note: 1, time: 17200 }, { note: 1, time: 18400 }, { note: 4, time: 19200 },
-        { note: 3, time: 20000 }, { note: 0, time: 20800 }, { note: 5, time: 22400 }, { note: 6, time: 23200 },
-        { note: 5, time: 24000 }, { note: 4, time: 24800 }, { note: 3, time: 25600 }, { note: 1, time: 26400 },
-        { note: 3, time: 27600 }, { note: 3, time: 28400 }, { note: 4, time: 29200 }, { note: 5, time: 30000 },
-        { note: 6, time: 31200 }, { note: 5, time: 32000 }, { note: 4, time: 32800 }, { note: 3, time: 33600 },
-        { note: 1, time: 34400 }, { note: 4, time: 35200 }, { note: 3, time: 36000 }, { note: 1, time: 36800 },
-        { note: 1, time: 38000 }, { note: 4, time: 38800 }, { note: 3, time: 39600 }, { note: 0, time: 40400 }
-      ];
-
-      auldLangSyneMelody.forEach((noteData) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 600,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "swan-lake-xylophone") {
-      const swanLakeMelody = [
-        { note: 2, time: 0 }, { note: 3, time: 600 }, { note: 4, time: 1200 }, { note: 5, time: 1800 },
-        { note: 6, time: 2400 }, { note: 5, time: 3000 }, { note: 4, time: 3600 }, { note: 3, time: 4200 },
-        { note: 2, time: 4800 }, { note: 1, time: 5400 }, { note: 0, time: 6000 }, { note: 1, time: 6600 },
-        { note: 2, time: 7200 }, { note: 3, time: 7800 }, { note: 4, time: 8400 }, { note: 5, time: 9000 },
-        { note: 6, time: 9600 }, { note: 6, time: 10200 }, { note: 5, time: 10800 }, { note: 4, time: 11400 },
-        { note: 5, time: 12000 }, { note: 6, time: 12600 }, { note: 5, time: 13200 }, { note: 4, time: 13800 },
-        { note: 3, time: 14400 }, { note: 2, time: 15000 }, { note: 1, time: 15600 }, { note: 0, time: 16200 },
-        { note: 1, time: 16800 }, { note: 2, time: 17400 }, { note: 1, time: 18000 }, { note: 0, time: 18600 },
-        { note: 2, time: 20000 }, { note: 3, time: 20600 }, { note: 4, time: 21200 }, { note: 5, time: 21800 },
-        { note: 6, time: 22400 }, { note: 5, time: 23000 }, { note: 4, time: 23600 }, { note: 6, time: 24200 },
-        { note: 5, time: 24800 }, { note: 4, time: 25400 }, { note: 3, time: 26000 }, { note: 2, time: 26600 },
-        { note: 1, time: 27200 }, { note: 0, time: 27800 }, { note: 2, time: 28400 }, { note: 0, time: 29000 }
-      ];
-
-      swanLakeMelody.forEach((noteData) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 500,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "moonlight-keyboard") {
-      const moonlightSonataMelody = [
-        { note: 4, time: 0 }, { note: 6, time: 800 }, { note: 5, time: 1600 }, { note: 4, time: 2400 },
-        { note: 3, time: 3200 }, { note: 2, time: 4000 }, { note: 1, time: 4800 }, { note: 0, time: 5600 },
-        { note: 1, time: 6400 }, { note: 2, time: 7200 }, { note: 3, time: 8000 }, { note: 4, time: 8800 },
-        { note: 3, time: 9600 }, { note: 2, time: 10400 }, { note: 1, time: 11200 }, { note: 2, time: 12000 },
-        { note: 4, time: 12800 }, { note: 6, time: 13600 }, { note: 5, time: 14400 }, { note: 4, time: 15200 },
-        { note: 5, time: 16000 }, { note: 6, time: 16800 }, { note: 5, time: 17600 }, { note: 4, time: 18400 },
-        { note: 3, time: 19200 }, { note: 2, time: 20000 }, { note: 1, time: 20800 }, { note: 0, time: 21600 },
-        { note: 1, time: 22400 }, { note: 3, time: 23200 }, { note: 2, time: 24000 }, { note: 1, time: 24800 },
-        { note: 0, time: 25600 }, { note: 2, time: 26400 }, { note: 4, time: 27200 }, { note: 6, time: 28000 },
-        { note: 5, time: 28800 }, { note: 4, time: 29600 }, { note: 3, time: 30400 }, { note: 4, time: 31200 },
-        { note: 2, time: 32000 }, { note: 1, time: 32800 }, { note: 0, time: 33600 }, { note: 1, time: 34400 },
-        { note: 2, time: 35200 }, { note: 3, time: 36000 }, { note: 4, time: 36800 }, { note: 2, time: 37600 },
-        { note: 3, time: 38400 }, { note: 4, time: 39200 }, { note: 5, time: 40000 }, { note: 4, time: 40800 },
-        { note: 3, time: 41600 }, { note: 2, time: 42400 }, { note: 1, time: 43200 }, { note: 0, time: 44000 },
-        { note: 1, time: 44800 }, { note: 2, time: 45600 }, { note: 3, time: 46400 }, { note: 4, time: 47200 },
-        { note: 5, time: 48000 }, { note: 6, time: 48800 }, { note: 0, time: 49600 }, { note: 1, time: 50400 },
-        { note: 6, time: 51200 }, { note: 5, time: 52000 }, { note: 4, time: 52800 }, { note: 3, time: 53600 },
-        { note: 4, time: 54400 }, { note: 5, time: 55200 }, { note: 1, time: 56000 }
-      ];
-
-      moonlightSonataMelody.forEach((noteData) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 700,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "canon-d-keyboard") {
-      const canonDMelody = [
-        { note: 1, time: 0 }, { note: 5, time: 600 }, { note: 6, time: 1200 }, { note: 3, time: 1800 },
-        { note: 4, time: 2400 }, { note: 1, time: 3000 }, { note: 4, time: 3600 }, { note: 5, time: 4200 },
-        { note: 1, time: 4800 }, { note: 3, time: 5400 }, { note: 5, time: 6000 }, { note: 1, time: 6600 },
-        { note: 6, time: 7200 }, { note: 4, time: 7800 }, { note: 5, time: 8400 }, { note: 3, time: 9000 },
-        { note: 4, time: 9600 }, { note: 1, time: 10200 }, { note: 4, time: 10800 }, { note: 5, time: 11400 },
-        { note: 6, time: 12000 }, { note: 3, time: 12600 }, { note: 4, time: 13200 }, { note: 2, time: 13800 },
-        { note: 1, time: 14400 }, { note: 6, time: 15000 }, { note: 5, time: 15600 }, { note: 4, time: 16200 },
-        { note: 3, time: 16800 }, { note: 1, time: 17400 }, { note: 2, time: 18000 }, { note: 3, time: 18600 },
-        { note: 4, time: 19200 }, { note: 5, time: 19800 }, { note: 6, time: 20400 }, { note: 0, time: 21000 },
-        { note: 6, time: 21600 }, { note: 5, time: 22200 }, { note: 4, time: 22800 }, { note: 3, time: 23400 },
-        { note: 4, time: 24000 }, { note: 5, time: 24600 }, { note: 1, time: 25200 }, { note: 2, time: 25800 },
-        { note: 3, time: 26400 }, { note: 4, time: 27000 }, { note: 5, time: 27600 }, { note: 6, time: 28200 },
-        { note: 0, time: 28800 }, { note: 1, time: 29400 }, { note: 6, time: 30000 }, { note: 5, time: 30600 },
-        { note: 4, time: 31200 }, { note: 3, time: 31800 }, { note: 4, time: 32400 }, { note: 5, time: 33000 },
-        { note: 1, time: 33600 }
-      ];
-
-      canonDMelody.forEach((noteData) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 500,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "turkish-march-xylophone") {
-      const turkishMarchMelody = [
-        { note: 6, time: 0 }, { note: 5, time: 400 }, { note: 4, time: 800 }, { note: 5, time: 1200 },
-        { note: 0, time: 1600 }, { note: 6, time: 2000 }, { note: 5, time: 2400 }, { note: 4, time: 2800 },
-        { note: 5, time: 3200 }, { note: 6, time: 3600 }, { note: 0, time: 4000 }, { note: 1, time: 4400 },
-        { note: 2, time: 4800 }, { note: 1, time: 5200 }, { note: 0, time: 5600 }, { note: 6, time: 6000 },
-        { note: 5, time: 6400 }, { note: 6, time: 6800 }, { note: 0, time: 7200 }, { note: 6, time: 7600 },
-        { note: 5, time: 8000 }, { note: 4, time: 8400 }, { note: 5, time: 8800 }, { note: 6, time: 9200 },
-        { note: 0, time: 9600 }, { note: 1, time: 9800 }, { note: 2, time: 10000 }, { note: 3, time: 10200 },
-        { note: 2, time: 10400 }, { note: 1, time: 10600 }, { note: 0, time: 10800 }, { note: 6, time: 11000 },
-        { note: 5, time: 11200 }, { note: 6, time: 11400 }, { note: 0, time: 11600 }, { note: 1, time: 11800 },
-        { note: 2, time: 12000 }, { note: 3, time: 12200 }, { note: 4, time: 12400 }, { note: 5, time: 12600 },
-        { note: 6, time: 12800 }, { note: 5, time: 13000 }, { note: 4, time: 13200 }, { note: 5, time: 13400 },
-        { note: 6, time: 13600 }, { note: 0, time: 13800 }, { note: 1, time: 14000 }, { note: 2, time: 14200 },
-        { note: 3, time: 14400 }, { note: 2, time: 14600 }, { note: 1, time: 14800 }, { note: 0, time: 15000 },
-        { note: 5, time: 15200 }
-      ];
-
-      turkishMarchMelody.forEach((noteData) => {
+      furEliseMelody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
           newNotes.push({
             id: `note-${noteId++}`,
@@ -277,29 +127,100 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
-    } else if (songId === "spring-vivaldi-xylophone") {
-      const springMelody = [
-        { note: 2, time: 0 }, { note: 2, time: 300 }, { note: 2, time: 600 }, { note: 2, time: 900 },
-        { note: 3, time: 1200 }, { note: 4, time: 1500 }, { note: 3, time: 1800 }, { note: 2, time: 2100 },
-        { note: 1, time: 2400 }, { note: 0, time: 2700 }, { note: 1, time: 3000 }, { note: 2, time: 3300 },
-        { note: 3, time: 3600 }, { note: 4, time: 3900 }, { note: 5, time: 4200 }, { note: 6, time: 4500 },
-        { note: 4, time: 4800 }, { note: 5, time: 5000 }, { note: 4, time: 5200 }, { note: 3, time: 5400 },
-        { note: 4, time: 5600 }, { note: 5, time: 5800 }, { note: 4, time: 6000 }, { note: 3, time: 6200 },
-        { note: 2, time: 6400 }, { note: 3, time: 6600 }, { note: 2, time: 6800 }, { note: 1, time: 7000 },
-        { note: 2, time: 7200 }, { note: 3, time: 7400 }, { note: 2, time: 7600 }, { note: 1, time: 7800 },
-        { note: 0, time: 8000 }, { note: 1, time: 8300 }, { note: 2, time: 8600 }, { note: 3, time: 8900 },
-        { note: 4, time: 9200 }, { note: 5, time: 9500 }, { note: 6, time: 9800 }, { note: 5, time: 10100 },
-        { note: 4, time: 10400 }, { note: 6, time: 10600 }, { note: 5, time: 10800 }, { note: 4, time: 11000 },
-        { note: 3, time: 11200 }, { note: 5, time: 11400 }, { note: 4, time: 11600 }, { note: 3, time: 11800 },
-        { note: 2, time: 12000 }, { note: 1, time: 12400 }, { note: 0, time: 12800 }, { note: 1, time: 13200 },
-        { note: 2, time: 13600 }, { note: 3, time: 14000 }, { note: 4, time: 14400 }, { note: 2, time: 14800 },
-        { note: 3, time: 15200 }, { note: 4, time: 15400 }, { note: 5, time: 15600 }, { note: 4, time: 15800 },
-        { note: 3, time: 16000 }, { note: 2, time: 16200 }, { note: 1, time: 16400 }, { note: 0, time: 16600 },
-        { note: 2, time: 16800 }, { note: 4, time: 17200 }, { note: 6, time: 17600 }, { note: 5, time: 18000 },
-        { note: 4, time: 18400 }, { note: 3, time: 18800 }, { note: 2, time: 19200 }, { note: 0, time: 19600 }
+    } else if (songId === "claire-de-lune-keyboard") {
+      const claireDeLuneMelody = [
+        { note: 1, time: 0 },
+        { note: 3, time: 800 },
+        { note: 5, time: 1600 },
+        { note: 4, time: 2400 },
+        { note: 3, time: 3200 },
+        { note: 2, time: 4000 },
+        { note: 1, time: 4800 },
+        { note: 0, time: 5600 },
+        { note: 2, time: 6400 },
+        { note: 4, time: 7200 },
+        { note: 6, time: 8000 },
+        { note: 5, time: 8800 },
+        { note: 4, time: 9600 },
+        { note: 3, time: 10400 },
+        { note: 2, time: 11200 },
+        { note: 1, time: 12000 },
+        { note: 0, time: 12800 },
+        { note: 2, time: 13600 },
+        { note: 4, time: 14400 },
+        { note: 6, time: 15200 },
+        { note: 5, time: 16000 },
+        { note: 4, time: 16800 },
+        { note: 3, time: 17600 },
+        { note: 2, time: 18400 },
+        { note: 1, time: 19200 },
+        { note: 0, time: 20000 },
+        { note: 2, time: 20800 },
+        { note: 4, time: 21600 },
+        { note: 3, time: 22400 },
+        { note: 2, time: 23200 },
+        { note: 1, time: 24000 },
+        { note: 0, time: 24800 },
       ];
 
-      springMelody.forEach((noteData) => {
+      claireDeLuneMelody.forEach((noteData) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 700,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "invention-1-keyboard") {
+      const invention1Melody = [
+        { note: 0, time: 0 },
+        { note: 1, time: 300 },
+        { note: 2, time: 600 },
+        { note: 3, time: 900 },
+        { note: 4, time: 1200 },
+        { note: 5, time: 1500 },
+        { note: 6, time: 1800 },
+        { note: 0, time: 2100 },
+        { note: 4, time: 2400 },
+        { note: 5, time: 2700 },
+        { note: 6, time: 3000 },
+        { note: 0, time: 3300 },
+        { note: 1, time: 3600 },
+        { note: 2, time: 3900 },
+        { note: 3, time: 4200 },
+        { note: 4, time: 4500 },
+        { note: 2, time: 4800 },
+        { note: 3, time: 5100 },
+        { note: 4, time: 5400 },
+        { note: 5, time: 5700 },
+        { note: 6, time: 6000 },
+        { note: 0, time: 6300 },
+        { note: 1, time: 6600 },
+        { note: 2, time: 6900 },
+        { note: 6, time: 7200 },
+        { note: 0, time: 9600 },
+        { note: 2, time: 9900 },
+        { note: 4, time: 10200 },
+        { note: 6, time: 10500 },
+        { note: 1, time: 10800 },
+        { note: 3, time: 11100 },
+        { note: 5, time: 11400 },
+        { note: 0, time: 11700 },
+        { note: 4, time: 12000 },
+        { note: 3, time: 12300 },
+        { note: 2, time: 12600 },
+        { note: 1, time: 12900 },
+        { note: 0, time: 13200 },
+      ];
+
+      invention1Melody.forEach((noteData) => {
         if (noteData.note < lanes.length) {
           newNotes.push({
             id: `note-${noteId++}`,
@@ -308,6 +229,243 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
             duration: 250,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "chopin-minute-keyboard") {
+      const minuteWaltzMelody = [
+        { note: 4, time: 0 },
+        { note: 5, time: 200 },
+        { note: 6, time: 400 },
+        { note: 0, time: 600 },
+        { note: 1, time: 800 },
+        { note: 2, time: 1000 },
+        { note: 3, time: 1200 },
+        { note: 4, time: 1400 },
+        { note: 6, time: 1600 },
+        { note: 5, time: 1800 },
+        { note: 4, time: 2000 },
+        { note: 3, time: 2200 },
+        { note: 2, time: 2400 },
+        { note: 1, time: 2600 },
+        { note: 0, time: 2800 },
+        { note: 6, time: 3000 },
+        { note: 5, time: 3200 },
+        { note: 4, time: 3400 },
+        { note: 3, time: 3600 },
+        { note: 2, time: 3800 },
+        { note: 1, time: 4000 },
+        { note: 0, time: 4200 },
+        { note: 4, time: 4400 },
+        { note: 5, time: 4600 },
+        { note: 6, time: 4800 },
+        { note: 0, time: 5000 },
+        { note: 1, time: 5200 },
+        { note: 2, time: 5400 },
+        { note: 3, time: 5600 },
+        { note: 4, time: 5800 },
+        { note: 5, time: 6000 },
+        { note: 6, time: 6200 },
+        { note: 0, time: 6400 },
+        { note: 1, time: 6600 },
+        { note: 2, time: 6800 },
+        { note: 3, time: 7000 },
+        { note: 4, time: 7200 },
+        { note: 5, time: 7400 },
+        { note: 6, time: 7600 },
+        { note: 0, time: 7800 },
+        { note: 1, time: 8000 },
+        { note: 2, time: 8200 },
+        { note: 3, time: 8400 },
+        { note: 4, time: 8600 },
+        { note: 5, time: 8800 },
+        { note: 6, time: 9000 },
+        { note: 0, time: 9200 },
+        { note: 1, time: 9400 },
+        { note: 2, time: 9600 },
+        { note: 3, time: 9800 },
+        { note: 4, time: 10000 },
+        { note: 5, time: 10200 },
+        { note: 6, time: 10400 },
+        { note: 0, time: 10600 },
+        { note: 1, time: 10800 },
+        { note: 2, time: 11000 },
+        { note: 3, time: 11200 },
+        { note: 4, time: 11400 },
+        { note: 5, time: 11600 },
+        { note: 6, time: 11800 },
+        { note: 0, time: 12000 },
+      ];
+
+      minuteWaltzMelody.forEach((noteData) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 150,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "asa-branca-bell") {
+      const asaBrancaMelody = [
+        { note: 4, time: 0 },
+        { note: 4, time: 600 },
+        { note: 4, time: 1000 },
+        { note: 3, time: 1400 },
+        { note: 2, time: 1800 },
+        { note: 3, time: 2200 },
+        { note: 4, time: 2600 },
+        { note: 5, time: 3000 },
+        { note: 4, time: 3400 },
+        { note: 3, time: 3800 },
+        { note: 2, time: 4200 },
+        { note: 3, time: 4600 },
+        { note: 4, time: 5000 },
+        { note: 4, time: 5400 },
+        { note: 4, time: 5800 },
+        { note: 3, time: 6200 },
+        { note: 2, time: 6600 },
+        { note: 1, time: 7000 },
+        { note: 0, time: 7400 },
+        { note: 4, time: 7800 },
+        { note: 4, time: 8200 },
+        { note: 4, time: 8600 },
+        { note: 3, time: 9000 },
+        { note: 2, time: 9400 },
+        { note: 1, time: 9800 },
+        { note: 0, time: 10200 },
+        { note: 4, time: 10600 },
+        { note: 4, time: 11000 },
+        { note: 4, time: 11400 },
+        { note: 3, time: 11800 },
+        { note: 2, time: 12200 },
+        { note: 1, time: 12600 },
+        { note: 0, time: 13000 },
+        { note: 4, time: 13400 },
+        { note: 4, time: 13800 },
+        { note: 4, time: 14200 },
+        { note: 3, time: 14600 },
+        { note: 2, time: 15000 },
+        { note: 1, time: 15400 },
+        { note: 0, time: 15800 },
+      ];
+
+      asaBrancaMelody.forEach((noteData) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "aquarela-xylophone") {
+      const aquarelaMelody = [
+        { note: 0, time: 0 },
+        { note: 2, time: 400 },
+        { note: 4, time: 800 },
+        { note: 2, time: 1200 },
+        { note: 3, time: 1600 },
+        { note: 4, time: 2000 },
+        { note: 5, time: 2400 },
+        { note: 4, time: 2800 },
+        { note: 3, time: 3200 },
+        { note: 2, time: 3600 },
+        { note: 1, time: 4000 },
+        { note: 2, time: 4400 },
+        { note: 4, time: 4800 },
+        { note: 3, time: 5200 },
+        { note: 2, time: 5600 },
+        { note: 0, time: 6000 },
+        { note: 2, time: 6800 },
+        { note: 4, time: 7200 },
+        { note: 5, time: 7600 },
+        { note: 4, time: 8000 },
+        { note: 3, time: 8400 },
+        { note: 4, time: 8800 },
+        { note: 5, time: 9200 },
+        { note: 6, time: 9600 },
+        { note: 5, time: 10000 },
+        { note: 4, time: 10400 },
+        { note: 3, time: 10800 },
+        { note: 2, time: 11200 },
+        { note: 1, time: 11600 },
+        { note: 0, time: 12000 },
+      ];
+
+      aquarelaMelody.forEach((noteData) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 350,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "ciranda-cirandinha-bell") {
+      const cirandaMelody = [
+        { note: 0, time: 0 },
+        { note: 2, time: 400 },
+        { note: 4, time: 800 },
+        { note: 0, time: 1200 },
+        { note: 2, time: 1600 },
+        { note: 4, time: 2000 },
+        { note: 4, time: 2400 },
+        { note: 5, time: 2800 },
+        { note: 4, time: 3200 },
+        { note: 3, time: 3600 },
+        { note: 2, time: 4000 },
+        { note: 1, time: 4400 },
+        { note: 2, time: 4800 },
+        { note: 0, time: 5200 },
+        { note: 0, time: 5600 },
+        { note: 2, time: 6000 },
+        { note: 4, time: 6400 },
+        { note: 5, time: 6800 },
+        { note: 4, time: 7200 },
+        { note: 3, time: 7600 },
+        { note: 2, time: 8000 },
+        { note: 1, time: 8400 },
+        { note: 0, time: 8800 },
+        { note: 4, time: 9200 },
+        { note: 5, time: 9600 },
+        { note: 4, time: 10000 },
+        { note: 3, time: 10400 },
+        { note: 2, time: 10800 },
+        { note: 1, time: 11200 },
+        { note: 0, time: 11600 },
+      ];
+
+      cirandaMelody.forEach((noteData) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 350,
             y: -100,
             hasPlayed: false,
             isHit: false
