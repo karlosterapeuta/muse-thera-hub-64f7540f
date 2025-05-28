@@ -247,6 +247,123 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { note: 0, time: 61500 }, // Dó (final)
       ];
 
+      rowBoatMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "happy-birthday-bell") {
+      // Melodia completa e corrigida de "Parabéns para Você"
+      const happyBirthdayMelody = [
+        { note: 0, time: 0 },     // Dó - "Pa"
+        { note: 0, time: 500 },   // Dó - "ra"
+        { note: 1, time: 1000 },  // Ré - "béns"
+        { note: 0, time: 1500 },  // Dó - "pra"
+        { note: 3, time: 2000 },  // Fá - "vo"
+        { note: 2, time: 2500 },  // Mi - "cê"
+        
+        { note: 0, time: 4000 },  // Dó - "Pa"
+        { note: 0, time: 4500 },  // Dó - "ra"
+        { note: 1, time: 5000 },  // Ré - "béns"
+        { note: 0, time: 5500 },  // Dó - "pra"
+        { note: 4, time: 6000 },  // Sol - "vo"
+        { note: 3, time: 6500 },  // Fá - "cê"
+        
+        { note: 0, time: 8000 },  // Dó - "Pa"
+        { note: 0, time: 8500 },  // Dó - "ra"
+        { note: 0, time: 9000 },  // Dó - "béns"
+        { note: 5, time: 9500 },  // Lá - "que"
+        { note: 3, time: 10000 }, // Fá - "ri"
+        { note: 2, time: 10500 }, // Mi - "do"
+        { note: 1, time: 11000 }, // Ré - "a"
+        { note: 0, time: 11500 }, // Dó - "migo"
+        
+        { note: 6, time: 13000 }, // Si - "Pa"
+        { note: 6, time: 13500 }, // Si - "ra"
+        { note: 5, time: 14000 }, // Lá - "béns"
+        { note: 3, time: 14500 }, // Fá - "pra"
+        { note: 4, time: 15000 }, // Sol - "vo"
+        { note: 3, time: 15500 }, // Fá - "cê"
+        
+        { note: 0, time: 17000 }, // Dó - "Pa"
+        { note: 0, time: 17500 }, // Dó - "ra"
+        { note: 1, time: 18000 }, // Ré - "béns"
+        { note: 0, time: 18500 }, // Dó - "pra"
+        { note: 3, time: 19000 }, // Fá - "vo"
+        { note: 2, time: 19500 }, // Mi - "cê"
+        
+        { note: 0, time: 21000 }, // Dó - "Pa"
+        { note: 0, time: 21500 }, // Dó - "ra"
+        { note: 1, time: 22000 }, // Ré - "béns"
+        { note: 0, time: 22500 }, // Dó - "pra"
+        { note: 4, time: 23000 }, // Sol - "vo"
+        { note: 3, time: 23500 }, // Fá - "cê"
+        
+        { note: 0, time: 25000 }, // Dó - "Pa"
+        { note: 0, time: 25500 }, // Dó - "ra"
+        { note: 0, time: 26000 }, // Dó - "béns"
+        { note: 5, time: 26500 }, // Lá - "que"
+        { note: 3, time: 27000 }, // Fá - "ri"
+        { note: 2, time: 27500 }, // Mi - "do"
+        { note: 1, time: 28000 }, // Ré - "a"
+        { note: 0, time: 28500 }, // Dó - "migo"
+        
+        { note: 6, time: 30000 }, // Si - "Pa"
+        { note: 6, time: 30500 }, // Si - "ra"
+        { note: 5, time: 31000 }, // Lá - "béns"
+        { note: 3, time: 31500 }, // Fá - "pra"
+        { note: 4, time: 32000 }, // Sol - "vo"
+        { note: 3, time: 32500 }, // Fá - "cê"
+        
+        { note: 0, time: 34000 }, // Dó - "Mui"
+        { note: 1, time: 34500 }, // Ré - "tas"
+        { note: 2, time: 35000 }, // Mi - "fe"
+        { note: 3, time: 35500 }, // Fá - "li"
+        { note: 4, time: 36000 }, // Sol - "ci"
+        { note: 5, time: 36500 }, // Lá - "da"
+        { note: 6, time: 37000 }, // Si - "des"
+        
+        { note: 5, time: 38000 }, // Lá - "Mui"
+        { note: 4, time: 38500 }, // Sol - "tos"
+        { note: 3, time: 39000 }, // Fá - "a"
+        { note: 2, time: 39500 }, // Mi - "nos"
+        { note: 1, time: 40000 }, // Ré - "de"
+        { note: 0, time: 40500 }, // Dó - "vi"
+        { note: 4, time: 41000 }, // Sol - "da"
+        
+        { note: 0, time: 42500 }, // Dó - "Que"
+        { note: 0, time: 43000 }, // Dó - "Deus"
+        { note: 1, time: 43500 }, // Ré - "te"
+        { note: 2, time: 44000 }, // Mi - "a"
+        { note: 3, time: 44500 }, // Fá - "ben"
+        { note: 4, time: 45000 }, // Sol - "ço"
+        { note: 5, time: 45500 }, // Lá - "e"
+        
+        { note: 6, time: 46500 }, // Si - "E"
+        { note: 5, time: 47000 }, // Lá - "te"
+        { note: 4, time: 47500 }, // Sol - "guar"
+        { note: 3, time: 48000 }, // Fá - "de"
+        { note: 2, time: 48500 }, // Mi - "sem"
+        { note: 1, time: 49000 }, // Ré - "pre"
+        { note: 0, time: 49500 }, // Dó - "!!"
+        
+        { note: 4, time: 51000 }, // Sol
+        { note: 3, time: 51500 }, // Fá
+        { note: 2, time: 52000 }, // Mi
+        { note: 1, time: 52500 }, // Ré
+        { note: 0, time: 53000 }, // Dó (final)
+      ];
+
       happyBirthdayMelody.forEach((noteData, index) => {
         if (noteData.note < lanes.length) {
           newNotes.push({
