@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -124,6 +123,67 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             frequency: lanes[noteData.note].frequency,
             startTime: noteData.time,
             duration: 600,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
+    } else if (songId === "mary-lamb-bell") {
+      // Melodia correta de "Mary Had a Little Lamb"
+      // Mi, Ré, Dó, Ré, Mi, Mi, Mi (Mary had a little lamb)
+      // Ré, Ré, Ré (little lamb)
+      // Mi, Sol, Sol (little lamb)
+      // Mi, Ré, Dó, Ré, Mi, Mi, Mi (Mary had a little lamb)
+      // Mi, Ré, Ré, Mi, Ré, Dó (Its fleece was white as snow)
+      
+      const maryLambMelody = [
+        // "Mary had a little lamb"
+        { note: 2, time: 0 },     // Mi - "Ma"
+        { note: 1, time: 600 },   // Ré - "ry"
+        { note: 0, time: 1200 },  // Dó - "had"
+        { note: 1, time: 1800 },  // Ré - "a"
+        { note: 2, time: 2400 },  // Mi - "lit"
+        { note: 2, time: 3000 },  // Mi - "tle"
+        { note: 2, time: 3600 },  // Mi - "lamb"
+        
+        // "little lamb"
+        { note: 1, time: 4800 },  // Ré - "lit"
+        { note: 1, time: 5400 },  // Ré - "tle"
+        { note: 1, time: 6000 },  // Ré - "lamb"
+        
+        // "little lamb"
+        { note: 2, time: 7200 },  // Mi - "lit"
+        { note: 4, time: 7800 },  // Sol - "tle"
+        { note: 4, time: 8400 },  // Sol - "lamb"
+        
+        // "Mary had a little lamb"
+        { note: 2, time: 9600 },  // Mi - "Ma"
+        { note: 1, time: 10200 }, // Ré - "ry"
+        { note: 0, time: 10800 }, // Dó - "had"
+        { note: 1, time: 11400 }, // Ré - "a"
+        { note: 2, time: 12000 }, // Mi - "lit"
+        { note: 2, time: 12600 }, // Mi - "tle"
+        { note: 2, time: 13200 }, // Mi - "lamb"
+        
+        // "Its fleece was white as snow"
+        { note: 2, time: 14400 }, // Mi - "Its"
+        { note: 1, time: 15000 }, // Ré - "fleece"
+        { note: 1, time: 15600 }, // Ré - "was"
+        { note: 2, time: 16200 }, // Mi - "white"
+        { note: 1, time: 16800 }, // Ré - "as"
+        { note: 0, time: 17400 }, // Dó - "snow"
+      ];
+
+      maryLambMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 500,
             y: -100,
             hasPlayed: false,
             isHit: false
