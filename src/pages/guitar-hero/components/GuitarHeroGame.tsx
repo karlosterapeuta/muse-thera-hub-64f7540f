@@ -170,12 +170,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setNotes(newNotes);
   }, [instrumentType, lanes]);
 
-  // Atualizar posição das notas
+  // Atualizar posição das notas e tocar automaticamente
   const updateNotes = useCallback(() => {
     if (!isPlaying) return;
 
     const now = Date.now();
     const currentGameTime = now - gameStartTimeRef.current;
+    const hitZoneTop = 350;
+    const hitZoneBottom = hitZoneTop + hitZoneHeight;
     
     setNotes(prevNotes => 
       prevNotes
@@ -183,6 +185,20 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           // Calcular posição baseada no tempo
           const noteAge = currentGameTime - note.startTime;
           const newY = noteAge * speed * 0.1; // Velocidade controlada
+          
+          // Verificar se a nota está na zona de acerto e ainda não foi tocada
+          if (!note.hasPlayed && newY >= hitZoneTop && newY <= hitZoneBottom + 20) {
+            // Tocar o som da nota automaticamente
+            console.log(`🎵 Auto-playing note: ${lanes[note.lane].name} at ${note.frequency}Hz`);
+            onNotePlay(note.frequency, note.color);
+            
+            return {
+              ...note,
+              y: newY,
+              hasPlayed: true // Marcar como tocada
+            };
+          }
+          
           return {
             ...note,
             y: newY
@@ -193,7 +209,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     // Remover notas que passaram da zona de acerto e perderam
     setNotes(prevNotes => {
-      const missedNotes = prevNotes.filter(note => note.y > 500);
+      const missedNotes = prevNotes.filter(note => note.y > 500 && !note.hasPlayed);
       if (missedNotes.length > 0 && combo > 0) {
         setCombo(0);
         toast("Notas perdidas! Combo resetado", { duration: 1000 });
@@ -203,7 +219,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     lastUpdateTimeRef.current = now;
     animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed, combo]);
+  }, [isPlaying, speed, combo, hitZoneHeight, lanes, onNotePlay]);
 
   // Detectar teclas pressionadas
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -288,14 +304,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       generateNotes();
       gameStartTimeRef.current = Date.now();
       lastUpdateTimeRef.current = Date.now();
-      startBackgroundMusic(); // Iniciar música de fundo
-      console.log(`Starting ${instrumentType} game with background music`);
+      console.log(`Starting ${instrumentType} game with auto-sound`);
       setIsPlaying(true);
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      stopBackgroundMusic(); // Parar música de fundo
       setIsPlaying(false);
       console.log(`Pausing ${instrumentType} game`);
     }
@@ -313,7 +327,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-    stopBackgroundMusic(); // Parar música de fundo
     setIsPlaying(false);
     setScore(0);
     setCombo(0);
@@ -330,9 +343,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      stopBackgroundMusic();
     };
-  }, [stopBackgroundMusic]);
+  }, []);
 
   const getInstrumentTitle = () => {
     switch (instrumentType) {
@@ -442,7 +454,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         {notes.map((note) => (
           <div
             key={note.id}
-            className="absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform"
+            className={`absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform ${note.hasPlayed ? 'opacity-50' : ''}`}
             style={{
               left: `${(note.lane / lanes.length) * 100 + 1}%`,
               width: `${100 / lanes.length - 2}%`,
