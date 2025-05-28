@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar as CalendarIcon, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Download, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
@@ -517,6 +517,41 @@ export default function ReportForm() {
     await html2pdf().from(element).set(opt).save();
   };
 
+  const saveReport = async (data: FormValues) => {
+    try {
+      console.log("Salvando relatório com dados:", data);
+      
+      const { error } = await supabase
+        .from("reports")
+        .insert({
+          patient_id: data.patient_id,
+          type: data.type,
+          content: data.content,
+          created_at: new Date().toISOString(),
+        });
+
+      if (error) {
+        console.error("Erro ao salvar relatório:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Relatório salvo no sistema com sucesso.",
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao salvar relatório:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível salvar o relatório.",
+      });
+      return false;
+    }
+  };
+
   const onSubmit = async (data: FormValues) => {
     try {
       console.log("Submetendo formulário com dados:", data);
@@ -525,33 +560,36 @@ export default function ReportForm() {
         throw new Error("Paciente não encontrado");
       }
 
-      const { error } = await supabase
-        .from("assessments")
-        .insert({
-          patient_id: data.patient_id,
-          date: format(data.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
-          type: data.type,
-          content: data.content,
-        });
+      // Salva o relatório no banco de dados
+      const saved = await saveReport(data);
+      if (!saved) return;
 
-      if (error) throw error;
-
+      // Gera o PDF
       await generatePDF(selectedPatient.name, data);
 
-      toast({
-        title: "Sucesso!",
-        description: "Relatório registrado e PDF gerado com sucesso.",
-      });
-
-      navigate("/processes");
+      navigate("/processes/reports");
     } catch (error) {
-      console.error("Erro ao salvar relatório:", error);
+      console.error("Erro ao processar relatório:", error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Não foi possível salvar o relatório.",
+        description: "Não foi possível processar o relatório.",
       });
     }
+  };
+
+  const handleSaveOnly = async () => {
+    const data = form.getValues();
+    if (!data.patient_id || !data.type || !data.date) {
+      toast({
+        variant: "destructive",
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha paciente, tipo e data do relatório.",
+      });
+      return;
+    }
+
+    await saveReport(data);
   };
 
   return (
@@ -741,11 +779,20 @@ export default function ReportForm() {
 
               <div className="flex justify-end space-x-4">
                 <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleSaveOnly}
+                  className="w-32"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar
+                </Button>
+                <Button
                   type="submit"
                   className="w-32"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Gerar PDF
+                  Salvar e Gerar PDF
                 </Button>
               </div>
             </form>
