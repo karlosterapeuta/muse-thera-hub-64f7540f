@@ -526,14 +526,14 @@ export default function ReportForm() {
         throw new Error("Usuário não autenticado");
       }
 
-      // Ensure professional exists before saving report
-      await ensureProfessionalExists(user.id, user.email || "");
+      // Ensure professional exists and get the professional ID
+      const professionalId = await ensureProfessionalExists(user.id, user.email || "");
       
       const { error } = await supabase
         .from("reports")
         .insert({
           patient_id: data.patient_id,
-          professional_id: user.id,
+          professional_id: professionalId,
           type: data.type as any,
           content: data.content as any,
           created_at: new Date().toISOString(),
