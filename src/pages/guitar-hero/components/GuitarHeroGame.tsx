@@ -300,6 +300,236 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
+    } else if (songId === "old-macdonald-bell") {
+      // Melodia completa e corrigida de "Old MacDonald Had a Farm"
+      const oldMacDonaldMelody = [
+        // "Old MacDonald had a farm"
+        { note: 4, time: 0 },     // Sol - "Old"
+        { note: 4, time: 500 },   // Sol - "Mac"
+        { note: 4, time: 1000 },  // Sol - "Don"
+        { note: 1, time: 1500 },  // Ré - "ald"
+        { note: 2, time: 2000 },  // Mi - "had"
+        { note: 2, time: 2500 },  // Mi - "a"
+        { note: 1, time: 3000 },  // Ré - "farm"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 4000 },  // Si - "E"
+        { note: 6, time: 4500 },  // Si - "I"
+        { note: 6, time: 5000 },  // Si - "E"
+        { note: 6, time: 5500 },  // Si - "I"
+        { note: 4, time: 6000 },  // Sol - "O"
+        
+        // "And on his farm he had some cows"
+        { note: 4, time: 7000 },  // Sol - "And"
+        { note: 4, time: 7500 },  // Sol - "on"
+        { note: 4, time: 8000 },  // Sol - "his"
+        { note: 1, time: 8500 },  // Ré - "farm"
+        { note: 2, time: 9000 },  // Mi - "he"
+        { note: 2, time: 9500 },  // Mi - "had"
+        { note: 1, time: 10000 }, // Ré - "some"
+        { note: 0, time: 10500 }, // Dó - "cows"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 11500 }, // Si - "E"
+        { note: 6, time: 12000 }, // Si - "I"
+        { note: 6, time: 12500 }, // Si - "E"
+        { note: 6, time: 13000 }, // Si - "I"
+        { note: 4, time: 13500 }, // Sol - "O"
+        
+        // "With a moo-moo here"
+        { note: 0, time: 14500 }, // Dó - "With"
+        { note: 0, time: 15000 }, // Dó - "a"
+        { note: 4, time: 15500 }, // Sol - "moo"
+        { note: 4, time: 16000 }, // Sol - "moo"
+        { note: 0, time: 16500 }, // Dó - "here"
+        
+        // "And a moo-moo there"
+        { note: 2, time: 17000 }, // Mi - "And"
+        { note: 2, time: 17500 }, // Mi - "a"
+        { note: 4, time: 18000 }, // Sol - "moo"
+        { note: 4, time: 18500 }, // Sol - "moo"
+        { note: 2, time: 19000 }, // Mi - "there"
+        
+        // "Here a moo, there a moo"
+        { note: 0, time: 19500 }, // Dó - "Here"
+        { note: 0, time: 20000 }, // Dó - "a"
+        { note: 4, time: 20300 }, // Sol - "moo"
+        { note: 2, time: 20600 }, // Mi - "there"
+        { note: 2, time: 20900 }, // Mi - "a"
+        { note: 4, time: 21200 }, // Sol - "moo"
+        
+        // "Everywhere a moo-moo"
+        { note: 0, time: 21700 }, // Dó - "Ev"
+        { note: 2, time: 22000 }, // Mi - "ery"
+        { note: 4, time: 22300 }, // Sol - "where"
+        { note: 2, time: 22600 }, // Mi - "a"
+        { note: 4, time: 22900 }, // Sol - "moo"
+        { note: 4, time: 23200 }, // Sol - "moo"
+        
+        // "Old MacDonald had a farm"
+        { note: 4, time: 24000 }, // Sol - "Old"
+        { note: 4, time: 24500 }, // Sol - "Mac"
+        { note: 4, time: 25000 }, // Sol - "Don"
+        { note: 1, time: 25500 }, // Ré - "ald"
+        { note: 2, time: 26000 }, // Mi - "had"
+        { note: 2, time: 26500 }, // Mi - "a"
+        { note: 1, time: 27000 }, // Ré - "farm"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 28000 }, // Si - "E"
+        { note: 6, time: 28500 }, // Si - "I"
+        { note: 6, time: 29000 }, // Si - "E"
+        { note: 6, time: 29500 }, // Si - "I"
+        { note: 4, time: 30000 }, // Sol - "O"
+        
+        // SEGUNDO VERSO - "And on his farm he had some pigs"
+        { note: 4, time: 31000 }, // Sol - "And"
+        { note: 4, time: 31500 }, // Sol - "on"
+        { note: 4, time: 32000 }, // Sol - "his"
+        { note: 1, time: 32500 }, // Ré - "farm"
+        { note: 2, time: 33000 }, // Mi - "he"
+        { note: 2, time: 33500 }, // Mi - "had"
+        { note: 1, time: 34000 }, // Ré - "some"
+        { note: 0, time: 34500 }, // Dó - "pigs"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 35500 }, // Si - "E"
+        { note: 6, time: 36000 }, // Si - "I"
+        { note: 6, time: 36500 }, // Si - "E"
+        { note: 6, time: 37000 }, // Si - "I"
+        { note: 4, time: 37500 }, // Sol - "O"
+        
+        // "With an oink-oink here"
+        { note: 0, time: 38500 }, // Dó - "With"
+        { note: 0, time: 39000 }, // Dó - "an"
+        { note: 3, time: 39500 }, // Fá - "oink"
+        { note: 3, time: 40000 }, // Fá - "oink"
+        { note: 0, time: 40500 }, // Dó - "here"
+        
+        // "And an oink-oink there"
+        { note: 2, time: 41000 }, // Mi - "And"
+        { note: 2, time: 41500 }, // Mi - "an"
+        { note: 3, time: 42000 }, // Fá - "oink"
+        { note: 3, time: 42500 }, // Fá - "oink"
+        { note: 2, time: 43000 }, // Mi - "there"
+        
+        // "Here an oink, there an oink"
+        { note: 0, time: 43500 }, // Dó - "Here"
+        { note: 0, time: 44000 }, // Dó - "an"
+        { note: 3, time: 44300 }, // Fá - "oink"
+        { note: 2, time: 44600 }, // Mi - "there"
+        { note: 2, time: 44900 }, // Mi - "an"
+        { note: 3, time: 45200 }, // Fá - "oink"
+        
+        // "Everywhere an oink-oink"
+        { note: 0, time: 45700 }, // Dó - "Ev"
+        { note: 2, time: 46000 }, // Mi - "ery"
+        { note: 4, time: 46300 }, // Sol - "where"
+        { note: 2, time: 46600 }, // Mi - "an"
+        { note: 3, time: 46900 }, // Fá - "oink"
+        { note: 3, time: 47200 }, // Fá - "oink"
+        
+        // "Old MacDonald had a farm"
+        { note: 4, time: 48000 }, // Sol - "Old"
+        { note: 4, time: 48500 }, // Sol - "Mac"
+        { note: 4, time: 49000 }, // Sol - "Don"
+        { note: 1, time: 49500 }, // Ré - "ald"
+        { note: 2, time: 50000 }, // Mi - "had"
+        { note: 2, time: 50500 }, // Mi - "a"
+        { note: 1, time: 51000 }, // Ré - "farm"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 52000 }, // Si - "E"
+        { note: 6, time: 52500 }, // Si - "I"
+        { note: 6, time: 53000 }, // Si - "E"
+        { note: 6, time: 53500 }, // Si - "I"
+        { note: 4, time: 54000 }, // Sol - "O"
+        
+        // TERCEIRO VERSO - "And on his farm he had some ducks"
+        { note: 4, time: 55000 }, // Sol - "And"
+        { note: 4, time: 55500 }, // Sol - "on"
+        { note: 4, time: 56000 }, // Sol - "his"
+        { note: 1, time: 56500 }, // Ré - "farm"
+        { note: 2, time: 57000 }, // Mi - "he"
+        { note: 2, time: 57500 }, // Mi - "had"
+        { note: 1, time: 58000 }, // Ré - "some"
+        { note: 0, time: 58500 }, // Dó - "ducks"
+        
+        // "E-I-E-I-O"
+        { note: 6, time: 59500 }, // Si - "E"
+        { note: 6, time: 60000 }, // Si - "I"
+        { note: 6, time: 60500 }, // Si - "E"
+        { note: 6, time: 61000 }, // Si - "I"
+        { note: 4, time: 61500 }, // Sol - "O"
+        
+        // "With a quack-quack here"
+        { note: 0, time: 62500 }, // Dó - "With"
+        { note: 0, time: 63000 }, // Dó - "a"
+        { note: 5, time: 63500 }, // Lá - "quack"
+        { note: 5, time: 64000 }, // Lá - "quack"
+        { note: 0, time: 64500 }, // Dó - "here"
+        
+        // "And a quack-quack there"
+        { note: 2, time: 65000 }, // Mi - "And"
+        { note: 2, time: 65500 }, // Mi - "a"
+        { note: 5, time: 66000 }, // Lá - "quack"
+        { note: 5, time: 66500 }, // Lá - "quack"
+        { note: 2, time: 67000 }, // Mi - "there"
+        
+        // "Here a quack, there a quack"
+        { note: 0, time: 67500 }, // Dó - "Here"
+        { note: 0, time: 68000 }, // Dó - "a"
+        { note: 5, time: 68300 }, // Lá - "quack"
+        { note: 2, time: 68600 }, // Mi - "there"
+        { note: 2, time: 68900 }, // Mi - "a"
+        { note: 5, time: 69200 }, // Lá - "quack"
+        
+        // "Everywhere a quack-quack"
+        { note: 0, time: 69700 }, // Dó - "Ev"
+        { note: 2, time: 70000 }, // Mi - "ery"
+        { note: 4, time: 70300 }, // Sol - "where"
+        { note: 2, time: 70600 }, // Mi - "a"
+        { note: 5, time: 70900 }, // Lá - "quack"
+        { note: 5, time: 71200 }, // Lá - "quack"
+        
+        // "Old MacDonald had a farm" (final)
+        { note: 4, time: 72000 }, // Sol - "Old"
+        { note: 4, time: 72500 }, // Sol - "Mac"
+        { note: 4, time: 73000 }, // Sol - "Don"
+        { note: 1, time: 73500 }, // Ré - "ald"
+        { note: 2, time: 74000 }, // Mi - "had"
+        { note: 2, time: 74500 }, // Mi - "a"
+        { note: 1, time: 75000 }, // Ré - "farm"
+        
+        // "E-I-E-I-O" (final)
+        { note: 6, time: 76000 }, // Si - "E"
+        { note: 6, time: 76500 }, // Si - "I"
+        { note: 6, time: 77000 }, // Si - "E"
+        { note: 6, time: 77500 }, // Si - "I"
+        { note: 4, time: 78000 }, // Sol - "O"
+        
+        // Final instrumental
+        { note: 4, time: 79000 }, // Sol
+        { note: 2, time: 79500 }, // Mi
+        { note: 1, time: 80000 }, // Ré
+        { note: 0, time: 80500 }, // Dó (final)
+      ];
+
+      oldMacDonaldMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
     } else {
       // Gerar padrão genérico para outras músicas
       const patterns = [
