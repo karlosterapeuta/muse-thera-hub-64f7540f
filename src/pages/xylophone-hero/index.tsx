@@ -17,6 +17,7 @@ const XylophoneHero = () => {
       <GuitarHeroGame 
         instrumentType="xylophone" 
         onNotePlay={handleNotePlay}
+        songId="happy-birthday-xylophone"
       />
     </div>
   );
