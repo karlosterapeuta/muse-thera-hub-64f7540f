@@ -32,7 +32,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   const animationRef = useRef<number>();
   const gameStartTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
-  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const pauseTimeRef = useRef<number>(0);
+  const totalPausedTimeRef = useRef<number>(0);
 
   // Configuração das lanes (faixas) baseada no instrumento
   const lanes = instrumentType === "bell" ? [
@@ -175,7 +176,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     if (!isPlaying) return;
 
     const now = Date.now();
-    const currentGameTime = now - gameStartTimeRef.current;
+    const currentGameTime = now - gameStartTimeRef.current - totalPausedTimeRef.current;
     const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
     
@@ -301,15 +302,31 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   // Iniciar/pausar o jogo
   const togglePlay = () => {
     if (!isPlaying) {
-      generateNotes();
-      gameStartTimeRef.current = Date.now();
-      lastUpdateTimeRef.current = Date.now();
-      console.log(`Starting ${instrumentType} game with auto-sound`);
+      // Iniciar o jogo
+      if (notes.length === 0) {
+        generateNotes();
+      }
+      
+      const now = Date.now();
+      if (gameStartTimeRef.current === 0) {
+        // Primeiro início do jogo
+        gameStartTimeRef.current = now;
+        totalPausedTimeRef.current = 0;
+      } else {
+        // Retomando do pause
+        const pausedDuration = now - pauseTimeRef.current;
+        totalPausedTimeRef.current += pausedDuration;
+      }
+      
+      lastUpdateTimeRef.current = now;
+      console.log(`Starting/Resuming ${instrumentType} game`);
       setIsPlaying(true);
     } else {
+      // Pausar o jogo
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      pauseTimeRef.current = Date.now();
       setIsPlaying(false);
       console.log(`Pausing ${instrumentType} game`);
     }
@@ -334,6 +351,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setNotes([]);
     gameStartTimeRef.current = 0;
     lastUpdateTimeRef.current = 0;
+    pauseTimeRef.current = 0;
+    totalPausedTimeRef.current = 0;
     console.log(`Game reset for ${instrumentType}`);
   };
 
@@ -375,6 +394,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           </div>
         </div>
 
+        {/* Stats grid */}
         <div className="grid grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-sm opacity-80">Pontuação</div>
