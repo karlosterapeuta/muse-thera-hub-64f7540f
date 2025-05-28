@@ -125,6 +125,201 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
+    } else if (songId === "london-bridge-xylophone") {
+      // Melodia completa e corrigida de "London Bridge Is Falling Down"
+      const londonBridgeMelody = [
+        // Primeira estrofe: "London Bridge is falling down"
+        { note: 4, time: 0 },     // Sol - "Lon"
+        { note: 5, time: 500 },   // Lá - "don"
+        { note: 4, time: 1000 },  // Sol - "Bridge"
+        { note: 3, time: 1500 },  // Fá - "is"
+        { note: 4, time: 2000 },  // Sol - "fall"
+        { note: 3, time: 2500 },  // Fá - "ing"
+        { note: 2, time: 3000 },  // Mi - "down"
+        
+        // Repetição: "falling down, falling down"
+        { note: 3, time: 4000 },  // Fá - "fall"
+        { note: 2, time: 4500 },  // Mi - "ing"
+        { note: 1, time: 5000 },  // Ré - "down"
+        
+        { note: 3, time: 6000 },  // Fá - "fall"
+        { note: 2, time: 6500 },  // Mi - "ing"
+        { note: 1, time: 7000 },  // Ré - "down"
+        
+        // Final da primeira estrofe: "London Bridge is falling down"
+        { note: 4, time: 8000 },  // Sol - "Lon"
+        { note: 5, time: 8500 },  // Lá - "don"
+        { note: 4, time: 9000 },  // Sol - "Bridge"
+        { note: 3, time: 9500 },  // Fá - "is"
+        { note: 4, time: 10000 }, // Sol - "fall"
+        { note: 3, time: 10500 }, // Fá - "ing"
+        { note: 2, time: 11000 }, // Mi - "down"
+        
+        // "My fair lady"
+        { note: 1, time: 12000 }, // Ré - "My"
+        { note: 0, time: 12500 }, // Dó - "fair"
+        { note: 1, time: 13000 }, // Ré - "la"
+        { note: 2, time: 13500 }, // Mi - "dy"
+        
+        // Segunda estrofe: "Take the key and lock her up"
+        { note: 4, time: 15000 }, // Sol - "Take"
+        { note: 5, time: 15500 }, // Lá - "the"
+        { note: 4, time: 16000 }, // Sol - "key"
+        { note: 3, time: 16500 }, // Fá - "and"
+        { note: 4, time: 17000 }, // Sol - "lock"
+        { note: 3, time: 17500 }, // Fá - "her"
+        { note: 2, time: 18000 }, // Mi - "up"
+        
+        // Repetição: "lock her up, lock her up"
+        { note: 3, time: 19000 }, // Fá - "lock"
+        { note: 2, time: 19500 }, // Mi - "her"
+        { note: 1, time: 20000 }, // Ré - "up"
+        
+        { note: 3, time: 21000 }, // Fá - "lock"
+        { note: 2, time: 21500 }, // Mi - "her"
+        { note: 1, time: 22000 }, // Ré - "up"
+        
+        // Final da segunda estrofe: "Take the key and lock her up"
+        { note: 4, time: 23000 }, // Sol - "Take"
+        { note: 5, time: 23500 }, // Lá - "the"
+        { note: 4, time: 24000 }, // Sol - "key"
+        { note: 3, time: 24500 }, // Fá - "and"
+        { note: 4, time: 25000 }, // Sol - "lock"
+        { note: 3, time: 25500 }, // Fá - "her"
+        { note: 2, time: 26000 }, // Mi - "up"
+        
+        // "My fair lady"
+        { note: 1, time: 27000 }, // Ré - "My"
+        { note: 0, time: 27500 }, // Dó - "fair"
+        { note: 1, time: 28000 }, // Ré - "la"
+        { note: 2, time: 28500 }, // Mi - "dy"
+        
+        // Terceira estrofe: "Build it up with wood and clay"
+        { note: 4, time: 30000 }, // Sol - "Build"
+        { note: 5, time: 30500 }, // Lá - "it"
+        { note: 4, time: 31000 }, // Sol - "up"
+        { note: 3, time: 31500 }, // Fá - "with"
+        { note: 4, time: 32000 }, // Sol - "wood"
+        { note: 3, time: 32500 }, // Fá - "and"
+        { note: 2, time: 33000 }, // Mi - "clay"
+        
+        // Repetição: "wood and clay, wood and clay"
+        { note: 3, time: 34000 }, // Fá - "wood"
+        { note: 2, time: 34500 }, // Mi - "and"
+        { note: 1, time: 35000 }, // Ré - "clay"
+        
+        { note: 3, time: 36000 }, // Fá - "wood"
+        { note: 2, time: 36500 }, // Mi - "and"
+        { note: 1, time: 37000 }, // Ré - "clay"
+        
+        // Final da terceira estrofe: "Build it up with wood and clay"
+        { note: 4, time: 38000 }, // Sol - "Build"
+        { note: 5, time: 38500 }, // Lá - "it"
+        { note: 4, time: 39000 }, // Sol - "up"
+        { note: 3, time: 39500 }, // Fá - "with"
+        { note: 4, time: 40000 }, // Sol - "wood"
+        { note: 3, time: 40500 }, // Fá - "and"
+        { note: 2, time: 41000 }, // Mi - "clay"
+        
+        // "My fair lady"
+        { note: 1, time: 42000 }, // Ré - "My"
+        { note: 0, time: 42500 }, // Dó - "fair"
+        { note: 1, time: 43000 }, // Ré - "la"
+        { note: 2, time: 43500 }, // Mi - "dy"
+        
+        // Quarta estrofe: "Wood and clay will wash away"
+        { note: 4, time: 45000 }, // Sol - "Wood"
+        { note: 5, time: 45500 }, // Lá - "and"
+        { note: 4, time: 46000 }, // Sol - "clay"
+        { note: 3, time: 46500 }, // Fá - "will"
+        { note: 4, time: 47000 }, // Sol - "wash"
+        { note: 3, time: 47500 }, // Fá - "a"
+        { note: 2, time: 48000 }, // Mi - "way"
+        
+        // Repetição: "wash away, wash away"
+        { note: 3, time: 49000 }, // Fá - "wash"
+        { note: 2, time: 49500 }, // Mi - "a"
+        { note: 1, time: 50000 }, // Ré - "way"
+        
+        { note: 3, time: 51000 }, // Fá - "wash"
+        { note: 2, time: 51500 }, // Mi - "a"
+        { note: 1, time: 52000 }, // Ré - "way"
+        
+        // Final da quarta estrofe: "Wood and clay will wash away"
+        { note: 4, time: 53000 }, // Sol - "Wood"
+        { note: 5, time: 53500 }, // Lá - "and"
+        { note: 4, time: 54000 }, // Sol - "clay"
+        { note: 3, time: 54500 }, // Fá - "will"
+        { note: 4, time: 55000 }, // Sol - "wash"
+        { note: 3, time: 55500 }, // Fá - "a"
+        { note: 2, time: 56000 }, // Mi - "way"
+        
+        // "My fair lady"
+        { note: 1, time: 57000 }, // Ré - "My"
+        { note: 0, time: 57500 }, // Dó - "fair"
+        { note: 1, time: 58000 }, // Ré - "la"
+        { note: 2, time: 58500 }, // Mi - "dy"
+        
+        // Quinta estrofe: "Build it up with bricks and mortar"
+        { note: 4, time: 60000 }, // Sol - "Build"
+        { note: 5, time: 60500 }, // Lá - "it"
+        { note: 4, time: 61000 }, // Sol - "up"
+        { note: 3, time: 61500 }, // Fá - "with"
+        { note: 4, time: 62000 }, // Sol - "bricks"
+        { note: 3, time: 62500 }, // Fá - "and"
+        { note: 2, time: 63000 }, // Mi - "mor"
+        { note: 1, time: 63500 }, // Ré - "tar"
+        
+        // Repetição: "bricks and mortar, bricks and mortar"
+        { note: 3, time: 64500 }, // Fá - "bricks"
+        { note: 2, time: 65000 }, // Mi - "and"
+        { note: 1, time: 65500 }, // Ré - "mor"
+        { note: 0, time: 66000 }, // Dó - "tar"
+        
+        { note: 3, time: 67000 }, // Fá - "bricks"
+        { note: 2, time: 67500 }, // Mi - "and"
+        { note: 1, time: 68000 }, // Ré - "mor"
+        { note: 0, time: 68500 }, // Dó - "tar"
+        
+        // Final da quinta estrofe: "Build it up with bricks and mortar"
+        { note: 4, time: 69500 }, // Sol - "Build"
+        { note: 5, time: 70000 }, // Lá - "it"
+        { note: 4, time: 70500 }, // Sol - "up"
+        { note: 3, time: 71000 }, // Fá - "with"
+        { note: 4, time: 71500 }, // Sol - "bricks"
+        { note: 3, time: 72000 }, // Fá - "and"
+        { note: 2, time: 72500 }, // Mi - "mor"
+        { note: 1, time: 73000 }, // Ré - "tar"
+        
+        // "My fair lady" (final)
+        { note: 1, time: 74000 }, // Ré - "My"
+        { note: 0, time: 74500 }, // Dó - "fair"
+        { note: 1, time: 75000 }, // Ré - "la"
+        { note: 2, time: 75500 }, // Mi - "dy"
+        
+        // Final instrumental
+        { note: 4, time: 77000 }, // Sol
+        { note: 3, time: 77500 }, // Fá
+        { note: 2, time: 78000 }, // Mi
+        { note: 1, time: 78500 }, // Ré
+        { note: 0, time: 79000 }, // Dó (final)
+      ];
+
+      londonBridgeMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
+          newNotes.push({
+            id: `note-${noteId++}`,
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
+            duration: 400,
+            y: -100,
+            hasPlayed: false,
+            isHit: false
+          });
+        }
+      });
     } else if (songId === "row-boat-bell") {
       // Melodia completa e corrigida de "Row, Row, Row Your Boat"
       const rowBoatMelody = [
@@ -262,7 +457,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           });
         }
       });
-    } else if (songId === "happy-birthday-bell") {
+    } else if (songId === "happy-birthday-xylophone") {
       // Melodia completa e corrigida de "Parabéns para Você"
       const happyBirthdayMelody = [
         { note: 0, time: 0 },     // Dó - "Pa"
@@ -365,355 +560,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       ];
 
       happyBirthdayMelody.forEach((noteData, index) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 400,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "mary-lamb-bell") {
-      // Melodia completa e corrigida de "Mary Had a Little Lamb"
-      const maryLambMelody = [
-        { note: 2, time: 0 },     // Mi - "Ma"
-        { note: 1, time: 500 },   // Ré - "ry"
-        { note: 0, time: 1000 },  // Dó - "had"
-        { note: 1, time: 1500 },  // Ré - "a"
-        { note: 2, time: 2000 },  // Mi - "lit"
-        { note: 2, time: 2500 },  // Mi - "tle"
-        { note: 2, time: 3000 },  // Mi - "lamb"
-        
-        { note: 1, time: 4000 },  // Ré - "lit"
-        { note: 1, time: 4500 },  // Ré - "tle"
-        { note: 1, time: 5000 },  // Ré - "lamb"
-        
-        { note: 2, time: 6000 },  // Mi - "lit"
-        { note: 4, time: 6500 },  // Sol - "tle"
-        { note: 4, time: 7000 },  // Sol - "lamb"
-        
-        { note: 2, time: 8000 },  // Mi - "Ma"
-        { note: 1, time: 8500 },  // Ré - "ry"
-        { note: 0, time: 9000 },  // Dó - "had"
-        { note: 1, time: 9500 },  // Ré - "a"
-        { note: 2, time: 10000 }, // Mi - "lit"
-        { note: 2, time: 10500 }, // Mi - "tle"
-        { note: 2, time: 11000 }, // Mi - "lamb"
-        
-        { note: 2, time: 12000 }, // Mi - "Its"
-        { note: 1, time: 12500 }, // Ré - "fleece"
-        { note: 1, time: 13000 }, // Ré - "was"
-        { note: 2, time: 13500 }, // Mi - "white"
-        { note: 1, time: 14000 }, // Ré - "as"
-        { note: 0, time: 14500 }, // Dó - "snow"
-        
-        { note: 2, time: 16000 }, // Mi - "And"
-        { note: 1, time: 16500 }, // Ré - "ev"
-        { note: 0, time: 17000 }, // Dó - "ery"
-        { note: 1, time: 17500 }, // Ré - "where"
-        { note: 2, time: 18000 }, // Mi - "that"
-        { note: 2, time: 18500 }, // Mi - "Ma"
-        { note: 2, time: 19000 }, // Mi - "ry"
-        
-        { note: 1, time: 20000 }, // Ré - "Ma"
-        { note: 1, time: 20500 }, // Ré - "ry"
-        { note: 1, time: 21000 }, // Ré - "went"
-        
-        { note: 2, time: 22000 }, // Mi - "Ma"
-        { note: 4, time: 22500 }, // Sol - "ry"
-        { note: 4, time: 23000 }, // Sol - "went"
-        
-        { note: 2, time: 24000 }, // Mi - "Ev"
-        { note: 1, time: 24500 }, // Ré - "ery"
-        { note: 0, time: 25000 }, // Dó - "where"
-        { note: 1, time: 25500 }, // Ré - "that"
-        { note: 2, time: 26000 }, // Mi - "Ma"
-        { note: 2, time: 26500 }, // Mi - "ry"
-        { note: 2, time: 27000 }, // Mi - "went"
-        
-        { note: 2, time: 28000 }, // Mi - "The"
-        { note: 1, time: 28500 }, // Ré - "lamb"
-        { note: 1, time: 29000 }, // Ré - "was"
-        { note: 2, time: 29500 }, // Mi - "sure"
-        { note: 1, time: 30000 }, // Ré - "to"
-        { note: 0, time: 30500 }, // Dó - "go"
-        
-        { note: 2, time: 32000 }, // Mi - "It"
-        { note: 1, time: 32500 }, // Ré - "fol"
-        { note: 0, time: 33000 }, // Dó - "lowed"
-        { note: 1, time: 33500 }, // Ré - "her"
-        { note: 2, time: 34000 }, // Mi - "to"
-        { note: 2, time: 34500 }, // Mi - "school"
-        { note: 2, time: 35000 }, // Mi - "one"
-        { note: 1, time: 35500 }, // Ré - "day"
-        
-        { note: 1, time: 36500 }, // Ré - "school"
-        { note: 1, time: 37000 }, // Ré - "one"
-        { note: 1, time: 37500 }, // Ré - "day"
-        
-        { note: 2, time: 38500 }, // Mi - "school"
-        { note: 4, time: 39000 }, // Sol - "one"
-        { note: 4, time: 39500 }, // Sol - "day"
-        
-        { note: 2, time: 40500 }, // Mi - "It"
-        { note: 1, time: 41000 }, // Ré - "fol"
-        { note: 0, time: 41500 }, // Dó - "lowed"
-        { note: 1, time: 42000 }, // Ré - "her"
-        { note: 2, time: 42500 }, // Mi - "to"
-        { note: 2, time: 43000 }, // Mi - "school"
-        { note: 2, time: 43500 }, // Mi - "one"
-        { note: 1, time: 44000 }, // Ré - "day"
-        
-        { note: 2, time: 45000 }, // Mi - "Which"
-        { note: 1, time: 45500 }, // Ré - "was"
-        { note: 1, time: 46000 }, // Ré - "a"
-        { note: 2, time: 46500 }, // Mi - "gainst"
-        { note: 1, time: 47000 }, // Ré - "the"
-        { note: 0, time: 47500 }, // Dó - "rule"
-        
-        { note: 2, time: 49000 }, // Mi - "It"
-        { note: 1, time: 49500 }, // Ré - "made"
-        { note: 0, time: 50000 }, // Dó - "the"
-        { note: 1, time: 50500 }, // Ré - "chil"
-        { note: 2, time: 51000 }, // Mi - "dren"
-        { note: 2, time: 51500 }, // Mi - "laugh"
-        { note: 2, time: 52000 }, // Mi - "and"
-        { note: 1, time: 52500 }, // Ré - "play"
-        
-        { note: 1, time: 53500 }, // Ré - "laugh"
-        { note: 1, time: 54000 }, // Ré - "and"
-        { note: 1, time: 54500 }, // Ré - "play"
-        
-        { note: 2, time: 55500 }, // Mi - "laugh"
-        { note: 4, time: 56000 }, // Sol - "and"
-        { note: 4, time: 56500 }, // Sol - "play"
-        
-        { note: 2, time: 57500 }, // Mi - "It"
-        { note: 1, time: 58000 }, // Ré - "made"
-        { note: 0, time: 58500 }, // Dó - "the"
-        { note: 1, time: 59000 }, // Ré - "chil"
-        { note: 2, time: 59500 }, // Mi - "dren"
-        { note: 2, time: 60000 }, // Mi - "laugh"
-        { note: 2, time: 60500 }, // Mi - "and"
-        { note: 1, time: 61000 }, // Ré - "play"
-        
-        { note: 4, time: 66000 }, // Sol
-        { note: 3, time: 66500 }, // Fá
-        { note: 2, time: 67000 }, // Mi
-        { note: 1, time: 67500 }, // Ré
-        { note: 0, time: 68000 }, // Dó (final)
-      ];
-
-      maryLambMelody.forEach((noteData, index) => {
-        if (noteData.note < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: noteData.note,
-            color: lanes[noteData.note].color,
-            frequency: lanes[noteData.note].frequency,
-            startTime: noteData.time,
-            duration: 400,
-            y: -100,
-            hasPlayed: false,
-            isHit: false
-          });
-        }
-      });
-    } else if (songId === "old-macdonald-bell") {
-      // Melodia completa e corrigida de "Old MacDonald Had a Farm"
-      const oldMacDonaldMelody = [
-        { note: 4, time: 0 },     // Sol - "Old"
-        { note: 4, time: 500 },   // Sol - "Mac"
-        { note: 4, time: 1000 },  // Sol - "Don"
-        { note: 1, time: 1500 },  // Ré - "ald"
-        { note: 2, time: 2000 },  // Mi - "had"
-        { note: 2, time: 2500 },  // Mi - "a"
-        { note: 1, time: 3000 },  // Ré - "farm"
-        
-        { note: 6, time: 4000 },  // Si - "E"
-        { note: 6, time: 4500 },  // Si - "I"
-        { note: 6, time: 5000 },  // Si - "E"
-        { note: 6, time: 5500 },  // Si - "I"
-        { note: 4, time: 6000 },  // Sol - "O"
-        
-        { note: 4, time: 7000 },  // Sol - "And"
-        { note: 4, time: 7500 },  // Sol - "on"
-        { note: 4, time: 8000 },  // Sol - "his"
-        { note: 1, time: 8500 },  // Ré - "farm"
-        { note: 2, time: 9000 },  // Mi - "he"
-        { note: 2, time: 9500 },  // Mi - "had"
-        { note: 1, time: 10000 }, // Ré - "some"
-        { note: 0, time: 10500 }, // Dó - "cows"
-        
-        { note: 6, time: 11500 }, // Si - "E"
-        { note: 6, time: 12000 }, // Si - "I"
-        { note: 6, time: 12500 }, // Si - "E"
-        { note: 6, time: 13000 }, // Si - "I"
-        { note: 4, time: 13500 }, // Sol - "O"
-        
-        { note: 0, time: 14500 }, // Dó - "With"
-        { note: 0, time: 15000 }, // Dó - "a"
-        { note: 4, time: 15500 }, // Sol - "moo"
-        { note: 4, time: 16000 }, // Sol - "moo"
-        { note: 0, time: 16500 }, // Dó - "here"
-        
-        { note: 2, time: 17000 }, // Mi - "And"
-        { note: 2, time: 17500 }, // Mi - "a"
-        { note: 4, time: 18000 }, // Sol - "moo"
-        { note: 4, time: 18500 }, // Sol - "moo"
-        { note: 2, time: 19000 }, // Mi - "there"
-        
-        { note: 0, time: 19500 }, // Dó - "Here"
-        { note: 0, time: 20000 }, // Dó - "a"
-        { note: 4, time: 20300 }, // Sol - "moo"
-        { note: 2, time: 20600 }, // Mi - "there"
-        { note: 2, time: 20900 }, // Mi - "a"
-        { note: 4, time: 21200 }, // Sol - "moo"
-        
-        { note: 0, time: 21700 }, // Dó - "Ev"
-        { note: 2, time: 22000 }, // Mi - "ery"
-        { note: 4, time: 22300 }, // Sol - "where"
-        { note: 2, time: 22600 }, // Mi - "a"
-        { note: 4, time: 22900 }, // Sol - "moo"
-        { note: 4, time: 23200 }, // Sol - "moo"
-        
-        { note: 4, time: 24000 }, // Sol - "Old"
-        { note: 4, time: 24500 }, // Sol - "Mac"
-        { note: 4, time: 25000 }, // Sol - "Don"
-        { note: 1, time: 25500 }, // Ré - "ald"
-        { note: 2, time: 26000 }, // Mi - "had"
-        { note: 2, time: 26500 }, // Mi - "a"
-        { note: 1, time: 27000 }, // Ré - "farm"
-        
-        { note: 6, time: 28000 }, // Si - "E"
-        { note: 6, time: 28500 }, // Si - "I"
-        { note: 6, time: 29000 }, // Si - "E"
-        { note: 6, time: 29500 }, // Si - "I"
-        { note: 4, time: 30000 }, // Sol - "O"
-        
-        { note: 4, time: 31000 }, // Sol - "And"
-        { note: 4, time: 31500 }, // Sol - "on"
-        { note: 4, time: 32000 }, // Sol - "his"
-        { note: 1, time: 32500 }, // Ré - "farm"
-        { note: 2, time: 33000 }, // Mi - "he"
-        { note: 2, time: 33500 }, // Mi - "had"
-        { note: 1, time: 34000 }, // Ré - "some"
-        { note: 0, time: 34500 }, // Dó - "pigs"
-        
-        { note: 6, time: 35500 }, // Si - "E"
-        { note: 6, time: 36000 }, // Si - "I"
-        { note: 6, time: 36500 }, // Si - "E"
-        { note: 6, time: 37000 }, // Si - "I"
-        { note: 4, time: 37500 }, // Sol - "O"
-        
-        { note: 0, time: 38500 }, // Dó - "With"
-        { note: 0, time: 39000 }, // Dó - "an"
-        { note: 3, time: 39500 }, // Fá - "oink"
-        { note: 3, time: 40000 }, // Fá - "oink"
-        { note: 0, time: 40500 }, // Dó - "here"
-        
-        { note: 2, time: 41000 }, // Mi - "And"
-        { note: 2, time: 41500 }, // Mi - "an"
-        { note: 3, time: 42000 }, // Fá - "oink"
-        { note: 3, time: 42500 }, // Fá - "oink"
-        { note: 2, time: 43000 }, // Mi - "there"
-        
-        { note: 0, time: 43500 }, // Dó - "Here"
-        { note: 0, time: 44000 }, // Dó - "an"
-        { note: 3, time: 44300 }, // Fá - "oink"
-        { note: 2, time: 44600 }, // Mi - "there"
-        { note: 2, time: 44900 }, // Mi - "an"
-        { note: 3, time: 45200 }, // Fá - "oink"
-        
-        { note: 0, time: 45700 }, // Dó - "Ev"
-        { note: 2, time: 46000 }, // Mi - "ery"
-        { note: 4, time: 46300 }, // Sol - "where"
-        { note: 2, time: 46600 }, // Mi - "an"
-        { note: 3, time: 46900 }, // Fá - "oink"
-        { note: 3, time: 47200 }, // Fá - "oink"
-        
-        { note: 4, time: 48000 }, // Sol - "Old"
-        { note: 4, time: 48500 }, // Sol - "Mac"
-        { note: 4, time: 49000 }, // Sol - "Don"
-        { note: 1, time: 49500 }, // Ré - "ald"
-        { note: 2, time: 50000 }, // Mi - "had"
-        { note: 2, time: 50500 }, // Mi - "a"
-        { note: 1, time: 51000 }, // Ré - "farm"
-        
-        { note: 6, time: 52000 }, // Si - "E"
-        { note: 6, time: 52500 }, // Si - "I"
-        { note: 6, time: 53000 }, // Si - "E"
-        { note: 6, time: 53500 }, // Si - "I"
-        { note: 4, time: 54000 }, // Sol - "O"
-        
-        { note: 4, time: 55000 }, // Sol - "And"
-        { note: 4, time: 55500 }, // Sol - "on"
-        { note: 4, time: 56000 }, // Sol - "his"
-        { note: 1, time: 56500 }, // Ré - "farm"
-        { note: 2, time: 57000 }, // Mi - "he"
-        { note: 2, time: 57500 }, // Mi - "had"
-        { note: 1, time: 58000 }, // Ré - "some"
-        { note: 0, time: 58500 }, // Dó - "ducks"
-        
-        { note: 6, time: 59500 }, // Si - "E"
-        { note: 6, time: 60000 }, // Si - "I"
-        { note: 6, time: 60500 }, // Si - "E"
-        { note: 6, time: 61000 }, // Si - "I"
-        { note: 4, time: 61500 }, // Sol - "O"
-        
-        { note: 0, time: 62500 }, // Dó - "With"
-        { note: 0, time: 63000 }, // Dó - "a"
-        { note: 5, time: 63500 }, // Lá - "quack"
-        { note: 5, time: 64000 }, // Lá - "quack"
-        { note: 0, time: 64500 }, // Dó - "here"
-        
-        { note: 2, time: 65000 }, // Mi - "And"
-        { note: 2, time: 65500 }, // Mi - "a"
-        { note: 5, time: 66000 }, // Lá - "quack"
-        { note: 5, time: 66500 }, // Lá - "quack"
-        { note: 2, time: 67000 }, // Mi - "there"
-        
-        { note: 0, time: 67500 }, // Dó - "Here"
-        { note: 0, time: 68000 }, // Dó - "an"
-        { note: 5, time: 68300 }, // Lá - "quack"
-        { note: 2, time: 68600 }, // Mi - "there"
-        { note: 2, time: 68900 }, // Mi - "a"
-        { note: 5, time: 69200 }, // Lá - "quack"
-        
-        { note: 0, time: 69700 }, // Dó - "Ev"
-        { note: 2, time: 70000 }, // Mi - "ery"
-        { note: 4, time: 70300 }, // Sol - "where"
-        { note: 2, time: 70600 }, // Mi - "a"
-        { note: 5, time: 70900 }, // Lá - "quack"
-        { note: 5, time: 71200 }, // Lá - "quack"
-        
-        { note: 4, time: 72000 }, // Sol - "Old"
-        { note: 4, time: 72500 }, // Sol - "Mac"
-        { note: 4, time: 73000 }, // Sol - "Don"
-        { note: 1, time: 73500 }, // Ré - "ald"
-        { note: 2, time: 74000 }, // Mi - "had"
-        { note: 2, time: 74500 }, // Mi - "a"
-        { note: 1, time: 75000 }, // Ré - "farm"
-        
-        { note: 6, time: 76000 }, // Si - "E"
-        { note: 6, time: 76500 }, // Si - "I"
-        { note: 6, time: 77000 }, // Si - "E"
-        { note: 6, time: 77500 }, // Si - "I"
-        { note: 4, time: 78000 }, // Sol - "O"
-        
-        { note: 4, time: 79000 }, // Sol
-        { note: 2, time: 79500 }, // Mi
-        { note: 1, time: 80000 }, // Ré
-        { note: 0, time: 80500 }, // Dó (final)
-      ];
-
-      oldMacDonaldMelody.forEach((noteData, index) => {
         if (noteData.note < lanes.length) {
           newNotes.push({
             id: `note-${noteId++}`,
