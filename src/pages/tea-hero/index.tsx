@@ -380,6 +380,7 @@ const TeaHero = () => {
         <GuitarHeroGame 
           instrumentType={selectedSong.instrument} 
           onNotePlay={handleNotePlay}
+          songId={selectedSong.id}
         />
       </div>
     );

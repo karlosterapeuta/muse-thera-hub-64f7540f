@@ -11,15 +11,16 @@ interface Note {
   startTime: number;
   duration: number;
   y: number;
-  hasPlayed?: boolean; // Adicionar flag para controlar se a nota já foi tocada
+  hasPlayed?: boolean;
 }
 
 interface GuitarHeroGameProps {
   instrumentType: "bell" | "xylophone" | "keyboard";
   onNotePlay: (frequency: number, color: string) => void;
+  songId?: string;
 }
 
-const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay }) => {
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay, songId }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -65,10 +66,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   // Função para iniciar música de fundo
   const startBackgroundMusic = useCallback(() => {
     try {
-      // Criar um áudio sintético animado para o jogo
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      // Criar osciladores para uma melodia de fundo simples
       const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -87,26 +86,23 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         oscillator.stop(audioContext.currentTime + startTime + duration);
       };
 
-      // Melodia simples e animada
       const melody = [
-        { freq: 523.25, time: 0, duration: 0.5 },    // C5
-        { freq: 587.33, time: 0.5, duration: 0.5 },  // D5
-        { freq: 659.25, time: 1, duration: 0.5 },    // E5
-        { freq: 523.25, time: 1.5, duration: 0.5 },  // C5
-        { freq: 587.33, time: 2, duration: 0.5 },    // D5
-        { freq: 659.25, time: 2.5, duration: 0.5 },  // E5
-        { freq: 783.99, time: 3, duration: 1 },      // G5
-        { freq: 659.25, time: 4, duration: 0.5 },    // E5
-        { freq: 587.33, time: 4.5, duration: 0.5 },  // D5
-        { freq: 523.25, time: 5, duration: 1 },      // C5
+        { freq: 523.25, time: 0, duration: 0.5 },
+        { freq: 587.33, time: 0.5, duration: 0.5 },
+        { freq: 659.25, time: 1, duration: 0.5 },
+        { freq: 523.25, time: 1.5, duration: 0.5 },
+        { freq: 587.33, time: 2, duration: 0.5 },
+        { freq: 659.25, time: 2.5, duration: 0.5 },
+        { freq: 783.99, time: 3, duration: 1 },
+        { freq: 659.25, time: 4, duration: 0.5 },
+        { freq: 587.33, time: 4.5, duration: 0.5 },
+        { freq: 523.25, time: 5, duration: 1 },
       ];
 
-      // Tocar a melodia
       melody.forEach(note => {
         playBackgroundTone(note.freq, note.time, note.duration);
       });
 
-      // Repetir a melodia a cada 6 segundos
       const interval = setInterval(() => {
         if (isPlaying) {
           melody.forEach(note => {
@@ -130,42 +126,113 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     console.log("🎵 Background music stopped");
   }, []);
 
-  // Gerar padrão de notas
-  const generateNotes = useCallback(() => {
+  // Função para gerar as notas da música específica
+  const generateSpecificSongNotes = useCallback((songId: string) => {
     const newNotes: Note[] = [];
-    const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol
-      [1, 3, 5], // Ré, Fá, Lá
-      [0, 1, 2], // Sequência simples
-      [4, 5, 6], // Notas agudas
-      [2, 4, 6], // Saltos
-      [0, 3, 6], // Acordes
-    ];
-
     let noteId = 0;
-    for (let i = 0; i < 20; i++) {
-      const pattern = patterns[i % patterns.length];
-      const baseTime = i * 4000; // 4 segundos entre padrões
-      
-      pattern.forEach((laneIndex, noteIndex) => {
-        if (laneIndex < lanes.length) {
+
+    // Notas para "Brilha, Brilha Estrelinha" (Twinkle, Twinkle, Little Star)
+    // Dó Dó Sol Sol Lá Lá Sol - Fá Fá Mi Mi Ré Ré Dó
+    // Notas mapeadas para os índices das lanes: 0=Dó, 1=Ré, 2=Mi, 3=Fá, 4=Sol, 5=Lá, 6=Si
+    if (songId === "twinkle-bell" || songId === "twinkle-xylophone") {
+      const twinkleMelody = [
+        // "Brilha, brilha estrelinha"
+        { note: 0, time: 0 },     // Dó - "Bri"
+        { note: 0, time: 800 },   // Dó - "lha"
+        { note: 4, time: 1600 },  // Sol - "bri"
+        { note: 4, time: 2400 },  // Sol - "lha"
+        { note: 5, time: 3200 },  // Lá - "es"
+        { note: 5, time: 4000 },  // Lá - "tre"
+        { note: 4, time: 4800 },  // Sol - "li" (pausa mais longa)
+        
+        // "Como eu quero saber"
+        { note: 3, time: 6000 },  // Fá - "Co"
+        { note: 3, time: 6800 },  // Fá - "mo"
+        { note: 2, time: 7600 },  // Mi - "eu"
+        { note: 2, time: 8400 },  // Mi - "que"
+        { note: 1, time: 9200 },  // Ré - "ro"
+        { note: 1, time: 10000 }, // Ré - "sa"
+        { note: 0, time: 10800 }, // Dó - "ber" (pausa mais longa)
+        
+        // "O que você é de verdade"
+        { note: 4, time: 12400 }, // Sol - "O"
+        { note: 4, time: 13200 }, // Sol - "que"
+        { note: 3, time: 14000 }, // Fá - "vo"
+        { note: 3, time: 14800 }, // Fá - "cê"
+        { note: 2, time: 15600 }, // Mi - "é"
+        { note: 2, time: 16400 }, // Mi - "de"
+        { note: 1, time: 17200 }, // Ré - "ver"
+        { note: 1, time: 18000 }, // Ré - "da" 
+        { note: 0, time: 18800 }, // Dó - "de" (final)
+        
+        // "Brilha, brilha estrelinha" (repetição)
+        { note: 0, time: 20400 }, // Dó - "Bri"
+        { note: 0, time: 21200 }, // Dó - "lha"
+        { note: 4, time: 22000 }, // Sol - "bri"
+        { note: 4, time: 22800 }, // Sol - "lha"
+        { note: 5, time: 23600 }, // Lá - "es"
+        { note: 5, time: 24400 }, // Lá - "tre"
+        { note: 4, time: 25200 }, // Sol - "li" (final)
+      ];
+
+      twinkleMelody.forEach((noteData, index) => {
+        if (noteData.note < lanes.length) {
           newNotes.push({
             id: `note-${noteId++}`,
-            lane: laneIndex,
-            color: lanes[laneIndex].color,
-            frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
+            lane: noteData.note,
+            color: lanes[noteData.note].color,
+            frequency: lanes[noteData.note].frequency,
+            startTime: noteData.time,
             duration: 600,
-            y: -100, // Começar acima da tela
+            y: -100,
             hasPlayed: false
           });
         }
       });
+    } else {
+      // Gerar padrão genérico para outras músicas
+      const patterns = [
+        [0, 2, 4], // Dó, Mi, Sol
+        [1, 3, 5], // Ré, Fá, Lá
+        [0, 1, 2], // Sequência simples
+        [4, 5, 6], // Notas agudas
+        [2, 4, 6], // Saltos
+        [0, 3, 6], // Acordes
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        const pattern = patterns[i % patterns.length];
+        const baseTime = i * 4000;
+        
+        pattern.forEach((laneIndex, noteIndex) => {
+          if (laneIndex < lanes.length) {
+            newNotes.push({
+              id: `note-${noteId++}`,
+              lane: laneIndex,
+              color: lanes[laneIndex].color,
+              frequency: lanes[laneIndex].frequency,
+              startTime: baseTime + noteIndex * 1000,
+              duration: 600,
+              y: -100,
+              hasPlayed: false
+            });
+          }
+        });
+      }
     }
 
-    console.log(`Generated ${newNotes.length} notes for ${instrumentType}`);
+    console.log(`Generated ${newNotes.length} notes for song: ${songId || 'generic'}`);
     setNotes(newNotes);
-  }, [instrumentType, lanes]);
+  }, [lanes]);
+
+  // Gerar padrão de notas
+  const generateNotes = useCallback(() => {
+    if (songId) {
+      generateSpecificSongNotes(songId);
+    } else {
+      generateSpecificSongNotes('generic');
+    }
+  }, [songId, generateSpecificSongNotes]);
 
   // Atualizar posição das notas e tocar automaticamente
   const updateNotes = useCallback(() => {
@@ -179,20 +246,17 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     setNotes(prevNotes => 
       prevNotes
         .map(note => {
-          // Calcular posição baseada no tempo
           const noteAge = currentGameTime - note.startTime;
-          const newY = noteAge * speed * 0.1; // Velocidade controlada
+          const newY = noteAge * speed * 0.1;
           
-          // Verificar se a nota está na zona de acerto e ainda não foi tocada
           if (!note.hasPlayed && newY >= hitZoneTop && newY <= hitZoneBottom + 20) {
-            // Tocar o som da nota automaticamente
             console.log(`🎵 Auto-playing note: ${lanes[note.lane].name} at ${note.frequency}Hz`);
             onNotePlay(note.frequency, note.color);
             
             return {
               ...note,
               y: newY,
-              hasPlayed: true // Marcar como tocada
+              hasPlayed: true
             };
           }
           
@@ -201,10 +265,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             y: newY
           };
         })
-        .filter(note => note.y < 600) // Remove notas que saíram da tela
+        .filter(note => note.y < 600)
     );
 
-    // Remover notas que passaram da zona de acerto e perderam
     setNotes(prevNotes => {
       const missedNotes = prevNotes.filter(note => note.y > 500 && !note.hasPlayed);
       if (missedNotes.length > 0 && combo > 0) {
@@ -229,12 +292,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     event.preventDefault();
 
     const laneIndex = lanes.indexOf(lane);
-    const hitZoneTop = 350; // Posição da zona de acerto
+    const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
     console.log(`Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
 
-    // Verificar se há uma nota na zona de acerto para esta lane
     const hitNote = notes.find(note => 
       note.lane === laneIndex && 
       note.y >= hitZoneTop - 50 && 
@@ -242,7 +304,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     );
 
     if (hitNote) {
-      // Acertou!
       const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
       let points = 100;
       let feedback = "Good!";
@@ -260,20 +321,16 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
-      // Tocar o som
       onNotePlay(lane.frequency, lane.color);
 
-      // Feedback visual
       toast(`${feedback} +${finalPoints} pontos`, {
         duration: 1000,
       });
 
-      // Remover a nota acertada
       setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
       
       console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
     } else {
-      // Errou ou tocou sem nota
       if (combo > 0) {
         setCombo(0);
         toast("Miss! Combo perdido", {
@@ -281,7 +338,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         });
       }
       
-      // Ainda toca o som para feedback
       onNotePlay(lane.frequency, lane.color);
       console.log(`Missed note in lane ${laneIndex}`);
     }
