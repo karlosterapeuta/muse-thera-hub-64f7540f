@@ -208,7 +208,7 @@ export default function AnamnesisForm() {
     const generateContentHTML = (content: Record<string, any>) => {
       const renderSection = (title: string, items: { id: string, label: string }[]) => {
         const checkedItems = items
-          .filter(item => content[item.id])
+          .filter(item => content[item.id] === true)
           .map(item => item.label)
           .join(", ");
         
@@ -224,10 +224,27 @@ export default function AnamnesisForm() {
         ` : '';
       };
 
+      const renderTextField = (key: string, label: string) => {
+        const value = content[key];
+        if (!value || value === '') return '';
+        
+        return `
+          <div style="margin-bottom: 8px;">
+            <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+              ${label}
+            </div>
+            <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+              ${value}
+            </div>
+          </div>
+        `;
+      };
+
       const sections = [
         {
           title: "Dados Pessoais",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "legal_guardian", label: "Responsável Legal" },
             { key: "family_relationship", label: "Parentesco" },
             { key: "referral_professional", label: "Profissional que Encaminhou" },
@@ -236,7 +253,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Histórico Musical",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "musical_education", label: "Educação Musical" },
             { id: "instrumental_practice", label: "Prática Instrumental" },
             { id: "body_musical_expression", label: "Expressão Corporal Musical" },
@@ -247,7 +265,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Comportamento Musical",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "active_musical_listening", label: "Escuta Musical Ativa" },
             { id: "body_expression", label: "Expressão Corporal" },
             { id: "sound_responsiveness", label: "Responsividade Sonora" },
@@ -258,7 +277,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Processamento Sonoro",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "auditory_hypersensitivity", label: "Hipersensibilidade Auditiva" },
             { id: "positive_musical_response", label: "Resposta Musical Positiva" },
             { id: "nominal_call_response", label: "Resposta ao Chamado Nominal" },
@@ -269,7 +289,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Preferências Musicais",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "children_repertoire", label: "Repertório Infantil" },
             { id: "rock_genre", label: "Rock" },
             { id: "sacred_gospel", label: "Sacra/Gospel" },
@@ -281,7 +302,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Desenvolvimento",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "cervical_control", label: "Controle Cervical" },
             { id: "crawling_pattern", label: "Padrão de Engatinhar" },
             { id: "fine_motor_dev", label: "Desenvolvimento Motor Fino" },
@@ -292,7 +314,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Desenvolvimento da Linguagem",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "babbling", label: "Balbucios" },
             { id: "simple_phrases", label: "Frases Simples" },
             { id: "echolalia", label: "Ecolalia" },
@@ -303,7 +326,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Comportamento",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "visual_contact", label: "Contato Visual" },
             { id: "shared_play", label: "Brincadeira Compartilhada" },
             { id: "stereotyped_behavior", label: "Comportamentos Estereotipados" },
@@ -314,7 +338,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Regulação Emocional",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "irritability", label: "Irritabilidade" },
             { id: "heteroaggressive", label: "Heteroagressividade" },
             { id: "emotional_ability", label: "Capacidade Emocional" },
@@ -325,7 +350,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Saúde",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "autism_spectrum", label: "Transtorno do Espectro Autista" },
             { id: "down_syndrome", label: "Síndrome de Down" },
             { id: "intellectual_disability", label: "Deficiência Intelectual" },
@@ -333,13 +359,15 @@ export default function AnamnesisForm() {
             { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
             { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
             { id: "depression", label: "Depressão" },
-            { id: "other_diagnoses", label: "Outros Diagnósticos" },
-            { id: "alzheimer", label: "Alzheimer" }
+            { id: "williams_syndrome", label: "Síndrome de Williams" },
+            { id: "alzheimer", label: "Alzheimer" },
+            { id: "other_diagnoses", label: "Outros Diagnósticos" }
           ]
         },
         {
-          title: "Medicação e Terapias",
-          checkboxes: [
+          title: "Terapias",
+          type: "checkbox",
+          items: [
             { id: "speech_therapy", label: "Fonoaudiologia" },
             { id: "psychological_support", label: "Acompanhamento Psicológico" },
             { id: "psychopedagogical", label: "Psicopedagogia" },
@@ -355,16 +383,18 @@ export default function AnamnesisForm() {
         },
         {
           title: "Medicação",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
         },
         {
           title: "Aspectos Sociais",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
             { key: "school_adaptation", label: "Adaptação Escolar" },
-            { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
+            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
       ];
@@ -372,23 +402,15 @@ export default function AnamnesisForm() {
       return sections.map(section => {
         let sectionContent = '';
         
-        if (section.textFields) {
-          sectionContent = section.textFields
-            .filter(field => content[field.key])
-            .map(field => `
-              <div style="margin-bottom: 8px;">
-                <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
-                  ${field.label}
-                </div>
-                <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
-                  ${content[field.key]}
-                </div>
-              </div>
-            `).join('');
+        if (section.type === 'text' && section.fields) {
+          sectionContent = section.fields
+            .map(field => renderTextField(field.key, field.label))
+            .filter(content => content !== '')
+            .join('');
         }
 
-        if (section.checkboxes) {
-          sectionContent = renderSection(section.title, section.checkboxes);
+        if (section.type === 'checkbox' && section.items) {
+          sectionContent = renderSection(section.title, section.items);
         }
 
         if (sectionContent) {
@@ -402,7 +424,7 @@ export default function AnamnesisForm() {
           `;
         }
         return '';
-      }).join('');
+      }).filter(section => section !== '').join('');
     };
 
     element.innerHTML = `
@@ -462,9 +484,18 @@ export default function AnamnesisForm() {
 
     try {
       await html2pdf().from(element).set(opt).save();
+      toast({
+        title: "Sucesso!",
+        description: "PDF gerado e baixado com sucesso.",
+      });
       return true;
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o PDF.",
+        variant: "destructive",
+      });
       return false;
     }
   };
