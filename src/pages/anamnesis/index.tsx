@@ -747,7 +747,7 @@ export default function AnamnesisForm() {
               <PatientSelect
                 patients={patients}
                 selectedPatient={selectedPatient}
-                onPatientSelect={setSelectedPatient}
+                onSelect={setSelectedPatient}
                 isLoading={isLoading}
               />
               
@@ -763,8 +763,8 @@ export default function AnamnesisForm() {
                   )}
                   
                   <InitialEvaluationForm
-                    formData={formData}
-                    updateFormData={updateFormData}
+                    content={formData}
+                    onChange={updateFormData}
                   />
                   
                   <div className="flex justify-end space-x-4">
