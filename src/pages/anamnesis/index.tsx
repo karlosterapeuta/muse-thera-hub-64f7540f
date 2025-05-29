@@ -20,7 +20,7 @@ type Professional = {
   email: string;
 };
 
-// Lista de campos conhecidos do banco de dados anamnesis
+// Lista de campos conhecidos do banco de dados anamnesis (removidos campos inexistentes)
 const knownDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -43,8 +43,8 @@ const knownDatabaseFields = [
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
   'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
-  'williams_syndrome', 'depression', 'bipolar_disorder',
-  // Explicitly list all new fields with lowercase names
+  'williams_syndrome', 'depression',
+  // Campos que existem no banco
   'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
@@ -332,6 +332,7 @@ export default function AnamnesisForm() {
             { id: "adhd", label: "TDAH" },
             { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
             { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
+            { id: "depression", label: "Depressão" },
             { id: "other_diagnoses", label: "Outros Diagnósticos" },
             { id: "alzheimer", label: "Alzheimer" }
           ]
@@ -474,7 +475,7 @@ export default function AnamnesisForm() {
     setFormData(newData);
   };
 
-  // Modified function to save anamnesis with special handling for new fields
+  // Simplified save function with only existing database fields
   const saveAnamnesis = async () => {
     if (!selectedPatient) {
       toast({
@@ -503,81 +504,44 @@ export default function AnamnesisForm() {
       const filteredData = filterDatabaseFields(formData);
       console.log("Debug - dados filtrados:", filteredData);
       
-      // Preparar dados básicos - excluindo campos problemáticos para primeira inserção
-      const baseDataFields = knownDatabaseFields.filter(field => 
-        !['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'].includes(field)
-      );
-      
-      const baseAnamnesisData: Record<string, any> = {
+      // Preparar dados para salvar
+      const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
-        professional_id: professionalId
+        professional_id: professionalId,
+        ...filteredData
       };
       
-      // Adicionar apenas os campos base
-      Object.entries(filteredData).forEach(([key, value]) => {
-        if (baseDataFields.includes(key)) {
-          baseAnamnesisData[key] = value;
-        }
-      });
-      
-      console.log("Debug - tentando salvar dados base:", baseAnamnesisData);
+      console.log("Debug - tentando salvar dados:", anamnesisData);
 
       let result;
-      let recordId = existingAnamnesisId;
       
       // Determine if we should insert or update
       if (existingAnamnesisId) {
-        // Update existing record with base data
+        // Update existing record
         result = await supabase
           .from("anamnesis")
-          .update(baseAnamnesisData)
+          .update(anamnesisData)
           .eq("id", existingAnamnesisId);
           
         if (result.error) {
-          console.error("Erro ao atualizar anamnese (dados base):", result.error);
+          console.error("Erro ao atualizar anamnese:", result.error);
           throw result.error;
         }
       } else {
-        // Insert new record with base data
+        // Insert new record
         result = await supabase
           .from("anamnesis")
-          .insert(baseAnamnesisData)
+          .insert(anamnesisData)
           .select();
           
         if (result.error) {
-          console.error("Erro ao inserir anamnese (dados base):", result.error);
+          console.error("Erro ao inserir anamnese:", result.error);
           throw result.error;
         }
         
         // Get the ID of the newly created record
         if (result.data && result.data.length > 0) {
-          recordId = result.data[0].id;
-          setExistingAnamnesisId(recordId);
-        } else {
-          throw new Error("Não foi possível obter o ID do registro criado");
-        }
-      }
-      
-      if (!recordId) {
-        throw new Error("ID do registro não disponível para atualização de campos adicionais");
-      }
-      
-      // Now update each potentially problematic field separately
-      const newFields = ['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'];
-      
-      for (const field of newFields) {
-        if (field in filteredData) {
-          const updateResult = await supabase
-            .from("anamnesis")
-            .update({ [field]: Boolean(filteredData[field]) })
-            .eq("id", recordId);
-            
-          if (updateResult.error) {
-            console.warn(`Aviso: Não foi possível atualizar o campo ${field}:`, updateResult.error);
-            // Continue with other fields rather than failing completely
-          } else {
-            console.log(`Campo ${field} atualizado com sucesso.`);
-          }
+          setExistingAnamnesisId(result.data[0].id);
         }
       }
 
