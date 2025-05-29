@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +20,7 @@ type Professional = {
   email: string;
 };
 
-// Lista de campos conhecidos do banco de dados anamnesis (apenas campos que existem)
+// Lista corrigida de campos que realmente existem no banco de dados anamnesis
 const knownDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -43,9 +42,7 @@ const knownDatabaseFields = [
   'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
-  'extracurricular_activities', 'williams_syndrome', 'depression',
-  // Campos confirmados que existem no banco
-  'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
+  'extracurricular_activities', 'williams_syndrome', 'depression'
 ];
 
 export default function AnamnesisForm() {
@@ -360,7 +357,6 @@ export default function AnamnesisForm() {
             { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
             { id: "depression", label: "Depressão" },
             { id: "williams_syndrome", label: "Síndrome de Williams" },
-            { id: "alzheimer", label: "Alzheimer" },
             { id: "other_diagnoses", label: "Outros Diagnósticos" }
           ]
         },
@@ -373,12 +369,7 @@ export default function AnamnesisForm() {
             { id: "psychopedagogical", label: "Psicopedagogia" },
             { id: "occupational_therapy", label: "Terapia Ocupacional" },
             { id: "physiotherapy", label: "Fisioterapia" },
-            { id: "equine_therapy", label: "Equoterapia" },
-            { id: "aba_therapy", label: "Terapia ABA" },
-            { id: "psychomotricity", label: "Psicomotricidade" },
-            { id: "music_therapy", label: "Musicoterapia" },
-            { id: "nutrition", label: "Nutrição" },
-            { id: "sensory_integration", label: "Integração Sensorial" }
+            { id: "equine_therapy", label: "Equoterapia" }
           ]
         },
         {
@@ -393,8 +384,8 @@ export default function AnamnesisForm() {
           type: "text",
           fields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
-            { key: "school_adaptation", label: "Adaptação Escolar" },
-            { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+            { id: "school_adaptation", label: "Adaptação Escolar" },
+            { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
       ];
