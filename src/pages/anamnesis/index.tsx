@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +21,7 @@ type Professional = {
   email: string;
 };
 
-// Lista de campos conhecidos do banco de dados anamnesis (removidos campos inexistentes)
+// Lista de campos conhecidos do banco de dados anamnesis (apenas campos que existem)
 const knownDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -42,9 +43,8 @@ const knownDatabaseFields = [
   'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
-  'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
-  'williams_syndrome', 'depression',
-  // Campos que existem no banco
+  'extracurricular_activities', 'williams_syndrome', 'depression',
+  // Campos confirmados que existem no banco
   'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
