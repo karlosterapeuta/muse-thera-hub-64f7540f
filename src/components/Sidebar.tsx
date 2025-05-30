@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -30,7 +31,6 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   // Buscar o email do usuário atual
@@ -66,7 +66,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      console.log("Iniciando logout...");
+      console.log("Iniciando logout do sistema...");
       
       // Clear any local storage data first
       localStorage.clear();
@@ -94,7 +94,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       onNavigate?.();
       
       // Force a complete page reload to login to ensure all state is cleared
-      window.location.href = '/login';
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 500);
       
     } catch (error) {
       console.error("Erro durante o logout:", error);
@@ -106,7 +108,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       
       // Even if there's an error, force redirect to login
       onNavigate?.();
-      window.location.href = '/login';
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 500);
     }
   };
 
