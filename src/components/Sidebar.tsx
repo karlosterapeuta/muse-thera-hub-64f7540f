@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -22,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -30,6 +30,8 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -66,29 +68,47 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     try {
       console.log("Iniciando logout...");
       
-      // Clear any local storage data
-      localStorage.clear();
-      sessionStorage.clear();
-      
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error("Erro ao fazer logout:", error);
-      } else {
-        console.log("Logout realizado com sucesso");
+        toast({
+          title: "Erro ao fazer logout",
+          description: "Ocorreu um erro ao tentar desconectar.",
+          variant: "destructive",
+        });
+        return;
       }
+      
+      console.log("Logout realizado com sucesso");
+      
+      // Clear any local storage data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
       
       // Call onNavigate if provided
       onNavigate?.();
       
-      // Force redirect to login page
-      window.location.replace('/login');
+      // Navigate to login page
+      navigate('/login', { replace: true });
+      
     } catch (error) {
       console.error("Erro durante o logout:", error);
-      // Even if there's an error, redirect to login
+      toast({
+        title: "Erro ao fazer logout",
+        description: "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
+      
+      // Even if there's an error, try to redirect to login
       onNavigate?.();
-      window.location.replace('/login');
+      navigate('/login', { replace: true });
     }
   };
 

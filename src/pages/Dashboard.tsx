@@ -37,6 +37,9 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
+      console.log("Iniciando logout...");
+      
+      // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -49,11 +52,18 @@ export default function Dashboard() {
         return;
       }
       
+      console.log("Logout realizado com sucesso");
+      
+      // Clear any local storage data
+      localStorage.clear();
+      sessionStorage.clear();
+      
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
       });
       
+      // Navigate to login page
       navigate("/login", { replace: true });
       
     } catch (error) {
@@ -63,6 +73,9 @@ export default function Dashboard() {
         description: "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
+      
+      // Even if there's an error, try to redirect to login
+      navigate("/login", { replace: true });
     }
   };
 
