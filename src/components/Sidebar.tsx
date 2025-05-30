@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -66,51 +65,57 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      console.log("Iniciando logout do sistema...");
+      console.log("=== INICIANDO PROCESSO DE LOGOUT ===");
       
-      // Clear any local storage data first
+      // Primeiro, limpar todos os dados locais
+      console.log("Limpando localStorage e sessionStorage...");
       localStorage.clear();
       sessionStorage.clear();
       
-      // Sign out from Supabase with scope local to remove session completely
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      // Fazer logout do Supabase
+      console.log("Fazendo logout no Supabase...");
+      const { error } = await supabase.auth.signOut({ 
+        scope: 'local' 
+      });
       
       if (error) {
-        console.error("Erro ao fazer logout:", error);
+        console.error("Erro ao fazer logout no Supabase:", error);
         toast({
-          title: "Erro ao fazer logout",
-          description: "Ocorreu um erro ao tentar desconectar.",
+          title: "Aviso",
+          description: "Ocorreu um erro no logout, mas você será redirecionado.",
           variant: "destructive",
         });
       } else {
-        console.log("Logout realizado com sucesso");
+        console.log("Logout do Supabase realizado com sucesso");
         toast({
           title: "Logout realizado",
           description: "Você foi desconectado com sucesso.",
         });
       }
       
-      // Call onNavigate if provided
-      onNavigate?.();
+      // Chamar onNavigate se fornecido
+      if (onNavigate) {
+        console.log("Chamando onNavigate...");
+        onNavigate();
+      }
       
-      // Force a complete page reload to login to ensure all state is cleared
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 500);
+      // Forçar redirecionamento para login
+      console.log("Redirecionando para /login...");
+      window.location.replace('/login');
       
     } catch (error) {
-      console.error("Erro durante o logout:", error);
+      console.error("Erro crítico durante logout:", error);
       toast({
-        title: "Erro ao fazer logout",
-        description: "Ocorreu um erro inesperado.",
+        title: "Erro no logout",
+        description: "Ocorreu um erro, mas você será redirecionado para o login.",
         variant: "destructive",
       });
       
-      // Even if there's an error, force redirect to login
-      onNavigate?.();
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 500);
+      // Mesmo com erro, forçar logout
+      localStorage.clear();
+      sessionStorage.clear();
+      if (onNavigate) onNavigate();
+      window.location.replace('/login');
     }
   };
 
@@ -262,7 +267,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         )}
       </nav>
 
-      {/* Footer */}
+      {/* Footer with Logout Button */}
       <div className="relative p-4 border-t border-white/20 bg-white/20 backdrop-blur-sm">
         <Button
           variant="ghost"
