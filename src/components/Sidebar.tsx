@@ -68,8 +68,12 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     try {
       console.log("Iniciando logout...");
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      // Clear any local storage data first
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Sign out from Supabase with scope local to remove session completely
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       
       if (error) {
         console.error("Erro ao fazer logout:", error);
@@ -78,25 +82,19 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           description: "Ocorreu um erro ao tentar desconectar.",
           variant: "destructive",
         });
-        return;
+      } else {
+        console.log("Logout realizado com sucesso");
+        toast({
+          title: "Logout realizado",
+          description: "Você foi desconectado com sucesso.",
+        });
       }
-      
-      console.log("Logout realizado com sucesso");
-      
-      // Clear any local storage data
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      });
       
       // Call onNavigate if provided
       onNavigate?.();
       
-      // Navigate to login page
-      navigate('/login', { replace: true });
+      // Force a complete page reload to login to ensure all state is cleared
+      window.location.href = '/login';
       
     } catch (error) {
       console.error("Erro durante o logout:", error);
@@ -106,9 +104,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         variant: "destructive",
       });
       
-      // Even if there's an error, try to redirect to login
+      // Even if there's an error, force redirect to login
       onNavigate?.();
-      navigate('/login', { replace: true });
+      window.location.href = '/login';
     }
   };
 

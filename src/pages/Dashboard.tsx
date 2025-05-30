@@ -39,8 +39,12 @@ export default function Dashboard() {
     try {
       console.log("Iniciando logout...");
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      // Clear any local storage data first
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Sign out from Supabase with scope local to remove session completely
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       
       if (error) {
         console.error("Erro no logout:", error);
@@ -49,22 +53,16 @@ export default function Dashboard() {
           description: "Ocorreu um erro ao tentar desconectar.",
           variant: "destructive",
         });
-        return;
+      } else {
+        console.log("Logout realizado com sucesso");
+        toast({
+          title: "Logout realizado",
+          description: "Você foi desconectado com sucesso.",
+        });
       }
       
-      console.log("Logout realizado com sucesso");
-      
-      // Clear any local storage data
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      });
-      
-      // Navigate to login page
-      navigate("/login", { replace: true });
+      // Force a complete page reload to login to ensure all state is cleared
+      window.location.href = "/login";
       
     } catch (error) {
       console.error("Erro inesperado:", error);
@@ -74,8 +72,8 @@ export default function Dashboard() {
         variant: "destructive",
       });
       
-      // Even if there's an error, try to redirect to login
-      navigate("/login", { replace: true });
+      // Even if there's an error, force redirect to login
+      window.location.href = "/login";
     }
   };
 
