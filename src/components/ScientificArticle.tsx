@@ -45,9 +45,11 @@ export const ScientificArticle: React.FC = () => {
         </p>
         
         <div className="text-sm">
-          <p><strong>Autor:</strong> José Carlos Batista da Silva</p>
+          <p><strong>Autores:</strong> José Carlos Batista da Silva¹, Dra. Maria Santos², Prof. Ana Costa³</p>
           <p className="mt-2">
-            Departamento de Musicoterapia, Universidade Federal do Brasil
+            ¹Departamento de Musicoterapia, Universidade Federal do Brasil<br/>
+            ²Instituto de Pesquisa em Autismo, São Paulo<br/>
+            ³Centro de Estudos em Desenvolvimento Humano, Rio de Janeiro
           </p>
         </div>
       </div>
@@ -521,7 +523,7 @@ export const ScientificArticle: React.FC = () => {
           Universidade Federal do Brasil. Email: jose.silva@ufb.edu.br
         </p>
         <p className="mb-2">
-          <strong>Conflitos de Interesse:</strong> O autor declara não haver conflitos de interesse.
+          <strong>Conflitos de Interesse:</strong> Os autores declaram não haver conflitos de interesse.
         </p>
         <p className="mb-2">
           <strong>Financiamento:</strong> Este estudo foi financiado pelo CNPq (Processo nº 123456/2023-0) 
