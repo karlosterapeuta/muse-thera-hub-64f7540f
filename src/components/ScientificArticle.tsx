@@ -75,7 +75,7 @@ export const ScientificArticle: React.FC = () => {
             <strong>Resultados:</strong> A escala demonstrou excelente confiabilidade (α = 0.94) e 
             validade de construto. A análise fatorial confirmatória sustentou a estrutura de quatro 
             domínios. Correlações significativas foram encontradas entre os domínios musicais e 
-            o desenvolvimento geral (r = 0.78, p < 0.001).
+            o desenvolvimento geral (r = 0.78, p &lt; 0.001).
           </p>
           <p className="text-justify leading-relaxed">
             <strong>Conclusões:</strong> A Escala de Avaliação Musicoterapêutica para TEA apresenta 
@@ -368,7 +368,7 @@ export const ScientificArticle: React.FC = () => {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-gray-600 mt-2">** p < 0.01</p>
+          <p className="text-xs text-gray-600 mt-2">** p &lt; 0.01</p>
         </div>
 
         <h3 className="text-lg font-semibold mb-3">3.3 Validade de Construto</h3>
