@@ -3,7 +3,6 @@ import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeToggle } from './ThemeToggle';
 import { useAdmin } from '@/hooks/use-admin';
 import AuthStatusChecker from './auth/AuthStatusChecker';
 
@@ -33,7 +32,6 @@ const Layout = () => {
               Sistema de Musicoterapia
             </h1>
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
               {isAdmin && (
                 <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
                   Admin
