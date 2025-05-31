@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
@@ -46,7 +45,7 @@ export const ScientificArticle: React.FC = () => {
         </p>
         
         <div className="text-sm">
-          <p><strong>Autores:</strong> Dr. Carlos Silva¹, Dra. Maria Santos², Prof. Ana Costa³</p>
+          <p><strong>Autores:</strong> José Carlos Batista da Silva¹, Dra. Maria Santos², Prof. Ana Costa³</p>
           <p className="mt-2">
             ¹Departamento de Musicoterapia, Universidade Federal do Brasil<br/>
             ²Instituto de Pesquisa em Autismo, São Paulo<br/>
@@ -520,8 +519,8 @@ export const ScientificArticle: React.FC = () => {
       {/* Footer */}
       <div className="border-t-2 border-gray-300 pt-6 text-center text-sm text-gray-600">
         <p className="mb-2">
-          <strong>Correspondência:</strong> Dr. Carlos Silva, Departamento de Musicoterapia, 
-          Universidade Federal do Brasil. Email: carlos.silva@ufb.edu.br
+          <strong>Correspondência:</strong> José Carlos Batista da Silva, Departamento de Musicoterapia, 
+          Universidade Federal do Brasil. Email: jose.silva@ufb.edu.br
         </p>
         <p className="mb-2">
           <strong>Conflitos de Interesse:</strong> Os autores declaram não haver conflitos de interesse.
