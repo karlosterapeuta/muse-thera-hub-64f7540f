@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -31,6 +31,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -73,14 +74,19 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         description: "Desconectando do sistema...",
       });
       
+      console.log("🔄 Fazendo logout no Supabase...");
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("❌ Erro no logout do Supabase:", error);
+        throw error;
+      }
+      
       console.log("🔄 Limpando dados locais...");
       localStorage.clear();
       sessionStorage.clear();
       
-      console.log("🔄 Fazendo logout no Supabase...");
-      await supabase.auth.signOut();
-      
-      console.log("✅ Logout realizado, redirecionando...");
+      console.log("✅ Logout realizado com sucesso");
       
       // Chamar onNavigate se fornecido
       if (onNavigate) {
@@ -94,11 +100,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         description: "Redirecionando para o login...",
       });
       
-      // Aguardar um pouco e redirecionar
-      setTimeout(() => {
-        console.log("🔄 Redirecionando para /login...");
-        window.location.href = '/login';
-      }, 1000);
+      // Usar navigate do React Router
+      console.log("🔄 Redirecionando para /login...");
+      navigate('/login', { replace: true });
       
     } catch (error) {
       console.error("❌ Erro durante logout:", error);
@@ -115,9 +119,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       
       if (onNavigate) onNavigate();
       
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 1000);
+      // Forçar redirecionamento mesmo com erro
+      navigate('/login', { replace: true });
     }
   };
 
