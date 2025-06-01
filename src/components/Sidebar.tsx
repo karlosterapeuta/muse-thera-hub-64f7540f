@@ -66,46 +66,33 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      console.log("🔴 Iniciando processo de logout...");
+      console.log("Iniciando logout...");
       
-      // 1. Fazer signOut no Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("❌ Erro no Supabase signOut:", error);
-      } else {
-        console.log("✅ Supabase signOut realizado com sucesso");
-      }
-      
-      // 2. Limpar armazenamento local
-      localStorage.clear();
-      sessionStorage.clear();
-      console.log("🗑️ Storage limpo");
-      
-      // 3. Fechar sidebar móvel se estiver aberta
+      // Fechar sidebar móvel se estiver aberta
       if (onNavigate) {
         onNavigate();
       }
       
-      // 4. Mostrar feedback
+      // Fazer logout no Supabase
+      await supabase.auth.signOut();
+      
+      // Limpar storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Mostrar toast
       toast({
         title: "Logout realizado",
-        description: "Você foi desconectado do sistema",
+        description: "Você foi desconectado com sucesso",
       });
       
-      // 5. Redirecionar para login
-      console.log("🔄 Redirecionando para login...");
-      navigate('/login', { replace: true });
-      
-      // 6. Forçar reload da página para garantir limpeza completa
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 100);
+      // Redirecionar para login
+      window.location.href = '/login';
       
     } catch (error) {
-      console.error("❌ Erro no processo de logout:", error);
+      console.error("Erro no logout:", error);
       
-      // Em caso de erro, forçar limpeza e redirecionamento
+      // Em caso de erro, forçar limpeza
       localStorage.clear();
       sessionStorage.clear();
       
@@ -113,12 +100,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         onNavigate();
       }
       
-      toast({
-        title: "Sessão encerrada",
-        description: "Redirecionando...",
-      });
-      
-      // Forçar redirecionamento
+      // Forçar redirecionamento mesmo com erro
       window.location.href = '/login';
     }
   };
