@@ -65,40 +65,47 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
-    console.log("🔴 Iniciando logout...");
-    
     try {
-      // Limpar dados locais primeiro
-      localStorage.clear();
-      sessionStorage.clear();
+      console.log("🔴 Iniciando processo de logout...");
       
-      // Fazer logout no Supabase
+      // 1. Fazer signOut no Supabase
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error("❌ Erro no logout:", error);
+        console.error("❌ Erro no Supabase signOut:", error);
+      } else {
+        console.log("✅ Supabase signOut realizado com sucesso");
       }
       
-      // Chamar onNavigate se fornecido
+      // 2. Limpar armazenamento local
+      localStorage.clear();
+      sessionStorage.clear();
+      console.log("🗑️ Storage limpo");
+      
+      // 3. Fechar sidebar móvel se estiver aberta
       if (onNavigate) {
         onNavigate();
       }
       
-      // Mostrar toast de sucesso
+      // 4. Mostrar feedback
       toast({
         title: "Logout realizado",
-        description: "Redirecionando...",
+        description: "Você foi desconectado do sistema",
       });
       
-      // Redirecionar imediatamente
+      // 5. Redirecionar para login
+      console.log("🔄 Redirecionando para login...");
       navigate('/login', { replace: true });
       
-      console.log("✅ Logout concluído");
+      // 6. Forçar reload da página para garantir limpeza completa
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 100);
       
     } catch (error) {
-      console.error("❌ Erro durante logout:", error);
+      console.error("❌ Erro no processo de logout:", error);
       
-      // Mesmo com erro, limpar dados e redirecionar
+      // Em caso de erro, forçar limpeza e redirecionamento
       localStorage.clear();
       sessionStorage.clear();
       
@@ -106,7 +113,13 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         onNavigate();
       }
       
-      navigate('/login', { replace: true });
+      toast({
+        title: "Sessão encerrada",
+        description: "Redirecionando...",
+      });
+      
+      // Forçar redirecionamento
+      window.location.href = '/login';
     }
   };
 
