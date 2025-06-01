@@ -65,61 +65,47 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
-    console.log("🔴 BOTÃO DE LOGOUT CLICADO - INICIANDO PROCESSO");
+    console.log("🔴 Iniciando logout...");
     
     try {
-      // Primeiro, mostrar feedback visual
-      toast({
-        title: "Fazendo logout...",
-        description: "Desconectando do sistema...",
-      });
-      
-      console.log("🔄 Fazendo logout no Supabase...");
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("❌ Erro no logout do Supabase:", error);
-        throw error;
-      }
-      
-      console.log("🔄 Limpando dados locais...");
+      // Limpar dados locais primeiro
       localStorage.clear();
       sessionStorage.clear();
       
-      console.log("✅ Logout realizado com sucesso");
+      // Fazer logout no Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("❌ Erro no logout:", error);
+      }
       
       // Chamar onNavigate se fornecido
       if (onNavigate) {
-        console.log("🔄 Chamando onNavigate...");
         onNavigate();
       }
       
-      // Mostrar sucesso
+      // Mostrar toast de sucesso
       toast({
         title: "Logout realizado",
-        description: "Redirecionando para o login...",
+        description: "Redirecionando...",
       });
       
-      // Usar navigate do React Router
-      console.log("🔄 Redirecionando para /login...");
+      // Redirecionar imediatamente
       navigate('/login', { replace: true });
+      
+      console.log("✅ Logout concluído");
       
     } catch (error) {
       console.error("❌ Erro durante logout:", error);
       
-      // Mesmo com erro, forçar logout
+      // Mesmo com erro, limpar dados e redirecionar
       localStorage.clear();
       sessionStorage.clear();
       
-      toast({
-        title: "Logout forçado",
-        description: "Redirecionando para o login...",
-        variant: "destructive",
-      });
+      if (onNavigate) {
+        onNavigate();
+      }
       
-      if (onNavigate) onNavigate();
-      
-      // Forçar redirecionamento mesmo com erro
       navigate('/login', { replace: true });
     }
   };
