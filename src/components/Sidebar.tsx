@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -65,37 +66,42 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
-    console.log("🔄 Iniciando processo de logout...");
-    
     try {
+      console.log("Iniciando logout...");
+      
       // Fechar sidebar móvel se estiver aberta
       if (onNavigate) {
         onNavigate();
       }
       
-      // Limpar storage primeiro
+      // Fazer logout no Supabase primeiro
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Erro no logout:", error);
+      }
+      
+      // Limpar todo o armazenamento local
       localStorage.clear();
       sessionStorage.clear();
-      console.log("✅ Storage limpo");
       
-      // Fazer logout no Supabase
-      await supabase.auth.signOut();
-      console.log("✅ Logout do Supabase realizado");
-      
-      // Mostrar toast de sucesso
+      // Mostrar mensagem de sucesso
       toast({
-        title: "Logout realizado com sucesso",
-        description: "Redirecionando para a página de login...",
+        title: "Logout realizado com sucesso!",
+        description: "Você será redirecionado para a página de login.",
       });
       
-      // Navegar para login
-      console.log("🔄 Redirecionando para /login...");
-      navigate('/login', { replace: true });
+      // Redirecionar para a página de login
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+        // Fallback para garantir o redirecionamento
+        window.location.href = '/login';
+      }, 500);
       
     } catch (error) {
-      console.error("❌ Erro no logout:", error);
+      console.error("Erro durante o logout:", error);
       
-      // Mesmo com erro, limpar tudo e redirecionar
+      // Mesmo com erro, limpar storage e redirecionar
       localStorage.clear();
       sessionStorage.clear();
       
