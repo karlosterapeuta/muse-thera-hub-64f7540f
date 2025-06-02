@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -67,51 +66,35 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      console.log("Iniciando logout...");
+      console.log("Fazendo logout...");
       
-      // Fechar sidebar móvel se estiver aberta
+      // Fechar sidebar móvel
       if (onNavigate) {
         onNavigate();
       }
       
-      // Fazer logout no Supabase primeiro
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Erro no logout:", error);
-      }
-      
-      // Limpar todo o armazenamento local
+      // Limpar storage
       localStorage.clear();
       sessionStorage.clear();
       
-      // Mostrar mensagem de sucesso
+      // Fazer logout do Supabase
+      await supabase.auth.signOut();
+      
+      // Toast de sucesso
       toast({
-        title: "Logout realizado com sucesso!",
-        description: "Você será redirecionado para a página de login.",
+        title: "Logout realizado",
+        description: "Redirecionando...",
       });
       
-      // Redirecionar para a página de login
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-        // Fallback para garantir o redirecionamento
-        window.location.href = '/login';
-      }, 500);
+      // Forçar redirecionamento para login
+      window.location.href = '/login';
       
     } catch (error) {
-      console.error("Erro durante o logout:", error);
+      console.error("Erro no logout:", error);
       
-      // Mesmo com erro, limpar storage e redirecionar
+      // Mesmo com erro, redirecionar
       localStorage.clear();
       sessionStorage.clear();
-      
-      toast({
-        title: "Sessão encerrada",
-        description: "Redirecionando para login...",
-        variant: "destructive",
-      });
-      
-      // Forçar redirecionamento
       window.location.href = '/login';
     }
   };
