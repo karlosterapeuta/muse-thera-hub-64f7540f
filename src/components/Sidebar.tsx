@@ -66,16 +66,20 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
+    console.log("Iniciando logout...");
+    
     try {
-      console.log("Iniciando logout...");
-      
       // Fechar sidebar móvel se estiver aberta
       if (onNavigate) {
         onNavigate();
       }
       
       // Fazer logout no Supabase
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Erro no logout do Supabase:", error);
+      }
       
       // Limpar storage
       localStorage.clear();
@@ -87,8 +91,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         description: "Redirecionando para login...",
       });
       
-      // Usar navigate do React Router
-      navigate('/login', { replace: true });
+      // Usar setTimeout para garantir que o toast seja exibido antes da navegação
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
       
     } catch (error) {
       console.error("Erro no logout:", error);
@@ -102,7 +108,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       }
       
       // Navegar para login mesmo com erro
-      navigate('/login', { replace: true });
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
     }
   };
 
