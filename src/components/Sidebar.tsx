@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -66,7 +65,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
-    console.log("Iniciando logout...");
+    console.log("🔄 Iniciando processo de logout...");
     
     try {
       // Fechar sidebar móvel se estiver aberta
@@ -74,43 +73,40 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         onNavigate();
       }
       
-      // Fazer logout no Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Erro no logout do Supabase:", error);
-      }
-      
-      // Limpar storage
+      // Limpar storage primeiro
       localStorage.clear();
       sessionStorage.clear();
+      console.log("✅ Storage limpo");
       
-      // Mostrar toast
+      // Fazer logout no Supabase
+      await supabase.auth.signOut();
+      console.log("✅ Logout do Supabase realizado");
+      
+      // Mostrar toast de sucesso
       toast({
-        title: "Logout realizado",
-        description: "Redirecionando para login...",
+        title: "Logout realizado com sucesso",
+        description: "Redirecionando para a página de login...",
       });
       
-      // Usar setTimeout para garantir que o toast seja exibido antes da navegação
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 100);
+      // Navegar para login
+      console.log("🔄 Redirecionando para /login...");
+      navigate('/login', { replace: true });
       
     } catch (error) {
-      console.error("Erro no logout:", error);
+      console.error("❌ Erro no logout:", error);
       
-      // Em caso de erro, limpar storage e navegar
+      // Mesmo com erro, limpar tudo e redirecionar
       localStorage.clear();
       sessionStorage.clear();
       
-      if (onNavigate) {
-        onNavigate();
-      }
+      toast({
+        title: "Sessão encerrada",
+        description: "Redirecionando para login...",
+        variant: "destructive",
+      });
       
-      // Navegar para login mesmo com erro
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 100);
+      // Forçar redirecionamento
+      window.location.href = '/login';
     }
   };
 
