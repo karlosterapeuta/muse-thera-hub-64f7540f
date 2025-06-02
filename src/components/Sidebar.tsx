@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -83,16 +84,16 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       // Mostrar toast
       toast({
         title: "Logout realizado",
-        description: "Você foi desconectado com sucesso",
+        description: "Redirecionando para login...",
       });
       
-      // Redirecionar para login
-      window.location.href = '/login';
+      // Usar navigate do React Router
+      navigate('/login', { replace: true });
       
     } catch (error) {
       console.error("Erro no logout:", error);
       
-      // Em caso de erro, forçar limpeza
+      // Em caso de erro, limpar storage e navegar
       localStorage.clear();
       sessionStorage.clear();
       
@@ -100,8 +101,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         onNavigate();
       }
       
-      // Forçar redirecionamento mesmo com erro
-      window.location.href = '/login';
+      // Navegar para login mesmo com erro
+      navigate('/login', { replace: true });
     }
   };
 
