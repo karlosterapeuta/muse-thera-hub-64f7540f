@@ -30,15 +30,6 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
   useEffect(() => {
     const fetchWeeklySessions = async () => {
       try {
-        // Get current user first
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          console.error("Usuário não autenticado");
-          setLocalLoading(false);
-          return;
-        }
-
         // Get current week dates
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
@@ -48,17 +39,14 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
         const formattedEndDate = format(endDate, "yyyy-MM-dd");
         
-        // Fetch sessions for this week with patient information, filtering by current user's patients
+        // Fetch sessions for this week with patient information
         const { data: sessions, error } = await supabase
           .from("sessions")
           .select(`
             id, 
             date, 
             patient_id, 
-            patients:patient_id (
-              name,
-              professional_id
-            )
+            patients:patient_id (name)
           `)
           .gte('date', formattedStartDate)
           .lte('date', formattedEndDate)
@@ -68,11 +56,6 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
           console.error("Error fetching weekly sessions:", error);
           return;
         }
-
-        // Filter sessions to only include patients belonging to current user
-        const filteredSessions = sessions?.filter(session => 
-          session.patients?.professional_id === user.id
-        ) || [];
 
         // Prepare data structure for the week (now including Saturday)
         const daysOfWeek: DaySessionsType[] = [];
@@ -87,8 +70,8 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
         }
 
         // Organize sessions by day
-        if (filteredSessions) {
-          filteredSessions.forEach(session => {
+        if (sessions) {
+          sessions.forEach(session => {
             const sessionDate = parseISO(session.date);
             const dayIndex = daysOfWeek.findIndex(day => 
               isSameDay(day.date, sessionDate)
