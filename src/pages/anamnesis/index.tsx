@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
-import { Download, Save } from "lucide-react";
+import { Download, Save, FileText, List } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import SavedAnamnesisView from "./components/SavedAnamnesisView";
 
 type Patient = {
   id: string;
@@ -19,7 +20,7 @@ type Professional = {
   email: string;
 };
 
-// Lista de campos conhecidos do banco de dados anamnesis
+// Lista corrigida de campos que realmente existem no banco de dados anamnesis
 const knownDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -41,10 +42,7 @@ const knownDatabaseFields = [
   'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
-  'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
-  'williams_syndrome', 'depression', 'bipolar_disorder',
-  // Explicitly list all new fields with lowercase names
-  'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
+  'extracurricular_activities', 'williams_syndrome', 'depression'
 ];
 
 export default function AnamnesisForm() {
@@ -57,6 +55,7 @@ export default function AnamnesisForm() {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentView, setCurrentView] = useState<'form' | 'saved'>('form');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -206,7 +205,7 @@ export default function AnamnesisForm() {
     const generateContentHTML = (content: Record<string, any>) => {
       const renderSection = (title: string, items: { id: string, label: string }[]) => {
         const checkedItems = items
-          .filter(item => content[item.id])
+          .filter(item => content[item.id] === true)
           .map(item => item.label)
           .join(", ");
         
@@ -222,10 +221,27 @@ export default function AnamnesisForm() {
         ` : '';
       };
 
+      const renderTextField = (key: string, label: string) => {
+        const value = content[key];
+        if (!value || value === '') return '';
+        
+        return `
+          <div style="margin-bottom: 8px;">
+            <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+              ${label}
+            </div>
+            <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+              ${value}
+            </div>
+          </div>
+        `;
+      };
+
       const sections = [
         {
           title: "Dados Pessoais",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "legal_guardian", label: "Responsável Legal" },
             { key: "family_relationship", label: "Parentesco" },
             { key: "referral_professional", label: "Profissional que Encaminhou" },
@@ -234,7 +250,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Histórico Musical",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "musical_education", label: "Educação Musical" },
             { id: "instrumental_practice", label: "Prática Instrumental" },
             { id: "body_musical_expression", label: "Expressão Corporal Musical" },
@@ -245,7 +262,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Comportamento Musical",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "active_musical_listening", label: "Escuta Musical Ativa" },
             { id: "body_expression", label: "Expressão Corporal" },
             { id: "sound_responsiveness", label: "Responsividade Sonora" },
@@ -256,7 +274,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Processamento Sonoro",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "auditory_hypersensitivity", label: "Hipersensibilidade Auditiva" },
             { id: "positive_musical_response", label: "Resposta Musical Positiva" },
             { id: "nominal_call_response", label: "Resposta ao Chamado Nominal" },
@@ -267,7 +286,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Preferências Musicais",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "children_repertoire", label: "Repertório Infantil" },
             { id: "rock_genre", label: "Rock" },
             { id: "sacred_gospel", label: "Sacra/Gospel" },
@@ -279,7 +299,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Desenvolvimento",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "cervical_control", label: "Controle Cervical" },
             { id: "crawling_pattern", label: "Padrão de Engatinhar" },
             { id: "fine_motor_dev", label: "Desenvolvimento Motor Fino" },
@@ -290,7 +311,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Desenvolvimento da Linguagem",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "babbling", label: "Balbucios" },
             { id: "simple_phrases", label: "Frases Simples" },
             { id: "echolalia", label: "Ecolalia" },
@@ -301,7 +323,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Comportamento",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "visual_contact", label: "Contato Visual" },
             { id: "shared_play", label: "Brincadeira Compartilhada" },
             { id: "stereotyped_behavior", label: "Comportamentos Estereotipados" },
@@ -312,7 +335,8 @@ export default function AnamnesisForm() {
         },
         {
           title: "Regulação Emocional",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "irritability", label: "Irritabilidade" },
             { id: "heteroaggressive", label: "Heteroagressividade" },
             { id: "emotional_ability", label: "Capacidade Emocional" },
@@ -323,44 +347,44 @@ export default function AnamnesisForm() {
         },
         {
           title: "Saúde",
-          checkboxes: [
+          type: "checkbox",
+          items: [
             { id: "autism_spectrum", label: "Transtorno do Espectro Autista" },
             { id: "down_syndrome", label: "Síndrome de Down" },
             { id: "intellectual_disability", label: "Deficiência Intelectual" },
             { id: "adhd", label: "TDAH" },
             { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
             { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
-            { id: "other_diagnoses", label: "Outros Diagnósticos" },
-            { id: "alzheimer", label: "Alzheimer" }
+            { id: "depression", label: "Depressão" },
+            { id: "williams_syndrome", label: "Síndrome de Williams" },
+            { id: "other_diagnoses", label: "Outros Diagnósticos" }
           ]
         },
         {
-          title: "Medicação e Terapias",
-          checkboxes: [
+          title: "Terapias",
+          type: "checkbox",
+          items: [
             { id: "speech_therapy", label: "Fonoaudiologia" },
             { id: "psychological_support", label: "Acompanhamento Psicológico" },
             { id: "psychopedagogical", label: "Psicopedagogia" },
             { id: "occupational_therapy", label: "Terapia Ocupacional" },
             { id: "physiotherapy", label: "Fisioterapia" },
-            { id: "equine_therapy", label: "Equoterapia" },
-            { id: "aba_therapy", label: "Terapia ABA" },
-            { id: "psychomotricity", label: "Psicomotricidade" },
-            { id: "music_therapy", label: "Musicoterapia" },
-            { id: "nutrition", label: "Nutrição" },
-            { id: "sensory_integration", label: "Integração Sensorial" }
+            { id: "equine_therapy", label: "Equoterapia" }
           ]
         },
         {
           title: "Medicação",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "current_medication", label: "Medicação Atual" }
           ]
         },
         {
           title: "Aspectos Sociais",
-          textFields: [
+          type: "text",
+          fields: [
             { key: "school_enrollment", label: "Matrícula Escolar" },
-            { key: "school_adaptation", label: "Adaptação Escolar" },
+            { id: "school_adaptation", label: "Adaptação Escolar" },
             { id: "extracurricular_activities", label: "Atividades Extracurriculares" }
           ]
         }
@@ -369,23 +393,15 @@ export default function AnamnesisForm() {
       return sections.map(section => {
         let sectionContent = '';
         
-        if (section.textFields) {
-          sectionContent = section.textFields
-            .filter(field => content[field.key])
-            .map(field => `
-              <div style="margin-bottom: 8px;">
-                <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
-                  ${field.label}
-                </div>
-                <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
-                  ${content[field.key]}
-                </div>
-              </div>
-            `).join('');
+        if (section.type === 'text' && section.fields) {
+          sectionContent = section.fields
+            .map(field => renderTextField(field.key, field.label))
+            .filter(content => content !== '')
+            .join('');
         }
 
-        if (section.checkboxes) {
-          sectionContent = renderSection(section.title, section.checkboxes);
+        if (section.type === 'checkbox' && section.items) {
+          sectionContent = renderSection(section.title, section.items);
         }
 
         if (sectionContent) {
@@ -399,7 +415,7 @@ export default function AnamnesisForm() {
           `;
         }
         return '';
-      }).join('');
+      }).filter(section => section !== '').join('');
     };
 
     element.innerHTML = `
@@ -459,9 +475,18 @@ export default function AnamnesisForm() {
 
     try {
       await html2pdf().from(element).set(opt).save();
+      toast({
+        title: "Sucesso!",
+        description: "PDF gerado e baixado com sucesso.",
+      });
       return true;
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o PDF.",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -472,7 +497,7 @@ export default function AnamnesisForm() {
     setFormData(newData);
   };
 
-  // Modified function to save anamnesis with special handling for new fields
+  // Simplified save function with only existing database fields
   const saveAnamnesis = async () => {
     if (!selectedPatient) {
       toast({
@@ -501,81 +526,44 @@ export default function AnamnesisForm() {
       const filteredData = filterDatabaseFields(formData);
       console.log("Debug - dados filtrados:", filteredData);
       
-      // Preparar dados básicos - excluindo campos problemáticos para primeira inserção
-      const baseDataFields = knownDatabaseFields.filter(field => 
-        !['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'].includes(field)
-      );
-      
-      const baseAnamnesisData: Record<string, any> = {
+      // Preparar dados para salvar
+      const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
-        professional_id: professionalId
+        professional_id: professionalId,
+        ...filteredData
       };
       
-      // Adicionar apenas os campos base
-      Object.entries(filteredData).forEach(([key, value]) => {
-        if (baseDataFields.includes(key)) {
-          baseAnamnesisData[key] = value;
-        }
-      });
-      
-      console.log("Debug - tentando salvar dados base:", baseAnamnesisData);
+      console.log("Debug - tentando salvar dados:", anamnesisData);
 
       let result;
-      let recordId = existingAnamnesisId;
       
       // Determine if we should insert or update
       if (existingAnamnesisId) {
-        // Update existing record with base data
+        // Update existing record
         result = await supabase
           .from("anamnesis")
-          .update(baseAnamnesisData)
+          .update(anamnesisData)
           .eq("id", existingAnamnesisId);
           
         if (result.error) {
-          console.error("Erro ao atualizar anamnese (dados base):", result.error);
+          console.error("Erro ao atualizar anamnese:", result.error);
           throw result.error;
         }
       } else {
-        // Insert new record with base data
+        // Insert new record
         result = await supabase
           .from("anamnesis")
-          .insert(baseAnamnesisData)
+          .insert(anamnesisData)
           .select();
           
         if (result.error) {
-          console.error("Erro ao inserir anamnese (dados base):", result.error);
+          console.error("Erro ao inserir anamnese:", result.error);
           throw result.error;
         }
         
         // Get the ID of the newly created record
         if (result.data && result.data.length > 0) {
-          recordId = result.data[0].id;
-          setExistingAnamnesisId(recordId);
-        } else {
-          throw new Error("Não foi possível obter o ID do registro criado");
-        }
-      }
-      
-      if (!recordId) {
-        throw new Error("ID do registro não disponível para atualização de campos adicionais");
-      }
-      
-      // Now update each potentially problematic field separately
-      const newFields = ['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'];
-      
-      for (const field of newFields) {
-        if (field in filteredData) {
-          const updateResult = await supabase
-            .from("anamnesis")
-            .update({ [field]: Boolean(filteredData[field]) })
-            .eq("id", recordId);
-            
-          if (updateResult.error) {
-            console.warn(`Aviso: Não foi possível atualizar o campo ${field}:`, updateResult.error);
-            // Continue with other fields rather than failing completely
-          } else {
-            console.log(`Campo ${field} atualizado com sucesso.`);
-          }
+          setExistingAnamnesisId(result.data[0].id);
         }
       }
 
@@ -651,20 +639,13 @@ export default function AnamnesisForm() {
       if (pdfGenerated) {
         toast({
           title: "Sucesso!",
-          description: "Anamnese registrada e PDF gerado com sucesso.",
-        });
-        navigate("/processes");
-      } else {
-        toast({
-          title: "Atenção",
-          description: "Anamnese salva, mas houve um problema ao gerar o PDF.",
-          variant: "destructive",
+          description: "Anamnese salva e PDF gerado com sucesso.",
         });
       }
+      
     } catch (error: any) {
       console.error("Erro ao processar anamnese:", error);
       
-      // More detailed error message
       let errorMessage = "Não foi possível processar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
@@ -680,79 +661,124 @@ export default function AnamnesisForm() {
     }
   };
 
+  // Handle save only (without PDF generation)
+  const handleSaveOnly = async () => {
+    if (!selectedPatient) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, selecione um paciente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!professionalId) {
+      toast({
+        title: "Erro",
+        description: "ID do profissional não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
+
+    await saveAnamnesis();
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="container mx-auto p-4 space-y-6 max-w-4xl">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+          <span className="ml-3 text-lg text-gray-600">Carregando...</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4 space-y-6 max-w-4xl">
-      <Card>
-        <CardHeader>
-          <CardTitle>Anamnese Musicoterapêutica</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <PatientSelect
-              patients={patients}
-              selectedPatient={selectedPatient}
-              onSelect={setSelectedPatient}
-            />
-            
-            <InitialEvaluationForm
-              content={formData}
-              onChange={updateFormData}
-            />
+      {/* Navigation Buttons */}
+      <div className="flex justify-center gap-4 mb-6">
+        <Button 
+          onClick={() => setCurrentView('form')}
+          variant={currentView === 'form' ? 'default' : 'outline'}
+          className="flex items-center gap-2"
+        >
+          <FileText className="h-4 w-4" />
+          Nova Anamnese
+        </Button>
+        <Button 
+          onClick={() => setCurrentView('saved')}
+          variant={currentView === 'saved' ? 'default' : 'outline'}
+          className="flex items-center gap-2"
+        >
+          <List className="h-4 w-4" />
+          Anamneses Salvas
+        </Button>
+      </div>
 
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/processes")}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isSubmitting}
-                onClick={saveAnamnesis}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2" />
-                    Salvar
-                  </>
-                )}
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <Download className="mr-2" />
-                    Salvar e Baixar PDF
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      {currentView === 'saved' ? (
+        <SavedAnamnesisView />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Anamnese Musicoterapêutica</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <PatientSelect
+                patients={patients}
+                selectedPatient={selectedPatient}
+                onSelect={setSelectedPatient}
+                isLoading={isLoading}
+              />
+              
+              {selectedPatient && (
+                <>
+                  {existingAnamnesisId && (
+                    <Alert>
+                      <AlertTitle>Anamnese existente encontrada</AlertTitle>
+                      <AlertDescription>
+                        Este paciente já possui uma anamnese cadastrada. Você pode editá-la ou criar uma nova.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  
+                  <InitialEvaluationForm
+                    content={formData}
+                    onChange={updateFormData}
+                  />
+                  
+                  <div className="flex justify-end space-x-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSaveOnly}
+                      disabled={isSubmitting}
+                      className="w-32"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {isSubmitting ? "Salvando..." : "Salvar"}
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-32"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      {isSubmitting ? "Processando..." : "Salvar e Gerar PDF"}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

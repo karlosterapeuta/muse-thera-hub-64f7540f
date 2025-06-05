@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -22,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -30,6 +30,8 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -64,31 +66,36 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      console.log("Iniciando logout...");
+      console.log("Fazendo logout...");
       
-      // Clear any local storage data
+      // Fechar sidebar móvel
+      if (onNavigate) {
+        onNavigate();
+      }
+      
+      // Limpar storage
       localStorage.clear();
       sessionStorage.clear();
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      // Fazer logout do Supabase
+      await supabase.auth.signOut();
       
-      if (error) {
-        console.error("Erro ao fazer logout:", error);
-      } else {
-        console.log("Logout realizado com sucesso");
-      }
+      // Toast de sucesso
+      toast({
+        title: "Logout realizado",
+        description: "Redirecionando...",
+      });
       
-      // Call onNavigate if provided
-      onNavigate?.();
+      // Forçar redirecionamento para login
+      window.location.href = '/login';
       
-      // Force redirect to login page
-      window.location.replace('/login');
     } catch (error) {
-      console.error("Erro durante o logout:", error);
-      // Even if there's an error, redirect to login
-      onNavigate?.();
-      window.location.replace('/login');
+      console.error("Erro no logout:", error);
+      
+      // Mesmo com erro, redirecionar
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/login';
     }
   };
 
@@ -240,7 +247,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         )}
       </nav>
 
-      {/* Footer */}
+      {/* Footer with Logout Button */}
       <div className="relative p-4 border-t border-white/20 bg-white/20 backdrop-blur-sm">
         <Button
           variant="ghost"

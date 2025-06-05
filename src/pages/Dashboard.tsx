@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CalendarDays, Users, TrendingUp, Activity, LogOut } from "lucide-react";
+import { CalendarDays, Users, TrendingUp, Activity } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [upcomingSessions, setUpcomingSessions] = useState([]);
@@ -18,7 +16,6 @@ export default function Dashboard() {
   const [sessionData, setSessionData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Função para obter o mês atual e os 3 meses anteriores
   const getRecentMonths = () => {
@@ -33,37 +30,6 @@ export default function Dashboard() {
     }
     
     return recentMonths;
-  };
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Erro no logout:", error);
-        toast({
-          title: "Erro ao fazer logout",
-          description: "Ocorreu um erro ao tentar desconectar.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      });
-      
-      navigate("/login", { replace: true });
-      
-    } catch (error) {
-      console.error("Erro inesperado:", error);
-      toast({
-        title: "Erro ao fazer logout",
-        description: "Ocorreu um erro inesperado.",
-        variant: "destructive",
-      });
-    }
   };
 
   useEffect(() => {
@@ -208,19 +174,6 @@ export default function Dashboard() {
       <div className="container mx-auto px-4 py-6 space-y-8 animate-fadeIn">
         {/* Hero Section */}
         <div className="text-center space-y-6 relative">
-          {/* Logout Button - Only visible on desktop */}
-          <div className="hidden md:block absolute top-0 right-0">
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              size="sm"
-              className="bg-white/80 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all duration-200 shadow-sm"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
-          </div>
-
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 blur-3xl rounded-full"></div>
             <LogoRound size="lg" className="relative animate-pulse-gentle" />
