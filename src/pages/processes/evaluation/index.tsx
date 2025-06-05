@@ -21,7 +21,6 @@ import { FileDown, Info, HelpCircle } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
-import ReactDOM from 'react-dom';
 import { PatientSelect } from "../../anamnesis/components/PatientSelect";
 import { 
   Tabs, 
@@ -333,36 +332,142 @@ export default function Evaluation() {
 
   const handleGeneratePDF = async () => {
     try {
-      const pdfContent = (
-        <div id="pdf-content" style={{ display: 'block' }}>
-          <TeaScalePDF
-            categoryData={subdomainScores}
-            pieData={pieData}
-            patientName={selectedPatientData?.name}
-            evaluatorName={userName}
-            evaluatorEmail={userEmail}
-            radarData={domainScores}
-          />
-        </div>
-      );
-
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("Iniciando geração de PDF...");
+      
+      if (!selectedPatientData) {
+        toast.error("Selecione um paciente antes de gerar o PDF");
+        return;
+      }
 
       toast.loading("Gerando PDF...");
 
+      // Criar elemento temporário para o PDF
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '0';
+      document.body.appendChild(tempDiv);
+
+      // Renderizar o componente PDF
+      tempDiv.innerHTML = `
+        <div id="pdf-content">
+          ${(() => {
+            // Criar dados para o PDF
+            const pdfData = {
+              categoryData: subdomainScores,
+              pieData: pieData,
+              patientName: selectedPatientData.name,
+              evaluatorName: userName,
+              evaluatorEmail: userEmail,
+              radarData: domainScores,
+              selectedParameters: selections,
+              overallScore: overallScore,
+              evaluationDomains: evaluationDomains
+            };
+
+            // Gerar HTML do PDF manualmente
+            return `
+              <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
+                  <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px;">Resultados da Avaliação TEA</h1>
+                  <h2 style="color: #374151; font-size: 18px; margin-bottom: 10px;">Paciente: ${pdfData.patientName}</h2>
+                  <p style="color: #6b7280; font-size: 14px;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+                  <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <p style="color: #1e40af; font-size: 16px; font-weight: bold; margin: 0;">
+                      Pontuação Total: ${pdfData.overallScore.raw}/${pdfData.overallScore.max} (${pdfData.overallScore.percentage}%)
+                    </p>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                  <h3 style="color: #374151; font-size: 18px; margin-bottom: 15px;">Detalhamento dos Parâmetros Avaliados</h3>
+                  ${pdfData.evaluationDomains.map(domain => `
+                    <div style="margin-bottom: 25px;">
+                      <h4 style="color: #2563eb; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center;">
+                        <span style="margin-right: 8px;">${domain.icon}</span>
+                        ${domain.title}
+                      </h4>
+                      ${domain.subdomains.map(subdomain => `
+                        <div style="margin-bottom: 20px; margin-left: 15px;">
+                          <h5 style="color: #374151; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #93c5fd; padding-left: 10px;">
+                            ${subdomain.title}
+                          </h5>
+                          <div style="display: grid; gap: 8px;">
+                            ${subdomain.parameters.map(parameter => {
+                              const key = `${domain.title}-${subdomain.title}-${parameter}`;
+                              const selectedValue = pdfData.selectedParameters[key];
+                              const score = selectedValue === "ausente" ? 0 : 
+                                          selectedValue === "emergente" ? 1 : 
+                                          selectedValue === "inconsistente" ? 2 : 
+                                          selectedValue === "consistente" ? 3 : 
+                                          selectedValue === "independente" ? 4 : null;
+                              
+                              const getScoreLabel = (score) => {
+                                if (score === 0) return "Ausente (0)";
+                                if (score === 1) return "Emergente (1)";
+                                if (score === 2) return "Inconsistente (2)";
+                                if (score === 3) return "Consistente (3)";
+                                if (score === 4) return "Independente (4)";
+                                return "Não avaliado";
+                              };
+
+                              const getScoreColor = (score) => {
+                                if (score === 0) return "#ef4444";
+                                if (score === 1) return "#f97316";
+                                if (score === 2) return "#eab308";
+                                if (score === 3) return "#3b82f6";
+                                if (score === 4) return "#22c55e";
+                                return "#6b7280";
+                              };
+
+                              return `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 12px;">
+                                  <span style="flex: 1; color: #374151;">${parameter}</span>
+                                  <span style="color: ${score !== null ? getScoreColor(score) : '#6b7280'}; font-weight: bold;">
+                                    ${score !== null ? getScoreLabel(score) : 'Não avaliado'}
+                                  </span>
+                                </div>
+                              `;
+                            }).join('')}
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `).join('')}
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; text-align: center;">
+                  <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
+                    Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+                  </p>
+                  <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
+                    Musetera - Sistema de Gestão para Musicoterapia
+                  </p>
+                  <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
+                    Musicoterapeuta: ${pdfData.evaluatorName}
+                  </p>
+                  <p style="color: #6b7280; font-size: 12px;">
+                    Email: ${pdfData.evaluatorEmail}
+                  </p>
+                </div>
+              </div>
+            `;
+          })()}
+        </div>
+      `;
+
+      // Aguardar renderização
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const element = tempDiv.querySelector('#pdf-content');
+      
+      if (!element) {
+        throw new Error('Elemento PDF não encontrado');
+      }
+
       const opt = {
         margin: [10, 10],
-        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `avaliacao-tea-${selectedPatientData.name.replace(/\s+/g, '_')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
@@ -373,19 +478,20 @@ export default function Evaluation() {
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait',
-          compress: true
+          orientation: 'portrait'
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      await html2pdf().set(opt).from(element).save();
       
-      document.body.removeChild(container);
+      // Limpar elemento temporário
+      document.body.removeChild(tempDiv);
       
       toast.success("PDF gerado com sucesso!");
+      
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+      toast.error("Erro ao gerar PDF. Verifique se há dados suficientes preenchidos.");
     }
   };
 
