@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -15,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Info, HelpCircle, Brain, Heart, Music, Hand, Sparkles } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
+import { TeaScalePDF } from "@/components/TeaScalePDF";
+import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { 
   Tabs, 
@@ -333,207 +336,62 @@ export default function Evaluation() {
 
   const handleGeneratePDF = async () => {
     try {
-      console.log("Iniciando geração de PDF...");
-      
-      if (!selectedPatientData) {
-        toast.error("Selecione um paciente antes de gerar o PDF");
-        return;
-      }
+      const pdfContent = (
+        <div id="pdf-content" style={{ display: 'block' }}>
+          <TeaScalePDF
+            categoryData={subdomainScores}
+            pieData={pieData}
+            patientName={selectedPatientData?.name}
+            evaluatorName={userName}
+            evaluatorEmail={userEmail}
+            radarData={domainScores}
+            selectedParameters={selections}
+            overallScore={overallScore}
+            evaluationDomains={evaluationDomains}
+          />
+        </div>
+      );
 
-      // Verificar se há dados de avaliação
-      const hasData = Object.keys(selections).length > 0;
-      if (!hasData) {
-        toast.error("Preencha pelo menos alguns campos da avaliação antes de gerar o PDF");
-        return;
-      }
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.loading("Gerando PDF...");
 
-      // Calcular dados necessários
-      const overallScore = calculateOverallScore();
-      const domainScores = getDomainAverages();
-
-      // Gerar HTML do conteúdo do PDF
-      const generatePDFContent = () => {
-        const renderDomainDetails = () => {
-          return evaluationDomains.map(domain => {
-            const domainScore = calculateDomainScore(domain);
-            return `
-              <div style="margin-bottom: 25px; page-break-inside: avoid;">
-                <h4 style="color: #2563eb; font-size: 16px; margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">
-                  ${domain.title}
-                </h4>
-                <div style="margin-bottom: 10px; padding: 8px; background: #f3f4f6; border-radius: 6px;">
-                  <span style="font-weight: 600; color: #374151;">Pontuação do Domínio: ${domainScore.percentage}%</span>
-                </div>
-                ${domain.subdomains.map(subdomain => {
-                  const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-                  return `
-                    <div style="margin-bottom: 20px; margin-left: 15px;">
-                      <h5 style="color: #374151; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #93c5fd; padding-left: 10px;">
-                        ${subdomain.title} (${subdomainScore.percentage}%)
-                      </h5>
-                      <div style="display: grid; gap: 6px;">
-                        ${subdomain.parameters.map(parameter => {
-                          const key = `${domain.title}-${subdomain.title}-${parameter}`;
-                          const selectedValue = selections[key];
-                          const score = selectedValue === "ausente" ? 0 : 
-                                      selectedValue === "emergente" ? 1 : 
-                                      selectedValue === "inconsistente" ? 2 : 
-                                      selectedValue === "consistente" ? 3 : 
-                                      selectedValue === "independente" ? 4 : null;
-                          
-                          const getScoreLabel = (score) => {
-                            if (score === 0) return "Ausente (0)";
-                            if (score === 1) return "Emergente (1)";
-                            if (score === 2) return "Inconsistente (2)";
-                            if (score === 3) return "Consistente (3)";
-                            if (score === 4) return "Independente (4)";
-                            return "Não avaliado";
-                          };
-
-                          const getScoreColor = (score) => {
-                            if (score === 0) return "#ef4444";
-                            if (score === 1) return "#f97316";
-                            if (score === 2) return "#eab308";
-                            if (score === 3) return "#3b82f6";
-                            if (score === 4) return "#22c55e";
-                            return "#6b7280";
-                          };
-
-                          return `
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 12px; border: 1px solid #e5e7eb;">
-                              <span style="flex: 1; color: #374151; font-weight: 500;">${parameter}</span>
-                              <span style="color: ${score !== null ? getScoreColor(score) : '#6b7280'}; font-weight: bold; margin-left: 10px;">
-                                ${score !== null ? getScoreLabel(score) : 'Não avaliado'}
-                              </span>
-                            </div>
-                          `;
-                        }).join('')}
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            `;
-          }).join('');
-        };
-
-        return `
-          <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.4; background: white;">
-            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
-              <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px; font-weight: bold;">Resultados da Avaliação Musicoterapêutica</h1>
-              <h2 style="color: #374151; font-size: 18px; margin-bottom: 10px; font-weight: 600;">Paciente: ${selectedPatientData.name}</h2>
-              <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-              <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">Idade: ${selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}</p>
-              <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <p style="color: #1e40af; font-size: 16px; font-weight: bold; margin: 0;">
-                  Pontuação Total: ${overallScore.raw}/${overallScore.max} (${overallScore.percentage}%)
-                </p>
-              </div>
-            </div>
-
-            <div style="margin-bottom: 30px;">
-              <h3 style="color: #374151; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Resumo por Domínios</h3>
-              ${evaluationDomains.map(domain => {
-                const domainScore = calculateDomainScore(domain);
-                return `
-                  <div style="margin-bottom: 15px; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <span style="font-weight: 600; color: #374151; font-size: 14px;">${domain.title}</span>
-                      <span style="color: #3b82f6; font-weight: bold; font-size: 14px;">${domainScore.percentage}%</span>
-                    </div>
-                    <div style="margin-top: 8px;">
-                      ${domain.subdomains.map(subdomain => {
-                        const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-                        return `
-                          <div style="margin-left: 10px; margin-bottom: 5px; font-size: 12px; color: #6b7280;">
-                            ${subdomain.title}: <span style="font-weight: 600; color: #374151;">${subdomainScore.percentage}%</span>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-
-            <div style="margin-bottom: 30px;">
-              <h3 style="color: #374151; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Detalhamento dos Parâmetros Avaliados</h3>
-              ${renderDomainDetails()}
-            </div>
-
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; text-align: center;">
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-              </p>
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Musetera - Sistema de Gestão para Musicoterapia
-              </p>
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Musicoterapeuta: ${userName}
-              </p>
-              <p style="color: #6b7280; font-size: 12px;">
-                Email: ${userEmail}
-              </p>
-            </div>
-          </div>
-        `;
-      };
-
-      // Criar um elemento temporário invisível
-      const printElement = document.createElement('div');
-      printElement.innerHTML = generatePDFContent();
-      printElement.style.position = 'absolute';
-      printElement.style.left = '-9999px';
-      printElement.style.top = '0';
-      printElement.style.width = '800px';
-      printElement.style.backgroundColor = '#ffffff';
-      
-      // Adicionar ao DOM temporariamente
-      document.body.appendChild(printElement);
-
-      // Aguardar um momento para garantir que o elemento seja renderizado
-      await new Promise(resolve => setTimeout(resolve, 500));
-
       const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `avaliacao-musicoterapeutica-${selectedPatientData.name.replace(/\s+/g, '_')}-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
+        margin: [10, 10],
+        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: true,
-          width: 800,
-          height: printElement.scrollHeight
+          backgroundColor: '#ffffff'
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait'
+          orientation: 'portrait',
+          compress: true
         }
       };
 
-      console.log("Gerando PDF com dados:", { 
-        overallScore, 
-        domainScores, 
-        selectionsCount: Object.keys(selections).length 
-      });
-
-      await html2pdf().set(opt).from(printElement).save();
+      await html2pdf().set(opt).from(root).save();
       
-      // Remover elemento temporário
-      document.body.removeChild(printElement);
+      document.body.removeChild(container);
       
-      toast.dismiss();
       toast.success("PDF gerado com sucesso!");
-      
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.dismiss();
-      toast.error("Erro ao gerar PDF. Tente novamente.");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -31,7 +31,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -65,37 +64,60 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   ].filter(Boolean);
 
   const handleLogout = async () => {
+    console.log("🔴 BOTÃO DE LOGOUT CLICADO - INICIANDO PROCESSO");
+    
     try {
-      console.log("Fazendo logout...");
+      // Primeiro, mostrar feedback visual
+      toast({
+        title: "Fazendo logout...",
+        description: "Desconectando do sistema...",
+      });
       
-      // Fechar sidebar móvel
+      console.log("🔄 Limpando dados locais...");
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      console.log("🔄 Fazendo logout no Supabase...");
+      await supabase.auth.signOut();
+      
+      console.log("✅ Logout realizado, redirecionando...");
+      
+      // Chamar onNavigate se fornecido
       if (onNavigate) {
+        console.log("🔄 Chamando onNavigate...");
         onNavigate();
       }
       
-      // Limpar storage
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Fazer logout do Supabase
-      await supabase.auth.signOut();
-      
-      // Toast de sucesso
+      // Mostrar sucesso
       toast({
         title: "Logout realizado",
-        description: "Redirecionando...",
+        description: "Redirecionando para o login...",
       });
       
-      // Forçar redirecionamento para login
-      window.location.href = '/login';
+      // Aguardar um pouco e redirecionar
+      setTimeout(() => {
+        console.log("🔄 Redirecionando para /login...");
+        window.location.href = '/login';
+      }, 1000);
       
     } catch (error) {
-      console.error("Erro no logout:", error);
+      console.error("❌ Erro durante logout:", error);
       
-      // Mesmo com erro, redirecionar
+      // Mesmo com erro, forçar logout
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = '/login';
+      
+      toast({
+        title: "Logout forçado",
+        description: "Redirecionando para o login...",
+        variant: "destructive",
+      });
+      
+      if (onNavigate) onNavigate();
+      
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1000);
     }
   };
 
