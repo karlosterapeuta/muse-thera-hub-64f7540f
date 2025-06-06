@@ -13,8 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileDown, Info, HelpCircle, Brain, Heart, Music, Hand, Sparkles } from "lucide-react";
-import html2pdf from "html2pdf.js";
-import { toast } from "sonner";
+import { usePDFGenerator } from "@/hooks/usePDFGenerator";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { 
   Tabs, 
@@ -43,6 +42,10 @@ export default function Evaluation() {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("evaluation");
+  const [userName, setUserName] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
+
+  const { generatePDF } = usePDFGenerator();
 
   useEffect(() => {
     async function fetchPatients() {
@@ -78,6 +81,18 @@ export default function Evaluation() {
     }
 
     fetchPatients();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email || "");
+        setUserName(formatNameFromEmail(user.email || ""));
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const selectedPatientData = patients.find(p => p.id === selectedPatient);
@@ -298,21 +313,6 @@ export default function Evaluation() {
     return subdomainScores;
   };
 
-  const [userName, setUserName] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email || "");
-        setUserName(formatNameFromEmail(user.email || ""));
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
     return namePart
@@ -322,307 +322,199 @@ export default function Evaluation() {
   };
 
   const handleGeneratePDF = async () => {
-    try {
-      console.log("Iniciando geração de PDF...");
-      
-      if (!selectedPatientData) {
-        toast.error("Selecione um paciente antes de gerar o PDF");
-        return;
-      }
-
-      // Verificar se há dados de avaliação
-      const hasData = Object.keys(selections).length > 0;
-      if (!hasData) {
-        toast.error("Preencha pelo menos alguns campos da avaliação antes de gerar o PDF");
-        return;
-      }
-
-      toast.loading("Gerando PDF...", { id: "pdf-generation" });
-
-      // Calcular scores para incluir no PDF
-      const overallScore = calculateOverallScore();
-      const domainScores = getDomainAverages();
-      const subdomainScores = getSubdomainData();
-
-      // Criar o conteúdo HTML completo para o PDF
-      const pdfContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Avaliação Musicoterapêutica - ${selectedPatientData.name}</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-            body { background: white; color: #333; line-height: 1.6; padding: 20px; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 20px; }
-            .logo { width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
-            .title { font-size: 28px; font-weight: bold; color: #1e40af; margin-bottom: 10px; }
-            .subtitle { font-size: 20px; color: #374151; margin-bottom: 8px; }
-            .patient-info { background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #3b82f6; }
-            .score-summary { background: linear-gradient(135deg, #dbeafe, #e0e7ff); padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center; }
-            .score-main { font-size: 24px; font-weight: bold; color: #1e40af; margin-bottom: 10px; }
-            .section { margin: 30px 0; page-break-inside: avoid; }
-            .section-title { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-            .domain-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #3b82f6; }
-            .domain-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-            .domain-title { font-size: 18px; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 8px; }
-            .domain-score { font-size: 16px; font-weight: bold; color: #3b82f6; }
-            .subdomain { margin: 8px 0 8px 20px; padding: 8px; background: white; border-radius: 4px; }
-            .subdomain-title { font-weight: 600; color: #4b5563; margin-bottom: 5px; }
-            .parameter-list { margin-left: 15px; }
-            .parameter-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin: 4px 0; background: #f8fafc; border-radius: 4px; font-size: 14px; }
-            .parameter-name { flex: 1; color: #374151; }
-            .parameter-score { font-weight: bold; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
-            .score-0 { background: #fee2e2; color: #dc2626; }
-            .score-1 { background: #fed7aa; color: #ea580c; }
-            .score-2 { background: #fef3c7; color: #d97706; }
-            .score-3 { background: #dbeafe; color: #2563eb; }
-            .score-4 { background: #dcfce7; color: #16a34a; }
-            .charts-section { margin: 30px 0; }
-            .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-            .chart-placeholder { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; min-height: 200px; display: flex; flex-direction: column; justify-content: center; }
-            .chart-title { font-weight: bold; margin-bottom: 15px; color: #374151; }
-            .chart-data { font-size: 14px; line-height: 1.8; }
-            .bar-chart { width: 100%; margin: 20px 0; }
-            .bar-item { display: flex; align-items: center; margin: 8px 0; }
-            .bar-label { width: 150px; font-size: 12px; color: #374151; }
-            .bar-visual { flex: 1; height: 20px; background: #f1f5f9; border-radius: 10px; margin: 0 10px; position: relative; overflow: hidden; }
-            .bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
-            .bar-value { font-size: 12px; font-weight: bold; color: #374151; min-width: 40px; }
-            .legend { margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; }
-            .legend-title { font-weight: bold; margin-bottom: 10px; color: #374151; }
-            .legend-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; }
-            .legend-item { display: flex; align-items: center; gap: 8px; }
-            .legend-color { width: 12px; height: 12px; border-radius: 50%; }
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; font-size: 12px; color: #6b7280; }
-            .footer-line { margin: 3px 0; }
-            @media print { body { padding: 15px; } .section { page-break-inside: avoid; } }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="logo">M</div>
-            <h1 class="title">Avaliação Musicoterapêutica</h1>
-            <h2 class="subtitle">Relatório Completo de Desenvolvimento</h2>
-            <div class="patient-info">
-              <strong>Paciente:</strong> ${selectedPatientData.name}<br>
-              <strong>Idade:</strong> ${selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}<br>
-              <strong>Data da Avaliação:</strong> ${new Date().toLocaleDateString('pt-BR')}<br>
-              <strong>Tipo:</strong> ${selectedEvaluation === "1" ? "Avaliação Inicial" : selectedEvaluation === "2" ? "Avaliação de Progresso" : selectedEvaluation === "3" ? "Avaliação Periódica" : "Avaliação Final"}
-            </div>
-            <div class="score-summary">
-              <div class="score-main">Pontuação Total: ${overallScore.raw}/${overallScore.max} (${overallScore.percentage}%)</div>
-              <div>Nível de Desenvolvimento Geral: ${overallScore.percentage >= 80 ? 'Excelente' : overallScore.percentage >= 60 ? 'Bom' : overallScore.percentage >= 40 ? 'Regular' : 'Iniciante'}</div>
-            </div>
-          </div>
-
-          <div class="charts-section">
-            <h2 class="section-title">📊 Análise Visual dos Resultados</h2>
-            <div class="chart-grid">
-              <div class="chart-placeholder">
-                <div class="chart-title">Perfil de Habilidades por Domínio</div>
-                <div class="chart-data">
-                  ${domainScores.map(domain => `${domain.name}: ${domain.value}%`).join('<br>')}
-                </div>
-              </div>
-              <div class="chart-placeholder">
-                <div class="chart-title">Distribuição do Desenvolvimento</div>
-                <div class="chart-data">
-                  Desenvolvido: ${overallScore.percentage}%<br>
-                  A Desenvolver: ${100 - overallScore.percentage}%
-                </div>
-              </div>
-            </div>
-            
-            <div class="chart-placeholder">
-              <div class="chart-title">Desempenho Detalhado por Subdomínios</div>
-              <div class="bar-chart">
-                ${subdomainScores.map(sub => `
-                  <div class="bar-item">
-                    <div class="bar-label">${sub.name}</div>
-                    <div class="bar-visual">
-                      <div class="bar-fill" style="width: ${sub.value}%"></div>
-                    </div>
-                    <div class="bar-value">${sub.value}%</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2 class="section-title">📋 Resumo por Domínios</h2>
-            ${evaluationDomains.map(domain => {
-              const domainScore = calculateDomainScore(domain);
-              const domainIcon = domain.title.includes('Musical') ? '🎵' : 
-                               domain.title.includes('Psicossocial') ? '❤️' : 
-                               domain.title.includes('Cognitivo') ? '🧠' : '👐';
-              return `
-                <div class="domain-card">
-                  <div class="domain-header">
-                    <div class="domain-title">${domainIcon} ${domain.title}</div>
-                    <div class="domain-score">${domainScore.percentage}%</div>
-                  </div>
-                  ${domain.subdomains.map(subdomain => {
-                    const subScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-                    return `
-                      <div class="subdomain">
-                        <div class="subdomain-title">${subdomain.title} (${subScore.percentage}%)</div>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              `;
-            }).join('')}
-          </div>
-
-          <div class="section">
-            <h2 class="section-title">📝 Detalhamento Completo dos Parâmetros</h2>
-            ${evaluationDomains.map(domain => {
-              const domainIcon = domain.title.includes('Musical') ? '🎵' : 
-                               domain.title.includes('Psicossocial') ? '❤️' : 
-                               domain.title.includes('Cognitivo') ? '🧠' : '👐';
-              return `
-                <div style="margin-bottom: 25px; page-break-inside: avoid;">
-                  <h3 style="font-size: 18px; font-weight: bold; color: #1e40af; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                    ${domainIcon} ${domain.title}
-                  </h3>
-                  ${domain.subdomains.map(subdomain => `
-                    <div style="margin-bottom: 20px; margin-left: 15px;">
-                      <h4 style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 12px; border-left: 3px solid #3b82f6;">
-                        ${subdomain.title}
-                      </h4>
-                      <div class="parameter-list">
-                        ${subdomain.parameters.map(parameter => {
-                          const key = `${domain.title}-${subdomain.title}-${parameter}`;
-                          const selectedValue = selections[key];
-                          const score = selectedValue === "ausente" ? 0 : 
-                                      selectedValue === "emergente" ? 1 : 
-                                      selectedValue === "inconsistente" ? 2 : 
-                                      selectedValue === "consistente" ? 3 : 
-                                      selectedValue === "independente" ? 4 : null;
-                          
-                          const getScoreLabel = (score: number | null) => {
-                            if (score === 0) return "Ausente";
-                            if (score === 1) return "Emergente";
-                            if (score === 2) return "Inconsistente";
-                            if (score === 3) return "Consistente";
-                            if (score === 4) return "Independente";
-                            return "Não avaliado";
-                          };
-
-                          const getScoreClass = (score: number | null) => {
-                            if (score === 0) return "score-0";
-                            if (score === 1) return "score-1";
-                            if (score === 2) return "score-2";
-                            if (score === 3) return "score-3";
-                            if (score === 4) return "score-4";
-                            return "score-0";
-                          };
-
-                          return `
-                            <div class="parameter-item">
-                              <span class="parameter-name">${parameter}</span>
-                              <span class="parameter-score ${score !== null ? getScoreClass(score) : 'score-0'}">
-                                ${score !== null ? `${getScoreLabel(score)} (${score})` : 'Não avaliado'}
-                              </span>
-                            </div>
-                          `;
-                        }).join('')}
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              `;
-            }).join('')}
-          </div>
-
-          <div class="legend">
-            <div class="legend-title">Legenda dos Níveis de Desenvolvimento</div>
-            <div class="legend-grid">
-              <div class="legend-item">
-                <div class="legend-color" style="background: #dc2626;"></div>
-                <span>Ausente (0) - Habilidade não demonstrada</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #ea580c;"></div>
-                <span>Emergente (1) - Início do desenvolvimento</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #d97706;"></div>
-                <span>Inconsistente (2) - Demonstrada ocasionalmente</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #2563eb;"></div>
-                <span>Consistente (3) - Demonstrada regularmente</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #16a34a;"></div>
-                <span>Independente (4) - Totalmente desenvolvida</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="footer">
-            <div class="footer-line"><strong>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</strong></div>
-            <div class="footer-line">Musetera - Sistema de Gestão para Musicoterapia</div>
-            <div class="footer-line">Musicoterapeuta: ${userName}</div>
-            <div class="footer-line">Email: ${userEmail}</div>
-          </div>
-        </body>
-        </html>
-      `;
-
-      // Criar elemento temporário fora da tela
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        throw new Error('Não foi possível abrir janela para impressão');
-      }
-
-      printWindow.document.write(pdfContent);
-      printWindow.document.close();
-
-      // Aguardar o carregamento completo
-      await new Promise(resolve => {
-        printWindow.onload = resolve;
-        setTimeout(resolve, 1000); // fallback
-      });
-
-      const options = {
-        margin: [10, 10, 10, 10],
-        filename: `avaliacao-musicoterapeutica-${selectedPatientData.name.replace(/\s+/g, '_')}-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-          scale: 1.5,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          width: 800,
-          height: 1200
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        }
-      };
-
-      // Gerar PDF a partir da janela
-      await html2pdf().set(options).from(printWindow.document.body).save();
-      
-      // Fechar janela temporária
-      printWindow.close();
-      
-      toast.dismiss("pdf-generation");
-      toast.success("PDF gerado com sucesso!");
-      
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast.dismiss("pdf-generation");
-      toast.error("Erro ao gerar PDF. Tente novamente.");
+    if (!selectedPatientData) {
+      console.error("Nenhum paciente selecionado");
+      return;
     }
+
+    // Verificar se há dados de avaliação
+    const hasData = Object.keys(selections).length > 0;
+    if (!hasData) {
+      console.error("Nenhum dado de avaliação preenchido");
+      return;
+    }
+
+    // Calcular scores para incluir no PDF
+    const overallScore = calculateOverallScore();
+    const domainScores = getDomainAverages();
+    const subdomainScores = getSubdomainData();
+
+    // Criar o conteúdo HTML completo para o PDF
+    const pdfContent = `
+      <div class="header">
+        <div class="logo">M</div>
+        <h1 class="title">Avaliação Musicoterapêutica</h1>
+        <h2 class="subtitle">Relatório Completo de Desenvolvimento</h2>
+        <div class="patient-info">
+          <strong>Paciente:</strong> ${selectedPatientData.name}<br>
+          <strong>Idade:</strong> ${selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}<br>
+          <strong>Data da Avaliação:</strong> ${new Date().toLocaleDateString('pt-BR')}<br>
+          <strong>Tipo:</strong> ${selectedEvaluation === "1" ? "Avaliação Inicial" : selectedEvaluation === "2" ? "Avaliação de Progresso" : selectedEvaluation === "3" ? "Avaliação Periódica" : "Avaliação Final"}
+        </div>
+        <div class="score-summary">
+          <div class="score-main">Pontuação Total: ${overallScore.raw}/${overallScore.max} (${overallScore.percentage}%)</div>
+          <div>Nível de Desenvolvimento Geral: ${overallScore.percentage >= 80 ? 'Excelente' : overallScore.percentage >= 60 ? 'Bom' : overallScore.percentage >= 40 ? 'Regular' : 'Iniciante'}</div>
+        </div>
+      </div>
+
+      <div class="charts-section">
+        <h2 class="section-title">📊 Análise Visual dos Resultados</h2>
+        <div class="chart-grid">
+          <div class="chart-placeholder">
+            <div class="chart-title">Perfil de Habilidades por Domínio</div>
+            <div class="chart-data">
+              ${domainScores.map(domain => `${domain.name}: ${domain.value}%`).join('<br>')}
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <div class="chart-title">Distribuição do Desenvolvimento</div>
+            <div class="chart-data">
+              Desenvolvido: ${overallScore.percentage}%<br>
+              A Desenvolver: ${100 - overallScore.percentage}%
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-placeholder">
+          <div class="chart-title">Desempenho Detalhado por Subdomínios</div>
+          <div class="bar-chart">
+            ${subdomainScores.map(sub => `
+              <div class="bar-item">
+                <div class="bar-label">${sub.name}</div>
+                <div class="bar-visual">
+                  <div class="bar-fill" style="width: ${sub.value}%"></div>
+                </div>
+                <div class="bar-value">${sub.value}%</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">📋 Resumo por Domínios</h2>
+        ${evaluationDomains.map(domain => {
+          const domainScore = calculateDomainScore(domain);
+          const domainIcon = domain.title.includes('Musical') ? '🎵' : 
+                           domain.title.includes('Psicossocial') ? '❤️' : 
+                           domain.title.includes('Cognitivo') ? '🧠' : '👐';
+          return `
+            <div class="domain-card">
+              <div class="domain-header">
+                <div class="domain-title">${domainIcon} ${domain.title}</div>
+                <div class="domain-score">${domainScore.percentage}%</div>
+              </div>
+              ${domain.subdomains.map(subdomain => {
+                const subScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
+                return `
+                  <div class="subdomain">
+                    <div class="subdomain-title">${subdomain.title} (${subScore.percentage}%)</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">📝 Detalhamento Completo dos Parâmetros</h2>
+        ${evaluationDomains.map(domain => {
+          const domainIcon = domain.title.includes('Musical') ? '🎵' : 
+                           domain.title.includes('Psicossocial') ? '❤️' : 
+                           domain.title.includes('Cognitivo') ? '🧠' : '👐';
+          return `
+            <div style="margin-bottom: 25px; page-break-inside: avoid;">
+              <h3 style="font-size: 18px; font-weight: bold; color: #1e40af; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                ${domainIcon} ${domain.title}
+              </h3>
+              ${domain.subdomains.map(subdomain => `
+                <div style="margin-bottom: 20px; margin-left: 15px;">
+                  <h4 style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 12px; border-left: 3px solid #3b82f6;">
+                    ${subdomain.title}
+                  </h4>
+                  <div class="parameter-list">
+                    ${subdomain.parameters.map(parameter => {
+                      const key = `${domain.title}-${subdomain.title}-${parameter}`;
+                      const selectedValue = selections[key];
+                      const score = selectedValue === "ausente" ? 0 : 
+                                  selectedValue === "emergente" ? 1 : 
+                                  selectedValue === "inconsistente" ? 2 : 
+                                  selectedValue === "consistente" ? 3 : 
+                                  selectedValue === "independente" ? 4 : null;
+                      
+                      const getScoreLabel = (score: number | null) => {
+                        if (score === 0) return "Ausente";
+                        if (score === 1) return "Emergente";
+                        if (score === 2) return "Inconsistente";
+                        if (score === 3) return "Consistente";
+                        if (score === 4) return "Independente";
+                        return "Não avaliado";
+                      };
+
+                      const getScoreClass = (score: number | null) => {
+                        if (score === 0) return "score-0";
+                        if (score === 1) return "score-1";
+                        if (score === 2) return "score-2";
+                        if (score === 3) return "score-3";
+                        if (score === 4) return "score-4";
+                        return "score-0";
+                      };
+
+                      return `
+                        <div class="parameter-item">
+                          <span class="parameter-name">${parameter}</span>
+                          <span class="parameter-score ${score !== null ? getScoreClass(score) : 'score-0'}">
+                            ${score !== null ? `${getScoreLabel(score)} (${score})` : 'Não avaliado'}
+                          </span>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="legend">
+        <div class="legend-title">Legenda dos Níveis de Desenvolvimento</div>
+        <div class="legend-grid">
+          <div class="legend-item">
+            <div class="legend-color" style="background: #dc2626;"></div>
+            <span>Ausente (0) - Habilidade não demonstrada</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #ea580c;"></div>
+            <span>Emergente (1) - Início do desenvolvimento</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #d97706;"></div>
+            <span>Inconsistente (2) - Demonstrada ocasionalmente</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #2563eb;"></div>
+            <span>Consistente (3) - Demonstrada regularmente</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #16a34a;"></div>
+            <span>Independente (4) - Totalmente desenvolvida</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-line"><strong>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</strong></div>
+        <div class="footer-line">Musetera - Sistema de Gestão para Musicoterapia</div>
+        <div class="footer-line">Musicoterapeuta: ${userName}</div>
+        <div class="footer-line">Email: ${userEmail}</div>
+      </div>
+    `;
+
+    const filename = `avaliacao-musicoterapeutica-${selectedPatientData.name.replace(/\s+/g, '_')}-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`;
+
+    await generatePDF(pdfContent, { filename });
   };
 
   const domainScores = getDomainAverages();
