@@ -173,7 +173,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-6 space-y-8 animate-fadeIn">
         {/* Hero Section */}
-        <div className="text-center space-y-6 relative">
+        <div className="text-center space-y-6">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 blur-3xl rounded-full"></div>
             <LogoRound size="lg" className="relative animate-pulse-gentle" />

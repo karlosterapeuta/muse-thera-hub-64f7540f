@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   BarChart2,
@@ -10,6 +11,7 @@ import {
   ChevronLeft,
   Key,
   UsersRound,
+  Bell,
   DollarSign,
   ListChecks,
   Waves,
@@ -21,7 +23,6 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -30,8 +31,6 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -42,120 +41,50 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     },
   });
 
-  const mainMenuItems = [
+  const menuItems = [
     { icon: BarChart2, text: "Dashboard", path: "/dashboard", gradient: "from-blue-500 to-purple-600" },
     { icon: UserCircle, text: "Profissional-MT", path: "/professional", gradient: "from-green-500 to-teal-600" },
     { icon: Users, text: "Pacientes", path: "/patients", gradient: "from-pink-500 to-rose-600" },
     { icon: FileText, text: "Processos", path: "/processes", gradient: "from-orange-500 to-red-600" },
-  ];
-
-  const toolsMenuItems = [
     { icon: ListChecks, text: "Atividades", path: "/activities", gradient: "from-cyan-500 to-blue-600" },
     { icon: Piano, text: "Compositor Musical", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
     { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
     { icon: DollarSign, text: "Financeiro", path: "/finance", gradient: "from-yellow-500 to-orange-600" },
-  ];
-
-  const adminMenuItems = [
-    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && 
-    { icon: UsersRound, text: "Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
-    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && 
-    { icon: Key, text: "Códigos de Convite", path: "/invite-codes", gradient: "from-amber-500 to-yellow-600" },
+    // Show Users menu for specific users or admins
+    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
+    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: Key, text: "Códigos de Convite", path: "/invite-codes", gradient: "from-amber-500 to-yellow-600" },
   ].filter(Boolean);
 
   const handleLogout = async () => {
     try {
-      console.log("Fazendo logout...");
+      console.log("Iniciando logout...");
       
-      // Fechar sidebar móvel
-      if (onNavigate) {
-        onNavigate();
+      // Clear any local storage data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Erro ao fazer logout:", error);
+      } else {
+        console.log("Logout realizado com sucesso");
       }
       
-      // Limpar storage
-      localStorage.clear();
-      sessionStorage.clear();
+      // Call onNavigate if provided
+      onNavigate?.();
       
-      // Fazer logout do Supabase
-      await supabase.auth.signOut();
-      
-      // Toast de sucesso
-      toast({
-        title: "Logout realizado",
-        description: "Redirecionando...",
-      });
-      
-      // Forçar redirecionamento para login
-      window.location.href = '/login';
-      
+      // Force redirect to login page
+      window.location.replace('/login');
     } catch (error) {
-      console.error("Erro no logout:", error);
-      
-      // Mesmo com erro, redirecionar
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = '/login';
+      console.error("Erro durante o logout:", error);
+      // Even if there's an error, redirect to login
+      onNavigate?.();
+      window.location.replace('/login');
     }
   };
-
-  const renderMenuItem = (item: any) => (
-    <NavLink
-      key={item.path}
-      to={item.path}
-      onClick={() => onNavigate?.()}
-      className={({ isActive }) =>
-        cn(
-          "group relative flex items-center space-x-3 px-4 py-3 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95",
-          collapsed && "justify-center px-3",
-          isActive 
-            ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.gradient.split('-')[1]}-500/30 ring-1 ring-white/20`
-            : "text-slate-700 hover:bg-white/40 hover:shadow-md hover:text-slate-800 backdrop-blur-sm border border-transparent hover:border-white/30"
-        )
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <div className={cn(
-            "relative transition-all duration-300",
-            isActive && "drop-shadow-lg"
-          )}>
-            <item.icon 
-              size={18} 
-              className={cn(
-                "transition-all duration-300",
-                isActive 
-                  ? "text-white drop-shadow-sm" 
-                  : "text-slate-600 group-hover:text-slate-800"
-              )} 
-            />
-            {isActive && (
-              <div className="absolute inset-0 bg-white/20 rounded-lg blur-sm"></div>
-            )}
-          </div>
-          
-          {!collapsed && (
-            <span className={cn(
-              "font-medium transition-all duration-300 tracking-wide text-sm",
-              isActive 
-                ? "text-white drop-shadow-sm" 
-                : "text-slate-700 group-hover:text-slate-800"
-            )}>
-              {item.text}
-            </span>
-          )}
-          
-          {/* Active indicator */}
-          {isActive && (
-            <div className="absolute right-2 w-2 h-2 bg-white rounded-full animate-pulse shadow-lg"></div>
-          )}
-          
-          {/* Hover glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-        </>
-      )}
-    </NavLink>
-  );
 
   return (
     <div
@@ -207,47 +136,69 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="relative flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {/* Main Menu Section */}
-        <div className="space-y-1 mb-4">
-          {!collapsed && (
-            <div className="px-4 py-2">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Principal
-              </h3>
-            </div>
-          )}
-          {mainMenuItems.map(renderMenuItem)}
-        </div>
-
-        {/* Tools Section */}
-        <div className="space-y-1 mb-4">
-          {!collapsed && (
-            <div className="px-4 py-2">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Ferramentas
-              </h3>
-            </div>
-          )}
-          {toolsMenuItems.map(renderMenuItem)}
-        </div>
-
-        {/* Admin Section */}
-        {adminMenuItems.length > 0 && (
-          <div className="space-y-1">
-            {!collapsed && (
-              <div className="px-4 py-2">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Administração
-                </h3>
-              </div>
-            )}
-            {adminMenuItems.map(renderMenuItem)}
-          </div>
-        )}
+      <nav className="relative flex-1 py-6 px-3 space-y-2">
+        {menuItems.map((item) => (
+          item && (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => onNavigate?.()}
+              className={({ isActive }) =>
+                cn(
+                  "group relative flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95",
+                  collapsed && "justify-center px-3",
+                  isActive 
+                    ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.gradient.split('-')[1]}-500/30 ring-1 ring-white/20`
+                    : "text-slate-700 hover:bg-white/40 hover:shadow-md hover:text-slate-800 backdrop-blur-sm border border-transparent hover:border-white/30"
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className={cn(
+                    "relative transition-all duration-300",
+                    isActive && "drop-shadow-lg"
+                  )}>
+                    <item.icon 
+                      size={20} 
+                      className={cn(
+                        "transition-all duration-300",
+                        isActive 
+                          ? "text-white drop-shadow-sm" 
+                          : "text-slate-600 group-hover:text-slate-800"
+                      )} 
+                    />
+                    {isActive && (
+                      <div className="absolute inset-0 bg-white/20 rounded-lg blur-sm"></div>
+                    )}
+                  </div>
+                  
+                  {!collapsed && (
+                    <span className={cn(
+                      "font-medium transition-all duration-300 tracking-wide",
+                      isActive 
+                        ? "text-white drop-shadow-sm" 
+                        : "text-slate-700 group-hover:text-slate-800"
+                    )}>
+                      {item.text}
+                    </span>
+                  )}
+                  
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute right-2 w-2 h-2 bg-white rounded-full animate-pulse shadow-lg"></div>
+                  )}
+                  
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                </>
+              )}
+            </NavLink>
+          )
+        ))}
       </nav>
 
-      {/* Footer with Logout Button */}
+      {/* Footer */}
       <div className="relative p-4 border-t border-white/20 bg-white/20 backdrop-blur-sm">
         <Button
           variant="ghost"
@@ -257,9 +208,9 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           )}
           onClick={handleLogout}
         >
-          <LogOut size={18} className="group-hover:animate-pulse" />
+          <LogOut size={20} className="group-hover:animate-pulse" />
           {!collapsed && (
-            <span className="ml-3 font-medium tracking-wide text-sm">
+            <span className="ml-3 font-medium tracking-wide">
               Sair do Sistema
             </span>
           )}
