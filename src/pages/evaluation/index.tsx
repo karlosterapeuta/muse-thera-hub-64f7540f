@@ -298,16 +298,6 @@ export default function Evaluation() {
     return subdomainScores;
   };
 
-  const domainScores = getDomainAverages();
-  const subdomainScores = getSubdomainData();
-  const overallScore = calculateOverallScore();
-  const pieData = [
-    { name: "Desenvolvido", value: overallScore.percentage },
-    { name: "A desenvolver", value: 100 - overallScore.percentage },
-  ];
-
-  const COLORS = ['#4ade80', '#ffa1b5'];
-
   const [userName, setUserName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
 
@@ -334,6 +324,8 @@ export default function Evaluation() {
   const handleGeneratePDF = async () => {
     try {
       console.log("Iniciando geração de PDF...");
+      console.log("Dados de seleções:", selections);
+      console.log("Paciente selecionado:", selectedPatientData);
       
       if (!selectedPatientData) {
         toast.error("Selecione um paciente antes de gerar o PDF");
@@ -347,167 +339,299 @@ export default function Evaluation() {
         return;
       }
 
-      toast.loading("Gerando PDF...");
+      toast.loading("Gerando PDF...", { id: "pdf-generation" });
 
-      // Calcular dados necessários
+      // Calcular scores
       const overallScore = calculateOverallScore();
       const domainScores = getDomainAverages();
+      
+      console.log("Scores calculados:", { overallScore, domainScores });
 
-      // Gerar HTML do conteúdo do PDF
-      const generatePDFContent = () => {
-        const renderDomainDetails = () => {
-          return evaluationDomains.map(domain => {
-            const domainScore = calculateDomainScore(domain);
-            return `
-              <div style="margin-bottom: 25px; page-break-inside: avoid;">
-                <h4 style="color: #2563eb; font-size: 16px; margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">
-                  ${domain.title}
-                </h4>
-                <div style="margin-bottom: 10px; padding: 8px; background: #f3f4f6; border-radius: 6px;">
-                  <span style="font-weight: 600; color: #374151;">Pontuação do Domínio: ${domainScore.percentage}%</span>
-                </div>
-                ${domain.subdomains.map(subdomain => {
-                  const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-                  return `
-                    <div style="margin-bottom: 20px; margin-left: 15px;">
-                      <h5 style="color: #374151; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #93c5fd; padding-left: 10px;">
-                        ${subdomain.title} (${subdomainScore.percentage}%)
-                      </h5>
-                      <div style="display: grid; gap: 6px;">
-                        ${subdomain.parameters.map(parameter => {
-                          const key = `${domain.title}-${subdomain.title}-${parameter}`;
-                          const selectedValue = selections[key];
-                          const score = selectedValue === "ausente" ? 0 : 
-                                      selectedValue === "emergente" ? 1 : 
-                                      selectedValue === "inconsistente" ? 2 : 
-                                      selectedValue === "consistente" ? 3 : 
-                                      selectedValue === "independente" ? 4 : null;
-                          
-                          const getScoreLabel = (score) => {
-                            if (score === 0) return "Ausente (0)";
-                            if (score === 1) return "Emergente (1)";
-                            if (score === 2) return "Inconsistente (2)";
-                            if (score === 3) return "Consistente (3)";
-                            if (score === 4) return "Independente (4)";
-                            return "Não avaliado";
-                          };
-
-                          const getScoreColor = (score) => {
-                            if (score === 0) return "#ef4444";
-                            if (score === 1) return "#f97316";
-                            if (score === 2) return "#eab308";
-                            if (score === 3) return "#3b82f6";
-                            if (score === 4) return "#22c55e";
-                            return "#6b7280";
-                          };
-
-                          return `
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 12px; border: 1px solid #e5e7eb;">
-                              <span style="flex: 1; color: #374151; font-weight: 500;">${parameter}</span>
-                              <span style="color: ${score !== null ? getScoreColor(score) : '#6b7280'}; font-weight: bold; margin-left: 10px;">
-                                ${score !== null ? getScoreLabel(score) : 'Não avaliado'}
-                              </span>
-                            </div>
-                          `;
-                        }).join('')}
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            `;
-          }).join('');
-        };
-
+      // Gerar conteúdo HTML para o PDF
+      const generatePDFHTML = () => {
         return `
-          <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.4; background: white;">
-            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
-              <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px; font-weight: bold;">Resultados da Avaliação Musicoterapêutica</h1>
-              <h2 style="color: #374151; font-size: 18px; margin-bottom: 10px; font-weight: 600;">Paciente: ${selectedPatientData.name}</h2>
-              <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-              <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">Idade: ${selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}</p>
-              <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <p style="color: #1e40af; font-size: 16px; font-weight: bold; margin: 0;">
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { 
+                font-family: Arial, sans-serif; 
+                line-height: 1.4; 
+                color: #333; 
+                background: white;
+                padding: 20px;
+              }
+              .header { 
+                text-align: center; 
+                margin-bottom: 30px; 
+                border-bottom: 2px solid #2563eb; 
+                padding-bottom: 20px; 
+              }
+              .title { 
+                color: #2563eb; 
+                font-size: 24px; 
+                font-weight: bold; 
+                margin-bottom: 10px; 
+              }
+              .subtitle { 
+                color: #374151; 
+                font-size: 18px; 
+                margin-bottom: 10px; 
+              }
+              .info { 
+                color: #6b7280; 
+                font-size: 14px; 
+                margin: 5px 0; 
+              }
+              .score-box { 
+                background: #dbeafe; 
+                padding: 15px; 
+                border-radius: 8px; 
+                margin-top: 15px; 
+                text-align: center;
+              }
+              .score-text { 
+                color: #1e40af; 
+                font-size: 16px; 
+                font-weight: bold; 
+              }
+              .section { 
+                margin-bottom: 30px; 
+                page-break-inside: avoid; 
+              }
+              .section-title { 
+                color: #374151; 
+                font-size: 18px; 
+                font-weight: bold; 
+                margin-bottom: 15px; 
+                border-bottom: 1px solid #e5e7eb; 
+                padding-bottom: 5px;
+              }
+              .domain-card { 
+                margin-bottom: 15px; 
+                padding: 12px; 
+                background: #f9fafb; 
+                border-radius: 8px; 
+                border-left: 4px solid #3b82f6; 
+              }
+              .domain-header { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                margin-bottom: 8px;
+              }
+              .domain-name { 
+                font-weight: 600; 
+                color: #374151; 
+              }
+              .domain-score { 
+                color: #3b82f6; 
+                font-weight: bold; 
+              }
+              .subdomain { 
+                margin-left: 15px; 
+                margin-bottom: 8px; 
+                font-size: 12px; 
+                color: #6b7280; 
+              }
+              .subdomain-score { 
+                font-weight: 600; 
+                color: #374151; 
+              }
+              .parameter-grid { 
+                display: grid; 
+                gap: 6px; 
+                margin-top: 10px;
+              }
+              .parameter-item { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                padding: 8px; 
+                background: #f9fafb; 
+                border-radius: 4px; 
+                border: 1px solid #e5e7eb; 
+                font-size: 12px;
+              }
+              .parameter-name { 
+                flex: 1; 
+                color: #374151; 
+                font-weight: 500; 
+              }
+              .parameter-score { 
+                font-weight: bold; 
+                margin-left: 10px; 
+              }
+              .footer { 
+                margin-top: 40px; 
+                padding-top: 20px; 
+                border-top: 2px solid #e2e8f0; 
+                text-align: center; 
+                font-size: 12px; 
+                color: #6b7280; 
+              }
+              .chart-placeholder {
+                width: 100%;
+                height: 200px;
+                background: #f3f4f6;
+                border: 2px dashed #d1d5db;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 20px 0;
+                border-radius: 8px;
+                font-size: 14px;
+                color: #6b7280;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="title">Resultados da Avaliação Musicoterapêutica</h1>
+              <h2 class="subtitle">Paciente: ${selectedPatientData.name}</h2>
+              <p class="info">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+              <p class="info">Idade: ${selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}</p>
+              <div class="score-box">
+                <p class="score-text">
                   Pontuação Total: ${overallScore.raw}/${overallScore.max} (${overallScore.percentage}%)
                 </p>
               </div>
             </div>
 
-            <div style="margin-bottom: 30px;">
-              <h3 style="color: #374151; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Resumo por Domínios</h3>
+            <div class="section">
+              <h3 class="section-title">Resumo por Domínios</h3>
               ${evaluationDomains.map(domain => {
                 const domainScore = calculateDomainScore(domain);
                 return `
-                  <div style="margin-bottom: 15px; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <span style="font-weight: 600; color: #374151; font-size: 14px;">${domain.title}</span>
-                      <span style="color: #3b82f6; font-weight: bold; font-size: 14px;">${domainScore.percentage}%</span>
+                  <div class="domain-card">
+                    <div class="domain-header">
+                      <span class="domain-name">${domain.title}</span>
+                      <span class="domain-score">${domainScore.percentage}%</span>
                     </div>
-                    <div style="margin-top: 8px;">
-                      ${domain.subdomains.map(subdomain => {
-                        const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-                        return `
-                          <div style="margin-left: 10px; margin-bottom: 5px; font-size: 12px; color: #6b7280;">
-                            ${subdomain.title}: <span style="font-weight: 600; color: #374151;">${subdomainScore.percentage}%</span>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
+                    ${domain.subdomains.map(subdomain => {
+                      const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
+                      return `
+                        <div class="subdomain">
+                          ${subdomain.title}: <span class="subdomain-score">${subdomainScore.percentage}%</span>
+                        </div>
+                      `;
+                    }).join('')}
                   </div>
                 `;
               }).join('')}
             </div>
 
-            <div style="margin-bottom: 30px;">
-              <h3 style="color: #374151; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Detalhamento dos Parâmetros Avaliados</h3>
-              ${renderDomainDetails()}
+            <div class="section">
+              <h3 class="section-title">Detalhamento dos Parâmetros Avaliados</h3>
+              ${evaluationDomains.map(domain => `
+                <div style="margin-bottom: 25px; page-break-inside: avoid;">
+                  <h4 style="color: #2563eb; font-size: 16px; margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">
+                    ${domain.title}
+                  </h4>
+                  ${domain.subdomains.map(subdomain => {
+                    const subdomainScore = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
+                    return `
+                      <div style="margin-bottom: 20px; margin-left: 15px;">
+                        <h5 style="color: #374151; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #93c5fd; padding-left: 10px;">
+                          ${subdomain.title} (${subdomainScore.percentage}%)
+                        </h5>
+                        <div class="parameter-grid">
+                          ${subdomain.parameters.map(parameter => {
+                            const key = `${domain.title}-${subdomain.title}-${parameter}`;
+                            const selectedValue = selections[key];
+                            const score = selectedValue === "ausente" ? 0 : 
+                                        selectedValue === "emergente" ? 1 : 
+                                        selectedValue === "inconsistente" ? 2 : 
+                                        selectedValue === "consistente" ? 3 : 
+                                        selectedValue === "independente" ? 4 : null;
+                            
+                            const getScoreLabel = (score) => {
+                              if (score === 0) return "Ausente (0)";
+                              if (score === 1) return "Emergente (1)";
+                              if (score === 2) return "Inconsistente (2)";
+                              if (score === 3) return "Consistente (3)";
+                              if (score === 4) return "Independente (4)";
+                              return "Não avaliado";
+                            };
+
+                            const getScoreColor = (score) => {
+                              if (score === 0) return "#ef4444";
+                              if (score === 1) return "#f97316";
+                              if (score === 2) return "#eab308";
+                              if (score === 3) return "#3b82f6";
+                              if (score === 4) return "#22c55e";
+                              return "#6b7280";
+                            };
+
+                            return `
+                              <div class="parameter-item">
+                                <span class="parameter-name">${parameter}</span>
+                                <span class="parameter-score" style="color: ${score !== null ? getScoreColor(score) : '#6b7280'};">
+                                  ${score !== null ? getScoreLabel(score) : 'Não avaliado'}
+                                </span>
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `).join('')}
             </div>
 
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; text-align: center;">
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-              </p>
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Musetera - Sistema de Gestão para Musicoterapia
-              </p>
-              <p style="color: #6b7280; font-size: 12px; margin-bottom: 5px;">
-                Musicoterapeuta: ${userName}
-              </p>
-              <p style="color: #6b7280; font-size: 12px;">
-                Email: ${userEmail}
-              </p>
+            <div class="section">
+              <h3 class="section-title">Gráfico de Perfil de Habilidades</h3>
+              <div class="chart-placeholder">
+                <div style="text-align: center;">
+                  <div style="font-weight: bold; margin-bottom: 10px;">Perfil de Habilidades por Domínio</div>
+                  ${domainScores.map(domain => `
+                    <div style="margin: 5px 0; padding: 5px; background: white; border-radius: 4px;">
+                      ${domain.name}: ${domain.value}%
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div class="footer">
+              <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+              <p>Musetera - Sistema de Gestão para Musicoterapia</p>
+              <p>Musicoterapeuta: ${userName}</p>
+              <p>Email: ${userEmail}</p>
+            </div>
+          </body>
+          </html>
         `;
       };
 
-      // Criar um elemento temporário invisível
-      const printElement = document.createElement('div');
-      printElement.innerHTML = generatePDFContent();
-      printElement.style.position = 'absolute';
-      printElement.style.left = '-9999px';
-      printElement.style.top = '0';
-      printElement.style.width = '800px';
-      printElement.style.backgroundColor = '#ffffff';
+      // Criar elemento temporário para o PDF
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = generatePDFHTML();
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '0';
+      tempDiv.style.width = '800px';
+      tempDiv.style.backgroundColor = '#ffffff';
       
-      // Adicionar ao DOM temporariamente
-      document.body.appendChild(printElement);
+      document.body.appendChild(tempDiv);
 
-      // Aguardar um momento para garantir que o elemento seja renderizado
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Aguardar renderização
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const opt = {
+      const options = {
         margin: [10, 10, 10, 10],
         filename: `avaliacao-musicoterapeutica-${selectedPatientData.name.replace(/\s+/g, '_')}-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { 
-          scale: 2,
+          scale: 1.5,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
-          logging: true,
-          width: 800,
-          height: printElement.scrollHeight
+          logging: false,
+          width: 800
         },
         jsPDF: { 
           unit: 'mm', 
@@ -516,26 +640,32 @@ export default function Evaluation() {
         }
       };
 
-      console.log("Gerando PDF com dados:", { 
-        overallScore, 
-        domainScores, 
-        selectionsCount: Object.keys(selections).length 
-      });
+      console.log("Gerando PDF com opções:", options);
 
-      await html2pdf().set(opt).from(printElement).save();
+      await html2pdf().set(options).from(tempDiv).save();
       
-      // Remover elemento temporário
-      document.body.removeChild(printElement);
+      // Limpar elemento temporário
+      document.body.removeChild(tempDiv);
       
-      toast.dismiss();
+      toast.dismiss("pdf-generation");
       toast.success("PDF gerado com sucesso!");
       
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.dismiss();
+      toast.dismiss("pdf-generation");
       toast.error("Erro ao gerar PDF. Tente novamente.");
     }
   };
+
+  const domainScores = getDomainAverages();
+  const subdomainScores = getSubdomainData();
+  const overallScore = calculateOverallScore();
+  const pieData = [
+    { name: "Desenvolvido", value: overallScore.percentage },
+    { name: "A desenvolver", value: 100 - overallScore.percentage },
+  ];
+
+  const COLORS = ['#4ade80', '#ffa1b5'];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
