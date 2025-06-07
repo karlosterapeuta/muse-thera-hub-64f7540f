@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
-import { AuthStatusChecker } from "./components/auth/AuthStatusChecker";
+import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import MusicalBells from "./pages/musical-bells";
