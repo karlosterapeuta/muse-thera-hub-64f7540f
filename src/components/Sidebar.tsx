@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -60,6 +59,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
   const toolsMenuItems = [
     { icon: Piano, text: "Compositor Musical", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
+    { icon: Bell, text: "Sinos Musicais", path: "/musical-bells", gradient: "from-yellow-500 to-amber-600" },
     { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
   ];
