@@ -1,5 +1,4 @@
 
-import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
+import { AuthStatusChecker } from "./components/auth/AuthStatusChecker";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import MusicalBells from "./pages/musical-bells";
+import BellHero from "./pages/musical-bells/BellHero";
 
 const queryClient = new QueryClient();
 
@@ -16,13 +20,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
+        <AuthStatusChecker />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/musical-bells" element={<Layout><MusicalBells /></Layout>} />
+          <Route path="/bell-hero" element={<Layout><BellHero /></Layout>} />
+          <Route path="/" element={<Layout />}>
             {navItems.map(({ to, page }) => (
-              <Route key={to} path={to} element={<Layout>{page}</Layout>} />
+              <Route key={to} path={to} element={page} />
             ))}
-          </Routes>
-        </Suspense>
+          </Route>
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
