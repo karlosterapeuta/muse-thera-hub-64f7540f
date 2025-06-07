@@ -18,6 +18,9 @@ import {
   Guitar,
   Piano,
   Music,
+  Stethoscope,
+  Brain,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -41,20 +44,37 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     },
   });
 
-  const menuItems = [
+  const mainMenuItems = [
     { icon: BarChart2, text: "Dashboard", path: "/dashboard", gradient: "from-blue-500 to-purple-600" },
     { icon: UserCircle, text: "Profissional-MT", path: "/professional", gradient: "from-green-500 to-teal-600" },
     { icon: Users, text: "Pacientes", path: "/patients", gradient: "from-pink-500 to-rose-600" },
+  ];
+
+  const clinicalMenuItems = [
     { icon: FileText, text: "Processos", path: "/processes", gradient: "from-orange-500 to-red-600" },
     { icon: ListChecks, text: "Atividades", path: "/activities", gradient: "from-cyan-500 to-blue-600" },
+    { icon: Stethoscope, text: "Anamnese", path: "/anamnesis", gradient: "from-emerald-500 to-green-600" },
+    { icon: Brain, text: "Avaliação", path: "/evaluation", gradient: "from-purple-500 to-indigo-600" },
+    { icon: Activity, text: "Plano Terapêutico", path: "/treatment-plan", gradient: "from-amber-500 to-orange-600" },
+  ];
+
+  const toolsMenuItems = [
     { icon: Piano, text: "Compositor Musical", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
     { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
+  ];
+
+  const managementMenuItems = [
     { icon: DollarSign, text: "Financeiro", path: "/finance", gradient: "from-yellow-500 to-orange-600" },
-    // Show Users menu for specific users or admins
-    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: UsersRound, text: "Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
-    (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) && { icon: Key, text: "Códigos de Convite", path: "/invite-codes", gradient: "from-amber-500 to-yellow-600" },
-  ].filter(Boolean);
+  ];
+
+  const adminMenuItems = [];
+  if (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) {
+    adminMenuItems.push(
+      { icon: UsersRound, text: "Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
+      { icon: Key, text: "Códigos de Convite", path: "/invite-codes", gradient: "from-amber-500 to-yellow-600" }
+    );
+  }
 
   const handleLogout = async () => {
     try {
@@ -86,34 +106,96 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     }
   };
 
+  const renderMenuSection = (title: string, items: any[], showTitle: boolean = true) => (
+    <div className="space-y-1">
+      {!collapsed && showTitle && (
+        <div className="px-3 py-2">
+          <span className="text-xs font-semibold text-slate-500/80 uppercase tracking-wider">
+            {title}
+          </span>
+        </div>
+      )}
+      {items.map((item) => (
+        <NavLink
+          key={item.path}
+          to={item.path}
+          onClick={() => onNavigate?.()}
+          className={({ isActive }) =>
+            cn(
+              "group relative flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-95 mx-2",
+              collapsed && "justify-center px-2",
+              isActive 
+                ? `bg-gradient-to-r ${item.gradient} text-white shadow-md shadow-${item.gradient.split('-')[1]}-500/25`
+                : "text-slate-700 hover:bg-white/50 hover:shadow-sm hover:text-slate-800"
+            )
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <div className={cn(
+                "relative transition-all duration-200",
+                isActive && "drop-shadow-sm"
+              )}>
+                <item.icon 
+                  size={18} 
+                  className={cn(
+                    "transition-all duration-200",
+                    isActive 
+                      ? "text-white" 
+                      : "text-slate-600 group-hover:text-slate-800"
+                  )} 
+                />
+              </div>
+              
+              {!collapsed && (
+                <span className={cn(
+                  "font-medium transition-all duration-200 text-sm",
+                  isActive 
+                    ? "text-white" 
+                    : "text-slate-700 group-hover:text-slate-800"
+                )}>
+                  {item.text}
+                </span>
+              )}
+              
+              {/* Active indicator */}
+              {isActive && !collapsed && (
+                <div className="absolute right-2 w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+              )}
+            </>
+          )}
+        </NavLink>
+      ))}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "h-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30 backdrop-blur-xl border-r border-white/20 shadow-2xl transition-all duration-500 flex flex-col relative overflow-hidden",
-        collapsed ? "w-20" : "w-72"
+        "h-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30 backdrop-blur-xl border-r border-white/20 shadow-xl transition-all duration-300 flex flex-col relative overflow-hidden",
+        collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-60"></div>
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-violet-500/10 to-pink-500/10 blur-3xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/3 to-pink-500/3"></div>
       
       {/* Header */}
-      <div className="relative flex items-center justify-between p-6 border-b border-white/20 bg-white/30 backdrop-blur-sm">
+      <div className="relative flex items-center justify-between p-4 border-b border-white/20 bg-white/20 backdrop-blur-sm">
         <div className="flex items-center space-x-3">
           <div className="relative">
             <img
               src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
               alt="MuseTera"
-              className="h-10 w-10 rounded-xl shadow-lg ring-2 ring-white/50"
+              className="h-8 w-8 rounded-lg shadow-md ring-1 ring-white/40"
             />
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse shadow-lg"></div>
+            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              <span className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 MuseTera
               </span>
-              <span className="text-xs text-slate-500/80 font-medium">
+              <span className="text-xs text-slate-500/80 font-medium -mt-1">
                 Musicoterapia Digital
               </span>
             </div>
@@ -123,12 +205,12 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="hover:bg-white/30 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 border border-white/20 backdrop-blur-sm"
+          className="hover:bg-white/30 rounded-lg transition-all duration-200 h-8 w-8"
         >
           <ChevronLeft 
-            size={18} 
+            size={16} 
             className={cn(
-              "transition-transform duration-300 text-slate-600",
+              "transition-transform duration-200 text-slate-600",
               collapsed && "rotate-180"
             )} 
           />
@@ -136,89 +218,47 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="relative flex-1 py-6 px-3 space-y-2">
-        {menuItems.map((item) => (
-          item && (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={() => onNavigate?.()}
-              className={({ isActive }) =>
-                cn(
-                  "group relative flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95",
-                  collapsed && "justify-center px-3",
-                  isActive 
-                    ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.gradient.split('-')[1]}-500/30 ring-1 ring-white/20`
-                    : "text-slate-700 hover:bg-white/40 hover:shadow-md hover:text-slate-800 backdrop-blur-sm border border-transparent hover:border-white/30"
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <div className={cn(
-                    "relative transition-all duration-300",
-                    isActive && "drop-shadow-lg"
-                  )}>
-                    <item.icon 
-                      size={20} 
-                      className={cn(
-                        "transition-all duration-300",
-                        isActive 
-                          ? "text-white drop-shadow-sm" 
-                          : "text-slate-600 group-hover:text-slate-800"
-                      )} 
-                    />
-                    {isActive && (
-                      <div className="absolute inset-0 bg-white/20 rounded-lg blur-sm"></div>
-                    )}
-                  </div>
-                  
-                  {!collapsed && (
-                    <span className={cn(
-                      "font-medium transition-all duration-300 tracking-wide",
-                      isActive 
-                        ? "text-white drop-shadow-sm" 
-                        : "text-slate-700 group-hover:text-slate-800"
-                    )}>
-                      {item.text}
-                    </span>
-                  )}
-                  
-                  {/* Active indicator */}
-                  {isActive && (
-                    <div className="absolute right-2 w-2 h-2 bg-white rounded-full animate-pulse shadow-lg"></div>
-                  )}
-                  
-                  {/* Hover glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                </>
-              )}
-            </NavLink>
-          )
-        ))}
+      <nav className="relative flex-1 py-4 space-y-4 overflow-y-auto">
+        {renderMenuSection("Principal", mainMenuItems)}
+        
+        <div className="mx-4 border-t border-white/20"></div>
+        
+        {renderMenuSection("Clínico", clinicalMenuItems)}
+        
+        <div className="mx-4 border-t border-white/20"></div>
+        
+        {renderMenuSection("Ferramentas", toolsMenuItems)}
+        
+        <div className="mx-4 border-t border-white/20"></div>
+        
+        {renderMenuSection("Gestão", managementMenuItems)}
+        
+        {adminMenuItems.length > 0 && (
+          <>
+            <div className="mx-4 border-t border-white/20"></div>
+            {renderMenuSection("Administração", adminMenuItems)}
+          </>
+        )}
       </nav>
 
       {/* Footer */}
-      <div className="relative p-4 border-t border-white/20 bg-white/20 backdrop-blur-sm">
+      <div className="relative p-3 border-t border-white/20 bg-white/10 backdrop-blur-sm">
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-center text-slate-700 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-600 hover:text-white hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 rounded-2xl border border-white/20 backdrop-blur-sm hover:scale-105 active:scale-95 group",
+            "w-full justify-center text-slate-700 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group",
             !collapsed && "justify-start"
           )}
           onClick={handleLogout}
         >
-          <LogOut size={20} className="group-hover:animate-pulse" />
+          <LogOut size={16} className="group-hover:animate-pulse" />
           {!collapsed && (
-            <span className="ml-3 font-medium tracking-wide">
+            <span className="ml-2 font-medium text-sm">
               Sair do Sistema
             </span>
           )}
         </Button>
       </div>
-
-      {/* Bottom decoration */}
-      <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-blue-500/10 to-transparent blur-2xl"></div>
     </div>
   );
 }
