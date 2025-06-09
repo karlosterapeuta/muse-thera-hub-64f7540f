@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { AnamnesisList } from "./components/AnamnesisList";
 import { AnamnesisView } from "./components/AnamnesisView";
-import AnamnesisForm from "./index";
+import AnamnesisFormWrapper from "./AnamnesisFormWrapper";
 
 type AnamnesisItem = {
   id: string;
@@ -51,7 +51,7 @@ export default function AnamnesisManager() {
 
   if (currentView === 'form') {
     return (
-      <AnamnesisForm 
+      <AnamnesisFormWrapper 
         editAnamnesisId={editAnamnesisId}
         editPatientId={editPatientId}
         onBack={handleBackToList}

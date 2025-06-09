@@ -17,6 +17,7 @@ type PatientSelectProps = {
   patients: Patient[];
   selectedPatient: string;
   onSelect: (value: string) => void;
+  disabled?: boolean;
   isLoading?: boolean;
   emptyMessage?: string;
   label?: string;
@@ -26,6 +27,7 @@ export function PatientSelect({
   patients, 
   selectedPatient, 
   onSelect, 
+  disabled = false,
   isLoading = false,
   emptyMessage = "Nenhum paciente encontrado",
   label = "Paciente"
@@ -47,7 +49,7 @@ export function PatientSelect({
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
-        disabled={isLoading || !hasPatients}
+        disabled={disabled || isLoading || !hasPatients}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder={getPlaceholderText()} />
