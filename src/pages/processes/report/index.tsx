@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar as CalendarIcon, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Download, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
@@ -45,11 +45,8 @@ import { DailyEvolutionForm } from "./components/DailyEvolutionForm";
 import { MonthlyEvolutionForm } from "./components/MonthlyEvolutionForm";
 import { SemesterEvolutionForm } from "./components/SemesterEvolutionForm";
 import { TherapeuticDischargeForm } from "./components/TherapeuticDischargeForm";
-import { AdministrativeDischargeForm } from "./components/AdministrativeDischargeForm";
-import { TeaScaleForm } from "./components/TeaScaleForm";
-import { FamilyReportForm } from "./components/FamilyReportForm";
-import { TeamReportForm } from "./components/TeamReportForm";
-import { TechnicalReportForm } from "./components/TechnicalReportForm";
+import { AIKeyPointsForm } from "./components/AIKeyPointsForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -82,6 +79,8 @@ export default function ReportForm() {
     phone: "",
     email: "",
   });
+  const [isGeneratingWithAI, setIsGeneratingWithAI] = useState(false);
+  const [activeTab, setActiveTab] = useState("manual");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -111,7 +110,6 @@ export default function ReportForm() {
 
         console.log("Buscando pacientes para usuário:", user.id);
         
-        // Only fetch patients registered by the current user
         const { data, error } = await supabase
           .from("patients")
           .select("id, name")
@@ -165,6 +163,54 @@ export default function ReportForm() {
       }
     } catch (error) {
       console.error('Error loading professional data:', error);
+    }
+  };
+
+  const generateWithAI = async (keyPoints: string) => {
+    setIsGeneratingWithAI(true);
+    try {
+      const selectedPatient = patients.find(p => p.id === form.getValues('patient_id'));
+      const selectedType = form.getValues('type');
+      const selectedDate = form.getValues('date');
+
+      if (!selectedPatient || !selectedType || !selectedDate) {
+        toast({
+          variant: "destructive",
+          title: "Dados incompletos",
+          description: "Por favor, selecione paciente, data e tipo de relatório antes de gerar com IA.",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('generate-report', {
+        body: {
+          reportType: selectedType,
+          keyPoints: keyPoints,
+          patientName: selectedPatient.name,
+          evaluationDate: format(selectedDate, 'yyyy-MM-dd')
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.content) {
+        form.setValue('content', data.content);
+        setActiveTab('manual');
+        toast({
+          title: "Relatório gerado!",
+          description: "O conteúdo foi gerado pela IA. Revise e edite conforme necessário.",
+        });
+      }
+
+    } catch (error) {
+      console.error('Erro ao gerar relatório com IA:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro na geração",
+        description: "Não foi possível gerar o relatório com IA. Tente novamente ou preencha manualmente.",
+      });
+    } finally {
+      setIsGeneratingWithAI(false);
     }
   };
 
@@ -554,6 +600,8 @@ export default function ReportForm() {
     }
   };
 
+  const selectedType = form.watch("type");
+
   return (
     <div className="container mx-auto p-4 space-y-6 max-w-4xl">
       <Card>
@@ -691,58 +739,78 @@ export default function ReportForm() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => {
-                  const selectedType = form.watch("type");
-                  return (
-                    <FormItem>
-                      {selectedType === "individual_session" && (
-                        <IndividualSessionForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
+              {selectedType && (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="ai" className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      Gerar com IA
+                    </TabsTrigger>
+                    <TabsTrigger value="manual">Preenchimento Manual</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="ai" className="mt-6">
+                    <AIKeyPointsForm 
+                      onGenerate={generateWithAI}
+                      isGenerating={isGeneratingWithAI}
+                      reportType={selectedType}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="manual" className="mt-6">
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          {selectedType === "individual_session" && (
+                            <IndividualSessionForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                          {selectedType === "group_session" && (
+                            <GroupSessionForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                          {selectedType === "daily_evolution" && (
+                            <DailyEvolutionForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                          {selectedType === "monthly_evolution" && (
+                            <MonthlyEvolutionForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                          {selectedType === "semester_evolution" && (
+                            <SemesterEvolutionForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                          {selectedType === "therapeutic_discharge" && (
+                            <TherapeuticDischargeForm
+                              content={field.value || {}}
+                              onChange={field.onChange}
+                            />
+                          )}
+                        </FormItem>
                       )}
-                      {selectedType === "group_session" && (
-                        <GroupSessionForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
-                      )}
-                      {selectedType === "daily_evolution" && (
-                        <DailyEvolutionForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
-                      )}
-                      {selectedType === "monthly_evolution" && (
-                        <MonthlyEvolutionForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
-                      )}
-                      {selectedType === "semester_evolution" && (
-                        <SemesterEvolutionForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
-                      )}
-                      {selectedType === "therapeutic_discharge" && (
-                        <TherapeuticDischargeForm
-                          content={field.value || {}}
-                          onChange={field.onChange}
-                        />
-                      )}
-                    </FormItem>
-                  );
-                }}
-              />
+                    />
+                  </TabsContent>
+                </Tabs>
+              )}
 
               <div className="flex justify-end space-x-4">
                 <Button
                   type="submit"
                   className="w-32"
+                  disabled={!form.watch("content") || Object.keys(form.watch("content") || {}).length === 0}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Gerar PDF
