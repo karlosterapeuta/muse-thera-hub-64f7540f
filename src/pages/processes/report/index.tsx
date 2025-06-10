@@ -29,8 +29,10 @@ const formSchema = z.object({
   date: z.date({
     required_error: "Por favor, selecione uma data",
   }),
-  type: z.string(),
-  content: z.record(z.any()),
+  type: z.string({
+    required_error: "Por favor, selecione o tipo de relatório",
+  }),
+  content: z.record(z.any()).default({}),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -52,6 +54,8 @@ export default function ReportForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      patient_id: "",
+      type: "",
       content: {},
     },
   });
