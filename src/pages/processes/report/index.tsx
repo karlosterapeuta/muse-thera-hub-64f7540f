@@ -77,35 +77,105 @@ export default function ReportForm() {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('generate-report', {
-        body: {
-          reportType: selectedType,
-          keyPoints: keyPoints,
-          patientName: selectedPatient.name,
-          evaluationDate: format(selectedDate, 'yyyy-MM-dd')
-        }
+      console.log('Calling generate-report function with:', {
+        reportType: selectedType,
+        keyPoints: keyPoints,
+        patientName: selectedPatient.name,
+        evaluationDate: format(selectedDate, 'yyyy-MM-dd')
       });
 
-      if (error) throw error;
+      // Tentar chamar a função edge do Supabase
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-report', {
+          body: {
+            reportType: selectedType,
+            keyPoints: keyPoints,
+            patientName: selectedPatient.name,
+            evaluationDate: format(selectedDate, 'yyyy-MM-dd')
+          }
+        });
 
-      if (data.content) {
-        form.setValue('content', data.content);
+        if (error) {
+          console.error('Supabase function error:', error);
+          throw new Error(`Erro na função: ${error.message}`);
+        }
+
+        if (data && data.content) {
+          form.setValue('content', data.content);
+          setActiveTab('manual');
+          toast({
+            title: "Relatório gerado!",
+            description: "O conteúdo foi gerado pela IA. Revise e edite conforme necessário.",
+          });
+        } else {
+          throw new Error('Resposta inválida da função');
+        }
+
+      } catch (functionError) {
+        console.error('Function call failed, generating fallback content:', functionError);
+        
+        // Fallback: gerar conteúdo simples baseado no tipo
+        const fallbackContent = generateFallbackContent(selectedType, keyPoints, selectedPatient.name);
+        form.setValue('content', fallbackContent);
         setActiveTab('manual');
+        
         toast({
-          title: "Relatório gerado!",
-          description: "O conteúdo foi gerado pela IA. Revise e edite conforme necessário.",
+          title: "Conteúdo gerado localmente",
+          description: "A IA está temporariamente indisponível. Um modelo básico foi gerado para você editar.",
         });
       }
 
     } catch (error) {
-      console.error('Erro ao gerar relatório com IA:', error);
+      console.error('Erro geral ao gerar relatório:', error);
       toast({
         variant: "destructive",
         title: "Erro na geração",
-        description: "Não foi possível gerar o relatório com IA. Tente novamente ou preencha manualmente.",
+        description: "Não foi possível gerar o relatório. Tente preencher manualmente.",
       });
     } finally {
       setIsGeneratingWithAI(false);
+    }
+  };
+
+  const generateFallbackContent = (reportType: string, keyPoints: string, patientName: string) => {
+    const baseContent = {
+      patient_name: patientName,
+      key_points: keyPoints,
+      generated_locally: true
+    };
+
+    switch (reportType) {
+      case "individual_session":
+        return {
+          ...baseContent,
+          objectives: `Objetivos da sessão com ${patientName}`,
+          activities: "Atividades realizadas durante a sessão",
+          patient_response: "Resposta do paciente às atividades",
+          observations: `Observações importantes: ${keyPoints}`,
+          next_steps: "Próximos passos para as sessões futuras"
+        };
+      case "monthly_evolution":
+        return {
+          ...baseContent,
+          therapeutic_objectives: "Objetivos terapêuticos do mês",
+          achievements: "Conquistas observadas no período",
+          challenges: "Desafios enfrentados",
+          adjustments: "Ajustes necessários no tratamento",
+          next_steps: "Planejamento para o próximo mês"
+        };
+      case "daily_evolution":
+        return {
+          ...baseContent,
+          initial_state: "Estado inicial do paciente",
+          activities: "Atividades realizadas",
+          responses: "Respostas observadas",
+          observations: `Observações: ${keyPoints}`
+        };
+      default:
+        return {
+          ...baseContent,
+          content: `Relatório para ${patientName}. Pontos principais: ${keyPoints}`
+        };
     }
   };
 
