@@ -114,16 +114,8 @@ export function ReportSubmission({
       // Primeiro salva o relatório
       const savedReportId = await handleSave();
       
-      // Criar dados completos para o PDF
-      const completeFormData: FormValues = {
-        patient_id: formData.patient_id,
-        type: formData.type,
-        date: formData.date || new Date(),
-        content: formData.content || {},
-      };
-      
       // Depois gera o PDF com os dados completos
-      await generatePDF(selectedPatient.name, completeFormData, professionalData, userEmail, userName);
+      await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
 
       toast({
         title: "Concluído!",
