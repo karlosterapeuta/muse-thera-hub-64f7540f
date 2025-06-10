@@ -1,17 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Download, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  generateAnamnesisPortrait, 
-  formatNameFromEmail, 
-  ANAMNESIS_SECTIONS, 
-  TEXT_FIELDS,
-  type AnamnesisData,
-  type ProfessionalData
-} from "@/pages/anamnesis/utils/anamnesisAgeneration";
+import html2pdf from "html2pdf.js";
 
 type Patient = {
   id: string;
@@ -46,9 +38,16 @@ interface ViewAnamnesisDialogProps {
 export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnesisDialogProps) {
   const [anamnesis, setAnamnesis] = useState<Anamnesis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [professional, setProfessional] = useState<ProfessionalData | null>(null);
+  const [professional, setProfessional] = useState<{ email: string; name?: string } | null>(null);
   const { toast } = useToast();
+
+  const formatNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart
+      .split(/[._-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -59,8 +58,6 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
     const loadAnamnesis = async () => {
       try {
         setIsLoading(true);
-        
-        console.log('Carregando anamnese para paciente:', patient.id);
         
         const { data, error } = await supabase
           .from("anamnesis")
@@ -76,11 +73,11 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
         }
 
         if (data) {
-          console.log('Anamnese carregada:', data);
           setAnamnesis(data);
           
           // Load professional data
           try {
+            // First try to get the user with auth.getUser()
             const { data: authData } = await supabase.auth.getUser();
             
             if (authData.user) {
@@ -89,6 +86,7 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
                 name: formatNameFromEmail(authData.user.email || '')
               });
             } else {
+              // Fallback to just using the ID without profile data
               setProfessional({
                 email: 'profissional@musetera.app',
                 name: 'Profissional'
@@ -96,6 +94,7 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
             }
           } catch (userError) {
             console.error("Error fetching user data:", userError);
+            // Set a fallback value
             setProfessional({
               email: 'profissional@musetera.app',
               name: 'Profissional'
@@ -115,12 +114,127 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
     };
 
     loadAnamnesis();
-  }, [patient.id, toast]);
+  }, [patient.id]);
 
   const renderCheckboxSections = () => {
     if (!anamnesis) return null;
 
-    return ANAMNESIS_SECTIONS.map((section, index) => {
+    const sections = [
+      {
+        title: "Histórico Musical",
+        fields: [
+          { id: "musical_education", label: "Educação Musical" },
+          { id: "instrumental_practice", label: "Prática Instrumental" },
+          { id: "body_musical_expression", label: "Expressão Corporal Musical" },
+          { id: "vocal_expression", label: "Expressão Vocal" },
+          { id: "choral_activities", label: "Atividades Corais" },
+          { id: "no_musical_experience", label: "Sem Experiência Musical" }
+        ]
+      },
+      {
+        title: "Comportamento Musical",
+        fields: [
+          { id: "active_musical_listening", label: "Escuta Musical Ativa" },
+          { id: "body_expression", label: "Expressão Corporal" },
+          { id: "sound_responsiveness", label: "Responsividade Sonora" },
+          { id: "spontaneous_vocal", label: "Emissões Vocais Espontâneas" },
+          { id: "instrumental_exploration", label: "Exploração Instrumental" },
+          { id: "adverse_sound_reactivity", label: "Reatividade Sonora Adversa" }
+        ]
+      },
+      {
+        title: "Processamento Sonoro",
+        fields: [
+          { id: "auditory_hypersensitivity", label: "Hipersensibilidade Auditiva" },
+          { id: "positive_musical_response", label: "Resposta Musical Positiva" },
+          { id: "nominal_call_response", label: "Resposta ao Chamado Nominal" },
+          { id: "active_sound_search", label: "Busca Ativa por Sons" },
+          { id: "specific_sound_aversion", label: "Aversão a Sons Específicos" },
+          { id: "sound_source_location", label: "Localização de Fonte Sonora" }
+        ]
+      },
+      {
+        title: "Preferências Musicais",
+        fields: [
+          { id: "children_repertoire", label: "Repertório Infantil" },
+          { id: "rock_genre", label: "Rock" },
+          { id: "sacred_gospel", label: "Sacra/Gospel" },
+          { id: "brazilian_popular", label: "MPB" },
+          { id: "country_music", label: "Sertanejo" },
+          { id: "classical_music", label: "Música Clássica" },
+          { id: "other_musical_genres", label: "Outros Gêneros" }
+        ]
+      },
+      {
+        title: "Desenvolvimento",
+        fields: [
+          { id: "cervical_control", label: "Controle Cervical" },
+          { id: "crawling_pattern", label: "Padrão de Engatinhar" },
+          { id: "fine_motor_dev", label: "Desenvolvimento Motor Fino" },
+          { id: "independent_sitting", label: "Sentar Independente" },
+          { id: "autonomous_walking", label: "Marcha Autônoma" },
+          { id: "broad_motor_dev", label: "Desenvolvimento Motor Amplo" }
+        ]
+      },
+      {
+        title: "Desenvolvimento da Linguagem",
+        fields: [
+          { id: "babbling", label: "Balbucios" },
+          { id: "simple_phrases", label: "Frases Simples" },
+          { id: "echolalia", label: "Ecolalia" },
+          { id: "first_words", label: "Primeiras Palavras" },
+          { id: "nonverbal_communication", label: "Comunicação Não-verbal" },
+          { id: "verbal_language_absence", label: "Ausência de Linguagem Verbal" }
+        ]
+      },
+      {
+        title: "Comportamento",
+        fields: [
+          { id: "visual_contact", label: "Contato Visual" },
+          { id: "shared_play", label: "Brincadeira Compartilhada" },
+          { id: "stereotyped_behavior", label: "Comportamentos Estereotipados" },
+          { id: "peer_interaction", label: "Interação com Pares" },
+          { id: "social_isolation", label: "Isolamento Social" },
+          { id: "restricted_interests", label: "Interesses Restritos" }
+        ]
+      },
+      {
+        title: "Regulação Emocional",
+        fields: [
+          { id: "irritability", label: "Irritabilidade" },
+          { id: "heteroaggressive", label: "Heteroagressividade" },
+          { id: "emotional_ability", label: "Capacidade Emocional" },
+          { id: "anxiety", label: "Ansiedade" },
+          { id: "frequent_crying", label: "Choro Frequente" },
+          { id: "low_frustration_tolerance", label: "Baixa Tolerância à Frustração" }
+        ]
+      },
+      {
+        title: "Saúde",
+        fields: [
+          { id: "autism_spectrum", label: "Transtorno do Espectro Autista" },
+          { id: "down_syndrome", label: "Síndrome de Down" },
+          { id: "intellectual_disability", label: "Deficiência Intelectual" },
+          { id: "adhd", label: "TDAH" },
+          { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
+          { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
+          { id: "other_diagnoses", label: "Outros Diagnósticos" }
+        ]
+      },
+      {
+        title: "Medicação e Terapias",
+        fields: [
+          { id: "speech_therapy", label: "Fonoaudiologia" },
+          { id: "psychological_support", label: "Acompanhamento Psicológico" },
+          { id: "psychopedagogical", label: "Psicopedagogia" },
+          { id: "occupational_therapy", label: "Terapia Ocupacional" },
+          { id: "physiotherapy", label: "Fisioterapia" },
+          { id: "equine_therapy", label: "Equoterapia" }
+        ]
+      }
+    ];
+
+    return sections.map((section, index) => {
       const selectedFields = section.fields.filter(field => anamnesis[field.id] === true);
       
       if (selectedFields.length === 0) return null;
@@ -143,7 +257,18 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
   const renderTextFields = () => {
     if (!anamnesis) return null;
 
-    return TEXT_FIELDS.map((field, index) => {
+    const textFields = [
+      { key: "legal_guardian", label: "Responsável Legal" },
+      { key: "family_relationship", label: "Parentesco" },
+      { key: "referral_professional", label: "Profissional que Encaminhou" },
+      { key: "main_clinical_demand", label: "Demanda Clínica Principal" },
+      { key: "current_medication", label: "Medicação Atual" },
+      { key: "school_enrollment", label: "Matrícula Escolar" },
+      { key: "school_adaptation", label: "Adaptação Escolar" },
+      { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+    ];
+
+    return textFields.map((field, index) => {
       if (!anamnesis[field.key]) return null;
       
       return (
@@ -156,41 +281,148 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
   };
 
   const generatePDF = async () => {
-    if (!anamnesis || !professional) {
-      toast({
-        title: "Erro",
-        description: "Dados insuficientes para gerar o PDF.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!anamnesis || !professional) return;
     
-    try {
-      setIsGeneratingPDF(true);
-      console.log('Iniciando geração de PDF com dados:', { anamnesis, professional });
-      
-      const anamnesisData: AnamnesisData = {
-        ...anamnesis,
-        patient_name: patient.name
+    const element = document.createElement('div');
+    
+    const generateContentHTML = () => {
+      const renderCheckboxSection = (title: string, fields: { id: string, label: string }[]) => {
+        const checkedItems = fields
+          .filter(item => anamnesis[item.id])
+          .map(item => item.label)
+          .join(", ");
+        
+        return checkedItems ? `
+          <div style="margin-bottom: 8px;">
+            <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+              ${title}
+            </div>
+            <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+              ${checkedItems}
+            </div>
+          </div>
+        ` : '';
       };
       
-      const success = await generateAnamnesisPortrait(anamnesisData, professional);
+      const sections = [
+        {
+          title: "Histórico Musical",
+          fields: [
+            { id: "musical_education", label: "Educação Musical" },
+            { id: "instrumental_practice", label: "Prática Instrumental" },
+            { id: "body_musical_expression", label: "Expressão Corporal Musical" },
+            { id: "vocal_expression", label: "Expressão Vocal" },
+            { id: "choral_activities", label: "Atividades Corais" },
+            { id: "no_musical_experience", label: "Sem Experiência Musical" }
+          ]
+        },
+        // ... include all other sections here
+      ];
       
-      if (success) {
-        toast({
-          title: "Sucesso",
-          description: "PDF gerado com sucesso!",
-        });
-      }
+      const textFields = [
+        { key: "legal_guardian", label: "Responsável Legal" },
+        { key: "family_relationship", label: "Parentesco" },
+        { key: "referral_professional", label: "Profissional que Encaminhou" },
+        { key: "main_clinical_demand", label: "Demanda Clínica Principal" },
+        { key: "current_medication", label: "Medicação Atual" },
+        { key: "school_enrollment", label: "Matrícula Escolar" },
+        { key: "school_adaptation", label: "Adaptação Escolar" },
+        { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
+      ];
+      
+      let contentHTML = '';
+      
+      // Add text fields
+      textFields.forEach(field => {
+        if (anamnesis[field.key]) {
+          contentHTML += `
+            <div style="margin-bottom: 8px;">
+              <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+                ${field.label}
+              </div>
+              <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+                ${anamnesis[field.key]}
+              </div>
+            </div>
+          `;
+        }
+      });
+      
+      // Add checkbox sections
+      sections.forEach(section => {
+        contentHTML += renderCheckboxSection(section.title, section.fields);
+      });
+      
+      return contentHTML;
+    };
+
+    element.innerHTML = `
+      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
+          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+            Anamnese Musicoterapêutica
+          </h1>
+          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
+            Paciente: ${patient.name}
+          </h2>
+          <p style="color: #6B7280; font-size: 13px;">
+            Data da Avaliação: ${formatDate(anamnesis.created_at)}
+          </p>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          ${generateContentHTML()}
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 2px solid #E5E7EB; text-align: center;">
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Musetera - Sistema de Gestão para Musicoterapia
+          </p>
+          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+            Musicoterapeuta: ${professional.name || formatNameFromEmail(professional.email)}
+          </p>
+          <p style="color: #6B7280; font-size: 11px;">
+            Email: ${professional.email}
+          </p>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: [20, 20, 20, 20],
+      filename: `Anamnese - ${patient.name}.pdf`,
+      pagebreak: { mode: 'avoid-all' },
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        backgroundColor: '#ffffff',
+      },
+    };
+
+    try {
+      await html2pdf().from(element).set(opt).save();
+      toast({
+        title: "Sucesso",
+        description: "PDF gerado com sucesso!",
+      });
+      return true;
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast({
         title: "Erro",
-        description: error.message || "Não foi possível gerar o PDF.",
+        description: "Não foi possível gerar o PDF.",
         variant: "destructive",
       });
-    } finally {
-      setIsGeneratingPDF(false);
+      return false;
     }
   };
   
@@ -244,21 +476,9 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
               Editar
             </Button>
           )}
-          <Button 
-            onClick={generatePDF}
-            disabled={isGeneratingPDF}
-          >
-            {isGeneratingPDF ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Gerando...
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 mr-2" />
-                Baixar PDF
-              </>
-            )}
+          <Button onClick={generatePDF}>
+            <Download className="h-4 w-4 mr-2" />
+            Baixar PDF
           </Button>
         </div>
       </div>

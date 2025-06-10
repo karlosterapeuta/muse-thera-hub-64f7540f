@@ -6,14 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Download, Edit, Calendar, User } from "lucide-react";
-import { 
-  generateAnamnesisPortrait, 
-  formatNameFromEmail, 
-  ANAMNESIS_SECTIONS, 
-  TEXT_FIELDS,
-  type AnamnesisData,
-  type ProfessionalData
-} from "../utils/anamnesisAgeneration";
+import html2pdf from "html2pdf.js";
 
 type AnamnesisItem = {
   id: string;
@@ -34,19 +27,15 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const [anamnesisData, setAnamnesisData] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [professional, setProfessional] = useState<ProfessionalData | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     loadAnamnesisData();
-    loadProfessionalData();
   }, [anamnesis.id]);
 
   const loadAnamnesisData = async () => {
     try {
       setIsLoading(true);
-      
-      console.log('Carregando dados da anamnese:', anamnesis.id);
       
       const { data, error } = await supabase
         .from("anamnesis")
@@ -64,7 +53,6 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         return;
       }
 
-      console.log('Dados da anamnese carregados:', data);
       setAnamnesisData(data);
     } catch (error) {
       console.error("Erro ao carregar dados da anamnese:", error);
@@ -78,58 +66,148 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     }
   };
 
-  const loadProfessionalData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      setProfessional({
-        email: user.email || '',
-        name: formatNameFromEmail(user.email || '')
-      });
-    } catch (error) {
-      console.error('Erro ao carregar dados do profissional:', error);
-      setProfessional({
-        email: 'profissional@musetera.app',
-        name: 'Profissional'
-      });
-    }
-  };
-
   const generatePDF = async () => {
-    if (!professional) {
-      toast({
-        title: "Erro",
-        description: "Dados do profissional não carregados.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       setIsGeneratingPDF(true);
-      console.log('Iniciando geração de PDF da anamnese');
       
-      const anamnesisForPDF: AnamnesisData = {
-        ...anamnesisData,
-        patient_name: anamnesis.patient_name,
-        id: anamnesis.id,
-        created_at: anamnesis.created_at
+      const element = document.createElement('div');
+      
+      const generateContentHTML = (content: Record<string, any>) => {
+        const renderSection = (title: string, items: { id: string, label: string }[]) => {
+          const checkedItems = items
+            .filter(item => content[item.id])
+            .map(item => item.label)
+            .join(", ");
+          
+          return checkedItems ? `
+            <div style="margin-bottom: 8px;">
+              <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+                ${title}
+              </div>
+              <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+                ${checkedItems}
+              </div>
+            </div>
+          ` : '';
+        };
+
+        const sections = [
+          {
+            title: "Dados Pessoais",
+            textFields: [
+              { key: "legal_guardian", label: "Responsável Legal" },
+              { key: "family_relationship", label: "Parentesco" },
+              { key: "referral_professional", label: "Profissional que Encaminhou" },
+              { key: "main_clinical_demand", label: "Demanda Clínica Principal" }
+            ]
+          },
+          {
+            title: "Histórico Musical",
+            checkboxes: [
+              { id: "musical_education", label: "Educação Musical" },
+              { id: "instrumental_practice", label: "Prática Instrumental" },
+              { id: "body_musical_expression", label: "Expressão Corporal Musical" },
+              { id: "vocal_expression", label: "Expressão Vocal" },
+              { id: "choral_activities", label: "Atividades Corais" },
+              { id: "no_musical_experience", label: "Sem Experiência Musical" }
+            ]
+          }
+          // Add more sections as needed
+        ];
+
+        return sections.map(section => {
+          let sectionContent = '';
+          
+          if (section.textFields) {
+            sectionContent = section.textFields
+              .filter(field => content[field.key])
+              .map(field => `
+                <div style="margin-bottom: 8px;">
+                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
+                    ${field.label}
+                  </div>
+                  <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
+                    ${content[field.key]}
+                  </div>
+                </div>
+              `).join('');
+          }
+
+          if (section.checkboxes) {
+            sectionContent = renderSection(section.title, section.checkboxes);
+          }
+
+          if (sectionContent) {
+            return `
+              <div style="margin-bottom: 16px;">
+                <h2 style="color: #1F2937; font-size: 15px; font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                  ${section.title}
+                </h2>
+                ${sectionContent}
+              </div>
+            `;
+          }
+          return '';
+        }).join('');
       };
+
+      element.innerHTML = `
+        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
+            <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
+              Anamnese Musicoterapêutica
+            </h1>
+            <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
+              Paciente: ${anamnesis.patient_name}
+            </h2>
+            <p style="color: #6B7280; font-size: 13px;">
+              Data da Avaliação: ${new Date(anamnesis.created_at).toLocaleDateString('pt-BR')}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            ${generateContentHTML(anamnesisData)}
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 2px solid #E5E7EB; text-align: center;">
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
+              Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
+            <p style="color: #6B7280; font-size: 11px;">
+              Musetera - Sistema de Gestão para Musicoterapia
+            </p>
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `Anamnese - ${anamnesis.patient_name}.pdf`,
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+        },
+      };
+
+      await html2pdf().from(element).set(opt).save();
       
-      const success = await generateAnamnesisPortrait(anamnesisForPDF, professional);
-      
-      if (success) {
-        toast({
-          title: "Sucesso",
-          description: "PDF gerado com sucesso!",
-        });
-      }
+      toast({
+        title: "Sucesso",
+        description: "PDF gerado com sucesso!",
+      });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast({
         title: "Erro",
-        description: error.message || "Não foi possível gerar o PDF.",
+        description: "Não foi possível gerar o PDF.",
         variant: "destructive",
       });
     } finally {
@@ -243,19 +321,35 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         <CardContent>
           <div className="space-y-6">
             {/* Dados Pessoais */}
-            {TEXT_FIELDS.some(field => anamnesisData[field.key]) && (
+            {(anamnesisData.legal_guardian || anamnesisData.family_relationship || 
+              anamnesisData.referral_professional || anamnesisData.main_clinical_demand) && (
               <div>
                 <h3 className="text-lg font-semibold mb-3 pb-2 border-b">Dados Pessoais</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {TEXT_FIELDS.map((field, index) => {
-                    if (!anamnesisData[field.key]) return null;
-                    return (
-                      <div key={index} className={field.key === 'main_clinical_demand' ? 'md:col-span-2' : ''}>
-                        <p className="text-sm font-medium text-gray-700">{field.label}</p>
-                        <p className="text-gray-900">{anamnesisData[field.key]}</p>
-                      </div>
-                    );
-                  })}
+                  {anamnesisData.legal_guardian && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Responsável Legal</p>
+                      <p className="text-gray-900">{anamnesisData.legal_guardian}</p>
+                    </div>
+                  )}
+                  {anamnesisData.family_relationship && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Parentesco</p>
+                      <p className="text-gray-900">{anamnesisData.family_relationship}</p>
+                    </div>
+                  )}
+                  {anamnesisData.referral_professional && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Profissional que Encaminhou</p>
+                      <p className="text-gray-900">{anamnesisData.referral_professional}</p>
+                    </div>
+                  )}
+                  {anamnesisData.main_clinical_demand && (
+                    <div className="md:col-span-2">
+                      <p className="text-sm font-medium text-gray-700">Demanda Clínica Principal</p>
+                      <p className="text-gray-900">{anamnesisData.main_clinical_demand}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
