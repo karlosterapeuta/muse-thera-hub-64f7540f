@@ -112,7 +112,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       
       const anamnesisForPDF: AnamnesisData = {
         ...anamnesisData,
-        patient_name: anamnesis.patient_name
+        patient_name: anamnesis.patient_name,
+        id: anamnesis.id,
+        created_at: anamnesis.created_at
       };
       
       const success = await generateAnamnesisPortrait(anamnesisForPDF, professional);
