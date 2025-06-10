@@ -11,6 +11,7 @@ import { DailyEvolutionForm } from "./DailyEvolutionForm";
 import { MonthlyEvolutionForm } from "./MonthlyEvolutionForm";
 import { SemesterEvolutionForm } from "./SemesterEvolutionForm";
 import { TherapeuticDischargeForm } from "./TherapeuticDischargeForm";
+import { TechnicalReportForm } from "./TechnicalReportForm";
 
 type FormValues = {
   patient_id: string;
@@ -94,6 +95,12 @@ export function ReportContentTabs({
               )}
               {selectedType === "therapeutic_discharge" && (
                 <TherapeuticDischargeForm
+                  content={field.value || {}}
+                  onChange={field.onChange}
+                />
+              )}
+              {selectedType === "technical_report" && (
+                <TechnicalReportForm
                   content={field.value || {}}
                   onChange={field.onChange}
                 />
