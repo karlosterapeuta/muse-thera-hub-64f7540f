@@ -19,9 +19,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { PlusIcon, Eye, Edit, Search } from "lucide-react";
+import { PlusIcon, Eye, Edit, Search, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ReportViewer } from "../report/components/ReportViewer";
+import { DeleteReportDialog } from "./components/DeleteReportDialog";
 
 type DatabaseReport = {
   id: string;
@@ -90,6 +91,17 @@ export default function ReportsPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [professionalId, setProfessionalId] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    reportId: string;
+    reportType: string;
+    patientName: string;
+  }>({
+    isOpen: false,
+    reportId: "",
+    reportType: "",
+    patientName: "",
+  });
 
   // Função para converter dados do banco para o tipo local
   const convertDatabaseReport = (dbReport: DatabaseReport): Report => {
@@ -252,6 +264,52 @@ export default function ReportsPage() {
     navigate(`/processes/report/${report.id}`);
   };
 
+  const handleDeleteClick = (report: Report) => {
+    setDeleteDialog({
+      isOpen: true,
+      reportId: report.id,
+      reportType: reportTypeLabels[report.type] || report.type,
+      patientName: report.patient?.name || 'N/A',
+    });
+  };
+
+  const handleDeleteSuccess = () => {
+    // Recarregar a lista de relatórios
+    const loadReports = async () => {
+      try {
+        if (!professionalId) return;
+
+        const { data, error } = await supabase
+          .from("reports")
+          .select(`
+            id,
+            type,
+            content,
+            created_at,
+            updated_at,
+            patient:patients (
+              name
+            ),
+            professional:professionals (
+              name
+            )
+          `)
+          .eq('professional_id', professionalId)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const convertedReports = (data || []).map(convertDatabaseReport);
+        setReports(convertedReports);
+        setFilteredReports(convertedReports);
+      } catch (error) {
+        console.error("Erro ao recarregar relatórios:", error);
+      }
+    };
+
+    loadReports();
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -309,11 +367,12 @@ export default function ReportsPage() {
                     <TableCell>{reportTypeLabels[report.type] || report.type}</TableCell>
                     <TableCell>{report.professional?.name || 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleView(report)}
+                          title="Visualizar"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -321,8 +380,18 @@ export default function ReportsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEdit(report)}
+                          title="Editar"
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(report)}
+                          title="Excluir"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -349,6 +418,15 @@ export default function ReportsPage() {
           {selectedReport && <ReportViewer report={selectedReport} />}
         </DialogContent>
       </Dialog>
+
+      <DeleteReportDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ ...deleteDialog, isOpen: false })}
+        reportId={deleteDialog.reportId}
+        reportType={deleteDialog.reportType}
+        patientName={deleteDialog.patientName}
+        onDeleteSuccess={handleDeleteSuccess}
+      />
     </div>
   );
 }

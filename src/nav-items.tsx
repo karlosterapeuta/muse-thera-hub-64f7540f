@@ -48,5 +48,6 @@ export const navItems = [
   { to: "/reevaluation", page: <Reevaluation /> },
   { to: "/processes/reports", page: <ProcessReports /> },
   { to: "/processes/report", page: <ReportForm /> },
+  { to: "/processes/report/:reportId", page: <ReportForm /> },
   { to: "/login", page: <Login /> },
 ];
