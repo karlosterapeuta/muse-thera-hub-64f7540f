@@ -6,7 +6,7 @@ import { Calendar, Clock, User, DollarSign, Building2 } from "lucide-react";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DayData } from "../hooks/useDashboardData";
+import { DayData } from "../types/dashboard";
 
 interface UnifiedWeeklyScheduleProps {
   weekDays: DayData[];
