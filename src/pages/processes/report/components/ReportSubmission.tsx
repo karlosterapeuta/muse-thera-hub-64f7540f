@@ -68,53 +68,102 @@ export function ReportSubmission({
       throw new Error("Dados do usuário não encontrados");
     }
 
+    console.log("Verificando profissional existente para userId:", userId);
+
     // Verificar se o profissional já existe
-    const { data: existingProfessional } = await supabase
+    const { data: existingProfessional, error: checkError } = await supabase
       .from('professionals')
-      .select('id')
+      .select('id, name, email')
       .eq('user_id', userId)
       .maybeSingle();
 
+    if (checkError) {
+      console.error("Erro ao verificar profissional existente:", checkError);
+      throw new Error(`Erro ao verificar profissional: ${checkError.message}`);
+    }
+
     if (existingProfessional) {
+      console.log("Profissional existente encontrado:", existingProfessional);
       return existingProfessional.id;
     }
 
-    // Se não existe, criar o registro
-    const { data: newProfessional, error } = await supabase
+    console.log("Criando novo profissional para:", { userId, userEmail, userName });
+
+    // Se não existe, criar o registro com dados válidos
+    const professionalData = {
+      user_id: userId,
+      name: userName || userEmail.split('@')[0] || 'Profissional',
+      email: userEmail,
+      phone: '', // Campo obrigatório, mas pode ser vazio inicialmente
+      specialty: 'Musicoterapia', // Valor padrão
+      license_number: '', // Campo opcional
+    };
+
+    const { data: newProfessional, error: createError } = await supabase
       .from('professionals')
-      .insert({
-        user_id: userId,
-        name: userName || userEmail.split('@')[0],
-        email: userEmail,
-        phone: '', // Campo obrigatório, mas pode ser vazio inicialmente
-      })
-      .select('id')
+      .insert(professionalData)
+      .select('id, name, email')
       .single();
 
-    if (error) {
-      console.error("Erro ao criar profissional:", error);
-      throw new Error("Não foi possível criar o registro do profissional");
+    if (createError) {
+      console.error("Erro detalhado ao criar profissional:", createError);
+      console.error("Dados enviados:", professionalData);
+      
+      // Verificar se é erro de constraint específico
+      if (createError.code === '23505') {
+        throw new Error("Profissional já existe com esses dados. Tente fazer logout e login novamente.");
+      } else if (createError.code === '23502') {
+        throw new Error("Dados obrigatórios ausentes para criar o profissional.");
+      } else {
+        throw new Error(`Erro ao criar profissional: ${createError.message}`);
+      }
     }
 
+    if (!newProfessional?.id) {
+      throw new Error("Profissional criado mas ID não retornado");
+    }
+
+    console.log("Novo profissional criado com sucesso:", newProfessional);
     return newProfessional.id;
+  };
+
+  const validateProfessionalExists = async (professionalId: string) => {
+    console.log("Validando se profissional existe na tabela:", professionalId);
+    
+    const { data: professional, error } = await supabase
+      .from('professionals')
+      .select('id')
+      .eq('id', professionalId)
+      .single();
+
+    if (error || !professional) {
+      console.error("Profissional não encontrado na validação:", error);
+      throw new Error("Profissional não encontrado após criação/verificação");
+    }
+
+    console.log("Profissional validado com sucesso");
+    return true;
   };
 
   const handleSaveAndGeneratePDF = async () => {
     try {
-      console.log("Iniciando salvamento e geração de PDF com dados:", formData);
+      console.log("=== Iniciando salvamento de relatório ===");
+      console.log("Dados do formulário:", formData);
       
       if (!validateRequiredData()) {
         return;
       }
 
-      // Mostrar toast de progresso
       toast({
         title: "Processando...",
-        description: "Verificando permissões...",
+        description: "Verificando dados do profissional...",
       });
 
-      // Garantir que o profissional existe na tabela
-      await ensureProfessionalExists();
+      // Garantir que o profissional existe e obter o ID
+      const professionalId = await ensureProfessionalExists();
+      
+      // Validar se o profissional realmente existe na tabela
+      await validateProfessionalExists(professionalId);
 
       toast({
         title: "Processando...",
@@ -126,17 +175,22 @@ export function ReportSubmission({
         ? formData.content 
         : {};
 
+      console.log("Preparando dados do relatório com professionalId:", professionalId);
+
       const reportData = {
         patient_id: formData.patient_id!,
-        professional_id: userId!,
+        professional_id: professionalId, // Usar o ID validado
         type: formData.type!,
         content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
         updated_at: new Date().toISOString(),
       };
 
+      console.log("Dados do relatório a serem salvos:", reportData);
+
       let result;
       if (reportId) {
         // Atualizar relatório existente
+        console.log("Atualizando relatório existente:", reportId);
         result = await supabase
           .from("reports")
           .update(reportData)
@@ -145,6 +199,7 @@ export function ReportSubmission({
           .single();
       } else {
         // Criar novo relatório
+        console.log("Criando novo relatório");
         result = await supabase
           .from("reports")
           .insert({
@@ -156,11 +211,15 @@ export function ReportSubmission({
       }
 
       if (result.error) {
-        console.error("Erro do Supabase:", result.error);
-        throw result.error;
+        console.error("Erro detalhado do Supabase:", result.error);
+        console.error("Código do erro:", result.error.code);
+        console.error("Mensagem do erro:", result.error.message);
+        console.error("Detalhes do erro:", result.error.details);
+        throw new Error(`Erro ao salvar relatório: ${result.error.message}`);
       }
 
-      // Atualizar toast de progresso
+      console.log("Relatório salvo com sucesso:", result.data);
+
       toast({
         title: "Relatório salvo!",
         description: "Gerando PDF...",
@@ -189,11 +248,30 @@ export function ReportSubmission({
       navigate("/processes/reports");
 
     } catch (error) {
-      console.error("Erro ao salvar e gerar PDF:", error);
+      console.error("=== Erro no processo completo ===");
+      console.error("Erro:", error);
+      console.error("Stack trace:", error instanceof Error ? error.stack : 'N/A');
+      
+      let errorMessage = "Erro desconhecido";
+      let suggestion = "Tente novamente ou entre em contato com o suporte.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Sugestões específicas baseadas no tipo de erro
+        if (error.message.includes("professional")) {
+          suggestion = "Tente fazer logout e login novamente, ou entre em contato com o administrador.";
+        } else if (error.message.includes("foreign key")) {
+          suggestion = "Problema de integridade de dados. Entre em contato com o suporte técnico.";
+        } else if (error.message.includes("network") || error.message.includes("fetch")) {
+          suggestion = "Verifique sua conexão com a internet e tente novamente.";
+        }
+      }
+
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: error instanceof Error ? error.message : "Não foi possível completar a operação. Tente novamente.",
+        title: "Erro ao processar relatório",
+        description: `${errorMessage}. ${suggestion}`,
       });
     }
   };
