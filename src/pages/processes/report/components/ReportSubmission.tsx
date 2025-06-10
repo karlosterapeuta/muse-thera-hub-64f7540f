@@ -101,11 +101,29 @@ export function ReportSubmission({
 
   const handleSaveAndGeneratePDF = async () => {
     try {
+      // Verificar se todos os dados necessários estão presentes
+      if (!formData.patient_id || !formData.type) {
+        toast({
+          variant: "destructive",
+          title: "Dados incompletos",
+          description: "Por favor, preencha todos os campos obrigatórios antes de finalizar.",
+        });
+        return;
+      }
+
       // Primeiro salva o relatório
       const savedReportId = await handleSave();
       
+      // Criar dados completos para o PDF
+      const completeFormData: FormValues = {
+        patient_id: formData.patient_id,
+        type: formData.type,
+        date: formData.date || new Date(),
+        content: formData.content || {},
+      };
+      
       // Depois gera o PDF
-      await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
+      await generatePDF(selectedPatient.name, completeFormData, professionalData, userEmail, userName);
 
       toast({
         title: "Concluído!",
