@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { format } from 'date-fns';
 
 interface MuseteraReportPDFProps {
   categoryData: any[];
@@ -17,6 +17,7 @@ interface MuseteraReportPDFProps {
     percentage: number;
   };
   evaluationDomains?: any[];
+  evaluationDate?: Date;
 }
 
 export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
@@ -28,7 +29,8 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
   radarData,
   selectedParameters,
   overallScore,
-  evaluationDomains
+  evaluationDomains,
+  evaluationDate
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
@@ -94,7 +96,7 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
                 Paciente: {patientName || 'Não informado'}
               </p>
               <p className="text-sm text-gray-600">
-                Data da Avaliação: {new Date().toLocaleDateString('pt-BR')}
+                Data da Avaliação: {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
               </p>
               <p className="text-sm text-gray-600">
                 Musicoterapeuta: {evaluatorName || 'Não informado'}

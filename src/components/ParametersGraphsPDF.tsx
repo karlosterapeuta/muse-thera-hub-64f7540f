@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { format } from 'date-fns';
 
 interface ParametersGraphsPDFProps {
   categoryData: any[];
@@ -15,6 +16,7 @@ interface ParametersGraphsPDFProps {
     max: number;
     percentage: number;
   };
+  evaluationDate?: Date;
 }
 
 export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
@@ -24,7 +26,8 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   evaluatorName,
   evaluatorEmail,
   radarData,
-  overallScore
+  overallScore,
+  evaluationDate
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
@@ -49,7 +52,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               Paciente: {patientName || 'Não informado'}
             </h2>
             <p className="text-sm text-gray-500 mb-2">
-              Data: {new Date().toLocaleDateString('pt-BR')}
+              Data da Avaliação: {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
             </p>
             {overallScore && (
               <div className="mt-3 p-3 bg-blue-50 rounded-lg">

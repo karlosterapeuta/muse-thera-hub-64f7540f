@@ -12,7 +12,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
@@ -32,6 +32,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Patient {
   id: string;
@@ -44,6 +52,7 @@ export default function Evaluation() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedEvaluation, setSelectedEvaluation] = useState("1");
+  const [evaluationDate, setEvaluationDate] = useState<Date>(new Date());
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("evaluation");
@@ -335,6 +344,7 @@ export default function Evaluation() {
             evaluatorEmail={userEmail}
             radarData={domainScores}
             overallScore={overallScore}
+            evaluationDate={evaluationDate}
           />
         </div>
       );
@@ -396,6 +406,7 @@ export default function Evaluation() {
             selectedParameters={selections}
             overallScore={overallScore}
             evaluationDomains={evaluationDomains}
+            evaluationDate={evaluationDate}
           />
         </div>
       );
@@ -462,6 +473,34 @@ export default function Evaluation() {
                 </p>
               </div>
             )}
+            
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Data da Avaliação</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[200px] justify-start text-left font-normal",
+                      !evaluationDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={evaluationDate}
+                    onSelect={(date) => date && setEvaluationDate(date)}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <Select
