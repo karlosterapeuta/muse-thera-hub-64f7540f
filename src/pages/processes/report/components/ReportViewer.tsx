@@ -25,6 +25,15 @@ const reportTypeLabels: Record<string, string> = {
   semester_evolution: "Evolução Semestral",
   therapeutic_discharge: "Alta Terapêutica",
   technical_report: "Relatório Técnico",
+  initial_evaluation: "Avaliação Inicial",
+  progress_report: "Relatório de Progresso",
+  session_summary: "Resumo de Sessão",
+  family_report: "Relatório Familiar",
+  team_report: "Relatório de Equipe",
+  assessment_report: "Relatório de Avaliação",
+  discharge_summary: "Resumo de Alta",
+  administrative_discharge: "Alta Administrativa",
+  tea_scale: "Escala TEA",
 };
 
 const statusLabels: Record<string, string> = {

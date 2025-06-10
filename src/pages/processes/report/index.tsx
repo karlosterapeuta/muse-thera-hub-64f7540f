@@ -62,9 +62,13 @@ export default function ReportForm() {
 
         if (data) {
           form.setValue('patient_id', data.patient_id);
-          form.setValue('date', new Date(data.date));
           form.setValue('type', data.type);
-          form.setValue('content', data.content || {});
+          
+          // Garantir que content seja um objeto válido
+          const content = data.content && typeof data.content === 'object' 
+            ? data.content as Record<string, any>
+            : {};
+          form.setValue('content', content);
           setActiveTab('manual');
         }
       } catch (error) {

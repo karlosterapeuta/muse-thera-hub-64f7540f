@@ -28,9 +28,8 @@ import { ReportViewer } from "../report/components/ReportViewer";
 type Report = {
   id: string;
   type: string;
-  date: string;
-  status: string;
   created_at: string;
+  updated_at: string;
   patient: {
     name: string;
   } | null;
@@ -48,11 +47,15 @@ const reportTypeLabels: Record<string, string> = {
   semester_evolution: "Evolução Semestral",
   therapeutic_discharge: "Alta Terapêutica",
   technical_report: "Relatório Técnico",
-};
-
-const statusLabels: Record<string, string> = {
-  draft: "Rascunho",
-  finalized: "Finalizado",
+  initial_evaluation: "Avaliação Inicial",
+  progress_report: "Relatório de Progresso",
+  session_summary: "Resumo de Sessão",
+  family_report: "Relatório Familiar",
+  team_report: "Relatório de Equipe",
+  assessment_report: "Relatório de Avaliação",
+  discharge_summary: "Resumo de Alta",
+  administrative_discharge: "Alta Administrativa",
+  tea_scale: "Escala TEA",
 };
 
 export default function ReportsPage() {
@@ -74,10 +77,9 @@ export default function ReportsPage() {
           .select(`
             id,
             type,
-            date,
-            status,
             content,
             created_at,
+            updated_at,
             patient:patients (
               name
             ),
@@ -118,14 +120,19 @@ export default function ReportsPage() {
 
     const filtered = reports.filter(report => 
       report.patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reportTypeLabels[report.type]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      statusLabels[report.status]?.toLowerCase().includes(searchTerm.toLowerCase())
+      reportTypeLabels[report.type]?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredReports(filtered);
   }, [searchTerm, reports]);
 
   const handleView = (report: Report) => {
-    setSelectedReport(report);
+    // Transformar o report para o formato esperado pelo ReportViewer
+    const transformedReport = {
+      ...report,
+      date: report.created_at,
+      status: 'finalized' // Como não temos status na tabela, assumir finalizado
+    };
+    setSelectedReport(transformedReport);
     setIsViewDialogOpen(true);
   };
 
@@ -148,7 +155,7 @@ export default function ReportsPage() {
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por paciente, tipo ou status..."
+                placeholder="Buscar por paciente ou tipo..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -164,10 +171,9 @@ export default function ReportsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Data</TableHead>
+                  <TableHead>Data de Criação</TableHead>
                   <TableHead>Paciente</TableHead>
                   <TableHead>Tipo</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Profissional</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -180,11 +186,6 @@ export default function ReportsPage() {
                     </TableCell>
                     <TableCell>{report.patient?.name || 'N/A'}</TableCell>
                     <TableCell>{reportTypeLabels[report.type] || report.type}</TableCell>
-                    <TableCell>
-                      <Badge variant={report.status === 'finalized' ? 'default' : 'secondary'}>
-                        {statusLabels[report.status] || report.status}
-                      </Badge>
-                    </TableCell>
                     <TableCell>{report.professional?.name || 'N/A'}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -208,7 +209,7 @@ export default function ReportsPage() {
                 ))}
                 {filteredReports.length === 0 && !isLoading && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
                       {searchTerm ? "Nenhum relatório encontrado para a busca." : "Nenhum relatório encontrado"}
                     </TableCell>
                   </TableRow>

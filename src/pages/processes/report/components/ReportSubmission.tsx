@@ -1,7 +1,6 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
 import { Download, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -46,10 +45,8 @@ export function ReportSubmission({
       const reportData = {
         patient_id: formData.patient_id,
         professional_id: userId,
-        date: format(formData.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
         type: formData.type,
         content: formData.content,
-        status: 'draft',
         updated_at: new Date().toISOString(),
       };
 
@@ -104,14 +101,6 @@ export function ReportSubmission({
       
       // Depois gera o PDF
       await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
-
-      // Atualiza o status para finalizado
-      if (savedReportId) {
-        await supabase
-          .from("reports")
-          .update({ status: 'finalized' })
-          .eq("id", savedReportId);
-      }
 
       toast({
         title: "Concluído!",

@@ -11,10 +11,24 @@ const formSchema = z.object({
   patient_id: z.string({
     required_error: "Por favor, selecione um paciente",
   }),
-  date: z.date({
-    required_error: "Por favor, selecione uma data",
-  }),
-  type: z.string({
+  type: z.enum([
+    "individual_session",
+    "group_session",
+    "daily_evolution",
+    "monthly_evolution",
+    "semester_evolution",
+    "therapeutic_discharge",
+    "technical_report",
+    "initial_evaluation",
+    "progress_report",
+    "session_summary",
+    "family_report",
+    "team_report",
+    "assessment_report",
+    "discharge_summary",
+    "administrative_discharge",
+    "tea_scale"
+  ], {
     required_error: "Por favor, selecione o tipo de relatório",
   }),
   content: z.record(z.any()).default({}),
@@ -31,8 +45,7 @@ export function useReportForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       patient_id: "",
-      date: new Date(),
-      type: "",
+      type: "individual_session",
       content: {},
     },
   });
@@ -42,13 +55,12 @@ export function useReportForm() {
     try {
       const selectedPatient = patients.find(p => p.id === form.getValues('patient_id'));
       const selectedType = form.getValues('type');
-      const selectedDate = form.getValues('date');
 
-      if (!selectedPatient || !selectedType || !selectedDate) {
+      if (!selectedPatient || !selectedType) {
         toast({
           variant: "destructive",
           title: "Dados incompletos",
-          description: "Por favor, selecione paciente, data e tipo de relatório antes de gerar com IA.",
+          description: "Por favor, selecione paciente e tipo de relatório antes de gerar com IA.",
         });
         return;
       }
@@ -57,7 +69,7 @@ export function useReportForm() {
         reportType: selectedType,
         keyPoints: keyPoints,
         patientName: selectedPatient.name,
-        evaluationDate: format(selectedDate, 'yyyy-MM-dd')
+        evaluationDate: format(new Date(), 'yyyy-MM-dd')
       });
 
       let retryCount = 0;
@@ -70,7 +82,7 @@ export function useReportForm() {
               reportType: selectedType,
               keyPoints: keyPoints,
               patientName: selectedPatient.name,
-              evaluationDate: format(selectedDate, 'yyyy-MM-dd')
+              evaluationDate: format(new Date(), 'yyyy-MM-dd')
             }
           });
 
@@ -103,7 +115,7 @@ export function useReportForm() {
 
       console.log('Todas as tentativas de IA falharam, gerando conteúdo local aprimorado');
       
-      const enhancedContent = generateEnhancedFallbackContent(selectedType, keyPoints, selectedPatient.name, selectedDate);
+      const enhancedContent = generateEnhancedFallbackContent(selectedType, keyPoints, selectedPatient.name);
       form.setValue('content', enhancedContent);
       setActiveTab('manual');
       
@@ -125,11 +137,9 @@ export function useReportForm() {
     }
   };
 
-  const generateEnhancedFallbackContent = (reportType: string, keyPoints: string, patientName: string, date: Date) => {
-    const formattedDate = format(date, 'dd/MM/yyyy');
+  const generateEnhancedFallbackContent = (reportType: string, keyPoints: string, patientName: string) => {
     const baseContent = {
       patient_name: patientName,
-      evaluation_date: formattedDate,
       key_points: keyPoints,
       generated_locally: true
     };
@@ -158,7 +168,7 @@ export function useReportForm() {
       default:
         return {
           ...baseContent,
-          content: `Relatório estruturado para ${patientName} - ${formattedDate}. Pontos principais: ${keyPoints}`,
+          content: `Relatório estruturado para ${patientName}. Pontos principais: ${keyPoints}`,
         };
     }
   };
