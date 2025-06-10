@@ -13,7 +13,7 @@ type ReportType = Database["public"]["Enums"]["report_type"];
 interface ReportSubmissionProps {
   formData: {
     patient_id?: string;
-    type?: string;
+    type?: ReportType;
     date?: Date;
     content?: Record<string, any>;
   };
@@ -60,36 +60,43 @@ export function ReportSubmission({
       return false;
     }
 
-    // Verificar se o tipo é válido
-    const validTypes: ReportType[] = [
-      "monthly_evolution",
-      "daily_evolution", 
-      "therapeutic_discharge",
-      "individual_session",
-      "group_session",
-      "initial_evaluation",
-      "semester_evolution",
-      "progress_report",
-      "session_summary",
-      "family_report",
-      "team_report",
-      "assessment_report",
-      "discharge_summary",
-      "administrative_discharge",
-      "tea_scale",
-      "technical_report"
-    ];
+    return true;
+  };
 
-    if (!validTypes.includes(formData.type as ReportType)) {
-      toast({
-        variant: "destructive",
-        title: "Tipo de relatório inválido",
-        description: "Por favor, selecione um tipo de relatório válido.",
-      });
-      return false;
+  const ensureProfessionalExists = async () => {
+    if (!userId || !userEmail) {
+      throw new Error("Dados do usuário não encontrados");
     }
 
-    return true;
+    // Verificar se o profissional já existe
+    const { data: existingProfessional } = await supabase
+      .from('professionals')
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (existingProfessional) {
+      return existingProfessional.id;
+    }
+
+    // Se não existe, criar o registro
+    const { data: newProfessional, error } = await supabase
+      .from('professionals')
+      .insert({
+        user_id: userId,
+        name: userName || userEmail.split('@')[0],
+        email: userEmail,
+        phone: '', // Campo obrigatório, mas pode ser vazio inicialmente
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error("Erro ao criar profissional:", error);
+      throw new Error("Não foi possível criar o registro do profissional");
+    }
+
+    return newProfessional.id;
   };
 
   const handleSaveAndGeneratePDF = async () => {
@@ -103,6 +110,14 @@ export function ReportSubmission({
       // Mostrar toast de progresso
       toast({
         title: "Processando...",
+        description: "Verificando permissões...",
+      });
+
+      // Garantir que o profissional existe na tabela
+      await ensureProfessionalExists();
+
+      toast({
+        title: "Processando...",
         description: "Salvando relatório...",
       });
 
@@ -114,7 +129,7 @@ export function ReportSubmission({
       const reportData = {
         patient_id: formData.patient_id!,
         professional_id: userId!,
-        type: formData.type! as ReportType,
+        type: formData.type!,
         content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
         updated_at: new Date().toISOString(),
       };
@@ -142,17 +157,6 @@ export function ReportSubmission({
 
       if (result.error) {
         console.error("Erro do Supabase:", result.error);
-        
-        // Verificar se é erro de chave estrangeira
-        if (result.error.code === '23503') {
-          toast({
-            variant: "destructive",
-            title: "Erro de permissão",
-            description: "Usuário não encontrado na tabela de profissionais. Entre em contato com o administrador.",
-          });
-          return;
-        }
-        
         throw result.error;
       }
 
@@ -169,7 +173,7 @@ export function ReportSubmission({
       // Preparar dados para o PDF com valores garantidos
       const pdfData = {
         patient_id: formData.patient_id!,
-        type: formData.type! as ReportType,
+        type: formData.type!,
         date: formData.date || new Date(),
         content: safeContent,
       };
@@ -189,7 +193,7 @@ export function ReportSubmission({
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Não foi possível completar a operação. Tente novamente.",
+        description: error instanceof Error ? error.message : "Não foi possível completar a operação. Tente novamente.",
       });
     }
   };
