@@ -58,7 +58,7 @@ export default function ReportForm() {
       date: new Date(),
       type: "",
       content: {},
-    },
+    } as FormValues,
   });
 
   const generateWithAI = async (keyPoints: string) => {
