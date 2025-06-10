@@ -6,6 +6,7 @@ import LogoRound from "@/components/LogoRound";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
+import { FinancialWeeklySchedule } from "@/components/FinancialWeeklySchedule";
 
 export default function Dashboard() {
   const [upcomingSessions, setUpcomingSessions] = useState([]);
@@ -315,6 +316,9 @@ export default function Dashboard() {
         
         {/* Weekly Schedule */}
         <WeeklySchedule isLoading={isLoading} />
+
+        {/* Financial Weekly Schedule */}
+        <FinancialWeeklySchedule isLoading={isLoading} />
 
         {/* Upcoming Sessions */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
