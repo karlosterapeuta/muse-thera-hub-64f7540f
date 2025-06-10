@@ -39,10 +39,34 @@ export default function Dashboard() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Buscar sessões do profissional logado
+        // Get professional_id for the current user
+        const { data: professional, error: professionalError } = await supabase
+          .from('professionals')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (professionalError || !professional) {
+          console.log("No professional profile found for user");
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch sessions filtered by professional's patients
         const { data: sessions, error: sessionsError } = await supabase
           .from('sessions')
-          .select('id, date, patient_id, notes');
+          .select(`
+            id, 
+            date, 
+            patient_id, 
+            notes,
+            patients!inner (
+              id,
+              name,
+              professional_id
+            )
+          `)
+          .eq('patients.professional_id', professional.id);
 
         if (sessionsError) {
           console.error('Erro ao buscar sessões:', sessionsError);
@@ -106,8 +130,7 @@ export default function Dashboard() {
         setCompletionRate(completionRate);
         setCompletionRateChange(3); // Placeholder, poderia ser calculado com dados históricos
 
-        // Buscar pacientes para as próximas sessões
-        // Primeiro, separar as futuras sessões
+        // Fetch upcoming sessions with patient names
         const futureSessions = sessions
           ? sessions
               .filter(session => new Date(session.date) >= new Date())
@@ -115,45 +138,21 @@ export default function Dashboard() {
               .slice(0, 5)
           : [];
 
-        // Extrair IDs dos pacientes das próximas sessões
-        const patientIds = futureSessions.map(session => session.patient_id).filter(Boolean);
+        const upcomingSessionsWithNames = futureSessions
+          .map(session => {
+            const sessionDate = new Date(session.date);
+            return {
+              id: session.id,
+              name: session.patients?.name || 'Paciente não encontrado',
+              type: session.notes?.includes('inicial') ? 'Inicial' : 'Regular',
+              date: sessionDate.toLocaleDateString('pt-BR'),
+              time: sessionDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            };
+          });
 
-        console.log("IDs de pacientes encontrados:", patientIds);
-        
-        if (patientIds.length > 0) {
-          // Buscar dados dos pacientes
-          const { data: patients, error: patientsError } = await supabase
-            .from('patients')
-            .select('id, name')
-            .in('id', patientIds);
+        setUpcomingSessions(upcomingSessionsWithNames);
+        console.log("Sessões processadas:", upcomingSessionsWithNames);
 
-          if (patientsError) {
-            console.error('Erro ao buscar pacientes:', patientsError);
-            throw patientsError;
-          }
-
-          console.log("Pacientes encontrados:", patients);
-
-          // Combinar informações de sessões e pacientes
-          const upcomingSessionsWithNames = futureSessions
-            .map(session => {
-              const patient = patients.find(p => p.id === session.patient_id);
-              const sessionDate = new Date(session.date);
-              return {
-                id: session.id,
-                name: patient ? patient.name : 'Paciente não encontrado',
-                type: session.notes?.includes('inicial') ? 'Inicial' : 'Regular',
-                date: sessionDate.toLocaleDateString('pt-BR'),
-                time: sessionDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-              };
-            });
-
-          setUpcomingSessions(upcomingSessionsWithNames);
-          console.log("Sessões processadas:", upcomingSessionsWithNames);
-        } else {
-          console.log("Nenhum paciente encontrado para as próximas sessões");
-          setUpcomingSessions([]);
-        }
       } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error);
         toast({

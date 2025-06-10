@@ -30,6 +30,27 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
   useEffect(() => {
     const fetchWeeklySessions = async () => {
       try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No user found");
+          setLocalLoading(false);
+          return;
+        }
+
+        // Get professional_id for the current user
+        const { data: professional, error: professionalError } = await supabase
+          .from('professionals')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (professionalError || !professional) {
+          console.log("No professional profile found for user");
+          setLocalLoading(false);
+          return;
+        }
+
         // Get current week dates
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
@@ -39,15 +60,20 @@ export function WeeklySchedule({ isLoading }: { isLoading?: boolean }) {
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
         const formattedEndDate = format(endDate, "yyyy-MM-dd");
         
-        // Fetch sessions for this week with patient information
+        // Fetch sessions for this week with patient information, filtered by professional
         const { data: sessions, error } = await supabase
           .from("sessions")
           .select(`
             id, 
             date, 
             patient_id, 
-            patients:patient_id (name)
+            patients!inner (
+              id,
+              name,
+              professional_id
+            )
           `)
+          .eq('patients.professional_id', professional.id)
           .gte('date', formattedStartDate)
           .lte('date', formattedEndDate)
           .order('date');
