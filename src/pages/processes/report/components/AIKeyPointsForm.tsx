@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Loader2, Info } from "lucide-react";
+import { Sparkles, Loader2, Info, Zap, Brain, Rocket } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AIKeyPointsFormProps {
@@ -252,69 +252,161 @@ OBSERVAÇÕES TÉCNICAS:
   };
 
   return (
-    <Card className="border-2 border-dashed border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-primary">
-          <Sparkles className="h-5 w-5" />
-          Geração Inteligente de Relatório
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Forneça informações detalhadas sobre o paciente e o contexto. A IA gerará um {getReportTypeLabel(reportType).toLowerCase()} completo e estruturado que você poderá revisar e personalizar.
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Dica:</strong> {getGuidanceText(reportType)}
-          </AlertDescription>
-        </Alert>
+    <div className="space-y-6">
+      {/* Animated Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse"></div>
+        <div className="relative bg-white rounded-xl p-6">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="relative">
+              <Brain className="h-10 w-10 text-purple-600 animate-pulse" />
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-bounce"></div>
+            </div>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+                IA Especializada em Musicoterapia
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Análise inteligente • Relatórios profissionais • Economia de tempo
+              </p>
+            </div>
+            <Rocket className="h-10 w-10 text-pink-600 animate-bounce" />
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3">
+              <div className="text-2xl font-bold text-blue-600">⚡</div>
+              <div className="text-sm font-semibold text-blue-800">Rápido</div>
+            </div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3">
+              <div className="text-2xl font-bold text-purple-600">🎯</div>
+              <div className="text-sm font-semibold text-purple-800">Preciso</div>
+            </div>
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg p-3">
+              <div className="text-2xl font-bold text-pink-600">📊</div>
+              <div className="text-sm font-semibold text-pink-800">Profissional</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div>
-          <Label htmlFor="keyPoints" className="text-base font-medium">
-            Informações do Paciente e Contexto da Sessão
-          </Label>
-          <p className="text-sm text-muted-foreground mb-2">
-            Quanto mais detalhes você fornecer, mais preciso e personalizado será o relatório gerado.
+      <Card className="border-2 border-dashed border-purple-300 bg-gradient-to-br from-purple-50/50 via-blue-50/50 to-pink-50/50 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-primary">
+            <div className="relative">
+              <Sparkles className="h-6 w-6 animate-spin text-purple-600" />
+              <div className="absolute inset-0 bg-purple-400 rounded-full blur-sm opacity-30 animate-pulse"></div>
+            </div>
+            <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Geração Inteligente de Relatório
+            </span>
+          </CardTitle>
+          <p className="text-base text-muted-foreground">
+            🎼 Nossa IA especializada analisa suas informações e cria um {getReportTypeLabel(reportType).toLowerCase()} 
+            completo e estruturado seguindo as melhores práticas da musicoterapia.
           </p>
-          <Textarea
-            id="keyPoints"
-            placeholder={getDetailedPlaceholderText(reportType)}
-            value={keyPoints}
-            onChange={(e) => setKeyPoints(e.target.value)}
-            rows={12}
-            className="mt-2 text-sm"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            Caracteres: {keyPoints.length} (recomendado: mínimo 200 caracteres para melhor qualidade)
-          </p>
-        </div>
-        
-        <Button 
-          onClick={handleGenerate}
-          disabled={!keyPoints.trim() || keyPoints.length < 50 || isGenerating}
-          className="w-full"
-          size="lg"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Gerando relatório inteligente...
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Gerar {getReportTypeLabel(reportType)} com IA
-            </>
-          )}
-        </Button>
-        
-        <div className="text-xs text-muted-foreground text-center space-y-1">
-          <p>✨ O relatório será gerado com estrutura profissional e linguagem técnica apropriada</p>
-          <p>📝 Você poderá revisar, editar e personalizar todo o conteúdo antes de salvar</p>
-          <p>🔄 Se a IA estiver indisponível, um modelo estruturado será gerado automaticamente</p>
-        </div>
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Alert className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+            <div className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-purple-600" />
+              <Sparkles className="h-4 w-4 text-purple-500 animate-pulse" />
+            </div>
+            <AlertDescription className="text-base">
+              <strong className="text-purple-800">💡 Dica Profissional:</strong> {getGuidanceText(reportType)}
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-4">
+            <Label htmlFor="keyPoints" className="text-lg font-semibold flex items-center gap-2">
+              <Brain className="h-5 w-5 text-blue-600" />
+              Informações do Paciente e Contexto da Sessão
+            </Label>
+            <p className="text-base text-muted-foreground bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded-lg border border-blue-200">
+              🎯 <strong>Quanto mais detalhes você fornecer, mais preciso e personalizado será o relatório gerado.</strong>
+              <br />
+              ✨ A IA analisará suas informações e criará um documento profissional completo.
+            </p>
+            <Textarea
+              id="keyPoints"
+              placeholder={getDetailedPlaceholderText(reportType)}
+              value={keyPoints}
+              onChange={(e) => setKeyPoints(e.target.value)}
+              rows={14}
+              className="text-base border-2 border-purple-200 focus:border-purple-400 bg-white/70 backdrop-blur-sm"
+            />
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">
+                Caracteres: <span className={keyPoints.length >= 200 ? 'text-green-600 font-semibold' : 'text-orange-600'}>{keyPoints.length}</span> 
+                (recomendado: mínimo 200 para melhor qualidade)
+              </p>
+              {keyPoints.length >= 200 && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Pronto para gerar!</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="relative">
+            <Button 
+              onClick={handleGenerate}
+              disabled={!keyPoints.trim() || keyPoints.length < 50 || isGenerating}
+              className="w-full h-16 text-lg font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 hover:from-purple-700 hover:via-blue-700 hover:to-pink-700 text-white shadow-2xl hover:shadow-purple-500/25 transform hover:scale-[1.02] transition-all duration-300 rounded-xl relative overflow-hidden group"
+              size="lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse group-hover:animate-none"></div>
+              <div className="relative flex items-center justify-center gap-3">
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <span>Gerando relatório inteligente...</span>
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-6 w-6 animate-bounce" />
+                    <span>🚀 Gerar {getReportTypeLabel(reportType)} com IA</span>
+                    <Sparkles className="h-6 w-6 animate-pulse" />
+                  </>
+                )}
+              </div>
+            </Button>
+            
+            {!isGenerating && keyPoints.length >= 200 && (
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-30 animate-pulse pointer-events-none"></div>
+            )}
+          </div>
+          
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-xl border border-green-200">
+            <div className="text-sm space-y-2">
+              <div className="flex items-center gap-2 text-green-700 font-semibold">
+                <Sparkles className="h-4 w-4" />
+                <span>Vantagens da Geração com IA:</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>✨ Estrutura profissional automatizada</span>
+                </div>
+                <div className="flex items-center gap-2 text-blue-600">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>📝 Linguagem técnica apropriada</span>
+                </div>
+                <div className="flex items-center gap-2 text-purple-600">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span>🔄 Totalmente editável após geração</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
