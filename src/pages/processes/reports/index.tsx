@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -90,6 +89,7 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState<ReportViewerData | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [professionalId, setProfessionalId] = useState<string | null>(null);
 
   // Função para converter dados do banco para o tipo local
   const convertDatabaseReport = (dbReport: DatabaseReport): Report => {
@@ -119,10 +119,63 @@ export default function ReportsPage() {
     };
   };
 
+  // Função para buscar o professional_id do usuário atual
+  const getCurrentProfessionalId = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      console.log("Buscando professional_id para usuário:", user.id);
+
+      const { data: professional, error } = await supabase
+        .from('professionals')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Erro ao buscar professional:", error);
+        throw error;
+      }
+
+      if (!professional) {
+        console.log("Profissional não encontrado para o usuário");
+        return null;
+      }
+
+      console.log("Professional_id encontrado:", professional.id);
+      return professional.id;
+    } catch (error) {
+      console.error("Erro ao obter professional_id:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     async function loadReports() {
       try {
         setIsLoading(true);
+        
+        // Primeiro, obter o professional_id do usuário atual
+        const currentProfessionalId = await getCurrentProfessionalId();
+        setProfessionalId(currentProfessionalId);
+
+        if (!currentProfessionalId) {
+          console.log("Usuário não possui registro de profissional");
+          setReports([]);
+          setFilteredReports([]);
+          toast({
+            title: "Aviso",
+            description: "Você ainda não possui um registro de profissional. Crie um relatório primeiro.",
+          });
+          return;
+        }
+
+        console.log("Carregando relatórios para professional_id:", currentProfessionalId);
+
+        // Buscar apenas relatórios do profissional atual
         const { data, error } = await supabase
           .from("reports")
           .select(`
@@ -138,6 +191,7 @@ export default function ReportsPage() {
               name
             )
           `)
+          .eq('professional_id', currentProfessionalId)
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -145,7 +199,7 @@ export default function ReportsPage() {
           throw error;
         }
 
-        console.log("Relatórios carregados:", data);
+        console.log("Relatórios carregados:", data?.length || 0);
         
         // Converter dados do banco para o tipo local
         const convertedReports = (data || []).map(convertDatabaseReport);
@@ -202,7 +256,7 @@ export default function ReportsPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle>Relatórios</CardTitle>
+          <CardTitle>Meus Relatórios</CardTitle>
           <Button onClick={() => navigate("/processes/report")} size="sm">
             <PlusIcon className="h-4 w-4 mr-2" />
             Novo Relatório
@@ -224,6 +278,15 @@ export default function ReportsPage() {
           {isLoading ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">Carregando relatórios...</p>
+            </div>
+          ) : !professionalId ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                Você ainda não possui um registro de profissional.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Crie seu primeiro relatório para inicializar seu perfil profissional.
+              </p>
             </div>
           ) : (
             <Table>
@@ -265,10 +328,10 @@ export default function ReportsPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {filteredReports.length === 0 && !isLoading && (
+                {filteredReports.length === 0 && !isLoading && professionalId && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      {searchTerm ? "Nenhum relatório encontrado para a busca." : "Nenhum relatório encontrado"}
+                      {searchTerm ? "Nenhum relatório encontrado para a busca." : "Você ainda não criou nenhum relatório"}
                     </TableCell>
                   </TableRow>
                 )}
