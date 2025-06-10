@@ -1,173 +1,14 @@
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CalendarDays, Users, TrendingUp, Activity } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { WeeklySchedule } from "@/components/WeeklySchedule";
-import { FinancialWeeklySchedule } from "@/components/FinancialWeeklySchedule";
+import { Card } from "@/components/ui/card";
+import { useDashboardData } from "./Dashboard/hooks/useDashboardData";
+import { DashboardStats } from "./Dashboard/components/DashboardStats";
+import { UnifiedWeeklySchedule } from "./Dashboard/components/UnifiedWeeklySchedule";
 
 export default function Dashboard() {
-  const [upcomingSessions, setUpcomingSessions] = useState([]);
-  const [totalSessions, setTotalSessions] = useState(0);
-  const [monthlyChangePercentage, setMonthlyChangePercentage] = useState(0);
-  const [completionRate, setCompletionRate] = useState(0);
-  const [completionRateChange, setCompletionRateChange] = useState(0);
-  const [sessionData, setSessionData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-
-  // Função para obter o mês atual e os 3 meses anteriores
-  const getRecentMonths = () => {
-    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    
-    const recentMonths = [];
-    for (let i = 3; i >= 0; i--) {
-      const monthIndex = (currentMonth - i + 12) % 12;
-      recentMonths.push(months[monthIndex]);
-    }
-    
-    return recentMonths;
-  };
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        // Get professional_id for the current user
-        const { data: professional, error: professionalError } = await supabase
-          .from('professionals')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (professionalError || !professional) {
-          console.log("No professional profile found for user");
-          setIsLoading(false);
-          return;
-        }
-
-        // Fetch sessions filtered by professional's patients
-        const { data: sessions, error: sessionsError } = await supabase
-          .from('sessions')
-          .select(`
-            id, 
-            date, 
-            patient_id, 
-            notes,
-            patients!inner (
-              id,
-              name,
-              professional_id
-            )
-          `)
-          .eq('patients.professional_id', professional.id);
-
-        if (sessionsError) {
-          console.error('Erro ao buscar sessões:', sessionsError);
-          throw sessionsError;
-        }
-
-        // Calcular total de sessões
-        setTotalSessions(sessions ? sessions.length : 0);
-
-        // Calcular dados para o gráfico (últimos 4 meses)
-        const recentMonths = getRecentMonths();
-        const currentDate = new Date();
-        const fourMonthsAgo = new Date();
-        fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
-
-        // Filtrar sessões dos últimos 4 meses
-        const recentSessions = sessions ? sessions.filter(session => {
-          const sessionDate = new Date(session.date);
-          return sessionDate >= fourMonthsAgo && sessionDate <= currentDate;
-        }) : [];
-
-        // Agrupar sessões por mês
-        const sessionsByMonth = {};
-        recentMonths.forEach(month => {
-          sessionsByMonth[month] = 0;
-        });
-
-        recentSessions.forEach(session => {
-          const sessionDate = new Date(session.date);
-          const monthIndex = sessionDate.getMonth();
-          const monthName = recentMonths.find((_, i) => 
-            (currentDate.getMonth() - i + 12) % 12 === monthIndex
-          );
-          
-          if (monthName && sessionsByMonth[monthName] !== undefined) {
-            sessionsByMonth[monthName]++;
-          }
-        });
-
-        // Converter para formato do gráfico
-        const chartData = recentMonths.map(month => ({
-          name: month,
-          sessions: sessionsByMonth[month]
-        }));
-
-        setSessionData(chartData);
-
-        // Calcular variação percentual (mês atual vs. mês anterior)
-        const currentMonthSessions = sessionsByMonth[recentMonths[3]] || 0;
-        const lastMonthSessions = sessionsByMonth[recentMonths[2]] || 0;
-        const percentage = lastMonthSessions > 0
-          ? Math.round(((currentMonthSessions - lastMonthSessions) / lastMonthSessions) * 100)
-          : 0;
-        setMonthlyChangePercentage(percentage);
-
-        // Taxa de conclusão (sessões com notas vs. total)
-        const sessionsWithNotes = sessions ? sessions.filter(s => s.notes && s.notes.trim() !== '').length : 0;
-        const completionRate = sessions && sessions.length > 0
-          ? Math.round((sessionsWithNotes / sessions.length) * 100)
-          : 0;
-        setCompletionRate(completionRate);
-        setCompletionRateChange(3); // Placeholder, poderia ser calculado com dados históricos
-
-        // Fetch upcoming sessions with patient names
-        const futureSessions = sessions
-          ? sessions
-              .filter(session => new Date(session.date) >= new Date())
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .slice(0, 5)
-          : [];
-
-        const upcomingSessionsWithNames = futureSessions
-          .map(session => {
-            const sessionDate = new Date(session.date);
-            return {
-              id: session.id,
-              name: session.patients?.name || 'Paciente não encontrado',
-              type: session.notes?.includes('inicial') ? 'Inicial' : 'Regular',
-              date: sessionDate.toLocaleDateString('pt-BR'),
-              time: sessionDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            };
-          });
-
-        setUpcomingSessions(upcomingSessionsWithNames);
-        console.log("Sessões processadas:", upcomingSessionsWithNames);
-
-      } catch (error) {
-        console.error('Erro ao carregar dados do dashboard:', error);
-        toast({
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados do dashboard.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, [toast]);
+  const dashboardData = useDashboardData();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -189,67 +30,14 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white hover:shadow-2xl transition-all duration-500 group">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative p-6 md:p-8">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                  <Users className="h-8 w-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white/90">Sessões esta Semana</h3>
-                  <p className="text-blue-100 text-sm">Atendimentos realizados</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl md:text-5xl font-bold">
-                  {isLoading ? (
-                    <div className="w-16 h-12 bg-white/20 rounded-lg animate-pulse"></div>
-                  ) : (
-                    totalSessions
-                  )}
-                </div>
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  monthlyChangePercentage >= 0 
-                    ? 'bg-green-500/20 text-green-100' 
-                    : 'bg-red-500/20 text-red-100'
-                }`}>
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  {monthlyChangePercentage >= 0 ? '+' : ''}{monthlyChangePercentage}% vs. mês anterior
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-700 text-white hover:shadow-2xl transition-all duration-500 group">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative p-6 md:p-8">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                  <Activity className="h-8 w-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white/90">Taxa de Conclusão</h3>
-                  <p className="text-purple-100 text-sm">Sessões finalizadas</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl md:text-5xl font-bold">
-                  {isLoading ? (
-                    <div className="w-20 h-12 bg-white/20 rounded-lg animate-pulse"></div>
-                  ) : (
-                    `${completionRate}%`
-                  )}
-                </div>
-                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-100">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  +{completionRateChange}% vs. mês anterior
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+        <DashboardStats
+          totalSessions={dashboardData.totalSessions}
+          totalRevenue={dashboardData.totalRevenue}
+          averagePerSession={dashboardData.averagePerSession}
+          completionRate={dashboardData.completionRate}
+          monthlyChange={dashboardData.monthlyChange}
+          isLoading={dashboardData.isLoading}
+        />
 
         {/* Charts Section */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
@@ -262,7 +50,7 @@ export default function Dashboard() {
                 Evolução de Sessões
               </h3>
             </div>
-            {isLoading ? (
+            {dashboardData.isLoading ? (
               <div className="h-[300px] md:h-[350px] flex items-center justify-center">
                 <div className="space-y-4 text-center">
                   <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -272,7 +60,7 @@ export default function Dashboard() {
             ) : (
               <div className="h-[300px] md:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={sessionData}>
+                  <LineChart data={dashboardData.sessionData}>
                     <XAxis 
                       dataKey="name" 
                       axisLine={false}
@@ -314,11 +102,11 @@ export default function Dashboard() {
           </div>
         </Card>
         
-        {/* Weekly Schedule */}
-        <WeeklySchedule isLoading={isLoading} />
-
-        {/* Financial Weekly Schedule */}
-        <FinancialWeeklySchedule isLoading={isLoading} />
+        {/* Unified Weekly Schedule */}
+        <UnifiedWeeklySchedule 
+          weekDays={dashboardData.weekDays}
+          isLoading={dashboardData.isLoading}
+        />
 
         {/* Upcoming Sessions */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
@@ -331,16 +119,16 @@ export default function Dashboard() {
                 Próximas Sessões
               </h3>
             </div>
-            {isLoading ? (
+            {dashboardData.isLoading ? (
               <div className="flex items-center justify-center h-32">
                 <div className="space-y-4 text-center">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
                   <p className="text-gray-500">Carregando sessões...</p>
                 </div>
               </div>
-            ) : upcomingSessions.length > 0 ? (
+            ) : dashboardData.upcomingSessions.length > 0 ? (
               <div className="space-y-4">
-                {upcomingSessions.map((session, index) => (
+                {dashboardData.upcomingSessions.map((session, index) => (
                   <div
                     key={session.id}
                     className="group flex flex-col md:flex-row md:items-center md:justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-2xl border border-gray-200/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
