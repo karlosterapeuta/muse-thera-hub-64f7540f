@@ -20,8 +20,8 @@ interface AnamnesisFormWrapperProps {
   onBack?: () => void;
 }
 
-// Lista de campos conhecidos do banco de dados anamnesis - incluindo todas as novas colunas
-const knownDatabaseFields = [
+// Lista de campos básicos que sempre existem na tabela anamnesis
+const basicDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
   'referral_professional', 'main_clinical_demand', 'musical_education', 
@@ -42,9 +42,14 @@ const knownDatabaseFields = [
   'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
-  'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
-  'williams_syndrome', 'depression', 'bipolar_disorder', 'rett_syndrome',
-  'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
+  'extracurricular_activities'
+];
+
+// Campos que podem não existir ainda (dependem da migração)
+const optionalDatabaseFields = [
+  'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 'williams_syndrome', 
+  'depression', 'bipolar_disorder', 'rett_syndrome', 'aba_therapy', 
+  'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
 export default function AnamnesisFormWrapper({ 
@@ -61,6 +66,7 @@ export default function AnamnesisFormWrapper({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -70,6 +76,37 @@ export default function AnamnesisFormWrapper({
       .split(/[._-]/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+  };
+
+  // Função para verificar quais colunas existem na tabela
+  const checkAvailableColumns = async () => {
+    try {
+      console.log("Verificando colunas disponíveis na tabela anamnesis...");
+      
+      // Fazer uma consulta simples para verificar a estrutura da tabela
+      const { data, error } = await supabase
+        .from("anamnesis")
+        .select("*")
+        .limit(1);
+
+      if (error) {
+        console.warn("Erro ao verificar colunas:", error);
+        // Se houver erro, usar apenas campos básicos
+        setAvailableColumns(basicDatabaseFields);
+        return basicDatabaseFields;
+      }
+
+      // Se conseguimos fazer a consulta, todas as colunas estão disponíveis
+      const allFields = [...basicDatabaseFields, ...optionalDatabaseFields];
+      setAvailableColumns(allFields);
+      console.log("Colunas disponíveis:", allFields);
+      return allFields;
+
+    } catch (error) {
+      console.warn("Erro ao verificar colunas disponíveis:", error);
+      setAvailableColumns(basicDatabaseFields);
+      return basicDatabaseFields;
+    }
   };
 
   useEffect(() => {
@@ -85,6 +122,9 @@ export default function AnamnesisFormWrapper({
   const loadInitialData = async () => {
     try {
       setIsLoading(true);
+      
+      // Verificar colunas disponíveis primeiro
+      await checkAvailableColumns();
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -174,13 +214,16 @@ export default function AnamnesisFormWrapper({
     const filteredData: Record<string, any> = {};
     
     Object.entries(data).forEach(([key, value]) => {
-      if (knownDatabaseFields.includes(key.toLowerCase())) {
-        const normalizedKey = key.toLowerCase();
+      const normalizedKey = key.toLowerCase();
+      // Usar apenas campos que estão disponíveis na tabela
+      if (availableColumns.includes(normalizedKey)) {
         if (typeof value === 'boolean' || value === true || value === false) {
           filteredData[normalizedKey] = Boolean(value);
         } else {
           filteredData[normalizedKey] = value;
         }
+      } else {
+        console.log(`Campo ${normalizedKey} não está disponível na tabela, ignorando...`);
       }
     });
     
@@ -213,7 +256,13 @@ export default function AnamnesisFormWrapper({
     try {
       setIsSubmitting(true);
       
+      // Atualizar lista de colunas disponíveis antes de salvar
+      const currentAvailableColumns = await checkAvailableColumns();
+      
       const filteredData = filterDatabaseFields(formData);
+      
+      console.log("Dados filtrados para salvar:", filteredData);
+      console.log("Colunas disponíveis:", currentAvailableColumns);
       
       const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
@@ -260,6 +309,11 @@ export default function AnamnesisFormWrapper({
       let errorMessage = "Não foi possível salvar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
+        
+        // Se o erro for sobre colunas faltantes, dar uma dica
+        if (error.message.includes('column') && error.message.includes('not find')) {
+          errorMessage += "\n\nDica: Pode ser necessário aplicar as migrações no banco de dados Supabase.";
+        }
       }
       
       toast({
