@@ -88,6 +88,14 @@ export default function ReportForm() {
   const selectedPatient = patients.find(p => p.id === form.watch("patient_id"));
   const isContentEmpty = !form.watch("content") || Object.keys(form.watch("content") || {}).length === 0;
 
+  // Preparar dados do formulário de forma segura
+  const formData = {
+    patient_id: form.watch("patient_id"),
+    type: form.watch("type"),
+    date: form.watch("date"),
+    content: form.watch("content"),
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6 max-w-4xl">
       <Card>
@@ -121,7 +129,7 @@ export default function ReportForm() {
               />
 
               <ReportSubmission
-                formData={form.getValues()}
+                formData={formData}
                 selectedPatient={selectedPatient}
                 professionalData={professionalData}
                 userEmail={userEmail}

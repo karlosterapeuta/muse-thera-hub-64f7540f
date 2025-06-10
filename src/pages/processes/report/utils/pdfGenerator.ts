@@ -1,13 +1,12 @@
-
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
 
 type ReportFormData = {
-  patient_id?: string;
-  date?: Date;
-  type?: string;
-  content?: Record<string, any>;
+  patient_id: string;
+  date: Date;
+  type: string;
+  content: Record<string, any>;
 };
 
 type ProfessionalData = {
@@ -283,11 +282,7 @@ export async function generatePDF(
   userEmail: string | null,
   userName: string | null
 ) {
-  // Garantir que os dados obrigatórios estão presentes
-  if (!formValues.type || !formValues.date) {
-    throw new Error("Dados obrigatórios ausentes para gerar PDF");
-  }
-
+  // Validação já foi feita no componente que chama esta função
   const element = document.createElement('div');
   
   element.innerHTML = `
@@ -326,7 +321,7 @@ export async function generatePDF(
       </div>
 
       <div style="margin-bottom: 32px;">
-        ${generateContentHTML(formValues.content || {}, formValues.type)}
+        ${generateContentHTML(formValues.content, formValues.type)}
       </div>
 
       <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">

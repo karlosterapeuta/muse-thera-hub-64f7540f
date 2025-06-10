@@ -8,7 +8,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { generatePDF } from "../utils/pdfGenerator";
 
 interface ReportSubmissionProps {
-  formData: any;
+  formData: {
+    patient_id?: string;
+    type?: string;
+    date?: Date;
+    content?: Record<string, any>;
+  };
   selectedPatient: any;
   professionalData: any;
   userEmail: string | null;
@@ -33,12 +38,34 @@ export function ReportSubmission({
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const validateRequiredData = () => {
+    if (!formData.patient_id || !formData.type) {
+      toast({
+        variant: "destructive",
+        title: "Dados incompletos",
+        description: "Por favor, preencha todos os campos obrigatórios antes de salvar.",
+      });
+      return false;
+    }
+
+    if (!selectedPatient || !userId) {
+      toast({
+        variant: "destructive",
+        title: "Dados necessários não encontrados",
+        description: "Paciente ou usuário não identificado.",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = async () => {
     try {
       console.log("Salvando relatório com dados:", formData);
       
-      if (!selectedPatient || !userId) {
-        throw new Error("Dados necessários não encontrados");
+      if (!validateRequiredData()) {
+        return;
       }
 
       // Garantir que content seja um objeto válido
@@ -47,9 +74,9 @@ export function ReportSubmission({
         : {};
 
       const reportData = {
-        patient_id: formData.patient_id,
-        professional_id: userId,
-        type: formData.type,
+        patient_id: formData.patient_id!,
+        professional_id: userId!,
+        type: formData.type!,
         content: safeContent,
         updated_at: new Date().toISOString(),
       };
@@ -100,32 +127,17 @@ export function ReportSubmission({
 
   const handleSaveAndGeneratePDF = async () => {
     try {
-      // Verificar se todos os dados necessários estão presentes
-      if (!formData.patient_id || !formData.type) {
-        toast({
-          variant: "destructive",
-          title: "Dados incompletos",
-          description: "Por favor, preencha todos os campos obrigatórios antes de finalizar.",
-        });
-        return;
-      }
-
-      if (!selectedPatient) {
-        toast({
-          variant: "destructive",
-          title: "Paciente não selecionado",
-          description: "Por favor, selecione um paciente antes de finalizar.",
-        });
+      if (!validateRequiredData()) {
         return;
       }
 
       // Primeiro salva o relatório
       const savedReportId = await handleSave();
       
-      // Preparar dados para o PDF com valores padrão para campos obrigatórios
+      // Preparar dados para o PDF com valores garantidos
       const pdfData = {
-        patient_id: formData.patient_id,
-        type: formData.type,
+        patient_id: formData.patient_id!,
+        type: formData.type!,
         date: formData.date || new Date(),
         content: formData.content || {},
       };
