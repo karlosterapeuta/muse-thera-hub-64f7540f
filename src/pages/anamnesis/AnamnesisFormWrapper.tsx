@@ -20,7 +20,7 @@ interface AnamnesisFormWrapperProps {
   onBack?: () => void;
 }
 
-// Lista de campos básicos que sempre existem na tabela anamnesis
+// Campos básicos que sempre existem na tabela anamnesis (garantidos)
 const basicDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -45,7 +45,7 @@ const basicDatabaseFields = [
   'extracurricular_activities'
 ];
 
-// Campos que podem não existir ainda (dependem da migração)
+// Campos que podem não existir (dependem da migração)
 const optionalDatabaseFields = [
   'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 'williams_syndrome', 
   'depression', 'bipolar_disorder', 'rett_syndrome', 'aba_therapy', 
@@ -67,6 +67,7 @@ export default function AnamnesisFormWrapper({
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
+  const [schemaChecked, setSchemaChecked] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -78,32 +79,33 @@ export default function AnamnesisFormWrapper({
       .join(' ');
   };
 
-  // Função para verificar quais colunas existem na tabela
-  const checkAvailableColumns = async () => {
+  // Função mais robusta para verificar colunas existentes
+  const checkAvailableColumns = async (): Promise<string[]> => {
     try {
-      console.log("Verificando colunas disponíveis na tabela anamnesis...");
+      console.log("🔍 Verificando colunas disponíveis na tabela anamnesis...");
       
-      // Fazer uma consulta simples para verificar a estrutura da tabela
+      // Tentar consultar a estrutura da tabela diretamente
       const { data, error } = await supabase
         .from("anamnesis")
         .select("*")
         .limit(1);
 
       if (error) {
-        console.warn("Erro ao verificar colunas:", error);
-        // Se houver erro, usar apenas campos básicos
+        console.warn("⚠️ Erro ao verificar colunas:", error.message);
+        console.log("📝 Usando apenas campos básicos como fallback");
         setAvailableColumns(basicDatabaseFields);
         return basicDatabaseFields;
       }
 
-      // Se conseguimos fazer a consulta, todas as colunas estão disponíveis
+      // Se a consulta funcionou, assumimos que todas as colunas estão disponíveis
       const allFields = [...basicDatabaseFields, ...optionalDatabaseFields];
+      console.log("✅ Todas as colunas parecem estar disponíveis:", allFields.length);
       setAvailableColumns(allFields);
-      console.log("Colunas disponíveis:", allFields);
       return allFields;
 
     } catch (error) {
-      console.warn("Erro ao verificar colunas disponíveis:", error);
+      console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
+      console.log("📝 Usando apenas campos básicos como fallback");
       setAvailableColumns(basicDatabaseFields);
       return basicDatabaseFields;
     }
@@ -125,6 +127,7 @@ export default function AnamnesisFormWrapper({
       
       // Verificar colunas disponíveis primeiro
       await checkAvailableColumns();
+      setSchemaChecked(true);
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -210,23 +213,27 @@ export default function AnamnesisFormWrapper({
     }
   };
 
+  // Função para filtrar apenas campos que existem no banco
   const filterDatabaseFields = (data: Record<string, any>) => {
     const filteredData: Record<string, any> = {};
     
+    console.log("🔄 Filtrando dados com colunas disponíveis:", availableColumns.length);
+    
     Object.entries(data).forEach(([key, value]) => {
       const normalizedKey = key.toLowerCase();
-      // Usar apenas campos que estão disponíveis na tabela
+      
       if (availableColumns.includes(normalizedKey)) {
         if (typeof value === 'boolean' || value === true || value === false) {
           filteredData[normalizedKey] = Boolean(value);
         } else {
           filteredData[normalizedKey] = value;
         }
-      } else {
-        console.log(`Campo ${normalizedKey} não está disponível na tabela, ignorando...`);
+      } else if (!['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(normalizedKey)) {
+        console.log(`⚠️ Campo ${normalizedKey} não está disponível na tabela, ignorando...`);
       }
     });
     
+    console.log("✅ Dados filtrados:", Object.keys(filteredData).length, "campos");
     return filteredData;
   };
 
@@ -253,16 +260,18 @@ export default function AnamnesisFormWrapper({
       return;
     }
 
+    if (!schemaChecked) {
+      console.log("⏳ Aguardando verificação do schema...");
+      await checkAvailableColumns();
+      setSchemaChecked(true);
+    }
+
     try {
       setIsSubmitting(true);
       
-      // Atualizar lista de colunas disponíveis antes de salvar
-      const currentAvailableColumns = await checkAvailableColumns();
-      
       const filteredData = filterDatabaseFields(formData);
       
-      console.log("Dados filtrados para salvar:", filteredData);
-      console.log("Colunas disponíveis:", currentAvailableColumns);
+      console.log("💾 Tentando salvar anamnese com", Object.keys(filteredData).length, "campos");
       
       const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
@@ -273,47 +282,81 @@ export default function AnamnesisFormWrapper({
       let result;
       
       if (existingAnamnesisId) {
+        console.log("🔄 Atualizando anamnese existente:", existingAnamnesisId);
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData)
           .eq("id", existingAnamnesisId);
-          
-        if (result.error) {
-          console.error("Erro ao atualizar anamnese:", result.error);
-          throw result.error;
-        }
       } else {
+        console.log("➕ Criando nova anamnese");
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData)
           .select();
-          
-        if (result.error) {
-          console.error("Erro ao inserir anamnese:", result.error);
-          throw result.error;
-        }
-        
-        if (result.data && result.data.length > 0) {
-          setExistingAnamnesisId(result.data[0].id);
-        }
       }
 
+      if (result.error) {
+        throw result.error;
+      }
+
+      if (!existingAnamnesisId && result.data && result.data.length > 0) {
+        setExistingAnamnesisId(result.data[0].id);
+      }
+
+      console.log("✅ Anamnese salva com sucesso!");
       toast({
         title: "Sucesso!",
         description: "Anamnese salva com sucesso no sistema.",
       });
       
     } catch (error: any) {
-      console.error("Erro ao salvar anamnese:", error);
+      console.error("❌ Erro ao salvar anamnese:", error);
+      
+      // Se ainda há erro de coluna, tentar com apenas campos básicos
+      if (error?.message?.includes('column') && availableColumns.length > basicDatabaseFields.length) {
+        console.log("🔄 Tentando novamente apenas com campos básicos...");
+        setAvailableColumns(basicDatabaseFields);
+        
+        try {
+          const basicFilteredData = filterDatabaseFields(formData);
+          const basicAnamnesisData = {
+            patient_id: selectedPatient,
+            professional_id: professionalId,
+            ...basicFilteredData
+          };
+
+          let basicResult;
+          if (existingAnamnesisId) {
+            basicResult = await supabase
+              .from("anamnesis")
+              .update(basicAnamnesisData)
+              .eq("id", existingAnamnesisId);
+          } else {
+            basicResult = await supabase
+              .from("anamnesis")
+              .insert(basicAnamnesisData)
+              .select();
+          }
+
+          if (basicResult.error) {
+            throw basicResult.error;
+          }
+
+          toast({
+            title: "Parcialmente Salvo",
+            description: "Anamnese salva com campos básicos. Alguns campos avançados podem não ter sido salvos devido a limitações do banco de dados.",
+            variant: "default",
+          });
+          return;
+
+        } catch (basicError) {
+          console.error("❌ Erro mesmo com campos básicos:", basicError);
+        }
+      }
       
       let errorMessage = "Não foi possível salvar a anamnese.";
       if (error?.message) {
         errorMessage += ` Detalhe: ${error.message}`;
-        
-        // Se o erro for sobre colunas faltantes, dar uma dica
-        if (error.message.includes('column') && error.message.includes('not find')) {
-          errorMessage += "\n\nDica: Pode ser necessário aplicar as migrações no banco de dados Supabase.";
-        }
       }
       
       toast({
