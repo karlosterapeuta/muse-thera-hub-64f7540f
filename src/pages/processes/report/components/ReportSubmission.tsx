@@ -2,7 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Download } from "lucide-react";
+import { Download, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,7 +15,10 @@ interface ReportSubmissionProps {
   professionalData: any;
   userEmail: string | null;
   userName: string | null;
+  userId: string | null;
   isContentEmpty: boolean;
+  reportId?: string;
+  onSaveSuccess?: (reportId: string) => void;
 }
 
 export function ReportSubmission({
@@ -24,38 +27,65 @@ export function ReportSubmission({
   professionalData,
   userEmail,
   userName,
+  userId,
   isContentEmpty,
+  reportId,
+  onSaveSuccess,
 }: ReportSubmissionProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSave = async () => {
     try {
-      console.log("Submetendo formulário com dados:", formData);
+      console.log("Salvando relatório com dados:", formData);
       
-      if (!selectedPatient) {
-        throw new Error("Paciente não encontrado");
+      if (!selectedPatient || !userId) {
+        throw new Error("Dados necessários não encontrados");
       }
 
-      const { error } = await supabase
-        .from("assessments")
-        .insert({
-          patient_id: formData.patient_id,
-          date: format(formData.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
-          type: formData.type,
-          content: formData.content,
-        });
+      const reportData = {
+        patient_id: formData.patient_id,
+        professional_id: userId,
+        date: format(formData.date, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+        type: formData.type,
+        content: formData.content,
+        status: 'draft',
+        updated_at: new Date().toISOString(),
+      };
 
-      if (error) throw error;
+      let result;
+      if (reportId) {
+        // Atualizar relatório existente
+        result = await supabase
+          .from("reports")
+          .update(reportData)
+          .eq("id", reportId)
+          .select()
+          .single();
+      } else {
+        // Criar novo relatório
+        result = await supabase
+          .from("reports")
+          .insert({
+            ...reportData,
+            created_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+      }
 
-      await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
+      if (result.error) throw result.error;
 
       toast({
         title: "Sucesso!",
-        description: "Relatório registrado e PDF gerado com sucesso.",
+        description: reportId ? "Relatório atualizado com sucesso." : "Relatório salvo com sucesso.",
       });
 
-      navigate("/processes");
+      if (onSaveSuccess && result.data) {
+        onSaveSuccess(result.data.id);
+      }
+
+      return result.data.id;
     } catch (error) {
       console.error("Erro ao salvar relatório:", error);
       toast({
@@ -63,18 +93,56 @@ export function ReportSubmission({
         title: "Erro",
         description: "Não foi possível salvar o relatório.",
       });
+      throw error;
+    }
+  };
+
+  const handleSaveAndGeneratePDF = async () => {
+    try {
+      // Primeiro salva o relatório
+      const savedReportId = await handleSave();
+      
+      // Depois gera o PDF
+      await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
+
+      // Atualiza o status para finalizado
+      if (savedReportId) {
+        await supabase
+          .from("reports")
+          .update({ status: 'finalized' })
+          .eq("id", savedReportId);
+      }
+
+      toast({
+        title: "Concluído!",
+        description: "Relatório salvo e PDF gerado com sucesso.",
+      });
+
+      navigate("/processes/reports");
+    } catch (error) {
+      console.error("Erro ao salvar e gerar PDF:", error);
     }
   };
 
   return (
     <div className="flex justify-end space-x-4">
       <Button
-        onClick={handleSubmit}
+        onClick={handleSave}
+        variant="outline"
+        className="w-32"
+        disabled={isContentEmpty}
+      >
+        <Save className="mr-2 h-4 w-4" />
+        Salvar
+      </Button>
+      
+      <Button
+        onClick={handleSaveAndGeneratePDF}
         className="w-32"
         disabled={isContentEmpty}
       >
         <Download className="mr-2 h-4 w-4" />
-        Gerar PDF
+        Finalizar
       </Button>
     </div>
   );

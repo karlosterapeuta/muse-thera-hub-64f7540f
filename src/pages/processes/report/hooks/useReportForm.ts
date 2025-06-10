@@ -34,7 +34,7 @@ export function useReportForm() {
       date: new Date(),
       type: "",
       content: {},
-    } satisfies FormValues,
+    },
   });
 
   const generateWithAI = async (keyPoints: string, patients: any[]) => {
@@ -60,7 +60,6 @@ export function useReportForm() {
         evaluationDate: format(selectedDate, 'yyyy-MM-dd')
       });
 
-      // Tentar chamar a função edge do Supabase com retry
       let retryCount = 0;
       const maxRetries = 2;
       
@@ -102,7 +101,6 @@ export function useReportForm() {
         }
       }
 
-      // Se chegou aqui, todas as tentativas falharam, usar fallback
       console.log('Todas as tentativas de IA falharam, gerando conteúdo local aprimorado');
       
       const enhancedContent = generateEnhancedFallbackContent(selectedType, keyPoints, selectedPatient.name, selectedDate);
@@ -140,208 +138,27 @@ export function useReportForm() {
       case "individual_session":
         return {
           ...baseContent,
-          objectives: `Objetivos Terapêuticos da Sessão Individual - ${patientName} (${formattedDate})
-          
-• Estimular a comunicação verbal e não-verbal através de atividades musicais
-• Desenvolver habilidades motoras finas e grossas com instrumentos musicais
-• Promover a autorregulação emocional através da expressão musical
-• Fortalecer o vínculo terapêutico e a confiança
-• Trabalhar aspectos específicos baseados nos pontos observados: ${keyPoints}`,
-
-          activities: `Atividades Musicoterapêuticas Realizadas:
-
-1. AQUECIMENTO E ACOLHIMENTO
-• Música de boas-vindas personalizada
-• Exercícios de respiração com sons vocais
-• Reconhecimento do espaço terapêutico
-
-2. ATIVIDADES PRINCIPAIS
-• Exploração livre de instrumentos (xilofone, tambores, chocalhos)
-• Improvisação musical dirigida
-• Canto terapêutico com repertório conhecido
-• Jogos musicais interativos
-
-3. TÉCNICAS APLICADAS
-• Método receptivo: audição musical ativa
-• Método ativo: criação e execução musical
-• Técnicas de espelhamento musical
-• Sincronização rítmica terapêutica`,
-
-          patient_response: `Resposta e Engajamento do Paciente:
-
-ASPECTOS POSITIVOS OBSERVADOS:
-• Demonstrou interesse pelos instrumentos apresentados
-• Manteve atenção sustentada durante as atividades propostas
-• Apresentou tentativas de comunicação através da música
-• Mostrou sinais de relaxamento durante as intervenções
-
-DESAFIOS IDENTIFICADOS:
-• Necessidade de maior tempo de adaptação às mudanças de atividade
-• Dificuldades pontuais de coordenação motora
-• Momentos de autorregulação que requerem suporte adicional
-
-PROGRESSOS OBSERVADOS:
-Com base nos pontos principais relatados (${keyPoints}), foi possível observar evolução significativa na participação e interesse pelas atividades propostas.`,
-
-          observations: `Observações Clínicas e Técnicas:
-
-ANÁLISE MUSICOTERAPÊUTICA:
-• Preferências sonoro-musicais: [instrumentos de percussão/melódicos/vocais]
-• Padrões rítmicos demonstrados: [regular/irregular/em desenvolvimento]
-• Capacidade de improvisação: [livre/dirigida/em construção]
-• Resposta à estrutura musical: [positiva/gradual/necessita adaptação]
-
-ASPECTOS RELACIONAIS:
-• Vínculo terapêutico: fortalecimento progressivo observado
-• Comunicação não-verbal: expressiva através da música
-• Iniciativa musical: [espontânea/encorajada/em desenvolvimento]
-
-PONTOS DE ATENÇÃO TÉCNICA:
-• Necessidade de continuidade nas intervenções específicas
-• Atenção aos sinais de fadiga ou sobrecarga sensorial
-• Adaptação do setting conforme responsividade apresentada`,
-
-          next_steps: `Planejamento e Próximos Passos:
-
-OBJETIVOS PARA PRÓXIMAS SESSÕES:
-• Aprofundar as técnicas que demonstraram maior efetividade
-• Expandir o repertório musical conforme interesses manifestados
-• Trabalhar aspectos específicos identificados nesta sessão
-• Continuar fortalecimento do vínculo terapêutico
-
-ESTRATÉGIAS RECOMENDADAS:
-• Manter estrutura consistente das sessões
-• Introduzir gradualmente novos desafios musicais
-• Documentar preferências e aversões sonoras
-• Considerar envolvimento familiar nas atividades domiciliares
-
-ENCAMINHAMENTOS:
-• Continuidade do processo musicoterapêutico semanal
-• Avaliação contínua da evolução apresentada
-• Possível interconsulta com outros profissionais se necessário`
+          objectives: `Objetivos da sessão individual para ${patientName}`,
+          activities: `Atividades realizadas: ${keyPoints}`,
+          patient_response: `Resposta do paciente observada durante a sessão`,
+          observations: `Observações clínicas relevantes`,
+          next_steps: `Próximos passos e recomendações`,
         };
 
       case "monthly_evolution":
         return {
           ...baseContent,
-          therapeutic_objectives: `Objetivos Terapêuticos Trabalhados no Período (Análise Mensal):
-
-OBJETIVOS GERAIS ESTABELECIDOS:
-• Desenvolvimento da comunicação expressiva através da música
-• Estimulação de habilidades socioemocionais e cognitivas
-• Promoção da autorregulação e bem-estar emocional
-• Fortalecimento de vínculos e interação social
-
-OBJETIVOS ESPECÍFICOS BASEADOS NO CONTEXTO:
-Com base nas observações registradas (${keyPoints}), foram priorizados durante este período:
-• Trabalho específico de expressão emocional através de improvisação musical
-• Desenvolvimento de coordenação motora com instrumentos variados
-• Estimulação da atenção sustentada através de atividades estruturadas
-• Promoção da confiança e autoestima através de conquistas musicais progressivas`,
-
-          achievements: `Conquistas e Progressos Observados no Período Mensal:
-
-DESENVOLVIMENTO MUSICAL SIGNIFICATIVO:
-• Maior familiaridade e exploração espontânea dos instrumentos musicais
-• Desenvolvimento de padrões rítmicos mais organizados e intencionais
-• Ampliação considerável do repertório vocal e instrumental
-• Melhora notável na capacidade de imitação e criação musical
-
-ASPECTOS SOCIOEMOCIONAIS EVOLUTIVOS:
-• Fortalecimento significativo do vínculo terapêutico estabelecido
-• Maior iniciativa e protagonismo na participação das atividades propostas
-• Demonstração regular de prazer, satisfação e alegria durante as sessões
-• Redução progressiva de comportamentos de resistência ou evitação
-
-HABILIDADES COMUNICATIVAS AMPLIADAS:
-• Aumento substancial de tentativas comunicativas espontâneas
-• Uso preferencial da música como canal principal de expressão
-• Melhora na compreensão e seguimento de comandos e instruções musicais
-• Desenvolvimento de comunicação não-verbal mais rica e expressiva`,
-
-          challenges: `Desafios e Dificuldades Encontradas Durante o Período:
-
-ASPECTOS TÉCNICOS IDENTIFICADOS:
-• Necessidade de adaptação constante das estratégias terapêuticas conforme estado emocional
-• Variabilidade significativa no estado e disposição entre as diferentes sessões
-• Processo gradual de construção da confiança, respeitando o tempo individual
-• Necessidade de tempo adicional para consolidação de algumas conquistas específicas
-
-FATORES EXTERNOS INFLUENCIADORES:
-• Influência direta de mudanças na rotina familiar, escolar ou social
-• Importância do maior envolvimento e participação ativa de cuidadores
-• Necessidade de adaptação a diferentes contextos e ambientes terapêuticos
-• Coordenação cuidadosa com outros tratamentos e terapias simultâneas
-
-ÁREAS QUE DEMANDAM DESENVOLVIMENTO CONTÍNUO:
-• Autorregulação emocional em momentos de frustração ou desafio
-• Ampliação progressiva do tempo de atenção sustentada nas atividades
-• Generalização das conquistas terapêuticas para outros contextos de vida`,
-
-          adjustments: `Ajustes e Modificações Realizadas no Plano Terapêutico:
-
-AJUSTES METODOLÓGICOS IMPLEMENTADOS:
-• Adaptação cuidadosa do tempo de duração das atividades conforme responsividade
-• Modificação estratégica na sequência e estrutura das sessões
-• Introdução planejada de novos instrumentos e técnicas musicoterapêuticas
-• Personalização contínua das intervenções conforme padrões de resposta observados
-
-ADEQUAÇÕES AMBIENTAIS REALIZADAS:
-• Otimização do setting terapêutico para maior conforto e segurança
-• Reorganização espacial dos instrumentos para facilitar acesso e exploração
-• Controle cuidadoso de estímulos sensoriais do ambiente (luz, som, temperatura)
-• Criação de rotinas previsíveis e reconfortantes para maior estabilidade emocional
-
-MODIFICAÇÕES RELACIONAIS E VINCULARES:
-• Fortalecimento contínuo de estratégias de estabelecimento de vínculo
-• Adequação da postura e abordagem terapêutica conforme necessidades individuais
-• Envolvimento gradual e respeitoso da família no processo terapêutico`,
-
-          next_steps: `Planejamento Estratégico para o Próximo Período Mensal:
-
-CONTINUIDADE E CONSOLIDAÇÃO TERAPÊUTICA:
-• Manutenção da frequência semanal das sessões para garantir consistência
-• Aprofundamento sistemático das técnicas que demonstraram maior eficácia clínica
-• Expansão gradual e cuidadosa dos desafios musicais propostos
-• Documentação sistemática e detalhada da evolução para acompanhamento preciso
-
-METAS ESPECÍFICAS PARA OS PRÓXIMOS 30 DIAS:
-• Consolidação e fortalecimento das conquistas já alcançadas
-• Trabalho focado e intensivo nas áreas que ainda apresentam desafios significativos
-• Introdução cautelosa de atividades de maior complexidade musical e relacional
-• Preparação gradual para possível ampliação do setting (atividades grupais ou familiares)
-
-ARTICULAÇÃO INTERDISCIPLINAR PLANEJADA:
-• Comunicação regular e estruturada com outros profissionais da equipe multidisciplinar
-• Compartilhamento sistemático de estratégias eficazes e resultados obtidos
-• Alinhamento contínuo de objetivos terapêuticos gerais com a equipe
-• Avaliação periódica da necessidade de ajustes no plano global de tratamento`
+          therapeutic_objectives: `Objetivos terapêuticos do período`,
+          achievements: `Conquistas e progressos observados`,
+          challenges: `Desafios encontrados`,
+          adjustments: `Ajustes realizados no plano terapêutico`,
+          next_steps: `Planejamento para o próximo período`,
         };
 
       default:
         return {
           ...baseContent,
-          content: `Relatório Musicoterapêutico Estruturado para ${patientName}
-
-Data da Avaliação: ${formattedDate}
-
-RESUMO EXECUTIVO:
-Este relatório apresenta a análise detalhada do processo musicoterapêutico de ${patientName}, considerando os aspectos observados durante o período avaliado.
-
-PONTOS PRINCIPAIS IDENTIFICADOS:
-${keyPoints}
-
-ANÁLISE TÉCNICA:
-Com base nas observações realizadas, foi possível identificar aspectos significativos do desenvolvimento do paciente através das intervenções musicoterapêuticas implementadas.
-
-RECOMENDAÇÕES:
-• Continuidade do processo terapêutico
-• Manutenção das estratégias eficazes
-• Adaptações conforme evolução apresentada
-• Envolvimento familiar no processo
-
-CONSIDERAÇÕES FINAIS:
-O processo musicoterapêutico demonstra resultados positivos e perspectivas favoráveis para continuidade do tratamento.`
+          content: `Relatório estruturado para ${patientName} - ${formattedDate}. Pontos principais: ${keyPoints}`,
         };
     }
   };
