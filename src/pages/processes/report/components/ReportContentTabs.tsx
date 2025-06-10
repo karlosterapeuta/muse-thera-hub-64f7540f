@@ -12,6 +12,7 @@ import { MonthlyEvolutionForm } from "./MonthlyEvolutionForm";
 import { SemesterEvolutionForm } from "./SemesterEvolutionForm";
 import { TherapeuticDischargeForm } from "./TherapeuticDischargeForm";
 import { TechnicalReportForm } from "./TechnicalReportForm";
+import { AssessmentReportForm } from "./AssessmentReportForm";
 import { FormValues } from "../hooks/useReportForm";
 
 interface ReportContentTabsProps {
@@ -95,6 +96,12 @@ export function ReportContentTabs({
               )}
               {selectedType === "technical_report" && (
                 <TechnicalReportForm
+                  content={field.value || {}}
+                  onChange={field.onChange}
+                />
+              )}
+              {selectedType === "assessment_report" && (
+                <AssessmentReportForm
                   content={field.value || {}}
                   onChange={field.onChange}
                 />
