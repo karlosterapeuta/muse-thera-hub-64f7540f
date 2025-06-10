@@ -34,6 +34,7 @@ export type DashboardData = {
   completionRate: number;
   sessionData: any[];
   isLoading: boolean;
+  error?: string;
 };
 
 export function useDashboardData(): DashboardData {
@@ -53,16 +54,17 @@ export function useDashboardData(): DashboardData {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        console.log("🔍 Iniciando busca de dados do dashboard...");
+        setData(prev => ({ ...prev, isLoading: true, error: undefined }));
         
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          console.log("❌ Usuário não encontrado");
-          setData(prev => ({ ...prev, isLoading: false }));
+          setData(prev => ({ 
+            ...prev, 
+            isLoading: false, 
+            error: "Usuário não encontrado" 
+          }));
           return;
         }
-        
-        console.log("👤 Usuário encontrado:", user.id);
 
         // Get professional profile
         const { data: professional, error: professionalError } = await supabase
@@ -72,75 +74,24 @@ export function useDashboardData(): DashboardData {
           .single();
 
         if (professionalError || !professional) {
-          console.log("❌ Perfil profissional não encontrado:", professionalError);
-          setData(prev => ({ ...prev, isLoading: false }));
+          setData(prev => ({ 
+            ...prev, 
+            isLoading: false, 
+            error: "Perfil profissional não encontrado" 
+          }));
           return;
         }
-
-        console.log("👨‍⚕️ Profissional encontrado:", professional.id);
 
         // Get current week dates
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
         const endDate = endOfWeek(today, { weekStartsOn: 0 });
-        
-        // Also get last month for fallback data
         const monthStartDate = startOfMonth(today);
         const monthEndDate = endOfMonth(today);
         
-        console.log("📅 Buscando dados da semana:", format(startDate, "yyyy-MM-dd"), "até", format(endDate, "yyyy-MM-dd"));
-        
-        // Fetch sessions for this week
-        const { data: sessions, error: sessionsError } = await supabase
-          .from("sessions")
-          .select(`
-            id, 
-            date, 
-            notes,
-            patient_id, 
-            patients!inner (
-              id,
-              name,
-              professional_id
-            )
-          `)
-          .eq('patients.professional_id', professional.id)
-          .gte('date', format(startDate, "yyyy-MM-dd"))
-          .lte('date', format(endDate, "yyyy-MM-dd"))
-          .order('date');
-
-        console.log("📋 Sessões da semana encontradas:", sessions?.length || 0);
-        if (sessions && sessions.length > 0) {
-          console.log("📋 Primeira sessão:", sessions[0]);
-        }
-
-        // Fetch financial records for this week
-        const { data: financialRecords, error: financialError } = await supabase
-          .from("financial_records")
-          .select(`
-            id, 
-            amount, 
-            session_date, 
-            description,
-            professional_id
-          `)
-          .eq('professional_id', professional.id)
-          .gte('session_date', format(startDate, "yyyy-MM-dd"))
-          .lte('session_date', format(endDate, "yyyy-MM-dd"));
-
-        console.log("💰 Registros financeiros da semana encontrados:", financialRecords?.length || 0);
-        if (financialRecords && financialRecords.length > 0) {
-          console.log("💰 Primeiro registro:", financialRecords[0]);
-        }
-
-        // If no data this week, try to get monthly data for stats
-        let monthlyFinancialRecords = [];
-        let monthlySessions = [];
-        
-        if ((!sessions || sessions.length === 0) && (!financialRecords || financialRecords.length === 0)) {
-          console.log("🔍 Nenhum dado da semana, buscando dados do mês...");
-          
-          const { data: monthSessions } = await supabase
+        // Fetch sessions and financial records in parallel
+        const [sessionsResponse, financialResponse] = await Promise.all([
+          supabase
             .from("sessions")
             .select(`
               id, 
@@ -154,11 +105,11 @@ export function useDashboardData(): DashboardData {
               )
             `)
             .eq('patients.professional_id', professional.id)
-            .gte('date', format(monthStartDate, "yyyy-MM-dd"))
-            .lte('date', format(monthEndDate, "yyyy-MM-dd"))
-            .order('date');
-
-          const { data: monthFinancial } = await supabase
+            .gte('date', format(startDate, "yyyy-MM-dd"))
+            .lte('date', format(endDate, "yyyy-MM-dd"))
+            .order('date'),
+          
+          supabase
             .from("financial_records")
             .select(`
               id, 
@@ -168,18 +119,57 @@ export function useDashboardData(): DashboardData {
               professional_id
             `)
             .eq('professional_id', professional.id)
-            .gte('session_date', format(monthStartDate, "yyyy-MM-dd"))
-            .lte('session_date', format(monthEndDate, "yyyy-MM-dd"));
+            .gte('session_date', format(startDate, "yyyy-MM-dd"))
+            .lte('session_date', format(endDate, "yyyy-MM-dd"))
+        ]);
 
-          monthlySessions = monthSessions || [];
-          monthlyFinancialRecords = monthFinancial || [];
-          
-          console.log("📊 Dados do mês - Sessões:", monthlySessions.length, "Financeiro:", monthlyFinancialRecords.length);
+        if (sessionsResponse.error || financialResponse.error) {
+          throw new Error("Erro ao carregar dados");
         }
 
-        if (sessionsError || financialError) {
-          console.error("❌ Erro ao buscar dados:", sessionsError || financialError);
-          return;
+        const sessions = sessionsResponse.data || [];
+        const financialRecords = financialResponse.data || [];
+
+        // If no data this week, try to get monthly data for stats
+        let monthlyFinancialRecords = [];
+        let monthlySessions = [];
+        
+        if (sessions.length === 0 && financialRecords.length === 0) {
+          const [monthSessionsResponse, monthFinancialResponse] = await Promise.all([
+            supabase
+              .from("sessions")
+              .select(`
+                id, 
+                date, 
+                notes,
+                patient_id, 
+                patients!inner (
+                  id,
+                  name,
+                  professional_id
+                )
+              `)
+              .eq('patients.professional_id', professional.id)
+              .gte('date', format(monthStartDate, "yyyy-MM-dd"))
+              .lte('date', format(monthEndDate, "yyyy-MM-dd"))
+              .order('date'),
+
+            supabase
+              .from("financial_records")
+              .select(`
+                id, 
+                amount, 
+                session_date, 
+                description,
+                professional_id
+              `)
+              .eq('professional_id', professional.id)
+              .gte('session_date', format(monthStartDate, "yyyy-MM-dd"))
+              .lte('session_date', format(monthEndDate, "yyyy-MM-dd"))
+          ]);
+
+          monthlySessions = monthSessionsResponse.data || [];
+          monthlyFinancialRecords = monthFinancialResponse.data || [];
         }
 
         // Prepare week structure
@@ -197,72 +187,58 @@ export function useDashboardData(): DashboardData {
         }
 
         // Organize sessions by day
-        if (sessions) {
-          sessions.forEach(session => {
-            const sessionDate = parseISO(session.date);
-            const dayIndex = weekDays.findIndex(day => 
-              isSameDay(day.date, sessionDate)
-            );
-            
-            if (dayIndex !== -1) {
-              weekDays[dayIndex].sessions.push({
-                id: session.id,
-                date: sessionDate,
-                patient_name: session.patients?.name || "Paciente não encontrado",
-                formatted_time: format(sessionDate, "HH:mm", { locale: ptBR }),
-                formatted_date: format(sessionDate, "dd/MM", { locale: ptBR }),
-                notes: session.notes
-              });
-              weekDays[dayIndex].session_count++;
-            }
-          });
-        }
-
-        // Add financial data to days
-        if (financialRecords) {
-          financialRecords.forEach(record => {
-            const recordDate = parseISO(record.session_date);
-            const dayIndex = weekDays.findIndex(day => 
-              isSameDay(day.date, recordDate)
-            );
-            
-            if (dayIndex !== -1) {
-              weekDays[dayIndex].total_financial += record.amount;
-              
-              // Try to match with existing session
-              const sessionIndex = weekDays[dayIndex].sessions.findIndex(session =>
-                isSameDay(session.date, recordDate)
-              );
-              
-              if (sessionIndex !== -1) {
-                weekDays[dayIndex].sessions[sessionIndex].financial_amount = record.amount;
-              }
-            }
-          });
-        }
-
-        // Calculate totals and statistics (use monthly data if weekly is empty)
-        const dataToUse = (sessions && sessions.length > 0) ? sessions : monthlySessions;
-        const financialToUse = (financialRecords && financialRecords.length > 0) ? financialRecords : monthlyFinancialRecords;
-        
-        const totalSessions = dataToUse?.length || 0;
-        const totalRevenue = financialToUse?.reduce((sum, record) => sum + record.amount, 0) || 0;
-        const averagePerSession = totalSessions > 0 ? totalRevenue / totalSessions : 0;
-
-        console.log("📊 Estatísticas calculadas:", {
-          totalSessions,
-          totalRevenue,
-          averagePerSession,
-          usingMonthlyData: dataToUse === monthlySessions
+        sessions.forEach(session => {
+          const sessionDate = parseISO(session.date);
+          const dayIndex = weekDays.findIndex(day => 
+            isSameDay(day.date, sessionDate)
+          );
+          
+          if (dayIndex !== -1) {
+            weekDays[dayIndex].sessions.push({
+              id: session.id,
+              date: sessionDate,
+              patient_name: session.patients?.name || "Paciente não encontrado",
+              formatted_time: format(sessionDate, "HH:mm", { locale: ptBR }),
+              formatted_date: format(sessionDate, "dd/MM", { locale: ptBR }),
+              notes: session.notes
+            });
+            weekDays[dayIndex].session_count++;
+          }
         });
 
-        // Calculate completion rate
-        const sessionsWithNotes = dataToUse?.filter(s => s.notes && s.notes.trim() !== '').length || 0;
+        // Add financial data to days
+        financialRecords.forEach(record => {
+          const recordDate = parseISO(record.session_date);
+          const dayIndex = weekDays.findIndex(day => 
+            isSameDay(day.date, recordDate)
+          );
+          
+          if (dayIndex !== -1) {
+            weekDays[dayIndex].total_financial += record.amount;
+            
+            const sessionIndex = weekDays[dayIndex].sessions.findIndex(session =>
+              isSameDay(session.date, recordDate)
+            );
+            
+            if (sessionIndex !== -1) {
+              weekDays[dayIndex].sessions[sessionIndex].financial_amount = record.amount;
+            }
+          }
+        });
+
+        // Calculate statistics
+        const dataToUse = sessions.length > 0 ? sessions : monthlySessions;
+        const financialToUse = financialRecords.length > 0 ? financialRecords : monthlyFinancialRecords;
+        
+        const totalSessions = dataToUse.length;
+        const totalRevenue = financialToUse.reduce((sum, record) => sum + record.amount, 0);
+        const averagePerSession = totalSessions > 0 ? totalRevenue / totalSessions : 0;
+        const sessionsWithNotes = dataToUse.filter(s => s.notes && s.notes.trim() !== '').length;
         const completionRate = totalSessions > 0 ? Math.round((sessionsWithNotes / totalSessions) * 100) : 0;
 
         // Get upcoming sessions
         const futureSessions = sessions
-          ?.filter(session => new Date(session.date) >= new Date())
+          .filter(session => new Date(session.date) >= new Date())
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
           .slice(0, 5)
           .map(session => ({
@@ -271,21 +247,21 @@ export function useDashboardData(): DashboardData {
             type: session.notes?.includes('inicial') ? 'Inicial' : 'Regular',
             date: new Date(session.date).toLocaleDateString('pt-BR'),
             time: new Date(session.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          })) || [];
+          }));
 
-        // Calculate monthly chart data (use broader dataset)
+        // Calculate monthly chart data
         const chartSessions = monthlySessions.length > 0 ? monthlySessions : dataToUse;
         const recentMonths = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
         const currentDate = new Date();
         const fourMonthsAgo = new Date();
         fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
 
-        const sessionsByMonth = {};
+        const sessionsByMonth: Record<string, number> = {};
         recentMonths.slice(-4).forEach(month => {
           sessionsByMonth[month] = 0;
         });
 
-        chartSessions?.forEach(session => {
+        chartSessions.forEach(session => {
           const sessionDate = new Date(session.date);
           if (sessionDate >= fourMonthsAgo && sessionDate <= currentDate) {
             const monthIndex = sessionDate.getMonth();
@@ -301,28 +277,30 @@ export function useDashboardData(): DashboardData {
           sessions: sessionsByMonth[month]
         }));
 
-        console.log("✅ Dashboard data prepared successfully");
-
         setData({
           weekDays,
           totalSessions,
           totalRevenue,
           averagePerSession,
           upcomingSessions: futureSessions,
-          monthlyChange: 5, // Placeholder
+          monthlyChange: 5, // This could be calculated based on historical data
           completionRate,
           sessionData,
           isLoading: false,
         });
 
       } catch (error) {
-        console.error('❌ Erro ao carregar dados do dashboard:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+        setData(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: errorMessage 
+        }));
         toast({
           title: "Erro ao carregar dados",
           description: "Não foi possível carregar os dados do dashboard.",
           variant: "destructive",
         });
-        setData(prev => ({ ...prev, isLoading: false }));
       }
     };
 
