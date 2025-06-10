@@ -20,7 +20,7 @@ interface AnamnesisFormWrapperProps {
   onBack?: () => void;
 }
 
-// Lista de campos conhecidos do banco de dados anamnesis
+// Lista de campos conhecidos do banco de dados anamnesis - incluindo todas as novas colunas
 const knownDatabaseFields = [
   'id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 
   'therapeutic_goals', 'treatment_approach', 'legal_guardian', 'family_relationship', 
@@ -43,7 +43,7 @@ const knownDatabaseFields = [
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
   'extracurricular_activities', 'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 
-  'williams_syndrome', 'depression', 'bipolar_disorder',
+  'williams_syndrome', 'depression', 'bipolar_disorder', 'rett_syndrome',
   'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
@@ -215,28 +215,18 @@ export default function AnamnesisFormWrapper({
       
       const filteredData = filterDatabaseFields(formData);
       
-      const baseDataFields = knownDatabaseFields.filter(field => 
-        !['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'].includes(field)
-      );
-      
-      const baseAnamnesisData: Record<string, any> = {
+      const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
-        professional_id: professionalId
+        professional_id: professionalId,
+        ...filteredData
       };
-      
-      Object.entries(filteredData).forEach(([key, value]) => {
-        if (baseDataFields.includes(key)) {
-          baseAnamnesisData[key] = value;
-        }
-      });
 
       let result;
-      let recordId = existingAnamnesisId;
       
       if (existingAnamnesisId) {
         result = await supabase
           .from("anamnesis")
-          .update(baseAnamnesisData)
+          .update(anamnesisData)
           .eq("id", existingAnamnesisId);
           
         if (result.error) {
@@ -246,7 +236,7 @@ export default function AnamnesisFormWrapper({
       } else {
         result = await supabase
           .from("anamnesis")
-          .insert(baseAnamnesisData)
+          .insert(anamnesisData)
           .select();
           
         if (result.error) {
@@ -255,21 +245,7 @@ export default function AnamnesisFormWrapper({
         }
         
         if (result.data && result.data.length > 0) {
-          recordId = result.data[0].id;
-          setExistingAnamnesisId(recordId);
-        }
-      }
-      
-      if (recordId) {
-        const newFields = ['alzheimer', 'aba_therapy', 'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration'];
-        
-        for (const field of newFields) {
-          if (field in filteredData) {
-            await supabase
-              .from("anamnesis")
-              .update({ [field]: Boolean(filteredData[field]) })
-              .eq("id", recordId);
-          }
+          setExistingAnamnesisId(result.data[0].id);
         }
       }
 
