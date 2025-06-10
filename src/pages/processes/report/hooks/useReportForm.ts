@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +5,9 @@ import * as z from "zod";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import type { Database } from "@/integrations/supabase/types";
+
+type ReportType = Database["public"]["Enums"]["report_type"];
 
 const formSchema = z.object({
   patient_id: z.string({
@@ -29,7 +31,7 @@ const formSchema = z.object({
     "discharge_summary",
     "administrative_discharge",
     "tea_scale"
-  ], {
+  ] as const, {
     required_error: "Por favor, selecione o tipo de relatório",
   }),
   content: z.record(z.any()).default({}),
@@ -139,7 +141,7 @@ export function useReportForm() {
     }
   };
 
-  const generateEnhancedFallbackContent = (reportType: string, keyPoints: string, patientName: string) => {
+  const generateEnhancedFallbackContent = (reportType: ReportType, keyPoints: string, patientName: string) => {
     const baseContent = {
       patient_name: patientName,
       key_points: keyPoints,

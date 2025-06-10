@@ -1,11 +1,14 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Download, Save } from "lucide-react";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { generatePDF } from "../utils/pdfGenerator";
+import type { Database } from "@/integrations/supabase/types";
+
+type ReportType = Database["public"]["Enums"]["report_type"];
 
 interface ReportSubmissionProps {
   formData: {
@@ -57,16 +60,51 @@ export function ReportSubmission({
       return false;
     }
 
+    // Verificar se o tipo é válido
+    const validTypes: ReportType[] = [
+      "monthly_evolution",
+      "daily_evolution", 
+      "therapeutic_discharge",
+      "individual_session",
+      "group_session",
+      "initial_evaluation",
+      "semester_evolution",
+      "progress_report",
+      "session_summary",
+      "family_report",
+      "team_report",
+      "assessment_report",
+      "discharge_summary",
+      "administrative_discharge",
+      "tea_scale",
+      "technical_report"
+    ];
+
+    if (!validTypes.includes(formData.type as ReportType)) {
+      toast({
+        variant: "destructive",
+        title: "Tipo de relatório inválido",
+        description: "Por favor, selecione um tipo de relatório válido.",
+      });
+      return false;
+    }
+
     return true;
   };
 
-  const handleSave = async () => {
+  const handleSaveAndGeneratePDF = async () => {
     try {
-      console.log("Salvando relatório com dados:", formData);
+      console.log("Iniciando salvamento e geração de PDF com dados:", formData);
       
       if (!validateRequiredData()) {
         return;
       }
+
+      // Mostrar toast de progresso
+      toast({
+        title: "Processando...",
+        description: "Salvando relatório...",
+      });
 
       // Garantir que content seja um objeto válido
       const safeContent = formData.content && typeof formData.content === 'object' 
@@ -76,8 +114,8 @@ export function ReportSubmission({
       const reportData = {
         patient_id: formData.patient_id!,
         professional_id: userId!,
-        type: formData.type!,
-        content: safeContent,
+        type: formData.type! as ReportType,
+        content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
         updated_at: new Date().toISOString(),
       };
 
@@ -102,47 +140,41 @@ export function ReportSubmission({
           .single();
       }
 
-      if (result.error) throw result.error;
+      if (result.error) {
+        console.error("Erro do Supabase:", result.error);
+        
+        // Verificar se é erro de chave estrangeira
+        if (result.error.code === '23503') {
+          toast({
+            variant: "destructive",
+            title: "Erro de permissão",
+            description: "Usuário não encontrado na tabela de profissionais. Entre em contato com o administrador.",
+          });
+          return;
+        }
+        
+        throw result.error;
+      }
 
+      // Atualizar toast de progresso
       toast({
-        title: "Sucesso!",
-        description: reportId ? "Relatório atualizado com sucesso." : "Relatório salvo com sucesso.",
+        title: "Relatório salvo!",
+        description: "Gerando PDF...",
       });
 
       if (onSaveSuccess && result.data) {
         onSaveSuccess(result.data.id);
       }
 
-      return result.data.id;
-    } catch (error) {
-      console.error("Erro ao salvar relatório:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível salvar o relatório.",
-      });
-      throw error;
-    }
-  };
-
-  const handleSaveAndGeneratePDF = async () => {
-    try {
-      if (!validateRequiredData()) {
-        return;
-      }
-
-      // Primeiro salva o relatório
-      const savedReportId = await handleSave();
-      
       // Preparar dados para o PDF com valores garantidos
       const pdfData = {
         patient_id: formData.patient_id!,
-        type: formData.type!,
+        type: formData.type! as ReportType,
         date: formData.date || new Date(),
-        content: formData.content || {},
+        content: safeContent,
       };
       
-      // Depois gera o PDF com os dados completos
+      // Gerar PDF
       await generatePDF(selectedPatient.name, pdfData, professionalData, userEmail, userName);
 
       toast({
@@ -151,30 +183,26 @@ export function ReportSubmission({
       });
 
       navigate("/processes/reports");
+
     } catch (error) {
       console.error("Erro ao salvar e gerar PDF:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível completar a operação. Tente novamente.",
+      });
     }
   };
 
   return (
-    <div className="flex justify-end space-x-4">
-      <Button
-        onClick={handleSave}
-        variant="outline"
-        className="w-32"
-        disabled={isContentEmpty}
-      >
-        <Save className="mr-2 h-4 w-4" />
-        Salvar
-      </Button>
-      
+    <div className="flex justify-end">
       <Button
         onClick={handleSaveAndGeneratePDF}
-        className="w-32"
+        className="w-48"
         disabled={isContentEmpty}
       >
         <Download className="mr-2 h-4 w-4" />
-        Finalizar
+        Salvar e Baixar PDF
       </Button>
     </div>
   );

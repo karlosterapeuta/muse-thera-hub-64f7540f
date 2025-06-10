@@ -1,11 +1,14 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
+import type { Database } from "@/integrations/supabase/types";
+
+type ReportType = Database["public"]["Enums"]["report_type"];
 
 type ReportFormData = {
   patient_id: string;
   date: Date;
-  type: string;
+  type: ReportType;
   content: Record<string, any>;
 };
 
@@ -15,7 +18,7 @@ type ProfessionalData = {
   email: string;
 };
 
-const generateContentHTML = (content: Record<string, any>, type: string) => {
+const generateContentHTML = (content: Record<string, any>, type: ReportType) => {
   if (type === "daily_evolution") {
     return `
       <div style="margin-bottom: 28px;">
