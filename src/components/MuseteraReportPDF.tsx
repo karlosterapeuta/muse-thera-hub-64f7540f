@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Card } from "@/components/ui/card";
-import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { StaticChart } from './StaticChart';
 import { format } from 'date-fns';
 
 interface MuseteraReportPDFProps {
@@ -124,16 +125,13 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
               <h4 className="font-semibold mb-3 text-gray-700">Perfil de Habilidades</h4>
               <div className="h-[200px]">
                 {radarData && (
-                  <RadarChart width={250} height={200} data={radarData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
-                    <Radar
-                      dataKey="value"
-                      stroke="#8884d8"
-                      fill="#8884d8"
-                      fillOpacity={0.6}
-                    />
-                  </RadarChart>
+                  <StaticChart 
+                    data={radarData} 
+                    type="radar" 
+                    width={250} 
+                    height={200}
+                    colors={['#8884d8']} 
+                  />
                 )}
               </div>
             </div>
@@ -141,28 +139,13 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
             <div>
               <h4 className="font-semibold mb-3 text-gray-700">Desenvolvimento Geral</h4>
               <div className="h-[200px] flex items-center justify-center">
-                <PieChart width={250} height={200}>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </div>
-              <div className="flex justify-center gap-3">
-                {pieData.map((entry: any, index: number) => (
-                  <div key={index} className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-                    <span className="text-xs">{entry.name}: {entry.value}%</span>
-                  </div>
-                ))}
+                <StaticChart 
+                  data={pieData} 
+                  type="pie" 
+                  width={250} 
+                  height={200}
+                  colors={['#4ade80', '#ffa1b5']} 
+                />
               </div>
             </div>
           </div>

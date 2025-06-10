@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { TeaScalePDFStatic } from '@/components/TeaScalePDFStatic';
 import { ParametersGraphsPDFStatic } from '@/components/ParametersGraphsPDFStatic';
-import { MuseteraReportPDF } from '@/components/MuseteraReportPDF';
+import { EnhancedMuseteraReportPDF } from '@/components/EnhancedMuseteraReportPDF';
 import React from 'react';
 
 interface EvaluationData {
@@ -21,6 +21,16 @@ interface EvaluationData {
   evaluatorName: string;
   evaluatorEmail: string;
   evaluationDate: Date;
+  patientData?: {
+    age?: number;
+    birthDate?: string;
+    diagnosis?: string;
+    medications?: string;
+    musicalPreferences?: string;
+    previousTherapies?: string;
+    familyHistory?: string;
+    developmentConcerns?: string;
+  };
 }
 
 export const useEvaluationPDF = () => {
@@ -90,9 +100,9 @@ export const useEvaluationPDF = () => {
   const generateReportPDF = async (data: EvaluationData): Promise<boolean> => {
     setIsGenerating(true);
     try {
-      console.log("📑 Gerando Relatório PDF com gráficos estáticos...");
+      console.log("📑 Gerando Relatório MuseTera Aprimorado...");
       
-      const component = React.createElement(MuseteraReportPDF, {
+      const component = React.createElement(EnhancedMuseteraReportPDF, {
         categoryData: data.categoryData,
         pieData: data.pieData,
         radarData: data.radarData,
@@ -102,17 +112,18 @@ export const useEvaluationPDF = () => {
         patientName: data.patientName,
         evaluatorName: data.evaluatorName,
         evaluatorEmail: data.evaluatorEmail,
-        evaluationDate: data.evaluationDate
+        evaluationDate: data.evaluationDate,
+        patientData: data.patientData
       });
 
       return await generateStaticPDF(component, {
-        filename: `Relatorio_Completo_${data.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
-        waitTime: 4000,
-        quality: 1.8
+        filename: `Relatorio_MuseTera_Completo_${data.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+        waitTime: 5000,
+        quality: 2.0
       });
       
     } catch (error) {
-      console.error("Erro ao gerar Relatório PDF:", error);
+      console.error("Erro ao gerar Relatório MuseTera:", error);
       return false;
     } finally {
       setIsGenerating(false);
