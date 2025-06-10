@@ -76,8 +76,15 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         email: user?.email || 'profissional@musetera.app'
       };
 
+      // Ensure we have the required created_at field and structure the data properly
+      const formattedAnamnesisData = {
+        ...anamnesisData,
+        created_at: anamnesisData.created_at || anamnesis.created_at,
+        patient_name: anamnesis.patient_name
+      };
+
       const success = await generateProfessionalAnamnesePDF(
-        anamnesisData,
+        formattedAnamnesisData,
         professionalData,
         anamnesis.patient_name || 'Paciente'
       );
