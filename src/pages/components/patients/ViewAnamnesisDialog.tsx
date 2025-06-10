@@ -4,6 +4,7 @@ import { Loader2, Download, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
+import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 
 type Patient = {
   id: string;
@@ -283,138 +284,22 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
   const generatePDF = async () => {
     if (!anamnesis || !professional) return;
     
-    const element = document.createElement('div');
-    
-    const generateContentHTML = () => {
-      const renderCheckboxSection = (title: string, fields: { id: string, label: string }[]) => {
-        const checkedItems = fields
-          .filter(item => anamnesis[item.id])
-          .map(item => item.label)
-          .join(", ");
-        
-        return checkedItems ? `
-          <div style="margin-bottom: 8px;">
-            <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
-              ${title}
-            </div>
-            <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
-              ${checkedItems}
-            </div>
-          </div>
-        ` : '';
-      };
-      
-      const sections = [
-        {
-          title: "Histórico Musical",
-          fields: [
-            { id: "musical_education", label: "Educação Musical" },
-            { id: "instrumental_practice", label: "Prática Instrumental" },
-            { id: "body_musical_expression", label: "Expressão Corporal Musical" },
-            { id: "vocal_expression", label: "Expressão Vocal" },
-            { id: "choral_activities", label: "Atividades Corais" },
-            { id: "no_musical_experience", label: "Sem Experiência Musical" }
-          ]
-        },
-        // ... include all other sections here
-      ];
-      
-      const textFields = [
-        { key: "legal_guardian", label: "Responsável Legal" },
-        { key: "family_relationship", label: "Parentesco" },
-        { key: "referral_professional", label: "Profissional que Encaminhou" },
-        { key: "main_clinical_demand", label: "Demanda Clínica Principal" },
-        { key: "current_medication", label: "Medicação Atual" },
-        { key: "school_enrollment", label: "Matrícula Escolar" },
-        { key: "school_adaptation", label: "Adaptação Escolar" },
-        { key: "extracurricular_activities", label: "Atividades Extracurriculares" }
-      ];
-      
-      let contentHTML = '';
-      
-      // Add text fields
-      textFields.forEach(field => {
-        if (anamnesis[field.key]) {
-          contentHTML += `
-            <div style="margin-bottom: 8px;">
-              <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #374151;">
-                ${field.label}
-              </div>
-              <div style="background-color: #F9FAFB; padding: 6px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.3; color: #1F2937;">
-                ${anamnesis[field.key]}
-              </div>
-            </div>
-          `;
-        }
-      });
-      
-      // Add checkbox sections
-      sections.forEach(section => {
-        contentHTML += renderCheckboxSection(section.title, section.fields);
-      });
-      
-      return contentHTML;
-    };
-
-    element.innerHTML = `
-      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #E5E7EB;">
-          <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
-            Anamnese Musicoterapêutica
-          </h1>
-          <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 6px;">
-            Paciente: ${patient.name}
-          </h2>
-          <p style="color: #6B7280; font-size: 13px;">
-            Data da Avaliação: ${formatDate(anamnesis.created_at)}
-          </p>
-        </div>
-
-        <div style="margin-bottom: 24px;">
-          ${generateContentHTML()}
-        </div>
-
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 2px solid #E5E7EB; text-align: center;">
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musetera - Sistema de Gestão para Musicoterapia
-          </p>
-          <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px;">
-            Musicoterapeuta: ${professional.name || formatNameFromEmail(professional.email)}
-          </p>
-          <p style="color: #6B7280; font-size: 11px;">
-            Email: ${professional.email}
-          </p>
-        </div>
-      </div>
-    `;
-
-    const opt = {
-      margin: [20, 20, 20, 20],
-      filename: `Anamnese - ${patient.name}.pdf`,
-      pagebreak: { mode: 'avoid-all' },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-      },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        backgroundColor: '#ffffff',
-      },
-    };
-
     try {
-      await html2pdf().from(element).set(opt).save();
-      toast({
-        title: "Sucesso",
-        description: "PDF gerado com sucesso!",
-      });
-      return true;
+      const success = await generateProfessionalAnamnesePDF(
+        anamnesis,
+        professional,
+        patient.name
+      );
+
+      if (success) {
+        toast({
+          title: "Sucesso",
+          description: "PDF profissional gerado com sucesso!",
+        });
+        return true;
+      } else {
+        throw new Error("Falha na geração do PDF");
+      }
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast({
@@ -476,9 +361,12 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
               Editar
             </Button>
           )}
-          <Button onClick={generatePDF}>
+          <Button 
+            onClick={generatePDF}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
             <Download className="h-4 w-4 mr-2" />
-            Baixar PDF
+            Baixar PDF Profissional
           </Button>
         </div>
       </div>
