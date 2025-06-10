@@ -28,6 +28,8 @@ export const generateProfessionalAnamnesePDF = async (
   patientName: string
 ): Promise<boolean> => {
   try {
+    console.log("🎯 Iniciando geração do PDF profissional...");
+    
     const element = document.createElement('div');
     
     const generateProfessionalHTML = () => {
@@ -175,9 +177,7 @@ export const generateProfessionalAnamnesePDF = async (
             { id: "psychopedagogical", label: "Acompanhamento Psicopedagógico" },
             { id: "occupational_therapy", label: "Terapia Ocupacional" },
             { id: "physiotherapy", label: "Fisioterapia" },
-            { id: "equine_therapy", label: "Equoterapia" },
-            { id: "aba_therapy", label: "Terapia ABA" },
-            { id: "music_therapy", label: "Musicoterapia" }
+            { id: "equine_therapy", label: "Equoterapia" }
           ]
         },
         {
@@ -199,7 +199,7 @@ export const generateProfessionalAnamnesePDF = async (
             <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
               ${field.label}:
             </div>
-            <div style="background-color: #F8FAFC; padding: 8px; border-radius: 6px; border: 1px solid #E2E8F0; font-size: 11px; line-height: 1.4; color: #1F2937; min-height: 20px;">
+            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: #1f2937; min-height: 20px;">
               ${anamnesisData[field.key]}
             </div>
           </div>
@@ -212,10 +212,10 @@ export const generateProfessionalAnamnesePDF = async (
         if (checkedItems.length === 0) return '';
         
         return `
-          <div style="background-color: #F8FAFC; padding: 10px; border-radius: 6px; border: 1px solid #E2E8F0; margin-bottom: 8px;">
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+            <div style="display: block;">
               ${checkedItems.map(item => `
-                <div style="display: inline-flex; align-items: center; background-color: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #374151;">
+                <div style="display: block; background-color: #ffffff; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #374151; margin-bottom: 4px;">
                   <span style="color: #059669; margin-right: 4px; font-weight: bold;">✓</span>
                   ${item.label}
                 </div>
@@ -252,12 +252,12 @@ export const generateProfessionalAnamnesePDF = async (
           if (!hasContent) return '';
 
           return `
-            <div style="margin-bottom: 20px; break-inside: avoid;">
-              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 13px; display: flex; align-items: center;">
+            <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 13px;">
                 <span style="margin-right: 8px; font-size: 14px;">${section.icon}</span>
                 ${section.title}
               </div>
-              <div style="background-color: #FFFFFF; border: 1px solid #E2E8F0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px;">
+              <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px;">
                 ${sectionHTML}
               </div>
             </div>
@@ -266,35 +266,46 @@ export const generateProfessionalAnamnesePDF = async (
       };
 
       return `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; background-color: #FFFFFF;">
-          <!-- Cabeçalho -->
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; margin-bottom: 0;">
-            <div style="text-align: center;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
-                ANAMNESE MUSICOTERAPÊUTICA
-              </h1>
-              <div style="margin-top: 8px; font-size: 14px; opacity: 0.9;">
-                Avaliação Inicial para Intervenção Musicoterapêutica
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; line-height: 1.4; }
+            .container { max-width: 800px; margin: 0 auto; background-color: #ffffff; }
+            .page-break { page-break-before: always; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <!-- Cabeçalho -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; margin-bottom: 0;">
+              <div style="text-align: center;">
+                <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                  ANAMNESE MUSICOTERAPÊUTICA
+                </h1>
+                <div style="margin-top: 8px; font-size: 14px; opacity: 0.9;">
+                  Avaliação Inicial para Intervenção Musicoterapêutica
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Informações do Documento -->
-          <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 16px; margin-bottom: 24px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div>
+            <!-- Informações do Documento -->
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 24px;">
+              <div style="margin-bottom: 12px;">
                 <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
                   PACIENTE:
                 </div>
-                <div style="font-size: 16px; font-weight: 600; color: #1F2937;">
+                <div style="font-size: 16px; font-weight: 600; color: #1f2937;">
                   ${patientName}
                 </div>
               </div>
-              <div>
+              <div style="margin-bottom: 12px;">
                 <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
                   DATA DA AVALIAÇÃO:
                 </div>
-                <div style="font-size: 14px; color: #1F2937;">
+                <div style="font-size: 14px; color: #1f2937;">
                   ${new Date(anamnesisData.created_at).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: 'long',
@@ -302,82 +313,77 @@ export const generateProfessionalAnamnesePDF = async (
                   })}
                 </div>
               </div>
-            </div>
-            <div style="margin-top: 12px;">
-              <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
-                MUSICOTERAPEUTA RESPONSÁVEL:
-              </div>
-              <div style="font-size: 14px; color: #1F2937;">
-                ${professional.name || 'Não informado'} | ${professional.email}
-              </div>
-            </div>
-          </div>
-
-          <!-- Conteúdo das Seções -->
-          <div style="padding: 0 16px;">
-            ${renderSections()}
-          </div>
-
-          <!-- Rodapé -->
-          <div style="margin-top: 40px; padding: 20px; background-color: #F8FAFC; border-top: 2px solid #E2E8F0;">
-            <div style="text-align: center; margin-bottom: 16px;">
-              <div style="border-top: 1px solid #9CA3AF; width: 200px; margin: 0 auto 8px auto;"></div>
-              <div style="font-size: 12px; color: #6B7280;">
-                Assinatura do Musicoterapeuta Responsável
-              </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 10px; color: #6B7280; text-align: center;">
               <div>
-                <strong>Documento gerado em:</strong><br>
-                ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-              </div>
-              <div>
-                <strong>Sistema:</strong><br>
-                Musetera - Gestão para Musicoterapia
+                <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
+                  MUSICOTERAPEUTA RESPONSÁVEL:
+                </div>
+                <div style="font-size: 14px; color: #1f2937;">
+                  ${professional.name || 'Não informado'} | ${professional.email}
+                </div>
               </div>
             </div>
-            
-            <div style="text-align: center; margin-top: 12px; font-size: 9px; color: #9CA3AF;">
-              Este documento contém informações confidenciais protegidas pelo sigilo profissional
+
+            <!-- Conteúdo das Seções -->
+            <div style="padding: 0 16px;">
+              ${renderSections()}
+            </div>
+
+            <!-- Rodapé -->
+            <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-top: 2px solid #e2e8f0;">
+              <div style="text-align: center; margin-bottom: 16px;">
+                <div style="border-top: 1px solid #9ca3af; width: 200px; margin: 0 auto 8px auto;"></div>
+                <div style="font-size: 12px; color: #6b7280;">
+                  Assinatura do Musicoterapeuta Responsável
+                </div>
+              </div>
+              
+              <div style="font-size: 10px; color: #6b7280; text-align: center;">
+                <div style="margin-bottom: 8px;">
+                  <strong>Documento gerado em:</strong>
+                  ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+                </div>
+                <div style="margin-bottom: 8px;">
+                  <strong>Sistema:</strong>
+                  Musetera - Gestão para Musicoterapia
+                </div>
+                <div style="font-size: 9px; color: #9ca3af;">
+                  Este documento contém informações confidenciais protegidas pelo sigilo profissional
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </body>
+        </html>
       `;
     };
 
     element.innerHTML = generateProfessionalHTML();
 
     const opt = {
-      margin: [15, 15, 15, 15],
+      margin: [10, 10, 10, 10],
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
-        mode: ['avoid-all', 'css', 'legacy'],
-        before: '.page-break-before',
-        after: '.page-break-after',
-        avoid: '.break-inside-avoid'
+        mode: ['avoid-all', 'css', 'legacy']
       },
       jsPDF: {
         unit: 'mm',
         format: 'a4',
-        orientation: 'portrait',
-        compressPDF: true
+        orientation: 'portrait'
       },
       html2canvas: {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
-        letterRendering: true,
-        backgroundColor: '#ffffff',
-        logging: false,
         allowTaint: false,
-        removeContainer: true
+        backgroundColor: '#ffffff'
       },
     };
 
+    console.log("📄 Gerando PDF com html2pdf...");
     await html2pdf().from(element).set(opt).save();
+    console.log("✅ PDF gerado com sucesso!");
     return true;
   } catch (error) {
-    console.error("Erro ao gerar PDF profissional:", error);
+    console.error("❌ Erro ao gerar PDF profissional:", error);
     return false;
   }
 };
