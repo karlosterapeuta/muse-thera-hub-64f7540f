@@ -6,10 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { generatePDF } from "../utils/pdfGenerator";
-import { FormValues } from "../hooks/useReportForm";
 
 interface ReportSubmissionProps {
-  formData: FormValues;
+  formData: any;
   selectedPatient: any;
   professionalData: any;
   userEmail: string | null;
@@ -111,11 +110,28 @@ export function ReportSubmission({
         return;
       }
 
+      if (!selectedPatient) {
+        toast({
+          variant: "destructive",
+          title: "Paciente não selecionado",
+          description: "Por favor, selecione um paciente antes de finalizar.",
+        });
+        return;
+      }
+
       // Primeiro salva o relatório
       const savedReportId = await handleSave();
       
+      // Preparar dados para o PDF com valores padrão para campos obrigatórios
+      const pdfData = {
+        patient_id: formData.patient_id,
+        type: formData.type,
+        date: formData.date || new Date(),
+        content: formData.content || {},
+      };
+      
       // Depois gera o PDF com os dados completos
-      await generatePDF(selectedPatient.name, formData, professionalData, userEmail, userName);
+      await generatePDF(selectedPatient.name, pdfData, professionalData, userEmail, userName);
 
       toast({
         title: "Concluído!",

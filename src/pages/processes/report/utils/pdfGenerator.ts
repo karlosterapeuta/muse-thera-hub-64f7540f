@@ -3,11 +3,11 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
 
-type FormValues = {
-  patient_id: string;
-  date: Date;
-  type: string;
-  content: Record<string, any>;
+type ReportFormData = {
+  patient_id?: string;
+  date?: Date;
+  type?: string;
+  content?: Record<string, any>;
 };
 
 type ProfessionalData = {
@@ -278,11 +278,16 @@ const generateContentHTML = (content: Record<string, any>, type: string) => {
 
 export async function generatePDF(
   patientName: string, 
-  formValues: FormValues, 
+  formValues: ReportFormData, 
   professionalData: ProfessionalData,
-  userEmail: string,
-  userName: string
+  userEmail: string | null,
+  userName: string | null
 ) {
+  // Garantir que os dados obrigatórios estão presentes
+  if (!formValues.type || !formValues.date) {
+    throw new Error("Dados obrigatórios ausentes para gerar PDF");
+  }
+
   const element = document.createElement('div');
   
   element.innerHTML = `
@@ -321,7 +326,7 @@ export async function generatePDF(
       </div>
 
       <div style="margin-bottom: 32px;">
-        ${generateContentHTML(formValues.content, formValues.type)}
+        ${generateContentHTML(formValues.content || {}, formValues.type)}
       </div>
 
       <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #E5E7EB; text-align: center;">
@@ -332,10 +337,10 @@ export async function generatePDF(
           Musetera - Sistema de Gestão para Musicoterapia
         </p>
         <p style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
-          Musicoterapeuta: ${userName}
+          Musicoterapeuta: ${userName || 'N/A'}
         </p>
         <p style="color: #6B7280; font-size: 13px;">
-          Email: ${userEmail}
+          Email: ${userEmail || 'N/A'}
         </p>
       </div>
     </div>
