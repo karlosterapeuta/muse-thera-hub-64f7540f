@@ -55,6 +55,7 @@ export default function ReportForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       patient_id: "",
+      date: undefined,
       type: "",
       content: {},
     },
