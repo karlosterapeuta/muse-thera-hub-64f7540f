@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Download } from "lucide-react";
@@ -70,7 +69,6 @@ export function ReportSubmission({
 
     console.log("Verificando profissional existente para userId:", userId);
 
-    // Verificar se o profissional já existe
     const { data: existingProfessional, error: checkError } = await supabase
       .from('professionals')
       .select('id, name, email')
@@ -89,14 +87,13 @@ export function ReportSubmission({
 
     console.log("Criando novo profissional para:", { userId, userEmail, userName });
 
-    // Se não existe, criar o registro com dados válidos
     const professionalData = {
       user_id: userId,
       name: userName || userEmail.split('@')[0] || 'Profissional',
       email: userEmail,
-      phone: '', // Campo obrigatório, mas pode ser vazio inicialmente
-      specialty: 'Musicoterapia', // Valor padrão
-      license_number: '', // Campo opcional
+      phone: '',
+      specialty: 'Musicoterapia',
+      license_number: '',
     };
 
     const { data: newProfessional, error: createError } = await supabase
@@ -109,7 +106,6 @@ export function ReportSubmission({
       console.error("Erro detalhado ao criar profissional:", createError);
       console.error("Dados enviados:", professionalData);
       
-      // Verificar se é erro de constraint específico
       if (createError.code === '23505') {
         throw new Error("Profissional já existe com esses dados. Tente fazer logout e login novamente.");
       } else if (createError.code === '23502') {
@@ -159,10 +155,7 @@ export function ReportSubmission({
         description: "Verificando dados do profissional...",
       });
 
-      // Garantir que o profissional existe e obter o ID
       const professionalId = await ensureProfessionalExists();
-      
-      // Validar se o profissional realmente existe na tabela
       await validateProfessionalExists(professionalId);
 
       toast({
@@ -170,7 +163,6 @@ export function ReportSubmission({
         description: "Salvando relatório...",
       });
 
-      // Garantir que content seja um objeto válido
       const safeContent = formData.content && typeof formData.content === 'object' 
         ? formData.content 
         : {};
@@ -179,7 +171,7 @@ export function ReportSubmission({
 
       const reportData = {
         patient_id: formData.patient_id!,
-        professional_id: professionalId, // Usar o ID validado
+        professional_id: professionalId,
         type: formData.type!,
         content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
         updated_at: new Date().toISOString(),
@@ -189,7 +181,6 @@ export function ReportSubmission({
 
       let result;
       if (reportId) {
-        // Atualizar relatório existente
         console.log("Atualizando relatório existente:", reportId);
         result = await supabase
           .from("reports")
@@ -198,7 +189,6 @@ export function ReportSubmission({
           .select()
           .single();
       } else {
-        // Criar novo relatório
         console.log("Criando novo relatório");
         result = await supabase
           .from("reports")
@@ -229,7 +219,6 @@ export function ReportSubmission({
         onSaveSuccess(result.data.id);
       }
 
-      // Preparar dados para o PDF com valores garantidos
       const pdfData = {
         patient_id: formData.patient_id!,
         type: formData.type!,
@@ -237,7 +226,6 @@ export function ReportSubmission({
         content: safeContent,
       };
       
-      // Gerar PDF
       await generatePDF(selectedPatient.name, pdfData, professionalData, userEmail, userName);
 
       toast({
@@ -258,7 +246,6 @@ export function ReportSubmission({
       if (error instanceof Error) {
         errorMessage = error.message;
         
-        // Sugestões específicas baseadas no tipo de erro
         if (error.message.includes("professional")) {
           suggestion = "Tente fazer logout e login novamente, ou entre em contato com o administrador.";
         } else if (error.message.includes("foreign key")) {
