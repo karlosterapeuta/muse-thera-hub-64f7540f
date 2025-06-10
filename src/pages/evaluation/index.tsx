@@ -12,10 +12,12 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
+import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
+import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { 
@@ -321,11 +323,70 @@ export default function Evaluation() {
       .join(' ');
   };
 
-  const handleGeneratePDF = async () => {
+  const handleGenerateParametersPDF = async () => {
     try {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
-          <TeaScalePDF
+          <ParametersGraphsPDF
+            categoryData={subdomainScores}
+            pieData={pieData}
+            patientName={selectedPatientData?.name}
+            evaluatorName={userName}
+            evaluatorEmail={userEmail}
+            radarData={domainScores}
+            overallScore={overallScore}
+          />
+        </div>
+      );
+
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.loading("Gerando PDF de Parâmetros e Gráficos...");
+
+      const opt = {
+        margin: [10, 10],
+        filename: `parametros-graficos-${selectedPatientData?.name || 'paciente'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
+
+      await html2pdf().set(opt).from(root).save();
+      
+      document.body.removeChild(container);
+      
+      toast.success("PDF de Parâmetros e Gráficos gerado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+    }
+  };
+
+  const handleGenerateMuseteraPDF = async () => {
+    try {
+      const pdfContent = (
+        <div id="pdf-content" style={{ display: 'block' }}>
+          <MuseteraReportPDF
             categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
@@ -351,11 +412,11 @@ export default function Evaluation() {
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      toast.loading("Gerando PDF...");
+      toast.loading("Gerando Relatório MuseTera...");
 
       const opt = {
         margin: [10, 10],
-        filename: `avaliacao-tea-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `relatorio-musetera-${selectedPatientData?.name || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
@@ -375,7 +436,7 @@ export default function Evaluation() {
       
       document.body.removeChild(container);
       
-      toast.success("PDF gerado com sucesso!");
+      toast.success("Relatório MuseTera gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
@@ -402,7 +463,7 @@ export default function Evaluation() {
               </div>
             )}
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Select
               value={selectedEvaluation}
               onValueChange={setSelectedEvaluation}
@@ -417,18 +478,47 @@ export default function Evaluation() {
                 <SelectItem value="4">Avaliação Final</SelectItem>
               </SelectContent>
             </Select>
-            <Button
-              onClick={handleGeneratePDF}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <FileDown className="h-4 w-4" />
-              Gerar PDF
-            </Button>
+            
+            <TooltipProvider>
+              <TooltipComponent>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleGenerateParametersPDF}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <FileBarChart className="h-4 w-4" />
+                    Parâmetros e Gráficos
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Gera PDF com gráficos e dados quantitativos</p>
+                </TooltipContent>
+              </TooltipComponent>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <TooltipComponent>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleGenerateMuseteraPDF}
+                    variant="default"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Relatório MuseTera
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Gera relatório completo com análise e recomendações</p>
+                </TooltipContent>
+              </TooltipComponent>
+            </TooltipProvider>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="evaluation">Avaliação</TabsTrigger>
             <TabsTrigger value="results">Resultados</TabsTrigger>
