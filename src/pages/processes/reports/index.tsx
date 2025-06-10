@@ -17,9 +17,24 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { PlusIcon, Eye, Edit, Search, Trash2 } from "lucide-react";
+import { 
+  PlusIcon, 
+  Eye, 
+  Edit, 
+  Search, 
+  Trash2, 
+  FileText, 
+  TrendingUp, 
+  Calendar,
+  Users,
+  Filter,
+  Grid3X3,
+  List,
+  ChevronRight
+} from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ReportViewer } from "../report/components/ReportViewer";
 import { DeleteReportDialog } from "./components/DeleteReportDialog";
@@ -29,7 +44,7 @@ type DatabaseReport = {
   type: string;
   created_at: string;
   updated_at: string;
-  content: any; // Json type from Supabase
+  content: any;
   patient: {
     name: string;
   } | null;
@@ -81,6 +96,25 @@ const reportTypeLabels: Record<string, string> = {
   tea_scale: "Escala TEA",
 };
 
+const reportTypeColors: Record<string, string> = {
+  individual_session: "bg-blue-500",
+  group_session: "bg-purple-500",
+  daily_evolution: "bg-green-500",
+  monthly_evolution: "bg-orange-500",
+  semester_evolution: "bg-red-500",
+  therapeutic_discharge: "bg-gray-500",
+  technical_report: "bg-indigo-500",
+  initial_evaluation: "bg-pink-500",
+  progress_report: "bg-yellow-500",
+  session_summary: "bg-cyan-500",
+  family_report: "bg-emerald-500",
+  team_report: "bg-violet-500",
+  assessment_report: "bg-rose-500",
+  discharge_summary: "bg-amber-500",
+  administrative_discharge: "bg-slate-500",
+  tea_scale: "bg-teal-500",
+};
+
 export default function ReportsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -91,6 +125,8 @@ export default function ReportsPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [professionalId, setProfessionalId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     reportId: string;
@@ -103,9 +139,7 @@ export default function ReportsPage() {
     patientName: "",
   });
 
-  // Função para converter dados do banco para o tipo local
   const convertDatabaseReport = (dbReport: DatabaseReport): Report => {
-    // Garantir que content seja um objeto válido
     let content: Record<string, any> = {};
     
     if (dbReport.content) {
@@ -131,15 +165,12 @@ export default function ReportsPage() {
     };
   };
 
-  // Função para buscar o professional_id do usuário atual
   const getCurrentProfessionalId = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("Usuário não autenticado");
       }
-
-      console.log("Buscando professional_id para usuário:", user.id);
 
       const { data: professional, error } = await supabase
         .from('professionals')
@@ -153,11 +184,9 @@ export default function ReportsPage() {
       }
 
       if (!professional) {
-        console.log("Profissional não encontrado para o usuário");
         return null;
       }
 
-      console.log("Professional_id encontrado:", professional.id);
       return professional.id;
     } catch (error) {
       console.error("Erro ao obter professional_id:", error);
@@ -170,12 +199,10 @@ export default function ReportsPage() {
       try {
         setIsLoading(true);
         
-        // Primeiro, obter o professional_id do usuário atual
         const currentProfessionalId = await getCurrentProfessionalId();
         setProfessionalId(currentProfessionalId);
 
         if (!currentProfessionalId) {
-          console.log("Usuário não possui registro de profissional");
           setReports([]);
           setFilteredReports([]);
           toast({
@@ -185,9 +212,6 @@ export default function ReportsPage() {
           return;
         }
 
-        console.log("Carregando relatórios para professional_id:", currentProfessionalId);
-
-        // Buscar apenas relatórios do profissional atual
         const { data, error } = await supabase
           .from("reports")
           .select(`
@@ -210,10 +234,7 @@ export default function ReportsPage() {
           console.error("Erro ao carregar relatórios:", error);
           throw error;
         }
-
-        console.log("Relatórios carregados:", data?.length || 0);
         
-        // Converter dados do banco para o tipo local
         const convertedReports = (data || []).map(convertDatabaseReport);
         setReports(convertedReports);
         setFilteredReports(convertedReports);
@@ -233,26 +254,29 @@ export default function ReportsPage() {
   }, [toast]);
 
   useEffect(() => {
-    if (!searchTerm) {
-      setFilteredReports(reports);
-      return;
+    let filtered = reports;
+
+    if (searchTerm) {
+      filtered = filtered.filter(report => 
+        report.patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reportTypeLabels[report.type]?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    const filtered = reports.filter(report => 
-      report.patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reportTypeLabels[report.type]?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    if (selectedTypeFilter !== 'all') {
+      filtered = filtered.filter(report => report.type === selectedTypeFilter);
+    }
+
     setFilteredReports(filtered);
-  }, [searchTerm, reports]);
+  }, [searchTerm, reports, selectedTypeFilter]);
 
   const handleView = (report: Report) => {
-    // Transformar o report para o formato esperado pelo ReportViewer
     const transformedReport: ReportViewerData = {
       id: report.id,
       type: report.type,
       date: report.created_at,
       content: report.content,
-      status: 'finalized', // Como não temos status na tabela, assumir finalizado
+      status: 'finalized',
       patient: report.patient,
       professional: report.professional,
     };
@@ -274,7 +298,6 @@ export default function ReportsPage() {
   };
 
   const handleDeleteSuccess = () => {
-    // Recarregar a lista de relatórios
     const loadReports = async () => {
       try {
         if (!professionalId) return;
@@ -310,106 +333,316 @@ export default function ReportsPage() {
     loadReports();
   };
 
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle>Meus Relatórios</CardTitle>
-          <Button onClick={() => navigate("/processes/report")} size="sm">
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Novo Relatório
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por paciente ou tipo..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
+  const getStats = () => {
+    const totalReports = reports.length;
+    const thisMonth = reports.filter(r => {
+      const reportDate = new Date(r.created_at);
+      const now = new Date();
+      return reportDate.getMonth() === now.getMonth() && reportDate.getFullYear() === now.getFullYear();
+    }).length;
+    const uniquePatients = new Set(reports.map(r => r.patient?.name).filter(Boolean)).size;
+    
+    return { totalReports, thisMonth, uniquePatients };
+  };
+
+  const uniqueTypes = Array.from(new Set(reports.map(r => r.type)));
+  const stats = getStats();
+
+  const ReportCard = ({ report }: { report: Report }) => (
+    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-white to-gray-50/50 shadow-lg">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${reportTypeColors[report.type] || 'bg-gray-400'}`}></div>
+            <div>
+              <CardTitle className="text-sm font-semibold text-gray-900">
+                {report.patient?.name || 'N/A'}
+              </CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                {format(new Date(report.created_at), "dd/MM/yyyy")} • {format(new Date(report.created_at), "HH:mm")}
+              </p>
             </div>
           </div>
+          <Badge variant="secondary" className="text-xs font-medium">
+            {reportTypeLabels[report.type] || report.type}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-gray-600">
+            <span className="font-medium">Por:</span> {report.professional?.name || 'N/A'}
+          </div>
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleView(report)}
+              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleEdit(report)}
+              className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-600"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDeleteClick(report)}
+              className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
-          {isLoading ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Carregando relatórios...</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-3 mb-6">
+              <FileText className="h-8 w-8" />
+              <h1 className="text-3xl font-bold">Meus Relatórios</h1>
             </div>
-          ) : !professionalId ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                Você ainda não possui um registro de profissional.
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Crie seu primeiro relatório para inicializar seu perfil profissional.
-              </p>
+            
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-white/20 rounded-lg">
+                      <FileText className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm opacity-90">Total de Relatórios</p>
+                      <p className="text-2xl font-bold">{stats.totalReports}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-white/20 rounded-lg">
+                      <Calendar className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm opacity-90">Este Mês</p>
+                      <p className="text-2xl font-bold">{stats.thisMonth}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-white/20 rounded-lg">
+                      <Users className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm opacity-90">Pacientes Únicos</p>
+                      <p className="text-2xl font-bold">{stats.uniquePatients}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data de Criação</TableHead>
-                  <TableHead>Paciente</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Profissional</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredReports.map((report) => (
-                  <TableRow key={report.id}>
-                    <TableCell>
-                      {format(new Date(report.created_at), "dd/MM/yyyy HH:mm")}
-                    </TableCell>
-                    <TableCell>{report.patient?.name || 'N/A'}</TableCell>
-                    <TableCell>{reportTypeLabels[report.type] || report.type}</TableCell>
-                    <TableCell>{report.professional?.name || 'N/A'}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleView(report)}
-                          title="Visualizar"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(report)}
-                          title="Editar"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteClick(report)}
-                          title="Excluir"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filteredReports.length === 0 && !isLoading && professionalId && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      {searchTerm ? "Nenhum relatório encontrado para a busca." : "Você ainda não criou nenhum relatório"}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
 
+            {/* Action Button */}
+            <Button 
+              onClick={() => navigate("/processes/report")} 
+              className="bg-white text-blue-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Criar Novo Relatório
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Filters and Search */}
+        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex flex-col md:flex-row gap-4 flex-1">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Buscar por paciente ou tipo..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 border-gray-200 focus:border-blue-500 bg-white"
+                  />
+                </div>
+                
+                <select
+                  value={selectedTypeFilter}
+                  onChange={(e) => setSelectedTypeFilter(e.target.value)}
+                  className="px-4 py-2 border border-gray-200 rounded-lg bg-white focus:border-blue-500 focus:outline-none"
+                >
+                  <option value="all">Todos os tipos</option>
+                  {uniqueTypes.map(type => (
+                    <option key={type} value={type}>
+                      {reportTypeLabels[type] || type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className="px-3"
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'table' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('table')}
+                  className="px-3"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Content */}
+        {isLoading ? (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-12 text-center">
+              <div className="animate-pulse space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+              </div>
+              <p className="text-gray-500 mt-4">Carregando relatórios...</p>
+            </CardContent>
+          </Card>
+        ) : !professionalId ? (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-12 text-center">
+              <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                Bem-vindo ao sistema!
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Você ainda não possui um registro de profissional. Crie seu primeiro relatório para começar.
+              </p>
+              <Button onClick={() => navigate("/processes/report")}>
+                <PlusIcon className="h-4 w-4 mr-2" />
+                Criar Primeiro Relatório
+              </Button>
+            </CardContent>
+          </Card>
+        ) : filteredReports.length === 0 ? (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-12 text-center">
+              <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                {searchTerm || selectedTypeFilter !== 'all' ? 'Nenhum resultado encontrado' : 'Nenhum relatório criado'}
+              </h3>
+              <p className="text-gray-500 mb-6">
+                {searchTerm || selectedTypeFilter !== 'all' 
+                  ? 'Tente ajustar os filtros de busca.'
+                  : 'Comece criando seu primeiro relatório.'}
+              </p>
+              {!searchTerm && selectedTypeFilter === 'all' && (
+                <Button onClick={() => navigate("/processes/report")}>
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Criar Relatório
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredReports.map((report) => (
+              <ReportCard key={report.id} report={report} />
+            ))}
+          </div>
+        ) : (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-semibold">Data</TableHead>
+                    <TableHead className="font-semibold">Paciente</TableHead>
+                    <TableHead className="font-semibold">Tipo</TableHead>
+                    <TableHead className="font-semibold">Profissional</TableHead>
+                    <TableHead className="text-right font-semibold">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredReports.map((report) => (
+                    <TableRow key={report.id} className="hover:bg-gray-50/50">
+                      <TableCell className="font-medium">
+                        {format(new Date(report.created_at), "dd/MM/yyyy HH:mm")}
+                      </TableCell>
+                      <TableCell>{report.patient?.name || 'N/A'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-medium">
+                          {reportTypeLabels[report.type] || report.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{report.professional?.name || 'N/A'}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleView(report)}
+                            className="hover:bg-blue-50 hover:text-blue-600"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(report)}
+                            className="hover:bg-green-50 hover:text-green-600"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteClick(report)}
+                            className="hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Dialogs */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
