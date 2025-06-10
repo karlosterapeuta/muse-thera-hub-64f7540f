@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +53,9 @@ const optionalDatabaseFields = [
   'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
 ];
 
+// Cache para colunas verificadas
+let columnCheckCache: string[] | null = null;
+
 export default function AnamnesisFormWrapper({ 
   editAnamnesisId, 
   editPatientId, 
@@ -66,8 +70,6 @@ export default function AnamnesisFormWrapper({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
-  const [schemaChecked, setSchemaChecked] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -79,8 +81,14 @@ export default function AnamnesisFormWrapper({
       .join(' ');
   };
 
-  // Função mais robusta para verificar colunas existentes
-  const checkAvailableColumns = async (): Promise<string[]> => {
+  // Função melhorada para verificar colunas disponíveis com cache
+  const getAvailableColumns = async (): Promise<string[]> => {
+    // Se já temos o cache, retornar imediatamente
+    if (columnCheckCache) {
+      console.log("✅ Usando cache de colunas:", columnCheckCache.length);
+      return columnCheckCache;
+    }
+
     try {
       console.log("🔍 Verificando colunas disponíveis na tabela anamnesis...");
       
@@ -93,20 +101,20 @@ export default function AnamnesisFormWrapper({
       if (error) {
         console.warn("⚠️ Erro ao verificar colunas:", error.message);
         console.log("📝 Usando apenas campos básicos como fallback");
-        setAvailableColumns(basicDatabaseFields);
+        columnCheckCache = basicDatabaseFields;
         return basicDatabaseFields;
       }
 
       // Se a consulta funcionou, assumimos que todas as colunas estão disponíveis
       const allFields = [...basicDatabaseFields, ...optionalDatabaseFields];
       console.log("✅ Todas as colunas parecem estar disponíveis:", allFields.length);
-      setAvailableColumns(allFields);
+      columnCheckCache = allFields;
       return allFields;
 
     } catch (error) {
       console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
       console.log("📝 Usando apenas campos básicos como fallback");
-      setAvailableColumns(basicDatabaseFields);
+      columnCheckCache = basicDatabaseFields;
       return basicDatabaseFields;
     }
   };
@@ -125,9 +133,8 @@ export default function AnamnesisFormWrapper({
     try {
       setIsLoading(true);
       
-      // Verificar colunas disponíveis primeiro
-      await checkAvailableColumns();
-      setSchemaChecked(true);
+      // Verificar colunas disponíveis primeiro e aguardar
+      await getAvailableColumns();
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -214,7 +221,7 @@ export default function AnamnesisFormWrapper({
   };
 
   // Função para filtrar apenas campos que existem no banco
-  const filterDatabaseFields = (data: Record<string, any>) => {
+  const filterDatabaseFields = (data: Record<string, any>, availableColumns: string[]) => {
     const filteredData: Record<string, any> = {};
     
     console.log("🔄 Filtrando dados com colunas disponíveis:", availableColumns.length);
@@ -260,16 +267,14 @@ export default function AnamnesisFormWrapper({
       return;
     }
 
-    if (!schemaChecked) {
-      console.log("⏳ Aguardando verificação do schema...");
-      await checkAvailableColumns();
-      setSchemaChecked(true);
-    }
-
     try {
       setIsSubmitting(true);
       
-      const filteredData = filterDatabaseFields(formData);
+      // SEMPRE garantir que temos as colunas disponíveis antes de prosseguir
+      console.log("💾 Iniciando salvamento - verificando colunas...");
+      const availableColumns = await getAvailableColumns();
+      
+      const filteredData = filterDatabaseFields(formData, availableColumns);
       
       console.log("💾 Tentando salvar anamnese com", Object.keys(filteredData).length, "campos");
       
@@ -313,12 +318,11 @@ export default function AnamnesisFormWrapper({
       console.error("❌ Erro ao salvar anamnese:", error);
       
       // Se ainda há erro de coluna, tentar com apenas campos básicos
-      if (error?.message?.includes('column') && availableColumns.length > basicDatabaseFields.length) {
+      if (error?.message?.includes('column')) {
         console.log("🔄 Tentando novamente apenas com campos básicos...");
-        setAvailableColumns(basicDatabaseFields);
         
         try {
-          const basicFilteredData = filterDatabaseFields(formData);
+          const basicFilteredData = filterDatabaseFields(formData, basicDatabaseFields);
           const basicAnamnesisData = {
             patient_id: selectedPatient,
             professional_id: professionalId,
@@ -341,6 +345,9 @@ export default function AnamnesisFormWrapper({
           if (basicResult.error) {
             throw basicResult.error;
           }
+
+          // Atualizar cache para usar apenas campos básicos
+          columnCheckCache = basicDatabaseFields;
 
           toast({
             title: "Parcialmente Salvo",
