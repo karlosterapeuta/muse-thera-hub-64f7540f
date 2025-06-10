@@ -17,120 +17,123 @@ interface ReportRequest {
 const getEnhancedPromptForReportType = (reportType: string, keyPoints: string, patientName: string, evaluationDate?: string) => {
   const baseContext = `Você é um musicoterapeuta experiente e especializado criando um relatório profissional detalhado para o paciente ${patientName}${evaluationDate ? ` em ${evaluationDate}` : ''}. 
 
-INSTRUÇÕES IMPORTANTES:
-- Use linguagem técnica em musicoterapia, mas clara e objetiva
-- Seja específico e detalhado em cada campo
-- Mantenha um tom profissional e empático
-- Base-se nas informações fornecidas mas expanda com conhecimento técnico apropriado
-- Cada campo deve ter pelo menos 2-3 parágrafos bem estruturados
-- Use terminologia técnica de musicoterapia quando apropriado`;
+INSTRUÇÕES CRÍTICAS:
+- Use linguagem técnica profissional de musicoterapia
+- Seja específico, detalhado e abrangente em cada campo
+- Mantenha um tom profissional, empático e cientificamente fundamentado
+- Base-se nas informações fornecidas mas expanda com conhecimento técnico especializado
+- Cada campo deve ter entre 200-400 palavras bem estruturadas
+- Use terminologia técnica musicoterapêutica apropriada
+- Inclua observações clínicas detalhadas e fundamentadas
+- Mencione técnicas específicas, metodologias e abordagens teóricas
+- Seja preciso em descrições comportamentais e evolutivas`;
   
   const prompts = {
     individual_session: `${baseContext}
 
-Crie um relatório completo de sessão individual de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório EXTREMAMENTE detalhado de sessão individual de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos EXTENSIVAMENTE detalhados:
 
-- objectives: Objetivos terapêuticos específicos da sessão (liste 3-5 objetivos detalhados com justificativas técnicas musicoterapêuticas)
+- objectives: Objetivos terapêuticos específicos da sessão (detalhe 4-6 objetivos com fundamentação teórica musicoterapêutica, metodologia aplicada, critérios de avaliação, conexão com o plano terapêutico geral)
 
-- activities: Atividades musicoterapêuticas realizadas (descreva detalhadamente as técnicas utilizadas, instrumentos, metodologia aplicada, duração e sequência das atividades)
+- activities: Atividades musicoterapêuticas realizadas (descreva minuciosamente as técnicas utilizadas, instrumentos específicos, metodologia passo-a-passo, duração detalhada, sequência estruturada, adaptações realizadas, fundamentação teórica das escolhas)
 
-- patient_response: Resposta e engajamento do paciente (analise comportamentos observados, níveis de participação, respostas emocionais, interação com instrumentos, comunicação verbal e não-verbal)
+- patient_response: Resposta e engajamento do paciente (análise comportamental detalhada, níveis de participação por atividade, respostas emocionais específicas, interação com instrumentos, comunicação verbal e não-verbal, linguagem corporal, preferências demonstradas, resistências observadas)
 
-- observations: Observações clínicas importantes (progressos técnicos, dificuldades identificadas, insights terapêuticos, aspectos relacionais, preferências musicais observadas)
+- observations: Observações clínicas importantes (progressos técnicos específicos, dificuldades identificadas com análise, insights terapêuticos fundamentados, aspectos relacionais detalhados, preferências musicais, competências emergentes, áreas de desenvolvimento)
 
-- next_steps: Planejamento para próximas sessões (estratégias de continuidade, objetivos a serem trabalhados, adaptações necessárias, recomendações específicas)
+- next_steps: Planejamento detalhado para próximas sessões (estratégias de continuidade específicas, objetivos progressivos, adaptações metodológicas necessárias, recomendações técnicas, cronograma de evolução, integração com outras terapias)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e profissional de pelo menos 150-200 palavras.`,
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e profissional de 250-400 palavras com detalhamento técnico especializado.`,
 
     monthly_evolution: `${baseContext}
 
-Crie um relatório abrangente de evolução mensal de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório ABRANGENTE de evolução mensal de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos EXTENSIVAMENTE detalhados:
 
-- therapeutic_objectives: Objetivos trabalhados no período (detalhe as metas estabelecidas, metodologia aplicada, cronograma de trabalho e critérios de avaliação)
+- therapeutic_objectives: Objetivos trabalhados no período (detalhe minuciosamente as metas estabelecidas, metodologia aplicada com fundamentação teórica, cronograma detalhado de trabalho, critérios específicos de avaliação, ajustes realizados, integração interdisciplinar)
 
-- achievements: Conquistas e progressos observados (documente desenvolvimentos específicos em diferentes áreas: comunicação, socialização, aspectos motores, expressão emocional, competências musicais)
+- achievements: Conquistas e progressos observados (documente desenvolvimentos específicos por área: comunicação verbal/não-verbal, socialização e interação, aspectos motores finos/grossos, expressão emocional, competências musicais técnicas, autonomia funcional, com exemplos concretos e mensuráveis)
 
-- challenges: Desafios e dificuldades encontradas (identifique áreas que necessitam atenção especial, fatores limitantes, estratégias de superação implementadas)
+- challenges: Desafios e dificuldades encontradas (identifique áreas que necessitam atenção especial com análise detalhada, fatores limitantes específicos, estratégias de superação implementadas, resistências encontradas, análise de causas, abordagens alternativas testadas)
 
-- adjustments: Ajustes necessários no plano terapêutico (modificações metodológicas, adaptações de objetivos, mudanças de estratégia, personalização de abordagens)
+- adjustments: Ajustes realizados no plano terapêutico (modificações metodológicas específicas com justificativas, adaptações de objetivos fundamentadas, mudanças de estratégia com análise de resultados, personalização de abordagens, integração de novas técnicas)
 
-- next_steps: Próximos passos e objetivos (planejamento para o próximo período, metas específicas, estratégias de continuidade, envolvimento familiar)
+- next_steps: Próximos passos e objetivos (planejamento detalhado para o próximo período, metas específicas mensuráveis, estratégias de continuidade fundamentadas, envolvimento familiar estruturado, coordenação interdisciplinar)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto detalhado e técnico de pelo menos 150-200 palavras.`,
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto detalhado e técnico de 300-450 palavras com análise clínica aprofundada.`,
 
     daily_evolution: `${baseContext}
 
-Crie um relatório detalhado de evolução diária de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório DETALHADO de evolução diária de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos MINUCIOSAMENTE detalhados:
 
-- initial_state: Estado inicial do paciente (descreva humor, disposição física e emocional, comunicação, fatores ambientais que podem ter influenciado o estado inicial)
+- initial_state: Estado inicial do paciente (descreva humor específico, disposição física detalhada, estado emocional observado, comunicação inicial, fatores ambientais influenciadores, condições contextuais, preparação para a sessão, receptividade inicial)
 
-- activities: Atividades realizadas (detalhe a estrutura da sessão, técnicas musicoterapêuticas aplicadas, instrumentos utilizados, metodologia específica, duração e sequência)
+- activities: Atividades realizadas (detalhe estrutura completa da sessão, técnicas musicoterapêuticas específicas aplicadas, instrumentos utilizados com justificativas, metodologia passo-a-passo detalhada, duração precisa, sequência fundamentada, adaptações em tempo real, transições entre atividades)
 
-- responses: Respostas observadas (analise reações emocionais, comportamentais, comunicativas, motoras, níveis de engajamento, preferências demonstradas)
+- responses: Respostas observadas (analise reações emocionais específicas, comportamentais detalhadas, comunicativas verbais/não-verbais, motoras finas/grossas, níveis de engajamento por atividade, preferências demonstradas, resistências manifestadas, evolução durante a sessão)
 
-- observations: Observações importantes (insights clínicos, progressos pontuais, dificuldades observadas, aspectos relacionais, elementos facilitadores ou dificultadores)
+- observations: Observações importantes (insights clínicos fundamentados, progressos pontuais específicos, dificuldades observadas com análise, aspectos relacionais detalhados, elementos facilitadores identificados, fatores dificultadores, competências emergentes, necessidades identificadas)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e profissional de pelo menos 120-150 palavras.`,
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e profissional de 200-300 palavras com observação clínica detalhada.`,
 
     semester_evolution: `${baseContext}
 
-Crie um relatório completo de evolução semestral de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório COMPLETO de evolução semestral de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos EXTENSIVAMENTE detalhados:
 
-- initial_evaluation: Avaliação inicial do período (contexto de início, diagnóstico, demandas identificadas, recursos e potencialidades, linha de base estabelecida)
+- initial_evaluation: Avaliação inicial do período (contexto de início detalhado, diagnóstico específico, demandas identificadas com análise, recursos e potencialidades mapeados, linha de base estabelecida com critérios, histórico relevante, condições iniciais)
 
-- therapeutic_process: Processo terapêutico desenvolvido (metodologia aplicada, técnicas principais, evolução do plano, marcos significativos, integração interdisciplinar)
+- therapeutic_process: Processo terapêutico desenvolvido (metodologia aplicada com fundamentação teórica, técnicas principais utilizadas, evolução cronológica do plano, marcos significativos identificados, integração interdisciplinar detalhada, adaptações realizadas, progressão metodológica)
 
-- evolution_areas: Áreas de evolução observadas (comunicação, aspectos socioemocionais, habilidades cognitivas, competências musicais, autonomia)
+- evolution_areas: Áreas de evolução observadas (comunicação verbal/não-verbal com exemplos, aspectos socioemocionais específicos, habilidades cognitivas desenvolvidas, competências musicais adquiridas, autonomia funcional conquistada, integração sensorial, aspectos motores)
 
-- family_involvement: Envolvimento familiar (participação dos cuidadores, orientações fornecidas, resultados do envolvimento, desafios e superações)
+- family_involvement: Envolvimento familiar (participação detalhada dos cuidadores, orientações específicas fornecidas, resultados mensuráveis do envolvimento, desafios familiares enfrentados, superações conquistadas, dinâmica familiar observada, recomendações implementadas)
 
-- conclusions: Conclusões do período (análise geral, objetivos alcançados, impacto do processo, fatores de sucesso, aprendizados clínicos)
+- conclusions: Conclusões do período (análise geral fundamentada, objetivos alcançados com evidências, impacto terapêutico mensurado, fatores de sucesso identificados, aprendizados clínicos específicos, evolução global do paciente)
 
-- recommendations: Recomendações futuras (continuidade, estratégias, orientações específicas, articulação interdisciplinar, perspectivas)
+- recommendations: Recomendações futuras (continuidade terapêutica fundamentada, estratégias específicas, orientações detalhadas, articulação interdisciplinar necessária, perspectivas de desenvolvimento, metas futuras, cronograma sugerido)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto abrangente e técnico de pelo menos 200-250 palavras.`,
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto abrangente e técnico de 350-500 palavras com análise clínica aprofundada.`,
 
     therapeutic_discharge: `${baseContext}
 
-Crie um relatório completo de alta terapêutica de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório COMPLETO de alta terapêutica de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos EXTENSIVAMENTE detalhados:
 
-- treatment_summary: Resumo do tratamento (período de acompanhamento, contexto inicial, metodologia empregada, evolução cronológica detalhada do processo)
+- treatment_summary: Resumo do tratamento (período detalhado de acompanhamento, contexto inicial específico, metodologia empregada com fundamentação, evolução cronológica minuciosa do processo, marcos terapêuticos alcançados, técnicas predominantes utilizadas, adaptações realizadas)
 
-- achieved_goals: Objetivos alcançados (metas atingidas integralmente, conquistas específicas documentadas por área de desenvolvimento, competências consolidadas)
+- achieved_goals: Objetivos alcançados (metas atingidas integralmente com evidências, conquistas específicas documentadas por área de desenvolvimento, competências consolidadas mensuravelmente, habilidades desenvolvidas, autonomia conquistada, integração de aprendizados, transferência para contextos cotidianos)
 
-- recommendations: Recomendações pós-alta (orientações para manutenção, atividades recomendadas, estratégias de generalização, recursos comunitários, sinais de alerta, disponibilidade para seguimento)
+- recommendations: Recomendações pós-alta (orientações detalhadas para manutenção, atividades específicas recomendadas, estratégias de generalização fundamentadas, recursos comunitários identificados, sinais de alerta específicos, disponibilidade para seguimento, cronograma de reavaliações, articulação com outros profissionais)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto detalhado e profissional de pelo menos 250-300 palavras.`,
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto detalhado e profissional de 400-600 palavras com análise clínica completa.`,
 
     group_session: `${baseContext}
 
-Crie um relatório completo de sessão em grupo de musicoterapia baseado nestas informações: ${keyPoints}
+Crie um relatório COMPLETO de sessão em grupo de musicoterapia baseado nestas informações: ${keyPoints}
 
-Estruture o relatório com os seguintes campos detalhados:
+Estruture o relatório com os seguintes campos EXTENSIVAMENTE detalhados:
 
-- participants: Participantes da sessão (composição do grupo, presença e participação, características individuais relevantes, interações iniciais)
+- participants: Participantes da sessão (composição detalhada do grupo, presença e participação individual, características relevantes de cada membro, interações iniciais observadas, dinâmicas emergentes, níveis diferenciados de engajamento)
 
-- theme: Tema trabalhado (foco terapêutico principal, objetivos específicos da sessão, metodologia temática aplicada)
+- theme: Tema trabalhado (foco terapêutico principal fundamentado, objetivos específicos da sessão por participante, metodologia temática aplicada detalhadamente, conexão com planos individuais, relevância grupal, adaptações necessárias)
 
-- group_dynamics: Dinâmica do grupo (clima grupal observado, padrões de interação, liderança e papéis, momentos significativos, desafios grupais)
+- group_dynamics: Dinâmica do grupo (clima grupal observado minuciosamente, padrões de interação específicos, liderança e papéis emergentes, momentos significativos detalhados, desafios grupais identificados, facilitadores da coesão, conflitos e resoluções)
 
-- activities: Atividades realizadas (estrutura da sessão grupal, técnicas musicoterapêuticas grupais, instrumentos e recursos utilizados)
+- activities: Atividades realizadas (estrutura completa da sessão grupal, técnicas musicoterapêuticas grupais específicas, instrumentos e recursos utilizados com justificativas, metodologia passo-a-passo, participação diferenciada, adaptações individuais dentro do grupo)
 
-- group_response: Resposta do grupo (participação coletiva, expressão musical grupal, comunicação e interação, clima emocional, evolução durante a sessão)
+- group_response: Resposta do grupo (participação coletiva detalhada, expressão musical grupal observada, comunicação e interação específicas, clima emocional evolutivo, transformações durante a sessão, sinergia grupal, momentos de conexão)
 
-- observations: Observações importantes (progressos grupais, destaques individuais, aspectos técnicos, impacto terapêutico, recomendações, orientações)
+- observations: Observações importantes (progressos grupais específicos, destaques individuais dentro do contexto grupal, aspectos técnicos relevantes, impacto terapêutico mensurado, recomendações específicas, orientações para continuidade, necessidades identificadas)
 
-Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e técnico de pelo menos 150-200 palavras.`
+Retorne apenas um JSON válido com estes campos, sendo cada campo um texto estruturado e técnico de 250-400 palavras com análise grupal aprofundada.`
   };
 
   return prompts[reportType as keyof typeof prompts] || prompts.individual_session;
@@ -144,7 +147,7 @@ serve(async (req) => {
   try {
     const { reportType, keyPoints, patientName, evaluationDate } = await req.json() as ReportRequest;
 
-    console.log('Received request:', { reportType, patientName, evaluationDate, keyPointsLength: keyPoints?.length });
+    console.log('Enhanced report generation request:', { reportType, patientName, evaluationDate, keyPointsLength: keyPoints?.length });
 
     // Validar entrada
     if (!reportType || !keyPoints || !patientName) {
@@ -159,7 +162,7 @@ serve(async (req) => {
 
     const prompt = getEnhancedPromptForReportType(reportType, keyPoints, patientName, evaluationDate);
 
-    console.log('Calling Gemini API with enhanced prompt...');
+    console.log('Calling Gemini API with enhanced detailed prompt...');
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
@@ -173,10 +176,10 @@ serve(async (req) => {
           }]
         }],
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.8,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 4096, // Increased for more detailed content
+          maxOutputTokens: 8192, // Aumentado para permitir relatórios mais extensos
         },
         safetySettings: [
           {
@@ -247,7 +250,37 @@ serve(async (req) => {
       }
     }
 
-    console.log('Successfully processed AI response');
+    // Validar qualidade do conteúdo gerado
+    const validateContentQuality = (content: any, reportType: string) => {
+      const expectedFields = {
+        individual_session: ['objectives', 'activities', 'patient_response', 'observations', 'next_steps'],
+        monthly_evolution: ['therapeutic_objectives', 'achievements', 'challenges', 'adjustments', 'next_steps'],
+        daily_evolution: ['initial_state', 'activities', 'responses', 'observations'],
+        semester_evolution: ['initial_evaluation', 'therapeutic_process', 'evolution_areas', 'family_involvement', 'conclusions', 'recommendations'],
+        therapeutic_discharge: ['treatment_summary', 'achieved_goals', 'recommendations'],
+        group_session: ['participants', 'theme', 'group_dynamics', 'activities', 'group_response', 'observations']
+      };
+
+      const fields = expectedFields[reportType as keyof typeof expectedFields] || [];
+      const missingFields = fields.filter(field => !content[field] || content[field].length < 100);
+      
+      return {
+        isValid: missingFields.length === 0,
+        missingFields,
+        totalFields: fields.length,
+        validFields: fields.length - missingFields.length
+      };
+    };
+
+    const qualityCheck = validateContentQuality(content, reportType);
+    console.log('Content quality check:', qualityCheck);
+
+    if (!qualityCheck.isValid && qualityCheck.validFields < qualityCheck.totalFields * 0.7) {
+      console.warn('Conteúdo gerado não atende aos critérios de qualidade, usando fallback aprimorado');
+      throw new Error('Qualidade insuficiente, forçando fallback');
+    }
+
+    console.log('Successfully processed high-quality AI response');
 
     return new Response(
       JSON.stringify({ content }),
