@@ -12,13 +12,7 @@ import { MonthlyEvolutionForm } from "./MonthlyEvolutionForm";
 import { SemesterEvolutionForm } from "./SemesterEvolutionForm";
 import { TherapeuticDischargeForm } from "./TherapeuticDischargeForm";
 import { TechnicalReportForm } from "./TechnicalReportForm";
-
-type FormValues = {
-  patient_id: string;
-  date: Date;
-  type: string;
-  content: Record<string, any>;
-};
+import { FormValues } from "../hooks/useReportForm";
 
 interface ReportContentTabsProps {
   control: Control<FormValues>;

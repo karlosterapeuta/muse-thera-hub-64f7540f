@@ -26,17 +26,11 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Control } from "react-hook-form";
+import { FormValues } from "../hooks/useReportForm";
 
 type Patient = {
   id: string;
   name: string;
-};
-
-type FormValues = {
-  patient_id: string;
-  date: Date;
-  type: string;
-  content: Record<string, any>;
 };
 
 interface ReportFormFieldsProps {

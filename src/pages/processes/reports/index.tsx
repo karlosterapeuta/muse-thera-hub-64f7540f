@@ -17,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,18 +24,42 @@ import { PlusIcon, Eye, Edit, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ReportViewer } from "../report/components/ReportViewer";
 
-type Report = {
+type DatabaseReport = {
   id: string;
   type: string;
   created_at: string;
   updated_at: string;
+  content: any; // Json type from Supabase
   patient: {
     name: string;
   } | null;
   professional: {
     name: string;
   } | null;
+};
+
+type Report = {
+  id: string;
+  type: string;
+  created_at: string;
+  updated_at: string;
   content: Record<string, any>;
+  patient: {
+    name: string;
+  } | null;
+  professional: {
+    name: string;
+  } | null;
+};
+
+type ReportViewerData = {
+  id: string;
+  type: string;
+  date: string;
+  content: Record<string, any>;
+  status: string;
+  patient: { name: string } | null;
+  professional: { name: string } | null;
 };
 
 const reportTypeLabels: Record<string, string> = {
@@ -64,9 +87,37 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [filteredReports, setFilteredReports] = useState<Report[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ReportViewerData | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Função para converter dados do banco para o tipo local
+  const convertDatabaseReport = (dbReport: DatabaseReport): Report => {
+    // Garantir que content seja um objeto válido
+    let content: Record<string, any> = {};
+    
+    if (dbReport.content) {
+      if (typeof dbReport.content === 'object') {
+        content = dbReport.content as Record<string, any>;
+      } else if (typeof dbReport.content === 'string') {
+        try {
+          content = JSON.parse(dbReport.content);
+        } catch {
+          content = { raw_content: dbReport.content };
+        }
+      }
+    }
+
+    return {
+      id: dbReport.id,
+      type: dbReport.type,
+      created_at: dbReport.created_at,
+      updated_at: dbReport.updated_at,
+      content,
+      patient: dbReport.patient,
+      professional: dbReport.professional,
+    };
+  };
 
   useEffect(() => {
     async function loadReports() {
@@ -95,8 +146,11 @@ export default function ReportsPage() {
         }
 
         console.log("Relatórios carregados:", data);
-        setReports(data || []);
-        setFilteredReports(data || []);
+        
+        // Converter dados do banco para o tipo local
+        const convertedReports = (data || []).map(convertDatabaseReport);
+        setReports(convertedReports);
+        setFilteredReports(convertedReports);
       } catch (error) {
         console.error("Erro ao carregar relatórios:", error);
         toast({
@@ -127,10 +181,14 @@ export default function ReportsPage() {
 
   const handleView = (report: Report) => {
     // Transformar o report para o formato esperado pelo ReportViewer
-    const transformedReport = {
-      ...report,
+    const transformedReport: ReportViewerData = {
+      id: report.id,
+      type: report.type,
       date: report.created_at,
-      status: 'finalized' // Como não temos status na tabela, assumir finalizado
+      content: report.content,
+      status: 'finalized', // Como não temos status na tabela, assumir finalizado
+      patient: report.patient,
+      professional: report.professional,
     };
     setSelectedReport(transformedReport);
     setIsViewDialogOpen(true);

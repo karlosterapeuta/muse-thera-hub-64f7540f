@@ -42,11 +42,16 @@ export function ReportSubmission({
         throw new Error("Dados necessários não encontrados");
       }
 
+      // Garantir que content seja um objeto válido
+      const safeContent = formData.content && typeof formData.content === 'object' 
+        ? formData.content 
+        : {};
+
       const reportData = {
         patient_id: formData.patient_id,
         professional_id: userId,
         type: formData.type,
-        content: formData.content,
+        content: safeContent,
         updated_at: new Date().toISOString(),
       };
 

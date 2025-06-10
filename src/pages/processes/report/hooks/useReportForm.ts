@@ -11,6 +11,7 @@ const formSchema = z.object({
   patient_id: z.string({
     required_error: "Por favor, selecione um paciente",
   }),
+  date: z.date().default(() => new Date()),
   type: z.enum([
     "individual_session",
     "group_session",
@@ -45,6 +46,7 @@ export function useReportForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       patient_id: "",
+      date: new Date(),
       type: "individual_session",
       content: {},
     },
