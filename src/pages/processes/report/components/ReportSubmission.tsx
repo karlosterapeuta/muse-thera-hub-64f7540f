@@ -122,7 +122,7 @@ export function ReportSubmission({
         content: formData.content || {},
       };
       
-      // Depois gera o PDF
+      // Depois gera o PDF com os dados completos
       await generatePDF(selectedPatient.name, completeFormData, professionalData, userEmail, userName);
 
       toast({
