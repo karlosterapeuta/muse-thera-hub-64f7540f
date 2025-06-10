@@ -160,12 +160,6 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
                 <SelectItem value="therapeutic_discharge">
                   Alta Terapêutica
                 </SelectItem>
-                <SelectItem value="technical_report">
-                  Relatório Técnico
-                </SelectItem>
-                <SelectItem value="assessment_report">
-                  Relatório Avaliação
-                </SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
