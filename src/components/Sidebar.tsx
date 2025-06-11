@@ -76,6 +76,14 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     );
   }
 
+  const getUserDisplayName = () => {
+    if (!userEmail) return "Carregando...";
+    
+    // Extrair apenas a parte antes do @ para economizar espaço
+    const username = userEmail.split('@')[0];
+    return username;
+  };
+
   const handleLogout = async () => {
     try {
       console.log("Iniciando logout...");
@@ -195,8 +203,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
               <span className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 MuseTera
               </span>
-              <span className="text-xs text-slate-500/80 font-medium -mt-1">
-                Musicoterapia Digital
+              <span className="text-xs text-slate-500/80 font-medium -mt-1" title={userEmail || "Usuário não identificado"}>
+                {getUserDisplayName()}
               </span>
             </div>
           )}
