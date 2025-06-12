@@ -1,466 +1,363 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
 
-interface Note {
-  id: string;
-  lane: number;
-  color: string;
-  frequency: number;
-  startTime: number;
-  duration: number;
-  y: number;
-}
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Pause, Play, RotateCcw } from 'lucide-react';
+import { NoteSequence, Note } from '@/types/musicTypes';
 
 interface GuitarHeroGameProps {
-  instrumentType: "bell" | "xylophone" | "keyboard";
+  instrumentType: 'bell' | 'xylophone' | 'keyboard';
   onNotePlay: (frequency: number, color: string) => void;
+  noteSequence?: NoteSequence;
 }
 
-const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+interface FallingNote {
+  id: string;
+  note: string;
+  frequency: number;
+  color: string;
+  position: number;
+  lane: number;
+  timing: number;
+  duration: number;
+}
+
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ 
+  instrumentType, 
+  onNotePlay,
+  noteSequence 
+}) => {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
-  const [maxCombo, setMaxCombo] = useState(0);
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [speed, setSpeed] = useState(2);
-  const [hitZoneHeight] = useState(80);
+  const [accuracy, setAccuracy] = useState(100);
+  const [gameTime, setGameTime] = useState(0);
+  const [fallingNotes, setFallingNotes] = useState<FallingNote[]>([]);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState(0);
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-  const gameStartTimeRef = useRef<number>(0);
-  const lastUpdateTimeRef = useRef<number>(0);
-  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const lastNoteTimeRef = useRef<number>(0);
 
-  // Configuração das lanes (faixas) baseada no instrumento
-  const lanes = instrumentType === "bell" ? [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
-    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
-    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
-    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
-  ] : instrumentType === "xylophone" ? [
-    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
-    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
-    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
-    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
-    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
-    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
-    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
-  ] : [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
-    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
-    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
-    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
-  ];
-
-  // Função para iniciar música de fundo
-  const startBackgroundMusic = useCallback(() => {
-    try {
-      // Criar um áudio sintético animado para o jogo
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Criar osciladores para uma melodia de fundo simples
-      const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
-        
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.start(audioContext.currentTime + startTime);
-        oscillator.stop(audioContext.currentTime + startTime + duration);
-      };
-
-      // Melodia simples e animada
-      const melody = [
-        { freq: 523.25, time: 0, duration: 0.5 },    // C5
-        { freq: 587.33, time: 0.5, duration: 0.5 },  // D5
-        { freq: 659.25, time: 1, duration: 0.5 },    // E5
-        { freq: 523.25, time: 1.5, duration: 0.5 },  // C5
-        { freq: 587.33, time: 2, duration: 0.5 },    // D5
-        { freq: 659.25, time: 2.5, duration: 0.5 },  // E5
-        { freq: 783.99, time: 3, duration: 1 },      // G5
-        { freq: 659.25, time: 4, duration: 0.5 },    // E5
-        { freq: 587.33, time: 4.5, duration: 0.5 },  // D5
-        { freq: 523.25, time: 5, duration: 1 },      // C5
-      ];
-
-      // Tocar a melodia
-      melody.forEach(note => {
-        playBackgroundTone(note.freq, note.time, note.duration);
-      });
-
-      // Repetir a melodia a cada 6 segundos
-      const interval = setInterval(() => {
-        if (isPlaying) {
-          melody.forEach(note => {
-            playBackgroundTone(note.freq, note.time, note.duration);
-          });
-        } else {
-          clearInterval(interval);
-        }
-      }, 6000);
-
-      console.log(`🎵 Background music started for ${instrumentType}`);
-      
-    } catch (error) {
-      console.error("Error starting background music:", error);
-    }
-  }, [instrumentType, isPlaying]);
-
-  // Parar música de fundo
-  const stopBackgroundMusic = useCallback(() => {
-    if (backgroundMusicRef.current) {
-      backgroundMusicRef.current.pause();
-      backgroundMusicRef.current.currentTime = 0;
-      backgroundMusicRef.current = null;
-    }
-    console.log("🎵 Background music stopped");
-  }, []);
-
-  // Gerar padrão de notas
-  const generateNotes = useCallback(() => {
-    const newNotes: Note[] = [];
-    const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol
-      [1, 3, 5], // Ré, Fá, Lá
-      [0, 1, 2], // Sequência simples
-      [4, 5, 6], // Notas agudas
-      [2, 4, 6], // Saltos
-      [0, 3, 6], // Acordes
-    ];
-
-    let noteId = 0;
-    for (let i = 0; i < 20; i++) {
-      const pattern = patterns[i % patterns.length];
-      const baseTime = i * 4000; // 4 segundos entre padrões
-      
-      pattern.forEach((laneIndex, noteIndex) => {
-        if (laneIndex < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: laneIndex,
-            color: lanes[laneIndex].color,
-            frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
-            duration: 600,
-            y: -100 // Começar acima da tela
-          });
-        }
-      });
-    }
-
-    console.log(`Generated ${newNotes.length} notes for ${instrumentType}`);
-    setNotes(newNotes);
-  }, [instrumentType, lanes]);
-
-  // Atualizar posição das notas
-  const updateNotes = useCallback(() => {
-    if (!isPlaying) return;
-
-    const now = Date.now();
-    const currentGameTime = now - gameStartTimeRef.current;
-    
-    setNotes(prevNotes => 
-      prevNotes
-        .map(note => {
-          // Calcular posição baseada no tempo
-          const noteAge = currentGameTime - note.startTime;
-          const newY = noteAge * speed * 0.1; // Velocidade controlada
-          return {
-            ...note,
-            y: newY
-          };
-        })
-        .filter(note => note.y < 600) // Remove notas que saíram da tela
-    );
-
-    // Remover notas que passaram da zona de acerto e perderam
-    setNotes(prevNotes => {
-      const missedNotes = prevNotes.filter(note => note.y > 500);
-      if (missedNotes.length > 0 && combo > 0) {
-        setCombo(0);
-        toast("Notas perdidas! Combo resetado", { duration: 1000 });
-      }
-      return prevNotes.filter(note => note.y <= 500);
-    });
-
-    lastUpdateTimeRef.current = now;
-    animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed, combo]);
-
-  // Detectar teclas pressionadas
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (!isPlaying) return;
-
-    const keyPressed = event.key;
-    const lane = lanes.find(l => l.key === keyPressed);
-    if (!lane) return;
-
-    event.preventDefault();
-
-    const laneIndex = lanes.indexOf(lane);
-    const hitZoneTop = 350; // Posição da zona de acerto
-    const hitZoneBottom = hitZoneTop + hitZoneHeight;
-
-    console.log(`Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
-
-    // Verificar se há uma nota na zona de acerto para esta lane
-    const hitNote = notes.find(note => 
-      note.lane === laneIndex && 
-      note.y >= hitZoneTop - 50 && 
-      note.y <= hitZoneBottom + 50
-    );
-
-    if (hitNote) {
-      // Acertou!
-      const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
-      let points = 100;
-      let feedback = "Good!";
-
-      if (precision < 15) {
-        points = 300;
-        feedback = "Perfect!";
-      } else if (precision < 30) {
-        points = 200;
-        feedback = "Great!";
-      }
-
-      const finalPoints = points * Math.max(1, combo + 1);
-      setScore(prev => prev + finalPoints);
-      setCombo(prev => prev + 1);
-      setMaxCombo(prev => Math.max(prev, combo + 1));
-
-      // Tocar o som
-      onNotePlay(lane.frequency, lane.color);
-
-      // Feedback visual
-      toast(`${feedback} +${finalPoints} pontos`, {
-        duration: 1000,
-      });
-
-      // Remover a nota acertada
-      setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
-      
-      console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
-    } else {
-      // Errou ou tocou sem nota
-      if (combo > 0) {
-        setCombo(0);
-        toast("Miss! Combo perdido", {
-          duration: 1000,
-        });
-      }
-      
-      // Ainda toca o som para feedback
-      onNotePlay(lane.frequency, lane.color);
-      console.log(`Missed note in lane ${laneIndex}`);
-    }
-  }, [lanes, isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
-
-  // Gerenciar eventos de teclado
-  useEffect(() => {
-    if (isPlaying) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
-    }
-  }, [isPlaying, handleKeyPress]);
-
-  // Iniciar/pausar o jogo
-  const togglePlay = () => {
-    if (!isPlaying) {
-      generateNotes();
-      gameStartTimeRef.current = Date.now();
-      lastUpdateTimeRef.current = Date.now();
-      startBackgroundMusic(); // Iniciar música de fundo
-      console.log(`Starting ${instrumentType} game with background music`);
-      setIsPlaying(true);
-    } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      stopBackgroundMusic(); // Parar música de fundo
-      setIsPlaying(false);
-      console.log(`Pausing ${instrumentType} game`);
+  // Configurações baseadas no instrumento
+  const instrumentConfig = {
+    bell: {
+      lanes: 5,
+      colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'],
+      notes: ['C', 'D', 'E', 'F', 'G'],
+      frequencies: [261.63, 293.66, 329.63, 349.23, 392.00]
+    },
+    xylophone: {
+      lanes: 7,
+      colors: ['#FF6B6B', '#FF8E53', '#FECA57', '#96CEB4', '#4ECDC4', '#45B7D1', '#A55EEA'],
+      notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+      frequencies: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88]
+    },
+    keyboard: {
+      lanes: 7,
+      colors: ['#FFFFFF', '#000000', '#FFFFFF', '#000000', '#FFFFFF', '#FFFFFF', '#000000'],
+      notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+      frequencies: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88]
     }
   };
 
-  // Iniciar animação quando o jogo começar
-  useEffect(() => {
-    if (isPlaying) {
-      updateNotes();
-    }
-  }, [isPlaying, updateNotes]);
+  const config = instrumentConfig[instrumentType];
 
-  // Resetar o jogo
-  const resetGame = () => {
+  // Converter sequência musical em notas que caem
+  const generateNotesFromSequence = useCallback(() => {
+    if (!noteSequence || !noteSequence.notes.length) {
+      return [];
+    }
+
+    const notes: FallingNote[] = [];
+    let currentTime = 0;
+    const beatDuration = 60000 / noteSequence.bpm; // duração de uma batida em ms
+
+    noteSequence.notes.forEach((note: Note, index: number) => {
+      const laneIndex = config.notes.indexOf(note.note);
+      if (laneIndex !== -1) {
+        const fallingNote: FallingNote = {
+          id: `note-${index}`,
+          note: note.note,
+          frequency: note.frequency,
+          color: config.colors[laneIndex],
+          position: 0,
+          lane: laneIndex,
+          timing: currentTime + 2000, // 2 segundos de delay inicial
+          duration: note.duration * beatDuration
+        };
+        notes.push(fallingNote);
+      }
+      currentTime += note.duration * beatDuration;
+    });
+
+    return notes;
+  }, [noteSequence, config]);
+
+  // Função para iniciar o jogo
+  const startGame = useCallback(() => {
+    setGameStarted(true);
+    setIsPaused(false);
+    setScore(0);
+    setCombo(0);
+    setAccuracy(100);
+    setGameTime(0);
+    setCurrentNoteIndex(0);
+    startTimeRef.current = Date.now();
+    lastNoteTimeRef.current = Date.now();
+    
+    // Gerar notas da sequência musical
+    const generatedNotes = generateNotesFromSequence();
+    setFallingNotes(generatedNotes);
+  }, [generateNotesFromSequence]);
+
+  // Função para pausar/despausar
+  const togglePause = useCallback(() => {
+    setIsPaused(!isPaused);
+  }, [isPaused]);
+
+  // Função para reiniciar
+  const resetGame = useCallback(() => {
+    setGameStarted(false);
+    setIsPaused(false);
+    setScore(0);
+    setCombo(0);
+    setAccuracy(100);
+    setGameTime(0);
+    setFallingNotes([]);
+    setCurrentNoteIndex(0);
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-    stopBackgroundMusic(); // Parar música de fundo
-    setIsPlaying(false);
-    setScore(0);
-    setCombo(0);
-    setMaxCombo(0);
-    setNotes([]);
-    gameStartTimeRef.current = 0;
-    lastUpdateTimeRef.current = 0;
-    console.log(`Game reset for ${instrumentType}`);
-  };
+  }, []);
 
-  // Cleanup
+  // Função para tocar nota quando tecla é pressionada
+  const playNote = useCallback((laneIndex: number) => {
+    if (!gameStarted || isPaused) return;
+
+    const frequency = config.frequencies[laneIndex];
+    const color = config.colors[laneIndex];
+    onNotePlay(frequency, color);
+
+    // Verificar se há uma nota na zona de acerto
+    const hitZone = 80; // zona de acerto em %
+    const tolerance = 10; // tolerância em %
+
+    const noteInZone = fallingNotes.find(note => 
+      note.lane === laneIndex && 
+      Math.abs(note.position - hitZone) <= tolerance &&
+      note.position > 0
+    );
+
+    if (noteInZone) {
+      // Acerto!
+      setScore(prev => prev + (10 + combo));
+      setCombo(prev => prev + 1);
+      
+      // Remover a nota acertada
+      setFallingNotes(prev => prev.filter(note => note.id !== noteInZone.id));
+      
+      // Feedback visual pode ser adicionado aqui
+    } else {
+      // Erro - quebrar combo
+      setCombo(0);
+    }
+  }, [gameStarted, isPaused, config, onNotePlay, fallingNotes, combo]);
+
+  // Event listener para teclas
   useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const keyToLane: { [key: string]: number } = {
+        '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6
+      };
+      
+      const laneIndex = keyToLane[event.key];
+      if (laneIndex !== undefined && laneIndex < config.lanes) {
+        playNote(laneIndex);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [playNote, config.lanes]);
+
+  // Loop principal do jogo
+  useEffect(() => {
+    if (!gameStarted || isPaused) return;
+
+    const gameLoop = () => {
+      const now = Date.now();
+      const elapsed = now - startTimeRef.current;
+      setGameTime(elapsed);
+
+      // Atualizar posição das notas
+      setFallingNotes(prev => prev.map(note => {
+        const noteElapsed = now - lastNoteTimeRef.current;
+        const newPosition = (noteElapsed / (note.timing + note.duration)) * 100;
+        
+        return {
+          ...note,
+          position: Math.min(newPosition, 100)
+        };
+      }).filter(note => note.position < 100)); // Remover notas que saíram da tela
+
+      animationRef.current = requestAnimationFrame(gameLoop);
+    };
+
+    animationRef.current = requestAnimationFrame(gameLoop);
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      stopBackgroundMusic();
     };
-  }, [stopBackgroundMusic]);
+  }, [gameStarted, isPaused]);
 
-  const getInstrumentTitle = () => {
-    switch (instrumentType) {
-      case "bell": return "🔔 Sino-Hero";
-      case "xylophone": return "🎵 Xilofone-Hero";
-      case "keyboard": return "🎹 Teclado-Hero";
-      default: return "TEA-Hero";
+  // Verificar fim do jogo
+  useEffect(() => {
+    if (gameStarted && fallingNotes.length === 0 && currentNoteIndex >= (noteSequence?.notes.length || 0)) {
+      // Fim do jogo após um delay
+      setTimeout(() => {
+        setGameStarted(false);
+      }, 2000);
     }
-  };
+  }, [gameStarted, fallingNotes.length, currentNoteIndex, noteSequence]);
 
   return (
-    <div className="flex flex-col h-full bg-black">
-      {/* Header com controles e pontuação */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">
-            {getInstrumentTitle()}
-          </h1>
-          <div className="flex gap-2">
-            <Button onClick={togglePlay} variant="secondary" size="sm">
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isPlaying ? "Pausar" : "Jogar"}
+    <div className="flex-1 flex flex-col bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+      {/* Header do jogo */}
+      <div className="bg-black/50 p-4 flex justify-between items-center">
+        <div className="flex space-x-6">
+          <div>Score: <span className="text-yellow-400 font-bold">{score.toLocaleString()}</span></div>
+          <div>Combo: <span className="text-orange-400 font-bold">x{combo}</span></div>
+          <div>Precisão: <span className="text-green-400 font-bold">{accuracy.toFixed(1)}%</span></div>
+        </div>
+        
+        <div className="flex space-x-2">
+          {!gameStarted ? (
+            <Button onClick={startGame} className="bg-green-600 hover:bg-green-700">
+              <Play className="w-4 h-4 mr-2" />
+              Iniciar
             </Button>
-            <Button onClick={resetGame} variant="secondary" size="sm">
-              <RotateCcw className="w-4 h-4" />
-              Reset
-            </Button>
-          </div>
+          ) : (
+            <>
+              <Button onClick={togglePause} variant="secondary">
+                {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+              </Button>
+              <Button onClick={resetGame} variant="destructive">
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Área do jogo */}
+      <div className="flex-1 relative" ref={gameRef}>
+        <div className="absolute inset-0 flex">
+          {/* Lanes do jogo */}
+          {Array.from({ length: config.lanes }).map((_, laneIndex) => (
+            <div 
+              key={laneIndex}
+              className="flex-1 border-r border-gray-600 relative"
+              style={{ backgroundColor: `${config.colors[laneIndex]}15` }}
+            >
+              {/* Zona de acerto */}
+              <div 
+                className="absolute left-0 right-0 h-16 border-2 border-yellow-400 bg-yellow-400/20 rounded"
+                style={{ bottom: '10%' }}
+              />
+              
+              {/* Tecla do instrumento */}
+              <button
+                onClick={() => playNote(laneIndex)}
+                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full font-bold text-lg border-2 hover:scale-110 transition-transform"
+                style={{ 
+                  backgroundColor: config.colors[laneIndex],
+                  borderColor: instrumentType === 'keyboard' ? '#333' : '#fff',
+                  color: instrumentType === 'keyboard' && (laneIndex === 1 || laneIndex === 3 || laneIndex === 6) ? '#fff' : '#000'
+                }}
+              >
+                {laneIndex + 1}
+              </button>
+
+              {/* Notas que caem */}
+              {fallingNotes
+                .filter(note => note.lane === laneIndex)
+                .map(note => (
+                  <div
+                    key={note.id}
+                    className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-2 border-white shadow-lg"
+                    style={{
+                      backgroundColor: note.color,
+                      top: `${note.position}%`,
+                      transition: 'top 0.1s linear'
+                    }}
+                  />
+                ))
+              }
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-sm opacity-80">Pontuação</div>
-            <div className="text-xl font-bold">{score.toLocaleString()}</div>
+        {/* Informações da música */}
+        {noteSequence && (
+          <div className="absolute top-4 left-4 bg-black/70 p-4 rounded-lg">
+            <h3 className="text-lg font-bold mb-2">Informações Musicais</h3>
+            <p>Tonalidade: {noteSequence.key} Maior</p>
+            <p>Andamento: {noteSequence.bpm} BPM</p>
+            <p>Compasso: {noteSequence.timeSignature}</p>
+            <p>Notas: {noteSequence.notes.length}</p>
+            <Progress 
+              value={(currentNoteIndex / noteSequence.notes.length) * 100} 
+              className="mt-2 w-48"
+            />
           </div>
-          <div>
-            <div className="text-sm opacity-80">Combo</div>
-            <div className="text-xl font-bold text-yellow-300">{combo}x</div>
+        )}
+
+        {/* Overlay de pausa */}
+        {isPaused && (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+            <Card>
+              <CardContent className="p-8 text-center text-black">
+                <h2 className="text-2xl font-bold mb-4">Jogo Pausado</h2>
+                <Button onClick={togglePause}>
+                  <Play className="w-4 h-4 mr-2" />
+                  Continuar
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-          <div>
-            <div className="text-sm opacity-80">Max Combo</div>
-            <div className="text-xl font-bold text-orange-300">{maxCombo}x</div>
+        )}
+
+        {/* Tela de fim de jogo */}
+        {!gameStarted && score > 0 && (
+          <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+            <Card>
+              <CardContent className="p-8 text-center text-black">
+                <h2 className="text-3xl font-bold mb-4 text-yellow-600">Parabéns!</h2>
+                <div className="space-y-2 mb-6">
+                  <p className="text-xl">Score Final: <span className="font-bold">{score.toLocaleString()}</span></p>
+                  <p>Maior Combo: <span className="font-bold">x{combo}</span></p>
+                  <p>Precisão: <span className="font-bold">{accuracy.toFixed(1)}%</span></p>
+                </div>
+                <div className="flex space-x-4">
+                  <Button onClick={startGame} className="bg-green-600 hover:bg-green-700">
+                    Jogar Novamente
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <div>
-            <div className="text-sm opacity-80">Velocidade</div>
-            <div className="text-xl font-bold">{speed}x</div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Instruções */}
-      <div className="bg-blue-600 p-3 text-center text-white">
-        <p className="text-sm">
-          Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
-        </p>
-      </div>
-
-      {/* Game Area */}
-      <div 
-        ref={gameRef}
-        className="flex-1 relative bg-gradient-to-b from-gray-900 to-black overflow-hidden"
-        style={{ height: "500px" }}
-      >
-        {/* Lanes (faixas) */}
-        {lanes.map((lane, index) => (
-          <div
-            key={index}
-            className="absolute border-r border-gray-600"
-            style={{
-              left: `${(index / lanes.length) * 100}%`,
-              width: `${100 / lanes.length}%`,
-              height: "100%",
-              backgroundColor: `${lane.color}15`
-            }}
-          >
-            {/* Indicador da nota na parte inferior */}
-            <div
-              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg"
-              style={{
-                height: "70px",
-                backgroundColor: lane.color,
-              }}
-            >
-              <div className="text-center">
-                <div className="text-xs font-bold">{lane.key}</div>
-                <div className="text-2xl">{lane.symbol}</div>
-                <div className="text-xs font-bold">{lane.name}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Zona de acerto */}
-        <div
-          className="absolute w-full border-4 border-yellow-400 bg-yellow-400/30 shadow-lg"
-          style={{
-            top: "350px",
-            height: `${hitZoneHeight}px`,
-          }}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-yellow-400 font-bold text-lg animate-pulse">ZONA DE ACERTO</div>
-          </div>
-        </div>
-
-        {/* Notas em queda */}
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className="absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform"
-            style={{
-              left: `${(note.lane / lanes.length) * 100 + 1}%`,
-              width: `${100 / lanes.length - 2}%`,
-              top: `${note.y}px`,
-              height: "50px",
-              backgroundColor: note.color,
-              boxShadow: `0 0 20px ${note.color}50`,
-            }}
-          >
-            <div className="text-center">
-              <div className="text-lg">{lanes[note.lane].symbol}</div>
-            </div>
-          </div>
-        ))}
-
-        {/* Linha de referência */}
-        <div
-          className="absolute w-full border-t-4 border-yellow-400 opacity-50"
-          style={{ top: "380px" }}
-        />
+      <div className="bg-black/50 p-2 text-center text-sm">
+        Use as teclas <strong>1-{config.lanes}</strong> para tocar as notas quando elas passarem pela zona dourada!
       </div>
     </div>
   );
