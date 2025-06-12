@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useDashboardData } from "./Dashboard/hooks/useDashboardData";
 import { DashboardStats } from "./Dashboard/components/DashboardStats";
 import { UnifiedWeeklySchedule } from "./Dashboard/components/UnifiedWeeklySchedule";
+import { FinancialAgenda } from "./Dashboard/components/FinancialAgenda";
 
 export default function Dashboard() {
   const dashboardData = useDashboardData();
@@ -36,6 +37,9 @@ export default function Dashboard() {
           averagePerSession={dashboardData.averagePerSession}
           completionRate={dashboardData.completionRate}
           monthlyChange={dashboardData.monthlyChange}
+          totalPatients={dashboardData.totalPatients}
+          totalAnamnesis={dashboardData.totalAnamnesis}
+          totalReports={dashboardData.totalReports}
           isLoading={dashboardData.isLoading}
         />
 
@@ -105,6 +109,12 @@ export default function Dashboard() {
         {/* Unified Weekly Schedule */}
         <UnifiedWeeklySchedule 
           weekDays={dashboardData.weekDays}
+          isLoading={dashboardData.isLoading}
+        />
+
+        {/* Financial Agenda */}
+        <FinancialAgenda 
+          financialSchedule={dashboardData.financialSchedule}
           isLoading={dashboardData.isLoading}
         />
 

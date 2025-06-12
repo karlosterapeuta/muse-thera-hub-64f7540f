@@ -24,6 +24,17 @@ export type DayData = {
   session_count: number;
 };
 
+export type FinancialAgendaItem = {
+  id: string;
+  amount: number;
+  session_date: string;
+  description?: string;
+  patient_name?: string;
+  clinic_name?: string;
+  formatted_date: string;
+  formatted_amount: string;
+};
+
 export type DashboardData = {
   weekDays: DayData[];
   totalSessions: number;
@@ -33,6 +44,10 @@ export type DashboardData = {
   monthlyChange: number;
   completionRate: number;
   sessionData: any[];
+  totalPatients: number;
+  totalAnamnesis: number;
+  totalReports: number;
+  financialSchedule: FinancialAgendaItem[];
   isLoading: boolean;
 };
 
@@ -46,6 +61,10 @@ export function useDashboardData(): DashboardData {
     monthlyChange: 0,
     completionRate: 0,
     sessionData: [],
+    totalPatients: 0,
+    totalAnamnesis: 0,
+    totalReports: 0,
+    financialSchedule: [],
     isLoading: true,
   });
   const { toast } = useToast();
@@ -90,48 +109,99 @@ export function useDashboardData(): DashboardData {
         
         console.log("📅 Buscando dados da semana:", format(startDate, "yyyy-MM-dd"), "até", format(endDate, "yyyy-MM-dd"));
         
-        // Fetch sessions for this week
-        const { data: sessions, error: sessionsError } = await supabase
-          .from("sessions")
-          .select(`
-            id, 
-            date, 
-            notes,
-            patient_id, 
-            patients!inner (
-              id,
-              name,
+        // Parallel queries for better performance
+        const [
+          sessionsResult,
+          financialRecordsResult,
+          patientsResult,
+          anamnesisResult,
+          reportsResult,
+          financialScheduleResult
+        ] = await Promise.all([
+          // Fetch sessions for this week
+          supabase
+            .from("sessions")
+            .select(`
+              id, 
+              date, 
+              notes,
+              patient_id, 
+              patients!inner (
+                id,
+                name,
+                professional_id
+              )
+            `)
+            .eq('patients.professional_id', professional.id)
+            .gte('date', format(startDate, "yyyy-MM-dd"))
+            .lte('date', format(endDate, "yyyy-MM-dd"))
+            .order('date'),
+
+          // Fetch financial records for this week
+          supabase
+            .from("financial_records")
+            .select(`
+              id, 
+              amount, 
+              session_date, 
+              description,
               professional_id
-            )
-          `)
-          .eq('patients.professional_id', professional.id)
-          .gte('date', format(startDate, "yyyy-MM-dd"))
-          .lte('date', format(endDate, "yyyy-MM-dd"))
-          .order('date');
+            `)
+            .eq('professional_id', professional.id)
+            .gte('session_date', format(startDate, "yyyy-MM-dd"))
+            .lte('session_date', format(endDate, "yyyy-MM-dd")),
 
-        console.log("📋 Sessões da semana encontradas:", sessions?.length || 0);
-        if (sessions && sessions.length > 0) {
-          console.log("📋 Primeira sessão:", sessions[0]);
-        }
+          // Count total patients
+          supabase
+            .from("patients")
+            .select('id', { count: 'exact', head: true })
+            .eq('professional_id', professional.id),
 
-        // Fetch financial records for this week
-        const { data: financialRecords, error: financialError } = await supabase
-          .from("financial_records")
-          .select(`
-            id, 
-            amount, 
-            session_date, 
-            description,
-            professional_id
-          `)
-          .eq('professional_id', professional.id)
-          .gte('session_date', format(startDate, "yyyy-MM-dd"))
-          .lte('session_date', format(endDate, "yyyy-MM-dd"));
+          // Count total anamnesis
+          supabase
+            .from("anamnesis")
+            .select('id', { count: 'exact', head: true })
+            .eq('professional_id', professional.id),
 
-        console.log("💰 Registros financeiros da semana encontrados:", financialRecords?.length || 0);
-        if (financialRecords && financialRecords.length > 0) {
-          console.log("💰 Primeiro registro:", financialRecords[0]);
-        }
+          // Count total reports
+          supabase
+            .from("reports")
+            .select('id', { count: 'exact', head: true })
+            .eq('professional_id', professional.id),
+
+          // Get financial schedule (last 30 days)
+          supabase
+            .from("financial_records")
+            .select(`
+              id,
+              amount,
+              session_date,
+              description,
+              professional_id,
+              patients:patient_id (name),
+              clinics:clinic_id (name)
+            `)
+            .eq('professional_id', professional.id)
+            .gte('session_date', format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
+            .order('session_date', { ascending: false })
+            .limit(10)
+        ]);
+
+        const { data: sessions, error: sessionsError } = sessionsResult;
+        const { data: financialRecords, error: financialError } = financialRecordsResult;
+        const { count: totalPatients } = patientsResult;
+        const { count: totalAnamnesis } = anamnesisResult;
+        const { count: totalReports } = reportsResult;
+        const { data: financialScheduleData, error: financialScheduleError } = financialScheduleResult;
+
+        console.log("📊 Dados coletados:", {
+          sessions: sessions?.length || 0,
+          financialRecords: financialRecords?.length || 0,
+          totalPatients: totalPatients || 0,
+          totalAnamnesis: totalAnamnesis || 0,
+          totalReports: totalReports || 0,
+          financialSchedule: financialScheduleData?.length || 0
+        });
 
         // If no data this week, try to get monthly data for stats
         let monthlyFinancialRecords = [];
@@ -301,6 +371,21 @@ export function useDashboardData(): DashboardData {
           sessions: sessionsByMonth[month]
         }));
 
+        // Prepare financial schedule
+        const financialSchedule: FinancialAgendaItem[] = financialScheduleData?.map(record => ({
+          id: record.id,
+          amount: record.amount,
+          session_date: record.session_date,
+          description: record.description,
+          patient_name: record.patients?.name || 'Não informado',
+          clinic_name: record.clinics?.name || 'Não informado',
+          formatted_date: format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR }),
+          formatted_amount: new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          }).format(record.amount)
+        })) || [];
+
         console.log("✅ Dashboard data prepared successfully");
 
         setData({
@@ -312,6 +397,10 @@ export function useDashboardData(): DashboardData {
           monthlyChange: 5, // Placeholder
           completionRate,
           sessionData,
+          totalPatients: totalPatients || 0,
+          totalAnamnesis: totalAnamnesis || 0,
+          totalReports: totalReports || 0,
+          financialSchedule,
           isLoading: false,
         });
 
