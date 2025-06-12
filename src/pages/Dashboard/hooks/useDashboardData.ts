@@ -83,173 +83,152 @@ export function useDashboardData(): DashboardData {
         
         console.log("👤 Usuário encontrado:", user.id);
 
-        // Get professional profile
+        // First try to get professional profile
+        let professionalId = null;
         const { data: professional, error: professionalError } = await supabase
           .from('professionals')
           .select('id')
           .eq('user_id', user.id)
           .single();
 
-        if (professionalError || !professional) {
-          console.log("❌ Perfil profissional não encontrado:", professionalError);
-          setData(prev => ({ ...prev, isLoading: false }));
-          return;
-        }
+        if (professional) {
+          professionalId = professional.id;
+          console.log("👨‍⚕️ Profissional encontrado:", professionalId);
+        } else {
+          console.log("⚠️ Perfil profissional não encontrado, tentando buscar por profiles...");
+          
+          // Fallback to profiles table
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', user.id)
+            .single();
 
-        console.log("👨‍⚕️ Profissional encontrado:", professional.id);
+          if (profile) {
+            professionalId = profile.id;
+            console.log("👤 Profile encontrado:", professionalId);
+          } else {
+            console.log("❌ Nenhum perfil encontrado:", profileError);
+            setData(prev => ({ ...prev, isLoading: false }));
+            return;
+          }
+        }
 
         // Get current week dates
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
         const endDate = endOfWeek(today, { weekStartsOn: 0 });
         
-        // Also get last month for fallback data
-        const monthStartDate = startOfMonth(today);
-        const monthEndDate = endOfMonth(today);
-        
         console.log("📅 Buscando dados da semana:", format(startDate, "yyyy-MM-dd"), "até", format(endDate, "yyyy-MM-dd"));
         
-        // Parallel queries for better performance
-        const [
-          sessionsResult,
-          financialRecordsResult,
-          patientsResult,
-          anamnesisResult,
-          reportsResult,
-          financialScheduleResult
-        ] = await Promise.all([
-          // Fetch sessions for this week
-          supabase
-            .from("sessions")
-            .select(`
-              id, 
-              date, 
-              notes,
-              patient_id, 
-              patients!inner (
-                id,
-                name,
-                professional_id
-              )
-            `)
-            .eq('patients.professional_id', professional.id)
-            .gte('date', format(startDate, "yyyy-MM-dd"))
-            .lte('date', format(endDate, "yyyy-MM-dd"))
-            .order('date'),
+        // Query patients with better error handling
+        console.log("🔍 Buscando pacientes...");
+        const { data: patientsData, error: patientsError, count: totalPatients } = await supabase
+          .from("patients")
+          .select('id', { count: 'exact', head: true })
+          .eq('professional_id', professionalId);
 
-          // Fetch financial records for this week
-          supabase
-            .from("financial_records")
-            .select(`
-              id, 
-              amount, 
-              session_date, 
-              description,
-              professional_id
-            `)
-            .eq('professional_id', professional.id)
-            .gte('session_date', format(startDate, "yyyy-MM-dd"))
-            .lte('session_date', format(endDate, "yyyy-MM-dd")),
-
-          // Count total patients
-          supabase
-            .from("patients")
-            .select('id', { count: 'exact', head: true })
-            .eq('professional_id', professional.id),
-
-          // Count total anamnesis
-          supabase
-            .from("anamnesis")
-            .select('id', { count: 'exact', head: true })
-            .eq('professional_id', professional.id),
-
-          // Count total reports
-          supabase
-            .from("reports")
-            .select('id', { count: 'exact', head: true })
-            .eq('professional_id', professional.id),
-
-          // Get financial schedule (last 30 days)
-          supabase
-            .from("financial_records")
-            .select(`
-              id,
-              amount,
-              session_date,
-              description,
-              professional_id,
-              patients:patient_id (name),
-              clinics:clinic_id (name)
-            `)
-            .eq('professional_id', professional.id)
-            .gte('session_date', format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
-            .order('session_date', { ascending: false })
-            .limit(10)
-        ]);
-
-        const { data: sessions, error: sessionsError } = sessionsResult;
-        const { data: financialRecords, error: financialError } = financialRecordsResult;
-        const { count: totalPatients } = patientsResult;
-        const { count: totalAnamnesis } = anamnesisResult;
-        const { count: totalReports } = reportsResult;
-        const { data: financialScheduleData, error: financialScheduleError } = financialScheduleResult;
-
-        console.log("📊 Dados coletados:", {
-          sessions: sessions?.length || 0,
-          financialRecords: financialRecords?.length || 0,
-          totalPatients: totalPatients || 0,
-          totalAnamnesis: totalAnamnesis || 0,
-          totalReports: totalReports || 0,
-          financialSchedule: financialScheduleData?.length || 0
-        });
-
-        // If no data this week, try to get monthly data for stats
-        let monthlyFinancialRecords = [];
-        let monthlySessions = [];
-        
-        if ((!sessions || sessions.length === 0) && (!financialRecords || financialRecords.length === 0)) {
-          console.log("🔍 Nenhum dado da semana, buscando dados do mês...");
-          
-          const { data: monthSessions } = await supabase
-            .from("sessions")
-            .select(`
-              id, 
-              date, 
-              notes,
-              patient_id, 
-              patients!inner (
-                id,
-                name,
-                professional_id
-              )
-            `)
-            .eq('patients.professional_id', professional.id)
-            .gte('date', format(monthStartDate, "yyyy-MM-dd"))
-            .lte('date', format(monthEndDate, "yyyy-MM-dd"))
-            .order('date');
-
-          const { data: monthFinancial } = await supabase
-            .from("financial_records")
-            .select(`
-              id, 
-              amount, 
-              session_date, 
-              description,
-              professional_id
-            `)
-            .eq('professional_id', professional.id)
-            .gte('session_date', format(monthStartDate, "yyyy-MM-dd"))
-            .lte('session_date', format(monthEndDate, "yyyy-MM-dd"));
-
-          monthlySessions = monthSessions || [];
-          monthlyFinancialRecords = monthFinancial || [];
-          
-          console.log("📊 Dados do mês - Sessões:", monthlySessions.length, "Financeiro:", monthlyFinancialRecords.length);
+        if (patientsError) {
+          console.error("❌ Erro ao buscar pacientes:", patientsError);
+        } else {
+          console.log("✅ Total de pacientes encontrados:", totalPatients);
         }
 
-        if (sessionsError || financialError) {
-          console.error("❌ Erro ao buscar dados:", sessionsError || financialError);
-          return;
+        // Query anamnesis with better error handling
+        console.log("🔍 Buscando anamneses...");
+        const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
+          .from("anamnesis")
+          .select('id', { count: 'exact', head: true })
+          .eq('professional_id', professionalId);
+
+        if (anamnesisError) {
+          console.error("❌ Erro ao buscar anamneses:", anamnesisError);
+        } else {
+          console.log("✅ Total de anamneses encontradas:", totalAnamnesis);
+        }
+
+        // Query reports with better error handling
+        console.log("🔍 Buscando relatórios...");
+        const { data: reportsData, error: reportsError, count: totalReports } = await supabase
+          .from("reports")
+          .select('id', { count: 'exact', head: true })
+          .eq('professional_id', professionalId);
+
+        if (reportsError) {
+          console.error("❌ Erro ao buscar relatórios:", reportsError);
+        } else {
+          console.log("✅ Total de relatórios encontrados:", totalReports);
+        }
+
+        // Query sessions for this week
+        console.log("🔍 Buscando sessões da semana...");
+        const { data: sessions, error: sessionsError } = await supabase
+          .from("sessions")
+          .select(`
+            id, 
+            date, 
+            notes,
+            patient_id, 
+            patients!inner (
+              id,
+              name,
+              professional_id
+            )
+          `)
+          .eq('patients.professional_id', professionalId)
+          .gte('date', format(startDate, "yyyy-MM-dd"))
+          .lte('date', format(endDate, "yyyy-MM-dd"))
+          .order('date');
+
+        if (sessionsError) {
+          console.error("❌ Erro ao buscar sessões:", sessionsError);
+        } else {
+          console.log("✅ Sessões da semana encontradas:", sessions?.length || 0);
+        }
+
+        // Query financial records for this week
+        console.log("🔍 Buscando registros financeiros da semana...");
+        const { data: financialRecords, error: financialError } = await supabase
+          .from("financial_records")
+          .select(`
+            id, 
+            amount, 
+            session_date, 
+            description,
+            professional_id
+          `)
+          .eq('professional_id', professionalId)
+          .gte('session_date', format(startDate, "yyyy-MM-dd"))
+          .lte('session_date', format(endDate, "yyyy-MM-dd"));
+
+        if (financialError) {
+          console.error("❌ Erro ao buscar registros financeiros:", financialError);
+        } else {
+          console.log("✅ Registros financeiros da semana encontrados:", financialRecords?.length || 0);
+        }
+
+        // Query financial schedule (last 30 days)
+        console.log("🔍 Buscando agenda financeira...");
+        const { data: financialScheduleData, error: financialScheduleError } = await supabase
+          .from("financial_records")
+          .select(`
+            id,
+            amount,
+            session_date,
+            description,
+            professional_id,
+            patients:patient_id (name),
+            clinics:clinic_id (name)
+          `)
+          .eq('professional_id', professionalId)
+          .gte('session_date', format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
+          .order('session_date', { ascending: false })
+          .limit(10);
+
+        if (financialScheduleError) {
+          console.error("❌ Erro ao buscar agenda financeira:", financialScheduleError);
+        } else {
+          console.log("✅ Agenda financeira encontrada:", financialScheduleData?.length || 0);
         }
 
         // Prepare week structure
@@ -267,7 +246,7 @@ export function useDashboardData(): DashboardData {
         }
 
         // Organize sessions by day
-        if (sessions) {
+        if (sessions && sessions.length > 0) {
           sessions.forEach(session => {
             const sessionDate = parseISO(session.date);
             const dayIndex = weekDays.findIndex(day => 
@@ -289,7 +268,7 @@ export function useDashboardData(): DashboardData {
         }
 
         // Add financial data to days
-        if (financialRecords) {
+        if (financialRecords && financialRecords.length > 0) {
           financialRecords.forEach(record => {
             const recordDate = parseISO(record.session_date);
             const dayIndex = weekDays.findIndex(day => 
@@ -311,23 +290,22 @@ export function useDashboardData(): DashboardData {
           });
         }
 
-        // Calculate totals and statistics (use monthly data if weekly is empty)
-        const dataToUse = (sessions && sessions.length > 0) ? sessions : monthlySessions;
-        const financialToUse = (financialRecords && financialRecords.length > 0) ? financialRecords : monthlyFinancialRecords;
-        
-        const totalSessions = dataToUse?.length || 0;
-        const totalRevenue = financialToUse?.reduce((sum, record) => sum + record.amount, 0) || 0;
+        // Calculate totals and statistics
+        const totalSessions = sessions?.length || 0;
+        const totalRevenue = financialRecords?.reduce((sum, record) => sum + record.amount, 0) || 0;
         const averagePerSession = totalSessions > 0 ? totalRevenue / totalSessions : 0;
 
         console.log("📊 Estatísticas calculadas:", {
           totalSessions,
           totalRevenue,
           averagePerSession,
-          usingMonthlyData: dataToUse === monthlySessions
+          totalPatients: totalPatients || 0,
+          totalAnamnesis: totalAnamnesis || 0,
+          totalReports: totalReports || 0
         });
 
         // Calculate completion rate
-        const sessionsWithNotes = dataToUse?.filter(s => s.notes && s.notes.trim() !== '').length || 0;
+        const sessionsWithNotes = sessions?.filter(s => s.notes && s.notes.trim() !== '').length || 0;
         const completionRate = totalSessions > 0 ? Math.round((sessionsWithNotes / totalSessions) * 100) : 0;
 
         // Get upcoming sessions
@@ -343,8 +321,7 @@ export function useDashboardData(): DashboardData {
             time: new Date(session.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           })) || [];
 
-        // Calculate monthly chart data (use broader dataset)
-        const chartSessions = monthlySessions.length > 0 ? monthlySessions : dataToUse;
+        // Calculate chart data for recent months
         const recentMonths = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
         const currentDate = new Date();
         const fourMonthsAgo = new Date();
@@ -355,7 +332,7 @@ export function useDashboardData(): DashboardData {
           sessionsByMonth[month] = 0;
         });
 
-        chartSessions?.forEach(session => {
+        sessions?.forEach(session => {
           const sessionDate = new Date(session.date);
           if (sessionDate >= fourMonthsAgo && sessionDate <= currentDate) {
             const monthIndex = sessionDate.getMonth();
