@@ -47,9 +47,22 @@ export interface MusicogramTemplate {
 export interface StudyTemplate {
   id: string;
   name: string;
+  category: string;
+  difficulty: string;
+  objective: string;
+  description: string;
+  ageGroup: string;
+  duration: string;
+  materials?: string[];
+  instructions?: string[];
   rows: number;
   columns: number;
-  description: string;
+  gridLayout?: {
+    rows: number;
+    cols: number;
+    cellSize: number;
+  };
+  backgroundColor?: string;
   previewContent?: string;
   imageUrl?: string;
   elements: VisualElement[];
