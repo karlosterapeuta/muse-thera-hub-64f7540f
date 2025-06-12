@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -20,6 +21,7 @@ import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
 import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
+import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
 import { 
   Tabs, 
   TabsContent, 
@@ -456,6 +458,8 @@ export default function Evaluation() {
 
   return (
     <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
+      <EvaluationLevelsHero />
+      
       <Card className="p-4 sm:p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
