@@ -2,367 +2,323 @@
 import { StudyTemplate } from "../types";
 
 export const musicStudyTemplates: StudyTemplate[] = [
+  // COORDENAÇÃO MOTORA - Nível Fácil
   {
-    id: "estudo1-2",
-    name: "Estudo 1 e 2",
-    rows: 2,
-    columns: 10,
-    description: "Barras verticais, quadrados e espirais",
-    imageUrl: "/lovable-uploads/2361048e-84d0-47e3-ad12-32f09b7c1b1a.png",
-    previewContent: `
-      <div class="flex gap-2">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">□</div>
-        <div class="text-2xl font-bold">@</div>
-      </div>
-    `,
+    id: "coordenacao-1",
+    name: "Coordenação Básica",
+    category: "Coordenação Motora",
+    difficulty: "Fácil",
+    objective: "Desenvolver coordenação bilateral básica",
+    description: "Exercícios simples de batidas alternadas para estimular coordenação entre mãos",
+    ageGroup: "3-6 anos",
+    duration: "10-15 min",
+    materials: ["Tambor", "Baquetas"],
+    instructions: [
+      "Posicione o tambor na frente da criança",
+      "Demonstre batidas alternadas simples",
+      "Acompanhe o ritmo lentamente",
+      "Celebre cada acerto"
+    ],
+    gridLayout: {
+      rows: 6,
+      cols: 6,
+      cellSize: 80
+    },
+    backgroundColor: "#f0f9ff",
+    previewContent: "👏🥁👏🥁",
     elements: [
-      // First row, based on image 1: | | | | □ | | | | @ @
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "square", position: { x: 360, y: 40 }, rotation: 0 },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "8", type: "element", x: 600, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "9", type: "element", x: 680, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 680, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "10", type: "element", x: 760, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 760, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Second row, based on image 1: | | | | @ @ | | | | □
-      { id: "11", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "14", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "15", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "16", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "17", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "18", type: "element", x: 600, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "19", type: "element", x: 680, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 680, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 760, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 760, y: 120 }, rotation: 0 }
+      { id: "1", type: "element", x: 80, y: 80, color: "#FF5722", size: 60, shape: "circle", iconType: "symbol", iconContent: "👏", position: { x: 80, y: 80 }, rotation: 0 },
+      { id: "2", type: "element", x: 240, y: 80, color: "#8BC34A", size: 60, shape: "circle", iconType: "instrument", iconContent: "🥁", position: { x: 240, y: 80 }, rotation: 0 },
+      { id: "3", type: "element", x: 400, y: 80, color: "#FF5722", size: 60, shape: "circle", iconType: "symbol", iconContent: "👏", position: { x: 400, y: 80 }, rotation: 0 },
+      { id: "4", type: "element", x: 560, y: 80, color: "#8BC34A", size: 60, shape: "circle", iconType: "instrument", iconContent: "🥁", position: { x: 560, y: 80 }, rotation: 0 }
     ]
   },
+
+  // EXPRESSÃO EMOCIONAL - Nível Fácil
   {
-    id: "estudo3",
-    name: "Estudo 3",
-    rows: 3,
-    columns: 7,
-    description: "Espirais e barras verticais",
-    imageUrl: "/lovable-uploads/bb019803-0587-462c-851c-393fcc685139.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">□</div>
-      </div>
-    `,
+    id: "emocoes-1",
+    name: "Expressando Alegria",
+    category: "Expressão Emocional",
+    difficulty: "Fácil",
+    objective: "Identificar e expressar emoções através da música",
+    description: "Atividade para trabalhar reconhecimento e expressão da alegria",
+    ageGroup: "4-8 anos",
+    duration: "15-20 min",
+    materials: ["Chocalho", "Sino", "Pandeiro"],
+    instructions: [
+      "Mostre diferentes expressões faciais",
+      "Associe cada emoção a um instrumento",
+      "Pratique a sequência feliz",
+      "Encoraje a expressão facial"
+    ],
+    gridLayout: {
+      rows: 5,
+      cols: 7,
+      cellSize: 70
+    },
+    backgroundColor: "#fff3e0",
+    previewContent: "😊🔔😊🔔",
     elements: [
-      // First row (from image 2): @ @ @ @ @ @ □
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "square", position: { x: 520, y: 40 }, rotation: 0 },
-      
-      // Second row (from image 2): @ @ @ @ @ @ □
-      { id: "8", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "9", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "10", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "11", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "12", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "13", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "14", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 520, y: 120 }, rotation: 0 },
-      
-      // Third row (from image 2): | | @ | | @ | | | | | @
-      { id: "15", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "18", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "19", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "21", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "1", type: "element", x: 70, y: 70, color: "#FFD54F", size: 65, shape: "circle", iconType: "symbol", iconContent: "😊", position: { x: 70, y: 70 }, rotation: 0 },
+      { id: "2", type: "element", x: 210, y: 70, color: "#4FC3F7", size: 65, shape: "circle", iconType: "instrument", iconContent: "🔔", position: { x: 210, y: 70 }, rotation: 0 },
+      { id: "3", type: "element", x: 350, y: 70, color: "#FFD54F", size: 65, shape: "circle", iconType: "symbol", iconContent: "😊", position: { x: 350, y: 70 }, rotation: 0 },
+      { id: "4", type: "element", x: 490, y: 70, color: "#4FC3F7", size: 65, shape: "circle", iconType: "instrument", iconContent: "🔔", position: { x: 490, y: 70 }, rotation: 0 }
     ]
   },
+
+  // COMUNICAÇÃO - Nível Médio
   {
-    id: "estudo4",
-    name: "Estudo 4",
-    rows: 3,
-    columns: 8,
-    description: "Barras verticais, espiral e repetição",
-    imageUrl: "/lovable-uploads/80847e14-0ceb-4478-9e62-d9757cbd7b10.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">:||</div>
-      </div>
-    `,
+    id: "comunicacao-1",
+    name: "Diálogo Musical",
+    category: "Comunicação",
+    difficulty: "Médio",
+    objective: "Estimular comunicação através de turnos musicais",
+    description: "Atividade de pergunta e resposta musical para desenvolver comunicação",
+    ageGroup: "5-10 anos",
+    duration: "20-25 min",
+    materials: ["Xilofone", "Metalofone", "Baquetas"],
+    instructions: [
+      "Demonstre o conceito de pergunta musical",
+      "Toque uma frase, espere a resposta",
+      "Varie a dinâmica e altura",
+      "Encoraje a criatividade"
+    ],
+    gridLayout: {
+      rows: 4,
+      cols: 8,
+      cellSize: 75
+    },
+    backgroundColor: "#e8f5e8",
+    previewContent: "🎵❓🎵❗",
     elements: [
-      // First row (from image 3): | | | | | | @ :||
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "8", type: "element", x: 600, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: ':||' },
-      
-      // Second row (from image 3): | | @ | | @
-      { id: "9", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "12", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "14", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Third row (from image 3): | | | | | | @
-      { id: "15", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "18", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "19", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "21", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "1", type: "element", x: 75, y: 75, color: "#2196F3", size: 70, shape: "circle", iconType: "symbol", iconContent: "🎵", position: { x: 75, y: 75 }, rotation: 0 },
+      { id: "2", type: "element", x: 225, y: 75, color: "#FF9800", size: 70, shape: "circle", iconType: "symbol", iconContent: "❓", position: { x: 225, y: 75 }, rotation: 0 },
+      { id: "3", type: "element", x: 375, y: 75, color: "#4CAF50", size: 70, shape: "circle", iconType: "symbol", iconContent: "🎵", position: { x: 375, y: 75 }, rotation: 0 },
+      { id: "4", type: "element", x: 525, y: 75, color: "#F44336", size: 70, shape: "circle", iconType: "symbol", iconContent: "❗", position: { x: 525, y: 75 }, rotation: 0 }
     ]
   },
+
+  // INTEGRAÇÃO SENSORIAL - Nível Médio
   {
-    id: "estudo5",
-    name: "Estudo 5",
-    rows: 3,
-    columns: 6,
-    description: "Barras verticais e espirais alternadas",
-    imageUrl: "/lovable-uploads/65fe902f-d08a-48e5-8c93-7c4a7cc6e6a6.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-      </div>
-    `,
+    id: "sensorial-1",
+    name: "Texturas Sonoras",
+    category: "Integração Sensorial",
+    difficulty: "Médio",
+    objective: "Integrar estímulos táteis e auditivos",
+    description: "Combinar diferentes texturas com sons específicos",
+    ageGroup: "4-9 anos",
+    duration: "15-25 min",
+    materials: ["Instrumentos de texturas variadas", "Tecidos", "Objetos táteis"],
+    instructions: [
+      "Apresente cada textura separadamente",
+      "Associe som a cada textura",
+      "Pratique com olhos fechados",
+      "Varie a intensidade"
+    ],
+    gridLayout: {
+      rows: 6,
+      cols: 5,
+      cellSize: 85
+    },
+    backgroundColor: "#f3e5f5",
+    previewContent: "✋🎶👂🎵",
     elements: [
-      // First row (from image 4): | | @ | | @
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Second row (from image 4): | | | | | @
-      { id: "7", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "8", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "9", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Third row (from image 4): | | | | @ @
-      { id: "13", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "14", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "15", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "18", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "1", type: "element", x: 85, y: 85, color: "#9C27B0", size: 75, shape: "circle", iconType: "symbol", iconContent: "✋", position: { x: 85, y: 85 }, rotation: 0 },
+      { id: "2", type: "element", x: 255, y: 85, color: "#673AB7", size: 75, shape: "circle", iconType: "symbol", iconContent: "🎶", position: { x: 255, y: 85 }, rotation: 0 },
+      { id: "3", type: "element", x: 425, y: 85, color: "#3F51B5", size: 75, shape: "circle", iconType: "symbol", iconContent: "👂", position: { x: 425, y: 85 }, rotation: 0 },
+      { id: "4", type: "element", x: 170, y: 170, color: "#2196F3", size: 75, shape: "circle", iconType: "symbol", iconContent: "🎵", position: { x: 170, y: 170 }, rotation: 0 }
     ]
   },
+
+  // ATENÇÃO E CONCENTRAÇÃO - Nível Difícil
   {
-    id: "estudo5-continuacao",
-    name: "Continuação do Estudo 5",
-    rows: 3,
-    columns: 9,
-    description: "Continuação com padrões de espirais e barras verticais",
-    imageUrl: "/lovable-uploads/0302407c-ff13-485b-b92e-84d9766078e4.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">□</div>
-      </div>
-    `,
+    id: "atencao-1",
+    name: "Foco Seletivo",
+    category: "Atenção e Concentração",
+    difficulty: "Difícil",
+    objective: "Desenvolver atenção seletiva e sustentada",
+    description: "Exercícios complexos de atenção auditiva com múltiplos estímulos",
+    ageGroup: "7-12 anos",
+    duration: "25-30 min",
+    materials: ["Múltiplos instrumentos", "Metrônomo", "Cartões visuais"],
+    instructions: [
+      "Identifique o instrumento alvo",
+      "Ignore os distratores",
+      "Mantenha o foco por períodos crescentes",
+      "Aumente gradualmente a complexidade"
+    ],
+    gridLayout: {
+      rows: 7,
+      cols: 7,
+      cellSize: 65
+    },
+    backgroundColor: "#fff8e1",
+    previewContent: "🎯👁️🎼🔍",
     elements: [
-      // First row (from image 5): | | | | | | @
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Second row (from image 5): @ @ @ @ | | | | □
-      { id: "8", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "9", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "10", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "11", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "12", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "14", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "15", type: "element", x: 600, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 680, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 680, y: 120 }, rotation: 0 },
-      
-      // Third row (from image 5): @ @ @ @ | | | | □
-      { id: "17", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "18", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "19", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "20", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "21", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "22", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "23", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "24", type: "element", x: 600, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "25", type: "element", x: 680, y: 200, color: "#000000", size: 60, shape: "square", position: { x: 680, y: 200 }, rotation: 0 }
+      { id: "1", type: "element", x: 65, y: 65, color: "#FF5722", size: 60, shape: "circle", iconType: "symbol", iconContent: "🎯", position: { x: 65, y: 65 }, rotation: 0 },
+      { id: "2", type: "element", x: 195, y: 65, color: "#795548", size: 60, shape: "circle", iconType: "symbol", iconContent: "👁️", position: { x: 195, y: 65 }, rotation: 0 },
+      { id: "3", type: "element", x: 325, y: 65, color: "#607D8B", size: 60, shape: "circle", iconType: "symbol", iconContent: "🎼", position: { x: 325, y: 65 }, rotation: 0 },
+      { id: "4", type: "element", x: 455, y: 65, color: "#9E9E9E", size: 60, shape: "circle", iconType: "symbol", iconContent: "🔍", position: { x: 455, y: 65 }, rotation: 0 }
     ]
   },
+
+  // HABILIDADES SOCIAIS - Nível Fácil
   {
-    id: "estudo6",
-    name: "Estudo 6",
-    rows: 2,
-    columns: 7,
-    description: "Barras verticais e espirais",
-    imageUrl: "/lovable-uploads/1556ebae-2a48-401a-b199-191d6b324da2.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-      </div>
-    `,
+    id: "social-1",
+    name: "Tocando Juntos",
+    category: "Habilidades Sociais",
+    difficulty: "Fácil",
+    objective: "Promover interação e cooperação musical",
+    description: "Atividades em grupo para desenvolver habilidades sociais",
+    ageGroup: "4-8 anos",
+    duration: "20-30 min",
+    materials: ["Instrumentos diversos", "Cartões de turno"],
+    instructions: [
+      "Estabeleça regras claras de turno",
+      "Pratique esperar a vez",
+      "Celebre as conquistas do grupo",
+      "Encoraje a colaboração"
+    ],
+    gridLayout: {
+      rows: 5,
+      cols: 6,
+      cellSize: 80
+    },
+    backgroundColor: "#e1f5fe",
+    previewContent: "👥🤝🎵👏",
     elements: [
-      // First row (from image 6): | | | | | | @
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Second row (from image 6): | | | | | | @
-      { id: "8", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "9", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "14", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "1", type: "element", x: 80, y: 80, color: "#FF9800", size: 70, shape: "circle", iconType: "symbol", iconContent: "👥", position: { x: 80, y: 80 }, rotation: 0 },
+      { id: "2", type: "element", x: 240, y: 80, color: "#4CAF50", size: 70, shape: "circle", iconType: "symbol", iconContent: "🤝", position: { x: 240, y: 80 }, rotation: 0 },
+      { id: "3", type: "element", x: 400, y: 80, color: "#2196F3", size: 70, shape: "circle", iconType: "symbol", iconContent: "🎵", position: { x: 400, y: 80 }, rotation: 0 },
+      { id: "4", type: "element", x: 320, y: 160, color: "#FF5722", size: 70, shape: "circle", iconType: "symbol", iconContent: "👏", position: { x: 320, y: 160 }, rotation: 0 }
     ]
   },
+
+  // AUTORREGULAÇÃO - Nível Médio
   {
-    id: "estudo7",
-    name: "Estudo 7",
-    rows: 2,
-    columns: 13,
-    description: "Padrão com barras verticais e espirais",
-    imageUrl: "/lovable-uploads/89a06917-0b2b-432a-a44c-26eebae1dff1.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">□</div>
-      </div>
-    `,
+    id: "autoregulacao-1",
+    name: "Controle do Ritmo",
+    category: "Autorregulação",
+    difficulty: "Médio",
+    objective: "Desenvolver autocontrole através do ritmo",
+    description: "Exercícios de aceleração e desaceleração consciente",
+    ageGroup: "6-11 anos",
+    duration: "20-25 min",
+    materials: ["Metrônomo", "Tambor", "Cartões de velocidade"],
+    instructions: [
+      "Comece em ritmo lento",
+      "Acelere gradualmente",
+      "Pratique parar no comando",
+      "Trabalhe respiração e ritmo"
+    ],
+    gridLayout: {
+      rows: 6,
+      cols: 6,
+      cellSize: 75
+    },
+    backgroundColor: "#f1f8e9",
+    previewContent: "🐌➡️🐇⏸️",
     elements: [
-      // First row (from image 7): | | | | | | | | | | | | □
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 80, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 80, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 160, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 160, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 240, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 240, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "8", type: "element", x: 320, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 320, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "9", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 400, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 400, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 480, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 480, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "square", position: { x: 520, y: 40 }, rotation: 0 },
-      
-      // Second row (from image 7): | | | | | | @ @ @ □
-      { id: "14", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "15", type: "element", x: 80, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 80, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 160, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 160, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "18", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "19", type: "element", x: 240, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 240, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "21", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "22", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "23", type: "element", x: 520, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 520, y: 120 }, rotation: 0 }
+      { id: "1", type: "element", x: 75, y: 75, color: "#8BC34A", size: 65, shape: "circle", iconType: "symbol", iconContent: "🐌", position: { x: 75, y: 75 }, rotation: 0 },
+      { id: "2", type: "element", x: 225, y: 75, color: "#FFC107", size: 65, shape: "circle", iconType: "symbol", iconContent: "➡️", position: { x: 225, y: 75 }, rotation: 0 },
+      { id: "3", type: "element", x: 375, y: 75, color: "#FF5722", size: 65, shape: "circle", iconType: "symbol", iconContent: "🐇", position: { x: 375, y: 75 }, rotation: 0 },
+      { id: "4", type: "element", x: 525, y: 75, color: "#9E9E9E", size: 65, shape: "circle", iconType: "symbol", iconContent: "⏸️", position: { x: 525, y: 75 }, rotation: 0 }
     ]
   },
+
+  // CRIATIVIDADE - Nível Difícil
   {
-    id: "estudo8",
-    name: "Estudo 8",
-    rows: 3,
-    columns: 8,
-    description: "Padrão com barras verticais, espirais e dois pontos",
-    imageUrl: "/lovable-uploads/32b77141-7004-43e3-a188-8fe65029be60.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">:||</div>
-      </div>
-    `,
+    id: "criatividade-1",
+    name: "Composição Livre",
+    category: "Criatividade",
+    difficulty: "Difícil",
+    objective: "Estimular expressão criativa e improvisação",
+    description: "Espaço aberto para criação musical individual",
+    ageGroup: "8-15 anos",
+    duration: "25-35 min",
+    materials: ["Diversos instrumentos", "Papel pautado", "Gravador"],
+    instructions: [
+      "Ofereça liberdade total de criação",
+      "Grave as criações",
+      "Discuta as escolhas musicais",
+      "Celebre a originalidade"
+    ],
+    gridLayout: {
+      rows: 8,
+      cols: 8,
+      cellSize: 60
+    },
+    backgroundColor: "#fce4ec",
+    previewContent: "🎨🎼✨💡",
     elements: [
-      // First row (from image 8): | | | | | | @ :||
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "8", type: "element", x: 600, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 600, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: ':||' },
-      
-      // Second row (from image 8): | | | | @ @
-      { id: "9", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "13", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "14", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "circle", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      
-      // Third row (from image 8): | | | | | | @
-      { id: "15", type: "element", x: 40, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "16", type: "element", x: 120, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "17", type: "element", x: 200, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "18", type: "element", x: 280, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "19", type: "element", x: 360, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 360, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "20", type: "element", x: 440, y: 200, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "21", type: "element", x: 520, y: 200, color: "#000000", size: 60, shape: "circle", position: { x: 520, y: 200 }, rotation: 0, iconType: 'symbol', iconContent: '@' }
+      { id: "1", type: "element", x: 60, y: 60, color: "#E91E63", size: 55, shape: "circle", iconType: "symbol", iconContent: "🎨", position: { x: 60, y: 60 }, rotation: 0 },
+      { id: "2", type: "element", x: 180, y: 60, color: "#9C27B0", size: 55, shape: "circle", iconType: "symbol", iconContent: "🎼", position: { x: 180, y: 60 }, rotation: 0 },
+      { id: "3", type: "element", x: 300, y: 60, color: "#673AB7", size: 55, shape: "circle", iconType: "symbol", iconContent: "✨", position: { x: 300, y: 60 }, rotation: 0 },
+      { id: "4", type: "element", x: 420, y: 60, color: "#FF9800", size: 55, shape: "circle", iconType: "symbol", iconContent: "💡", position: { x: 420, y: 60 }, rotation: 0 }
     ]
   },
+
+  // RELAXAMENTO - Nível Fácil
   {
-    id: "estudo9-10",
-    name: "Estudo 9 e 10",
-    rows: 2,
-    columns: 7,
-    description: "Padrão com barras verticais, espiral, quadrado e repetição",
-    imageUrl: "/lovable-uploads/6df01cd1-31a7-48e4-a002-c88f4dac3435.png",
-    previewContent: `
-      <div class="flex gap-1">
-        <div class="text-2xl font-bold">|</div>
-        <div class="text-2xl font-bold">@</div>
-        <div class="text-2xl font-bold">:||</div>
-      </div>
-    `,
+    id: "relaxamento-1",
+    name: "Sons da Natureza",
+    category: "Relaxamento",
+    difficulty: "Fácil",
+    objective: "Promover relaxamento e bem-estar",
+    description: "Atividade com sons naturais para relaxamento profundo",
+    ageGroup: "3-12 anos",
+    duration: "15-30 min",
+    materials: ["Instrumentos suaves", "Almofadas", "Música ambiente"],
+    instructions: [
+      "Crie ambiente calmo",
+      "Use sons suaves e contínuos",
+      "Pratique respiração profunda",
+      "Termine gradualmente"
+    ],
+    gridLayout: {
+      rows: 4,
+      cols: 5,
+      cellSize: 90
+    },
+    backgroundColor: "#e0f2f1",
+    previewContent: "🌊🍃💤🧘",
     elements: [
-      // First row (from image 9): | | | | @ | |
-      { id: "1", type: "element", x: 40, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "2", type: "element", x: 120, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "3", type: "element", x: 200, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "4", type: "element", x: 280, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "5", type: "element", x: 360, y: 40, color: "#000000", size: 60, shape: "circle", position: { x: 360, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '@' },
-      { id: "6", type: "element", x: 440, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "7", type: "element", x: 520, y: 40, color: "#000000", size: 60, shape: "rect", position: { x: 520, y: 40 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      
-      // Second row (from image 9): | | | | □ :||
-      { id: "8", type: "element", x: 40, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 40, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "9", type: "element", x: 120, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 120, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "10", type: "element", x: 200, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 200, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "11", type: "element", x: 280, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 280, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: '|' },
-      { id: "12", type: "element", x: 360, y: 120, color: "#000000", size: 60, shape: "square", position: { x: 360, y: 120 }, rotation: 0 },
-      { id: "13", type: "element", x: 440, y: 120, color: "#000000", size: 60, shape: "rect", position: { x: 440, y: 120 }, rotation: 0, iconType: 'symbol', iconContent: ':||' }
+      { id: "1", type: "element", x: 90, y: 90, color: "#00BCD4", size: 80, shape: "circle", iconType: "symbol", iconContent: "🌊", position: { x: 90, y: 90 }, rotation: 0 },
+      { id: "2", type: "element", x: 270, y: 90, color: "#4CAF50", size: 80, shape: "circle", iconType: "symbol", iconContent: "🍃", position: { x: 270, y: 90 }, rotation: 0 },
+      { id: "3", type: "element", x: 450, y: 90, color: "#9C27B0", size: 80, shape: "circle", iconType: "symbol", iconContent: "💤", position: { x: 450, y: 90 }, rotation: 0 },
+      { id: "4", type: "element", x: 180, y: 180, color: "#FF9800", size: 80, shape: "circle", iconType: "symbol", iconContent: "🧘", position: { x: 180, y: 180 }, rotation: 0 }
+    ]
+  },
+
+  // MEMÓRIA - Nível Médio
+  {
+    id: "memoria-1",
+    name: "Sequências Musicais",
+    category: "Memória",
+    difficulty: "Médio",
+    objective: "Fortalecer memória auditiva e sequencial",
+    description: "Jogos de memória com padrões musicais crescentes",
+    ageGroup: "5-10 anos",
+    duration: "20-25 min",
+    materials: ["Xilofone colorido", "Cartões de sequência"],
+    instructions: [
+      "Comece com sequências curtas",
+      "Aumente progressivamente",
+      "Use apoio visual inicialmente",
+      "Pratique repetição ativa"
+    ],
+    gridLayout: {
+      rows: 5,
+      cols: 7,
+      cellSize: 70
+    },
+    backgroundColor: "#fff3e0",
+    previewContent: "🧠🔄🎵📝",
+    elements: [
+      { id: "1", type: "element", x: 70, y: 70, color: "#FF5722", size: 65, shape: "circle", iconType: "symbol", iconContent: "🧠", position: { x: 70, y: 70 }, rotation: 0 },
+      { id: "2", type: "element", x: 210, y: 70, color: "#009688", size: 65, shape: "circle", iconType: "symbol", iconContent: "🔄", position: { x: 210, y: 70 }, rotation: 0 },
+      { id: "3", type: "element", x: 350, y: 70, color: "#2196F3", size: 65, shape: "circle", iconType: "symbol", iconContent: "🎵", position: { x: 350, y: 70 }, rotation: 0 },
+      { id: "4", type: "element", x: 490, y: 70, color: "#FFC107", size: 65, shape: "circle", iconType: "symbol", iconContent: "📝", position: { x: 490, y: 70 }, rotation: 0 }
     ]
   }
 ];

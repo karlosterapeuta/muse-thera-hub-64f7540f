@@ -10,6 +10,7 @@ const Activities = lazy(() => import("./pages/activities"));
 const CategoryPage = lazy(() => import("./pages/activities/category"));
 const MusicComposer = lazy(() => import("./pages/music-composer"));
 const TeaHero = lazy(() => import("./pages/tea-hero"));
+const Musicogram = lazy(() => import("./pages/musicogram"));
 const BinaralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
 const Finance = lazy(() => import("./pages/finance"));
 const FinancialRecords = lazy(() => import("./pages/finance/records"));
@@ -35,6 +36,7 @@ export const navItems = [
   { to: "/activities/category/:categoryId", page: <CategoryPage /> },
   { to: "/music-composer", page: <MusicComposer /> },
   { to: "/tea-hero", page: <TeaHero /> },
+  { to: "/musicogram", page: <Musicogram /> },
   { to: "/binaural-frequencies", page: <BinaralFrequencies /> },
   { to: "/finance", page: <Finance /> },
   { to: "/finance/records", page: <FinancialRecords /> },

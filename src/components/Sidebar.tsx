@@ -20,6 +20,7 @@ import {
   Stethoscope,
   Brain,
   Activity,
+  Grid3X3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
@@ -61,6 +62,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Piano, text: "Compositor Musical", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells", gradient: "from-yellow-500 to-amber-600" },
     { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
+    { icon: Grid3X3, text: "Musicograma", path: "/musicogram", gradient: "from-emerald-500 to-teal-600" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
   ];
 

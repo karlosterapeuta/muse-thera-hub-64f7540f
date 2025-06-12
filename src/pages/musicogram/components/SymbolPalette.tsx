@@ -1,14 +1,12 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { InstrumentType } from "../types";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Star, Smile, Fingerprint } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SymbolPaletteProps {
   symbols: InstrumentType[];
   onSymbolSelect: (symbol: InstrumentType) => void;
-  onDragStart: (e: React.DragEvent<HTMLDivElement>, symbol: InstrumentType, type: 'symbol' | 'instrument') => void;
+  onDragStart: (e: React.DragEvent<HTMLDivElement>, symbol: InstrumentType, type: 'symbol') => void;
   isDrawingMode: boolean;
 }
 
@@ -19,123 +17,119 @@ const SymbolPalette: React.FC<SymbolPaletteProps> = ({
   isDrawingMode
 }) => {
   const isMobile = useIsMobile();
-  const [symbolCategory, setSymbolCategory] = useState<string>("all");
 
-  // Group symbols into categories
-  const categories = {
-    all: symbols,
-    shapes: symbols.filter(s => ["circle-black", "circle-red", "circle-blue", "circle-group", "waves"].includes(s.id)),
-    hands: symbols.filter(s => ["clapping", "fist", "hand-head", "hand-shoulder", "pointing", "knock", "hand"].includes(s.id)),
-    emotions: symbols.filter(s => ["happy", "sad", "angry", "surprised", "thinking", "love", "face"].includes(s.id))
+  // Organizar símbolos por categorias para melhor navegação
+  const symbolCategories = {
+    "Básicos": symbols.filter(s => ["circle-black", "circle-red", "circle-blue", "vertical-bar", "spiral", "square", "repeat-end"].includes(s.id)),
+    "Gestos": symbols.filter(s => ["clapping", "fist", "hand-head", "hand-shoulder", "pointing"].includes(s.id)),
+    "Emoções": [
+      { id: "happy", name: "Feliz", shape: "symbol", color: "#FFD54F", iconType: "symbol", iconContent: "😊", size: 72 },
+      { id: "sad", name: "Triste", shape: "symbol", color: "#9E9E9E", iconType: "symbol", iconContent: "😢", size: 72 },
+      { id: "excited", name: "Animado", shape: "symbol", color: "#FF5722", iconType: "symbol", iconContent: "🤩", size: 72 },
+      { id: "calm", name: "Calmo", shape: "symbol", color: "#4CAF50", iconType: "symbol", iconContent: "😌", size: 72 },
+      { id: "surprised", name: "Surpreso", shape: "symbol", color: "#FF9800", iconType: "symbol", iconContent: "😮", size: 72 }
+    ],
+    "Dinâmica": [
+      { id: "forte", name: "Forte", shape: "symbol", color: "#F44336", iconType: "symbol", iconContent: "💥", size: 72 },
+      { id: "piano", name: "Piano", shape: "symbol", color: "#E1BEE7", iconType: "symbol", iconContent: "🤫", size: 72 },
+      { id: "crescendo", name: "Crescendo", shape: "symbol", color: "#FF9800", iconType: "symbol", iconContent: "📈", size: 72 },
+      { id: "diminuendo", name: "Diminuendo", shape: "symbol", color: "#2196F3", iconType: "symbol", iconContent: "📉", size: 72 }
+    ],
+    "Movimento": [
+      { id: "walk", name: "Andar", shape: "symbol", color: "#795548", iconType: "symbol", iconContent: "🚶", size: 72 },
+      { id: "run", name: "Correr", shape: "symbol", color: "#FF5722", iconType: "symbol", iconContent: "🏃", size: 72 },
+      { id: "jump", name: "Pular", shape: "symbol", color: "#4CAF50", iconType: "symbol", iconContent: "🤸", size: 72 },
+      { id: "dance", name: "Dançar", shape: "symbol", color: "#E91E63", iconType: "symbol", iconContent: "💃", size: 72 },
+      { id: "spin", name: "Girar", shape: "symbol", color: "#9C27B0", iconType: "symbol", iconContent: "🌀", size: 72 }
+    ],
+    "Natureza": [
+      { id: "water", name: "Água", shape: "symbol", color: "#00BCD4", iconType: "symbol", iconContent: "🌊", size: 72 },
+      { id: "wind", name: "Vento", shape: "symbol", color: "#607D8B", iconType: "symbol", iconContent: "🍃", size: 72 },
+      { id: "fire", name: "Fogo", shape: "symbol", color: "#FF5722", iconType: "symbol", iconContent: "🔥", size: 72 },
+      { id: "earth", name: "Terra", shape: "symbol", color: "#795548", iconType: "symbol", iconContent: "🌍", size: 72 }
+    ]
   };
 
-  // Update the happy symbol color to yellow
-  const modifiedSymbols = symbols.map(symbol => {
-    if (symbol.id === "happy") {
-      return { ...symbol, color: "#FEF7CD" };
-    }
-    return symbol;
-  });
+  const allSymbols = [
+    ...symbolCategories.Básicos,
+    ...symbolCategories.Gestos,
+    ...symbolCategories.Emoções,
+    ...symbolCategories.Dinâmica,
+    ...symbolCategories.Movimento,
+    ...symbolCategories.Natureza
+  ].filter(Boolean) as InstrumentType[];
 
-  // Update the categories to use the modified symbols
-  const updatedCategories = {
-    all: modifiedSymbols,
-    shapes: modifiedSymbols.filter(s => ["circle-black", "circle-red", "circle-blue", "circle-group", "waves"].includes(s.id)),
-    hands: modifiedSymbols.filter(s => ["clapping", "fist", "hand-head", "hand-shoulder", "pointing", "knock", "hand"].includes(s.id)),
-    emotions: modifiedSymbols.filter(s => ["happy", "sad", "angry", "surprised", "thinking", "love", "face"].includes(s.id))
-  };
-
-  const renderStarIcon = () => {
-    return (
-      <div className="hidden md:flex flex-grow items-end justify-center pb-4">
-        <div className="w-32 h-32 md:w-40 md:h-40 opacity-10">
-          <Star className="w-full h-full" />
-        </div>
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-200">
+          Símbolos
+        </h3>
       </div>
-    );
-  };
-
-  const renderSymbolGrid = (symbolList: InstrumentType[]) => {
-    // Display consistently 5 icons per row on all device sizes
-    return (
-      <div className="grid grid-cols-5 gap-1 sm:gap-2">
-        {symbolList.map((symbol, index) => (
-          <div 
-            key={index} 
-            className={`flex flex-col items-center justify-center p-1 transition-all cursor-grab rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
-            onClick={() => onSymbolSelect(symbol)}
-            draggable="true" 
-            onDragStart={(e) => {
-              // Set cursor style to grabbing when dragging starts
-              e.currentTarget.style.cursor = 'grabbing';
-              onDragStart(e, symbol, 'symbol');
-            }}
-            onDragEnd={(e) => {
-              // Reset cursor style when drag ends
-              e.currentTarget.style.cursor = 'grab';
-            }}
-          >
-            <div 
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-md transition-transform duration-200 hover:scale-110 text-2xl sm:text-3xl md:text-4xl font-bold cursor-grab" 
-              style={{ color: symbol.color }}
-            >
-              {symbol.iconContent}
+      
+      <div className="space-y-3">
+        {Object.entries(symbolCategories).map(([categoryName, categorySymbols]) => (
+          <div key={categoryName} className="space-y-2">
+            <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              {categoryName}
+            </h4>
+            <div className="grid grid-cols-3 sm:grid-cols-2 gap-1 sm:gap-2">
+              {categorySymbols.map((symbol) => (
+                <div
+                  key={symbol.id}
+                  draggable={!isMobile}
+                  onDragStart={(e) => !isMobile && onDragStart(e, symbol, 'symbol')}
+                  onClick={() => onSymbolSelect(symbol)}
+                  className={`
+                    aspect-square rounded-lg border-2 border-gray-200 dark:border-gray-700 
+                    flex items-center justify-center cursor-pointer
+                    transition-all duration-200 hover:scale-105 hover:shadow-md
+                    ${isMobile ? 'active:scale-95' : 'hover:border-gray-400'}
+                    group relative overflow-hidden
+                  `}
+                  style={{ 
+                    backgroundColor: `${symbol.color}15`,
+                    borderColor: symbol.color 
+                  }}
+                >
+                  <div 
+                    className="text-xl sm:text-2xl transition-transform group-hover:scale-110"
+                    style={{ color: symbol.color }}
+                  >
+                    {symbol.iconContent}
+                  </div>
+                  
+                  {/* Tooltip com nome do símbolo */}
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 
+                                  bg-black text-white text-xs px-2 py-1 rounded 
+                                  opacity-0 group-hover:opacity-100 transition-opacity
+                                  pointer-events-none z-10 whitespace-nowrap">
+                    {symbol.name}
+                  </div>
+                  
+                  {/* Indicador visual para modo de desenho */}
+                  {isDrawingMode && (
+                    <div className="absolute inset-0 bg-blue-500 bg-opacity-20 
+                                    flex items-center justify-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-            <span className="text-xs mt-1 text-center truncate w-full">{symbol.name}</span>
           </div>
         ))}
       </div>
-    );
-  };
-
-  return (
-    <div className="flex flex-col flex-1">
-      <h3 className="font-medium mb-2 sm:mb-3 text-center">Símbolos Musicais</h3>
       
-      <Tabs defaultValue="all" value={symbolCategory} onValueChange={setSymbolCategory} className="w-full">
-        <TabsList className="w-full grid grid-cols-4 mb-2">
-          <TabsTrigger value="all" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Todos</TabsTrigger>
-          <TabsTrigger value="shapes" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Formas</TabsTrigger>
-          <TabsTrigger value="hands" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Gestos</TabsTrigger>
-          <TabsTrigger value="emotions" className="text-xs sm:text-sm px-1 py-1 sm:px-3 sm:py-2">Emoções</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all" className="mt-0">
-          {renderSymbolGrid(updatedCategories.all)}
-        </TabsContent>
-        
-        <TabsContent value="shapes" className="mt-0">
-          {renderSymbolGrid(updatedCategories.shapes)}
-        </TabsContent>
-        
-        <TabsContent value="hands" className="mt-0">
-          {renderSymbolGrid(updatedCategories.hands)}
-        </TabsContent>
-        
-        <TabsContent value="emotions" className="mt-0">
-          {renderSymbolGrid(updatedCategories.emotions)}
-        </TabsContent>
-      </Tabs>
-
-      <div className="mt-4 p-2 rounded text-center">
-        <div className={`text-xs sm:text-sm font-medium ${isDrawingMode ? "text-blue-600" : "text-green-600"}`}>
-          {isDrawingMode 
-            ? "Modo Desenho: Clique nos símbolos para adicionar ao grid" 
-            : "Modo Movimentação Livre: Arraste e gire as figuras sem restrições"}
+      {isMobile && (
+        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+          <p className="text-xs text-blue-600 dark:text-blue-400 text-center">
+            💡 Toque nos símbolos para adicioná-los ao musicograma
+          </p>
         </div>
-        {!isDrawingMode && (
-          <div className="text-xs text-gray-600 mt-1">
-            Clique e arraste as figuras para <strong>QUALQUER</strong> lugar do quadro! Sem limites de posição.
-          </div>
-        )}
-        <div className="text-xs bg-blue-100 text-blue-800 p-2 rounded mt-2">
-          Adicione quantas figuras quiser ao quadro e mova-as livremente para qualquer posição!
-        </div>
-      </div>
-
-      {renderStarIcon()}
+      )}
     </div>
   );
-}
+};
 
 export default SymbolPalette;
