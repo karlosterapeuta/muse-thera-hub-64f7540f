@@ -1,21 +1,31 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Music } from "lucide-react";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
-import { MusicalSong } from "@/types/musicTypes";
-import { getSequenceForSong } from "@/data/musicalSequences";
 
 type InstrumentType = "bell" | "xylophone" | "keyboard";
 
+interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  difficulty: "Fácil" | "Médio" | "Difícil";
+  instrument: InstrumentType;
+  color: string;
+  category: "infantil" | "clássico" | "brasileiro" | "terapêutico" | "desenhos";
+  therapeuticBenefits: string;
+}
+
 const TeaHero = () => {
-  const [selectedSong, setSelectedSong] = useState<MusicalSong | null>(null);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
 
-  // Catálogo reorganizado e balanceado de músicas específicas para TEA com sequências musicais
-  const songs: MusicalSong[] = [
+  // Catálogo reorganizado e balanceado de músicas específicas para TEA
+  const songs: Song[] = [
     // MÚSICAS FÁCEIS - SINO (6 músicas)
     {
       id: "twinkle-bell",
@@ -25,13 +35,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "infantil",
-      therapeuticBenefits: "Estimula coordenação básica e reconhecimento de padrões simples",
-      noteSequence: getSequenceForSong("twinkle-bell") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula coordenação básica e reconhecimento de padrões simples"
     },
     {
       id: "mary-lamb-bell",
@@ -41,13 +45,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "infantil",
-      therapeuticBenefits: "Desenvolve sequenciamento e memória auditiva",
-      noteSequence: getSequenceForSong("mary-lamb-bell") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve sequenciamento e memória auditiva"
     },
     {
       id: "ciranda-bell",
@@ -57,13 +55,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Promove integração social e cultural brasileira",
-      noteSequence: getSequenceForSong("ciranda-bell") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "2/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Promove integração social e cultural brasileira"
     },
     {
       id: "galinha-pintadinha-bell",
@@ -73,13 +65,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula atenção e engagement através de personagem familiar",
-      noteSequence: getSequenceForSong("galinha-pintadinha-bell") || {
-        notes: [],
-        bpm: 120,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula atenção e engagement através de personagem familiar"
     },
     {
       id: "borboletinha-bell",
@@ -89,13 +75,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve motricidade fina e ritmo básico",
-      noteSequence: getSequenceForSong("borboletinha-bell") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "2/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve motricidade fina e ritmo básico"
     },
     {
       id: "atirei-pau-bell",
@@ -105,13 +85,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Trabalha coordenação e sequenciamento motor",
-      noteSequence: getSequenceForSong("atirei-pau-bell") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha coordenação e sequenciamento motor"
     },
 
     // MÚSICAS FÁCEIS - XILOFONE (6 músicas)
@@ -123,13 +97,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "infantil",
-      therapeuticBenefits: "Conecta música com eventos sociais importantes",
-      noteSequence: getSequenceForSong("happy-birthday-xylophone") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "3/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta música com eventos sociais importantes"
     },
     {
       id: "xuxa-xylophone",
@@ -139,13 +107,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula expressão corporal e alegria",
-      noteSequence: getSequenceForSong("xuxa-xylophone") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "G"
-      }
+      therapeuticBenefits: "Estimula expressão corporal e alegria"
     },
     {
       id: "sapo-nao-lava-xylophone",
@@ -155,13 +117,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve consciência corporal e higiene",
-      noteSequence: getSequenceForSong("sapo-nao-lava-xylophone") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "2/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve consciência corporal e higiene"
     },
     {
       id: "peppa-pig-xylophone",
@@ -171,13 +127,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha familiaridade e conforto através de personagem conhecido",
-      noteSequence: getSequenceForSong("peppa-pig-xylophone") || {
-        notes: [],
-        bpm: 120,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha familiaridade e conforto através de personagem conhecido"
     },
     {
       id: "escravos-jo-xylophone",
@@ -187,13 +137,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula coordenação bilateral e sequenciamento",
-      noteSequence: getSequenceForSong("escravos-jo-xylophone") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula coordenação bilateral e sequenciamento"
     },
     {
       id: "jingle-bells-xylophone",
@@ -203,13 +147,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "infantil",
-      therapeuticBenefits: "Conecta com eventos sazonais e tradições",
-      noteSequence: getSequenceForSong("jingle-bells-xylophone") || {
-        notes: [],
-        bpm: 120,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com eventos sazonais e tradições"
     },
 
     // MÚSICAS FÁCEIS - TECLADO (6 músicas)
@@ -221,13 +159,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "terapêutico",
-      therapeuticBenefits: "Desenvolve sequenciamento e organização mental",
-      noteSequence: getSequenceForSong("scale-keyboard") || {
-        notes: [],
-        bpm: 80,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve sequenciamento e organização mental"
     },
     {
       id: "hot-cross-keyboard",
@@ -237,13 +169,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "terapêutico",
-      therapeuticBenefits: "Estimula foco e concentração através da simplicidade",
-      noteSequence: getSequenceForSong("hot-cross-keyboard") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula foco e concentração através da simplicidade"
     },
     {
       id: "frozen-keyboard",
@@ -253,13 +179,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha expressão emocional e autoestima",
-      noteSequence: getSequenceForSong("frozen-keyboard") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "F"
-      }
+      therapeuticBenefits: "Trabalha expressão emocional e autoestima"
     },
     {
       id: "aquarela-keyboard",
@@ -269,13 +189,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula criatividade e imaginação",
-      noteSequence: getSequenceForSong("aquarela-keyboard") || {
-        notes: [],
-        bpm: 95,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula criatividade e imaginação"
     },
     {
       id: "caranguejo-keyboard",
@@ -285,13 +199,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve conhecimento sobre natureza e animais",
-      noteSequence: getSequenceForSong("caranguejo-keyboard") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "2/4",
-        key: "G"
-      }
+      therapeuticBenefits: "Desenvolve conhecimento sobre natureza e animais"
     },
     {
       id: "paw-patrol-keyboard",
@@ -301,13 +209,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Promove trabalho em equipe e resolução de problemas",
-      noteSequence: getSequenceForSong("paw-patrol-keyboard") || {
-        notes: [],
-        bpm: 125,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Promove trabalho em equipe e resolução de problemas"
     },
 
     // MÚSICAS MÉDIAS - SINO (6 músicas)
@@ -319,13 +221,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve memória sequencial e padrões repetitivos",
-      noteSequence: getSequenceForSong("frere-jacques-bell") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve memória sequencial e padrões repetitivos"
     },
     {
       id: "asa-branca-bell",
@@ -335,13 +231,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com cultura nordestina e geografia brasileira",
-      noteSequence: getSequenceForSong("asa-branca-bell") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "4/4",
-        key: "G"
-      }
+      therapeuticBenefits: "Conecta com cultura nordestina e geografia brasileira"
     },
     {
       id: "sitio-lobato-bell",
@@ -351,13 +241,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula imaginação e literatura brasileira",
-      noteSequence: getSequenceForSong("sitio-lobato-bell") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula imaginação e literatura brasileira"
     },
     {
       id: "pink-panther-bell",
@@ -367,13 +251,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha reconhecimento de melodias marcantes",
-      noteSequence: getSequenceForSong("pink-panther-bell") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha reconhecimento de melodias marcantes"
     },
     {
       id: "capelinha-bell",
@@ -383,13 +261,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com tradições e festividades brasileiras",
-      noteSequence: getSequenceForSong("capelinha-bell") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com tradições e festividades brasileiras"
     },
     {
       id: "amazing-grace-bell",
@@ -399,13 +271,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Promove calma e introspecção",
-      noteSequence: getSequenceForSong("amazing-grace-bell") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Promove calma e introspecção"
     },
 
     // MÚSICAS MÉDIAS - XILOFONE (6 músicas)
@@ -417,13 +283,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula apreciação da música clássica e grandiosidade",
-      noteSequence: getSequenceForSong("ode-joy-xylophone") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula apreciação da música clássica e grandiosidade"
     },
     {
       id: "chaves-xylophone",
@@ -433,13 +293,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Conecta com humor e nostalgia familiar",
-      noteSequence: getSequenceForSong("chaves-xylophone") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com humor e nostalgia familiar"
     },
     {
       id: "garota-ipanema-xylophone",
@@ -449,13 +303,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Introduz bossa nova e sofisticação musical",
-      noteSequence: getSequenceForSong("garota-ipanema-xylophone") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Introduz bossa nova e sofisticação musical"
     },
     {
       id: "danny-boy-xylophone",
@@ -465,13 +313,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve expressão emocional profunda",
-      noteSequence: getSequenceForSong("danny-boy-xylophone") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve expressão emocional profunda"
     },
     {
       id: "turma-monica-xylophone",
@@ -481,13 +323,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula criatividade e narrativa brasileira",
-      noteSequence: getSequenceForSong("turma-monica-xylophone") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula criatividade e narrativa brasileira"
     },
     {
       id: "cai-cai-balao-xylophone",
@@ -497,13 +333,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Trabalha coordenação e festividades tradicionais",
-      noteSequence: getSequenceForSong("cai-cai-balao-xylophone") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha coordenação e festividades tradicionais"
     },
 
     // MÚSICAS MÉDIAS - TECLADO (6 músicas)
@@ -515,13 +345,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Promove relaxamento e concentração profunda",
-      noteSequence: getSequenceForSong("moonlight-keyboard") || {
-        notes: [],
-        bpm: 60,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Promove relaxamento e concentração profunda"
     },
     {
       id: "moana-keyboard",
@@ -531,13 +355,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula coragem e autodescoberta",
-      noteSequence: getSequenceForSong("moana-keyboard") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula coragem e autodescoberta"
     },
     {
       id: "bach-minuet-keyboard",
@@ -547,13 +365,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve estrutura e organização mental",
-      noteSequence: getSequenceForSong("bach-minuet-keyboard") || {
-        notes: [],
-        bpm: 90,
-        timeSignature: "3/4",
-        key: "G"
-      }
+      therapeuticBenefits: "Desenvolve estrutura e organização mental"
     },
     {
       id: "country-roads-keyboard",
@@ -563,13 +375,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Conecta com natureza e tranquilidade",
-      noteSequence: getSequenceForSong("country-roads-keyboard") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com natureza e tranquilidade"
     },
     {
       id: "peixe-vivo-keyboard",
@@ -579,13 +385,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula conexão com natureza aquática",
-      noteSequence: getSequenceForSong("peixe-vivo-keyboard") || {
-        notes: [],
-        bpm: 110,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula conexão com natureza aquática"
     },
     {
       id: "toy-story-keyboard",
@@ -595,13 +395,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha amizade e lealdade",
-      noteSequence: getSequenceForSong("toy-story-keyboard") || {
-        notes: [],
-        bpm: 100,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha amizade e lealdade"
     },
 
     // MÚSICAS DIFÍCEIS - SINO (6 músicas)
@@ -613,13 +407,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve coordenação avançada e perseverança",
-      noteSequence: getSequenceForSong("william-tell-bell") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve coordenação avançada e perseverança"
     },
     {
       id: "carmen-bell",
@@ -629,13 +417,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula expressão dramática e emocional",
-      noteSequence: getSequenceForSong("carmen-bell") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula expressão dramática e emocional"
     },
     {
       id: "pirates-bell",
@@ -645,13 +427,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha aventura e determinação",
-      noteSequence: getSequenceForSong("pirates-bell") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha aventura e determinação"
     },
     {
       id: "aquarela-complexa-bell",
@@ -661,13 +437,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com identidade nacional complexa",
-      noteSequence: getSequenceForSong("aquarela-complexa-bell") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com identidade nacional complexa"
     },
     {
       id: "carnival-bell",
@@ -677,13 +447,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve agilidade mental e festa",
-      noteSequence: getSequenceForSong("carnival-bell") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve agilidade mental e festa"
     },
     {
       id: "star-wars-bell",
@@ -693,13 +457,7 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula imaginação épica e heroísmo",
-      noteSequence: getSequenceForSong("star-wars-bell") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula imaginação épica e heroísmo"
     },
 
     // MÚSICAS DIFÍCEIS - XILOFONE (6 músicas)
@@ -711,13 +469,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve velocidade e precisão mental",
-      noteSequence: getSequenceForSong("turkish-march-xylophone") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve velocidade e precisão mental"
     },
     {
       id: "spring-vivaldi-xylophone",
@@ -727,13 +479,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Conecta com estações e renovação",
-      noteSequence: getSequenceForSong("spring-vivaldi-xylophone") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com estações e renovação"
     },
     {
       id: "choro-xylophone",
@@ -743,13 +489,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula agilidade e música instrumental brasileira",
-      noteSequence: getSequenceForSong("choro-xylophone") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula agilidade e música instrumental brasileira"
     },
     {
       id: "incredibles-xylophone",
@@ -759,13 +499,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha superpoderes e autoconfiança",
-      noteSequence: getSequenceForSong("incredibles-xylophone") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha superpoderes e autoconfiança"
     },
     {
       id: "hungarian-dance-xylophone",
@@ -775,13 +509,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve ritmo complexo e energia",
-      noteSequence: getSequenceForSong("hungarian-dance-xylophone") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve ritmo complexo e energia"
     },
     {
       id: "beatles-xylophone",
@@ -791,13 +519,7 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula nostalgia e melancolia controlada",
-      noteSequence: getSequenceForSong("beatles-xylophone") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Estimula nostalgia e melancolia controlada"
     },
 
     // MÚSICAS DIFÍCEIS - TECLADO (6 músicas)
@@ -809,13 +531,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve delicadeza e expressão refinada",
-      noteSequence: getSequenceForSong("fur-elise-keyboard") || {
-        notes: [],
-        bpm: 120,
-        timeSignature: "3/4",
-        key: "A"
-      }
+      therapeuticBenefits: "Desenvolve delicadeza e expressão refinada"
     },
     {
       id: "claire-de-lune-keyboard",
@@ -825,13 +541,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Promove tranquilidade noturna e contemplação",
-      noteSequence: getSequenceForSong("claire-de-lune-keyboard") || {
-        notes: [],
-        bpm: 70,
-        timeSignature: "3/4",
-        key: "D"
-      }
+      therapeuticBenefits: "Promove tranquilidade noturna e contemplação"
     },
     {
       id: "chopin-minute-keyboard",
@@ -841,13 +551,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula velocidade controlada e elegância",
-      noteSequence: getSequenceForSong("chopin-minute-keyboard") || {
-        notes: [],
-        bpm: 140,
-        timeSignature: "3/4",
-        key: "G"
-      }
+      therapeuticBenefits: "Estimula velocidade controlada e elegância"
     },
     {
       id: "casa-papel-keyboard",
@@ -857,13 +561,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Trabalha resistência e determinação",
-      noteSequence: getSequenceForSong("casa-papel-keyboard") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Trabalha resistência e determinação"
     },
     {
       id: "lion-king-keyboard",
@@ -873,13 +571,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Conecta com ciclo da vida e propósito",
-      noteSequence: getSequenceForSong("lion-king-keyboard") || {
-        notes: [],
-        bpm: 120,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Conecta com ciclo da vida e propósito"
     },
     {
       id: "samba-keyboard",
@@ -889,13 +581,7 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve complexidade rítmica brasileira",
-      noteSequence: getSequenceForSong("samba-keyboard") || {
-        notes: [],
-        bpm: 130,
-        timeSignature: "4/4",
-        key: "C"
-      }
+      therapeuticBenefits: "Desenvolve complexidade rítmica brasileira"
     }
   ];
 
@@ -919,10 +605,9 @@ const TeaHero = () => {
                            selectedSong?.instrument === "xylophone" ? "🎵" : "🎹";
     
     console.log(`${instrumentEmoji} ${selectedSong?.instrument} tocado: ${frequency}Hz (${color})`);
-    console.log(`Sequência musical: ${selectedSong?.noteSequence.notes.length} notas em ${selectedSong?.noteSequence.key} - ${selectedSong?.noteSequence.bpm} BPM`);
   };
 
-  const handleSongSelect = (song: MusicalSong) => {
+  const handleSongSelect = (song: Song) => {
     setSelectedSong(song);
     setGameStarted(false);
   };
@@ -981,7 +666,6 @@ const TeaHero = () => {
         <GuitarHeroGame 
           instrumentType={selectedSong.instrument} 
           onNotePlay={handleNotePlay}
-          noteSequence={selectedSong.noteSequence}
         />
       </div>
     );
@@ -1053,10 +737,6 @@ const TeaHero = () => {
                     <strong>Benefício:</strong> {song.therapeuticBenefits}
                   </div>
 
-                  <div className="bg-purple-50 p-2 rounded text-xs text-purple-800 mb-2">
-                    <strong>Música:</strong> {song.noteSequence.notes.length} notas • {song.noteSequence.bpm} BPM • {song.noteSequence.key} Maior
-                  </div>
-
                   <Button size="sm" className="w-full">
                     <Play className="w-3 h-3 mr-1" />
                     Jogar
@@ -1099,25 +779,13 @@ const TeaHero = () => {
                   </p>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-green-800 mb-2">
-                    🎼 Informações Musicais:
-                  </h4>
-                  <p className="text-sm text-green-700">
-                    <strong>Notas:</strong> {selectedSong.noteSequence.notes.length} • 
-                    <strong> Andamento:</strong> {selectedSong.noteSequence.bpm} BPM • 
-                    <strong> Compasso:</strong> {selectedSong.noteSequence.timeSignature} • 
-                    <strong> Tonalidade:</strong> {selectedSong.noteSequence.key} Maior
-                  </p>
-                </div>
-
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-sm text-blue-800 mb-2">
                     <strong>Como jogar:</strong>
                   </p>
                   <p className="text-sm text-blue-700">
                     Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
-                    Esta música segue a sequência musical real com {selectedSong.noteSequence.notes.length} notas.
+                    Esta música foi especialmente selecionada para estimular seu desenvolvimento.
                   </p>
                 </div>
 
@@ -1142,21 +810,21 @@ const TeaHero = () => {
             </h3>
             <p className="text-sm text-gray-600 mb-4">
               O TEA-Hero foi desenvolvido especificamente para pessoas com Transtorno do Espectro Autista,
-              utilizando sequências musicais reais como ferramenta terapêutica para estimular desenvolvimento cognitivo,
+              utilizando música como ferramenta terapêutica para estimular desenvolvimento cognitivo,
               coordenação motora, memória sequencial e integração sensorial.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="bg-green-50 p-3 rounded">
                 <strong className="text-green-800">🟢 Fácil:</strong>
-                <p className="text-green-700">3-5 notas diferentes, 80-100 BPM, melodias simples</p>
+                <p className="text-green-700">3-4 notas, ritmo simples, melodias familiares</p>
               </div>
               <div className="bg-yellow-50 p-3 rounded">
                 <strong className="text-yellow-800">🟡 Médio:</strong>
-                <p className="text-yellow-700">5-7 notas, 100-120 BPM, ritmo moderado</p>
+                <p className="text-yellow-700">5-6 notas, ritmo moderado, pequenas variações</p>
               </div>
               <div className="bg-red-50 p-3 rounded">
                 <strong className="text-red-800">🔴 Difícil:</strong>
-                <p className="text-red-700">7+ notas, 120+ BPM, melodias complexas</p>
+                <p className="text-red-700">7+ notas, ritmos complexos, melodias elaboradas</p>
               </div>
             </div>
           </div>
