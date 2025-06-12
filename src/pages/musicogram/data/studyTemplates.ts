@@ -19,6 +19,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Acompanhe o ritmo lentamente",
       "Celebre cada acerto"
     ],
+    rows: 6,
+    columns: 6,
     gridLayout: {
       rows: 6,
       cols: 6,
@@ -51,6 +53,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Pratique a sequência feliz",
       "Encoraje a expressão facial"
     ],
+    rows: 5,
+    columns: 7,
     gridLayout: {
       rows: 5,
       cols: 7,
@@ -83,6 +87,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Varie a dinâmica e altura",
       "Encoraje a criatividade"
     ],
+    rows: 4,
+    columns: 8,
     gridLayout: {
       rows: 4,
       cols: 8,
@@ -115,6 +121,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Pratique com olhos fechados",
       "Varie a intensidade"
     ],
+    rows: 6,
+    columns: 5,
     gridLayout: {
       rows: 6,
       cols: 5,
@@ -147,6 +155,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Mantenha o foco por períodos crescentes",
       "Aumente gradualmente a complexidade"
     ],
+    rows: 7,
+    columns: 7,
     gridLayout: {
       rows: 7,
       cols: 7,
@@ -179,6 +189,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Celebre as conquistas do grupo",
       "Encoraje a colaboração"
     ],
+    rows: 5,
+    columns: 6,
     gridLayout: {
       rows: 5,
       cols: 6,
@@ -211,6 +223,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Pratique parar no comando",
       "Trabalhe respiração e ritmo"
     ],
+    rows: 6,
+    columns: 6,
     gridLayout: {
       rows: 6,
       cols: 6,
@@ -243,6 +257,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Discuta as escolhas musicais",
       "Celebre a originalidade"
     ],
+    rows: 8,
+    columns: 8,
     gridLayout: {
       rows: 8,
       cols: 8,
@@ -275,6 +291,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Pratique respiração profunda",
       "Termine gradualmente"
     ],
+    rows: 4,
+    columns: 5,
     gridLayout: {
       rows: 4,
       cols: 5,
@@ -307,6 +325,8 @@ export const musicStudyTemplates: StudyTemplate[] = [
       "Use apoio visual inicialmente",
       "Pratique repetição ativa"
     ],
+    rows: 5,
+    columns: 7,
     gridLayout: {
       rows: 5,
       cols: 7,
