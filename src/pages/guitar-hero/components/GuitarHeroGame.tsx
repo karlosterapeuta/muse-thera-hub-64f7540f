@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { getMusicalSequence, generateGameNotes } from "@/data/musicalSequences";
 
 interface Note {
   id: string;
@@ -16,9 +17,14 @@ interface Note {
 interface GuitarHeroGameProps {
   instrumentType: "bell" | "xylophone" | "keyboard";
   onNotePlay: (frequency: number, color: string) => void;
+  selectedSong?: {
+    id: string;
+    title: string;
+    hasSequence?: boolean;
+  };
 }
 
-const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay }) => {
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay, selectedSong }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -134,6 +140,21 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
   // Gerar padrão de notas
   const generateNotes = useCallback(() => {
+    if (selectedSong?.hasSequence) {
+      const sequence = getMusicalSequence(selectedSong.id);
+      if (sequence) {
+        console.log(`🎼 Carregando sequência musical: ${sequence.name}`);
+        console.log(`📊 BPM: ${sequence.bpm}, Notas: ${sequence.notes.length}`);
+        
+        const gameNotes = generateGameNotes(sequence, instrumentType);
+        setNotes(gameNotes);
+        console.log(`Generated ${gameNotes.length} authentic notes for ${selectedSong.title}`);
+        return;
+      }
+    }
+
+    // Fallback para padrão aleatório se não houver sequência
+    console.log(`⚠️ Usando padrão aleatório para ${selectedSong?.title || 'música desconhecida'}`);
     const newNotes: Note[] = [];
     const patterns = [
       [0, 2, 4], // Dó, Mi, Sol
@@ -164,9 +185,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       });
     }
 
-    console.log(`Generated ${newNotes.length} notes for ${instrumentType}`);
     setNotes(newNotes);
-  }, [instrumentType, lanes]);
+  }, [instrumentType, lanes, selectedSong]);
 
   // Atualizar posição das notas
   const updateNotes = useCallback(() => {
@@ -287,7 +307,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       gameStartTimeRef.current = Date.now();
       lastUpdateTimeRef.current = Date.now();
       startBackgroundMusic(); // Iniciar música de fundo
-      console.log(`Starting ${instrumentType} game with background music`);
+      
+      if (selectedSong?.hasSequence) {
+        console.log(`🎵 Iniciando ${selectedSong.title} com sequência musical autêntica`);
+        toast(`🎼 Tocando: ${selectedSong.title}`, { duration: 2000 });
+      } else {
+        console.log(`🎵 Iniciando ${instrumentType} game com padrão aleatório`);
+      }
+      
       setIsPlaying(true);
     } else {
       if (animationRef.current) {
@@ -333,6 +360,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
   }, [stopBackgroundMusic]);
 
   const getInstrumentTitle = () => {
+    if (selectedSong?.hasSequence) {
+      return `🎼 ${selectedSong.title}`;
+    }
+    
     switch (instrumentType) {
       case "bell": return "🔔 Sino-Hero";
       case "xylophone": return "🎵 Xilofone-Hero";
@@ -346,9 +377,16 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       {/* Header com controles e pontuação */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">
-            {getInstrumentTitle()}
-          </h1>
+          <div>
+            <h1 className="text-2xl font-bold">
+              {getInstrumentTitle()}
+            </h1>
+            {selectedSong?.hasSequence && (
+              <p className="text-sm opacity-90">
+                🎼 Sequência musical autêntica
+              </p>
+            )}
+          </div>
           <div className="flex gap-2">
             <Button onClick={togglePlay} variant="secondary" size="sm">
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -385,6 +423,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       <div className="bg-blue-600 p-3 text-center text-white">
         <p className="text-sm">
           Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
+          {selectedSong?.hasSequence && (
+            <span className="block mt-1 text-yellow-200">
+              🎼 Esta música toca a melodia autêntica de "{selectedSong.title}"
+            </span>
+          )}
         </p>
       </div>
 

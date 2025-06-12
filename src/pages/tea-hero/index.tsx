@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Music } from "lucide-react";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
+import { getMusicalSequence } from "@/data/musicalSequences";
 
 type InstrumentType = "bell" | "xylophone" | "keyboard";
 
@@ -17,6 +17,7 @@ interface Song {
   color: string;
   category: "infantil" | "clássico" | "brasileiro" | "terapêutico" | "desenhos";
   therapeuticBenefits: string;
+  hasSequence?: boolean; // Nova propriedade para indicar se tem sequência musical
 }
 
 const TeaHero = () => {
@@ -35,7 +36,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "infantil",
-      therapeuticBenefits: "Estimula coordenação básica e reconhecimento de padrões simples"
+      therapeuticBenefits: "Estimula coordenação básica e reconhecimento de padrões simples",
+      hasSequence: true
     },
     {
       id: "mary-lamb-bell",
@@ -45,7 +47,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "infantil",
-      therapeuticBenefits: "Desenvolve sequenciamento e memória auditiva"
+      therapeuticBenefits: "Desenvolve sequenciamento e memória auditiva",
+      hasSequence: true
     },
     {
       id: "ciranda-bell",
@@ -55,7 +58,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Promove integração social e cultural brasileira"
+      therapeuticBenefits: "Promove integração social e cultural brasileira",
+      hasSequence: true
     },
     {
       id: "galinha-pintadinha-bell",
@@ -65,7 +69,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula atenção e engagement através de personagem familiar"
+      therapeuticBenefits: "Estimula atenção e engagement através de personagem familiar",
+      hasSequence: true
     },
     {
       id: "borboletinha-bell",
@@ -75,7 +80,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve motricidade fina e ritmo básico"
+      therapeuticBenefits: "Desenvolve motricidade fina e ritmo básico",
+      hasSequence: true
     },
     {
       id: "atirei-pau-bell",
@@ -85,7 +91,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Trabalha coordenação e sequenciamento motor"
+      therapeuticBenefits: "Trabalha coordenação e sequenciamento motor",
+      hasSequence: true
     },
 
     // MÚSICAS FÁCEIS - XILOFONE (6 músicas)
@@ -97,7 +104,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "infantil",
-      therapeuticBenefits: "Conecta música com eventos sociais importantes"
+      therapeuticBenefits: "Conecta música com eventos sociais importantes",
+      hasSequence: true
     },
     {
       id: "xuxa-xylophone",
@@ -107,7 +115,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula expressão corporal e alegria"
+      therapeuticBenefits: "Estimula expressão corporal e alegria",
+      hasSequence: true
     },
     {
       id: "sapo-nao-lava-xylophone",
@@ -117,7 +126,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve consciência corporal e higiene"
+      therapeuticBenefits: "Desenvolve consciência corporal e higiene",
+      hasSequence: true
     },
     {
       id: "peppa-pig-xylophone",
@@ -127,7 +137,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha familiaridade e conforto através de personagem conhecido"
+      therapeuticBenefits: "Trabalha familiaridade e conforto através de personagem conhecido",
+      hasSequence: true
     },
     {
       id: "escravos-jo-xylophone",
@@ -137,7 +148,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula coordenação bilateral e sequenciamento"
+      therapeuticBenefits: "Estimula coordenação bilateral e sequenciamento",
+      hasSequence: true
     },
     {
       id: "jingle-bells-xylophone",
@@ -147,7 +159,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "infantil",
-      therapeuticBenefits: "Conecta com eventos sazonais e tradições"
+      therapeuticBenefits: "Conecta com eventos sazonais e tradições",
+      hasSequence: true
     },
 
     // MÚSICAS FÁCEIS - TECLADO (6 músicas)
@@ -159,7 +172,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "terapêutico",
-      therapeuticBenefits: "Desenvolve sequenciamento e organização mental"
+      therapeuticBenefits: "Desenvolve sequenciamento e organização mental",
+      hasSequence: true
     },
     {
       id: "hot-cross-keyboard",
@@ -169,7 +183,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "terapêutico",
-      therapeuticBenefits: "Estimula foco e concentração através da simplicidade"
+      therapeuticBenefits: "Estimula foco e concentração através da simplicidade",
+      hasSequence: true
     },
     {
       id: "frozen-keyboard",
@@ -179,7 +194,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha expressão emocional e autoestima"
+      therapeuticBenefits: "Trabalha expressão emocional e autoestima",
+      hasSequence: true
     },
     {
       id: "aquarela-keyboard",
@@ -189,7 +205,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula criatividade e imaginação"
+      therapeuticBenefits: "Estimula criatividade e imaginação",
+      hasSequence: true
     },
     {
       id: "caranguejo-keyboard",
@@ -199,7 +216,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve conhecimento sobre natureza e animais"
+      therapeuticBenefits: "Desenvolve conhecimento sobre natureza e animais",
+      hasSequence: true
     },
     {
       id: "paw-patrol-keyboard",
@@ -209,7 +227,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Promove trabalho em equipe e resolução de problemas"
+      therapeuticBenefits: "Promove trabalho em equipe e resolução de problemas",
+      hasSequence: true
     },
 
     // MÚSICAS MÉDIAS - SINO (6 músicas)
@@ -221,7 +240,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve memória sequencial e padrões repetitivos"
+      therapeuticBenefits: "Desenvolve memória sequencial e padrões repetitivos",
+      hasSequence: true
     },
     {
       id: "asa-branca-bell",
@@ -231,7 +251,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com cultura nordestina e geografia brasileira"
+      therapeuticBenefits: "Conecta com cultura nordestina e geografia brasileira",
+      hasSequence: true
     },
     {
       id: "sitio-lobato-bell",
@@ -241,7 +262,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula imaginação e literatura brasileira"
+      therapeuticBenefits: "Estimula imaginação e literatura brasileira",
+      hasSequence: true
     },
     {
       id: "pink-panther-bell",
@@ -251,7 +273,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha reconhecimento de melodias marcantes"
+      therapeuticBenefits: "Trabalha reconhecimento de melodias marcantes",
+      hasSequence: true
     },
     {
       id: "capelinha-bell",
@@ -261,7 +284,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com tradições e festividades brasileiras"
+      therapeuticBenefits: "Conecta com tradições e festividades brasileiras",
+      hasSequence: true
     },
     {
       id: "amazing-grace-bell",
@@ -271,7 +295,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Promove calma e introspecção"
+      therapeuticBenefits: "Promove calma e introspecção",
+      hasSequence: true
     },
 
     // MÚSICAS MÉDIAS - XILOFONE (6 músicas)
@@ -283,7 +308,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula apreciação da música clássica e grandiosidade"
+      therapeuticBenefits: "Estimula apreciação da música clássica e grandiosidade",
+      hasSequence: true
     },
     {
       id: "chaves-xylophone",
@@ -293,7 +319,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Conecta com humor e nostalgia familiar"
+      therapeuticBenefits: "Conecta com humor e nostalgia familiar",
+      hasSequence: true
     },
     {
       id: "garota-ipanema-xylophone",
@@ -303,7 +330,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Introduz bossa nova e sofisticação musical"
+      therapeuticBenefits: "Introduz bossa nova e sofisticação musical",
+      hasSequence: true
     },
     {
       id: "danny-boy-xylophone",
@@ -313,7 +341,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve expressão emocional profunda"
+      therapeuticBenefits: "Desenvolve expressão emocional profunda",
+      hasSequence: true
     },
     {
       id: "turma-monica-xylophone",
@@ -323,7 +352,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula criatividade e narrativa brasileira"
+      therapeuticBenefits: "Estimula criatividade e narrativa brasileira",
+      hasSequence: true
     },
     {
       id: "cai-cai-balao-xylophone",
@@ -333,7 +363,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Trabalha coordenação e festividades tradicionais"
+      therapeuticBenefits: "Trabalha coordenação e festividades tradicionais",
+      hasSequence: true
     },
 
     // MÚSICAS MÉDIAS - TECLADO (6 músicas)
@@ -345,7 +376,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Promove relaxamento e concentração profunda"
+      therapeuticBenefits: "Promove relaxamento e concentração profunda",
+      hasSequence: true
     },
     {
       id: "moana-keyboard",
@@ -355,7 +387,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula coragem e autodescoberta"
+      therapeuticBenefits: "Estimula coragem e autodescoberta",
+      hasSequence: true
     },
     {
       id: "bach-minuet-keyboard",
@@ -365,7 +398,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve estrutura e organização mental"
+      therapeuticBenefits: "Desenvolve estrutura e organização mental",
+      hasSequence: true
     },
     {
       id: "country-roads-keyboard",
@@ -375,7 +409,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Conecta com natureza e tranquilidade"
+      therapeuticBenefits: "Conecta com natureza e tranquilidade",
+      hasSequence: true
     },
     {
       id: "peixe-vivo-keyboard",
@@ -385,7 +420,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula conexão com natureza aquática"
+      therapeuticBenefits: "Estimula conexão com natureza aquática",
+      hasSequence: true
     },
     {
       id: "toy-story-keyboard",
@@ -395,7 +431,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha amizade e lealdade"
+      therapeuticBenefits: "Trabalha amizade e lealdade",
+      hasSequence: true
     },
 
     // MÚSICAS DIFÍCEIS - SINO (6 músicas)
@@ -407,7 +444,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve coordenação avançada e perseverança"
+      therapeuticBenefits: "Desenvolve coordenação avançada e perseverança",
+      hasSequence: true
     },
     {
       id: "carmen-bell",
@@ -417,7 +455,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula expressão dramática e emocional"
+      therapeuticBenefits: "Estimula expressão dramática e emocional",
+      hasSequence: true
     },
     {
       id: "pirates-bell",
@@ -427,7 +466,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha aventura e determinação"
+      therapeuticBenefits: "Trabalha aventura e determinação",
+      hasSequence: true
     },
     {
       id: "aquarela-complexa-bell",
@@ -437,7 +477,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "brasileiro",
-      therapeuticBenefits: "Conecta com identidade nacional complexa"
+      therapeuticBenefits: "Conecta com identidade nacional complexa",
+      hasSequence: true
     },
     {
       id: "carnival-bell",
@@ -447,7 +488,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve agilidade mental e festa"
+      therapeuticBenefits: "Desenvolve agilidade mental e festa",
+      hasSequence: true
     },
     {
       id: "star-wars-bell",
@@ -457,7 +499,8 @@ const TeaHero = () => {
       instrument: "bell",
       color: "bg-red-100 border-red-200",
       category: "desenhos",
-      therapeuticBenefits: "Estimula imaginação épica e heroísmo"
+      therapeuticBenefits: "Estimula imaginação épica e heroísmo",
+      hasSequence: true
     },
 
     // MÚSICAS DIFÍCEIS - XILOFONE (6 músicas)
@@ -469,7 +512,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve velocidade e precisão mental"
+      therapeuticBenefits: "Desenvolve velocidade e precisão mental",
+      hasSequence: true
     },
     {
       id: "spring-vivaldi-xylophone",
@@ -479,7 +523,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Conecta com estações e renovação"
+      therapeuticBenefits: "Conecta com estações e renovação",
+      hasSequence: true
     },
     {
       id: "choro-xylophone",
@@ -489,7 +534,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "brasileiro",
-      therapeuticBenefits: "Estimula agilidade e música instrumental brasileira"
+      therapeuticBenefits: "Estimula agilidade e música instrumental brasileira",
+      hasSequence: true
     },
     {
       id: "incredibles-xylophone",
@@ -499,7 +545,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "desenhos",
-      therapeuticBenefits: "Trabalha superpoderes e autoconfiança"
+      therapeuticBenefits: "Trabalha superpoderes e autoconfiança",
+      hasSequence: true
     },
     {
       id: "hungarian-dance-xylophone",
@@ -509,7 +556,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve ritmo complexo e energia"
+      therapeuticBenefits: "Desenvolve ritmo complexo e energia",
+      hasSequence: true
     },
     {
       id: "beatles-xylophone",
@@ -519,7 +567,8 @@ const TeaHero = () => {
       instrument: "xylophone",
       color: "bg-blue-100 border-blue-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula nostalgia e melancolia controlada"
+      therapeuticBenefits: "Estimula nostalgia e melancolia controlada",
+      hasSequence: true
     },
 
     // MÚSICAS DIFÍCEIS - TECLADO (6 músicas)
@@ -531,7 +580,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Desenvolve delicadeza e expressão refinada"
+      therapeuticBenefits: "Desenvolve delicadeza e expressão refinada",
+      hasSequence: true
     },
     {
       id: "claire-de-lune-keyboard",
@@ -541,7 +591,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Promove tranquilidade noturna e contemplação"
+      therapeuticBenefits: "Promove tranquilidade noturna e contemplação",
+      hasSequence: true
     },
     {
       id: "chopin-minute-keyboard",
@@ -551,7 +602,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Estimula velocidade controlada e elegância"
+      therapeuticBenefits: "Estimula velocidade controlada e elegância",
+      hasSequence: true
     },
     {
       id: "casa-papel-keyboard",
@@ -561,7 +613,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "clássico",
-      therapeuticBenefits: "Trabalha resistência e determinação"
+      therapeuticBenefits: "Trabalha resistência e determinação",
+      hasSequence: true
     },
     {
       id: "lion-king-keyboard",
@@ -571,7 +624,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "desenhos",
-      therapeuticBenefits: "Conecta com ciclo da vida e propósito"
+      therapeuticBenefits: "Conecta com ciclo da vida e propósito",
+      hasSequence: true
     },
     {
       id: "samba-keyboard",
@@ -581,7 +635,8 @@ const TeaHero = () => {
       instrument: "keyboard",
       color: "bg-green-100 border-green-200",
       category: "brasileiro",
-      therapeuticBenefits: "Desenvolve complexidade rítmica brasileira"
+      therapeuticBenefits: "Desenvolve complexidade rítmica brasileira",
+      hasSequence: true
     }
   ];
 
@@ -614,6 +669,12 @@ const TeaHero = () => {
 
   const handleStartGame = () => {
     if (selectedSong) {
+      const sequence = getMusicalSequence(selectedSong.id);
+      if (sequence) {
+        console.log(`🎵 Iniciando música com sequência autêntica: ${sequence.name}`);
+        console.log(`📊 BPM: ${sequence.bpm}, Compasso: ${sequence.timeSignature}`);
+        console.log(`🎼 Total de notas: ${sequence.notes.length}`);
+      }
       setGameStarted(true);
     }
   };
@@ -656,9 +717,16 @@ const TeaHero = () => {
     return (
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            TEA-Hero - {selectedSong.title} {getInstrumentIcon(selectedSong.instrument)}
-          </h1>
+          <div>
+            <h1 className="text-2xl font-bold">
+              TEA-Hero - {selectedSong.title} {getInstrumentIcon(selectedSong.instrument)}
+            </h1>
+            {selectedSong.hasSequence && (
+              <p className="text-sm opacity-90">
+                🎼 Melodia autêntica • Sequência musical real
+              </p>
+            )}
+          </div>
           <Button onClick={handleBackToSelection} variant="secondary" size="sm">
             Voltar ao Menu
           </Button>
@@ -666,6 +734,7 @@ const TeaHero = () => {
         <GuitarHeroGame 
           instrumentType={selectedSong.instrument} 
           onNotePlay={handleNotePlay}
+          selectedSong={selectedSong}
         />
       </div>
     );
@@ -711,16 +780,26 @@ const TeaHero = () => {
             {filteredSongs.map((song) => (
               <Card 
                 key={song.id}
-                className={`cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 ${song.color} border-2`}
+                className={`cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 ${song.color} border-2 ${song.hasSequence ? 'ring-2 ring-yellow-400' : ''}`}
                 onClick={() => handleSongSelect(song)}
               >
                 <CardHeader className="text-center pb-2">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-2xl">{getCategoryIcon(song.category)}</div>
-                    <div className="text-3xl">{getInstrumentIcon(song.instrument)}</div>
+                    <div className="flex items-center">
+                      <div className="text-3xl">{getInstrumentIcon(song.instrument)}</div>
+                      {song.hasSequence && (
+                        <div className="text-lg ml-1" title="Sequência musical autêntica">🎼</div>
+                      )}
+                    </div>
                   </div>
                   <CardTitle className="text-base leading-tight">{song.title}</CardTitle>
                   <p className="text-xs text-gray-600">{song.artist}</p>
+                  {song.hasSequence && (
+                    <p className="text-xs text-yellow-700 font-medium">
+                      ⭐ Melodia Autêntica
+                    </p>
+                  )}
                 </CardHeader>
                 <CardContent className="text-center space-y-2">
                   <div className="flex justify-center items-center space-x-2 mb-2">
