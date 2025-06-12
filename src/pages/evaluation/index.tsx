@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -19,6 +18,7 @@ import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
 import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
+import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
 import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
@@ -398,7 +398,7 @@ export default function Evaluation() {
     try {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
-          <MuseteraReportPDF
+          <EnhancedMuseteraReportPDF
             categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
@@ -409,6 +409,10 @@ export default function Evaluation() {
             overallScore={overallScore}
             evaluationDomains={evaluationDomains}
             evaluationDate={evaluationDate}
+            patientData={{
+              age: selectedPatientData?.age || undefined,
+              birthDate: selectedPatientData?.birth_date || undefined
+            }}
           />
         </div>
       );
@@ -423,19 +427,21 @@ export default function Evaluation() {
 
       ReactDOM.render(pdfContent, root);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      toast.loading("Gerando Relatório MuseTera...");
+      toast.loading("Gerando Relatório MuseTera Aprimorado...");
 
       const opt = {
-        margin: [10, 10],
-        filename: `relatorio-musetera-${selectedPatientData?.name || 'paciente'}.pdf`,
+        margin: [8, 8],
+        filename: `relatorio-musetera-completo-${selectedPatientData?.name || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-          scale: 2,
+          scale: 1.8,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
         },
         jsPDF: { 
           unit: 'mm', 
@@ -449,7 +455,7 @@ export default function Evaluation() {
       
       document.body.removeChild(container);
       
-      toast.success("Relatório MuseTera gerado com sucesso!");
+      toast.success("Relatório MuseTera Aprimorado gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.");

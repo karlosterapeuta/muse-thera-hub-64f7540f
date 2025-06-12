@@ -1,79 +1,96 @@
 
-import html2pdf from "html2pdf.js";
-import React from "react";
-import { createRoot } from "react-dom/client";
+import html2pdf from 'html2pdf.js';
+import ReactDOM from 'react-dom';
+import { toast } from 'sonner';
 
-interface PDFGenerationOptions {
-  filename: string;
+interface PDFOptions {
+  filename?: string;
   waitTime?: number;
   quality?: number;
+  format?: 'a4' | 'letter';
+  orientation?: 'portrait' | 'landscape';
 }
 
 export const generateStaticPDF = async (
   component: React.ReactElement,
-  options: PDFGenerationOptions
+  options: PDFOptions = {}
 ): Promise<boolean> => {
+  const {
+    filename = 'documento.pdf',
+    waitTime = 2000,
+    quality = 1.5,
+    format = 'a4',
+    orientation = 'portrait'
+  } = options;
+
   try {
-    console.log("🎯 Iniciando geração de PDF estático...");
-    
-    // Criar elemento temporário
-    const tempDiv = document.createElement('div');
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.top = '-9999px';
-    tempDiv.style.width = '800px';
-    document.body.appendChild(tempDiv);
+    // Criar container temporário
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '800px';
+    container.style.backgroundColor = '#ffffff';
+    document.body.appendChild(container);
+
+    const root = document.createElement('div');
+    container.appendChild(root);
 
     // Renderizar componente
-    const root = createRoot(tempDiv);
-    root.render(component);
+    ReactDOM.render(component, root);
 
-    // Aguardar renderização completa
-    await new Promise(resolve => setTimeout(resolve, options.waitTime || 2000));
+    // Aguardar renderização
+    await new Promise(resolve => setTimeout(resolve, waitTime));
 
-    console.log("📊 Componente renderizado, iniciando captura...");
-
-    // Configurações otimizadas para gráficos estáticos
-    const pdfOptions = {
+    // Configurações do PDF
+    const opt = {
       margin: [10, 10, 10, 10],
-      filename: options.filename,
+      filename,
       pagebreak: { 
-        mode: ['avoid-all', 'css', 'legacy']
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.page-break-before',
+        after: '.page-break-after',
+        avoid: '.page-break-avoid'
       },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
+      image: { 
+        type: 'jpeg', 
+        quality: 0.98 
       },
-      html2canvas: {
-        scale: options.quality || 1.5,
+      html2canvas: { 
+        scale: quality,
         useCORS: true,
-        allowTaint: false,
+        allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        onclone: (clonedDoc: Document) => {
-          // Garantir que elementos SVG sejam renderizados corretamente
-          const svgs = clonedDoc.querySelectorAll('svg');
-          svgs.forEach(svg => {
-            svg.style.display = 'block';
-            svg.style.visibility = 'visible';
-          });
-        }
+        letterRendering: true,
+        removeContainer: true,
+        imageTimeout: 15000,
+        height: window.innerHeight,
+        width: window.innerWidth,
+        scrollX: 0,
+        scrollY: 0
       },
+      jsPDF: { 
+        unit: 'mm', 
+        format,
+        orientation,
+        compress: true,
+        putOnlyUsedFonts: true,
+        floatPrecision: 16
+      }
     };
 
     // Gerar PDF
-    await html2pdf().from(tempDiv).set(pdfOptions).save();
+    await html2pdf().set(opt).from(root).save();
     
-    // Limpar
-    root.unmount();
-    document.body.removeChild(tempDiv);
+    // Limpar container
+    document.body.removeChild(container);
     
-    console.log("✅ PDF estático gerado com sucesso!");
     return true;
     
   } catch (error) {
-    console.error("❌ Erro ao gerar PDF estático:", error);
+    console.error('Erro ao gerar PDF:', error);
+    toast.error('Erro ao gerar PDF. Por favor, tente novamente.');
     return false;
   }
 };
