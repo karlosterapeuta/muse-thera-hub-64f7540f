@@ -1,15 +1,9 @@
 
 import React from "react";
-import MusicogramWorkspace from "./components/MusicogramWorkspace";
-import { therapyTemplates } from "./data/therapyTemplates";
+import SimpleMusicogram from "./components/SimpleMusicogram";
 
 const Musicogram: React.FC = () => {
-  return (
-    <MusicogramWorkspace 
-      templates={therapyTemplates}
-      patientId="demo-patient" // Em produção, isso viria do contexto/rota
-    />
-  );
+  return <SimpleMusicogram />;
 };
 
 export default Musicogram;
