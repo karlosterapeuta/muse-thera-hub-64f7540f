@@ -2,22 +2,27 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ProgressData, TherapySession } from "../types";
+import { ProgressData, TherapySession, TherapyTemplate } from "../types";
 
 interface ProgressTrackerProps {
   currentSession: TherapySession | null;
   progressData: ProgressData[];
   onEndSession: () => void;
+  // Novo prop para trazer template selecionado
+  selectedTemplateData?: TherapyTemplate | null;
 }
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({
   currentSession,
   progressData,
-  onEndSession
+  onEndSession,
+  selectedTemplateData
 }) => {
-  if (!currentSession) return null;
+  if (!currentSession || !selectedTemplateData) return null;
 
-  const sessionProgress = (currentSession.completedActivities.length / 5) * 100; // Assumindo 5 atividades por sessão
+  // Corrigir cálculo do total de atividades com base no template
+  const totalActivities = selectedTemplateData.activities.length;
+  const sessionProgress = (currentSession.completedActivities.length / totalActivities) * 100;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-4 space-y-4">
@@ -31,7 +36,7 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
           <span>Atividades Concluídas</span>
-          <span>{currentSession.completedActivities.length}/5</span>
+          <span>{currentSession.completedActivities.length}/{totalActivities}</span>
         </div>
         <Progress value={sessionProgress} className="h-2" />
       </div>

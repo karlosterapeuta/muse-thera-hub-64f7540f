@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -214,6 +213,7 @@ const MusicogramWorkspace: React.FC<MusicogramWorkspaceProps> = ({
               currentSession={currentSession}
               progressData={progressData}
               onEndSession={endSession}
+              selectedTemplateData={selectedTemplateData}
             />
 
             {/* Informações da Atividade */}

@@ -66,56 +66,49 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
   };
 
   const playSymbolSound = (symbol: ActivitySymbol) => {
-    // Implementação básica de som usando Web Audio API
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    // Diferentes frequências para diferentes símbolos
-    const frequencies: { [key: string]: number } = {
-      'instrument': 440, // A4
-      'emotion': 523, // C5
-      'action': 659, // E5
-      'dynamic': 784, // G5
-      'nature': 330 // E4
-    };
-    
-    oscillator.frequency.setValueAtTime(
-      frequencies[symbol.category] || 440, 
-      audioContext.currentTime
-    );
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
+    // Agora usa Howler se disponível (básico): você pode expandir para sons customizados
+    if (symbol.sound) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { Howl } = require('howler');
+        const sound = new Howl({ src: [symbol.sound]});
+        sound.play();
+      } catch (e) {
+        // Falha como fallback para Web Audio
+      }
+    }
+    // Web Audio API como fallback
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      const frequencies: { [key: string]: number } = { 'instrument': 440, 'emotion': 523, 'action': 659, 'dynamic': 784, 'nature': 330 };
+      oscillator.frequency.setValueAtTime(frequencies[symbol.category] || 440, audioContext.currentTime);
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch { }
   };
 
+  // Corrigir lógica de seleção e feedback para cobrir todos os tipos!
   const handleSymbolClick = (symbolIndex: number) => {
     if (isPlaying) return;
-    
-    if (!startTime) {
-      setStartTime(Date.now());
-    }
+    if (!startTime) setStartTime(Date.now());
 
-    const newSelected = [...selectedSymbols, symbolIndex];
+    // Som imediato
+    if (soundEnabled) playSymbolSound(activity.symbols[symbolIndex]);
+
+    let newSelected = [...selectedSymbols, symbolIndex];
     setSelectedSymbols(newSelected);
 
-    if (soundEnabled) {
-      playSymbolSound(activity.symbols[symbolIndex]);
-    }
-
-    // Verificar se a atividade foi completada
     if (activity.type === 'sequence' && activity.correctOrder) {
       if (newSelected.length === activity.correctOrder.length) {
         const isCorrect = newSelected.every((sel, idx) => sel === activity.correctOrder![idx]);
-        const timeElapsed = Date.now() - startTime!;
-        
+        const timeElapsed = Date.now() - (startTime || Date.now());
         setShowFeedback(isCorrect ? 'success' : 'error');
         setTimeout(() => {
           onActivityComplete(isCorrect, timeElapsed);
@@ -123,8 +116,25 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         }, 1500);
       }
     } else if (activity.type === 'selection') {
-      // Para atividades de seleção, completar imediatamente
-      const timeElapsed = Date.now() - startTime!;
+      const timeElapsed = Date.now() - (startTime || Date.now());
+      setShowFeedback('success');
+      setTimeout(() => {
+        onActivityComplete(true, timeElapsed);
+        setShowFeedback(null);
+      }, 1000);
+    } else if (activity.type === 'response') {
+      // Atividades tipo response: completa ao menos uma seleção
+      if (newSelected.length >= 1) {
+        const timeElapsed = Date.now() - (startTime || Date.now());
+        setShowFeedback('success');
+        setTimeout(() => {
+          onActivityComplete(true, timeElapsed);
+          setShowFeedback(null);
+        }, 1200);
+      }
+    } else {
+      // fallback (para novos tipos futuros)
+      const timeElapsed = Date.now() - (startTime || Date.now());
       setShowFeedback('success');
       setTimeout(() => {
         onActivityComplete(true, timeElapsed);
@@ -245,5 +255,4 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     </div>
   );
 };
-
 export default InteractiveCanvas;
