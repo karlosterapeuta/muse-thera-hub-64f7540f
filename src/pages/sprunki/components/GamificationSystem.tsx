@@ -1,103 +1,31 @@
 
 import React, { useState, useEffect } from 'react';
-import { Star, Trophy, Target, Music, Zap, Heart } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Trophy, Star, Target, Music, Zap, Heart } from 'lucide-react';
 
-export interface Achievement {
+interface Achievement {
   id: string;
   name: string;
   description: string;
   icon: React.ReactNode;
-  requirement: number;
-  current: number;
   unlocked: boolean;
-  category: 'creation' | 'exploration' | 'mastery' | 'therapeutic';
-}
-
-export interface GamificationData {
-  level: number;
-  xp: number;
-  xpToNextLevel: number;
-  achievements: Achievement[];
-  streak: number;
-  totalSessions: number;
-  favoriteMode: string;
-  creationsCount: number;
-  harmoniesCreated: number;
-  modesExplored: string[];
+  progress: number;
+  maxProgress: number;
 }
 
 interface GamificationSystemProps {
-  metrics: any;
+  metrics: {
+    movementCount: number;
+    sessionDuration: number;
+    modeChanges: number;
+    harmoniesCreated?: number;
+  };
   currentMode: string;
-  onLevelUp?: (newLevel: number) => void;
-  onAchievementUnlocked?: (achievement: Achievement) => void;
+  onLevelUp: (level: number) => void;
+  onAchievementUnlocked: (achievement: Achievement) => void;
 }
-
-const initialAchievements: Achievement[] = [
-  {
-    id: 'first-touch',
-    name: 'Primeiro Toque',
-    description: 'Crie seu primeiro som',
-    icon: <Music className="w-4 h-4" />,
-    requirement: 1,
-    current: 0,
-    unlocked: false,
-    category: 'creation'
-  },
-  {
-    id: 'explorer',
-    name: 'Explorador Musical',
-    description: 'Experimente todos os 4 modos',
-    icon: <Target className="w-4 h-4" />,
-    requirement: 4,
-    current: 0,
-    unlocked: false,
-    category: 'exploration'
-  },
-  {
-    id: 'composer',
-    name: 'Compositor',
-    description: 'Crie 50 sons',
-    icon: <Star className="w-4 h-4" />,
-    requirement: 50,
-    current: 0,
-    unlocked: false,
-    category: 'creation'
-  },
-  {
-    id: 'harmony-master',
-    name: 'Mestre da Harmonia',
-    description: 'Crie 10 harmonias tocando múltiplos pontos',
-    icon: <Trophy className="w-4 h-4" />,
-    requirement: 10,
-    current: 0,
-    unlocked: false,
-    category: 'mastery'
-  },
-  {
-    id: 'therapeutic-session',
-    name: 'Sessão Terapêutica',
-    description: 'Complete uma sessão de 5 minutos',
-    icon: <Heart className="w-4 h-4" />,
-    requirement: 300000, // 5 minutes in milliseconds
-    current: 0,
-    unlocked: false,
-    category: 'therapeutic'
-  },
-  {
-    id: 'energy-master',
-    name: 'Mestre da Energia',
-    description: 'Mantenha alta intensidade por 2 minutos',
-    icon: <Zap className="w-4 h-4" />,
-    requirement: 120000, // 2 minutes
-    current: 0,
-    unlocked: false,
-    category: 'therapeutic'
-  }
-];
 
 const GamificationSystem: React.FC<GamificationSystemProps> = ({
   metrics,
@@ -105,234 +33,269 @@ const GamificationSystem: React.FC<GamificationSystemProps> = ({
   onLevelUp,
   onAchievementUnlocked
 }) => {
-  const [gamificationData, setGamificationData] = useState<GamificationData>(() => {
-    const saved = localStorage.getItem('sensorsync-gamification');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        ...parsed,
-        achievements: parsed.achievements || initialAchievements
-      };
+  const [level, setLevel] = useState(1);
+  const [experience, setExperience] = useState(0);
+  const [achievements, setAchievements] = useState<Achievement[]>([
+    {
+      id: 'first-touch',
+      name: 'Primeiro Toque',
+      description: 'Crie sua primeira nota musical',
+      icon: <Music className="w-4 h-4" />,
+      unlocked: false,
+      progress: 0,
+      maxProgress: 1
+    },
+    {
+      id: 'explorer',
+      name: 'Explorador Musical',
+      description: 'Teste todos os modos do jogo',
+      icon: <Target className="w-4 h-4" />,
+      unlocked: false,
+      progress: 0,
+      maxProgress: 5
+    },
+    {
+      id: 'composer',
+      name: 'Compositor',
+      description: 'Crie 100 notas musicais',
+      icon: <Star className="w-4 h-4" />,
+      unlocked: false,
+      progress: 0,
+      maxProgress: 100
+    },
+    {
+      id: 'harmony-master',
+      name: 'Mestre da Harmonia',
+      description: 'Crie 10 harmonias',
+      icon: <Zap className="w-4 h-4" />,
+      unlocked: false,
+      progress: 0,
+      maxProgress: 10
+    },
+    {
+      id: 'dedicated',
+      name: 'Dedicado',
+      description: 'Toque por 10 minutos',
+      icon: <Heart className="w-4 h-4" />,
+      unlocked: false,
+      progress: 0,
+      maxProgress: 600000 // 10 minutes in milliseconds
     }
-    return {
-      level: 1,
-      xp: 0,
-      xpToNextLevel: 100,
-      achievements: initialAchievements,
-      streak: 0,
-      totalSessions: 0,
-      favoriteMode: 'calm',
-      creationsCount: 0,
-      harmoniesCreated: 0,
-      modesExplored: []
-    };
-  });
+  ]);
 
-  const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
-
-  // Calculate XP from metrics
+  // Calculate experience and level based on metrics
   useEffect(() => {
-    const xpGain = Math.floor(metrics.movementCount * 2);
-    const sessionXP = Math.floor(metrics.sessionDuration / 10000); // 1 XP per 10 seconds
-    const totalXP = xpGain + sessionXP;
+    const newExperience = 
+      metrics.movementCount * 2 + 
+      Math.floor(metrics.sessionDuration / 1000) + 
+      metrics.modeChanges * 10 +
+      (metrics.harmoniesCreated || 0) * 25;
 
-    if (totalXP > gamificationData.xp) {
-      const newXP = totalXP;
-      let newLevel = gamificationData.level;
-      let xpToNext = gamificationData.xpToNextLevel;
+    const newLevel = Math.floor(newExperience / 100) + 1;
 
-      // Check for level up
-      while (newXP >= xpToNext) {
-        newLevel++;
-        xpToNext = newLevel * 100; // Each level requires more XP
-        if (onLevelUp) {
-          onLevelUp(newLevel);
-        }
-      }
-
-      setGamificationData(prev => ({
-        ...prev,
-        xp: newXP,
-        level: newLevel,
-        xpToNextLevel: xpToNext,
-        creationsCount: metrics.movementCount
-      }));
+    if (newLevel > level) {
+      setLevel(newLevel);
+      onLevelUp(newLevel);
     }
-  }, [metrics, gamificationData.xp, gamificationData.level, gamificationData.xpToNextLevel, onLevelUp]);
 
-  // Check achievements
+    setExperience(newExperience);
+  }, [metrics, level, onLevelUp]);
+
+  // Update achievements
   useEffect(() => {
-    const updatedAchievements = gamificationData.achievements.map(achievement => {
-      let current = achievement.current;
+    setAchievements(prev => prev.map(achievement => {
+      let newProgress = achievement.progress;
+      let unlocked = achievement.unlocked;
 
       switch (achievement.id) {
         case 'first-touch':
-          current = metrics.movementCount > 0 ? 1 : 0;
-          break;
-        case 'composer':
-          current = metrics.movementCount;
-          break;
-        case 'therapeutic-session':
-          current = metrics.sessionDuration;
+          newProgress = Math.min(metrics.movementCount, achievement.maxProgress);
           break;
         case 'explorer':
-          current = gamificationData.modesExplored.length;
+          newProgress = Math.min(metrics.modeChanges, achievement.maxProgress);
+          break;
+        case 'composer':
+          newProgress = Math.min(metrics.movementCount, achievement.maxProgress);
           break;
         case 'harmony-master':
-          current = gamificationData.harmoniesCreated;
+          newProgress = Math.min(metrics.harmoniesCreated || 0, achievement.maxProgress);
           break;
-        case 'energy-master':
-          if (metrics.averageIntensity > 0.7) {
-            current = Math.min(current + 1000, achievement.requirement);
-          }
+        case 'dedicated':
+          newProgress = Math.min(metrics.sessionDuration, achievement.maxProgress);
           break;
       }
 
-      const wasUnlocked = achievement.unlocked;
-      const unlocked = current >= achievement.requirement;
-
-      if (!wasUnlocked && unlocked) {
-        setNewlyUnlocked(prev => [...prev, { ...achievement, current, unlocked }]);
-        if (onAchievementUnlocked) {
-          onAchievementUnlocked({ ...achievement, current, unlocked });
-        }
+      if (newProgress >= achievement.maxProgress && !unlocked) {
+        unlocked = true;
+        onAchievementUnlocked(achievement);
       }
 
-      return { ...achievement, current, unlocked };
-    });
-
-    setGamificationData(prev => ({
-      ...prev,
-      achievements: updatedAchievements
+      return {
+        ...achievement,
+        progress: newProgress,
+        unlocked
+      };
     }));
-  }, [metrics, gamificationData.modesExplored, gamificationData.harmoniesCreated, onAchievementUnlocked]);
+  }, [metrics, onAchievementUnlocked]);
 
-  // Track mode exploration
-  useEffect(() => {
-    if (!gamificationData.modesExplored.includes(currentMode)) {
-      setGamificationData(prev => ({
-        ...prev,
-        modesExplored: [...prev.modesExplored, currentMode]
-      }));
-    }
-  }, [currentMode, gamificationData.modesExplored]);
-
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem('sensorsync-gamification', JSON.stringify(gamificationData));
-  }, [gamificationData]);
-
-  const progressPercentage = (gamificationData.xp / gamificationData.xpToNextLevel) * 100;
-  const unlockedAchievements = gamificationData.achievements.filter(a => a.unlocked);
+  const experienceToNextLevel = ((level * 100) - experience);
+  const currentLevelProgress = (experience % 100);
 
   return (
-    <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          Progresso Terapêutico
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Level and XP */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">Nível {gamificationData.level}</span>
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {gamificationData.xp} / {gamificationData.xpToNextLevel} XP
-            </span>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
-        </div>
-
-        {/* Recent Achievements */}
-        {unlockedAchievements.length > 0 && (
-          <div>
-            <h4 className="text-sm font-medium mb-2">Conquistas Desbloqueadas</h4>
-            <div className="grid grid-cols-2 gap-2">
-              {unlockedAchievements.slice(-4).map(achievement => (
-                <Badge
-                  key={achievement.id}
-                  variant="secondary"
-                  className="flex items-center gap-1 p-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
-                >
-                  {achievement.icon}
-                  <span className="text-xs">{achievement.name}</span>
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Current Challenges */}
-        <div>
-          <h4 className="text-sm font-medium mb-2">Desafios Ativos</h4>
+    <div className="space-y-4">
+      {/* Level Progress */}
+      <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
+            <Trophy className="w-5 h-5" />
+            Nível {level}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="space-y-2">
-            {gamificationData.achievements
-              .filter(a => !a.unlocked)
-              .slice(0, 3)
-              .map(achievement => (
-                <div key={achievement.id} className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
-                  <div className="flex items-center gap-2 mb-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-yellow-600 dark:text-yellow-400">Experiência</span>
+              <span className="text-yellow-600 dark:text-yellow-400">{experience} XP</span>
+            </div>
+            <Progress value={currentLevelProgress} className="h-2" />
+            <div className="text-xs text-yellow-500 dark:text-yellow-500 text-center">
+              {experienceToNextLevel} XP para próximo nível
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Achievements */}
+      <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+            <Star className="w-5 h-5" />
+            Conquistas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {achievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className={`
+                  p-3 rounded-lg transition-all duration-300
+                  ${achievement.unlocked 
+                    ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800' 
+                    : 'bg-gray-50 border border-gray-200 dark:bg-gray-800 dark:border-gray-700'
+                  }
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`
+                    p-2 rounded-full 
+                    ${achievement.unlocked 
+                      ? 'bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300' 
+                      : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
+                    }
+                  `}>
                     {achievement.icon}
-                    <span className="text-xs font-medium">{achievement.name}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`
+                        font-medium text-sm
+                        ${achievement.unlocked 
+                          ? 'text-green-700 dark:text-green-300' 
+                          : 'text-gray-600 dark:text-gray-400'
+                        }
+                      `}>
+                        {achievement.name}
+                      </span>
+                      {achievement.unlocked && (
+                        <Badge variant="default" className="bg-green-500 text-white text-xs">
+                          Desbloqueado!
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <p className={`
+                      text-xs mb-2
+                      ${achievement.unlocked 
+                        ? 'text-green-600 dark:text-green-400' 
+                        : 'text-gray-500 dark:text-gray-500'
+                      }
+                    `}>
                       {achievement.description}
-                    </span>
-                    <span className="text-xs font-bold">
-                      {achievement.current}/{achievement.requirement}
-                    </span>
+                    </p>
+                    
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-500">
+                          Progresso
+                        </span>
+                        <span className="text-gray-500">
+                          {achievement.progress}/{achievement.maxProgress}
+                        </span>
+                      </div>
+                      <Progress 
+                        value={(achievement.progress / achievement.maxProgress) * 100} 
+                        className="h-1"
+                      />
+                    </div>
                   </div>
-                  <Progress 
-                    value={(achievement.current / achievement.requirement) * 100} 
-                    className="h-1 mt-1" 
-                  />
-                </div>
-              ))}
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-2 text-center">
-          <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
-            <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
-              {gamificationData.modesExplored.length}
-            </div>
-            <div className="text-xs text-blue-600 dark:text-blue-400">Modos Explorados</div>
-          </div>
-          <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-2">
-            <div className="text-lg font-bold text-green-700 dark:text-green-300">
-              {Math.floor(metrics.sessionDuration / 60000)}m
-            </div>
-            <div className="text-xs text-green-600 dark:text-green-400">Tempo de Sessão</div>
-          </div>
-        </div>
-      </CardContent>
-
-      {/* Achievement Notifications */}
-      {newlyUnlocked.length > 0 && (
-        <div className="fixed top-4 right-4 z-50">
-          {newlyUnlocked.map(achievement => (
-            <div
-              key={achievement.id}
-              className="bg-yellow-400 text-yellow-900 p-4 rounded-lg shadow-lg mb-2 animate-bounce"
-              onClick={() => setNewlyUnlocked(prev => prev.filter(a => a.id !== achievement.id))}
-            >
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                <div>
-                  <div className="font-bold">Conquista Desbloqueada!</div>
-                  <div className="text-sm">{achievement.name}</div>
                 </div>
               </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Stats */}
+      <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300 text-base">
+            <Target className="w-4 h-4" />
+            Estatísticas da Sessão
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+              <div className="font-bold text-purple-600 dark:text-purple-400">
+                {metrics.movementCount}
+              </div>
+              <div className="text-xs text-purple-500 dark:text-purple-500">
+                Notas Criadas
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-    </Card>
+            
+            <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+              <div className="font-bold text-purple-600 dark:text-purple-400">
+                {Math.floor(metrics.sessionDuration / 1000)}s
+              </div>
+              <div className="text-xs text-purple-500 dark:text-purple-500">
+                Tempo Ativo
+              </div>
+            </div>
+            
+            <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+              <div className="font-bold text-purple-600 dark:text-purple-400">
+                {metrics.modeChanges}
+              </div>
+              <div className="text-xs text-purple-500 dark:text-purple-500">
+                Modos Testados
+              </div>
+            </div>
+            
+            <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+              <div className="font-bold text-purple-600 dark:text-purple-400">
+                {metrics.harmoniesCreated || 0}
+              </div>
+              <div className="text-xs text-purple-500 dark:text-purple-500">
+                Harmonias
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
