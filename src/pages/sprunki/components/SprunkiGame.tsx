@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SprunkiSlot, SprunkiSettings } from '../types';
 import { sprunkiCharacters } from '../data/sprunkiCharacters';
@@ -60,12 +61,15 @@ const SprunkiGame: React.FC = () => {
     } catch (error) {
       console.error('Erro ao inicializar áudio:', error);
       setShowAudioPrompt(false);
+      setAudioInitialized(true); // Allow visual-only mode
     } finally {
       setIsInitializing(false);
     }
   }, [toast]);
 
   const handleSlotDrop = useCallback((slotIndex: number, characterId: string) => {
+    console.log('Drop no slot:', slotIndex, 'personagem:', characterId);
+    
     setStage(prevStage => {
       const newStage = [...prevStage];
       const slot = newStage[slotIndex];
@@ -77,9 +81,10 @@ const SprunkiGame: React.FC = () => {
       
       // Add new character
       slot.characterId = characterId;
+      slot.isActive = true;
       
       // Start playing if game is playing
-      if (isPlaying && audioInitialized) {
+      if (isPlaying && audioInitialized && !settings.visualFeedbackOnly) {
         const character = sprunkiCharacters.find(c => c.id === characterId);
         if (character) {
           sprunkiAudio.playCharacterSound(`slot-${slotIndex}`, character.frequency, character.type);
@@ -88,25 +93,39 @@ const SprunkiGame: React.FC = () => {
       
       return newStage;
     });
-  }, [isPlaying, audioInitialized]);
+
+    toast({
+      title: "🎵 Personagem Adicionado!",
+      description: `${sprunkiCharacters.find(c => c.id === characterId)?.name} foi colocado no slot ${slotIndex + 1}!`,
+    });
+  }, [isPlaying, audioInitialized, settings.visualFeedbackOnly, toast]);
 
   const handleSlotClick = useCallback((slotIndex: number) => {
+    console.log('Click no slot:', slotIndex);
+    
     setStage(prevStage => {
       const newStage = [...prevStage];
       const slot = newStage[slotIndex];
       
       if (slot.characterId) {
         // Remove character
+        const characterName = sprunkiCharacters.find(c => c.id === slot.characterId)?.name;
         sprunkiAudio.stopCharacterSound(`slot-${slotIndex}`);
         slot.characterId = null;
+        slot.isActive = false;
+        
+        toast({
+          title: "👋 Personagem Removido!",
+          description: `${characterName} saiu do palco!`,
+        });
       }
       
       return newStage;
     });
-  }, []);
+  }, [toast]);
 
   const togglePlayback = useCallback(async () => {
-    if (!audioInitialized) {
+    if (!audioInitialized && !settings.visualFeedbackOnly) {
       await initializeAudio();
     }
 
@@ -114,11 +133,16 @@ const SprunkiGame: React.FC = () => {
       // Stop all sounds
       setIsPlaying(false);
       sprunkiAudio.stopAllSounds();
+      
+      toast({
+        title: "⏹️ Música Parada!",
+        description: "Todos os sons foram pausados.",
+      });
     } else {
       // Start playing all active slots
       setIsPlaying(true);
       
-      if (audioInitialized && !settings.visualFeedbackOnly) {
+      if (!settings.visualFeedbackOnly && audioInitialized) {
         stage.forEach((slot, index) => {
           if (slot.characterId) {
             const character = sprunkiCharacters.find(c => c.id === slot.characterId);
@@ -128,8 +152,13 @@ const SprunkiGame: React.FC = () => {
           }
         });
       }
+      
+      toast({
+        title: "▶️ Música Tocando!",
+        description: "Sua composição Sprunki está rolando!",
+      });
     }
-  }, [stage, isPlaying, audioInitialized, settings.visualFeedbackOnly, initializeAudio]);
+  }, [stage, isPlaying, audioInitialized, settings.visualFeedbackOnly, initializeAudio, toast]);
 
   const clearStage = useCallback(() => {
     if (isPlaying) {
@@ -137,7 +166,7 @@ const SprunkiGame: React.FC = () => {
     }
     
     setStage(prevStage => 
-      prevStage.map(slot => ({ ...slot, characterId: null }))
+      prevStage.map(slot => ({ ...slot, characterId: null, isActive: false }))
     );
     
     sprunkiAudio.stopAllSounds();
@@ -198,11 +227,19 @@ const SprunkiGame: React.FC = () => {
       }
       if (newSettings.visualFeedbackOnly !== undefined) {
         sprunkiAudio.setVisualFeedbackOnly(newSettings.visualFeedbackOnly);
+        if (newSettings.visualFeedbackOnly && isPlaying) {
+          sprunkiAudio.stopAllSounds();
+        }
       }
       
       return updated;
     });
-  }, []);
+  }, [isPlaying]);
+
+  // Apply volume changes
+  useEffect(() => {
+    sprunkiAudio.setMasterVolume(masterVolume);
+  }, [masterVolume]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -284,7 +321,7 @@ const SprunkiGame: React.FC = () => {
       />
 
       {/* Main Content - Vertical Layout */}
-      <div className="flex-1 flex flex-col p-4 gap-6">
+      <div className="flex-1 flex flex-col p-4 gap-6 min-h-0">
         {/* Stage - Top Section */}
         <div className="flex-shrink-0">
           <SprunkiHorizontalStage

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SprunkiCharacter, SprunkiSettings } from '../types';
 import { characterCategories } from '../data/sprunkiCharacters';
@@ -14,11 +15,13 @@ const SprunkiCharacterPalette: React.FC<SprunkiCharacterPaletteProps> = ({
   settings
 }) => {
   const handleDragStart = (e: React.DragEvent, character: SprunkiCharacter) => {
+    console.log('Iniciando drag do personagem:', character.name);
     e.dataTransfer.setData('text/plain', character.id);
     e.dataTransfer.effectAllowed = 'copy';
   };
 
   const handleCharacterClick = async (character: SprunkiCharacter) => {
+    console.log('Click no personagem:', character.name);
     // Play sound preview
     if (sprunkiAudio.getInitialized() && !settings.visualFeedbackOnly) {
       try {

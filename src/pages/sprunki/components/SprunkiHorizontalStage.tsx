@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SprunkiSlot, SprunkiCharacter, SprunkiSettings } from '../types';
 import SprunkiCharacterVisual from './SprunkiCharacterVisual';
@@ -25,13 +26,14 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
   };
 
-  const handleDrop = (e: React.DragEvent, slotIndex: number) => {
+  const handleDrop = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     const characterId = e.dataTransfer.getData('text/plain');
     if (characterId) {
-      onSlotDrop(slotIndex, characterId);
+      onSlotDrop(index, characterId);
     }
   };
 
@@ -72,7 +74,7 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
       </div>
 
       {/* Stage Slots - Horizontal Layout */}
-      <div className="flex justify-center items-center gap-4 p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm relative z-10">
+      <div className="flex justify-center items-center gap-4 p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm relative z-10 min-h-[120px]">
         {stage.map((slot, index) => {
           const character = getCharacter(slot.characterId);
           const hasCharacter = !!slot.characterId;
@@ -102,11 +104,11 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
               }}
             >
               {character ? (
-                <div className="relative">
+                <div className="relative w-full h-full flex items-center justify-center">
                   <SprunkiCharacterVisual 
                     character={character} 
                     size="small"
-                    isPlaying={isPlaying}
+                    isPlaying={isPlaying && hasCharacter}
                   />
                 </div>
               ) : (
