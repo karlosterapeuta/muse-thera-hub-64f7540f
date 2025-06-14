@@ -1,4 +1,3 @@
-
 class SprunkiAudioService {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
@@ -44,16 +43,16 @@ class SprunkiAudioService {
       this.stopCharacterSound(characterId);
 
       const characterGain = this.audioContext.createGain();
-      characterGain.gain.value = this.settings.sensoryMode ? 0.3 : 0.5;
+      characterGain.gain.value = this.settings.sensoryMode ? 0.4 : 0.6;
       characterGain.connect(this.masterGain);
       
       this.characterGains.set(characterId, characterGain);
 
-      // Create sound based on character type
-      const oscillators = this.createCharacterOscillators(type, frequency, characterGain);
+      // Create continuous loops based on character type
+      const oscillators = this.createLoopingOscillators(type, frequency, characterGain);
       this.activeOscillators.set(characterId, oscillators);
 
-      // Start all oscillators
+      // Start all oscillators for continuous playback
       const now = this.audioContext.currentTime;
       oscillators.forEach(osc => osc.start(now));
 
@@ -62,68 +61,79 @@ class SprunkiAudioService {
     }
   }
 
-  private createCharacterOscillators(type: string, frequency: number, gain: GainNode): OscillatorNode[] {
+  private createLoopingOscillators(type: string, frequency: number, gain: GainNode): OscillatorNode[] {
     if (!this.audioContext) return [];
 
     const oscillators: OscillatorNode[] = [];
 
     switch (type) {
       case 'beat':
-        // Kick drum simulation
+        // Continuous kick drum pattern
         const kick = this.audioContext.createOscillator();
         kick.type = 'sine';
-        kick.frequency.setValueAtTime(60, this.audioContext.currentTime);
-        kick.frequency.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
-        kick.connect(gain);
+        kick.frequency.value = 60;
+        
+        // Create envelope for kick drum effect
+        const kickGain = this.audioContext.createGain();
+        kickGain.gain.setValueAtTime(0.8, this.audioContext.currentTime);
+        kick.connect(kickGain);
+        kickGain.connect(gain);
+        
         oscillators.push(kick);
         break;
 
       case 'melody':
-        // Simple melody line
+        // Melodic loop
         const melody = this.audioContext.createOscillator();
         melody.type = 'triangle';
         melody.frequency.value = frequency;
+        
+        // Add slight vibrato for organic feel
+        const vibrato = this.audioContext.createOscillator();
+        vibrato.type = 'sine';
+        vibrato.frequency.value = 5;
+        
+        const vibratoGain = this.audioContext.createGain();
+        vibratoGain.gain.value = 2;
+        
+        vibrato.connect(vibratoGain);
+        vibratoGain.connect(melody.frequency);
+        
         melody.connect(gain);
-        oscillators.push(melody);
-        break;
-
-      case 'bass':
-        // Bass line
-        const bass = this.audioContext.createOscillator();
-        bass.type = 'sawtooth';
-        bass.frequency.value = frequency * 0.5;
-        bass.connect(gain);
-        oscillators.push(bass);
-        break;
-
-      case 'harmony':
-        // Harmonic chord
-        [1, 1.25, 1.5].forEach(ratio => {
-          const harm = this.audioContext.createOscillator();
-          harm.type = 'sine';
-          harm.frequency.value = frequency * ratio;
-          harm.connect(gain);
-          oscillators.push(harm);
-        });
+        oscillators.push(melody, vibrato);
         break;
 
       case 'effect':
-        // Special effect
+        // Atmospheric effect
         const effect = this.audioContext.createOscillator();
         effect.type = 'square';
-        effect.frequency.setValueAtTime(frequency * 2, this.audioContext.currentTime);
-        effect.frequency.linearRampToValueAtTime(frequency * 4, this.audioContext.currentTime + 0.5);
-        effect.connect(gain);
+        effect.frequency.value = frequency;
+        
+        // Create filter for effect processing
+        const filter = this.audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = frequency * 2;
+        filter.Q.value = 5;
+        
+        effect.connect(filter);
+        filter.connect(gain);
         oscillators.push(effect);
         break;
 
-      case 'rhythm':
-        // Rhythmic pattern
-        const rhythm = this.audioContext.createOscillator();
-        rhythm.type = 'square';
-        rhythm.frequency.value = frequency;
-        rhythm.connect(gain);
-        oscillators.push(rhythm);
+      case 'harmony':
+        // Harmonic voices/chords
+        [1, 1.25, 1.5, 1.75].forEach(ratio => {
+          const harm = this.audioContext.createOscillator();
+          harm.type = 'sine';
+          harm.frequency.value = frequency * ratio;
+          
+          const harmGain = this.audioContext.createGain();
+          harmGain.gain.value = 0.3; // Lower individual volumes for blend
+          
+          harm.connect(harmGain);
+          harmGain.connect(gain);
+          oscillators.push(harm);
+        });
         break;
 
       default:

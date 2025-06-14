@@ -1,22 +1,19 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SprunkiSlot, SprunkiSettings } from '../types';
 import { sprunkiCharacters } from '../data/sprunkiCharacters';
 import { sprunkiAudio } from '../utils/sprunkiAudioService';
-import SprunkiCharacters from './SprunkiCharacters';
-import SprunkiStage from './SprunkiStage';
+import SprunkiHorizontalStage from './SprunkiHorizontalStage';
+import SprunkiCharacterPalette from './SprunkiCharacterPalette';
 import SprunkiControls from './SprunkiControls';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Volume2, Loader2 } from 'lucide-react';
 
-const STAGE_SLOTS = 8;
+const STAGE_SLOTS = 7; // Típico do Incredibox
 
 const SprunkiGame: React.FC = () => {
   const { toast } = useToast();
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSlot, setCurrentSlot] = useState(-1);
   const [bpm, setBpm] = useState(120);
   const [masterVolume, setMasterVolume] = useState(0.6);
   const [audioInitialized, setAudioInitialized] = useState(false);
@@ -68,101 +65,76 @@ const SprunkiGame: React.FC = () => {
     }
   }, [toast]);
 
-  const handleSlotClick = useCallback((slotIndex: number) => {
+  const handleSlotDrop = useCallback((slotIndex: number, characterId: string) => {
     setStage(prevStage => {
       const newStage = [...prevStage];
       const slot = newStage[slotIndex];
       
-      if (slot.characterId === selectedCharacter) {
-        // Remove character
-        slot.characterId = null;
+      // Stop previous character if any
+      if (slot.characterId) {
         sprunkiAudio.stopCharacterSound(`slot-${slotIndex}`);
-      } else if (selectedCharacter) {
-        // Add character
-        slot.characterId = selectedCharacter;
-        
-        // Play sound preview
-        if (audioInitialized) {
-          const character = sprunkiCharacters.find(c => c.id === selectedCharacter);
-          if (character) {
-            sprunkiAudio.playCharacterSound(`slot-${slotIndex}`, character.frequency, character.type);
-            
-            // Stop preview after 1 second
-            setTimeout(() => {
-              sprunkiAudio.stopCharacterSound(`slot-${slotIndex}`);
-            }, 1000);
-          }
+      }
+      
+      // Add new character
+      slot.characterId = characterId;
+      
+      // Start playing if game is playing
+      if (isPlaying && audioInitialized) {
+        const character = sprunkiCharacters.find(c => c.id === characterId);
+        if (character) {
+          sprunkiAudio.playCharacterSound(`slot-${slotIndex}`, character.frequency, character.type);
         }
       }
       
       return newStage;
     });
-  }, [selectedCharacter, audioInitialized]);
+  }, [isPlaying, audioInitialized]);
 
-  const playComposition = useCallback(async () => {
-    if (isPlaying) return;
-    
+  const handleSlotClick = useCallback((slotIndex: number) => {
+    setStage(prevStage => {
+      const newStage = [...prevStage];
+      const slot = newStage[slotIndex];
+      
+      if (slot.characterId) {
+        // Remove character
+        sprunkiAudio.stopCharacterSound(`slot-${slotIndex}`);
+        slot.characterId = null;
+      }
+      
+      return newStage;
+    });
+  }, []);
+
+  const togglePlayback = useCallback(async () => {
     if (!audioInitialized) {
       await initializeAudio();
     }
-    
-    setIsPlaying(true);
-    setCurrentSlot(0);
-    
-    const beatDuration = (60 / bpm) * 1000;
-    let currentSlotIndex = 0;
-    
-    const playNextSlot = async () => {
-      if (currentSlotIndex >= STAGE_SLOTS) {
-        setIsPlaying(false);
-        setCurrentSlot(-1);
-        sprunkiAudio.stopAllSounds();
-        toast({
-          title: "🎉 Apresentação Finalizada!",
-          description: "Que música incrível você criou!",
-        });
-        return;
-      }
-      
-      setCurrentSlot(currentSlotIndex);
-      
-      // Play all active characters in current slot
-      if (!settings.visualFeedbackOnly && audioInitialized) {
-        const slot = stage[currentSlotIndex];
-        if (slot.characterId) {
-          const character = sprunkiCharacters.find(c => c.id === slot.characterId);
-          if (character) {
-            sprunkiAudio.playCharacterSound(
-              `playing-${slot.id}`, 
-              character.frequency, 
-              character.type
-            );
-          }
-        }
-      }
-      
-      currentSlotIndex++;
-      
-      if (isPlaying) {
-        intervalRef.current = setTimeout(playNextSlot, beatDuration);
-      }
-    };
-    
-    playNextSlot();
-  }, [stage, bpm, isPlaying, audioInitialized, settings.visualFeedbackOnly, toast, initializeAudio]);
 
-  const stopComposition = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentSlot(-1);
-    sprunkiAudio.stopAllSounds();
-    if (intervalRef.current) {
-      clearTimeout(intervalRef.current);
-      intervalRef.current = null;
+    if (isPlaying) {
+      // Stop all sounds
+      setIsPlaying(false);
+      sprunkiAudio.stopAllSounds();
+    } else {
+      // Start playing all active slots
+      setIsPlaying(true);
+      
+      if (audioInitialized && !settings.visualFeedbackOnly) {
+        stage.forEach((slot, index) => {
+          if (slot.characterId) {
+            const character = sprunkiCharacters.find(c => c.id === slot.characterId);
+            if (character) {
+              sprunkiAudio.playCharacterSound(`slot-${index}`, character.frequency, character.type);
+            }
+          }
+        });
+      }
     }
-  }, []);
+  }, [stage, isPlaying, audioInitialized, settings.visualFeedbackOnly, initializeAudio]);
 
   const clearStage = useCallback(() => {
-    if (isPlaying) stopComposition();
+    if (isPlaying) {
+      setIsPlaying(false);
+    }
     
     setStage(prevStage => 
       prevStage.map(slot => ({ ...slot, characterId: null }))
@@ -174,7 +146,7 @@ const SprunkiGame: React.FC = () => {
       title: "🧹 Palco Limpo!",
       description: "Todos os personagens voltaram para casa",
     });
-  }, [isPlaying, stopComposition, toast]);
+  }, [isPlaying, toast]);
 
   const saveComposition = useCallback(() => {
     const hasCharacters = stage.some(slot => slot.characterId);
@@ -248,14 +220,14 @@ const SprunkiGame: React.FC = () => {
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-800 dark:via-pink-800 dark:to-blue-800 text-white p-4 sm:p-6 shadow-xl">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-2xl sm:text-4xl font-bold mb-2">
-            🎵 SPRUNKI: O JOGO MUSICAL
+            🎵 SPRUNKI INCREDIBOX
           </h1>
           <p className="text-sm sm:text-lg opacity-90 mb-2">
-            Crie música arrastando personagens para o palco!
+            Arraste e solte para criar música!
           </p>
           <div className="inline-flex items-center gap-2 bg-white/20 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm backdrop-blur-sm">
             <span className={`w-2 h-2 rounded-full animate-pulse ${audioInitialized ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Adaptado para TEA • Interface intuitiva
+            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Adaptado para TEA
           </div>
         </div>
       </div>
@@ -299,8 +271,8 @@ const SprunkiGame: React.FC = () => {
       {/* Controls */}
       <SprunkiControls
         isPlaying={isPlaying}
-        onPlay={playComposition}
-        onStop={stopComposition}
+        onPlay={togglePlayback}
+        onStop={togglePlayback}
         onClear={clearStage}
         onSave={saveComposition}
         bpm={bpm}
@@ -311,24 +283,27 @@ const SprunkiGame: React.FC = () => {
         onSettingsChange={updateSettings}
       />
 
-      {/* Main Content */}
-      <div className="flex flex-1 min-h-0 flex-col lg:flex-row">
-        <SprunkiCharacters
-          characters={sprunkiCharacters}
-          selectedCharacter={selectedCharacter}
-          onSelectCharacter={setSelectedCharacter}
-          settings={settings}
-        />
+      {/* Main Content - Vertical Layout */}
+      <div className="flex-1 flex flex-col p-4 gap-6">
+        {/* Stage - Top Section */}
+        <div className="flex-shrink-0">
+          <SprunkiHorizontalStage
+            stage={stage}
+            characters={sprunkiCharacters}
+            onSlotDrop={handleSlotDrop}
+            onSlotClick={handleSlotClick}
+            isPlaying={isPlaying}
+            settings={settings}
+          />
+        </div>
         
-        <SprunkiStage
-          stage={stage}
-          characters={sprunkiCharacters}
-          selectedCharacter={selectedCharacter}
-          onSlotClick={handleSlotClick}
-          isPlaying={isPlaying}
-          currentSlot={currentSlot}
-          settings={settings}
-        />
+        {/* Character Palette - Bottom Section */}
+        <div className="flex-shrink-0">
+          <SprunkiCharacterPalette
+            characters={sprunkiCharacters}
+            settings={settings}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 export interface SprunkiCharacter {
   id: string;
   name: string;
@@ -8,6 +9,7 @@ export interface SprunkiCharacter {
   soundPattern: string;
   description: string;
   animation?: string;
+  category: 'beats' | 'effects' | 'melodies' | 'voices';
 }
 
 export interface SprunkiSlot {
