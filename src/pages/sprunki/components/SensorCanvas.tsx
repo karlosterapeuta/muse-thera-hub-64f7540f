@@ -118,6 +118,23 @@ const SensorCanvas: React.FC<SensorCanvasProps> = ({
     setIsMouseDown(false);
   }, []);
 
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    Array.from(e.touches).forEach(touch => {
+      const position: SensorPosition = {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+        pressure: 0.8, // Default pressure since force is not available on all devices
+        velocity: 1.0
+      };
+      createSoundWave(position);
+    });
+  }, [createSoundWave]);
+
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const canvas = canvasRef.current;
@@ -128,12 +145,16 @@ const SensorCanvas: React.FC<SensorCanvasProps> = ({
       const position: SensorPosition = {
         x: touch.clientX - rect.left,
         y: touch.clientY - rect.top,
-        pressure: touch.force || 0.8,
+        pressure: 0.8, // Default pressure since force is not available on all devices
         velocity: 1.0
       };
       createSoundWave(position);
     });
   }, [createSoundWave]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsMouseDown(false);
+  }, []);
 
   // Animation loop
   useEffect(() => {
@@ -244,9 +265,9 @@ const SensorCanvas: React.FC<SensorCanvasProps> = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onTouchStart={handleMouseDown}
+        onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        onTouchEnd={handleMouseUp}
+        onTouchEnd={handleTouchEnd}
         style={{
           background: `linear-gradient(135deg, ${currentMode.colorPalette[0]}20, ${currentMode.colorPalette[1]}20)`
         }}

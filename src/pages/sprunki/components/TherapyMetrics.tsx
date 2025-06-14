@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { TherapyMetrics } from '../types/sensorSync';
+import type { TherapyMetrics as TherapyMetricsType } from '../types/sensorSync';
 import { Clock, MousePointer, Activity, Palette } from 'lucide-react';
 
 interface TherapyMetricsProps {
-  metrics: TherapyMetrics;
+  metrics: TherapyMetricsType;
 }
 
 const TherapyMetrics: React.FC<TherapyMetricsProps> = ({ metrics }) => {

@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { SensorSyncSettings, TherapyMetrics, GameMode } from './types/sensorSync';
+import type { SensorSyncSettings, TherapyMetrics, GameMode } from './types/sensorSync';
 import { gameModes } from './utils/colorTheory';
 import { audioSynthesis } from './utils/audioSynthesis';
 import SensorCanvas from './components/SensorCanvas';
 import ModeSelector from './components/ModeSelector';
 import AdaptiveControls from './components/AdaptiveControls';
-import TherapyMetrics from './components/TherapyMetrics';
+import TherapyMetricsComponent from './components/TherapyMetrics';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Volume2, Loader2, Play, Pause } from 'lucide-react';
@@ -222,7 +222,7 @@ const SensorSyncGame: React.FC = () => {
           />
 
           {/* Therapy Metrics */}
-          <TherapyMetrics metrics={metrics} />
+          <TherapyMetricsComponent metrics={metrics} />
         </div>
 
         {/* Center - Canvas */}
