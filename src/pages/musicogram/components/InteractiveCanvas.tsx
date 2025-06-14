@@ -1,8 +1,10 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ActivitySymbol, TherapyActivity } from "../types";
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react";
+
+// Importação correta do Howler como ES module
+import { Howl } from "howler";
 
 interface InteractiveCanvasProps {
   activity: TherapyActivity;
@@ -10,6 +12,24 @@ interface InteractiveCanvasProps {
   soundEnabled: boolean;
   onToggleSound: () => void;
 }
+
+// Síntese básica por categoria – tons diferentes para cada tipo!
+const categoryFrequencies: { [key: string]: number } = {
+  instrument: 440, // Lá
+  emotion: 494,    // Si
+  action: 523,     // Dó
+  dynamic: 587,    // Ré
+  nature: 659      // Mi
+};
+
+const categorySoundFallbacks: { [key: string]: string | null } = {
+  // Aqui você pode mapear para URLs se desejar, por enquanto null para síntese
+  instrument: null,
+  emotion: null,
+  action: null,
+  dynamic: null,
+  nature: null
+};
 
 const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
   activity,
@@ -46,55 +66,52 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     }
   };
 
-  const playSequence = async () => {
-    if (!activity.correctOrder) return;
-    
-    for (let i = 0; i < activity.correctOrder.length; i++) {
-      setCurrentStep(i);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (soundEnabled) {
-        // Aqui você pode adicionar reprodução de som
-        playSymbolSound(activity.symbols[activity.correctOrder[i]]);
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 400));
-    }
-    
-    setCurrentStep(-1);
-    setIsPlaying(false);
-  };
-
+  // Corrigir playSymbolSound: usa Howler se houver sound definido, senão faz síntese simples
   const playSymbolSound = (symbol: ActivitySymbol) => {
-    // Agora usa Howler se disponível (básico): você pode expandir para sons customizados
-    if (symbol.sound) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { Howl } = require('howler');
-        const sound = new Howl({ src: [symbol.sound]});
-        sound.play();
-      } catch (e) {
-        // Falha como fallback para Web Audio
-      }
-    }
-    // Web Audio API como fallback
+    if (!soundEnabled) return;
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      const frequencies: { [key: string]: number } = { 'instrument': 440, 'emotion': 523, 'action': 659, 'dynamic': 784, 'nature': 330 };
-      oscillator.frequency.setValueAtTime(frequencies[symbol.category] || 440, audioContext.currentTime);
-      oscillator.type = 'sine';
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } catch { }
+      if (symbol.sound) {
+        // Usar Howler com import correto
+        const howl = new Howl({ src: [symbol.sound], volume: 0.8 });
+        howl.play();
+        console.log(`[AUDIO] Playing sound: ${symbol.sound}`);
+        return;
+      }
+      // Se existir fallback sonoro por categoria, poderia ser definido aqui.
+      if (categorySoundFallbacks[symbol.category]) {
+        const fallbackSound = categorySoundFallbacks[symbol.category];
+        const howl = new Howl({ src: [fallbackSound!], volume: 0.6 });
+        howl.play();
+        console.log(`[AUDIO] Playing fallback sound url for category ${symbol.category}`);
+        return;
+      }
+    } catch (err) {
+      // Se falhar tentar síntese abaixo
+      console.warn("[AUDIO] Howler failed, fallback to Web Audio API:", err);
+    }
+
+    // Fallback: synth por categoria usando Web Audio API
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+      const freq = categoryFrequencies[symbol.category] || 440;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+      osc.onended = () => ctx.close();
+      console.log(`[AUDIO] Playing synthesized tone for category: ${symbol.category} (${freq}Hz)`);
+    } catch (err2) {
+      console.error("[AUDIO] Failed all sound fallbacks:", err2);
+    }
   };
 
-  // Corrigir lógica de seleção e feedback para cobrir todos os tipos!
   const handleSymbolClick = (symbolIndex: number) => {
     if (isPlaying) return;
     if (!startTime) setStartTime(Date.now());
@@ -141,6 +158,24 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         setShowFeedback(null);
       }, 1000);
     }
+  };
+
+  const playSequence = async () => {
+    if (!activity.correctOrder) return;
+
+    for (let i = 0; i < activity.correctOrder.length; i++) {
+      setCurrentStep(i);
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      if (soundEnabled) {
+        playSymbolSound(activity.symbols[activity.correctOrder[i]]);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 400));
+    }
+
+    setCurrentStep(-1);
+    setIsPlaying(false);
   };
 
   const getSymbolStyle = (symbolIndex: number) => {
@@ -255,4 +290,5 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     </div>
   );
 };
+
 export default InteractiveCanvas;
