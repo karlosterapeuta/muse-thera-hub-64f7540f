@@ -28,7 +28,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🥁",
             name: "Tambor",
             category: "instrument",
-            sound: "https://www.soundjay.com/misc/sounds/drum-roll-1.mp3",
             color: "#EF4444"
           },
           {
@@ -36,7 +35,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🎹",
             name: "Piano",
             category: "instrument",
-            sound: "https://www.soundjay.com/misc/sounds/piano-key.mp3",
             color: "#8B5CF6"
           },
           {
@@ -44,7 +42,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🎸",
             name: "Violão",
             category: "instrument",
-            sound: "https://www.soundjay.com/misc/sounds/guitar-chord.mp3",
             color: "#F59E0B"
           }
         ]
@@ -75,7 +72,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "😊",
             name: "Feliz",
             category: "emotion",
-            sound: "https://www.soundjay.com/misc/sounds/happy-bell.mp3",
             color: "#FDE047"
           },
           {
@@ -83,7 +79,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "😌",
             name: "Calmo",
             category: "emotion",
-            sound: "https://www.soundjay.com/misc/sounds/soft-chime.mp3",
             color: "#34D399"
           },
           {
@@ -91,7 +86,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🤗",
             name: "Animado",
             category: "emotion",
-            sound: "https://www.soundjay.com/misc/sounds/excited-ding.mp3",
             color: "#F87171"
           },
           {
@@ -99,7 +93,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🕊️",
             name: "Tranquilo",
             category: "emotion",
-            sound: "https://www.soundjay.com/misc/sounds/peaceful-tone.mp3",
             color: "#60A5FA"
           }
         ]
@@ -130,7 +123,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "👏",
             name: "Palma",
             category: "action",
-            sound: "https://www.soundjay.com/misc/sounds/hand-clap.mp3",
             color: "#EF4444"
           },
           {
@@ -138,7 +130,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🦶",
             name: "Pisada",
             category: "action",
-            sound: "https://www.soundjay.com/misc/sounds/foot-stomp.mp3",
             color: "#8B5CF6"
           },
           {
@@ -146,7 +137,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "👋",
             name: "Acenar",
             category: "action",
-            sound: "https://www.soundjay.com/misc/sounds/gentle-wave.mp3",
             color: "#10B981"
           },
           {
@@ -154,7 +144,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🤸",
             name: "Pular",
             category: "action",
-            sound: "https://www.soundjay.com/misc/sounds/bounce.mp3",
             color: "#F59E0B"
           }
         ]
@@ -187,7 +176,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🎵",
             name: "Nota Aguda",
             category: "dynamic",
-            sound: "https://www.soundjay.com/misc/sounds/high-tone.mp3",
             color: "#F87171"
           },
           {
@@ -195,7 +183,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🎶",
             name: "Nota Grave",
             category: "dynamic",
-            sound: "https://www.soundjay.com/misc/sounds/low-tone.mp3",
             color: "#3B82F6"
           },
           {
@@ -203,7 +190,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "♪",
             name: "Nota Média",
             category: "dynamic",
-            sound: "https://www.soundjay.com/misc/sounds/medium-tone.mp3",
             color: "#10B981"
           },
           {
@@ -211,7 +197,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🔇",
             name: "Silêncio",
             category: "dynamic",
-            sound: null,
             color: "#6B7280"
           }
         ]
@@ -242,7 +227,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🌧️",
             name: "Chuva",
             category: "nature",
-            sound: "https://www.soundjay.com/misc/sounds/rain-drops.mp3",
             color: "#3B82F6"
           },
           {
@@ -250,7 +234,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🐦",
             name: "Pássaros",
             category: "nature",
-            sound: "https://www.soundjay.com/misc/sounds/bird-chirp.mp3",
             color: "#10B981"
           },
           {
@@ -258,7 +241,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "🌊",
             name: "Oceano",
             category: "nature",
-            sound: "https://www.soundjay.com/misc/sounds/ocean-waves.mp3",
             color: "#06B6D4"
           },
           {
@@ -266,7 +248,6 @@ export const therapyTemplates: TherapyTemplate[] = [
             emoji: "💨",
             name: "Vento",
             category: "nature",
-            sound: "https://www.soundjay.com/misc/sounds/wind-blow.mp3",
             color: "#8B5CF6"
           }
         ]

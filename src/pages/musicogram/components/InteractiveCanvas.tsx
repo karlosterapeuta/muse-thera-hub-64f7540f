@@ -1,8 +1,9 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ActivitySymbol, TherapyActivity } from "../types";
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { Howl } from "howler";
+import { musicogramAudio } from "../utils/audioService";
 
 interface InteractiveCanvasProps {
   activity: TherapyActivity;
@@ -10,24 +11,6 @@ interface InteractiveCanvasProps {
   soundEnabled: boolean;
   onToggleSound: () => void;
 }
-
-// Frequências sintéticas melhoradas por categoria
-const categoryFrequencies: { [key: string]: number } = {
-  instrument: 440, // Lá
-  emotion: 523,    // Dó
-  action: 659,     // Mi
-  dynamic: 392,    // Sol
-  nature: 294      // Ré
-};
-
-// Tipos de onda específicos para cada categoria
-const categoryWaveTypes: { [key: string]: OscillatorType } = {
-  instrument: 'sine',
-  emotion: 'triangle',
-  action: 'square',
-  dynamic: 'sawtooth',
-  nature: 'sine'
-};
 
 const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
   activity,
@@ -41,12 +24,27 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
+  const [audioInitialized, setAudioInitialized] = useState(false);
 
   useEffect(() => {
     if (activity) {
       resetActivity();
     }
   }, [activity]);
+
+  useEffect(() => {
+    // Inicializar áudio na montagem do componente
+    const initAudio = async () => {
+      const success = await musicogramAudio.initialize();
+      setAudioInitialized(success);
+    };
+    initAudio();
+
+    // Cleanup ao desmontar
+    return () => {
+      musicogramAudio.cleanup();
+    };
+  }, []);
 
   const resetActivity = () => {
     setSelectedSymbols([]);
@@ -71,129 +69,15 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
       return;
     }
 
-    console.log(`[AUDIO] Tentando reproduzir som para: ${symbol.name} (${symbol.category})`);
-
-    // Tentar reproduzir som específico do símbolo primeiro
-    if (symbol.sound) {
-      try {
-        console.log(`[AUDIO] Carregando arquivo: ${symbol.sound}`);
-        const howl = new Howl({
-          src: [symbol.sound],
-          volume: 0.7,
-          onload: () => console.log(`[AUDIO] ✅ Arquivo carregado: ${symbol.sound}`),
-          onloaderror: (id, error) => {
-            console.warn(`[AUDIO] ❌ Erro ao carregar: ${symbol.sound}`, error);
-            playSynthenticSound(symbol);
-          },
-          onplayerror: (id, error) => {
-            console.warn(`[AUDIO] ❌ Erro ao reproduzir: ${symbol.sound}`, error);
-            playSynthenticSound(symbol);
-          }
-        });
-        
-        howl.play();
-        console.log(`[AUDIO] ✅ Reproduzindo: ${symbol.sound}`);
-        return;
-      } catch (error) {
-        console.warn(`[AUDIO] ❌ Howler falhou para ${symbol.sound}:`, error);
-      }
-    }
-
-    // Fallback para som sintético
-    playSynthenticSound(symbol);
+    await musicogramAudio.playSymbolSound(symbol.name, symbol.category);
   };
 
-  // Função para gerar som sintético melhorado
-  const playSynthenticSound = (symbol: ActivitySymbol) => {
-    try {
-      console.log(`[AUDIO] 🎵 Gerando som sintético para: ${symbol.name} (${symbol.category})`);
-      
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContext();
-
-      // Garantir que o AudioContext está ativo
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-
-      const frequency = categoryFrequencies[symbol.category] || 440;
-      const waveType = categoryWaveTypes[symbol.category] || 'sine';
-      
-      // Criar oscilador
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.type = waveType;
-      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-      
-      // Envelope ADSR para som mais natural
-      const now = audioContext.currentTime;
-      const attackTime = 0.05;
-      const decayTime = 0.1;
-      const sustainLevel = 0.4;
-      const releaseTime = 0.3;
-      
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.6, now + attackTime);
-      gainNode.gain.exponentialRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + attackTime + decayTime + releaseTime);
-      
-      // Adicionar filtro para tom mais agradável
-      const filter = audioContext.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(2000, now);
-      
-      // Conectar os nós
-      oscillator.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Reproduzir
-      oscillator.start(now);
-      oscillator.stop(now + attackTime + decayTime + releaseTime);
-      
-      console.log(`[AUDIO] ✅ Som sintético: ${symbol.category} - ${frequency}Hz (${waveType})`);
-      
-      // Limpar recursos
-      oscillator.onended = () => {
-        try {
-          oscillator.disconnect();
-          gainNode.disconnect();
-          filter.disconnect();
-          audioContext.close();
-        } catch (error) {
-          console.warn('[AUDIO] Erro ao limpar recursos:', error);
-        }
-      };
-      
-    } catch (error) {
-      console.error('[AUDIO] ❌ Falha completa no áudio:', error);
-      // Último fallback: beep simples do sistema
-      try {
-        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const osc = context.createOscillator();
-        const gain = context.createGain();
-        osc.connect(gain);
-        gain.connect(context.destination);
-        osc.frequency.value = 800;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.3, context.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
-        osc.start();
-        osc.stop(context.currentTime + 0.2);
-        console.log('[AUDIO] 🔔 Beep de fallback reproduzido');
-      } catch (fallbackError) {
-        console.error('[AUDIO] ❌ Até o fallback falhou:', fallbackError);
-      }
-    }
-  };
-
-  const handleSymbolClick = (symbolIndex: number) => {
+  const handleSymbolClick = async (symbolIndex: number) => {
     if (isPlaying) return;
     if (!startTime) setStartTime(Date.now());
 
     // Som imediato
-    playSymbolSound(activity.symbols[symbolIndex]);
+    await playSymbolSound(activity.symbols[symbolIndex]);
 
     let newSelected = [...selectedSymbols, symbolIndex];
     setSelectedSymbols(newSelected);
@@ -203,6 +87,16 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         const isCorrect = newSelected.every((sel, idx) => sel === activity.correctOrder![idx]);
         const timeElapsed = Date.now() - (startTime || Date.now());
         setShowFeedback(isCorrect ? 'success' : 'error');
+        
+        // Feedback sonoro
+        if (soundEnabled) {
+          if (isCorrect) {
+            await musicogramAudio.playSuccessSound();
+          } else {
+            await musicogramAudio.playErrorSound();
+          }
+        }
+        
         setTimeout(() => {
           onActivityComplete(isCorrect, timeElapsed);
           setShowFeedback(null);
@@ -211,6 +105,11 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     } else if (activity.type === 'selection') {
       const timeElapsed = Date.now() - (startTime || Date.now());
       setShowFeedback('success');
+      
+      if (soundEnabled) {
+        await musicogramAudio.playSuccessSound();
+      }
+      
       setTimeout(() => {
         onActivityComplete(true, timeElapsed);
         setShowFeedback(null);
@@ -219,6 +118,11 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
       if (newSelected.length >= 1) {
         const timeElapsed = Date.now() - (startTime || Date.now());
         setShowFeedback('success');
+        
+        if (soundEnabled) {
+          await musicogramAudio.playSuccessSound();
+        }
+        
         setTimeout(() => {
           onActivityComplete(true, timeElapsed);
           setShowFeedback(null);
@@ -227,6 +131,11 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     } else {
       const timeElapsed = Date.now() - (startTime || Date.now());
       setShowFeedback('success');
+      
+      if (soundEnabled) {
+        await musicogramAudio.playSuccessSound();
+      }
+      
       setTimeout(() => {
         onActivityComplete(true, timeElapsed);
         setShowFeedback(null);
@@ -242,7 +151,7 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
       await new Promise(resolve => setTimeout(resolve, 800));
 
       if (soundEnabled) {
-        playSymbolSound(activity.symbols[activity.correctOrder[i]]);
+        await playSymbolSound(activity.symbols[activity.correctOrder[i]]);
       }
 
       await new Promise(resolve => setTimeout(resolve, 400));
@@ -274,6 +183,11 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
           {activity.timeLimit && (
             <span className="text-sm text-gray-500">
               ⏱️ {activity.timeLimit}s
+            </span>
+          )}
+          {!audioInitialized && (
+            <span className="text-xs text-orange-500">
+              🔇 Áudio não disponível
             </span>
           )}
         </div>
