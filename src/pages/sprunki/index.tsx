@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import type { SensorSyncSettings, TherapyMetrics, GameMode } from './types/sensorSync';
 import { gameModes } from './utils/colorTheory';
 import { enhancedAudio } from './utils/enhancedAudioSynthesis';
 import SensorCanvas from './components/SensorCanvas';
+import EnhancedSensorCanvas from './components/EnhancedSensorCanvas';
 import ModeSelector from './components/ModeSelector';
 import AdaptiveControls from './components/AdaptiveControls';
 import TherapyMetricsComponent from './components/TherapyMetrics';
