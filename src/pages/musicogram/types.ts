@@ -55,3 +55,65 @@ export interface ProgressData {
   lastAttempt: string;
   accuracy: number;
 }
+
+// Additional types needed by existing components
+export interface MusicElement {
+  id: string;
+  name: string;
+  category: string;
+  defaultColor: string;
+  defaultShape: string;
+  defaultSize: number;
+}
+
+export interface InstrumentType {
+  id: string;
+  name: string;
+  shape: string;
+  color: string;
+  iconType: string;
+}
+
+export interface VisualElement {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  shape: string;
+  position: { x: number; y: number };
+  rotation: number;
+  iconType?: string;
+  iconContent?: string;
+  instrumentId?: string;
+}
+
+export interface MusicogramTemplate {
+  id: string;
+  name: string;
+  rows: number;
+  columns: number;
+  description: string;
+  elements?: VisualElement[];
+  background?: string;
+}
+
+export interface StudyTemplate {
+  id: string;
+  name: string;
+  rows: number;
+  columns: number;
+  description: string;
+  elements?: VisualElement[];
+  background?: string;
+}
+
+export interface PatientMusicogram {
+  id: string;
+  patientId: string;
+  templateId: string;
+  createdAt: string;
+  elements: VisualElement[];
+  notes?: string;
+}
