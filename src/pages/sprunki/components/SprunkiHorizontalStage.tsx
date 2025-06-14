@@ -82,7 +82,7 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
               key={slot.id}
               onClick={() => onSlotClick(index)}
               onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, slotIndex)}
+              onDrop={(e) => handleDrop(e, index)}
               className={`
                 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl cursor-pointer transition-all duration-300
                 flex items-center justify-center text-3xl lg:text-4xl
