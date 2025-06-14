@@ -1,15 +1,16 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import type { SensorSyncSettings, TherapyMetrics, GameMode } from './types/sensorSync';
 import { gameModes } from './utils/colorTheory';
-import { audioSynthesis } from './utils/audioSynthesis';
+import { enhancedAudio } from './utils/enhancedAudioSynthesis';
 import SensorCanvas from './components/SensorCanvas';
 import ModeSelector from './components/ModeSelector';
 import AdaptiveControls from './components/AdaptiveControls';
 import TherapyMetricsComponent from './components/TherapyMetrics';
+import GamificationSystem from './components/GamificationSystem';
+import InstrumentSelector from './components/InstrumentSelector';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Volume2, Loader2, Play, Pause } from 'lucide-react';
+import { Volume2, Loader2, Play, Pause, Music2, Trophy } from 'lucide-react';
 
 const SensorSyncGame: React.FC = () => {
   const { toast } = useToast();
@@ -37,27 +38,31 @@ const SensorSyncGame: React.FC = () => {
     creativePatterns: 0
   });
 
+  const [selectedInstrument, setSelectedInstrument] = useState('piano');
+  const [showGamification, setShowGamification] = useState(true);
+
   const initializeAudio = useCallback(async () => {
     setIsInitializing(true);
     try {
-      const success = await audioSynthesis.initialize();
+      const success = await enhancedAudio.initialize();
       setAudioInitialized(success);
       setShowAudioPrompt(false);
       
       if (success) {
+        enhancedAudio.setInstrument(selectedInstrument);
         toast({
-          title: "🎵 SensorSync Pronto!",
-          description: "Agora você pode criar música visual tocando na tela!",
+          title: "🎵 SensorSync Aprimorado Pronto!",
+          description: "Agora com física avançada, múltiplos instrumentos e gamificação!",
         });
       }
     } catch (error) {
       console.error('Erro ao inicializar áudio:', error);
       setShowAudioPrompt(false);
-      setAudioInitialized(true); // Allow visual-only mode
+      setAudioInitialized(true);
     } finally {
       setIsInitializing(false);
     }
-  }, [toast]);
+  }, [toast, selectedInstrument]);
 
   const handleModeChange = useCallback((mode: GameMode) => {
     setCurrentMode(mode);
@@ -76,7 +81,7 @@ const SensorSyncGame: React.FC = () => {
       
       // Apply audio volume
       if (newSettings.audioVolume !== undefined) {
-        audioSynthesis.setMasterVolume(newSettings.audioVolume);
+        enhancedAudio.setMasterVolume(newSettings.audioVolume);
       }
       
       return updated;
@@ -95,7 +100,7 @@ const SensorSyncGame: React.FC = () => {
   }, [audioInitialized, initializeAudio]);
 
   const clearCanvas = useCallback(() => {
-    audioSynthesis.stopAll();
+    enhancedAudio.stopAll();
     setMetrics(prev => ({
       ...prev,
       movementCount: 0,
@@ -105,19 +110,43 @@ const SensorSyncGame: React.FC = () => {
     
     toast({
       title: "🧹 Canvas Limpo!",
-      description: "Nova sessão iniciada",
+      description: "Nova sessão iniciada - continue criando!",
+    });
+  }, [toast]);
+
+  const handleInstrumentChange = useCallback((instrument: string) => {
+    setSelectedInstrument(instrument);
+    enhancedAudio.setInstrument(instrument);
+    
+    toast({
+      title: `🎼 ${instrument.charAt(0).toUpperCase() + instrument.slice(1)}`,
+      description: "Instrumento selecionado! Toque na tela para ouvir.",
+    });
+  }, [toast]);
+
+  const handleLevelUp = useCallback((newLevel: number) => {
+    toast({
+      title: `🎉 Nível ${newLevel}!`,
+      description: "Parabéns! Você evoluiu em sua jornada musical!",
+    });
+  }, [toast]);
+
+  const handleAchievementUnlocked = useCallback((achievement: any) => {
+    toast({
+      title: `🏆 Conquista Desbloqueada!`,
+      description: achievement.name,
     });
   }, [toast]);
 
   // Apply volume changes
   useEffect(() => {
-    audioSynthesis.setMasterVolume(settings.audioVolume);
+    enhancedAudio.setMasterVolume(settings.audioVolume);
   }, [settings.audioVolume]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      audioSynthesis.cleanup();
+      enhancedAudio.cleanup();
     };
   }, []);
 
@@ -127,14 +156,14 @@ const SensorSyncGame: React.FC = () => {
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-800 dark:via-pink-800 dark:to-blue-800 text-white p-4 sm:p-6 shadow-xl">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-2xl sm:text-4xl font-bold mb-2">
-            🎵 SENSORSYNC
+            🎵 SENSORSYNC PRO
           </h1>
           <p className="text-sm sm:text-lg opacity-90 mb-2">
-            Música Visual Interativa para Terapia Sensorial
+            Música Visual Interativa com IA • Física Avançada • Gamificação Terapêutica
           </p>
           <div className="inline-flex items-center gap-2 bg-white/20 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm backdrop-blur-sm">
             <span className={`w-2 h-2 rounded-full animate-pulse ${audioInitialized ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Inovação TEA
+            {audioInitialized ? 'Sistema Avançado Ativo' : 'Clique para ativar'} • TEA Revolution
           </div>
         </div>
       </div>
@@ -147,10 +176,10 @@ const SensorSyncGame: React.FC = () => {
               <div className="text-xl sm:text-2xl">🎵</div>
               <div className="flex-1 text-center sm:text-left">
                 <p className="text-yellow-800 dark:text-yellow-200 font-medium text-sm sm:text-base">
-                  Ative o áudio para experiência sensorial completa!
+                  Ative o sistema aprimorado para experiência completa com física e múltiplos instrumentos!
                 </p>
                 <p className="text-yellow-700 dark:text-yellow-300 text-xs sm:text-sm">
-                  (Funciona apenas com visual também)
+                  (Também funciona apenas com visual)
                 </p>
               </div>
               <Button 
@@ -161,12 +190,12 @@ const SensorSyncGame: React.FC = () => {
                 {isInitializing ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Ativando...
+                    Ativando Sistema...
                   </>
                 ) : (
                   <>
                     <Volume2 className="w-4 h-4 mr-2" />
-                    Ativar Áudio
+                    Ativar SensorSync Pro
                   </>
                 )}
               </Button>
@@ -175,7 +204,7 @@ const SensorSyncGame: React.FC = () => {
         </div>
       )}
 
-      {/* Controls */}
+      {/* Enhanced Controls */}
       <div className="p-4 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4">
           <Button
@@ -191,11 +220,21 @@ const SensorSyncGame: React.FC = () => {
             variant="outline"
             className="border-purple-300 text-purple-700 hover:bg-purple-50"
           >
-            🧹 Limpar
+            🧹 Limpar Canvas
+          </Button>
+
+          <Button
+            onClick={() => setShowGamification(!showGamification)}
+            variant="outline"
+            className="border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+          >
+            <Trophy className="w-4 h-4 mr-2" />
+            {showGamification ? 'Ocultar' : 'Mostrar'} Conquistas
           </Button>
           
           <div className="text-sm text-purple-700 dark:text-purple-300">
-            Modo: <span className="font-bold">{currentMode.name}</span>
+            Modo: <span className="font-bold">{currentMode.name}</span> • 
+            Instrumento: <span className="font-bold capitalize">{selectedInstrument}</span>
           </div>
         </div>
       </div>
@@ -215,23 +254,43 @@ const SensorSyncGame: React.FC = () => {
             />
           </div>
 
+          {/* Instrument Selector */}
+          <InstrumentSelector
+            selectedInstrument={selectedInstrument}
+            onInstrumentChange={handleInstrumentChange}
+          />
+
           {/* Adaptive Controls */}
           <AdaptiveControls
             settings={settings}
             onSettingsChange={handleSettingsChange}
           />
-
-          {/* Therapy Metrics */}
-          <TherapyMetricsComponent metrics={metrics} />
         </div>
 
         {/* Center - Canvas */}
         <div className="flex-1 min-h-[400px] lg:min-h-0">
-          <SensorCanvas
+          <EnhancedSensorCanvas
             currentMode={currentMode}
             settings={settings}
             onMetricsUpdate={handleMetricsUpdate}
+            selectedInstrument={selectedInstrument}
           />
+        </div>
+
+        {/* Right Panel - Metrics & Gamification */}
+        <div className="lg:w-80 space-y-6">
+          {/* Therapy Metrics */}
+          <TherapyMetricsComponent metrics={metrics} />
+
+          {/* Gamification System */}
+          {showGamification && (
+            <GamificationSystem
+              metrics={metrics}
+              currentMode={currentMode.id}
+              onLevelUp={handleLevelUp}
+              onAchievementUnlocked={handleAchievementUnlocked}
+            />
+          )}
         </div>
       </div>
     </div>
