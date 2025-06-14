@@ -1,8 +1,7 @@
-
 import React, { useState, useCallback, useRef } from 'react';
 import { GridCell, SimpleInstrument } from '../types/simple';
 import { simpleInstruments } from '../data/simpleInstruments';
-import { simpleAudio } from '../utils/simpleAudioService';
+import { realisticAudio } from '../utils/realisticAudioService';
 import SimplePalette from './SimplePalette';
 import SimpleGrid from './SimpleGrid';
 import SimpleControls from './SimpleControls';
@@ -78,27 +77,18 @@ const SimpleMusicogram: React.FC = () => {
           return -1;
         }
         
-        // Tocar todas as notas da coluna atual
-        const notesToPlay: Array<{ frequency: number; waveType: OscillatorType }> = [];
-        
-        for (let row = 0; row < GRID_ROWS; row++) {
-          const cell = grid[row][nextCol];
-          if (cell.instrumentId) {
-            const instrument = simpleInstruments.find(i => i.id === cell.instrumentId);
-            if (instrument) {
-              notesToPlay.push({
-                frequency: instrument.frequency,
-                waveType: instrument.waveType
-              });
+        // Tocar todas as notas da coluna atual com sons realistas
+        if (!isMuted) {
+          for (let row = 0; row < GRID_ROWS; row++) {
+            const cell = grid[row][nextCol];
+            if (cell.instrumentId) {
+              const instrument = simpleInstruments.find(i => i.id === cell.instrumentId);
+              if (instrument) {
+                // Usar o novo sistema de áudio realista
+                realisticAudio.playRealisticNote(instrument.id, instrument.frequency, 0.6);
+              }
             }
           }
-        }
-        
-        // Tocar todas as notas simultaneamente
-        if (notesToPlay.length > 0 && !isMuted) {
-          notesToPlay.forEach(({ frequency, waveType }) => {
-            simpleAudio.playNote(frequency, 0.4, waveType);
-          });
         }
         
         return nextCol;
@@ -164,13 +154,13 @@ const SimpleMusicogram: React.FC = () => {
 
   const handleVolumeChange = useCallback((newVolume: number) => {
     setVolume(newVolume);
-    simpleAudio.setVolume(newVolume);
+    realisticAudio.setVolume(newVolume);
   }, []);
 
   const handleToggleMute = useCallback(() => {
     setIsMuted(prev => {
       const newMuted = !prev;
-      simpleAudio.setVolume(newMuted ? 0 : volume);
+      realisticAudio.setVolume(newMuted ? 0 : volume);
       return newMuted;
     });
   }, [volume]);
@@ -190,11 +180,15 @@ const SimpleMusicogram: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-            🎵 Musicograma Simples
+            🎵 Musicograma Realista
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Crie suas composições musicais de forma visual e intuitiva
+            Crie suas composições com sons realistas de instrumentos musicais
           </p>
+          <div className="mt-2 inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Sons avançados com síntese realista
+          </div>
         </div>
       </div>
 
