@@ -1,9 +1,9 @@
 
 import React from "react";
-import SimpleMusicogram from "./components/SimpleMusicogram";
+import TEAMusicogram from "./components/TEAMusicogram";
 
 const Musicogram: React.FC = () => {
-  return <SimpleMusicogram />;
+  return <TEAMusicogram />;
 };
 
 export default Musicogram;
