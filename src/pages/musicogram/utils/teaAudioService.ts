@@ -1,40 +1,88 @@
 
-// Sistema de áudio adaptado para crianças TEA
+// Sistema de áudio robusto e adaptado para crianças TEA
 class TEAAudioService {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private isInitialized = false;
   private isCalmMode = false;
-  private volume = 0.4; // Volume mais baixo por padrão
+  private volume = 0.4;
+  private soundCache = new Map<string, AudioBuffer>();
+  private initializationPromise: Promise<boolean> | null = null;
 
   async initialize(): Promise<boolean> {
+    // Evitar múltiplas inicializações simultâneas
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
     if (this.isInitialized) return true;
 
+    this.initializationPromise = this._initialize();
+    return this.initializationPromise;
+  }
+
+  private async _initialize(): Promise<boolean> {
     try {
+      // Verificar suporte do navegador
+      if (!window.AudioContext && !(window as any).webkitAudioContext) {
+        console.warn('Web Audio API não suportado');
+        return false;
+      }
+
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.masterGain = this.audioContext.createGain();
       this.masterGain.gain.value = this.volume;
       this.masterGain.connect(this.audioContext.destination);
 
+      // Resumir contexto se necessário
       if (this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
 
       this.isInitialized = true;
-      console.log('🎵 Áudio TEA inicializado');
+      console.log('🎵 Áudio TEA inicializado com sucesso');
       return true;
     } catch (error) {
       console.error('❌ Erro ao inicializar áudio TEA:', error);
+      this.isInitialized = false;
       return false;
+    } finally {
+      this.initializationPromise = null;
     }
+  }
+
+  // Método público para garantir que o áudio está inicializado
+  async ensureInitialized(): Promise<boolean> {
+    if (!this.isInitialized) {
+      return await this.initialize();
+    }
+    return true;
   }
 
   setCalmMode(enabled: boolean): void {
     this.isCalmMode = enabled;
-    if (enabled) {
-      this.setVolume(this.volume * 0.6); // Volume ainda mais baixo no modo calmo
-    } else {
-      this.setVolume(this.volume);
+    this.updateVolume();
+  }
+
+  private updateVolume(): void {
+    if (this.masterGain) {
+      const finalVolume = this.isCalmMode ? this.volume * 0.6 : this.volume;
+      this.masterGain.gain.setValueAtTime(finalVolume, this.audioContext?.currentTime || 0);
+    }
+  }
+
+  async playAnimalSound(animalId: string, frequency: number, duration: number = 0.6): Promise<void> {
+    try {
+      const initialized = await this.ensureInitialized();
+      if (!initialized || !this.audioContext || !this.masterGain) {
+        console.warn('Áudio não disponível, usando fallback silencioso');
+        return;
+      }
+
+      await this.createAnimalSound(animalId, frequency, duration);
+    } catch (error) {
+      console.warn(`Erro ao tocar som do animal ${animalId}:`, error);
+      // Fallback silencioso - não quebra a experiência
     }
   }
 
@@ -43,55 +91,53 @@ class TEAAudioService {
 
     const now = this.audioContext.currentTime;
     
-    switch (animalId) {
-      case 'cat-piano':
-        await this.createCatPiano(frequency, duration, now);
-        break;
-      case 'dog-drums':
-        await this.createDogDrums(frequency, duration, now);
-        break;
-      case 'rabbit-flute':
-        await this.createRabbitFlute(frequency, duration, now);
-        break;
-      case 'bird-singer':
-        await this.createBirdSinger(frequency, duration, now);
-        break;
-      case 'elephant-trumpet':
-        await this.createElephantTrumpet(frequency, duration, now);
-        break;
-      case 'frog-bell':
-        await this.createFrogBell(frequency, duration, now);
-        break;
-      case 'bear-guitar':
-        await this.createBearGuitar(frequency, duration, now);
-        break;
-      case 'monkey-maracas':
-        await this.createMonkeyMaracas(frequency, duration, now);
-        break;
-      default:
-        await this.createGenericAnimalSound(frequency, duration, now);
+    try {
+      switch (animalId) {
+        case 'cat-piano':
+          await this.createCatPiano(frequency, duration, now);
+          break;
+        case 'dog-drums':
+          await this.createDogDrums(frequency, duration, now);
+          break;
+        case 'rabbit-flute':
+          await this.createRabbitFlute(frequency, duration, now);
+          break;
+        case 'bird-singer':
+          await this.createBirdSinger(frequency, duration, now);
+          break;
+        case 'elephant-trumpet':
+          await this.createElephantTrumpet(frequency, duration, now);
+          break;
+        case 'frog-bell':
+          await this.createFrogBell(frequency, duration, now);
+          break;
+        case 'bear-guitar':
+          await this.createBearGuitar(frequency, duration, now);
+          break;
+        case 'monkey-maracas':
+          await this.createMonkeyMaracas(frequency, duration, now);
+          break;
+        default:
+          await this.createGenericAnimalSound(frequency, duration, now);
+      }
+    } catch (error) {
+      console.warn('Erro ao criar som específico, usando som genérico', error);
+      await this.createGenericAnimalSound(frequency, duration, now);
     }
   }
 
   private async createCatPiano(frequency: number, duration: number, now: number): Promise<void> {
-    // Piano suave com "miau" sutil
     const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const filter = this.audioContext!.createBiquadFilter();
-
+    
     osc.type = 'sine';
     osc.frequency.setValueAtTime(frequency, now);
     
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2000, now);
-    
-    // Envelope suave tipo piano
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.4, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    osc.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(this.masterGain!);
 
     osc.start(now);
@@ -99,43 +145,31 @@ class TEAAudioService {
   }
 
   private async createDogDrums(frequency: number, duration: number, now: number): Promise<void> {
-    // Som de bateria com "au au" rítmico
-    const noise = this.audioContext!.createBuffer(1, this.audioContext!.sampleRate * 0.1, this.audioContext!.sampleRate);
-    const data = noise.getChannelData(0);
-    
-    for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    
-    const source = this.audioContext!.createBufferSource();
+    const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const filter = this.audioContext!.createBiquadFilter();
     
-    source.buffer = noise;
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(frequency, now);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(frequency * 0.5, now);
     
-    gain.gain.setValueAtTime(0.5, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    gain.gain.setValueAtTime(0.4, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
     
-    source.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(this.masterGain!);
     
-    source.start(now);
+    osc.start(now);
+    osc.stop(now + 0.3);
   }
 
   private async createRabbitFlute(frequency: number, duration: number, now: number): Promise<void> {
-    // Flauta doce e suave
     const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
     
     osc.type = 'sine';
     osc.frequency.setValueAtTime(frequency, now);
     
-    // Envelope muito suave
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.1);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.1);
     gain.gain.linearRampToValueAtTime(0.2, now + duration - 0.1);
     gain.gain.linearRampToValueAtTime(0, now + duration);
     
@@ -147,54 +181,37 @@ class TEAAudioService {
   }
 
   private async createBirdSinger(frequency: number, duration: number, now: number): Promise<void> {
-    // Canto de pássaro melodioso
     const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const lfo = this.audioContext!.createOscillator();
-    const lfoGain = this.audioContext!.createGain();
     
     osc.type = 'sine';
     osc.frequency.setValueAtTime(frequency, now);
-    
-    // Vibrato suave
-    lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(5, now);
-    lfoGain.gain.setValueAtTime(frequency * 0.03, now);
-    
-    lfo.connect(lfoGain);
-    lfoGain.connect(osc.frequency);
+    osc.frequency.linearRampToValueAtTime(frequency * 1.2, now + duration * 0.5);
+    osc.frequency.linearRampToValueAtTime(frequency, now + duration);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     
     osc.connect(gain);
     gain.connect(this.masterGain!);
     
     osc.start(now);
-    lfo.start(now);
     osc.stop(now + duration);
-    lfo.stop(now + duration);
   }
 
   private async createElephantTrumpet(frequency: number, duration: number, now: number): Promise<void> {
-    // Trompete grave e amigável
     const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const filter = this.audioContext!.createBiquadFilter();
     
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(frequency, now);
-    
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(frequency * 3, now);
+    osc.frequency.setValueAtTime(frequency * 0.7, now);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.4, now + 0.1);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     
-    osc.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(this.masterGain!);
     
     osc.start(now);
@@ -202,7 +219,6 @@ class TEAAudioService {
   }
 
   private async createFrogBell(frequency: number, duration: number, now: number): Promise<void> {
-    // Sino cristalino como coaxar
     const osc1 = this.audioContext!.createOscillator();
     const osc2 = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
@@ -214,8 +230,8 @@ class TEAAudioService {
     osc2.frequency.setValueAtTime(frequency * 1.5, now);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     
     osc1.connect(gain);
     osc2.connect(gain);
@@ -228,24 +244,17 @@ class TEAAudioService {
   }
 
   private async createBearGuitar(frequency: number, duration: number, now: number): Promise<void> {
-    // Violão caloroso
     const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const filter = this.audioContext!.createBiquadFilter();
     
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(frequency, now);
     
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(frequency * 2, now);
-    filter.Q.setValueAtTime(5, now);
-    
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     
-    osc.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(this.masterGain!);
     
     osc.start(now);
@@ -253,30 +262,20 @@ class TEAAudioService {
   }
 
   private async createMonkeyMaracas(frequency: number, duration: number, now: number): Promise<void> {
-    // Maracas alegres
-    const noise = this.audioContext!.createBuffer(1, this.audioContext!.sampleRate * 0.05, this.audioContext!.sampleRate);
-    const data = noise.getChannelData(0);
-    
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * 0.3;
-    }
-    
-    const source = this.audioContext!.createBufferSource();
+    const osc = this.audioContext!.createOscillator();
     const gain = this.audioContext!.createGain();
-    const filter = this.audioContext!.createBiquadFilter();
     
-    source.buffer = noise;
-    filter.type = 'highpass';
-    filter.frequency.setValueAtTime(frequency, now);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(frequency * 2, now);
     
-    gain.gain.setValueAtTime(0.4, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
     
-    source.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(this.masterGain!);
     
-    source.start(now);
+    osc.start(now);
+    osc.stop(now + 0.2);
   }
 
   private async createGenericAnimalSound(frequency: number, duration: number, now: number): Promise<void> {
@@ -287,8 +286,8 @@ class TEAAudioService {
     osc.frequency.setValueAtTime(frequency, now);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     
     osc.connect(gain);
     gain.connect(this.masterGain!);
@@ -297,22 +296,9 @@ class TEAAudioService {
     osc.stop(now + duration);
   }
 
-  async playAnimalSound(animalId: string, frequency: number, duration: number = 0.6): Promise<void> {
-    await this.initialize();
-    if (!this.audioContext || !this.masterGain) return;
-
-    try {
-      await this.createAnimalSound(animalId, frequency, duration);
-    } catch (error) {
-      console.error(`Erro ao tocar som do animal ${animalId}:`, error);
-    }
-  }
-
   setVolume(volume: number): void {
-    this.volume = Math.max(0, Math.min(0.6, volume)); // Limita o volume máximo
-    if (this.masterGain) {
-      this.masterGain.gain.value = this.isCalmMode ? this.volume * 0.6 : this.volume;
-    }
+    this.volume = Math.max(0, Math.min(0.6, volume));
+    this.updateVolume();
   }
 
   getVolume(): number {
@@ -321,6 +307,21 @@ class TEAAudioService {
 
   getCalmMode(): boolean {
     return this.isCalmMode;
+  }
+
+  getInitialized(): boolean {
+    return this.isInitialized;
+  }
+
+  // Método para cleanup quando necessário
+  cleanup(): void {
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close();
+    }
+    this.audioContext = null;
+    this.masterGain = null;
+    this.isInitialized = false;
+    this.soundCache.clear();
   }
 }
 
