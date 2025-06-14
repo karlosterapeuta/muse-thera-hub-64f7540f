@@ -8,10 +8,11 @@ import TEAMusicogramStage from './TEAMusicogramStage';
 import TEAControls from './TEAControls';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Loader2 } from 'lucide-react';
 
-const STAGE_ROWS = 6;
-const STAGE_COLS = 16;
+// Grid menor e mais gerenciável para crianças TEA
+const STAGE_ROWS = 4;
+const STAGE_COLS = 8;
 
 const TEAMusicogram: React.FC = () => {
   const { toast } = useToast();
@@ -24,9 +25,10 @@ const TEAMusicogram: React.FC = () => {
   const [calmMode, setCalmMode] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
   const [showAudioPrompt, setShowAudioPrompt] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Inicializar palco vazio
+  // Inicializar palco vazio com novo tamanho
   const [stage, setStage] = useState<StageCell[][]>(() => {
     const initialStage: StageCell[][] = [];
     for (let row = 0; row < STAGE_ROWS; row++) {
@@ -44,28 +46,25 @@ const TEAMusicogram: React.FC = () => {
     return initialStage;
   });
 
-  // Inicializar áudio quando usuário interagir
+  // Inicializar áudio automaticamente quando usuário interagir
   const initializeAudio = useCallback(async () => {
+    setIsInitializing(true);
     try {
       const success = await teaAudio.initialize();
       setAudioInitialized(success);
-      setShowAudioPrompt(!success);
+      setShowAudioPrompt(false);
       
       if (success) {
         toast({
-          title: "🎵 Áudio Ativado!",
+          title: "🎵 Áudio Funcionando!",
           description: "Agora você pode ouvir os sons dos animais!",
-        });
-      } else {
-        toast({
-          title: "⚠️ Áudio Limitado",
-          description: "Continuando sem som - a diversão visual continua!",
-          variant: "destructive"
         });
       }
     } catch (error) {
       console.error('Erro ao inicializar áudio:', error);
       setShowAudioPrompt(false);
+    } finally {
+      setIsInitializing(false);
     }
   }, [toast]);
 
@@ -103,8 +102,8 @@ const TEAMusicogram: React.FC = () => {
         setIsPlaying(false);
         setCurrentColumn(-1);
         toast({
-          title: "🎉 Que apresentação incrível!",
-          description: "Todos os animais tocaram maravilhosamente!",
+          title: "🎉 Show Finalizado!",
+          description: "Que apresentação incrível!",
         });
         return;
       }
@@ -119,7 +118,7 @@ const TEAMusicogram: React.FC = () => {
           if (cell.animalId) {
             const animal = animalInstruments.find(a => a.id === cell.animalId);
             if (animal) {
-              playPromises.push(teaAudio.playAnimalSound(animal.id, animal.frequency, 0.6));
+              playPromises.push(teaAudio.playAnimalSound(animal.id, animal.frequency, 0.4));
             }
           }
         }
@@ -156,7 +155,7 @@ const TEAMusicogram: React.FC = () => {
     
     toast({
       title: "🧹 Palco Limpo!",
-      description: "Todos os animais voltaram para seus lugares",
+      description: "Todos os animais voltaram para casa",
     });
   }, [isPlaying, stopComposition, toast]);
 
@@ -166,7 +165,7 @@ const TEAMusicogram: React.FC = () => {
     if (!hasAnimals) {
       toast({
         title: "🎭 Palco Vazio",
-        description: "Coloque alguns animais no palco antes de salvar!",
+        description: "Coloque alguns animais no palco primeiro!",
         variant: "destructive"
       });
       return;
@@ -181,15 +180,23 @@ const TEAMusicogram: React.FC = () => {
       stickers: []
     };
     
-    const saved = localStorage.getItem('tea-musicogram-compositions') || '[]';
-    const compositions = JSON.parse(saved);
-    compositions.push(composition);
-    localStorage.setItem('tea-musicogram-compositions', JSON.stringify(compositions));
-    
-    toast({
-      title: "🎉 Música Salva!",
-      description: `"${composition.name}" foi salva com sucesso!`,
-    });
+    try {
+      const saved = localStorage.getItem('tea-musicogram-compositions') || '[]';
+      const compositions = JSON.parse(saved);
+      compositions.push(composition);
+      localStorage.setItem('tea-musicogram-compositions', JSON.stringify(compositions));
+      
+      toast({
+        title: "🎉 Música Salva!",
+        description: `"${composition.name}" foi salva com sucesso!`,
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao salvar",
+        description: "Tente novamente em alguns segundos",
+        variant: "destructive"
+      });
+    }
   }, [stage, tempo, toast]);
 
   const handleVolumeChange = useCallback((newVolume: number) => {
@@ -211,8 +218,8 @@ const TEAMusicogram: React.FC = () => {
       teaAudio.setCalmMode(newCalmMode);
       
       toast({
-        title: newCalmMode ? "🌙 Modo Calmo Ativado" : "☀️ Modo Normal Ativado",
-        description: newCalmMode ? "Sons mais suaves e transições lentas" : "Experiência completa reativada",
+        title: newCalmMode ? "🌙 Modo Calmo" : "☀️ Modo Normal",
+        description: newCalmMode ? "Sons mais suaves" : "Todos os efeitos ativos",
       });
       
       return newCalmMode;
@@ -231,41 +238,51 @@ const TEAMusicogram: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-green-100 dark:from-sky-900/20 dark:to-green-900/20 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 text-white p-6 shadow-2xl">
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 text-white p-4 sm:p-6 shadow-xl">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">
             🎭 Musicograma dos Animais TEA
           </h1>
-          <p className="text-lg opacity-90 mb-2">
-            Um palco musical especialmente criado para crianças do espectro autista
+          <p className="text-sm sm:text-lg opacity-90 mb-2">
+            Um palco musical especial para crianças do espectro autista
           </p>
-          <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 bg-white/20 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm backdrop-blur-sm">
             <span className={`w-2 h-2 rounded-full animate-pulse ${audioInitialized ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Sons suaves • Interação intuitiva
+            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Grid 4x8 • Interface simplificada
           </div>
         </div>
       </div>
 
       {/* Audio Initialization Prompt */}
       {showAudioPrompt && !audioInitialized && (
-        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 border-b-2 border-yellow-300 p-4">
+        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 border-b-2 border-yellow-300 p-3 sm:p-4">
           <div className="max-w-7xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-4">
-              <div className="text-2xl">🎵</div>
-              <div className="flex-1">
-                <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-                  Clique no botão abaixo para ativar os sons dos animais!
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <div className="text-xl sm:text-2xl">🎵</div>
+              <div className="flex-1 text-center sm:text-left">
+                <p className="text-yellow-800 dark:text-yellow-200 font-medium text-sm sm:text-base">
+                  Clique no botão para ativar os sons dos animais!
                 </p>
-                <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-                  (O musicograma funciona sem som também)
+                <p className="text-yellow-700 dark:text-yellow-300 text-xs sm:text-sm">
+                  (Funciona sem som também)
                 </p>
               </div>
               <Button 
                 onClick={initializeAudio}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full"
+                disabled={isInitializing}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm"
               >
-                <Volume2 className="w-4 h-4 mr-2" />
-                Ativar Sons
+                {isInitializing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Ativando...
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-4 h-4 mr-2" />
+                    Ativar Sons
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -290,7 +307,7 @@ const TEAMusicogram: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 flex-col lg:flex-row">
         <AnimalPalette
           animals={animalInstruments}
           selectedAnimal={selectedAnimal}

@@ -22,16 +22,16 @@ const AnimalPalette: React.FC<AnimalPaletteProps> = ({
     // Tocar som se o áudio estiver inicializado
     if (teaAudio.getInitialized()) {
       try {
-        await teaAudio.playAnimalSound(animal.id, animal.frequency, 0.8);
+        await teaAudio.playAnimalSound(animal.id, animal.frequency, 0.6);
       } catch (error) {
-        console.warn('Erro ao tocar som do animal:', error);
+        console.log('Som não disponível para este animal');
       }
     }
   };
 
   return (
-    <div className="w-64 sm:w-72 bg-gradient-to-b from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-r-4 border-rainbow-500 p-4 sm:p-6 overflow-y-auto">
-      <div className="text-center mb-4 sm:mb-6">
+    <div className="w-full lg:w-64 bg-gradient-to-b from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b-4 lg:border-b-0 lg:border-r-4 border-purple-300 p-3 sm:p-4 overflow-y-auto">
+      <div className="text-center mb-3 sm:mb-4">
         <h3 className="text-lg sm:text-xl font-bold mb-2 text-green-700 dark:text-green-300">
           🎪 Orquestra Animal
         </h3>
@@ -40,45 +40,46 @@ const AnimalPalette: React.FC<AnimalPaletteProps> = ({
         </div>
       </div>
       
-      <div className="space-y-2 sm:space-y-3">
+      {/* Grid responsivo para móveis */}
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-3">
         {animals.map((animal) => (
           <button
             key={animal.id}
             onClick={() => handleAnimalClick(animal)}
             className={`
-              w-full p-3 sm:p-4 rounded-2xl border-2 sm:border-3 transition-all duration-300 transform
-              hover:scale-105 active:scale-95 hover:shadow-xl
+              w-full p-2 sm:p-3 rounded-xl border-2 transition-all duration-300 transform
+              hover:scale-105 active:scale-95 hover:shadow-lg
               ${selectedAnimal === animal.id 
-                ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 shadow-2xl scale-105' 
+                ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 shadow-xl scale-105' 
                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400'
               }
               ${calmMode ? 'hover:scale-102 transition-transform duration-500' : ''}
             `}
             style={{
               borderColor: selectedAnimal === animal.id ? animal.color : undefined,
-              boxShadow: selectedAnimal === animal.id ? `0 0 20px sm:0 0 30px ${animal.color}60` : undefined
+              boxShadow: selectedAnimal === animal.id ? `0 0 15px ${animal.color}60` : undefined
             }}
           >
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex-shrink-0">
-                <div className="text-2xl sm:text-4xl mb-1">{animal.emoji}</div>
-                <div className="text-lg sm:text-2xl">{animal.instrument}</div>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex-shrink-0 text-center">
+                <div className="text-lg sm:text-2xl mb-1">{animal.emoji}</div>
+                <div className="text-sm sm:text-lg">{animal.instrument}</div>
               </div>
               <div className="text-left flex-1 min-w-0">
-                <div className="font-bold text-sm sm:text-lg text-gray-800 dark:text-gray-200 mb-1">
+                <div className="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-200 mb-1">
                   {animal.name}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 line-clamp-2">
                   {animal.description}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <span 
-                    className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm"
+                    className="w-2 h-2 sm:w-3 sm:h-3 rounded-full border border-white shadow-sm"
                     style={{ backgroundColor: animal.color }}
                   ></span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {animal.soundType === 'melodic' ? '🎵 Melodia' : 
-                     animal.soundType === 'rhythmic' ? '🥁 Ritmo' : '🌊 Ambiente'}
+                    {animal.soundType === 'melodic' ? '🎵' : 
+                     animal.soundType === 'rhythmic' ? '🥁' : '🌊'}
                   </span>
                 </div>
               </div>
@@ -87,14 +88,14 @@ const AnimalPalette: React.FC<AnimalPaletteProps> = ({
         ))}
       </div>
       
-      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-2 border-purple-200 dark:border-purple-700">
+      <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700">
         <div className="text-center">
-          <div className="text-xl sm:text-2xl mb-2">🌟</div>
+          <div className="text-lg sm:text-xl mb-1">🌟</div>
           <p className="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-medium">
-            Cada animal tem seu som especial!
+            Grid 4x8 simplificado!
           </p>
           <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-            Experimente todos e crie sua música
+            Mais fácil de usar
           </p>
         </div>
       </div>
