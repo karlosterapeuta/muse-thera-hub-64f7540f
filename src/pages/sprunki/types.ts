@@ -1,4 +1,3 @@
-
 export interface SprunkiCharacter {
   id: string;
   name: string;
@@ -35,3 +34,6 @@ export interface SprunkiSettings {
   autoSave: boolean;
   visualFeedbackOnly: boolean;
 }
+
+// Export challenge types
+export * from './types/challenge';
