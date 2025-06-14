@@ -17,6 +17,7 @@ import {
   Guitar,
   Piano,
   Music,
+  Music2,
   Stethoscope,
   Brain,
   Activity,
@@ -63,6 +64,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     { icon: Bell, text: "Sinos Musicais", path: "/musical-bells", gradient: "from-yellow-500 to-amber-600" },
     { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
     { icon: Grid3X3, text: "Musicograma", path: "/musicogram", gradient: "from-emerald-500 to-teal-600" },
+    { icon: Music2, text: "Sprunki Musical", path: "/sprunki", gradient: "from-rose-500 to-pink-600" },
     { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
   ];
 
