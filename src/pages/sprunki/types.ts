@@ -1,4 +1,3 @@
-
 export interface SprunkiCharacter {
   id: string;
   name: string;
@@ -10,6 +9,9 @@ export interface SprunkiCharacter {
   description: string;
   animation?: string;
   category: 'beats' | 'effects' | 'melodies' | 'voices';
+  visualShape?: string;
+  bodyColor?: string;
+  headShape?: 'round' | 'spiky' | 'rectangular' | 'hat';
 }
 
 export interface SprunkiSlot {

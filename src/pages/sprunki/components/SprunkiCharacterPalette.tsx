@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { SprunkiCharacter, SprunkiSettings } from '../types';
 import { characterCategories } from '../data/sprunkiCharacters';
 import { sprunkiAudio } from '../utils/sprunkiAudioService';
+import SprunkiCharacterVisual from './SprunkiCharacterVisual';
 
 interface SprunkiCharacterPaletteProps {
   characters: SprunkiCharacter[];
@@ -85,7 +85,13 @@ const SprunkiCharacterPalette: React.FC<SprunkiCharacterPaletteProps> = ({
                   }}
                 >
                   <div className="text-center">
-                    <div className="text-3xl mb-2">{character.emoji}</div>
+                    {/* Visual Character */}
+                    <div className="flex justify-center mb-2">
+                      <SprunkiCharacterVisual 
+                        character={character} 
+                        size="medium"
+                      />
+                    </div>
                     <div className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-1">
                       {character.name}
                     </div>

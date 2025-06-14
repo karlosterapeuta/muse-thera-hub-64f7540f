@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { SprunkiSlot, SprunkiCharacter, SprunkiSettings } from '../types';
+import SprunkiCharacterVisual from './SprunkiCharacterVisual';
 
 interface SprunkiHorizontalStageProps {
   stage: SprunkiSlot[];
@@ -85,7 +85,7 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
               onDrop={(e) => handleDrop(e, index)}
               className={`
                 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl cursor-pointer transition-all duration-300
-                flex items-center justify-center text-3xl lg:text-4xl
+                flex items-center justify-center
                 border-4 relative overflow-hidden
                 ${hasCharacter 
                   ? 'border-gray-400 dark:border-gray-500 shadow-xl transform scale-105' 
@@ -101,14 +101,17 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
                 boxShadow: character && isPlaying ? `0 0 20px ${character.color}80` : undefined
               }}
             >
-              {character && (
-                <div className="relative filter drop-shadow-lg">
-                  {character.emoji}
-                  {isPlaying && (
-                    <div className="absolute -top-2 -right-2 text-sm animate-bounce">
-                      🎵
-                    </div>
-                  )}
+              {character ? (
+                <div className="relative">
+                  <SprunkiCharacterVisual 
+                    character={character} 
+                    size="small"
+                    isPlaying={isPlaying}
+                  />
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500">
+                  <div className="text-2xl">+</div>
                 </div>
               )}
               
@@ -116,13 +119,6 @@ const SprunkiHorizontalStage: React.FC<SprunkiHorizontalStageProps> = ({
               <div className="absolute bottom-0 right-0 bg-gray-600 text-white text-xs rounded-tl-md px-1">
                 {index + 1}
               </div>
-              
-              {/* Drop zone indicator */}
-              {!hasCharacter && (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500">
-                  <div className="text-2xl">+</div>
-                </div>
-              )}
             </div>
           );
         })}
