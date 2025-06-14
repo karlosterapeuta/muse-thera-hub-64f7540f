@@ -80,7 +80,6 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         const howl = new Howl({
           src: [symbol.sound],
           volume: 0.7,
-          timeout: 3000, // Timeout de 3 segundos
           onload: () => console.log(`[AUDIO] ✅ Arquivo carregado: ${symbol.sound}`),
           onloaderror: (id, error) => {
             console.warn(`[AUDIO] ❌ Erro ao carregar: ${symbol.sound}`, error);
