@@ -3,161 +3,273 @@ import { TherapyTemplate } from "../types";
 
 export const therapyTemplates: TherapyTemplate[] = [
   {
-    id: "motor-coordination-1",
-    name: "Coordenação Básica",
+    id: "sequence-1",
+    name: "Sequência de Instrumentos Básica",
     category: "motor",
     difficulty: "easy",
-    objective: "Desenvolver coordenação bilateral através de sequências rítmicas",
-    description: "Atividade para estimular coordenação entre mãos usando padrões visuais simples",
-    ageGroup: "3-6 anos",
-    duration: "10-15 min",
-    icon: "🤸",
-    color: "#4CAF50",
+    objective: "Desenvolver coordenação motora e memória sequencial",
+    description: "O paciente deve reproduzir uma sequência de instrumentos musicais na ordem correta",
+    ageGroup: "4-12 anos",
+    duration: "5-10 min",
+    icon: "🥁",
+    color: "#3B82F6",
     activities: [
       {
-        id: "motor-seq-1",
+        id: "seq-activity-1",
         type: "sequence",
-        title: "Padrão Alternado",
-        instruction: "Toque na sequência: palma → tambor → palma → tambor",
+        title: "Siga a Sequência Musical",
+        instruction: "Ouça a sequência e depois toque os instrumentos na mesma ordem",
+        correctOrder: [0, 1, 2],
+        timeLimit: 30,
         soundEnabled: true,
         symbols: [
-          { id: "clap", emoji: "👏", name: "Palma", category: "action", color: "#FF5722" },
-          { id: "drum", emoji: "🥁", name: "Tambor", category: "instrument", color: "#8BC34A" }
-        ],
-        correctOrder: [0, 1, 0, 1]
+          {
+            id: "drum",
+            emoji: "🥁",
+            name: "Tambor",
+            category: "instrument",
+            sound: "https://www.soundjay.com/misc/sounds/drum-roll-1.mp3",
+            color: "#EF4444"
+          },
+          {
+            id: "piano",
+            emoji: "🎹",
+            name: "Piano",
+            category: "instrument",
+            sound: "https://www.soundjay.com/misc/sounds/piano-key.mp3",
+            color: "#8B5CF6"
+          },
+          {
+            id: "guitar",
+            emoji: "🎸",
+            name: "Violão",
+            category: "instrument",
+            sound: "https://www.soundjay.com/misc/sounds/guitar-chord.mp3",
+            color: "#F59E0B"
+          }
+        ]
       }
     ]
   },
   {
-    id: "emotional-expression-1",
+    id: "emotion-1",
     name: "Expressão Emocional",
     category: "emotional",
-    difficulty: "easy",
-    objective: "Identificar e expressar emoções através da música",
-    description: "Atividade para reconhecimento e expressão de sentimentos",
-    ageGroup: "4-8 anos",
-    duration: "15-20 min",
+    difficulty: "medium",
+    objective: "Reconhecer e expressar diferentes emoções através da música",
+    description: "Atividades focadas no desenvolvimento emocional usando símbolos musicais",
+    ageGroup: "5-15 anos",
+    duration: "10-15 min",
     icon: "😊",
-    color: "#FF9800",
+    color: "#10B981",
     activities: [
       {
-        id: "emotion-sel-1",
+        id: "emotion-activity-1",
         type: "selection",
-        title: "Como você está?",
-        instruction: "Escolha o emoji que representa como você se sente agora",
+        title: "Como você se sente?",
+        instruction: "Escolha o símbolo que representa como a música te faz sentir",
         soundEnabled: true,
         symbols: [
-          { id: "happy", emoji: "😊", name: "Feliz", category: "emotion", color: "#FFD54F" },
-          { id: "sad", emoji: "😢", name: "Triste", category: "emotion", color: "#9E9E9E" },
-          { id: "excited", emoji: "🤩", name: "Animado", category: "emotion", color: "#FF5722" },
-          { id: "calm", emoji: "😌", name: "Calmo", category: "emotion", color: "#4CAF50" }
+          {
+            id: "happy",
+            emoji: "😊",
+            name: "Feliz",
+            category: "emotion",
+            sound: "https://www.soundjay.com/misc/sounds/happy-bell.mp3",
+            color: "#FDE047"
+          },
+          {
+            id: "calm",
+            emoji: "😌",
+            name: "Calmo",
+            category: "emotion",
+            sound: "https://www.soundjay.com/misc/sounds/soft-chime.mp3",
+            color: "#34D399"
+          },
+          {
+            id: "excited",
+            emoji: "🤗",
+            name: "Animado",
+            category: "emotion",
+            sound: "https://www.soundjay.com/misc/sounds/excited-ding.mp3",
+            color: "#F87171"
+          },
+          {
+            id: "peaceful",
+            emoji: "🕊️",
+            name: "Tranquilo",
+            category: "emotion",
+            sound: "https://www.soundjay.com/misc/sounds/peaceful-tone.mp3",
+            color: "#60A5FA"
+          }
         ]
       }
     ]
   },
   {
-    id: "communication-1",
-    name: "Diálogo Musical",
-    category: "communication",
-    difficulty: "medium",
-    objective: "Estimular comunicação através de turnos musicais",
-    description: "Atividade de pergunta e resposta musical",
-    ageGroup: "5-10 anos",
-    duration: "20-25 min",
-    icon: "💬",
-    color: "#2196F3",
-    activities: [
-      {
-        id: "comm-resp-1",
-        type: "response",
-        title: "Pergunta e Resposta",
-        instruction: "Escute o padrão e crie sua resposta musical",
-        soundEnabled: true,
-        symbols: [
-          { id: "note1", emoji: "🎵", name: "Nota", category: "instrument", color: "#2196F3" },
-          { id: "question", emoji: "❓", name: "Pergunta", category: "action", color: "#FF9800" },
-          { id: "answer", emoji: "❗", name: "Resposta", category: "action", color: "#4CAF50" }
-        ]
-      }
-    ]
-  },
-  {
-    id: "attention-focus-1",
-    name: "Foco Seletivo",
-    category: "attention",
-    difficulty: "hard",
-    objective: "Desenvolver atenção seletiva e sustentada",
-    description: "Exercícios de concentração com múltiplos estímulos",
-    ageGroup: "7-12 anos",
-    duration: "25-30 min",
-    icon: "🎯",
-    color: "#9C27B0",
-    activities: [
-      {
-        id: "attention-sel-1",
-        type: "selection",
-        title: "Encontre o Alvo",
-        instruction: "Concentre-se apenas no tambor, ignore os outros sons",
-        soundEnabled: true,
-        timeLimit: 60,
-        symbols: [
-          { id: "target", emoji: "🎯", name: "Alvo", category: "action", color: "#FF5722" },
-          { id: "eye", emoji: "👁️", name: "Foco", category: "action", color: "#795548" },
-          { id: "music", emoji: "🎼", name: "Música", category: "instrument", color: "#607D8B" }
-        ]
-      }
-    ]
-  },
-  {
-    id: "social-skills-1",
-    name: "Tocando Juntos",
-    category: "social",
+    id: "movement-1",
+    name: "Movimentos e Ações",
+    category: "motor",
     difficulty: "easy",
-    objective: "Promover interação e cooperação musical",
-    description: "Atividades em grupo para habilidades sociais",
-    ageGroup: "4-8 anos",
-    duration: "20-30 min",
-    icon: "👥",
-    color: "#00BCD4",
+    objective: "Coordenar movimentos corporais com estímulos musicais",
+    description: "Desenvolve coordenação motora através de ações musicais",
+    ageGroup: "3-10 anos",
+    duration: "8-12 min",
+    icon: "👏",
+    color: "#F59E0B",
     activities: [
       {
-        id: "social-coop-1",
-        type: "sequence",
-        title: "Vez de Cada Um",
-        instruction: "Aguarde sua vez e toque junto com o grupo",
+        id: "movement-activity-1",
+        type: "response",
+        title: "Faça o Movimento!",
+        instruction: "Quando ouvir o som, faça o movimento correspondente",
         soundEnabled: true,
         symbols: [
-          { id: "group", emoji: "👥", name: "Grupo", category: "action", color: "#FF9800" },
-          { id: "handshake", emoji: "🤝", name: "Cooperação", category: "action", color: "#4CAF50" },
-          { id: "music", emoji: "🎵", name: "Música", category: "instrument", color: "#2196F3" }
+          {
+            id: "clap",
+            emoji: "👏",
+            name: "Palma",
+            category: "action",
+            sound: "https://www.soundjay.com/misc/sounds/hand-clap.mp3",
+            color: "#EF4444"
+          },
+          {
+            id: "stomp",
+            emoji: "🦶",
+            name: "Pisada",
+            category: "action",
+            sound: "https://www.soundjay.com/misc/sounds/foot-stomp.mp3",
+            color: "#8B5CF6"
+          },
+          {
+            id: "wave",
+            emoji: "👋",
+            name: "Acenar",
+            category: "action",
+            sound: "https://www.soundjay.com/misc/sounds/gentle-wave.mp3",
+            color: "#10B981"
+          },
+          {
+            id: "jump",
+            emoji: "🤸",
+            name: "Pular",
+            category: "action",
+            sound: "https://www.soundjay.com/misc/sounds/bounce.mp3",
+            color: "#F59E0B"
+          }
         ]
       }
     ]
   },
   {
-    id: "memory-patterns-1",
-    name: "Sequências Musicais",
-    category: "memory",
+    id: "attention-1",
+    name: "Foco e Atenção",
+    category: "attention",
     difficulty: "medium",
-    objective: "Fortalecer memória auditiva e sequencial",
-    description: "Jogos de memória com padrões musicais crescentes",
-    ageGroup: "5-10 anos",
-    duration: "20-25 min",
-    icon: "🧠",
-    color: "#E91E63",
+    objective: "Melhorar capacidade de concentração e atenção sustentada",
+    description: "Exercícios de atenção usando elementos musicais",
+    ageGroup: "6-16 anos",
+    duration: "10-15 min",
+    icon: "🎯",
+    color: "#8B5CF6",
     activities: [
       {
-        id: "memory-seq-1",
+        id: "attention-activity-1",
         type: "sequence",
-        title: "Repita a Sequência",
-        instruction: "Memorize e repita a sequência de sons",
+        title: "Concentre-se na Sequência",
+        instruction: "Preste atenção na sequência de sons e repita exatamente",
+        correctOrder: [0, 2, 1, 3],
+        timeLimit: 45,
         soundEnabled: true,
         symbols: [
-          { id: "brain", emoji: "🧠", name: "Memória", category: "action", color: "#FF5722" },
-          { id: "repeat", emoji: "🔄", name: "Repetir", category: "action", color: "#009688" },
-          { id: "note", emoji: "🎵", name: "Nota", category: "instrument", color: "#2196F3" }
-        ],
-        correctOrder: [2, 1, 2, 0, 2]
+          {
+            id: "high-note",
+            emoji: "🎵",
+            name: "Nota Aguda",
+            category: "dynamic",
+            sound: "https://www.soundjay.com/misc/sounds/high-tone.mp3",
+            color: "#F87171"
+          },
+          {
+            id: "low-note",
+            emoji: "🎶",
+            name: "Nota Grave",
+            category: "dynamic",
+            sound: "https://www.soundjay.com/misc/sounds/low-tone.mp3",
+            color: "#3B82F6"
+          },
+          {
+            id: "medium-note",
+            emoji: "♪",
+            name: "Nota Média",
+            category: "dynamic",
+            sound: "https://www.soundjay.com/misc/sounds/medium-tone.mp3",
+            color: "#10B981"
+          },
+          {
+            id: "silence",
+            emoji: "🔇",
+            name: "Silêncio",
+            category: "dynamic",
+            sound: null,
+            color: "#6B7280"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "nature-sounds",
+    name: "Sons da Natureza",
+    category: "emotional",
+    difficulty: "easy",
+    objective: "Relaxamento e conexão com elementos naturais",
+    description: "Atividade calmante usando sons da natureza",
+    ageGroup: "3-18 anos",
+    duration: "5-10 min",
+    icon: "🌿",
+    color: "#059669",
+    activities: [
+      {
+        id: "nature-activity-1",
+        type: "selection",
+        title: "Escolha seu Som Favorito",
+        instruction: "Toque no som da natureza que mais te relaxa",
+        soundEnabled: true,
+        symbols: [
+          {
+            id: "rain",
+            emoji: "🌧️",
+            name: "Chuva",
+            category: "nature",
+            sound: "https://www.soundjay.com/misc/sounds/rain-drops.mp3",
+            color: "#3B82F6"
+          },
+          {
+            id: "birds",
+            emoji: "🐦",
+            name: "Pássaros",
+            category: "nature",
+            sound: "https://www.soundjay.com/misc/sounds/bird-chirp.mp3",
+            color: "#10B981"
+          },
+          {
+            id: "ocean",
+            emoji: "🌊",
+            name: "Oceano",
+            category: "nature",
+            sound: "https://www.soundjay.com/misc/sounds/ocean-waves.mp3",
+            color: "#06B6D4"
+          },
+          {
+            id: "wind",
+            emoji: "💨",
+            name: "Vento",
+            category: "nature",
+            sound: "https://www.soundjay.com/misc/sounds/wind-blow.mp3",
+            color: "#8B5CF6"
+          }
+        ]
       }
     ]
   }

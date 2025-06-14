@@ -2,8 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ActivitySymbol, TherapyActivity } from "../types";
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react";
-
-// Importação correta do Howler como ES module
 import { Howl } from "howler";
 
 interface InteractiveCanvasProps {
@@ -13,22 +11,22 @@ interface InteractiveCanvasProps {
   onToggleSound: () => void;
 }
 
-// Síntese básica por categoria – tons diferentes para cada tipo!
+// Frequências sintéticas melhoradas por categoria
 const categoryFrequencies: { [key: string]: number } = {
   instrument: 440, // Lá
-  emotion: 494,    // Si
-  action: 523,     // Dó
-  dynamic: 587,    // Ré
-  nature: 659      // Mi
+  emotion: 523,    // Dó
+  action: 659,     // Mi
+  dynamic: 392,    // Sol
+  nature: 294      // Ré
 };
 
-const categorySoundFallbacks: { [key: string]: string | null } = {
-  // Aqui você pode mapear para URLs se desejar, por enquanto null para síntese
-  instrument: null,
-  emotion: null,
-  action: null,
-  dynamic: null,
-  nature: null
+// Tipos de onda específicos para cada categoria
+const categoryWaveTypes: { [key: string]: OscillatorType } = {
+  instrument: 'sine',
+  emotion: 'triangle',
+  action: 'square',
+  dynamic: 'sawtooth',
+  nature: 'sine'
 };
 
 const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
@@ -66,49 +64,128 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     }
   };
 
-  // Corrigir playSymbolSound: usa Howler se houver sound definido, senão faz síntese simples
-  const playSymbolSound = (symbol: ActivitySymbol) => {
-    if (!soundEnabled) return;
-    try {
-      if (symbol.sound) {
-        // Usar Howler com import correto
-        const howl = new Howl({ src: [symbol.sound], volume: 0.8 });
-        howl.play();
-        console.log(`[AUDIO] Playing sound: ${symbol.sound}`);
-        return;
-      }
-      // Se existir fallback sonoro por categoria, poderia ser definido aqui.
-      if (categorySoundFallbacks[symbol.category]) {
-        const fallbackSound = categorySoundFallbacks[symbol.category];
-        const howl = new Howl({ src: [fallbackSound!], volume: 0.6 });
-        howl.play();
-        console.log(`[AUDIO] Playing fallback sound url for category ${symbol.category}`);
-        return;
-      }
-    } catch (err) {
-      // Se falhar tentar síntese abaixo
-      console.warn("[AUDIO] Howler failed, fallback to Web Audio API:", err);
+  // Função melhorada para reproduzir som dos símbolos
+  const playSymbolSound = async (symbol: ActivitySymbol) => {
+    if (!soundEnabled) {
+      console.log('[AUDIO] Som desabilitado pelo usuário');
+      return;
     }
 
-    // Fallback: synth por categoria usando Web Audio API
+    console.log(`[AUDIO] Tentando reproduzir som para: ${symbol.name} (${symbol.category})`);
+
+    // Tentar reproduzir som específico do símbolo primeiro
+    if (symbol.sound) {
+      try {
+        console.log(`[AUDIO] Carregando arquivo: ${symbol.sound}`);
+        const howl = new Howl({
+          src: [symbol.sound],
+          volume: 0.7,
+          timeout: 3000, // Timeout de 3 segundos
+          onload: () => console.log(`[AUDIO] ✅ Arquivo carregado: ${symbol.sound}`),
+          onloaderror: (id, error) => {
+            console.warn(`[AUDIO] ❌ Erro ao carregar: ${symbol.sound}`, error);
+            playSynthenticSound(symbol);
+          },
+          onplayerror: (id, error) => {
+            console.warn(`[AUDIO] ❌ Erro ao reproduzir: ${symbol.sound}`, error);
+            playSynthenticSound(symbol);
+          }
+        });
+        
+        howl.play();
+        console.log(`[AUDIO] ✅ Reproduzindo: ${symbol.sound}`);
+        return;
+      } catch (error) {
+        console.warn(`[AUDIO] ❌ Howler falhou para ${symbol.sound}:`, error);
+      }
+    }
+
+    // Fallback para som sintético
+    playSynthenticSound(symbol);
+  };
+
+  // Função para gerar som sintético melhorado
+  const playSynthenticSound = (symbol: ActivitySymbol) => {
     try {
+      console.log(`[AUDIO] 🎵 Gerando som sintético para: ${symbol.name} (${symbol.category})`);
+      
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContext();
-      const freq = categoryFrequencies[symbol.category] || 440;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.4);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.4);
-      osc.onended = () => ctx.close();
-      console.log(`[AUDIO] Playing synthesized tone for category: ${symbol.category} (${freq}Hz)`);
-    } catch (err2) {
-      console.error("[AUDIO] Failed all sound fallbacks:", err2);
+      const audioContext = new AudioContext();
+
+      // Garantir que o AudioContext está ativo
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      const frequency = categoryFrequencies[symbol.category] || 440;
+      const waveType = categoryWaveTypes[symbol.category] || 'sine';
+      
+      // Criar oscilador
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.type = waveType;
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      
+      // Envelope ADSR para som mais natural
+      const now = audioContext.currentTime;
+      const attackTime = 0.05;
+      const decayTime = 0.1;
+      const sustainLevel = 0.4;
+      const releaseTime = 0.3;
+      
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.6, now + attackTime);
+      gainNode.gain.exponentialRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + attackTime + decayTime + releaseTime);
+      
+      // Adicionar filtro para tom mais agradável
+      const filter = audioContext.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2000, now);
+      
+      // Conectar os nós
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Reproduzir
+      oscillator.start(now);
+      oscillator.stop(now + attackTime + decayTime + releaseTime);
+      
+      console.log(`[AUDIO] ✅ Som sintético: ${symbol.category} - ${frequency}Hz (${waveType})`);
+      
+      // Limpar recursos
+      oscillator.onended = () => {
+        try {
+          oscillator.disconnect();
+          gainNode.disconnect();
+          filter.disconnect();
+          audioContext.close();
+        } catch (error) {
+          console.warn('[AUDIO] Erro ao limpar recursos:', error);
+        }
+      };
+      
+    } catch (error) {
+      console.error('[AUDIO] ❌ Falha completa no áudio:', error);
+      // Último fallback: beep simples do sistema
+      try {
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        osc.connect(gain);
+        gain.connect(context.destination);
+        osc.frequency.value = 800;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+        osc.start();
+        osc.stop(context.currentTime + 0.2);
+        console.log('[AUDIO] 🔔 Beep de fallback reproduzido');
+      } catch (fallbackError) {
+        console.error('[AUDIO] ❌ Até o fallback falhou:', fallbackError);
+      }
     }
   };
 
@@ -117,7 +194,7 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     if (!startTime) setStartTime(Date.now());
 
     // Som imediato
-    if (soundEnabled) playSymbolSound(activity.symbols[symbolIndex]);
+    playSymbolSound(activity.symbols[symbolIndex]);
 
     let newSelected = [...selectedSymbols, symbolIndex];
     setSelectedSymbols(newSelected);
@@ -140,7 +217,6 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         setShowFeedback(null);
       }, 1000);
     } else if (activity.type === 'response') {
-      // Atividades tipo response: completa ao menos uma seleção
       if (newSelected.length >= 1) {
         const timeElapsed = Date.now() - (startTime || Date.now());
         setShowFeedback('success');
@@ -150,7 +226,6 @@ const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         }, 1200);
       }
     } else {
-      // fallback (para novos tipos futuros)
       const timeElapsed = Date.now() - (startTime || Date.now());
       setShowFeedback('success');
       setTimeout(() => {
