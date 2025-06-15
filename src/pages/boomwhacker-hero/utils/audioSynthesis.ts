@@ -1,7 +1,8 @@
 
-// Utilitário para síntese de áudio procedural
+// Utilitário para síntese de áudio procedural melhorado
 export class AudioSynthesis {
   private audioContext: AudioContext | null = null;
+  private audioCache: Map<string, string> = new Map();
 
   constructor() {
     try {
@@ -52,68 +53,166 @@ export class AudioSynthesis {
     });
   }
 
-  // Criar uma melodia simples para uma música demo
-  async generateSimpleMelody(title: string): Promise<string> {
+  // Padrões musicais brasileiros específicos
+  private getMelodyPattern(title: string): { notes: number[], rhythm: number[], tempo: number } {
+    const normalizedTitle = title.toLowerCase();
+    
+    // Frequências das notas (C4 = 261.63Hz como base)
+    const notes = {
+      C: 261.63, D: 293.66, E: 329.63, F: 349.23, G: 392.00, A: 440.00, B: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99
+    };
+
+    // Padrões específicos para músicas brasileiras conhecidas
+    if (normalizedTitle.includes('águas de março') || normalizedTitle.includes('aguas')) {
+      return {
+        notes: [notes.F, notes.G, notes.A, notes.F, notes.E, notes.D, notes.C, notes.F],
+        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0],
+        tempo: 120
+      };
+    }
+    
+    if (normalizedTitle.includes('garota') && normalizedTitle.includes('ipanema')) {
+      return {
+        notes: [notes.F, notes.G, notes.A, notes.G, notes.F, notes.E, notes.D, notes.F, notes.A, notes.C5],
+        rhythm: [0.5, 0.5, 0.75, 0.25, 0.5, 0.5, 0.5, 0.5, 0.75, 1.25],
+        tempo: 125
+      };
+    }
+    
+    if (normalizedTitle.includes('ciranda') || normalizedTitle.includes('cirandinha')) {
+      return {
+        notes: [notes.C, notes.C, notes.G, notes.G, notes.A, notes.A, notes.G, notes.F, notes.F, notes.E, notes.E, notes.D, notes.D, notes.C],
+        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
+        tempo: 100
+      };
+    }
+    
+    if (normalizedTitle.includes('brilha') || normalizedTitle.includes('estrelinha')) {
+      return {
+        notes: [notes.C, notes.C, notes.G, notes.G, notes.A, notes.A, notes.G, notes.F, notes.F, notes.E, notes.E, notes.D, notes.D, notes.C],
+        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
+        tempo: 95
+      };
+    }
+    
+    if (normalizedTitle.includes('asa branca')) {
+      return {
+        notes: [notes.E, notes.G, notes.A, notes.G, notes.E, notes.D, notes.E, notes.G, notes.A],
+        rhythm: [0.75, 0.25, 0.5, 0.5, 0.5, 0.5, 0.75, 0.25, 1.0],
+        tempo: 110
+      };
+    }
+
+    // Padrão genérico para outras músicas
+    return {
+      notes: [notes.C, notes.E, notes.G, notes.E, notes.C, notes.G, notes.E, notes.C],
+      rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
+      tempo: 120
+    };
+  }
+
+  // Criar uma melodia brasileira realista
+  async generateBrazilianMelody(title: string, duration: number = 30): Promise<string> {
     if (!this.audioContext) {
       throw new Error('Contexto de áudio não disponível');
     }
 
+    // Verificar cache primeiro
+    const cacheKey = `${title}-${duration}`;
+    if (this.audioCache.has(cacheKey)) {
+      console.log(`🎵 Usando melodia em cache para: ${title}`);
+      return this.audioCache.get(cacheKey)!;
+    }
+
     try {
-      // Frequências das notas musicais (escala de C maior)
-      const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88]; // C, D, E, F, G, A, B
+      const pattern = this.getMelodyPattern(title);
+      const { notes, rhythm, tempo } = pattern;
       
-      // Padrões simples baseados no título
-      let pattern: number[] = [];
+      // Calcular duração baseada no tempo
+      const beatDuration = 60 / tempo; // duração de uma batida em segundos
+      const patternDuration = rhythm.reduce((sum, beat) => sum + beat, 0) * beatDuration;
+      const repetitions = Math.ceil(duration / patternDuration);
       
-      if (title.toLowerCase().includes('twinkle') || title.toLowerCase().includes('brilha')) {
-        pattern = [0, 0, 4, 4, 5, 5, 4]; // Twinkle Twinkle
-      } else if (title.toLowerCase().includes('happy') || title.toLowerCase().includes('parabéns')) {
-        pattern = [0, 0, 1, 0, 3, 2]; // Happy Birthday
-      } else {
-        // Padrão padrão simples
-        pattern = [0, 2, 4, 2, 0, 4, 2];
-      }
-
-      // Criar buffer combinado
-      const noteDuration = 0.5;
-      const totalDuration = pattern.length * noteDuration;
       const sampleRate = this.audioContext.sampleRate;
-      const length = sampleRate * totalDuration;
-      const buffer = this.audioContext.createBuffer(1, length, sampleRate);
-      const data = buffer.getChannelData(0);
+      const totalSamples = Math.floor(sampleRate * duration);
+      const buffer = this.audioContext.createBuffer(2, totalSamples, sampleRate); // Stereo
+      const leftChannel = buffer.getChannelData(0);
+      const rightChannel = buffer.getChannelData(1);
 
-      // Gerar cada nota da melodia
-      for (let noteIndex = 0; noteIndex < pattern.length; noteIndex++) {
-        const frequency = notes[pattern[noteIndex]];
-        const startSample = Math.floor(noteIndex * noteDuration * sampleRate);
-        const endSample = Math.floor((noteIndex + 1) * noteDuration * sampleRate);
+      let currentTime = 0;
+      let sampleIndex = 0;
 
-        for (let i = startSample; i < endSample && i < length; i++) {
-          const t = (i - startSample) / sampleRate;
-          const envelope = Math.min(1, Math.min(t * 5, (noteDuration - t) * 5));
-          data[i] = Math.sin(2 * Math.PI * frequency * t) * envelope * 0.2;
+      // Gerar repetições da melodia
+      for (let rep = 0; rep < repetitions && currentTime < duration; rep++) {
+        for (let i = 0; i < notes.length && currentTime < duration; i++) {
+          const frequency = notes[i];
+          const noteDuration = Math.min(rhythm[i] * beatDuration, duration - currentTime);
+          const noteSamples = Math.floor(noteDuration * sampleRate);
+          
+          // Gerar a nota com envelope ADSR suavizado
+          for (let s = 0; s < noteSamples && sampleIndex < totalSamples; s++, sampleIndex++) {
+            const t = s / sampleRate;
+            const noteProgress = s / noteSamples;
+            
+            // Envelope ADSR mais suave
+            let envelope = 1;
+            if (noteProgress < 0.1) {
+              envelope = noteProgress / 0.1; // Attack
+            } else if (noteProgress > 0.8) {
+              envelope = (1 - noteProgress) / 0.2; // Release
+            } else {
+              envelope = 0.8; // Sustain
+            }
+            
+            // Onda senoidal com harmônicos sutis para soar mais natural
+            const fundamental = Math.sin(2 * Math.PI * frequency * (currentTime + t));
+            const harmonic2 = 0.3 * Math.sin(2 * Math.PI * frequency * 2 * (currentTime + t));
+            const harmonic3 = 0.1 * Math.sin(2 * Math.PI * frequency * 3 * (currentTime + t));
+            
+            const sample = (fundamental + harmonic2 + harmonic3) * envelope * 0.2;
+            
+            leftChannel[sampleIndex] = sample;
+            rightChannel[sampleIndex] = sample * 0.8; // Ligeira diferença para stereo
+          }
+          
+          currentTime += noteDuration;
         }
       }
 
-      // Converter para blob URL
-      const audioBuffer = buffer;
-      const wav = this.bufferToWav(audioBuffer);
-      const blob = new Blob([wav], { type: 'audio/wav' });
-      return URL.createObjectURL(blob);
+      // Fade out suave no final
+      const fadeOutSamples = Math.min(sampleRate * 2, totalSamples / 10); // 2 segundos ou 10% da música
+      for (let i = 0; i < fadeOutSamples; i++) {
+        const fadeIndex = totalSamples - fadeOutSamples + i;
+        const fadeFactor = 1 - (i / fadeOutSamples);
+        leftChannel[fadeIndex] *= fadeFactor;
+        rightChannel[fadeIndex] *= fadeFactor;
+      }
+
+      // Converter para WAV e criar URL
+      const wavArrayBuffer = this.bufferToWav(buffer);
+      const blob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      
+      // Adicionar ao cache
+      this.audioCache.set(cacheKey, url);
+      
+      console.log(`🎵 Melodia gerada para: ${title} (${duration}s)`);
+      return url;
 
     } catch (error) {
-      console.error('❌ Erro ao gerar melodia:', error);
+      console.error('❌ Erro ao gerar melodia brasileira:', error);
       throw error;
     }
   }
 
-  // Converter AudioBuffer para WAV
+  // Converter AudioBuffer para WAV com melhor qualidade
   private bufferToWav(buffer: AudioBuffer): ArrayBuffer {
     const length = buffer.length;
-    const result = new ArrayBuffer(44 + length * 2);
-    const view = new DataView(result);
-    const channels = buffer.numberOfChannels;
+    const numberOfChannels = buffer.numberOfChannels;
     const sampleRate = buffer.sampleRate;
+    const arrayBuffer = new ArrayBuffer(44 + length * numberOfChannels * 2);
+    const view = new DataView(arrayBuffer);
 
     // WAV header
     const writeString = (offset: number, string: string) => {
@@ -122,36 +221,53 @@ export class AudioSynthesis {
       }
     };
 
+    // RIFF chunk descriptor
     writeString(0, 'RIFF');
-    view.setUint32(4, 36 + length * 2, true);
+    view.setUint32(4, 36 + length * numberOfChannels * 2, true);
     writeString(8, 'WAVE');
+
+    // FMT sub-chunk
     writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, channels, true);
+    view.setUint32(16, 16, true); // SubChunk1Size (16 for PCM)
+    view.setUint16(20, 1, true);  // AudioFormat (1 for PCM)
+    view.setUint16(22, numberOfChannels, true);
     view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
+    view.setUint32(28, sampleRate * numberOfChannels * 2, true); // ByteRate
+    view.setUint16(32, numberOfChannels * 2, true); // BlockAlign
+    view.setUint16(34, 16, true); // BitsPerSample
+
+    // Data sub-chunk
     writeString(36, 'data');
-    view.setUint32(40, length * 2, true);
+    view.setUint32(40, length * numberOfChannels * 2, true);
 
     // Convert samples
-    const channelData = buffer.getChannelData(0);
     let offset = 44;
     for (let i = 0; i < length; i++) {
-      const sample = Math.max(-1, Math.min(1, channelData[i]));
-      view.setInt16(offset, sample * 0x7FFF, true);
-      offset += 2;
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+        view.setInt16(offset, sample * 0x7FFF, true);
+        offset += 2;
+      }
     }
 
-    return result;
+    return arrayBuffer;
+  }
+
+  // Limpar cache de áudio
+  clearCache() {
+    this.audioCache.forEach(url => URL.revokeObjectURL(url));
+    this.audioCache.clear();
+    console.log('🧹 Cache de áudio limpo');
   }
 
   dispose() {
+    this.clearCache();
     if (this.audioContext) {
       this.audioContext.close();
       this.audioContext = null;
     }
   }
 }
+
+// Instância global para reutilização
+export const globalAudioSynthesis = new AudioSynthesis();

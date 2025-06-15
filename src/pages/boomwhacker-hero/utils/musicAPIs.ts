@@ -127,8 +127,10 @@ class SpotifyAPI {
   }
 }
 
-// Gerador de músicas demo brasileiras expandido
-export const generateBrazilianDemoTracks = (): MusicTrack[] => {
+// Gerador de músicas demo brasileiras expandido com áudio sintético
+import { globalAudioSynthesis } from './audioSynthesis';
+
+export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
   const brazilianSongs = [
     // MPB Clássicos
     { title: "Águas de Março", artist: "Tom Jobim", genre: "bossa nova", bpm: 120 },
@@ -207,18 +209,61 @@ export const generateBrazilianDemoTracks = (): MusicTrack[] => {
     { title: "Carinhoso", artist: "Pixinguinha", genre: "samba", bpm: 80 }
   ];
 
-  return brazilianSongs.map((song, index) => ({
-    id: `demo-br-${index}`,
-    title: song.title,
-    artist: song.artist,
-    duration: Math.floor(Math.random() * 120) + 120, // 2-4 minutos
-    preview_url: null, // Sem preview real, será simulado
-    image: null,
-    popularity: Math.floor(Math.random() * 50) + 50, // 50-100
-    external_url: null,
-    source: 'demo' as const,
-    bpm: song.bpm
-  }));
+  const tracks: MusicTrack[] = [];
+
+  // Processar as primeiras 10 músicas com áudio sintético para performance
+  for (let index = 0; index < Math.min(brazilianSongs.length, 10); index++) {
+    const song = brazilianSongs[index];
+    const duration = Math.floor(Math.random() * 120) + 120; // 2-4 minutos
+    
+    let preview_url: string | null = null;
+    
+    try {
+      // Gerar áudio sintético para músicas conhecidas
+      if (song.title.includes('Ciranda') || song.title.includes('Brilha') || 
+          song.title.includes('Águas') || song.title.includes('Garota') ||
+          song.title.includes('Asa Branca')) {
+        preview_url = await globalAudioSynthesis.generateBrazilianMelody(song.title, 30);
+        console.log(`🎵 Áudio gerado para: ${song.title}`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Erro ao gerar áudio para ${song.title}:`, error);
+    }
+
+    tracks.push({
+      id: `demo-br-${index}`,
+      title: song.title,
+      artist: song.artist,
+      duration: duration,
+      preview_url: preview_url,
+      image: null,
+      popularity: Math.floor(Math.random() * 50) + 50, // 50-100
+      external_url: null,
+      source: 'demo' as const,
+      bpm: song.bpm
+    });
+  }
+
+  // Adicionar o restante sem áudio sintético para não sobrecarregar
+  for (let index = 10; index < brazilianSongs.length; index++) {
+    const song = brazilianSongs[index];
+    const duration = Math.floor(Math.random() * 120) + 120;
+    
+    tracks.push({
+      id: `demo-br-${index}`,
+      title: song.title,
+      artist: song.artist,
+      duration: duration,
+      preview_url: null,
+      image: null,
+      popularity: Math.floor(Math.random() * 50) + 50,
+      external_url: null,
+      source: 'demo' as const,
+      bpm: song.bpm
+    });
+  }
+
+  return tracks;
 };
 
 // Classe para buscar músicas na API Jamendo
@@ -330,6 +375,8 @@ class YouTubeMusicAPI {
 
 // Classe para gerenciar a busca em múltiplas APIs de música
 export class MusicAPIManager {
+  private static demoTracksCache: MusicTrack[] | null = null;
+
   static async search(query: string, source: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'demo'): Promise<MusicTrack[]> {
     try {
       let results: MusicTrack[] = [];
@@ -340,7 +387,8 @@ export class MusicAPIManager {
           // Se Spotify falhar, usar demo como fallback
           if (results.length === 0) {
             console.log('Spotify falhou, usando demo como fallback');
-            results = generateBrazilianDemoTracks().filter(track =>
+            const demoTracks = await this.getDemoTracks();
+            results = demoTracks.filter(track =>
               track.title.toLowerCase().includes(query.toLowerCase()) ||
               track.artist.toLowerCase().includes(query.toLowerCase())
             );
@@ -351,7 +399,8 @@ export class MusicAPIManager {
           // Se Jamendo falhar, usar demo como fallback
           if (results.length === 0) {
             console.log('Jamendo falhou, usando demo como fallback');
-            results = generateBrazilianDemoTracks().filter(track =>
+            const demoTracks = await this.getDemoTracks();
+            results = demoTracks.filter(track =>
               track.title.toLowerCase().includes(query.toLowerCase()) ||
               track.artist.toLowerCase().includes(query.toLowerCase())
             );
@@ -361,14 +410,16 @@ export class MusicAPIManager {
           results = await YouTubeMusicAPI.search(query);
           break;
         case 'demo':
-          results = generateBrazilianDemoTracks().filter(track =>
+          const demoTracks = await this.getDemoTracks();
+          results = demoTracks.filter(track =>
             track.title.toLowerCase().includes(query.toLowerCase()) ||
             track.artist.toLowerCase().includes(query.toLowerCase())
           );
           break;
         default:
           console.warn('Fonte de música inválida, usando demo.');
-          results = generateBrazilianDemoTracks().filter(track =>
+          const defaultTracks = await this.getDemoTracks();
+          results = defaultTracks.filter(track =>
             track.title.toLowerCase().includes(query.toLowerCase()) ||
             track.artist.toLowerCase().includes(query.toLowerCase())
           );
@@ -378,7 +429,8 @@ export class MusicAPIManager {
     } catch (error) {
       console.error('Erro ao buscar músicas, usando fallback demo:', error);
       // Fallback final para demo
-      return generateBrazilianDemoTracks().filter(track =>
+      const demoTracks = await this.getDemoTracks();
+      return demoTracks.filter(track =>
         track.title.toLowerCase().includes(query.toLowerCase()) ||
         track.artist.toLowerCase().includes(query.toLowerCase())
       );
@@ -395,7 +447,7 @@ export class MusicAPIManager {
           // Se Spotify falhar, usar demo como fallback
           if (results.length === 0) {
             console.log('Spotify populares falhou, usando demo como fallback');
-            results = generateBrazilianDemoTracks();
+            results = await this.getDemoTracks();
           }
           break;
         case 'jamendo':
@@ -403,26 +455,35 @@ export class MusicAPIManager {
           // Se Jamendo falhar, usar demo como fallback
           if (results.length === 0) {
             console.log('Jamendo populares falhou, usando demo como fallback');
-            results = generateBrazilianDemoTracks();
+            results = await this.getDemoTracks();
           }
           break;
         case 'youtube':
           results = await YouTubeMusicAPI.getPopular();
           break;
         case 'demo':
-          results = generateBrazilianDemoTracks();
+          results = await this.getDemoTracks();
           break;
         default:
           console.warn('Fonte de música inválida, usando demo.');
-          results = generateBrazilianDemoTracks();
+          results = await this.getDemoTracks();
       }
 
       return results.filter(track => !track.failed);
     } catch (error) {
       console.error('Erro ao buscar músicas populares, usando fallback demo:', error);
       // Fallback final para demo
-      return generateBrazilianDemoTracks();
+      return await this.getDemoTracks();
     }
+  }
+
+  // Método privado para obter tracks demo com cache
+  private static async getDemoTracks(): Promise<MusicTrack[]> {
+    if (!this.demoTracksCache) {
+      console.log('🎵 Gerando tracks demo com áudio sintético...');
+      this.demoTracksCache = await generateBrazilianDemoTracks();
+    }
+    return this.demoTracksCache;
   }
 
   static markTrackAsFailed(track: MusicTrack) {
@@ -438,5 +499,11 @@ export class MusicAPIManager {
       }
     }
     return null;
+  }
+
+  // Limpar cache de demo tracks
+  static clearCache() {
+    this.demoTracksCache = null;
+    globalAudioSynthesis.clearCache();
   }
 }

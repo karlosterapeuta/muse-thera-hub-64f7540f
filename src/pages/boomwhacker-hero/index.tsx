@@ -288,17 +288,28 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [fallingNotes, currentTime, gameStats.combo, playBoomwhackerSound, toast]);
 
-  // Controlar tempo do jogo
+  // Controlar tempo do jogo - MELHORADO
   const handleMusicTimeUpdate = useCallback((timeInSeconds: number) => {
     const timeInMs = timeInSeconds * 1000;
     setCurrentTime(timeInMs);
-  }, []);
+    
+    // Se o jogo está rodando e a música terminou, finalizar
+    if (gameState === 'playing' && selectedSong && timeInMs >= selectedSong.duration * 1000) {
+      console.log('⏱️ Música terminou - finalizando jogo via time update');
+      handleTrackEnd();
+    }
+  }, [gameState, selectedSong]);
 
-  // Controlar play/pause - MOVED BEFORE startGame
+  // Controlar play/pause
   const handleMusicPlayPause = useCallback((playing: boolean) => {
     console.log(`🎵 Player estado: ${playing ? 'Play' : 'Pause'}`);
     setIsMusicPlaying(playing);
-  }, []);
+    
+    // Se pausou durante o jogo, pausar o jogo também
+    if (!playing && gameState === 'playing') {
+      setGameState('paused');
+    }
+  }, [gameState]);
 
   // Iniciar jogo
   const startGame = useCallback(async () => {
@@ -370,11 +381,17 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [gameState, toast]);
 
-  // Quando música termina
+  // Quando música termina - MELHORADO
   const handleTrackEnd = useCallback(() => {
     console.log('🏆 Música terminou - finalizando jogo');
     setGameState('ended');
     setIsMusicPlaying(false);
+    
+    // Limpar simulação de tempo se estiver rodando
+    if (timeSimulationRef.current) {
+      clearInterval(timeSimulationRef.current);
+      timeSimulationRef.current = undefined;
+    }
     
     toast({
       title: "🏆 Jogo Finalizado!",
@@ -382,7 +399,7 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [gameStats.score, toast]);
 
-  // Lidar com falha de música
+  // Lidar com falha de música - MELHORADO
   const handleTrackFailed = useCallback(async () => {
     if (!selectedSong) return;
     
@@ -405,22 +422,13 @@ const BoomwhackerHero: React.FC = () => {
       console.log('🔄 Carregando novas músicas...');
       
       try {
-        let newTracks: MusicTrack[] = [];
-        
-        newTracks = await MusicAPIManager.getPopular('spotify');
-        
-        if (newTracks.length === 0) {
-          newTracks = await MusicAPIManager.getPopular('jamendo');
-        }
-        
-        if (newTracks.length === 0) {
-          newTracks = await MusicAPIManager.getPopular('demo');
-        }
+        // Sempre tentar demo primeiro para garantir que funcione
+        let newTracks = await MusicAPIManager.getPopular('demo');
         
         if (newTracks.length > 0) {
           setAvailableTracks(newTracks);
           nextTrack = newTracks[0];
-          console.log(`✅ Novas músicas carregadas: ${newTracks.length}`);
+          console.log(`✅ Novas músicas demo carregadas: ${newTracks.length}`);
         }
       } catch (error) {
         console.error('❌ Erro ao carregar novas músicas:', error);
@@ -478,14 +486,15 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [handleTrackClick]);
 
-  // Efeito para inicialização
+  // Efeito para inicialização - MELHORADO
   useEffect(() => {
     initializeAudio();
     setSelectedSong(ANGELS_SONG);
     
+    // Carregar músicas demo com áudio sintético
     MusicAPIManager.getPopular('demo').then(tracks => {
       setAvailableTracks(tracks);
-      console.log(`🎵 Músicas de backup carregadas: ${tracks.length}`);
+      console.log(`🎵 Músicas demo carregadas: ${tracks.length} (algumas com áudio sintético)`);
     });
     
     console.log('🎵 Jogo inicializado com música padrão');
@@ -516,7 +525,7 @@ const BoomwhackerHero: React.FC = () => {
     };
   }, [gameState, gameLoop]);
 
-  // Efeito para simulação de tempo quando não há áudio real
+  // Efeito para simulação de tempo quando não há áudio real - MELHORADO
   useEffect(() => {
     if (gameState === 'playing' && selectedSong && isMusicPlaying) {
       // Se é MusicTrack sem preview_url ou ANGELS_SONG, usar simulação
@@ -528,12 +537,14 @@ const BoomwhackerHero: React.FC = () => {
             // Verificar se chegou ao fim da música
             if (newTime >= selectedSong.duration * 1000) {
               console.log('🏆 Música simulada terminou');
-              setGameState('ended');
-              setIsMusicPlaying(false);
               if (timeSimulationRef.current) {
                 clearInterval(timeSimulationRef.current);
                 timeSimulationRef.current = undefined;
               }
+              // Usar setTimeout para evitar problemas de estado
+              setTimeout(() => {
+                handleTrackEnd();
+              }, 0);
               return selectedSong.duration * 1000;
             }
             return newTime;
@@ -553,7 +564,7 @@ const BoomwhackerHero: React.FC = () => {
         timeSimulationRef.current = undefined;
       }
     };
-  }, [gameState, selectedSong, isMusicPlaying]);
+  }, [gameState, selectedSong, isMusicPlaying, handleTrackEnd]);
 
   // Renderizar menu de seleção de música
   if (gameState === 'menu') {

@@ -32,15 +32,9 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [audioStatus, setAudioStatus] = useState<'loading' | 'ready' | 'error' | 'none'>('none');
   const [loadAttempts, setLoadAttempts] = useState(0);
-  const simulationIntervalRef = useRef<NodeJS.Timeout>();
 
   // Limpar áudio anterior
   const cleanupAudio = () => {
-    if (simulationIntervalRef.current) {
-      clearInterval(simulationIntervalRef.current);
-      simulationIntervalRef.current = undefined;
-    }
-    
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -88,8 +82,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     
     setLoadAttempts(prev => prev + 1);
     
-    // Tentar novamente até 2 vezes
-    if (loadAttempts < 2 && track?.preview_url) {
+    // Tentar novamente até 2 vezes apenas para URLs reais
+    if (loadAttempts < 2 && track?.preview_url && !track.preview_url.startsWith('blob:')) {
       console.log(`🔄 Tentativa ${loadAttempts + 1} de carregar áudio...`);
       setTimeout(() => {
         initializeAudio();
@@ -122,6 +116,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     console.log(`🎵 Inicializando: ${track.title} (${track.source})`);
     cleanupAudio();
 
+    // Se não há preview_url, definir duração manualmente e status como error
     if (!track.preview_url) {
       console.log(`⚠️ Sem preview URL para: ${track.title}`);
       setDuration(track.duration);
@@ -135,9 +130,16 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       
       const audio = new Audio();
       
-      // Configurações otimizadas para CORS e streaming
-      audio.crossOrigin = "anonymous";
-      audio.preload = "auto";
+      // Configurações para diferentes tipos de URL
+      if (track.preview_url.startsWith('blob:')) {
+        // URLs blob (áudio sintético) não precisam de CORS
+        audio.preload = "auto";
+      } else {
+        // URLs externas precisam de CORS
+        audio.crossOrigin = "anonymous";
+        audio.preload = "metadata";
+      }
+      
       audio.volume = isMuted ? 0 : volume;
       
       // Event listeners
@@ -147,13 +149,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       audio.addEventListener('error', handleError);
       audio.addEventListener('canplay', handleCanPlay);
       
-      // Timeout para forçar carregamento
+      // Timeout mais longo para áudio sintético
+      const timeoutDuration = track.preview_url.startsWith('blob:') ? 3000 : 8000;
       const timeoutId = setTimeout(() => {
         if (audioRef.current && audioRef.current.readyState < 2) {
           console.log('⏰ Timeout no carregamento');
           handleError(new Event('timeout'));
         }
-      }, 8000);
+      }, timeoutDuration);
       
       audio.addEventListener('canplay', () => {
         clearTimeout(timeoutId);
@@ -191,6 +194,9 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           onTrackFailed();
         }
       }
+    } else if (audioStatus === 'error' && track?.preview_url) {
+      // Se está em erro mas tem URL, tentar novamente
+      handleRetry();
     }
   };
 
@@ -250,7 +256,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       case 'loading':
         return { text: '🔄 Carregando áudio...', color: 'text-blue-400', showSpinner: true };
       case 'error':
-        return { text: '⚠️ Erro no áudio', color: 'text-red-400', showSpinner: false };
+        return { 
+          text: track.preview_url ? '⚠️ Erro no áudio' : '🎵 Sem áudio (demonstração)', 
+          color: track.preview_url ? 'text-red-400' : 'text-yellow-400', 
+          showSpinner: false 
+        };
       case 'ready':
         return { text: '🎵 Pronto para tocar', color: 'text-green-400', showSpinner: false };
       default:
@@ -270,7 +280,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <span className={`text-sm ${statusDisplay.color}`}>
               {statusDisplay.text}
             </span>
-            {audioStatus === 'error' && (
+            {audioStatus === 'error' && track.preview_url && (
               <div className="flex gap-1">
                 <Button
                   onClick={handleRetry}
