@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Play, Heart, Clock, Music, ExternalLink, RefreshCw, Volume2, Wifi, CheckCircle } from 'lucide-react';
+import { Search, Play, Heart, Clock, Music, Volume2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MusicAPIManager, MusicTrack } from '../utils/musicAPIs';
 
@@ -18,47 +18,39 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(false);
+  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo'>('demo');
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
-  const [spotifyConnected, setSpotifyConnected] = useState<boolean | null>(null);
 
+  // Carregar músicas populares iniciais
   const loadPopularTracks = async () => {
     setLoading(true);
-    
     try {
-      console.log('🔍 Carregando músicas populares do Spotify');
-      const popularTracks = await MusicAPIManager.getPopular();
+      console.log(`🔍 Carregando músicas populares da fonte: ${apiSource}`);
+      const popularTracks = await MusicAPIManager.getPopular(apiSource);
       console.log(`✅ Músicas carregadas: ${popularTracks.length}`);
-      
       setTracks(popularTracks);
       
-      // Verificar se são do Spotify ou fallback
-      const spotifyTracks = popularTracks.filter(t => t.source === 'spotify');
-      setSpotifyConnected(spotifyTracks.length > 0);
-      
-      if (spotifyTracks.length > 0) {
+      if (popularTracks.length === 0) {
         toast({
-          title: "🎵 Spotify Conectado!",
-          description: `${popularTracks.length} músicas carregadas, todas com preview de áudio!`,
-        });
-      } else {
-        toast({
-          title: "🎵 Músicas locais carregadas",
-          description: `${popularTracks.length} músicas de demonstração disponíveis`,
+          title: "Sem músicas encontradas",
+          description: "Carregando músicas demo como alternativa.",
         });
       }
     } catch (error) {
-      console.error('❌ Erro ao carregar músicas:', error);
-      setSpotifyConnected(false);
+      console.error('❌ Erro ao carregar músicas populares:', error);
       toast({
-        title: "⚠️ Erro ao carregar músicas",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive"
+        title: "Erro ao carregar músicas",
+        description: "Usando músicas demo como alternativa.",
       });
+      // Fallback para demo
+      const demoTracks = await MusicAPIManager.getPopular('demo');
+      setTracks(demoTracks);
     } finally {
       setLoading(false);
     }
   };
 
+  // Função principal de busca
   const searchTracks = async (query: string) => {
     if (!query.trim()) {
       loadPopularTracks();
@@ -66,39 +58,24 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
     
     setLoading(true);
-    
     try {
-      console.log(`🔍 Buscando por: "${query}"`);
-      const results = await MusicAPIManager.search(query);
+      console.log(`🔍 Buscando por: "${query}" na fonte: ${apiSource}`);
+      const results = await MusicAPIManager.search(query, apiSource);
       console.log(`✅ Resultados encontrados: ${results.length}`);
       
       setTracks(results);
       
-      // Verificar tipo de resultados
-      const spotifyTracks = results.filter(t => t.source === 'spotify');
-      setSpotifyConnected(spotifyTracks.length > 0);
-      
-      if (spotifyTracks.length > 0) {
+      if (results.length === 0) {
         toast({
-          title: "🎵 Busca no Spotify realizada!",
-          description: `${results.length} músicas encontradas, todas com preview!`,
-        });
-      } else if (results.length > 0) {
-        toast({
-          title: "🎵 Músicas locais encontradas",
-          description: `${results.length} músicas de demonstração para "${query}"`,
-        });
-      } else {
-        toast({
-          title: "🔍 Nenhuma música encontrada",
-          description: `Tente buscar por termos como "piano", "infantil", "children" ou "music"`,
+          title: "Nenhuma música encontrada",
+          description: `Tente buscar por termos como "infantil", "criança" ou nomes de músicas conhecidas`,
         });
       }
     } catch (error) {
       console.error('❌ Erro ao buscar músicas:', error);
       toast({
-        title: "⚠️ Erro na busca",
-        description: "Tente novamente em alguns instantes.",
+        title: "Erro na busca",
+        description: "Não foi possível buscar músicas. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -106,6 +83,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
+  // Parar áudio atual se estiver tocando
   const stopCurrentAudio = () => {
     if (currentAudio) {
       currentAudio.pause();
@@ -114,17 +92,17 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
+  // Tocar preview
   const playPreview = (track: MusicTrack) => {
     console.log(`🎵 Tentando tocar preview de: ${track.title}`);
     
+    // Parar áudio atual
     stopCurrentAudio();
     
     if (!track.preview_url) {
       toast({
         title: "Preview não disponível",
-        description: track.source === 'local' ? 
-          "Esta é uma música local sem preview, mas pode ser usada no jogo." :
-          "Esta música não possui preview de áudio, mas pode ser selecionada para o jogo.",
+        description: "Esta música não possui preview de áudio.",
         variant: "destructive"
       });
       return;
@@ -133,7 +111,15 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     try {
       const audio = new Audio(track.preview_url);
       audio.volume = 0.5;
-      audio.crossOrigin = "anonymous";
+      audio.crossOrigin = "anonymous"; // Para evitar problemas de CORS
+      
+      audio.addEventListener('loadstart', () => {
+        console.log('🔄 Carregando áudio...');
+      });
+      
+      audio.addEventListener('canplay', () => {
+        console.log('✅ Áudio pronto para tocar');
+      });
       
       audio.addEventListener('error', (e) => {
         console.error('❌ Erro no áudio:', e);
@@ -145,12 +131,14 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       });
       
       audio.addEventListener('ended', () => {
+        console.log('🔚 Áudio terminou');
         setCurrentAudio(null);
       });
       
       setCurrentAudio(audio);
       
       audio.play().then(() => {
+        console.log('▶️ Áudio iniciado com sucesso');
         toast({
           title: "🎵 Tocando preview",
           description: `${track.title} - ${track.artist}`,
@@ -159,7 +147,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         console.error('❌ Erro ao iniciar áudio:', error);
         toast({
           title: "Erro no áudio",
-          description: "Não foi possível tocar o preview.",
+          description: "Não foi possível tocar o preview. Verifique se o áudio está habilitado no navegador.",
           variant: "destructive"
         });
       });
@@ -179,10 +167,12 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     searchTracks(searchTerm);
   };
 
+  // Carregar músicas ao mudar fonte de API
   useEffect(() => {
     loadPopularTracks();
-  }, []);
+  }, [apiSource]);
 
+  // Limpar áudio ao desmontar componente
   useEffect(() => {
     return () => {
       stopCurrentAudio();
@@ -195,27 +185,36 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            Buscar Músicas no Spotify
-            {spotifyConnected !== null && (
-              <div className="flex items-center gap-1">
-                {spotifyConnected ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <Badge variant="outline" className="text-green-600 bg-green-50">
-                      <Wifi className="w-3 h-3 mr-1" />
-                      Spotify Conectado
-                    </Badge>
-                  </>
-                ) : (
-                  <Badge variant="outline" className="text-orange-600 bg-orange-50">
-                    Modo Local
-                  </Badge>
-                )}
-              </div>
-            )}
+            Buscar Músicas
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Seletor de API */}
+          <div className="flex gap-2">
+            <Button
+              variant={apiSource === 'spotify' ? 'default' : 'outline'}
+              onClick={() => setApiSource('spotify')}
+              className="flex-1"
+            >
+              Spotify
+            </Button>
+            <Button
+              variant={apiSource === 'jamendo' ? 'default' : 'outline'}
+              onClick={() => setApiSource('jamendo')}
+              className="flex-1"
+            >
+              Jamendo
+            </Button>
+            <Button
+              variant={apiSource === 'demo' ? 'default' : 'outline'}
+              onClick={() => setApiSource('demo')}
+              className="flex-1"
+            >
+              Demo
+            </Button>
+          </div>
+
+          {/* Formulário de busca */}
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
               placeholder="Digite o nome da música ou artista..."
@@ -226,20 +225,12 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
             <Button type="submit" disabled={loading}>
               <Search className="w-4 h-4" />
             </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={loadPopularTracks}
-              disabled={loading}
-              title="Recarregar músicas populares"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </Button>
           </form>
 
+          {/* Sugestões de busca */}
           <div className="flex flex-wrap gap-2">
             <span className="text-sm text-gray-600">Sugestões:</span>
-            {['infantil', 'piano', 'children', 'classical', 'kids music', 'música brasileira'].map((suggestion) => (
+            {['infantil', 'criança', 'twinkle', 'parabéns'].map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
@@ -253,16 +244,6 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               </Button>
             ))}
           </div>
-
-          {spotifyConnected === true && (
-            <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                <strong>Spotify conectado com sucesso!</strong>
-              </div>
-              <p className="mt-1">Todas as músicas têm preview de áudio de alta qualidade.</p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -270,9 +251,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         {loading && (
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-2 text-gray-600">
-              Buscando músicas no Spotify...
-            </p>
+            <p className="mt-2 text-gray-600">Buscando músicas...</p>
           </div>
         )}
 
@@ -305,7 +284,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                     <span className="text-sm text-gray-500">{track.duration}s</span>
                     
                     <Badge variant="secondary" className="text-xs">
-                      {track.source === 'spotify' ? 'Spotify' : 'Local'}
+                      {track.source}
                     </Badge>
                     
                     {track.popularity && (
@@ -314,10 +293,9 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                       </Badge>
                     )}
 
-                    {track.has_preview && (
-                      <Badge variant="default" className="text-xs bg-green-100 text-green-800">
-                        <Volume2 className="w-3 h-3 mr-1" />
-                        Preview
+                    {track.bpm && (
+                      <Badge variant="outline" className="text-xs">
+                        {track.bpm} BPM
                       </Badge>
                     )}
                   </div>
@@ -346,7 +324,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                         e.stopPropagation();
                         window.open(track.external_url, '_blank');
                       }}
-                      title="Abrir no Spotify"
+                      title="Abrir no site original"
                     >
                       <ExternalLink className="w-3 h-3" />
                     </Button>
@@ -376,13 +354,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           <div className="col-span-full text-center py-8">
             <Music className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600">Nenhuma música encontrada</p>
-            <p className="text-sm text-gray-500 mb-4">
-              Tente buscar por músicas populares ou use as sugestões acima
-            </p>
-            <Button onClick={loadPopularTracks} variant="outline">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Carregar Músicas Populares
-            </Button>
+            <p className="text-sm text-gray-500">Tente buscar por músicas infantis populares ou use as sugestões acima</p>
           </div>
         )}
       </div>
@@ -397,12 +369,11 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                 <p className="text-gray-600">{selectedTrack.artist}</p>
                 <div className="flex gap-2 mt-1">
                   <Badge variant="secondary">
-                    {selectedTrack.source === 'spotify' ? 'Spotify' : 'Local'}
+                    Fonte: {selectedTrack.source}
                   </Badge>
-                  {selectedTrack.has_preview && (
-                    <Badge variant="default" className="bg-green-100 text-green-800">
-                      <Volume2 className="w-3 h-3 mr-1" />
-                      Com Preview
+                  {selectedTrack.bpm && (
+                    <Badge variant="outline">
+                      {selectedTrack.bpm} BPM
                     </Badge>
                   )}
                 </div>

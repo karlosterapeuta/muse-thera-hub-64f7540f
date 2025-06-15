@@ -20,14 +20,14 @@ const BOOMWHACKER_NOTES = [
   { note: 'A', color: '#8A2BE2', name: 'Lá', frequency: 440.00, track: 5, key: 'h' }
 ];
 
-// Música de exemplo padrão
-const DEFAULT_SONG = {
-  id: 'default',
-  title: 'Exemplo - Boomwhacker Hero',
-  artist: 'Música de Demonstração',
+// Música de exemplo "Anjos Que Temos Ouvido"
+const ANGELS_SONG = {
+  id: 'angels',
+  title: 'Anjos Que Temos Ouvido',
+  artist: 'Música Tradicional',
   duration: 20,
   bpm: 120,
-  source: 'spotify' as const,
+  difficulty: 'medium',
   pattern: [
     { time: 1000, track: 4, duration: 500 }, // G
     { time: 2000, track: 1, duration: 500 }, // D
@@ -72,7 +72,7 @@ type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
-  const [selectedSong, setSelectedSong] = useState<typeof DEFAULT_SONG | MusicTrack | null>(null);
+  const [selectedSong, setSelectedSong] = useState<typeof ANGELS_SONG | MusicTrack | null>(null);
   const [availableTracks, setAvailableTracks] = useState<MusicTrack[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [fallingNotes, setFallingNotes] = useState<FallingNote[]>([]);
@@ -182,7 +182,7 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [gameState]);
 
-  // Função quando música termina
+  // Função quando música termina - melhorada
   const handleTrackEnd = useCallback(() => {
     console.log('🏆 Música terminou - finalizando jogo');
     setGameState('ended');
@@ -199,28 +199,53 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [gameStats.score, toast]);
 
-  // Função para lidar com falha de música
+  // Nova função melhorada para lidar com falha de música
   const handleTrackFailed = useCallback(async () => {
     if (!selectedSong) return;
     
     console.log(`❌ Música falhou: ${selectedSong.title}`);
     
-    // Marcar como falha
-    MusicAPIManager.markTrackAsFailed(selectedSong as MusicTrack);
-    
     // Tentar próxima música válida da lista atual
     let nextTrack = null;
     
-    if (availableTracks.length > 1) {
+    // Só tentar getNextValidTrack se a música atual não for synthesized e temos tracks disponíveis
+    if (availableTracks.length > 1 && 'source' in selectedSong && selectedSong.source !== 'synthesized') {
       nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
     }
     
     // Se não há próxima música válida, carregar novas músicas
     if (!nextTrack) {
-      console.log('🔄 Carregando novas músicas do Spotify...');
+      console.log('🔄 Carregando novas músicas...');
       
       try {
-        const newTracks = await MusicAPIManager.getPopular();
+        // Tentar carregar músicas de diferentes fontes
+        let newTracks: MusicTrack[] = [];
+        
+        // Determinar qual fonte usar baseado no source da música atual
+        const currentSource = 'source' in selectedSong ? selectedSong.source : 'demo';
+        let sourceToTry: 'spotify' | 'jamendo' | 'demo' = 'jamendo';
+        
+        // Se a música atual é 'synthesized' ou 'demo', usar 'jamendo' como fallback
+        if (currentSource === 'synthesized' || currentSource === 'demo') {
+          sourceToTry = 'jamendo';
+        } else if (currentSource === 'spotify') {
+          sourceToTry = 'spotify';
+        } else if (currentSource === 'jamendo') {
+          sourceToTry = 'jamendo';
+        }
+        
+        // Primeiro tentar a fonte determinada
+        newTracks = await MusicAPIManager.getPopular(sourceToTry);
+        
+        // Se falhar, tentar outras fontes
+        if (newTracks.length === 0 && sourceToTry !== 'jamendo') {
+          newTracks = await MusicAPIManager.getPopular('jamendo');
+        }
+        
+        // Se Jamendo falhar, tentar Demo
+        if (newTracks.length === 0) {
+          newTracks = await MusicAPIManager.getPopular('demo');
+        }
         
         if (newTracks.length > 0) {
           setAvailableTracks(newTracks);
@@ -242,9 +267,9 @@ const BoomwhackerHero: React.FC = () => {
         description: `Agora tocando: ${nextTrack.title}`,
       });
     } else {
-      // Último recurso: voltar para a música padrão
+      // Último recurso: voltar para a música padrão ANGELS_SONG
       console.log('🚨 Voltando para música padrão...');
-      setSelectedSong(DEFAULT_SONG);
+      setSelectedSong(ANGELS_SONG);
       
       toast({
         title: "🎵 Usando Música Padrão",
@@ -270,7 +295,7 @@ const BoomwhackerHero: React.FC = () => {
   const generateNotes = useCallback((time: number) => {
     if (!selectedSong || gameState !== 'playing') return;
 
-    // Use DEFAULT_SONG pattern if it's the default song, otherwise create a simple pattern
+    // Use ANGELS_SONG pattern if it's the default song, otherwise create a simple pattern
     const pattern = 'pattern' in selectedSong ? selectedSong.pattern : [
       { time: 1000, track: 0, duration: 500 },
       { time: 2000, track: 1, duration: 500 },
@@ -407,12 +432,12 @@ const BoomwhackerHero: React.FC = () => {
   // Efeitos
   useEffect(() => {
     initializeAudio();
-    setSelectedSong(DEFAULT_SONG);
+    setSelectedSong(ANGELS_SONG);
     
-    // Carregar músicas populares do Spotify como backup
-    MusicAPIManager.getPopular().then(tracks => {
+    // Carregar músicas populares como backup
+    MusicAPIManager.getPopular('demo').then(tracks => {
       setAvailableTracks(tracks);
-      console.log(`🎵 Músicas do Spotify carregadas: ${tracks.length}`);
+      console.log(`🎵 Músicas de backup carregadas: ${tracks.length}`);
     });
     
     console.log('🎵 Jogo inicializado com música padrão');
@@ -452,7 +477,7 @@ const BoomwhackerHero: React.FC = () => {
               className="bg-orange-500 hover:bg-orange-600"
             >
               <Music className="w-4 h-4 mr-2" />
-              Músicas do Spotify
+              Minhas Músicas
             </Button>
             <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-700">
               <Settings className="w-4 h-4 mr-2" />
@@ -464,15 +489,15 @@ const BoomwhackerHero: React.FC = () => {
         <div className="pt-20 px-4 max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">🎵 BOOMWHACKER HERO</h1>
-            <p className="text-xl text-purple-200">Escolha uma música do Spotify e toque as notas que caem!</p>
+            <p className="text-xl text-purple-200">Escolha uma música e toque as notas que caem!</p>
           </div>
 
           {showMusicAPI ? (
             <MusicAPI 
               onTrackSelect={(track) => {
                 setSelectedSong(track);
-                // Carregar mais músicas do Spotify para ter backups
-                MusicAPIManager.getPopular().then(tracks => {
+                // Carregar mais músicas da mesma fonte para ter backups
+                MusicAPIManager.getPopular(track.source).then(tracks => {
                   setAvailableTracks(tracks);
                 });
                 setShowMusicAPI(false);
@@ -504,24 +529,24 @@ const BoomwhackerHero: React.FC = () => {
                             {'bpm' in selectedSong && selectedSong.bpm && (
                               <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
                             )}
-                            <Badge variant="secondary">
-                              {selectedSong.source === 'spotify' ? 'Spotify' : 'Demo'}
-                            </Badge>
+                            {(selectedSong as MusicTrack).source && (
+                              <Badge variant="secondary">
+                                {(selectedSong as MusicTrack).source}
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         <Badge variant="default">Pronto para jogar!</Badge>
                       </div>
                       
-                      {selectedSong.source === 'spotify' && (
-                        <MusicPlayer
-                          track={selectedSong as MusicTrack}
-                          isPlaying={false}
-                          onPlayPause={() => {}}
-                          onTrackFailed={handleTrackFailed}
-                          volume={musicVolume}
-                          onVolumeChange={setMusicVolume}
-                        />
-                      )}
+                      <MusicPlayer
+                        track={selectedSong as MusicTrack}
+                        isPlaying={false}
+                        onPlayPause={() => {}}
+                        onTrackFailed={handleTrackFailed}
+                        volume={musicVolume}
+                        onVolumeChange={setMusicVolume}
+                      />
                     </div>
                   )}
                 </CardContent>
@@ -657,8 +682,8 @@ const BoomwhackerHero: React.FC = () => {
         </div>
       </div>
 
-      {/* Player de música durante o jogo */}
-      {selectedSong && selectedSong.source === 'spotify' && (gameState === 'playing' || gameState === 'paused') && (
+      {/* Player de música durante o jogo - melhorado */}
+      {selectedSong && (gameState === 'playing' || gameState === 'paused') && (
         <div className="fixed top-20 right-4 z-40 w-80">
           <MusicPlayer
             track={selectedSong as MusicTrack}
