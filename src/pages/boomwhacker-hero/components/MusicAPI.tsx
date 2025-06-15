@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Play, Heart, Clock, Music, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
+import { Search, Play, Heart, Clock, Music, ExternalLink, RefreshCw, AlertCircle, Volume2, VolumeX } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MusicAPIManager, MusicTrack } from '../utils/musicAPIs';
 
@@ -52,9 +53,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           variant: "destructive"
         });
       } else {
+        const withPreview = popularTracks.filter(t => t.has_preview).length;
         toast({
           title: "✅ Músicas carregadas!",
-          description: `${popularTracks.length} músicas encontradas no Spotify`,
+          description: `${popularTracks.length} músicas encontradas (${withPreview} com preview)`,
         });
       }
     } catch (error) {
@@ -115,9 +117,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           description: `Tente buscar por termos como "piano", "children", "instrumental" ou "happy"`,
         });
       } else {
+        const withPreview = results.filter(t => t.has_preview).length;
         toast({
           title: "✅ Busca concluída!",
-          description: `${results.length} músicas encontradas no Spotify`,
+          description: `${results.length} músicas encontradas (${withPreview} com preview)`,
         });
       }
     } catch (error) {
@@ -172,7 +175,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     if (!track.preview_url) {
       toast({
         title: "Preview não disponível",
-        description: "Esta música não possui preview de áudio.",
+        description: "Esta música não possui preview de áudio, mas pode ser selecionada para o jogo.",
         variant: "destructive"
       });
       return;
@@ -315,7 +318,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           </div>
 
           <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-            🎵 Todas as músicas são fornecidas pelo Spotify
+            🎵 Credenciais atualizadas do Spotify integradas com sucesso!
           </div>
         </CardContent>
       </Card>
@@ -371,6 +374,18 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                     {track.bpm && (
                       <Badge variant="outline" className="text-xs">
                         {track.bpm} BPM
+                      </Badge>
+                    )}
+
+                    {track.has_preview ? (
+                      <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                        <Volume2 className="w-3 h-3 mr-1" />
+                        Com Preview
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600">
+                        <VolumeX className="w-3 h-3 mr-1" />
+                        Sem Preview
                       </Badge>
                     )}
                   </div>
@@ -455,6 +470,17 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                   {selectedTrack.bpm && (
                     <Badge variant="outline">
                       {selectedTrack.bpm} BPM
+                    </Badge>
+                  )}
+                  {selectedTrack.has_preview ? (
+                    <Badge variant="default" className="bg-green-100 text-green-800">
+                      <Volume2 className="w-3 h-3 mr-1" />
+                      Com Preview
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-gray-100 text-gray-600">
+                      <VolumeX className="w-3 h-3 mr-1" />
+                      Sem Preview
                     </Badge>
                   )}
                 </div>

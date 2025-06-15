@@ -6,13 +6,14 @@ export interface MusicTrack {
   title: string;
   artist: string;
   duration: number;
-  preview_url?: string;
+  preview_url?: string | null;
   image?: string;
   popularity?: number;
   external_url?: string;
   source: 'spotify';
   bpm?: number;
   failed?: boolean;
+  has_preview?: boolean;
 }
 
 export class SpotifyAPI {
@@ -35,9 +36,8 @@ export class SpotifyAPI {
       const tracks = data?.tracks || [];
       console.log(`📊 Spotify retornou ${tracks.length} resultados`);
       
-      // Validar e filtrar tracks
+      // Validar tracks - agora aceitamos músicas sem preview
       const validTracks = tracks.filter(track => {
-        const hasPreview = track.preview_url && track.preview_url.trim() !== '';
         const hasBasicInfo = track.title && track.artist && track.id;
         
         if (!hasBasicInfo) {
@@ -45,9 +45,8 @@ export class SpotifyAPI {
           return false;
         }
         
-        if (!hasPreview) {
-          console.warn(`⚠️ Track sem preview: ${track.title} - ${track.artist}`);
-          return false;
+        if (!track.has_preview) {
+          console.log(`ℹ️ Track sem preview aceita: ${track.title} - ${track.artist}`);
         }
         
         return true;
@@ -80,11 +79,10 @@ export class SpotifyAPI {
       const tracks = data?.tracks || [];
       console.log(`📊 Spotify popular retornou ${tracks.length} resultados`);
       
-      // Validar tracks populares
+      // Validar tracks populares - aceitar todas com informações básicas
       const validTracks = tracks.filter(track => {
-        const hasPreview = track.preview_url && track.preview_url.trim() !== '';
         const hasBasicInfo = track.title && track.artist && track.id;
-        return hasBasicInfo && hasPreview;
+        return hasBasicInfo;
       });
       
       console.log(`✅ ${validTracks.length} músicas populares válidas`);
@@ -133,7 +131,11 @@ export class MusicAPIManager {
         !this.failedTracks.has(`${track.source}-${track.id}`)
       );
       
-      console.log(`✅ Total final: ${validResults.length} músicas encontradas no Spotify`);
+      // Separar músicas com e sem preview
+      const withPreview = validResults.filter(track => track.has_preview);
+      const withoutPreview = validResults.filter(track => !track.has_preview);
+      
+      console.log(`✅ Total: ${validResults.length} músicas (${withPreview.length} com preview, ${withoutPreview.length} sem preview)`);
       return validResults;
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
@@ -152,7 +154,11 @@ export class MusicAPIManager {
         !this.failedTracks.has(`${track.source}-${track.id}`)
       );
       
-      console.log(`✅ Total de músicas populares do Spotify: ${validResults.length}`);
+      // Separar músicas com e sem preview
+      const withPreview = validResults.filter(track => track.has_preview);
+      const withoutPreview = validResults.filter(track => !track.has_preview);
+      
+      console.log(`✅ Total de músicas populares: ${validResults.length} (${withPreview.length} com preview, ${withoutPreview.length} sem preview)`);
       return validResults;
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
@@ -194,6 +200,25 @@ export class MusicAPIManager {
     
     console.log('⚠️ Nenhuma música válida restante na lista');
     return null;
+  }
+
+  // Obter próxima música com preview disponível
+  static getNextTrackWithPreview(tracks: MusicTrack[], currentTrack: MusicTrack): MusicTrack | null {
+    const tracksWithPreview = tracks.filter(track => 
+      track.has_preview && 
+      !this.failedTracks.has(`${track.source}-${track.id}`)
+    );
+    
+    if (tracksWithPreview.length === 0) return null;
+    
+    const currentIndex = tracksWithPreview.findIndex(t => 
+      t.id === currentTrack.id && t.source === currentTrack.source
+    );
+    
+    if (currentIndex === -1) return tracksWithPreview[0];
+    
+    const nextIndex = (currentIndex + 1) % tracksWithPreview.length;
+    return tracksWithPreview[nextIndex];
   }
 
   static async getBPM(track: MusicTrack): Promise<number> {
