@@ -14,32 +14,12 @@ serve(async (req) => {
   try {
     const { action, query, trackId } = await req.json()
     
-    // Obter credenciais dos secrets
-    const clientId = Deno.env.get('SPOTIFY_CLIENT_ID')
-    const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET')
+    // Usar credenciais fornecidas pelo usuário
+    const clientId = Deno.env.get('SPOTIFY_CLIENT_ID') || '5d9cbefe'
+    const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET') || 'a062a2dba4d89577a089199a1b5c795a'
     
     console.log(`🎵 Spotify API - Ação: ${action}, Query: ${query}`)
-    console.log(`🔐 Client ID configurado: ${clientId ? 'Sim' : 'Não'}`)
-    console.log(`🔐 Client Secret configurado: ${clientSecret ? 'Sim' : 'Não'}`)
-    
-    // Verificar se as credenciais estão configuradas
-    if (!clientId || !clientSecret) {
-      console.error('❌ Credenciais do Spotify não configuradas')
-      return new Response(
-        JSON.stringify({ 
-          tracks: [],
-          error: 'Spotify credentials not configured',
-          fallback: true 
-        }),
-        { 
-          status: 200,
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json' 
-          } 
-        }
-      )
-    }
+    console.log(`🔐 Usando Client ID: ${clientId}`)
     
     // Obter token de acesso
     console.log('🔄 Obtendo token do Spotify...')
@@ -82,21 +62,24 @@ serve(async (req) => {
     if (action === 'search') {
       console.log(`🔍 Iniciando busca por: "${query}"`)
       
-      // Estratégias de busca simplificadas mas eficazes
+      // Estratégias de busca otimizadas
       const searchStrategies = [
         query,
         `${query} music`,
+        `${query} song`,
         'children songs',
         'piano music',
         'instrumental music',
         'classical music for children',
         'nursery rhymes',
         'kids music',
-        'educational songs'
+        'educational songs',
+        'música infantil',
+        'canções de ninar',
+        'música clássica'
       ]
 
       let allTracks = new Map()
-      const markets = ['US', 'BR', 'GB']
 
       for (const searchQuery of searchStrategies) {
         try {
@@ -106,7 +89,7 @@ serve(async (req) => {
             q: searchQuery,
             type: 'track',
             market: 'US',
-            limit: '20'
+            limit: '50'
           })
 
           const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
@@ -122,18 +105,19 @@ serve(async (req) => {
             
             if (searchData.tracks && searchData.tracks.items) {
               searchData.tracks.items.forEach(track => {
-                if (track.id && track.name && track.artists?.[0]?.name) {
+                if (track.id && track.name && track.artists?.[0]?.name && track.preview_url) {
                   const trackObj = {
                     id: track.id,
                     title: track.name,
                     artist: track.artists[0].name,
                     duration: Math.floor(track.duration_ms / 1000),
-                    preview_url: track.preview_url || null,
+                    preview_url: track.preview_url,
                     image: track.album?.images?.[0]?.url,
                     popularity: track.popularity || 0,
                     external_url: track.external_urls?.spotify,
                     source: 'spotify',
-                    has_preview: !!track.preview_url
+                    has_preview: true,
+                    spotify_success: true
                   }
                   
                   if (!allTracks.has(track.id)) {
@@ -149,39 +133,42 @@ serve(async (req) => {
           console.error(`❌ Erro na busca "${searchQuery}":`, error)
         }
 
-        // Parar se já temos músicas suficientes
-        if (allTracks.size >= 15) {
-          console.log(`🎯 Limite atingido: ${allTracks.size} músicas`)
+        // Parar se já temos músicas suficientes com preview
+        if (allTracks.size >= 20) {
+          console.log(`🎯 Limite atingido: ${allTracks.size} músicas com preview`)
           break
         }
       }
 
       const tracks = Array.from(allTracks.values())
-        .sort((a, b) => {
-          if (a.has_preview && !b.has_preview) return -1
-          if (!a.has_preview && b.has_preview) return 1
-          return b.popularity - a.popularity
-        })
-        .slice(0, 15)
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 20)
 
-      console.log(`✅ Total final: ${tracks.length} músicas encontradas`)
+      console.log(`✅ Total final: ${tracks.length} músicas do Spotify encontradas`)
+      console.log(`🎵 Todas com preview: ${tracks.filter(t => t.has_preview).length}`)
       
       tracks.slice(0, 3).forEach((track, index) => {
-        console.log(`🎵 ${index + 1}. ${track.title} - ${track.artist} (preview: ${track.has_preview ? 'Sim' : 'Não'})`)
+        console.log(`🎵 ${index + 1}. ${track.title} - ${track.artist} (✅ com preview)`)
       })
       
-      result = { tracks }
+      result = { 
+        tracks,
+        spotify_success: true,
+        total_found: tracks.length
+      }
 
     } else if (action === 'popular') {
       console.log('🔍 Buscando músicas populares')
 
       const popularQueries = [
-        'top hits',
-        'children music',
-        'piano instrumental',
-        'classical music',
-        'kids songs',
-        'nursery rhymes'
+        'top hits 2024',
+        'children music popular',
+        'piano instrumental hits',
+        'classical music popular',
+        'kids songs popular',
+        'nursery rhymes',
+        'música infantil popular',
+        'canções populares crianças'
       ]
 
       let allTracks = new Map()
@@ -194,7 +181,7 @@ serve(async (req) => {
             q: category,
             type: 'track',
             market: 'US',
-            limit: '20'
+            limit: '50'
           })
 
           const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
@@ -209,18 +196,19 @@ serve(async (req) => {
             
             if (searchData.tracks && searchData.tracks.items) {
               searchData.tracks.items.forEach(track => {
-                if (track.id && track.name && track.artists?.[0]?.name) {
+                if (track.id && track.name && track.artists?.[0]?.name && track.preview_url) {
                   const trackObj = {
                     id: track.id,
                     title: track.name,
                     artist: track.artists[0].name,
                     duration: Math.floor(track.duration_ms / 1000),
-                    preview_url: track.preview_url || null,
+                    preview_url: track.preview_url,
                     image: track.album?.images?.[0]?.url,
                     popularity: track.popularity || 0,
                     external_url: track.external_urls?.spotify,
                     source: 'spotify',
-                    has_preview: !!track.preview_url
+                    has_preview: true,
+                    spotify_success: true
                   }
                   
                   if (!allTracks.has(track.id)) {
@@ -236,27 +224,28 @@ serve(async (req) => {
           console.error(`❌ Erro na categoria "${category}":`, error)
         }
 
-        if (allTracks.size >= 20) {
+        if (allTracks.size >= 30) {
           console.log(`🎯 Limite popular atingido: ${allTracks.size} músicas`)
           break
         }
       }
 
       const tracks = Array.from(allTracks.values())
-        .sort((a, b) => {
-          if (a.has_preview && !b.has_preview) return -1
-          if (!a.has_preview && b.has_preview) return 1
-          return b.popularity - a.popularity
-        })
-        .slice(0, 20)
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 30)
 
       console.log(`✅ Total de músicas populares: ${tracks.length}`)
+      console.log(`🎵 Todas com preview: ${tracks.filter(t => t.has_preview).length}`)
       
       tracks.slice(0, 3).forEach((track, index) => {
-        console.log(`🏆 ${index + 1}. ${track.title} - ${track.artist} (preview: ${track.has_preview ? 'Sim' : 'Não'})`)
+        console.log(`🏆 ${index + 1}. ${track.title} - ${track.artist} (✅ com preview)`)
       })
       
-      result = { tracks }
+      result = { 
+        tracks,
+        spotify_success: true,
+        total_found: tracks.length
+      }
 
     } else if (action === 'audio-features' && trackId) {
       try {

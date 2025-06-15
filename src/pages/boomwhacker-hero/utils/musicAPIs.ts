@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface MusicTrack {
@@ -14,9 +13,10 @@ export interface MusicTrack {
   bpm?: number;
   failed?: boolean;
   has_preview?: boolean;
+  spotify_success?: boolean;
 }
 
-// Músicas de fallback locais para quando o Spotify não estiver disponível
+// Músicas de fallback apenas se Spotify falhar completamente
 const FALLBACK_TRACKS: MusicTrack[] = [
   {
     id: 'fallback-1',
@@ -37,36 +37,6 @@ const FALLBACK_TRACKS: MusicTrack[] = [
     bpm: 140,
     has_preview: false,
     popularity: 95
-  },
-  {
-    id: 'fallback-3',
-    title: 'Mary Had a Little Lamb',
-    artist: 'Children\'s Song',
-    duration: 100,
-    source: 'local',
-    bpm: 120,
-    has_preview: false,
-    popularity: 90
-  },
-  {
-    id: 'fallback-4',
-    title: 'Ciranda, Cirandinha',
-    artist: 'Folclore Brasileiro',
-    duration: 110,
-    source: 'local',
-    bpm: 125,
-    has_preview: false,
-    popularity: 85
-  },
-  {
-    id: 'fallback-5',
-    title: 'Old MacDonald Had a Farm',
-    artist: 'Children\'s Song',
-    duration: 130,
-    source: 'local',
-    bpm: 130,
-    has_preview: false,
-    popularity: 80
   }
 ];
 
@@ -87,26 +57,14 @@ export class SpotifyAPI {
         return [];
       }
 
-      // Verificar se houve erro ou fallback necessário
-      if (data?.error || data?.fallback) {
-        console.warn(`⚠️ Spotify API retornou erro: ${data?.error || 'Fallback necessário'}`);
-        return [];
+      // Verificar se foi bem-sucedido
+      if (data?.spotify_success && data?.tracks?.length > 0) {
+        console.log(`✅ Spotify conectado! ${data.tracks.length} músicas com preview encontradas`);
+        return data.tracks;
       }
 
-      const tracks = data?.tracks || [];
-      console.log(`📊 Spotify retornou ${tracks.length} resultados`);
-      
-      const validTracks = tracks.filter(track => {
-        const hasBasicInfo = track.title && track.artist && track.id;
-        if (!hasBasicInfo) {
-          console.warn(`⚠️ Track inválida: faltam informações básicas`, track);
-          return false;
-        }
-        return true;
-      });
-      
-      console.log(`✅ ${validTracks.length} músicas válidas encontradas`);
-      return validTracks;
+      console.warn(`⚠️ Spotify não retornou resultados válidos`);
+      return [];
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
@@ -128,22 +86,14 @@ export class SpotifyAPI {
         return [];
       }
 
-      // Verificar se houve erro ou fallback necessário
-      if (data?.error || data?.fallback) {
-        console.warn(`⚠️ Spotify API popular retornou erro: ${data?.error || 'Fallback necessário'}`);
-        return [];
+      // Verificar se foi bem-sucedido
+      if (data?.spotify_success && data?.tracks?.length > 0) {
+        console.log(`✅ Spotify conectado! ${data.tracks.length} músicas populares com preview`);
+        return data.tracks;
       }
 
-      const tracks = data?.tracks || [];
-      console.log(`📊 Spotify popular retornou ${tracks.length} resultados`);
-      
-      const validTracks = tracks.filter(track => {
-        const hasBasicInfo = track.title && track.artist && track.id;
-        return hasBasicInfo;
-      });
-      
-      console.log(`✅ ${validTracks.length} músicas populares válidas`);
-      return validTracks;
+      console.warn(`⚠️ Spotify não retornou músicas populares válidas`);
+      return [];
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
       return [];
@@ -179,25 +129,18 @@ export class MusicAPIManager {
     console.log(`🎵 Iniciando busca: "${query}"`);
     
     try {
-      // Tentar buscar no Spotify primeiro
+      // Buscar no Spotify primeiro (agora otimizado)
       const spotifyResults = await SpotifyAPI.search(query);
       
       if (spotifyResults.length > 0) {
-        const validResults = spotifyResults.filter(track => 
-          !this.failedTracks.has(`${track.source}-${track.id}`)
-        );
-        
-        const withPreview = validResults.filter(track => track.has_preview);
-        const withoutPreview = validResults.filter(track => !track.has_preview);
-        
-        console.log(`✅ Spotify: ${validResults.length} músicas (${withPreview.length} com preview, ${withoutPreview.length} sem preview)`);
-        return validResults;
+        console.log(`✅ Spotify: ${spotifyResults.length} músicas encontradas, todas com preview!`);
+        return spotifyResults;
       }
       
-      // Se Spotify falhou, usar músicas de fallback filtradas por query
+      // Só usar fallback se Spotify falhar completamente
       console.log('🔄 Spotify indisponível, usando músicas de fallback');
       const fallbackResults = this.getFallbackTracks(query);
-      console.log(`✅ Fallback: ${fallbackResults.length} músicas encontradas`);
+      console.log(`⚠️ Fallback: ${fallbackResults.length} músicas locais`);
       return fallbackResults;
       
     } catch (error) {
@@ -210,24 +153,17 @@ export class MusicAPIManager {
     console.log('🎵 Buscando músicas populares');
     
     try {
-      // Tentar buscar no Spotify primeiro
+      // Buscar no Spotify primeiro (agora otimizado)
       const spotifyResults = await SpotifyAPI.getPopular();
       
       if (spotifyResults.length > 0) {
-        const validResults = spotifyResults.filter(track => 
-          !this.failedTracks.has(`${track.source}-${track.id}`)
-        );
-        
-        const withPreview = validResults.filter(track => track.has_preview);
-        const withoutPreview = validResults.filter(track => !track.has_preview);
-        
-        console.log(`✅ Spotify popular: ${validResults.length} músicas (${withPreview.length} com preview, ${withoutPreview.length} sem preview)`);
-        return validResults;
+        console.log(`✅ Spotify: ${spotifyResults.length} músicas populares, todas com preview!`);
+        return spotifyResults;
       }
       
-      // Se Spotify falhou, usar todas as músicas de fallback
+      // Só usar fallback se Spotify falhar completamente
       console.log('🔄 Spotify indisponível, usando músicas de fallback populares');
-      console.log(`✅ Fallback popular: ${FALLBACK_TRACKS.length} músicas`);
+      console.log(`⚠️ Fallback: ${FALLBACK_TRACKS.length} músicas locais`);
       return FALLBACK_TRACKS;
       
     } catch (error) {
@@ -236,7 +172,6 @@ export class MusicAPIManager {
     }
   }
 
-  // Filtrar músicas de fallback baseado na query
   private static getFallbackTracks(query: string): MusicTrack[] {
     const searchTerm = query.toLowerCase();
     
@@ -305,26 +240,15 @@ export class MusicAPIManager {
       return track.bpm;
     }
 
-    // Se for música local, usar BPM padrão
     if (track.source === 'local') {
       return track.bpm || 120;
     }
 
-    // Para músicas do Spotify, tentar obter features
     const features = await SpotifyAPI.getAudioFeatures(track.id);
     if (features?.bpm) {
       return features.bpm;
     }
 
-    // BPM padrão baseado no tipo de música
-    const title = track.title.toLowerCase();
-    if (title.includes('twinkle') || title.includes('brilha')) return 120;
-    if (title.includes('happy') || title.includes('parabéns')) return 140;
-    if (title.includes('mary')) return 120;
-    if (title.includes('old') || title.includes('macdonald')) return 130;
-    if (title.includes('row')) return 110;
-    if (title.includes('ciranda')) return 125;
-    
     return 120;
   }
 }
