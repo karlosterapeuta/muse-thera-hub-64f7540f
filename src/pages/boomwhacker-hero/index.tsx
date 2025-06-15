@@ -181,16 +181,35 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [gameState]);
 
-  // Função quando música termina
+  // Função quando música termina - melhorada
   const handleTrackEnd = useCallback(() => {
     console.log('🏆 Música terminou - finalizando jogo');
     setGameState('ended');
     setIsMusicPlaying(false);
+    
+    // Parar animação do jogo
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    
     toast({
       title: "🏆 Jogo Finalizado!",
-      description: `Pontuação final: ${gameStats.score}`,
+      description: `Pontuação final: ${gameStats.score.toLocaleString()}`,
     });
   }, [gameStats.score, toast]);
+
+  // Função para controlar play/pause do player
+  const handleMusicPlayPause = useCallback((playing: boolean) => {
+    console.log(`🎵 Player: ${playing ? 'Play' : 'Pause'}`);
+    setIsMusicPlaying(playing);
+    
+    // Se estamos no jogo, sincronizar o estado do jogo
+    if (gameState === 'playing' && !playing) {
+      setGameState('paused');
+    } else if (gameState === 'paused' && playing) {
+      setGameState('playing');
+    }
+  }, [gameState]);
 
   // Gerar notas baseadas no padrão da música
   const generateNotes = useCallback((time: number) => {
@@ -391,6 +410,10 @@ const BoomwhackerHero: React.FC = () => {
               onTrackSelect={(track) => {
                 setSelectedSong(track);
                 setShowMusicAPI(false);
+                toast({
+                  title: "🎵 Música Selecionada!",
+                  description: `${track.title} - ${track.artist}`,
+                });
               }}
               selectedTrack={selectedSong as MusicTrack}
             />
@@ -415,21 +438,24 @@ const BoomwhackerHero: React.FC = () => {
                             {'bpm' in selectedSong && selectedSong.bpm && (
                               <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
                             )}
+                            {(selectedSong as MusicTrack).source && (
+                              <Badge variant="secondary">
+                                {(selectedSong as MusicTrack).source}
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         <Badge variant="default">Pronto para jogar!</Badge>
                       </div>
                       
-                      {/* Preview da música */}
-                      {'preview_url' in selectedSong && selectedSong.preview_url && (
-                        <MusicPlayer
-                          track={selectedSong as MusicTrack}
-                          isPlaying={false}
-                          onPlayPause={() => {}}
-                          volume={musicVolume}
-                          onVolumeChange={setMusicVolume}
-                        />
-                      )}
+                      {/* Preview da música - melhorado */}
+                      <MusicPlayer
+                        track={selectedSong as MusicTrack}
+                        isPlaying={false}
+                        onPlayPause={() => {}}
+                        volume={musicVolume}
+                        onVolumeChange={setMusicVolume}
+                      />
                     </div>
                   )}
                 </CardContent>
@@ -565,13 +591,13 @@ const BoomwhackerHero: React.FC = () => {
         </div>
       </div>
 
-      {/* Player de música durante o jogo */}
+      {/* Player de música durante o jogo - melhorado */}
       {selectedSong && (gameState === 'playing' || gameState === 'paused') && (
         <div className="fixed top-20 right-4 z-40 w-80">
           <MusicPlayer
             track={selectedSong as MusicTrack}
             isPlaying={isMusicPlaying}
-            onPlayPause={setIsMusicPlaying}
+            onPlayPause={handleMusicPlayPause}
             onTrackEnd={handleTrackEnd}
             volume={musicVolume}
             onVolumeChange={setMusicVolume}

@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { AudioSynthesis } from './audioSynthesis';
 
 export interface MusicTrack {
   id: string;
@@ -9,9 +10,19 @@ export interface MusicTrack {
   image?: string;
   popularity?: number;
   external_url?: string;
-  source: 'spotify' | 'jamendo' | 'demo';
+  source: 'spotify' | 'jamendo' | 'demo' | 'synthesized';
   bpm?: number;
 }
+
+// Instância global para síntese de áudio
+let audioSynthesis: AudioSynthesis | null = null;
+
+const getAudioSynthesis = () => {
+  if (!audioSynthesis) {
+    audioSynthesis = new AudioSynthesis();
+  }
+  return audioSynthesis;
+};
 
 // Configurações das APIs
 export const API_CONFIG = {
@@ -46,8 +57,9 @@ export class SpotifyAPI {
         return [];
       }
 
-      console.log(`✅ Spotify retornou ${data.tracks?.length || 0} resultados`);
-      return data.tracks || [];
+      const tracks = data.tracks || [];
+      console.log(`✅ Spotify retornou ${tracks.length} resultados`);
+      return tracks;
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
@@ -69,8 +81,9 @@ export class SpotifyAPI {
         return [];
       }
 
-      console.log(`✅ Spotify popular retornou ${data.tracks?.length || 0} resultados`);
-      return data.tracks || [];
+      const tracks = data.tracks || [];
+      console.log(`✅ Spotify popular retornou ${tracks.length} resultados`);
+      return tracks;
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
       return [];
@@ -104,13 +117,14 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
+      // Busca mais ampla sem filtros restritivos
       const searchParams = new URLSearchParams({
         client_id: API_KEY,
         format: 'json',
         namesearch: query,
-        limit: '20',
-        tags: 'children,kids,instrumental,happy,family',
-        audioformat: 'mp31'
+        limit: '30',
+        audioformat: 'mp31',
+        order: 'popularity_total'
       });
 
       console.log(`🔍 Buscando no Jamendo: ${query}`);
@@ -123,9 +137,11 @@ export class JamendoAPI {
       }
 
       const data = await response.json();
-      console.log(`✅ Jamendo retornou ${data.results?.length || 0} resultados`);
+      const results = data.results || [];
       
-      return (data.results || []).map((item: any) => ({
+      console.log(`✅ Jamendo retornou ${results.length} resultados`);
+      
+      return results.map((item: any) => ({
         id: item.id.toString(),
         title: item.name,
         artist: item.artist_name,
@@ -147,11 +163,11 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
+      // Busca por músicas populares sem filtros muito específicos
       const searchParams = new URLSearchParams({
         client_id: API_KEY,
         format: 'json',
-        limit: '20',
-        tags: 'children,kids,instrumental,happy,family',
+        limit: '30',
         audioformat: 'mp31',
         order: 'popularity_total'
       });
@@ -166,9 +182,11 @@ export class JamendoAPI {
       }
 
       const data = await response.json();
-      console.log(`✅ Jamendo popular retornou ${data.results?.length || 0} resultados`);
+      const results = data.results || [];
       
-      return (data.results || []).map((item: any) => ({
+      console.log(`✅ Jamendo popular retornou ${results.length} resultados`);
+      
+      return results.map((item: any) => ({
         id: item.id.toString(),
         title: item.name,
         artist: item.artist_name,
@@ -188,14 +206,15 @@ export class JamendoAPI {
 }
 
 export class DemoAPI {
-  static getPopularTracks(): MusicTrack[] {
-    return [
+  static async getPopularTracks(): Promise<MusicTrack[]> {
+    const synthesis = getAudioSynthesis();
+    
+    const tracks: MusicTrack[] = [
       {
         id: 'demo-1',
         title: 'Twinkle Twinkle Little Star',
         artist: 'Tradicional',
         duration: 30,
-        preview_url: '/assets/music/children-song-1.mp3',
         popularity: 95,
         source: 'demo',
         bpm: 120
@@ -264,10 +283,24 @@ export class DemoAPI {
         bpm: 125
       }
     ];
+
+    // Gerar áudio sintético para cada música demo
+    for (const track of tracks) {
+      try {
+        const audioUrl = await synthesis.generateSimpleMelody(track.title);
+        track.preview_url = audioUrl;
+        track.source = 'synthesized';
+        console.log(`🎵 Áudio gerado para: ${track.title}`);
+      } catch (error) {
+        console.error(`❌ Erro ao gerar áudio para ${track.title}:`, error);
+      }
+    }
+
+    return tracks;
   }
 
-  static search(query: string): MusicTrack[] {
-    const tracks = this.getPopularTracks();
+  static async search(query: string): Promise<MusicTrack[]> {
+    const tracks = await this.getPopularTracks();
     
     if (!query.trim()) {
       return tracks;
@@ -281,64 +314,100 @@ export class DemoAPI {
   }
 }
 
-// Classe principal para gerenciar todas as APIs
+// Classe principal para gerenciar todas as APIs com fallback robusto
 export class MusicAPIManager {
   static async search(query: string, source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
     console.log(`🎵 Iniciando busca: "${query}" na fonte: ${source}`);
     
-    switch (source) {
-      case 'spotify':
-        const spotifyResults = await SpotifyAPI.search(query);
-        // Se Spotify falhar, tentar demo como fallback
-        if (spotifyResults.length === 0) {
-          console.log('⚠️ Spotify sem resultados, usando demo como fallback');
-          return DemoAPI.search(query);
-        }
-        return spotifyResults;
-        
-      case 'jamendo':
-        const jamendoResults = await JamendoAPI.search(query);
-        // Se Jamendo falhar, tentar demo como fallback
-        if (jamendoResults.length === 0) {
-          console.log('⚠️ Jamendo sem resultados, usando demo como fallback');
-          return DemoAPI.search(query);
-        }
-        return jamendoResults;
-        
-      case 'demo':
-        return DemoAPI.search(query);
-        
-      default:
-        return DemoAPI.search(query);
+    // Sempre tentar todas as fontes em cascata
+    let results: MusicTrack[] = [];
+    
+    // 1. Tentar fonte especificada primeiro
+    if (source === 'spotify') {
+      results = await SpotifyAPI.search(query);
+    } else if (source === 'jamendo') {
+      results = await JamendoAPI.search(query);
+    } else if (source === 'demo') {
+      results = await DemoAPI.search(query);
     }
+    
+    // 2. Se não encontrou resultados suficientes, tentar outras fontes
+    if (results.length < 5) {
+      console.log(`⚠️ Poucos resultados em ${source}, tentando fallbacks...`);
+      
+      if (source !== 'spotify') {
+        const spotifyResults = await SpotifyAPI.search(query);
+        results.push(...spotifyResults);
+      }
+      
+      if (source !== 'jamendo' && results.length < 10) {
+        const jamendoResults = await JamendoAPI.search(query);
+        results.push(...jamendoResults);
+      }
+      
+      if (source !== 'demo' && results.length < 15) {
+        const demoResults = await DemoAPI.search(query);
+        results.push(...demoResults);
+      }
+    }
+    
+    // 3. Remover duplicatas e limitar resultados
+    const uniqueResults = results.filter((track, index, self) => 
+      index === self.findIndex(t => t.id === track.id && t.source === track.source)
+    ).slice(0, 20);
+    
+    console.log(`✅ Total final: ${uniqueResults.length} músicas encontradas`);
+    return uniqueResults;
   }
 
   static async getPopular(source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
     console.log(`🎵 Buscando músicas populares da fonte: ${source}`);
     
-    switch (source) {
-      case 'spotify':
-        const spotifyPopular = await SpotifyAPI.getPopular();
-        if (spotifyPopular.length === 0) {
-          console.log('⚠️ Spotify não disponível, usando demo');
-          return DemoAPI.getPopularTracks();
-        }
-        return spotifyPopular;
-        
-      case 'jamendo':
-        const jamendoPopular = await JamendoAPI.search('children happy');
-        if (jamendoPopular.length === 0) {
-          console.log('⚠️ Jamendo não disponível, usando demo');
-          return DemoAPI.getPopularTracks();
-        }
-        return jamendoPopular;
-        
-      case 'demo':
-        return DemoAPI.getPopularTracks();
-        
-      default:
-        return DemoAPI.getPopularTracks();
+    let results: MusicTrack[] = [];
+    
+    // Tentar fonte primária
+    if (source === 'spotify') {
+      results = await SpotifyAPI.getPopular();
+    } else if (source === 'jamendo') {
+      results = await JamendoAPI.getPopular();
+    } else if (source === 'demo') {
+      results = await DemoAPI.getPopularTracks();
     }
+    
+    // Fallback para outras fontes se necessário
+    if (results.length < 5) {
+      console.log(`⚠️ Poucos resultados populares em ${source}, usando fallbacks...`);
+      
+      const fallbackSources = ['spotify', 'jamendo', 'demo'].filter(s => s !== source);
+      
+      for (const fallbackSource of fallbackSources) {
+        if (results.length >= 15) break;
+        
+        try {
+          let fallbackResults: MusicTrack[] = [];
+          
+          if (fallbackSource === 'spotify') {
+            fallbackResults = await SpotifyAPI.getPopular();
+          } else if (fallbackSource === 'jamendo') {
+            fallbackResults = await JamendoAPI.getPopular();
+          } else if (fallbackSource === 'demo') {
+            fallbackResults = await DemoAPI.getPopularTracks();
+          }
+          
+          results.push(...fallbackResults);
+        } catch (error) {
+          console.error(`❌ Erro no fallback ${fallbackSource}:`, error);
+        }
+      }
+    }
+    
+    // Remover duplicatas e retornar
+    const uniqueResults = results.filter((track, index, self) => 
+      index === self.findIndex(t => t.id === track.id && t.source === track.source)
+    ).slice(0, 20);
+    
+    console.log(`✅ Total de músicas populares: ${uniqueResults.length}`);
+    return uniqueResults;
   }
 
   static async getBPM(track: MusicTrack): Promise<number> {

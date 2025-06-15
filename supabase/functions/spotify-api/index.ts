@@ -14,9 +14,11 @@ serve(async (req) => {
   try {
     const { action, query, trackId } = await req.json()
     
-    // Usar as credenciais do Supabase Secrets
+    // Credenciais do Spotify
     const clientId = '456e8998507c4ce69392ec1afd8a7fb6'
     const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET') || '00194c96f7574e5393f2f3f931bfb29f'
+    
+    console.log(`🎵 Spotify API - Ação: ${action}, Query: ${query}`)
     
     // Obter token de acesso
     const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
@@ -29,6 +31,7 @@ serve(async (req) => {
     })
 
     if (!tokenResponse.ok) {
+      console.error(`❌ Falha ao obter token do Spotify: ${tokenResponse.status}`)
       throw new Error(`Failed to get Spotify token: ${tokenResponse.status}`)
     }
 
@@ -38,29 +41,49 @@ serve(async (req) => {
     let result = {}
 
     if (action === 'search') {
-      // Buscar músicas
-      const searchQuery = `${query} genre:children OR ${query} kids OR ${query} infantil`
-      const searchParams = new URLSearchParams({
-        q: searchQuery,
-        type: 'track',
-        market: 'BR',
-        limit: '20'
-      })
+      // Buscar músicas com termos mais amplos
+      const searchTerms = [
+        `${query}`,
+        `${query} children`,
+        `${query} kids`,
+        `instrumental ${query}`,
+        `piano ${query}`
+      ]
 
-      const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
+      let allTracks = []
+
+      for (const searchTerm of searchTerms) {
+        const searchParams = new URLSearchParams({
+          q: searchTerm,
+          type: 'track',
+          market: 'BR',
+          limit: '10'
+        })
+
+        const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json()
+          const tracks = searchData.tracks.items.filter(item => item.preview_url)
+          allTracks.push(...tracks)
+          
+          if (allTracks.length >= 15) break
         }
-      })
-
-      if (!searchResponse.ok) {
-        throw new Error(`Spotify search failed: ${searchResponse.status}`)
       }
 
-      const searchData = await searchResponse.json()
-      
+      // Remover duplicatas
+      const uniqueTracks = allTracks.filter((track, index, self) => 
+        index === self.findIndex(t => t.id === track.id)
+      ).slice(0, 15)
+
+      console.log(`✅ Spotify encontrou ${uniqueTracks.length} músicas com preview`)
+
       result = {
-        tracks: searchData.tracks.items.map((item: any) => ({
+        tracks: uniqueTracks.map((item: any) => ({
           id: item.id,
           title: item.name,
           artist: item.artists[0]?.name || 'Artista Desconhecido',
@@ -74,28 +97,47 @@ serve(async (req) => {
         }))
       }
     } else if (action === 'popular') {
-      // Buscar músicas populares infantis
-      const searchParams = new URLSearchParams({
-        q: 'children songs popular infantil',
-        type: 'track',
-        market: 'BR',
-        limit: '20'
-      })
+      // Buscar músicas populares com vários termos
+      const popularQueries = [
+        'children songs popular',
+        'kids music instrumental',
+        'piano children',
+        'classical kids',
+        'nursery rhymes'
+      ]
 
-      const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
+      let allTracks = []
+
+      for (const popularQuery of popularQueries) {
+        const searchParams = new URLSearchParams({
+          q: popularQuery,
+          type: 'track',
+          market: 'BR',
+          limit: '10'
+        })
+
+        const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json()
+          const tracks = searchData.tracks.items.filter(item => item.preview_url)
+          allTracks.push(...tracks)
         }
-      })
-
-      if (!searchResponse.ok) {
-        throw new Error(`Spotify popular search failed: ${searchResponse.status}`)
       }
 
-      const searchData = await searchResponse.json()
+      // Remover duplicatas e ordenar por popularidade
+      const uniqueTracks = allTracks.filter((track, index, self) => 
+        index === self.findIndex(t => t.id === track.id)
+      ).sort((a, b) => b.popularity - a.popularity).slice(0, 20)
+
+      console.log(`✅ Spotify popular encontrou ${uniqueTracks.length} músicas`)
       
       result = {
-        tracks: searchData.tracks.items.map((item: any) => ({
+        tracks: uniqueTracks.map((item: any) => ({
           id: item.id,
           title: item.name,
           artist: item.artists[0]?.name || 'Artista Desconhecido',
@@ -135,9 +177,9 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error in Spotify API function:', error)
+    console.error('❌ Erro na função Spotify API:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, tracks: [] }),
       { 
         status: 500,
         headers: { 
