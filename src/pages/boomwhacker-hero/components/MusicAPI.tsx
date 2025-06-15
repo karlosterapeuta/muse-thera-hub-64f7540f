@@ -27,7 +27,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedSource, setSelectedSource: any] = useState<'spotify' | 'jamendo' | 'demo' | 'youtube'>('demo');
+  const [selectedSource, setSelectedSource] = useState<'spotify' | 'jamendo' | 'demo' | 'youtube'>('demo');
 
   // Carregar músicas populares ao inicializar, sempre começando com demo
   useEffect(() => {
