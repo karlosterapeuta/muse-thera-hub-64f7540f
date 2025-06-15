@@ -1,3 +1,4 @@
+
 // Definição do tipo para representar uma faixa de música
 export interface MusicTrack {
   id: string;
@@ -211,8 +212,8 @@ export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
 
   const tracks: MusicTrack[] = [];
 
-  // Processar as primeiras 10 músicas com áudio sintético para performance
-  for (let index = 0; index < Math.min(brazilianSongs.length, 10); index++) {
+  // Processar as primeiras 15 músicas com áudio sintético para performance
+  for (let index = 0; index < Math.min(brazilianSongs.length, 15); index++) {
     const song = brazilianSongs[index];
     const duration = Math.floor(Math.random() * 120) + 120; // 2-4 minutos
     
@@ -222,7 +223,8 @@ export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
       // Gerar áudio sintético para músicas conhecidas
       if (song.title.includes('Ciranda') || song.title.includes('Brilha') || 
           song.title.includes('Águas') || song.title.includes('Garota') ||
-          song.title.includes('Asa Branca')) {
+          song.title.includes('Asa Branca') || song.title.includes('Aquele Abraço') ||
+          song.title.includes('Alegria Alegria') || song.title.includes('Como Nossos Pais')) {
         preview_url = await globalAudioSynthesis.generateBrazilianMelody(song.title, 30);
         console.log(`🎵 Áudio gerado para: ${song.title}`);
       }
@@ -245,7 +247,7 @@ export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
   }
 
   // Adicionar o restante sem áudio sintético para não sobrecarregar
-  for (let index = 10; index < brazilianSongs.length; index++) {
+  for (let index = 15; index < brazilianSongs.length; index++) {
     const song = brazilianSongs[index];
     const duration = Math.floor(Math.random() * 120) + 120;
     
@@ -345,7 +347,8 @@ class JamendoAPI {
 class YouTubeMusicAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     // Simulação de resultados do YouTube
-    const demoResults = generateBrazilianDemoTracks().filter(track =>
+    const demoTracks = await generateBrazilianDemoTracks();
+    const demoResults = demoTracks.filter(track =>
       track.title.toLowerCase().includes(query.toLowerCase()) ||
       track.artist.toLowerCase().includes(query.toLowerCase())
     ).map(track => ({
@@ -361,7 +364,8 @@ class YouTubeMusicAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     // Simulação de músicas populares do YouTube
-    const popularTracks = generateBrazilianDemoTracks().slice(0, 5).map(track => ({
+    const demoTracks = await generateBrazilianDemoTracks();
+    const popularTracks = demoTracks.slice(0, 5).map(track => ({
       ...track,
       id: `youtube-${track.id}`,
       source: 'youtube' as const,
