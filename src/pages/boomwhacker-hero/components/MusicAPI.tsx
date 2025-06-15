@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Play, Heart, Clock, Music, ExternalLink, RefreshCw } from 'lucide-react';
+import { Search, Play, Heart, Clock, Music, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MusicAPIManager, MusicTrack } from '../utils/musicAPIs';
 
@@ -21,10 +20,13 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [lastSearchTerm, setLastSearchTerm] = useState('');
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
-  // Carregar músicas populares iniciais com retry
+  // Carregar músicas populares iniciais com retry e debug melhorado
   const loadPopularTracks = async (isRetry = false) => {
     setLoading(true);
+    setDebugInfo('Conectando com Spotify...');
+    
     try {
       console.log('🔍 Carregando músicas populares do Spotify');
       const popularTracks = await MusicAPIManager.getPopular();
@@ -32,18 +34,21 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       
       setTracks(popularTracks);
       setRetryCount(0);
+      setDebugInfo('');
       
       if (popularTracks.length === 0) {
-        if (!isRetry && retryCount < 2) {
+        if (!isRetry && retryCount < 3) {
           console.log('🔄 Tentando novamente carregar músicas populares...');
           setRetryCount(prev => prev + 1);
-          setTimeout(() => loadPopularTracks(true), 2000);
+          setDebugInfo(`Tentativa ${retryCount + 1}/3 - Recarregando...`);
+          setTimeout(() => loadPopularTracks(true), 3000);
           return;
         }
         
+        setDebugInfo('Não foi possível carregar músicas do Spotify');
         toast({
-          title: "Sem músicas encontradas",
-          description: "Não foi possível carregar músicas do Spotify. Tente buscar manualmente.",
+          title: "🚨 Problema com Spotify",
+          description: "Não foi possível carregar músicas. Verifique sua conexão ou tente buscar manualmente.",
           variant: "destructive"
         });
       } else {
@@ -55,16 +60,18 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     } catch (error) {
       console.error('❌ Erro ao carregar músicas populares:', error);
       
-      if (!isRetry && retryCount < 2) {
+      if (!isRetry && retryCount < 3) {
         console.log('🔄 Tentando novamente após erro...');
         setRetryCount(prev => prev + 1);
-        setTimeout(() => loadPopularTracks(true), 2000);
+        setDebugInfo(`Erro - Tentativa ${retryCount + 1}/3...`);
+        setTimeout(() => loadPopularTracks(true), 3000);
         return;
       }
       
+      setDebugInfo('Erro de conexão com Spotify');
       toast({
-        title: "Erro ao carregar músicas",
-        description: "Não foi possível conectar com o Spotify. Verifique sua conexão.",
+        title: "❌ Erro de conexão",
+        description: "Não foi possível conectar com o Spotify. Tente novamente em alguns minutos.",
         variant: "destructive"
       });
     } finally {
@@ -72,7 +79,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
-  // Função principal de busca com retry
+  // Função principal de busca com retry e debug melhorado
   const searchTracks = async (query: string, isRetry = false) => {
     if (!query.trim()) {
       setLastSearchTerm('');
@@ -82,6 +89,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     
     setLoading(true);
     setLastSearchTerm(query);
+    setDebugInfo(`Buscando "${query}" no Spotify...`);
     
     try {
       console.log(`🔍 Buscando por: "${query}" no Spotify`);
@@ -90,18 +98,21 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       
       setTracks(results);
       setRetryCount(0);
+      setDebugInfo('');
       
       if (results.length === 0) {
-        if (!isRetry && retryCount < 2) {
+        if (!isRetry && retryCount < 3) {
           console.log('🔄 Tentando busca novamente...');
           setRetryCount(prev => prev + 1);
+          setDebugInfo(`Busca - Tentativa ${retryCount + 1}/3...`);
           setTimeout(() => searchTracks(query, true), 2000);
           return;
         }
         
+        setDebugInfo(`Nenhum resultado para "${query}"`);
         toast({
-          title: "Nenhuma música encontrada",
-          description: `Tente buscar por termos como "infantil", "piano", "classical" ou "kids music"`,
+          title: "🔍 Nenhuma música encontrada",
+          description: `Tente buscar por termos como "piano", "children", "instrumental" ou "happy"`,
         });
       } else {
         toast({
@@ -112,15 +123,17 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     } catch (error) {
       console.error('❌ Erro ao buscar músicas:', error);
       
-      if (!isRetry && retryCount < 2) {
+      if (!isRetry && retryCount < 3) {
         console.log('🔄 Tentando busca novamente após erro...');
         setRetryCount(prev => prev + 1);
+        setDebugInfo(`Erro - Tentativa ${retryCount + 1}/3...`);
         setTimeout(() => searchTracks(query, true), 2000);
         return;
       }
       
+      setDebugInfo('Erro na busca do Spotify');
       toast({
-        title: "Erro na busca",
+        title: "❌ Erro na busca",
         description: "Não foi possível buscar músicas no Spotify. Tente novamente.",
         variant: "destructive"
       });
@@ -132,6 +145,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   // Função para forçar retry manual
   const handleRetry = () => {
     setRetryCount(0);
+    setDebugInfo('');
     if (lastSearchTerm) {
       searchTracks(lastSearchTerm);
     } else {
@@ -243,6 +257,11 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
             Buscar Músicas no Spotify
+            {retryCount > 0 && (
+              <Badge variant="outline" className="text-orange-600">
+                Tentativa {retryCount}/3
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -268,10 +287,18 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
             </Button>
           </form>
 
+          {/* Debug info */}
+          {debugInfo && (
+            <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded">
+              <AlertCircle className="w-4 h-4" />
+              {debugInfo}
+            </div>
+          )}
+
           {/* Sugestões de busca */}
           <div className="flex flex-wrap gap-2">
             <span className="text-sm text-gray-600">Sugestões:</span>
-            {['children songs', 'kids music', 'piano instrumental', 'nursery rhymes', 'classical piano'].map((suggestion) => (
+            {['children songs', 'piano music', 'happy birthday', 'twinkle star', 'classical piano'].map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
@@ -289,11 +316,6 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
 
           <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
             🎵 Todas as músicas são fornecidas pelo Spotify
-            {retryCount > 0 && (
-              <span className="block text-orange-600 mt-1">
-                🔄 Tentativa {retryCount}/2 - Recarregando...
-              </span>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -303,8 +325,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
             <p className="mt-2 text-gray-600">
-              {retryCount > 0 ? `Tentativa ${retryCount}/2 - ` : ''}
-              Buscando músicas no Spotify...
+              {debugInfo || 'Buscando músicas no Spotify...'}
             </p>
           </div>
         )}
@@ -409,7 +430,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
             <Music className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600">Nenhuma música encontrada no Spotify</p>
             <p className="text-sm text-gray-500 mb-4">
-              Tente buscar por músicas populares ou use as sugestões acima
+              {debugInfo || 'Tente buscar por músicas populares ou use as sugestões acima'}
             </p>
             <Button onClick={handleRetry} variant="outline">
               <RefreshCw className="w-4 h-4 mr-2" />

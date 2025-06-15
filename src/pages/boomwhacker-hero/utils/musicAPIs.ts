@@ -33,11 +33,27 @@ export class SpotifyAPI {
       }
 
       const tracks = data?.tracks || [];
-      console.log(`✅ Spotify retornou ${tracks.length} resultados`);
+      console.log(`📊 Spotify retornou ${tracks.length} resultados`);
       
-      // Filtrar apenas músicas com preview_url válida
-      const validTracks = tracks.filter(track => track.preview_url && track.preview_url.trim() !== '');
-      console.log(`✅ ${validTracks.length} músicas com preview válido`);
+      // Validar e filtrar tracks
+      const validTracks = tracks.filter(track => {
+        const hasPreview = track.preview_url && track.preview_url.trim() !== '';
+        const hasBasicInfo = track.title && track.artist && track.id;
+        
+        if (!hasBasicInfo) {
+          console.warn(`⚠️ Track inválida: faltam informações básicas`, track);
+          return false;
+        }
+        
+        if (!hasPreview) {
+          console.warn(`⚠️ Track sem preview: ${track.title} - ${track.artist}`);
+          return false;
+        }
+        
+        return true;
+      });
+      
+      console.log(`✅ ${validTracks.length} músicas válidas encontradas`);
       
       return validTracks;
     } catch (error) {
@@ -62,11 +78,16 @@ export class SpotifyAPI {
       }
 
       const tracks = data?.tracks || [];
-      console.log(`✅ Spotify popular retornou ${tracks.length} resultados`);
+      console.log(`📊 Spotify popular retornou ${tracks.length} resultados`);
       
-      // Filtrar apenas músicas com preview_url válida
-      const validTracks = tracks.filter(track => track.preview_url && track.preview_url.trim() !== '');
-      console.log(`✅ ${validTracks.length} músicas populares com preview válido`);
+      // Validar tracks populares
+      const validTracks = tracks.filter(track => {
+        const hasPreview = track.preview_url && track.preview_url.trim() !== '';
+        const hasBasicInfo = track.title && track.artist && track.id;
+        return hasBasicInfo && hasPreview;
+      });
+      
+      console.log(`✅ ${validTracks.length} músicas populares válidas`);
       
       return validTracks;
     } catch (error) {
