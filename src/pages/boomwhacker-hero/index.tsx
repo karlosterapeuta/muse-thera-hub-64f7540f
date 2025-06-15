@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target } from 'lucide-react';
 
-// Boomwhacker color/note mapping
+// Boomwhacker color/note mapping baseado na imagem
 const BOOMWHACKER_NOTES = [
   { note: 'C', color: '#FF0000', name: 'Dó', frequency: 261.63 },
   { note: 'D', color: '#FF7F00', name: 'Ré', frequency: 293.66 },
@@ -17,6 +17,14 @@ const BOOMWHACKER_NOTES = [
   { note: 'A', color: '#8B00FF', name: 'Lá', frequency: 440.00 },
   { note: 'B', color: '#FF69B4', name: 'Si', frequency: 493.88 },
   { note: 'C2', color: '#8B0000', name: 'Dó²', frequency: 523.25 }
+];
+
+// Layout das fileiras baseado na imagem
+const TUBE_LAYOUT = [
+  [1, 2, 5, 0], // Fileira superior: D, E, G, C
+  [0, 2, 5, 0], // Segunda fileira: C, E, G, C  
+  [0, 4, 6, 0], // Terceira fileira: C, F, A, C
+  [0, 1, 2, 4, 5, 6, 7, 0] // Fileira inferior: C, D, E, F, G, A, B, C
 ];
 
 interface GameStats {
@@ -82,14 +90,14 @@ const BoomwhackerHero: React.FC = () => {
       
       // Envelope for tube-like sound
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1.5);
+      gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1.2);
       
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
       oscillator.start();
-      oscillator.stop(audioContext.currentTime + 1.5);
+      oscillator.stop(audioContext.currentTime + 1.2);
       
       // Add tube animation
       const animationId = `tube-${Date.now()}-${noteIndex}`;
@@ -102,7 +110,7 @@ const BoomwhackerHero: React.FC = () => {
       // Remove animation after duration
       setTimeout(() => {
         setTubeAnimations(prev => prev.filter(anim => anim.id !== animationId));
-      }, 1000);
+      }, 800);
       
     } catch (error) {
       console.error('Erro ao tocar nota:', error);
@@ -167,7 +175,7 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [currentSequence, playBoomwhackerNote]);
 
-  // Canvas drawing
+  // Canvas drawing with multiple rows layout
   const drawTubes = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -177,44 +185,64 @@ const BoomwhackerHero: React.FC = () => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    const tubeWidth = 60;
-    const tubeHeight = 200;
-    const spacing = 80;
-    const startX = (canvas.width - (BOOMWHACKER_NOTES.length * spacing - (spacing - tubeWidth))) / 2;
+    const tubeWidth = 80;
+    const tubeHeight = 120;
+    const spacingX = 100;
+    const spacingY = 140;
+    const startY = 50;
     
-    BOOMWHACKER_NOTES.forEach((note, index) => {
-      const x = startX + index * spacing;
-      const y = canvas.height - tubeHeight - 50;
+    TUBE_LAYOUT.forEach((row, rowIndex) => {
+      const startX = (canvas.width - (row.length * spacingX - (spacingX - tubeWidth))) / 2;
+      const y = startY + rowIndex * spacingY;
       
-      // Check if tube is being animated
-      const isAnimated = tubeAnimations.some(anim => anim.noteIndex === index);
-      const animationProgress = isAnimated ? 
-        Math.sin((Date.now() % 500) / 500 * Math.PI * 4) * 10 : 0;
-      
-      // Draw tube
-      ctx.fillStyle = note.color;
-      ctx.fillRect(x, y + animationProgress, tubeWidth, tubeHeight);
-      
-      // Draw tube highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.fillRect(x, y + animationProgress, tubeWidth * 0.3, tubeHeight);
-      
-      // Draw note label
-      ctx.fillStyle = '#000';
-      ctx.font = 'bold 16px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(note.note, x + tubeWidth/2, y + tubeHeight + 25);
-      ctx.fillText(note.name, x + tubeWidth/2, y + tubeHeight + 45);
-      
-      // Draw glow effect if animated
-      if (isAnimated) {
-        ctx.shadowColor = note.color;
-        ctx.shadowBlur = 20;
-        ctx.strokeStyle = note.color;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(x - 3, y + animationProgress - 3, tubeWidth + 6, tubeHeight + 6);
-        ctx.shadowBlur = 0;
-      }
+      row.forEach((noteIndex, colIndex) => {
+        const x = startX + colIndex * spacingX;
+        const note = BOOMWHACKER_NOTES[noteIndex];
+        
+        // Check if tube is being animated
+        const isAnimated = tubeAnimations.some(anim => anim.noteIndex === noteIndex);
+        const animationOffset = isAnimated ? 
+          Math.sin((Date.now() % 400) / 400 * Math.PI * 6) * 8 : 0;
+        
+        // Draw tube shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillRect(x + 4, y + 4 + animationOffset, tubeWidth, tubeHeight);
+        
+        // Draw tube body
+        ctx.fillStyle = note.color;
+        ctx.fillRect(x, y + animationOffset, tubeWidth, tubeHeight);
+        
+        // Draw tube highlight
+        const gradient = ctx.createLinearGradient(x, y, x + tubeWidth * 0.4, y);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y + animationOffset, tubeWidth * 0.4, tubeHeight);
+        
+        // Draw tube rim (top)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillRect(x, y + animationOffset, tubeWidth, 8);
+        
+        // Draw note label background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(x + 10, y + tubeHeight + animationOffset + 10, tubeWidth - 20, 30);
+        
+        // Draw note label
+        ctx.fillStyle = '#FFF';
+        ctx.font = 'bold 18px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(note.note, x + tubeWidth/2, y + tubeHeight + animationOffset + 30);
+        
+        // Draw glow effect if animated
+        if (isAnimated) {
+          ctx.shadowColor = note.color;
+          ctx.shadowBlur = 25;
+          ctx.strokeStyle = note.color;
+          ctx.lineWidth = 4;
+          ctx.strokeRect(x - 2, y + animationOffset - 2, tubeWidth + 4, tubeHeight + 4);
+          ctx.shadowBlur = 0;
+        }
+      });
     });
   }, [tubeAnimations]);
 
@@ -233,18 +261,23 @@ const BoomwhackerHero: React.FC = () => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     
-    const tubeWidth = 60;
-    const spacing = 80;
-    const startX = (canvas.width - (BOOMWHACKER_NOTES.length * spacing - (spacing - tubeWidth))) / 2;
-    const tubeHeight = 200;
-    const tubeY = canvas.height - tubeHeight - 50;
+    const tubeWidth = 80;
+    const tubeHeight = 120;
+    const spacingX = 100;
+    const spacingY = 140;
+    const startY = 50;
     
-    // Check which tube was clicked
-    BOOMWHACKER_NOTES.forEach((_, index) => {
-      const tubeX = startX + index * spacing;
-      if (x >= tubeX && x <= tubeX + tubeWidth && y >= tubeY && y <= tubeY + tubeHeight) {
-        handleTubeClick(index);
-      }
+    // Check which tube was clicked in each row
+    TUBE_LAYOUT.forEach((row, rowIndex) => {
+      const startX = (canvas.width - (row.length * spacingX - (spacingX - tubeWidth))) / 2;
+      const tubeY = startY + rowIndex * spacingY;
+      
+      row.forEach((noteIndex, colIndex) => {
+        const tubeX = startX + colIndex * spacingX;
+        if (x >= tubeX && x <= tubeX + tubeWidth && y >= tubeY && y <= tubeY + tubeHeight) {
+          handleTubeClick(noteIndex);
+        }
+      });
     });
   }, [handleTubeClick]);
 
@@ -279,8 +312,8 @@ const BoomwhackerHero: React.FC = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.width = 800;
-      canvas.height = 400;
+      canvas.width = 900;
+      canvas.height = 650;
     }
   }, []);
 
@@ -291,7 +324,7 @@ const BoomwhackerHero: React.FC = () => {
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-2">🎵 BOOMWHACKER HERO</h1>
           <p className="text-lg opacity-90">
-            Toque os tubos coloridos para criar música! Cada cor é uma nota diferente.
+            Toque nos tubos coloridos organizados em fileiras! Cada cor é uma nota diferente.
           </p>
         </div>
       </div>
@@ -400,13 +433,33 @@ const BoomwhackerHero: React.FC = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Legend */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Legenda das Notas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {BOOMWHACKER_NOTES.map((note) => (
+                  <div key={note.note} className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: note.color }}
+                    />
+                    <span>{note.note} - {note.name}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Game Canvas */}
         <div className="lg:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Boomwhackers Interativos</CardTitle>
+              <CardTitle>Boomwhackers Organizados em Fileiras</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="relative">
@@ -414,11 +467,11 @@ const BoomwhackerHero: React.FC = () => {
                   ref={canvasRef}
                   onClick={handleCanvasClick}
                   className="w-full max-w-4xl mx-auto border rounded-lg cursor-pointer"
-                  style={{ backgroundColor: '#f8f9fa' }}
+                  style={{ backgroundColor: '#1a1a1a' }}
                 />
                 
                 <div className="mt-4 text-center text-sm text-gray-600">
-                  Clique nos tubos coloridos para tocar as notas!
+                  Clique nos tubos coloridos organizados em fileiras para tocar as notas!
                 </div>
               </div>
             </CardContent>
