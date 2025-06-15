@@ -32,6 +32,12 @@ export class SpotifyAPI {
 
   static async getToken(): Promise<string | null> {
     try {
+      // Verificar se as credenciais estão configuradas
+      if (API_CONFIG.spotify.clientSecret === 'YOUR_SPOTIFY_CLIENT_SECRET') {
+        console.log('❌ Credenciais do Spotify não configuradas');
+        return null;
+      }
+
       const response = await fetch(API_CONFIG.spotify.tokenUrl, {
         method: 'POST',
         headers: {
@@ -42,14 +48,16 @@ export class SpotifyAPI {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get Spotify token');
+        console.error('❌ Falha ao obter token do Spotify:', response.status, response.statusText);
+        return null;
       }
 
       const data = await response.json();
       this.token = data.access_token;
+      console.log('✅ Token do Spotify obtido com sucesso');
       return data.access_token;
     } catch (error) {
-      console.error('Spotify token error:', error);
+      console.error('❌ Erro ao obter token do Spotify:', error);
       return null;
     }
   }
@@ -59,15 +67,22 @@ export class SpotifyAPI {
       let token = this.token;
       if (!token) {
         token = await this.getToken();
-        if (!token) return [];
+        if (!token) {
+          console.log('⚠️ Spotify não disponível, token não obtido');
+          return [];
+        }
       }
 
+      // Melhorar a query de busca para músicas infantis
+      const searchQuery = `${query} genre:children OR ${query} kids OR ${query} infantil`;
       const searchParams = new URLSearchParams({
-        q: `${query} genre:children OR ${query} kids OR ${query}`,
+        q: searchQuery,
         type: 'track',
         market: 'BR',
         limit: '20'
       });
+
+      console.log(`🔍 Buscando no Spotify: ${searchQuery}`);
 
       const response = await fetch(`${API_CONFIG.spotify.searchUrl}?${searchParams}`, {
         headers: {
@@ -76,10 +91,16 @@ export class SpotifyAPI {
       });
 
       if (!response.ok) {
-        throw new Error('Spotify search failed');
+        console.error('❌ Busca no Spotify falhou:', response.status, response.statusText);
+        // Token pode ter expirado, tentar renovar
+        if (response.status === 401) {
+          this.token = null;
+        }
+        return [];
       }
 
       const data = await response.json();
+      console.log(`✅ Spotify retornou ${data.tracks.items.length} resultados`);
       
       return data.tracks.items.map((item: any) => ({
         id: item.id,
@@ -94,7 +115,7 @@ export class SpotifyAPI {
         bpm: undefined
       }));
     } catch (error) {
-      console.error('Spotify search error:', error);
+      console.error('❌ Erro na busca do Spotify:', error);
       return [];
     }
   }
@@ -131,24 +152,34 @@ export class SpotifyAPI {
 export class JamendoAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
+      // Verificar se a chave está configurada
+      if (API_CONFIG.jamendo.clientId === 'YOUR_JAMENDO_CLIENT_ID') {
+        console.log('❌ Chave do Jamendo não configurada');
+        return [];
+      }
+
       const searchParams = new URLSearchParams({
         client_id: API_CONFIG.jamendo.clientId,
         format: 'json',
         namesearch: query,
         limit: '20',
-        tags: 'children,kids,instrumental,happy',
+        tags: 'children,kids,instrumental,happy,family',
         audioformat: 'mp31'
       });
+
+      console.log(`🔍 Buscando no Jamendo: ${query}`);
 
       const response = await fetch(`${API_CONFIG.jamendo.searchUrl}?${searchParams}`);
       
       if (!response.ok) {
-        throw new Error('Jamendo search failed');
+        console.error('❌ Busca no Jamendo falhou:', response.status, response.statusText);
+        return [];
       }
 
       const data = await response.json();
+      console.log(`✅ Jamendo retornou ${data.results?.length || 0} resultados`);
       
-      return data.results.map((item: any) => ({
+      return (data.results || []).map((item: any) => ({
         id: item.id.toString(),
         title: item.name,
         artist: item.artist_name,
@@ -161,7 +192,7 @@ export class JamendoAPI {
         bpm: undefined
       }));
     } catch (error) {
-      console.error('Jamendo search error:', error);
+      console.error('❌ Erro na busca do Jamendo:', error);
       return [];
     }
   }
@@ -233,6 +264,15 @@ export class DemoAPI {
         popularity: 85,
         source: 'demo',
         bpm: 140
+      },
+      {
+        id: 'demo-8',
+        title: 'Ciranda Cirandinha',
+        artist: 'Folclore',
+        duration: 26,
+        popularity: 82,
+        source: 'demo',
+        bpm: 125
       }
     ];
   }
@@ -244,9 +284,10 @@ export class DemoAPI {
       return tracks;
     }
 
+    const lowerQuery = query.toLowerCase();
     return tracks.filter(track => 
-      track.title.toLowerCase().includes(query.toLowerCase()) ||
-      track.artist.toLowerCase().includes(query.toLowerCase())
+      track.title.toLowerCase().includes(lowerQuery) ||
+      track.artist.toLowerCase().includes(lowerQuery)
     );
   }
 }
@@ -254,26 +295,58 @@ export class DemoAPI {
 // Classe principal para gerenciar todas as APIs
 export class MusicAPIManager {
   static async search(query: string, source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
+    console.log(`🎵 Iniciando busca: "${query}" na fonte: ${source}`);
+    
     switch (source) {
       case 'spotify':
-        return await SpotifyAPI.search(query);
+        const spotifyResults = await SpotifyAPI.search(query);
+        // Se Spotify falhar, tentar demo como fallback
+        if (spotifyResults.length === 0) {
+          console.log('⚠️ Spotify sem resultados, usando demo como fallback');
+          return DemoAPI.search(query);
+        }
+        return spotifyResults;
+        
       case 'jamendo':
-        return await JamendoAPI.search(query);
+        const jamendoResults = await JamendoAPI.search(query);
+        // Se Jamendo falhar, tentar demo como fallback
+        if (jamendoResults.length === 0) {
+          console.log('⚠️ Jamendo sem resultados, usando demo como fallback');
+          return DemoAPI.search(query);
+        }
+        return jamendoResults;
+        
       case 'demo':
         return DemoAPI.search(query);
+        
       default:
         return DemoAPI.search(query);
     }
   }
 
   static async getPopular(source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
+    console.log(`🎵 Buscando músicas populares da fonte: ${source}`);
+    
     switch (source) {
       case 'spotify':
-        return await SpotifyAPI.search('children songs popular');
+        const spotifyPopular = await SpotifyAPI.search('children songs popular');
+        if (spotifyPopular.length === 0) {
+          console.log('⚠️ Spotify não disponível, usando demo');
+          return DemoAPI.getPopularTracks();
+        }
+        return spotifyPopular;
+        
       case 'jamendo':
-        return await JamendoAPI.search('children happy');
+        const jamendoPopular = await JamendoAPI.search('children happy');
+        if (jamendoPopular.length === 0) {
+          console.log('⚠️ Jamendo não disponível, usando demo');
+          return DemoAPI.getPopularTracks();
+        }
+        return jamendoPopular;
+        
       case 'demo':
         return DemoAPI.getPopularTracks();
+        
       default:
         return DemoAPI.getPopularTracks();
     }
@@ -292,10 +365,13 @@ export class MusicAPIManager {
     }
 
     // BPM padrão baseado no tipo de música
-    if (track.title.toLowerCase().includes('twinkle')) return 120;
-    if (track.title.toLowerCase().includes('happy')) return 140;
-    if (track.title.toLowerCase().includes('mary')) return 120;
-    if (track.title.toLowerCase().includes('old')) return 130;
+    const title = track.title.toLowerCase();
+    if (title.includes('twinkle') || title.includes('brilha')) return 120;
+    if (title.includes('happy') || title.includes('parabéns')) return 140;
+    if (title.includes('mary')) return 120;
+    if (title.includes('old') || title.includes('macdonald')) return 130;
+    if (title.includes('row')) return 110;
+    if (title.includes('ciranda')) return 125;
     
     // BPM padrão para músicas infantis
     return 120;
