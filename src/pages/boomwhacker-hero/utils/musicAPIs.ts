@@ -190,7 +190,8 @@ export const generateBrazilianDemoTracks = (): MusicTrack[] => {
 
 // Classe para buscar músicas na API Jamendo
 class JamendoAPI {
-  private static clientId = process.env.JAMENDO_CLIENT_ID;
+  // Removido process.env para evitar erro no browser
+  private static clientId: string | null = null;
   private static baseUrl = 'https://api.jamendo.com/v3.0';
 
   static async search(query: string): Promise<MusicTrack[]> {
