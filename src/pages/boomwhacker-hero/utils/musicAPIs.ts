@@ -27,7 +27,19 @@ class SpotifyAPI {
         body: JSON.stringify({ action: 'search', query })
       });
       
-      const data = await response.json();
+      // Verificar se a resposta é válida
+      if (!response.ok) {
+        console.warn(`Spotify API não disponível (${response.status}), usando fallback`);
+        return [];
+      }
+      
+      const text = await response.text();
+      if (!text.trim()) {
+        console.warn('Resposta vazia da API Spotify, usando fallback');
+        return [];
+      }
+      
+      const data = JSON.parse(text);
       return (data.tracks || []).map((track: any) => ({
         id: track.id,
         title: track.title,
@@ -41,7 +53,7 @@ class SpotifyAPI {
         bpm: track.bpm
       }));
     } catch (error: any) {
-      console.error('Erro ao buscar no Spotify:', error.message);
+      console.warn('Spotify API indisponível, usando fallback:', error.message);
       return [];
     }
   }
@@ -56,7 +68,19 @@ class SpotifyAPI {
         body: JSON.stringify({ action: 'popular' })
       });
       
-      const data = await response.json();
+      // Verificar se a resposta é válida
+      if (!response.ok) {
+        console.warn(`Spotify API não disponível (${response.status}), usando fallback`);
+        return [];
+      }
+      
+      const text = await response.text();
+      if (!text.trim()) {
+        console.warn('Resposta vazia da API Spotify, usando fallback');
+        return [];
+      }
+      
+      const data = JSON.parse(text);
       return (data.tracks || []).map((track: any) => ({
         id: track.id,
         title: track.title,
@@ -70,7 +94,7 @@ class SpotifyAPI {
         bpm: track.bpm
       }));
     } catch (error: any) {
-      console.error('Erro ao buscar populares no Spotify:', error.message);
+      console.warn('Spotify API indisponível, usando fallback:', error.message);
       return [];
     }
   }
@@ -85,10 +109,19 @@ class SpotifyAPI {
         body: JSON.stringify({ action: 'audio-features', trackId })
       });
       
-      const data = await response.json();
+      if (!response.ok) {
+        return null;
+      }
+      
+      const text = await response.text();
+      if (!text.trim()) {
+        return null;
+      }
+      
+      const data = JSON.parse(text);
       return data || null;
     } catch (error: any) {
-      console.error('Erro ao obter audio features do Spotify:', error.message);
+      console.warn('Erro ao obter audio features do Spotify:', error.message);
       return null;
     }
   }
@@ -297,16 +330,32 @@ class YouTubeMusicAPI {
 
 // Classe para gerenciar a busca em múltiplas APIs de música
 export class MusicAPIManager {
-  static async search(query: string, source: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'spotify'): Promise<MusicTrack[]> {
+  static async search(query: string, source: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'demo'): Promise<MusicTrack[]> {
     try {
       let results: MusicTrack[] = [];
 
       switch (source) {
         case 'spotify':
           results = await SpotifyAPI.search(query);
+          // Se Spotify falhar, usar demo como fallback
+          if (results.length === 0) {
+            console.log('Spotify falhou, usando demo como fallback');
+            results = generateBrazilianDemoTracks().filter(track =>
+              track.title.toLowerCase().includes(query.toLowerCase()) ||
+              track.artist.toLowerCase().includes(query.toLowerCase())
+            );
+          }
           break;
         case 'jamendo':
           results = await JamendoAPI.search(query);
+          // Se Jamendo falhar, usar demo como fallback
+          if (results.length === 0) {
+            console.log('Jamendo falhou, usando demo como fallback');
+            results = generateBrazilianDemoTracks().filter(track =>
+              track.title.toLowerCase().includes(query.toLowerCase()) ||
+              track.artist.toLowerCase().includes(query.toLowerCase())
+            );
+          }
           break;
         case 'youtube':
           results = await YouTubeMusicAPI.search(query);
@@ -318,37 +367,44 @@ export class MusicAPIManager {
           );
           break;
         default:
-          console.warn('Fonte de música inválida.');
-          return [];
-      }
-
-      // Enriquecer com BPM se a fonte não fornecer
-      if (source !== 'spotify') {
-        for (const track of results) {
-          if (!track.bpm && source !== 'youtube') {
-            const features = await SpotifyAPI.getAudioFeatures(track.id);
-            track.bpm = features?.bpm;
-          }
-        }
+          console.warn('Fonte de música inválida, usando demo.');
+          results = generateBrazilianDemoTracks().filter(track =>
+            track.title.toLowerCase().includes(query.toLowerCase()) ||
+            track.artist.toLowerCase().includes(query.toLowerCase())
+          );
       }
 
       return results.filter(track => !track.failed);
     } catch (error) {
-      console.error('Erro ao buscar músicas:', error);
-      return [];
+      console.error('Erro ao buscar músicas, usando fallback demo:', error);
+      // Fallback final para demo
+      return generateBrazilianDemoTracks().filter(track =>
+        track.title.toLowerCase().includes(query.toLowerCase()) ||
+        track.artist.toLowerCase().includes(query.toLowerCase())
+      );
     }
   }
 
-  static async getPopular(source: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'spotify'): Promise<MusicTrack[]> {
+  static async getPopular(source: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'demo'): Promise<MusicTrack[]> {
     try {
       let results: MusicTrack[] = [];
 
       switch (source) {
         case 'spotify':
           results = await SpotifyAPI.getPopular();
+          // Se Spotify falhar, usar demo como fallback
+          if (results.length === 0) {
+            console.log('Spotify populares falhou, usando demo como fallback');
+            results = generateBrazilianDemoTracks();
+          }
           break;
         case 'jamendo':
           results = await JamendoAPI.getPopular();
+          // Se Jamendo falhar, usar demo como fallback
+          if (results.length === 0) {
+            console.log('Jamendo populares falhou, usando demo como fallback');
+            results = generateBrazilianDemoTracks();
+          }
           break;
         case 'youtube':
           results = await YouTubeMusicAPI.getPopular();
@@ -357,14 +413,15 @@ export class MusicAPIManager {
           results = generateBrazilianDemoTracks();
           break;
         default:
-          console.warn('Fonte de música inválida.');
-          return [];
+          console.warn('Fonte de música inválida, usando demo.');
+          results = generateBrazilianDemoTracks();
       }
 
       return results.filter(track => !track.failed);
     } catch (error) {
-      console.error('Erro ao buscar músicas populares:', error);
-      return [];
+      console.error('Erro ao buscar músicas populares, usando fallback demo:', error);
+      // Fallback final para demo
+      return generateBrazilianDemoTracks();
     }
   }
 
