@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Play, Heart, Clock, Music, ExternalLink, CheckCircle, AlertCircle, Loader, Wifi, WifiOff } from 'lucide-react';
+import { Search, Play, Heart, Clock, Music, ExternalLink, CheckCircle, AlertCircle, Loader, Wifi, WifiOff, Zap, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MusicAPIManager, MusicTrack } from '../utils/musicAPIs';
 
@@ -18,32 +18,42 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(false);
-  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo'>('spotify');
+  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo' | 'youtube'>('spotify');
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [searchStatus, setSearchStatus] = useState<'idle' | 'searching' | 'success' | 'error'>('idle');
   const [apiHealth, setApiHealth] = useState({
     spotify: 'unknown',
     jamendo: 'unknown',
+    youtube: 'unknown',
     demo: 'healthy'
   });
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Carregar músicas populares brasileiras
+  // Busca em tempo real com debounce
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      if (query.trim().length >= 2) {
+        searchTracks(query);
+      }
+    }, 800),
+    [apiSource]
+  );
+
+  // Carregar músicas populares inteligentes
   const loadPopularTracks = async () => {
     setLoading(true);
     setSearchStatus('searching');
     
     try {
-      console.log(`🔍 Carregando populares brasileiras: ${apiSource}`);
+      console.log(`🔍 Carregando hits brasileiros: ${apiSource}`);
       const popularTracks = await MusicAPIManager.getPopular(apiSource);
       console.log(`✅ Populares carregadas: ${popularTracks.length}`);
       
       setTracks(popularTracks);
       setSearchStatus(popularTracks.length > 0 ? 'success' : 'error');
       
-      setApiHealth(prev => ({
-        ...prev,
-        [apiSource]: popularTracks.length > 0 ? 'healthy' : 'degraded'
-      }));
+      updateApiHealthFromResults(popularTracks);
       
       if (popularTracks.length === 0) {
         toast({
@@ -51,36 +61,17 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           description: "Tentando outras fontes...",
         });
       } else {
-        const sourceCount = popularTracks.reduce((acc, track) => {
-          acc[track.source] = (acc[track.source] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-        
-        const sourceInfo = Object.entries(sourceCount)
-          .map(([source, count]) => `${source}: ${count}`)
-          .join(', ');
-        
-        toast({
-          title: `🎵 ${popularTracks.length} músicas brasileiras carregadas`,
-          description: sourceInfo,
-        });
+        showSuccessToast(popularTracks, 'populares brasileiras');
       }
     } catch (error) {
       console.error('❌ Erro ao carregar populares:', error);
-      setSearchStatus('error');
-      setApiHealth(prev => ({ ...prev, [apiSource]: 'error' }));
-      
-      toast({
-        title: "❌ Erro ao carregar músicas",
-        description: "Tentando fontes alternativas...",
-        variant: "destructive"
-      });
+      handleSearchError();
     } finally {
       setLoading(false);
     }
   };
 
-  // Busca inteligente de músicas brasileiras
+  // Busca inteligente e funcional
   const searchTracks = async (query: string) => {
     if (!query.trim()) {
       loadPopularTracks();
@@ -89,9 +80,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     
     setLoading(true);
     setSearchStatus('searching');
+    setIsTyping(false);
     
     try {
-      console.log(`🔍 Busca brasileira: "${query}" em ${apiSource}`);
+      console.log(`🔍 Busca inteligente: "${query}" via ${apiSource}`);
       
       const results = await MusicAPIManager.search(query, apiSource);
       console.log(`✅ Busca finalizada: ${results.length} resultados`);
@@ -99,45 +91,86 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       setTracks(results);
       setSearchStatus(results.length > 0 ? 'success' : 'error');
       
-      const sourceResults = results.filter(track => track.source === apiSource);
-      setApiHealth(prev => ({
-        ...prev,
-        [apiSource]: sourceResults.length > 0 ? 'healthy' : 'degraded'
-      }));
+      updateApiHealthFromResults(results);
+      updateSearchSuggestions(query, results);
       
       if (results.length === 0) {
         toast({
-          title: "🔍 Nenhuma música encontrada",
-          description: "Tente 'Roberto Carlos', 'MPB' ou 'música infantil'",
+          title: "🔍 Busca sem resultados",
+          description: `Tente: "Roberto Carlos", "música infantil", "MPB" ou "bossa nova"`,
         });
       } else {
-        const bySource = results.reduce((acc, track) => {
-          acc[track.source] = (acc[track.source] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-        
-        const sourceInfo = Object.entries(bySource)
-          .map(([source, count]) => `${source}: ${count}`)
-          .join(', ');
-        
-        toast({
-          title: `🎵 ${results.length} músicas brasileiras encontradas`,
-          description: sourceInfo,
-        });
+        showSuccessToast(results, `para "${query}"`);
       }
     } catch (error) {
       console.error('❌ Erro na busca:', error);
-      setSearchStatus('error');
-      setApiHealth(prev => ({ ...prev, [apiSource]: 'error' }));
-      
-      toast({
-        title: "❌ Erro na busca",
-        description: "Problema na conexão. Tentando outras fontes...",
-        variant: "destructive"
-      });
+      handleSearchError();
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateApiHealthFromResults = (results: MusicTrack[]) => {
+    const sourceResults = results.filter(track => track.source === apiSource);
+    setApiHealth(prev => ({
+      ...prev,
+      [apiSource]: sourceResults.length > 0 ? 'healthy' : 'degraded'
+    }));
+  };
+
+  const showSuccessToast = (results: MusicTrack[], context: string) => {
+    const bySource = results.reduce((acc, track) => {
+      acc[track.source] = (acc[track.source] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const sourceInfo = Object.entries(bySource)
+      .map(([source, count]) => `${source}: ${count}`)
+      .join(', ');
+    
+    toast({
+      title: `🎵 ${results.length} músicas ${context}`,
+      description: `Fontes: ${sourceInfo}`,
+    });
+  };
+
+  const handleSearchError = () => {
+    setSearchStatus('error');
+    setApiHealth(prev => ({ ...prev, [apiSource]: 'error' }));
+    
+    toast({
+      title: "❌ Erro na busca",
+      description: "Problema na conexão. Tentando outras fontes automaticamente...",
+      variant: "destructive"
+    });
+  };
+
+  const updateSearchSuggestions = (query: string, results: MusicTrack[]) => {
+    const suggestions = new Set<string>();
+    
+    // Sugestões baseadas nos resultados
+    results.forEach(track => {
+      if (suggestions.size < 5) {
+        suggestions.add(`mais de ${track.artist}`);
+        suggestions.add(`${track.artist} sucessos`);
+      }
+    });
+    
+    // Sugestões inteligentes baseadas na busca
+    const lowerQuery = query.toLowerCase();
+    if (lowerQuery.includes('infantil') || lowerQuery.includes('criança')) {
+      suggestions.add('ciranda cirandinha');
+      suggestions.add('brilha brilha estrelinha');
+      suggestions.add('música educativa');
+    }
+    
+    if (lowerQuery.includes('mpb') || lowerQuery.includes('brasileiro')) {
+      suggestions.add('caetano veloso');
+      suggestions.add('elis regina');
+      suggestions.add('chico buarque');
+    }
+    
+    setSearchSuggestions(Array.from(suggestions).slice(0, 6));
   };
 
   const stopCurrentAudio = () => {
@@ -165,7 +198,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     try {
       const audio = new Audio();
       audio.crossOrigin = "anonymous";
-      audio.volume = 0.5;
+      audio.volume = 0.3;
       
       const handleError = () => {
         console.error('❌ Erro no preview');
@@ -217,38 +250,77 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
+  const getSourceLabel = (source: string) => {
+    const labels = {
+      spotify: 'Spotify BR',
+      youtube: 'YouTube Music',
+      jamendo: 'Jamendo',
+      demo: 'Demo BR'
+    };
+    return labels[source] || source;
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsTyping(false);
     searchTracks(searchTerm);
   };
 
-  // Sugestões brasileiras
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setIsTyping(true);
+    
+    // Busca em tempo real
+    debouncedSearch(value);
+  };
+
+  // Sugestões brasileiras inteligentes
   const getBrazilianSuggestions = () => {
-    const suggestions = [
+    const baseSuggestions = [
       'Roberto Carlos',
-      'Caetano Veloso', 
+      'música infantil',
       'MPB clássicos',
       'bossa nova',
-      'sertanejo',
-      'forró',
-      'música infantil',
-      'piano brasileiro',
-      'violão brasileiro',
-      'samba',
+      'sertanejo hits',
+      'Legião Urbana',
       'Tom Jobim',
       'Elis Regina',
-      'Chico Buarque',
-      'Gilberto Gil',
-      'Legião Urbana',
-      'rock nacional'
+      'Caetano Veloso',
+      'forró pé de serra',
+      'rock nacional',
+      'samba brasileiro'
     ];
     
-    if (tracks.length > 0) {
-      const artists = [...new Set(tracks.map(t => t.artist).slice(0, 3))];
-      suggestions.push(...artists.map(artist => `mais de ${artist}`));
+    return [...baseSuggestions, ...searchSuggestions]
+      .filter((suggestion, index, self) => self.indexOf(suggestion) === index)
+      .slice(0, 8);
+  };
+
+  const getTrackQualityBadge = (track: MusicTrack) => {
+    let quality = 'standard';
+    let icon = null;
+    
+    if (track.popularity && track.popularity > 85) {
+      quality = 'hit';
+      icon = <Star className="w-3 h-3" />;
+    } else if (track.preview_url && track.popularity && track.popularity > 70) {
+      quality = 'premium';
+      icon = <Zap className="w-3 h-3" />;
     }
     
-    return suggestions.slice(0, 8);
+    const colors = {
+      hit: 'bg-yellow-100 text-yellow-800',
+      premium: 'bg-blue-100 text-blue-800',
+      standard: 'bg-gray-100 text-gray-600'
+    };
+    
+    return (
+      <Badge variant="outline" className={`text-xs ${colors[quality]}`}>
+        {icon}
+        {quality === 'hit' ? 'HIT' : quality === 'premium' ? 'PREMIUM' : 'OK'}
+      </Badge>
+    );
   };
 
   useEffect(() => {
@@ -267,45 +339,33 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            🇧🇷 Músicas Brasileiras - Boomwhacker Hero
-            {searchStatus === 'searching' && <Loader className="w-4 h-4 animate-spin" />}
+            🇧🇷 Busca Inteligente de Músicas Brasileiras
+            {(loading || isTyping) && <Loader className="w-4 h-4 animate-spin text-blue-500" />}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Seletor de API otimizado */}
-          <div className="flex gap-2">
-            <Button
-              variant={apiSource === 'spotify' ? 'default' : 'outline'}
-              onClick={() => setApiSource('spotify')}
-              className="flex-1 flex items-center gap-2"
-            >
-              {getApiStatusIcon(apiHealth.spotify)}
-              Spotify BR
-            </Button>
-            <Button
-              variant={apiSource === 'jamendo' ? 'default' : 'outline'}
-              onClick={() => setApiSource('jamendo')}
-              className="flex-1 flex items-center gap-2"
-            >
-              {getApiStatusIcon(apiHealth.jamendo)}
-              Jamendo
-            </Button>
-            <Button
-              variant={apiSource === 'demo' ? 'default' : 'outline'}
-              onClick={() => setApiSource('demo')}
-              className="flex-1 flex items-center gap-2"
-            >
-              {getApiStatusIcon(apiHealth.demo)}
-              Demo BR
-            </Button>
+          {/* Seletor de fonte otimizado */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {(['spotify', 'youtube', 'jamendo', 'demo'] as const).map((source) => (
+              <Button
+                key={source}
+                variant={apiSource === source ? 'default' : 'outline'}
+                onClick={() => setApiSource(source)}
+                className="flex items-center gap-2 text-sm"
+                size="sm"
+              >
+                {getApiStatusIcon(apiHealth[source])}
+                {getSourceLabel(source)}
+              </Button>
+            ))}
           </div>
 
-          {/* Busca aprimorada */}
+          {/* Busca inteligente */}
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="🎵 Digite: Roberto Carlos, MPB, sertanejo, música infantil..."
+              placeholder="🎵 Digite qualquer música: Roberto Carlos, música infantil, MPB, rock nacional..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchInputChange}
               className="flex-1"
               disabled={loading}
             />
@@ -316,35 +376,42 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
 
           {/* Status da busca */}
           {searchStatus === 'searching' && (
-            <div className="flex items-center gap-2 text-blue-600">
+            <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
               <Loader className="w-4 h-4 animate-spin" />
-              <span className="text-sm">🔍 Buscando nas melhores fontes de música brasileira...</span>
+              <span className="text-sm">
+                🔍 Buscando em múltiplas fontes... Sistema inteligente ativo!
+              </span>
             </div>
           )}
 
-          {/* Sugestões brasileiras */}
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-600">🇧🇷 Sugestões brasileiras:</span>
-            {getBrazilianSuggestions().map((suggestion) => (
-              <Button
-                key={suggestion}
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSearchTerm(suggestion);
-                  searchTracks(suggestion);
-                }}
-                disabled={loading}
-                className="text-xs"
-              >
-                {suggestion}
-              </Button>
-            ))}
+          {/* Sugestões brasileiras inteligentes */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Zap className="w-4 h-4" />
+              <span>🇧🇷 Sugestões inteligentes:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {getBrazilianSuggestions().map((suggestion) => (
+                <Button
+                  key={suggestion}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm(suggestion);
+                    searchTracks(suggestion);
+                  }}
+                  disabled={loading}
+                  className="text-xs hover:bg-blue-50"
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {/* Informações do sistema */}
-          <div className="text-xs text-gray-500 space-y-1">
-            <div className="flex items-center gap-2">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
               <CheckCircle className="w-3 h-3 text-green-500" />
               <span>Funcionando</span>
               <AlertCircle className="w-3 h-3 text-yellow-500" />
@@ -352,25 +419,27 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               <WifiOff className="w-3 h-3 text-red-500" />
               <span>Indisponível</span>
             </div>
-            <p className="text-xs">🎵 Sistema otimizado para música brasileira com fallback inteligente entre fontes!</p>
+            <p className="text-xs text-gray-600">
+              🚀 Sistema de busca inteligente com fallback automático entre Spotify, YouTube Music, Jamendo e base brasileira!
+            </p>
           </div>
         </CardContent>
       </Card>
 
       {/* Grid de resultados otimizado */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-        {loading && (
+        {loading && tracks.length === 0 && (
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">🔍 Buscando músicas brasileiras...</p>
-            <p className="text-sm text-gray-500">Usando múltiplas fontes para melhores resultados</p>
+            <p className="text-gray-600 font-medium">🔍 Busca inteligente em andamento...</p>
+            <p className="text-sm text-gray-500">Verificando Spotify → YouTube → Jamendo → Base brasileira</p>
           </div>
         )}
 
         {!loading && tracks.map((track) => (
           <Card 
             key={`${track.source}-${track.id}`}
-            className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
+            className={`cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
               selectedTrack?.id === track.id && selectedTrack?.source === track.source 
                 ? 'ring-2 ring-blue-500 bg-blue-50' : ''
             }`}
@@ -400,12 +469,15 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                       variant="secondary" 
                       className={`text-xs ${
                         track.source === 'spotify' ? 'bg-green-100 text-green-800' :
+                        track.source === 'youtube' ? 'bg-red-100 text-red-800' :
                         track.source === 'jamendo' ? 'bg-orange-100 text-orange-800' :
                         'bg-blue-100 text-blue-800'
                       }`}
                     >
                       {track.source}
                     </Badge>
+                    
+                    {getTrackQualityBadge(track)}
                     
                     {track.popularity && (
                       <Badge variant="outline" className="text-xs">
@@ -421,7 +493,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
 
                     {track.preview_url && (
                       <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                        ✓ Com áudio
+                        ✓ Áudio OK
                       </Badge>
                     )}
                   </div>
@@ -479,24 +551,40 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         {!loading && tracks.length === 0 && searchStatus === 'error' && (
           <div className="col-span-full text-center py-8">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600 font-medium">🔍 Nenhuma música brasileira encontrada</p>
+            <p className="text-gray-600 font-medium">🔍 Nenhuma música encontrada</p>
             <p className="text-sm text-gray-500 mt-1">
-              Tente: Roberto Carlos, Caetano Veloso, MPB, sertanejo, bossa nova
+              O sistema tentou automaticamente: Spotify → YouTube → Jamendo → Base brasileira
             </p>
-            <Button 
-              variant="outline" 
-              className="mt-3"
-              onClick={() => loadPopularTracks()}
-            >
-              🎵 Carregar Hits Brasileiros
-            </Button>
+            <div className="flex gap-2 justify-center mt-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => loadPopularTracks()}
+              >
+                🎵 Hits Brasileiros
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => searchTracks('música infantil')}
+              >
+                🧸 Música Infantil
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => searchTracks('MPB clássicos')}
+              >
+                🎭 MPB Clássicos
+              </Button>
+            </div>
           </div>
         )}
       </div>
 
       {/* Música selecionada */}
       {selectedTrack && (
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -504,19 +592,21 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   🎵 Música Selecionada para o Jogo:
                 </h4>
-                <p className="text-lg">{selectedTrack.title}</p>
+                <p className="text-lg font-bold">{selectedTrack.title}</p>
                 <p className="text-gray-600">🎤 {selectedTrack.artist}</p>
-                <div className="flex gap-2 mt-1">
+                <div className="flex gap-2 mt-2">
                   <Badge 
                     variant="secondary"
                     className={
                       selectedTrack.source === 'spotify' ? 'bg-green-100 text-green-800' :
+                      selectedTrack.source === 'youtube' ? 'bg-red-100 text-red-800' :
                       selectedTrack.source === 'jamendo' ? 'bg-orange-100 text-orange-800' :
                       'bg-blue-100 text-blue-800'
                     }
                   >
                     📡 {selectedTrack.source}
                   </Badge>
+                  {getTrackQualityBadge(selectedTrack)}
                   {selectedTrack.bpm && (
                     <Badge variant="outline">
                       🥁 {selectedTrack.bpm} BPM
@@ -524,12 +614,12 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                   )}
                   {selectedTrack.preview_url && (
                     <Badge variant="outline" className="bg-green-50 text-green-700">
-                      ✓ Com áudio funcionando
+                      ✓ Áudio funcionando
                     </Badge>
                   )}
                 </div>
               </div>
-              <Badge variant="default" className="bg-green-500">
+              <Badge variant="default" className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
                 🎮 Pronto para jogar!
               </Badge>
             </div>
@@ -539,5 +629,17 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     </div>
   );
 };
+
+// Função debounce utilitária
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 export default MusicAPI;

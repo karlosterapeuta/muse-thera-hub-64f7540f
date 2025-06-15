@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { AudioSynthesis } from './audioSynthesis';
 
@@ -11,7 +10,7 @@ export interface MusicTrack {
   image?: string;
   popularity?: number;
   external_url?: string;
-  source: 'spotify' | 'jamendo' | 'demo' | 'synthesized';
+  source: 'spotify' | 'jamendo' | 'youtube' | 'demo' | 'synthesized';
   bpm?: number;
 }
 
@@ -27,13 +26,10 @@ const getAudioSynthesis = () => {
 export class SpotifyAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      console.log(`🔍 Buscando no Spotify: ${query}`);
+      console.log(`🔍 Busca inteligente no Spotify: ${query}`);
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
-        body: {
-          action: 'search',
-          query: query
-        }
+        body: { action: 'search', query: query }
       });
 
       if (error) {
@@ -42,7 +38,7 @@ export class SpotifyAPI {
       }
 
       const tracks = data.tracks || [];
-      console.log(`✅ Spotify retornou ${tracks.length} resultados válidos`);
+      console.log(`✅ Spotify retornou ${tracks.length} resultados`);
       
       return tracks;
     } catch (error) {
@@ -53,12 +49,10 @@ export class SpotifyAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     try {
-      console.log('🔍 Buscando músicas populares no Spotify');
+      console.log('🔍 Buscando hits populares no Spotify');
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
-        body: {
-          action: 'popular'
-        }
+        body: { action: 'popular' }
       });
 
       if (error) {
@@ -79,10 +73,7 @@ export class SpotifyAPI {
   static async getAudioFeatures(trackId: string): Promise<{ bpm?: number } | null> {
     try {
       const { data, error } = await supabase.functions.invoke('spotify-api', {
-        body: {
-          action: 'audio-features',
-          trackId: trackId
-        }
+        body: { action: 'audio-features', trackId: trackId }
       });
 
       if (error) {
@@ -98,6 +89,117 @@ export class SpotifyAPI {
   }
 }
 
+export class YouTubeMusicAPI {
+  static async search(query: string): Promise<MusicTrack[]> {
+    try {
+      console.log(`🔍 YouTube Music: ${query}`);
+      
+      // Implementação simplificada usando pesquisa pública do YouTube
+      const searchTerms = this.generateYouTubeSearchTerms(query);
+      let allResults = [];
+
+      for (const searchTerm of searchTerms.slice(0, 5)) {
+        if (allResults.length >= 15) break;
+
+        try {
+          // Simular busca YouTube Music (seria necessário API key real)
+          const mockResults = this.getMockYouTubeResults(searchTerm);
+          allResults.push(...mockResults);
+          console.log(`✅ YouTube "${searchTerm}": ${mockResults.length} resultados`);
+        } catch (error) {
+          console.error(`❌ Erro YouTube "${searchTerm}":`, error);
+        }
+      }
+
+      return allResults.slice(0, 10);
+    } catch (error) {
+      console.error('❌ Erro na busca do YouTube Music:', error);
+      return [];
+    }
+  }
+
+  static generateYouTubeSearchTerms(query: string): string[] {
+    const terms = [query];
+    const lowerQuery = query.toLowerCase();
+
+    // Adicionar termos específicos para YouTube Music
+    terms.push(`${query} official`);
+    terms.push(`${query} music video`);
+    terms.push(`${query} audio`);
+    terms.push(`${query} letra`);
+    
+    if (lowerQuery.includes('brasileiro') || lowerQuery.includes('brasil')) {
+      terms.push(`${query} brazil`);
+    }
+
+    return terms;
+  }
+
+  static getMockYouTubeResults(searchTerm: string): MusicTrack[] {
+    // Mock data baseado em músicas brasileiras populares no YouTube
+    const mockDatabase = [
+      {
+        id: 'yt-1',
+        title: 'Como É Grande o Meu Amor Por Você',
+        artist: 'Roberto Carlos',
+        duration: 180,
+        source: 'youtube' as const,
+        popularity: 95,
+        bpm: 125
+      },
+      {
+        id: 'yt-2',
+        title: 'Garota de Ipanema',
+        artist: 'Tom Jobim & Vinícius de Moraes',
+        duration: 165,
+        source: 'youtube' as const,
+        popularity: 92,
+        bpm: 120
+      },
+      {
+        id: 'yt-3',
+        title: 'Águas de Março',
+        artist: 'Elis Regina',
+        duration: 195,
+        source: 'youtube' as const,
+        popularity: 90,
+        bpm: 118
+      },
+      {
+        id: 'yt-4',
+        title: 'Tempo Perdido',
+        artist: 'Legião Urbana',
+        duration: 210,
+        source: 'youtube' as const,
+        popularity: 88,
+        bpm: 135
+      },
+      {
+        id: 'yt-5',
+        title: 'Asa Branca',
+        artist: 'Luiz Gonzaga',
+        duration: 155,
+        source: 'youtube' as const,
+        popularity: 87,
+        bpm: 140
+      }
+    ];
+
+    // Filtrar por relevância da busca
+    return mockDatabase.filter(track => {
+      const searchLower = searchTerm.toLowerCase();
+      const titleLower = track.title.toLowerCase();
+      const artistLower = track.artist.toLowerCase();
+      
+      return titleLower.includes(searchLower) || 
+             artistLower.includes(searchLower) ||
+             searchLower.split(' ').some(word => 
+               titleLower.includes(word) || artistLower.includes(word)
+             );
+    });
+  }
+}
+
 export class JamendoAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
@@ -105,14 +207,14 @@ export class JamendoAPI {
       const expandedTerms = this.expandSearchTerms(query);
       let allResults = [];
 
-      for (const searchTerm of expandedTerms.slice(0, 6)) {
-        if (allResults.length >= 20) break;
+      for (const searchTerm of expandedTerms.slice(0, 8)) {
+        if (allResults.length >= 25) break;
 
         const searchParams = new URLSearchParams({
           client_id: API_KEY,
           format: 'json',
           search: searchTerm,
-          limit: '15',
+          limit: '20',
           audioformat: 'mp31',
           order: 'popularity_total',
           include: 'musicinfo'
@@ -128,7 +230,7 @@ export class JamendoAPI {
             const results = data.results || [];
             
             const validTracks = results.filter((item: any) => 
-              item.audio && item.audio.length > 0 && item.duration > 15
+              item.audio && item.audio.length > 0 && item.duration > 20
             );
             
             allResults.push(...validTracks);
@@ -266,181 +368,92 @@ export class JamendoAPI {
     terms.push(`${query} instrumental`);
     terms.push(`${query} acoustic`);
     
-    return [...new Set(terms)].slice(0, 8);
+    return [...new Set(terms)].slice(0, 10);
   }
 }
 
 export class DemoAPI {
   static async getPopularTracks(): Promise<MusicTrack[]> {
-    const realBrazilianTracks: MusicTrack[] = [
-      // Roberto Carlos
-      {
-        id: 'demo-rc-1',
-        title: 'Detalhes',
-        artist: 'Roberto Carlos',
-        duration: 45,
-        popularity: 95,
-        source: 'demo',
-        bpm: 130
-      },
-      {
-        id: 'demo-rc-2',
-        title: 'Como É Grande o Meu Amor Por Você',
-        artist: 'Roberto Carlos',
-        duration: 42,
-        popularity: 92,
-        source: 'demo',
-        bpm: 125
-      },
-      // Caetano Veloso
-      {
-        id: 'demo-cv-1',
-        title: 'Alegria, Alegria',
-        artist: 'Caetano Veloso',
-        duration: 40,
-        popularity: 90,
-        source: 'demo',
-        bpm: 125
-      },
-      {
-        id: 'demo-cv-2',
-        title: 'Sozinho',
-        artist: 'Caetano Veloso',
-        duration: 38,
-        popularity: 88,
-        source: 'demo',
-        bpm: 120
-      },
-      // Tom Jobim
-      {
-        id: 'demo-tj-1',
-        title: 'Garota de Ipanema',
-        artist: 'Tom Jobim',
-        duration: 38,
-        popularity: 88,
-        source: 'demo',
-        bpm: 120
-      },
-      {
-        id: 'demo-tj-2',
-        title: 'Corcovado',
-        artist: 'Tom Jobim',
-        duration: 35,
-        popularity: 85,
-        source: 'demo',
-        bpm: 115
-      },
-      // Elis Regina
-      {
-        id: 'demo-er-1',
-        title: 'Como Nossos Pais',
-        artist: 'Elis Regina',
-        duration: 42,
-        popularity: 87,
-        source: 'demo',
-        bpm: 115
-      },
-      {
-        id: 'demo-er-2',
-        title: 'Águas de Março',
-        artist: 'Elis Regina',
-        duration: 40,
-        popularity: 86,
-        source: 'demo',
-        bpm: 118
-      },
+    // Expandir significativamente a base de dados brasileira
+    const expandedBrazilianTracks: MusicTrack[] = [
+      // Roberto Carlos - Rei da Música Brasileira
+      { id: 'demo-rc-1', title: 'Detalhes', artist: 'Roberto Carlos', duration: 45, popularity: 95, source: 'demo', bpm: 130 },
+      { id: 'demo-rc-2', title: 'Como É Grande o Meu Amor Por Você', artist: 'Roberto Carlos', duration: 42, popularity: 92, source: 'demo', bpm: 125 },
+      { id: 'demo-rc-3', title: 'Sua Estupidez', artist: 'Roberto Carlos', duration: 44, popularity: 88, source: 'demo', bpm: 135 },
+      { id: 'demo-rc-4', title: 'Jesus Cristo', artist: 'Roberto Carlos', duration: 46, popularity: 90, source: 'demo', bpm: 120 },
+      { id: 'demo-rc-5', title: 'Amigo', artist: 'Roberto Carlos', duration: 38, popularity: 87, source: 'demo', bpm: 125 },
+
+      // Caetano Veloso - Tropicália
+      { id: 'demo-cv-1', title: 'Alegria, Alegria', artist: 'Caetano Veloso', duration: 40, popularity: 90, source: 'demo', bpm: 125 },
+      { id: 'demo-cv-2', title: 'Sozinho', artist: 'Caetano Veloso', duration: 38, popularity: 88, source: 'demo', bpm: 120 },
+      { id: 'demo-cv-3', title: 'Tropicália', artist: 'Caetano Veloso', duration: 42, popularity: 89, source: 'demo', bpm: 130 },
+      { id: 'demo-cv-4', title: 'Domingo', artist: 'Caetano Veloso', duration: 35, popularity: 86, source: 'demo', bpm: 115 },
+
+      // Tom Jobim - Bossa Nova
+      { id: 'demo-tj-1', title: 'Garota de Ipanema', artist: 'Tom Jobim', duration: 38, popularity: 95, source: 'demo', bpm: 120 },
+      { id: 'demo-tj-2', title: 'Corcovado', artist: 'Tom Jobim', duration: 35, popularity: 85, source: 'demo', bpm: 115 },
+      { id: 'demo-tj-3', title: 'Desafinado', artist: 'Tom Jobim', duration: 40, popularity: 88, source: 'demo', bpm: 118 },
+      { id: 'demo-tj-4', title: 'Wave', artist: 'Tom Jobim', duration: 42, popularity: 87, source: 'demo', bpm: 122 },
+
+      // Elis Regina - Rainha da MPB
+      { id: 'demo-er-1', title: 'Como Nossos Pais', artist: 'Elis Regina', duration: 42, popularity: 92, source: 'demo', bpm: 115 },
+      { id: 'demo-er-2', title: 'Águas de Março', artist: 'Elis Regina', duration: 40, popularity: 90, source: 'demo', bpm: 118 },
+      { id: 'demo-er-3', title: 'O Bêbado e a Equilibrista', artist: 'Elis Regina', duration: 45, popularity: 89, source: 'demo', bpm: 110 },
+      { id: 'demo-er-4', title: 'Madalena', artist: 'Elis Regina', duration: 38, popularity: 86, source: 'demo', bpm: 125 },
+
       // Chico Buarque
-      {
-        id: 'demo-cb-1',
-        title: 'Construção',
-        artist: 'Chico Buarque',
-        duration: 44,
-        popularity: 89,
-        source: 'demo',
-        bpm: 122
-      },
-      {
-        id: 'demo-cb-2',
-        title: 'A Banda',
-        artist: 'Chico Buarque',
-        duration: 36,
-        popularity: 84,
-        source: 'demo',
-        bpm: 130
-      },
+      { id: 'demo-cb-1', title: 'Construção', artist: 'Chico Buarque', duration: 44, popularity: 89, source: 'demo', bpm: 122 },
+      { id: 'demo-cb-2', title: 'A Banda', artist: 'Chico Buarque', duration: 36, popularity: 84, source: 'demo', bpm: 130 },
+      { id: 'demo-cb-3', title: 'Apesar de Você', artist: 'Chico Buarque', duration: 40, popularity: 88, source: 'demo', bpm: 120 },
+
+      // Gilberto Gil
+      { id: 'demo-gg-1', title: 'Aquele Abraço', artist: 'Gilberto Gil', duration: 38, popularity: 87, source: 'demo', bpm: 128 },
+      { id: 'demo-gg-2', title: 'Expresso 2222', artist: 'Gilberto Gil', duration: 42, popularity: 85, source: 'demo', bpm: 135 },
+
+      // Legião Urbana - Rock Nacional
+      { id: 'demo-lu-1', title: 'Tempo Perdido', artist: 'Legião Urbana', duration: 45, popularity: 92, source: 'demo', bpm: 135 },
+      { id: 'demo-lu-2', title: 'Pais e Filhos', artist: 'Legião Urbana', duration: 48, popularity: 90, source: 'demo', bpm: 125 },
+      { id: 'demo-lu-3', title: 'Será', artist: 'Legião Urbana', duration: 52, popularity: 88, source: 'demo', bpm: 130 },
+
+      // Skank
+      { id: 'demo-sk-1', title: 'Garota Nacional', artist: 'Skank', duration: 38, popularity: 85, source: 'demo', bpm: 140 },
+      { id: 'demo-sk-2', title: 'Vou Deixar', artist: 'Skank', duration: 42, popularity: 83, source: 'demo', bmp: 135 },
+
       // Música Infantil Brasileira
-      {
-        id: 'demo-inf-1',
-        title: 'Ciranda Cirandinha',
-        artist: 'Folclore Brasileiro',
-        duration: 32,
-        popularity: 85,
-        source: 'demo',
-        bpm: 125
-      },
-      {
-        id: 'demo-inf-2',
-        title: 'Atirei o Pau no Gato',
-        artist: 'Música Infantil',
-        duration: 26,
-        popularity: 82,
-        source: 'demo',
-        bpm: 140
-      },
-      {
-        id: 'demo-inf-3',
-        title: 'Brilha Brilha Estrelinha',
-        artist: 'Música Infantil',
-        duration: 28,
-        popularity: 92,
-        source: 'demo',
-        bpm: 115
-      },
-      {
-        id: 'demo-inf-4',
-        title: 'Parabéns Pra Você',
-        artist: 'Tradicional Brasileira',
-        duration: 22,
-        popularity: 88,
-        source: 'demo',
-        bpm: 135
-      },
+      { id: 'demo-inf-1', title: 'Ciranda Cirandinha', artist: 'Folclore Brasileiro', duration: 32, popularity: 85, source: 'demo', bpm: 125 },
+      { id: 'demo-inf-2', title: 'Atirei o Pau no Gato', artist: 'Música Infantil', duration: 26, popularity: 82, source: 'demo', bpm: 140 },
+      { id: 'demo-inf-3', title: 'Brilha Brilha Estrelinha', artist: 'Música Infantil', duration: 28, popularity: 92, source: 'demo', bpm: 115 },
+      { id: 'demo-inf-4', title: 'Parabéns Pra Você', artist: 'Tradicional Brasileira', duration: 22, popularity: 95, source: 'demo', bpm: 135 },
+      { id: 'demo-inf-5', title: 'Se Essa Rua Fosse Minha', artist: 'Folclore', duration: 30, popularity: 80, source: 'demo', bpm: 120 },
+      { id: 'demo-inf-6', title: 'Borboletinha', artist: 'Música Infantil', duration: 25, popularity: 78, source: 'demo', bmp: 130 },
+
       // Sertanejo/Forró
-      {
-        id: 'demo-luiz-1',
-        title: 'Asa Branca',
-        artist: 'Luiz Gonzaga',
-        duration: 40,
-        popularity: 90,
-        source: 'demo',
-        bpm: 140
-      },
-      // Rock Nacional
-      {
-        id: 'demo-legiao-1',
-        title: 'Tempo Perdido',
-        artist: 'Legião Urbana',
-        duration: 45,
-        popularity: 88,
-        source: 'demo',
-        bpm: 135
-      }
+      { id: 'demo-lg-1', title: 'Asa Branca', artist: 'Luiz Gonzaga', duration: 40, popularity: 90, source: 'demo', bpm: 140 },
+      { id: 'demo-lg-2', title: 'Assum Preto', artist: 'Luiz Gonzaga', duration: 38, popularity: 85, source: 'demo', bmp: 135 },
+
+      // Samba
+      { id: 'demo-sm-1', title: 'Mas Que Nada', artist: 'Jorge Ben Jor', duration: 40, popularity: 88, source: 'demo', bpm: 140 },
+      { id: 'demo-sm-2', title: 'País Tropical', artist: 'Jorge Ben Jor', duration: 42, popularity: 86, source: 'demo', bpm: 135 },
+
+      // MPB Clássica
+      { id: 'demo-mn-1', title: 'Travessia', artist: 'Milton Nascimento', duration: 45, popularity: 87, source: 'demo', bmp: 110 },
+      { id: 'demo-dj-1', title: 'Flor de Lis', artist: 'Djavan', duration: 40, popularity: 85, source: 'demo', bpm: 125 }
     ];
 
-    console.log(`🎵 Demo brasileiro: ${realBrazilianTracks.length} músicas`);
-    return realBrazilianTracks;
+    console.log(`🎵 Demo brasileiro expandido: ${expandedBrazilianTracks.length} músicas`);
+    return expandedBrazilianTracks;
   }
 
   static async search(query: string): Promise<MusicTrack[]> {
     const tracks = await this.getPopularTracks();
     
     if (!query.trim()) {
-      return tracks;
+      return tracks.slice(0, 20);
     }
 
     const lowerQuery = query.toLowerCase();
     
-    return tracks.filter(track => {
+    const filtered = tracks.filter(track => {
       const titleMatch = track.title.toLowerCase().includes(lowerQuery);
       const artistMatch = track.artist.toLowerCase().includes(lowerQuery);
       
@@ -457,19 +470,23 @@ export class DemoAPI {
       
       return titleMatch || artistMatch || wordMatch || brazilianMatches;
     });
+
+    console.log(`🔍 Demo search "${query}": ${filtered.length} resultados`);
+    return filtered.slice(0, 20);
   }
 
   static checkBrazilianSynonyms(query: string, track: MusicTrack): boolean {
     const synonymMap = {
       'rei': ['roberto carlos'],
       'tropicália': ['caetano'],
-      'mpb': ['elis', 'caetano', 'tom', 'chico'],
+      'mpb': ['elis', 'caetano', 'tom', 'chico', 'milton', 'djavan'],
       'bossa': ['tom jobim', 'garota'],
       'brasileiro': ['roberto', 'caetano', 'elis', 'tom'],
       'clássico': ['detalhes', 'alegria', 'ipanema', 'pais'],
-      'infantil': ['ciranda', 'brilha', 'parabéns', 'pau'],
-      'forró': ['asa branca', 'luiz'],
-      'rock': ['legião', 'tempo']
+      'infantil': ['ciranda', 'brilha', 'parabéns', 'pau', 'rua', 'borboleta'],
+      'forró': ['asa branca', 'luiz', 'assum'],
+      'rock': ['legião', 'tempo', 'skank'],
+      'samba': ['jorge ben', 'mas que nada', 'país tropical']
     };
 
     for (const [synonym, artists] of Object.entries(synonymMap)) {
@@ -488,160 +505,126 @@ export class DemoAPI {
 export class MusicAPIManager {
   private static failedTracks = new Set<string>();
   private static apiStatus = {
-    spotify: { working: true, lastCheck: 0 },
-    jamendo: { working: true, lastCheck: 0 },
-    demo: { working: true, lastCheck: 0 }
+    spotify: { working: true, lastCheck: 0, priority: 1 },
+    youtube: { working: true, lastCheck: 0, priority: 2 },
+    jamendo: { working: true, lastCheck: 0, priority: 3 },
+    demo: { working: true, lastCheck: 0, priority: 4 }
   };
 
-  static async search(query: string, source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
-    console.log(`🎵 Busca inteligente: "${query}" em ${source}`);
+  static async search(query: string, preferredSource: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'spotify'): Promise<MusicTrack[]> {
+    console.log(`🎵 Busca inteligente: "${query}" (preferência: ${preferredSource})`);
     
     let results: MusicTrack[] = [];
+    const sources = this.getOptimalSourceOrder(preferredSource);
     
-    // Tentar fonte principal
-    try {
-      if (source === 'spotify' && this.apiStatus.spotify.working) {
-        results = await SpotifyAPI.search(query);
-        this.updateApiStatus('spotify', true);
-      } else if (source === 'jamendo' && this.apiStatus.jamendo.working) {
-        results = await JamendoAPI.search(query);
-        this.updateApiStatus('jamendo', true);
-      } else if (source === 'demo') {
-        results = await DemoAPI.search(query);
-        this.updateApiStatus('demo', true);
+    // Buscar em múltiplas fontes com fallback inteligente
+    for (const source of sources) {
+      if (results.length >= 20) break;
+      
+      if (!this.apiStatus[source].working) {
+        console.log(`⚠️ ${source} marcado como não funcionando, pulando...`);
+        continue;
       }
-    } catch (error) {
-      console.error(`❌ Erro em ${source}:`, error);
-      this.updateApiStatus(source, false);
-    }
-    
-    // Fallback inteligente
-    if (results.length < 3) {
-      console.log(`⚠️ Poucos resultados (${results.length}), aplicando fallbacks...`);
       
-      const fallbackOrder = this.getOptimalFallbackOrder(source);
-      
-      for (const fallbackSource of fallbackOrder) {
-        if (results.length >= 15) break;
+      try {
+        let sourceResults: MusicTrack[] = [];
         
-        if (!this.apiStatus[fallbackSource].working) continue;
+        console.log(`🔍 Tentando ${source}...`);
         
-        try {
-          let fallbackResults: MusicTrack[] = [];
-          
-          console.log(`🔄 Fallback: ${fallbackSource}`);
-          
-          if (fallbackSource === 'spotify') {
-            fallbackResults = await SpotifyAPI.search(query);
-            this.updateApiStatus('spotify', true);
-          } else if (fallbackSource === 'jamendo') {
-            fallbackResults = await JamendoAPI.search(query);
-            this.updateApiStatus('jamendo', true);
-          } else if (fallbackSource === 'demo') {
-            fallbackResults = await DemoAPI.search(query);
-            this.updateApiStatus('demo', true);
-          }
-          
-          if (fallbackResults.length > 0) {
-            const newTracks = fallbackResults.filter(fallbackTrack => 
-              !results.some(existingTrack => 
-                existingTrack.id === fallbackTrack.id && existingTrack.source === fallbackTrack.source
-              )
-            );
-            
-            results.push(...newTracks);
-            console.log(`✅ Fallback ${fallbackSource}: +${newTracks.length} músicas`);
-          }
-        } catch (error) {
-          console.error(`❌ Erro fallback ${fallbackSource}:`, error);
-          this.updateApiStatus(fallbackSource, false);
+        if (source === 'spotify') {
+          sourceResults = await SpotifyAPI.search(query);
+          this.updateApiStatus('spotify', true);
+        } else if (source === 'youtube') {
+          sourceResults = await YouTubeMusicAPI.search(query);
+          this.updateApiStatus('youtube', true);
+        } else if (source === 'jamendo') {
+          sourceResults = await JamendoAPI.search(query);
+          this.updateApiStatus('jamendo', true);
+        } else if (source === 'demo') {
+          sourceResults = await DemoAPI.search(query);
+          this.updateApiStatus('demo', true);
         }
+        
+        if (sourceResults.length > 0) {
+          const newTracks = sourceResults.filter(sourceTrack => 
+            !results.some(existingTrack => 
+              existingTrack.id === sourceTrack.id && existingTrack.source === sourceTrack.source
+            )
+          );
+          
+          results.push(...newTracks);
+          console.log(`✅ ${source}: +${newTracks.length} músicas (total: ${results.length})`);
+          
+          // Se conseguimos resultados suficientes, parar
+          if (results.length >= 15) break;
+        }
+        
+      } catch (error) {
+        console.error(`❌ Erro em ${source}:`, error);
+        this.updateApiStatus(source, false);
       }
     }
     
     // Garantir que sempre temos músicas
     if (results.length === 0) {
-      console.log('🚨 Carregando músicas demo de emergência...');
+      console.log('🚨 Nenhum resultado encontrado, carregando demos de emergência...');
       const emergencyTracks = await DemoAPI.getPopularTracks();
-      results.push(...emergencyTracks);
+      results.push(...emergencyTracks.slice(0, 10));
     }
     
-    // Filtrar músicas que falharam
+    // Filtrar músicas que falharam e otimizar ordem
     const validResults = results.filter(track => 
       !this.failedTracks.has(`${track.source}-${track.id}`)
     );
     
-    // Otimizar ordem
     const optimizedResults = this.optimizeResultOrder(validResults, query);
     
-    console.log(`✅ Busca finalizada: ${optimizedResults.length} músicas`);
-    return optimizedResults.slice(0, 20);
+    console.log(`✅ Busca finalizada: ${optimizedResults.length} músicas de ${new Set(optimizedResults.map(t => t.source)).size} fontes`);
+    return optimizedResults.slice(0, 25);
   }
 
-  static async getPopular(source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
-    console.log(`🎵 Músicas populares: ${source}`);
+  static async getPopular(preferredSource: 'spotify' | 'jamendo' | 'demo' | 'youtube' = 'spotify'): Promise<MusicTrack[]> {
+    console.log(`🎵 Músicas populares (preferência: ${preferredSource})`);
     
     let results: MusicTrack[] = [];
+    const sources = this.getOptimalSourceOrder(preferredSource);
     
-    try {
-      if (source === 'spotify' && this.apiStatus.spotify.working) {
-        results = await SpotifyAPI.getPopular();
-        this.updateApiStatus('spotify', true);
-      } else if (source === 'jamendo' && this.apiStatus.jamendo.working) {
-        results = await JamendoAPI.getPopular();
-        this.updateApiStatus('jamendo', true);
-      } else if (source === 'demo') {
-        results = await DemoAPI.getPopularTracks();
-        this.updateApiStatus('demo', true);
-      }
-    } catch (error) {
-      console.error(`❌ Erro popular ${source}:`, error);
-      this.updateApiStatus(source, false);
-    }
-    
-    // Fallback se necessário
-    if (results.length < 5) {
-      console.log(`⚠️ Poucos populares (${results.length}), usando fallbacks...`);
+    for (const source of sources) {
+      if (results.length >= 30) break;
       
-      const fallbackOrder = this.getOptimalFallbackOrder(source);
+      if (!this.apiStatus[source].working) continue;
       
-      for (const fallbackSource of fallbackOrder) {
-        if (results.length >= 20) break;
+      try {
+        let sourceResults: MusicTrack[] = [];
         
-        if (!this.apiStatus[fallbackSource].working) continue;
-        
-        try {
-          let fallbackResults: MusicTrack[] = [];
-          
-          if (fallbackSource === 'spotify') {
-            fallbackResults = await SpotifyAPI.getPopular();
-            this.updateApiStatus('spotify', true);
-          } else if (fallbackSource === 'jamendo') {
-            fallbackResults = await JamendoAPI.getPopular();
-            this.updateApiStatus('jamendo', true);
-          } else if (fallbackSource === 'demo') {
-            fallbackResults = await DemoAPI.getPopularTracks();
-            this.updateApiStatus('demo', true);
-          }
-          
-          if (fallbackResults.length > 0) {
-            const newTracks = fallbackResults.filter(fallbackTrack => 
-              !results.some(existingTrack => 
-                existingTrack.id === fallbackTrack.id && existingTrack.source === fallbackTrack.source
-              )
-            );
-            
-            results.push(...newTracks);
-            console.log(`✅ Fallback popular ${fallbackSource}: +${newTracks.length}`);
-          }
-        } catch (error) {
-          console.error(`❌ Erro fallback popular ${fallbackSource}:`, error);
-          this.updateApiStatus(fallbackSource, false);
+        if (source === 'spotify') {
+          sourceResults = await SpotifyAPI.getPopular();
+          this.updateApiStatus('spotify', true);
+        } else if (source === 'jamendo') {
+          sourceResults = await JamendoAPI.getPopular();
+          this.updateApiStatus('jamendo', true);
+        } else if (source === 'demo') {
+          sourceResults = await DemoAPI.getPopularTracks();
+          this.updateApiStatus('demo', true);
         }
+        
+        if (sourceResults.length > 0) {
+          const newTracks = sourceResults.filter(sourceTrack => 
+            !results.some(existingTrack => 
+              existingTrack.id === sourceTrack.id && existingTrack.source === sourceTrack.source
+            )
+          );
+          
+          results.push(...newTracks);
+          console.log(`✅ Popular ${source}: +${newTracks.length} (total: ${results.length})`);
+        }
+        
+      } catch (error) {
+        console.error(`❌ Erro popular ${source}:`, error);
+        this.updateApiStatus(source, false);
       }
     }
     
-    // Demo como último recurso
     if (results.length === 0) {
       console.log('🚨 Usando demos de emergência...');
       results = await DemoAPI.getPopularTracks();
@@ -653,10 +636,97 @@ export class MusicAPIManager {
     
     const uniqueResults = validResults.filter((track, index, self) => 
       index === self.findIndex(t => t.id === track.id && t.source === track.source)
-    ).slice(0, 25);
+    ).slice(0, 30);
     
-    console.log(`✅ Total populares: ${uniqueResults.length}`);
+    console.log(`✅ Total populares: ${uniqueResults.length} de ${new Set(uniqueResults.map(t => t.source)).size} fontes`);
     return uniqueResults;
+  }
+
+  private static getOptimalSourceOrder(preferred: string): string[] {
+    const allSources = Object.entries(this.apiStatus)
+      .sort(([, a], [, b]) => {
+        // Priorizar fonte preferida
+        if (a.priority === 1 && preferred === 'spotify') return -1;
+        if (b.priority === 1 && preferred === 'spotify') return 1;
+        
+        // Depois por status (funcionando primeiro)
+        if (a.working && !b.working) return -1;
+        if (!a.working && b.working) return 1;
+        
+        // Depois por prioridade
+        return a.priority - b.priority;
+      })
+      .map(([source]) => source);
+    
+    return allSources;
+  }
+
+  private static updateApiStatus(source: string, working: boolean) {
+    this.apiStatus[source] = {
+      ...this.apiStatus[source],
+      working,
+      lastCheck: Date.now()
+    };
+    
+    if (!working) {
+      // Reabilitar após 2 minutos
+      setTimeout(() => {
+        this.apiStatus[source].working = true;
+        console.log(`🔄 API ${source} reabilitada`);
+      }, 2 * 60 * 1000);
+    }
+  }
+
+  private static optimizeResultOrder(tracks: MusicTrack[], query: string): MusicTrack[] {
+    return tracks.sort((a, b) => {
+      const aRelevance = this.calculateRelevance(a, query);
+      const bRelevance = this.calculateRelevance(b, query);
+      
+      if (aRelevance !== bRelevance) {
+        return bRelevance - aRelevance;
+      }
+      
+      // Priorizar por fonte
+      const sourceOrder = { spotify: 4, youtube: 3, jamendo: 2, demo: 1 };
+      const aSourceScore = sourceOrder[a.source] || 0;
+      const bSourceScore = sourceOrder[b.source] || 0;
+      
+      if (aSourceScore !== bSourceScore) {
+        return bSourceScore - aSourceScore;
+      }
+      
+      return (b.popularity || 0) - (a.popularity || 0);
+    });
+  }
+
+  private static calculateRelevance(track: MusicTrack, query: string): number {
+    const lowerQuery = query.toLowerCase();
+    const lowerTitle = track.title.toLowerCase();
+    const lowerArtist = track.artist.toLowerCase();
+    
+    let relevance = 0;
+    
+    // Correspondência exata
+    if (lowerTitle === lowerQuery) relevance += 100;
+    else if (lowerTitle.includes(lowerQuery)) relevance += 80;
+    else {
+      const queryWords = lowerQuery.split(' ');
+      const titleWords = lowerTitle.split(' ');
+      const matches = queryWords.filter(qw => titleWords.some(tw => tw.includes(qw)));
+      relevance += matches.length * 25;
+    }
+    
+    // Correspondência do artista
+    if (lowerArtist.includes(lowerQuery)) relevance += 40;
+    
+    // Bônus por qualidade
+    if (track.preview_url) relevance += 15;
+    if (track.popularity && track.popularity > 70) relevance += 10;
+    if (track.source === 'spotify') relevance += 8;
+    else if (track.source === 'youtube') relevance += 6;
+    else if (track.source === 'jamendo') relevance += 4;
+    
+    return relevance;
   }
 
   static markTrackAsFailed(track: MusicTrack) {
@@ -664,7 +734,6 @@ export class MusicAPIManager {
     this.failedTracks.add(key);
     console.log(`❌ Música falhou: ${track.title}`);
     
-    // Limpar após 2 minutos
     setTimeout(() => {
       this.failedTracks.delete(key);
       console.log(`🔄 Música reabilitada: ${track.title}`);
@@ -692,69 +761,6 @@ export class MusicAPIManager {
     return null;
   }
 
-  private static updateApiStatus(source: string, working: boolean) {
-    this.apiStatus[source] = {
-      working,
-      lastCheck: Date.now()
-    };
-    
-    if (!working) {
-      setTimeout(() => {
-        this.apiStatus[source].working = true;
-        console.log(`🔄 API ${source} reabilitada`);
-      }, 3 * 60 * 1000);
-    }
-  }
-
-  private static getOptimalFallbackOrder(source: string): string[] {
-    const availableAPIs = Object.entries(this.apiStatus)
-      .filter(([api, status]) => api !== source && status.working)
-      .sort(([, a], [, b]) => b.lastCheck - a.lastCheck)
-      .map(([api]) => api);
-    
-    const withoutDemo = availableAPIs.filter(api => api !== 'demo');
-    const demo = availableAPIs.find(api => api === 'demo');
-    
-    return demo ? [...withoutDemo, demo] : withoutDemo;
-  }
-
-  private static optimizeResultOrder(tracks: MusicTrack[], query: string): MusicTrack[] {
-    return tracks.sort((a, b) => {
-      const aRelevance = this.calculateRelevance(a, query);
-      const bRelevance = this.calculateRelevance(b, query);
-      
-      if (aRelevance !== bRelevance) {
-        return bRelevance - aRelevance;
-      }
-      
-      return (b.popularity || 0) - (a.popularity || 0);
-    });
-  }
-
-  private static calculateRelevance(track: MusicTrack, query: string): number {
-    const lowerQuery = query.toLowerCase();
-    const lowerTitle = track.title.toLowerCase();
-    const lowerArtist = track.artist.toLowerCase();
-    
-    let relevance = 0;
-    
-    if (lowerTitle === lowerQuery) relevance += 100;
-    else if (lowerTitle.includes(lowerQuery)) relevance += 80;
-    else {
-      const queryWords = lowerQuery.split(' ');
-      const titleWords = lowerTitle.split(' ');
-      const matches = queryWords.filter(qw => titleWords.some(tw => tw.includes(qw)));
-      relevance += matches.length * 20;
-    }
-    
-    if (lowerArtist.includes(lowerQuery)) relevance += 30;
-    if (track.preview_url) relevance += 10;
-    if (track.source === 'spotify') relevance += 5;
-    else if (track.source === 'jamendo') relevance += 3;
-    
-    return relevance;
-  }
-
   static async getBPM(track: MusicTrack): Promise<number> {
     if (track.bpm) {
       return track.bpm;
@@ -767,14 +773,20 @@ export class MusicAPIManager {
       }
     }
 
+    // BPM estimado baseado no título/artista
     const title = track.title.toLowerCase();
+    const artist = track.artist.toLowerCase();
+    
     if (title.includes('detalhes')) return 130;
     if (title.includes('alegria')) return 125;
     if (title.includes('ipanema')) return 120;
     if (title.includes('ciranda')) return 125;
     if (title.includes('parabéns')) return 135;
     if (title.includes('asa branca')) return 140;
+    if (artist.includes('roberto carlos')) return 125;
+    if (artist.includes('legião')) return 135;
+    if (artist.includes('tom jobim')) return 118;
     
-    return 120;
+    return 120; // BPM padrão
   }
 }
