@@ -14,9 +14,9 @@ serve(async (req) => {
   try {
     const { action, query, trackId } = await req.json()
     
-    // Credenciais do Spotify
-    const clientId = '456e8998507c4ce69392ec1afd8a7fb6'
-    const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET') || '00194c96f7574e5393f2f3f931bfb29f'
+    // Credenciais corretas do Spotify
+    const clientId = 'ca7261877c7848e6a2e8e7bb14f85e6e'
+    const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET') || 'b93c7e8b936141d8b7fc0b6d4aa8b9b1'
     
     console.log(`🎵 Spotify API - Ação: ${action}, Query: ${query}`)
     
@@ -31,7 +31,9 @@ serve(async (req) => {
     })
 
     if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.json()
       console.error(`❌ Falha ao obter token do Spotify: ${tokenResponse.status}`)
+      console.error(`❌ Resposta do erro:`, JSON.stringify(errorData))
       throw new Error(`Failed to get Spotify token: ${tokenResponse.status}`)
     }
 
@@ -41,53 +43,60 @@ serve(async (req) => {
     let result = {}
 
     if (action === 'search') {
-      // Buscar com termos muito mais amplos e variados
+      // Buscar com termos mais amplos e diversos mercados
       const searchTerms = [
         query,
         `${query} instrumental`,
-        `${query} cover`,
-        `${query} acoustic`,
         `${query} piano`,
-        `children ${query}`,
-        `kids ${query}`,
-        `nursery ${query}`,
-        `classical ${query}`,
-        `simple ${query}`
+        `${query} acoustic`,
+        `${query} children`,
+        `${query} kids`,
+        `música ${query}`,
+        `canção ${query}`,
+        `${query} cover`,
+        `${query} classical`
       ]
 
       let allTracks = []
 
+      // Tentar diferentes mercados para mais resultados
+      const markets = ['US', 'BR', 'GB', 'ES', 'DE']
+
       for (const searchTerm of searchTerms) {
-        if (allTracks.length >= 25) break
+        if (allTracks.length >= 30) break
 
-        try {
-          const searchParams = new URLSearchParams({
-            q: searchTerm,
-            type: 'track',
-            market: 'US', // Usar mercado US para mais resultados
-            limit: '15'
-          })
+        for (const market of markets) {
+          if (allTracks.length >= 30) break
 
-          const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
-            headers: {
-              'Authorization': `Bearer ${accessToken}`
+          try {
+            const searchParams = new URLSearchParams({
+              q: searchTerm,
+              type: 'track',
+              market: market,
+              limit: '20'
+            })
+
+            const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`
+              }
+            })
+
+            if (searchResponse.ok) {
+              const searchData = await searchResponse.json()
+              const tracks = searchData.tracks.items || []
+              
+              // Filtrar apenas músicas com preview_url
+              const tracksWithPreview = tracks.filter(item => item.preview_url)
+              allTracks.push(...tracksWithPreview)
+              
+              if (tracksWithPreview.length > 0) {
+                console.log(`🔍 "${searchTerm}" (${market}): ${tracksWithPreview.length} com preview`)
+              }
             }
-          })
-
-          if (searchResponse.ok) {
-            const searchData = await searchResponse.json()
-            const tracks = searchData.tracks.items || []
-            
-            // Filtrar apenas músicas com preview_url
-            const tracksWithPreview = tracks.filter(item => item.preview_url)
-            allTracks.push(...tracksWithPreview)
-            
-            console.log(`🔍 "${searchTerm}": ${tracksWithPreview.length} com preview`)
-          } else {
-            console.log(`⚠️ Busca falhou para: "${searchTerm}"`)
+          } catch (error) {
+            console.error(`❌ Erro na busca "${searchTerm}" (${market}):`, error)
           }
-        } catch (error) {
-          console.error(`❌ Erro na busca "${searchTerm}":`, error)
         }
       }
 
@@ -96,23 +105,27 @@ serve(async (req) => {
         console.log('🔄 Poucos resultados, tentando buscas genéricas...')
         
         const genericTerms = [
-          'children music instrumental',
-          'kids songs piano',
-          'nursery rhymes acoustic',
-          'classical piano simple',
-          'instrumental covers',
-          'easy listening piano'
+          'children music',
+          'kids songs',
+          'nursery rhymes',
+          'piano instrumental',
+          'acoustic covers',
+          'classical music',
+          'música infantil',
+          'canções populares',
+          'instrumental piano',
+          'easy listening'
         ]
 
         for (const genericTerm of genericTerms) {
-          if (allTracks.length >= 20) break
+          if (allTracks.length >= 25) break
 
           try {
             const searchParams = new URLSearchParams({
               q: genericTerm,
               type: 'track',
               market: 'US',
-              limit: '10'
+              limit: '15'
             })
 
             const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
@@ -138,7 +151,7 @@ serve(async (req) => {
       // Remover duplicatas e ordenar por popularidade
       const uniqueTracks = allTracks.filter((track, index, self) => 
         index === self.findIndex(t => t.id === track.id)
-      ).sort((a, b) => b.popularity - a.popularity).slice(0, 20)
+      ).sort((a, b) => b.popularity - a.popularity).slice(0, 25)
 
       console.log(`✅ Spotify search encontrou ${uniqueTracks.length} músicas únicas com preview`)
 
@@ -157,31 +170,36 @@ serve(async (req) => {
         }))
       }
     } else if (action === 'popular') {
-      // Buscar playlists populares de música infantil e instrumental
+      // Buscar playlists populares com termos mais diversos
       const popularQueries = [
-        'top 50 instrumental',
-        'piano covers popular',
-        'children music hits',
-        'nursery rhymes collection',
-        'classical piano peaceful',
-        'acoustic covers popular',
-        'kids instrumental music',
-        'peaceful piano music',
-        'simple piano melodies',
-        'easy listening instrumental'
+        'top hits instrumental',
+        'piano covers',
+        'acoustic popular',
+        'children music playlist',
+        'kids songs collection',
+        'classical piano',
+        'easy listening',
+        'peaceful music',
+        'instrumental covers',
+        'popular melodies',
+        'música popular brasileira',
+        'canções conhecidas',
+        'hits internacionais',
+        'música relaxante',
+        'piano suave'
       ]
 
       let allTracks = []
 
       for (const popularQuery of popularQueries) {
-        if (allTracks.length >= 30) break
+        if (allTracks.length >= 40) break
 
         try {
           const searchParams = new URLSearchParams({
             q: popularQuery,
             type: 'track',
             market: 'US',
-            limit: '15'
+            limit: '20'
           })
 
           const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
@@ -206,7 +224,7 @@ serve(async (req) => {
       // Remover duplicatas e ordenar por popularidade
       const uniqueTracks = allTracks.filter((track, index, self) => 
         index === self.findIndex(t => t.id === track.id)
-      ).sort((a, b) => b.popularity - a.popularity).slice(0, 25)
+      ).sort((a, b) => b.popularity - a.popularity).slice(0, 30)
 
       console.log(`✅ Spotify popular encontrou ${uniqueTracks.length} músicas únicas`)
       
