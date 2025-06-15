@@ -53,80 +53,105 @@ export class AudioSynthesis {
     });
   }
 
-  // Padrões musicais brasileiros específicos
-  private getMelodyPattern(title: string): { notes: number[], rhythm: number[], tempo: number } {
-    const normalizedTitle = title.toLowerCase();
-    
+  // Padrões musicais por gênero - COMPOSIÇÕES ORIGINAIS
+  private getOriginalMelodyPattern(title: string, genre: string): { notes: number[], rhythm: number[], tempo: number } {
     // Frequências das notas (C4 = 261.63Hz como base)
     const notes = {
       C: 261.63, D: 293.66, E: 329.63, F: 349.23, G: 392.00, A: 440.00, B: 493.88,
       C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99
     };
 
-    // Padrões específicos para músicas brasileiras conhecidas
-    if (normalizedTitle.includes('águas de março') || normalizedTitle.includes('aguas')) {
-      return {
-        notes: [notes.F, notes.G, notes.A, notes.F, notes.E, notes.D, notes.C, notes.F],
-        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0],
-        tempo: 120
-      };
+    // Padrões originais baseados em gênero musical
+    switch (genre) {
+      case 'infantil':
+        // Padrão alegre e simples para crianças
+        return {
+          notes: [notes.C, notes.E, notes.G, notes.E, notes.C, notes.G, notes.F, notes.E, notes.D, notes.C],
+          rhythm: [0.5, 0.5, 0.5, 0.5, 0.75, 0.25, 0.5, 0.5, 0.5, 1.0],
+          tempo: 100
+        };
+      
+      case 'mpb':
+        // Padrão sofisticado estilo MPB
+        return {
+          notes: [notes.F, notes.A, notes.C5, notes.A, notes.G, notes.F, notes.E, notes.D, notes.F, notes.G],
+          rhythm: [0.75, 0.25, 0.5, 0.5, 0.75, 0.25, 0.5, 0.5, 0.75, 1.25],
+          tempo: 95
+        };
+      
+      case 'bossa nova':
+        // Padrão suave estilo bossa nova
+        return {
+          notes: [notes.A, notes.G, notes.F, notes.E, notes.D, notes.E, notes.F, notes.G, notes.A],
+          rhythm: [0.67, 0.33, 0.5, 0.5, 0.5, 0.5, 0.67, 0.33, 1.0],
+          tempo: 120
+        };
+      
+      case 'rock':
+        // Padrão energético de rock
+        return {
+          notes: [notes.E, notes.G, notes.A, notes.C5, notes.A, notes.G, notes.E, notes.D, notes.E],
+          rhythm: [0.5, 0.25, 0.25, 0.5, 0.25, 0.25, 0.5, 0.5, 1.0],
+          tempo: 130
+        };
+      
+      case 'forró':
+        // Padrão rítmico de forró
+        return {
+          notes: [notes.D, notes.F, notes.A, notes.F, notes.D, notes.G, notes.F, notes.E, notes.D],
+          rhythm: [0.33, 0.33, 0.34, 0.33, 0.33, 0.34, 0.5, 0.5, 1.0],
+          tempo: 115
+        };
+      
+      case 'sertanejo':
+        // Padrão country brasileiro
+        return {
+          notes: [notes.G, notes.B, notes.D5, notes.B, notes.G, notes.A, notes.G, notes.F, notes.G],
+          rhythm: [0.5, 0.5, 0.75, 0.25, 0.5, 0.5, 0.5, 0.5, 1.0],
+          tempo: 90
+        };
+      
+      case 'samba':
+        // Padrão sincopado de samba
+        return {
+          notes: [notes.C, notes.E, notes.G, notes.A, notes.G, notes.E, notes.C, notes.D, notes.C],
+          rhythm: [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1.0],
+          tempo: 100
+        };
+      
+      case 'romântica':
+        // Padrão suave e romântico
+        return {
+          notes: [notes.F, notes.A, notes.C5, notes.D5, notes.C5, notes.A, notes.F, notes.G, notes.F],
+          rhythm: [1.0, 0.5, 0.5, 1.0, 0.5, 0.5, 0.75, 0.25, 1.5],
+          tempo: 75
+        };
+      
+      default:
+        // Padrão genérico
+        return {
+          notes: [notes.C, notes.E, notes.G, notes.E, notes.C, notes.G, notes.E, notes.C],
+          rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
+          tempo: 120
+        };
     }
-    
-    if (normalizedTitle.includes('garota') && normalizedTitle.includes('ipanema')) {
-      return {
-        notes: [notes.F, notes.G, notes.A, notes.G, notes.F, notes.E, notes.D, notes.F, notes.A, notes.C5],
-        rhythm: [0.5, 0.5, 0.75, 0.25, 0.5, 0.5, 0.5, 0.5, 0.75, 1.25],
-        tempo: 125
-      };
-    }
-    
-    if (normalizedTitle.includes('ciranda') || normalizedTitle.includes('cirandinha')) {
-      return {
-        notes: [notes.C, notes.C, notes.G, notes.G, notes.A, notes.A, notes.G, notes.F, notes.F, notes.E, notes.E, notes.D, notes.D, notes.C],
-        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
-        tempo: 100
-      };
-    }
-    
-    if (normalizedTitle.includes('brilha') || normalizedTitle.includes('estrelinha')) {
-      return {
-        notes: [notes.C, notes.C, notes.G, notes.G, notes.A, notes.A, notes.G, notes.F, notes.F, notes.E, notes.E, notes.D, notes.D, notes.C],
-        rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
-        tempo: 95
-      };
-    }
-    
-    if (normalizedTitle.includes('asa branca')) {
-      return {
-        notes: [notes.E, notes.G, notes.A, notes.G, notes.E, notes.D, notes.E, notes.G, notes.A],
-        rhythm: [0.75, 0.25, 0.5, 0.5, 0.5, 0.5, 0.75, 0.25, 1.0],
-        tempo: 110
-      };
-    }
-
-    // Padrão genérico para outras músicas
-    return {
-      notes: [notes.C, notes.E, notes.G, notes.E, notes.C, notes.G, notes.E, notes.C],
-      rhythm: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0],
-      tempo: 120
-    };
   }
 
-  // Criar uma melodia brasileira realista
-  async generateBrazilianMelody(title: string, duration: number = 30): Promise<string> {
+  // Criar uma melodia original baseada em gênero
+  async generateOriginalMelody(title: string, genre: string, duration: number = 30): Promise<string> {
     if (!this.audioContext) {
       throw new Error('Contexto de áudio não disponível');
     }
 
     // Verificar cache primeiro
-    const cacheKey = `${title}-${duration}`;
+    const cacheKey = `${title}-${genre}-${duration}`;
     if (this.audioCache.has(cacheKey)) {
-      console.log(`🎵 Usando melodia em cache para: ${title}`);
+      console.log(`🎵 Usando melodia original em cache para: ${title}`);
       return this.audioCache.get(cacheKey)!;
     }
 
     try {
-      const pattern = this.getMelodyPattern(title);
+      const pattern = this.getOriginalMelodyPattern(title, genre);
       const { notes, rhythm, tempo } = pattern;
       
       // Calcular duração baseada no tempo
@@ -165,15 +190,26 @@ export class AudioSynthesis {
               envelope = 0.8; // Sustain
             }
             
-            // Onda senoidal com harmônicos sutis para soar mais natural
-            const fundamental = Math.sin(2 * Math.PI * frequency * (currentTime + t));
-            const harmonic2 = 0.3 * Math.sin(2 * Math.PI * frequency * 2 * (currentTime + t));
-            const harmonic3 = 0.1 * Math.sin(2 * Math.PI * frequency * 3 * (currentTime + t));
+            // Onda senoidal com harmônicos sutis baseados no gênero
+            let fundamental = Math.sin(2 * Math.PI * frequency * (currentTime + t));
+            let harmonic2 = 0.3 * Math.sin(2 * Math.PI * frequency * 2 * (currentTime + t));
+            let harmonic3 = 0.1 * Math.sin(2 * Math.PI * frequency * 3 * (currentTime + t));
+            
+            // Variações por gênero
+            if (genre === 'rock') {
+              // Adicionar distorção sutil para rock
+              fundamental = Math.tanh(fundamental * 1.5);
+              harmonic2 *= 0.5;
+            } else if (genre === 'forró') {
+              // Adicionar um vibrato sutil para forró
+              const vibrato = 1 + 0.02 * Math.sin(2 * Math.PI * 5 * (currentTime + t));
+              fundamental *= vibrato;
+            }
             
             const sample = (fundamental + harmonic2 + harmonic3) * envelope * 0.2;
             
             leftChannel[sampleIndex] = sample;
-            rightChannel[sampleIndex] = sample * 0.8; // Ligeira diferença para stereo
+            rightChannel[sampleIndex] = sample * 0.9; // Ligeira diferença para stereo
           }
           
           currentTime += noteDuration;
@@ -197,13 +233,25 @@ export class AudioSynthesis {
       // Adicionar ao cache
       this.audioCache.set(cacheKey, url);
       
-      console.log(`🎵 Melodia gerada para: ${title} (${duration}s)`);
+      console.log(`🎵 Melodia original gerada: ${title} (${genre}) - ${duration}s`);
       return url;
 
     } catch (error) {
-      console.error('❌ Erro ao gerar melodia brasileira:', error);
+      console.error('❌ Erro ao gerar melodia original:', error);
       throw error;
     }
+  }
+
+  // Manter método antigo para compatibilidade
+  async generateBrazilianMelody(title: string, duration: number = 30): Promise<string> {
+    // Detectar gênero baseado no título para compatibilidade
+    let genre = 'mpb';
+    if (title.includes('Infantil') || title.includes('Criança')) genre = 'infantil';
+    else if (title.includes('Rock')) genre = 'rock';
+    else if (title.includes('Forró')) genre = 'forró';
+    else if (title.includes('Samba')) genre = 'samba';
+    
+    return this.generateOriginalMelody(title, genre, duration);
   }
 
   // Converter AudioBuffer para WAV com melhor qualidade

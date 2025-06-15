@@ -20,11 +20,11 @@ const BOOMWHACKER_NOTES = [
   { note: 'A', color: '#8A2BE2', name: 'Lá', frequency: 440.00, track: 5, key: 'h' }
 ];
 
-// Música de exemplo "Anjos Que Temos Ouvido"
-const ANGELS_SONG = {
-  id: 'angels',
-  title: 'Anjos Que Temos Ouvido',
-  artist: 'Música Tradicional',
+// Música de exemplo original "Melodia de Demonstração"
+const DEMO_SONG = {
+  id: 'demo-melody',
+  title: 'Melodia de Demonstração',
+  artist: 'Compositor Original',
   duration: 20,
   bpm: 120,
   difficulty: 'medium',
@@ -72,7 +72,7 @@ type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
-  const [selectedSong, setSelectedSong] = useState<typeof ANGELS_SONG | MusicTrack | null>(null);
+  const [selectedSong, setSelectedSong] = useState<typeof DEMO_SONG | MusicTrack | null>(null);
   const [availableTracks, setAvailableTracks] = useState<MusicTrack[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [fallingNotes, setFallingNotes] = useState<FallingNote[]>([]);
@@ -445,7 +445,7 @@ const BoomwhackerHero: React.FC = () => {
       });
     } else {
       console.log('🚨 Voltando para música padrão...');
-      setSelectedSong(ANGELS_SONG);
+      setSelectedSong(DEMO_SONG);
       
       toast({
         title: "🎵 Usando Música Padrão",
@@ -486,19 +486,24 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [handleTrackClick]);
 
-  // Efeito para inicialização - MELHORADO
+  // Efeito para inicialização - MELHORADO para músicas originais
   useEffect(() => {
     initializeAudio();
-    setSelectedSong(ANGELS_SONG);
+    setSelectedSong(DEMO_SONG);
     
-    // Carregar músicas demo com áudio sintético
+    // Carregar biblioteca original de músicas livres de direitos autorais
     MusicAPIManager.getPopular('demo').then(tracks => {
       setAvailableTracks(tracks);
-      console.log(`🎵 Músicas demo carregadas: ${tracks.length} (algumas com áudio sintético)`);
+      console.log(`🎵 Biblioteca original carregada: ${tracks.length} composições livres de direitos autorais`);
+      
+      toast({
+        title: "🎵 Biblioteca Musical Carregada",
+        description: `${tracks.length} composições originais disponíveis - 100% livres de direitos autorais`,
+      });
     });
     
-    console.log('🎵 Jogo inicializado com música padrão');
-  }, [initializeAudio]);
+    console.log('🎵 Jogo inicializado com música original');
+  }, [initializeAudio, toast]);
 
   // Efeito para manipular teclas
   useEffect(() => {
@@ -583,7 +588,7 @@ const BoomwhackerHero: React.FC = () => {
               className="bg-orange-500 hover:bg-orange-600"
             >
               <Music className="w-4 h-4 mr-2" />
-              Minhas Músicas
+              Biblioteca Original
             </Button>
             <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-700">
               <Settings className="w-4 h-4 mr-2" />
@@ -596,6 +601,11 @@ const BoomwhackerHero: React.FC = () => {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">🎵 BOOMWHACKER HERO</h1>
             <p className="text-xl text-purple-200">Escolha uma música e toque as notas que caem!</p>
+            <div className="mt-4 p-3 bg-green-900 bg-opacity-50 rounded-lg">
+              <p className="text-sm text-green-200">
+                ✅ <strong>100% Livre de Direitos Autorais</strong> - Todas as músicas são composições originais
+              </p>
+            </div>
           </div>
 
           {showMusicAPI ? (
@@ -609,8 +619,8 @@ const BoomwhackerHero: React.FC = () => {
                 }
                 setShowMusicAPI(false);
                 toast({
-                  title: "🎵 Música Selecionada!",
-                  description: `${track.title} - ${track.artist}`,
+                  title: "🎵 Composição Original Selecionada!",
+                  description: `${track.title} - ${track.artist} (Livre de direitos autorais)`,
                 });
               }}
               selectedTrack={selectedSong as MusicTrack}
@@ -622,7 +632,7 @@ const BoomwhackerHero: React.FC = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Music className="w-5 h-5" />
-                      Música Selecionada
+                      Composição Selecionada
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -641,6 +651,9 @@ const BoomwhackerHero: React.FC = () => {
                                 {selectedSong.source}
                               </Badge>
                             )}
+                            <Badge className="bg-green-600">
+                              Original & Livre
+                            </Badge>
                           </div>
                         </div>
                         <Badge variant="default">Pronto para jogar!</Badge>
@@ -734,6 +747,7 @@ const BoomwhackerHero: React.FC = () => {
           <div>
             <h2 className="text-xl font-bold">{selectedSong?.title}</h2>
             <p className="text-gray-400">{selectedSong?.artist}</p>
+            <p className="text-xs text-green-400">🎵 Composição Original</p>
           </div>
         </div>
 

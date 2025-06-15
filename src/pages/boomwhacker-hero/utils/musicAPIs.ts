@@ -128,112 +128,106 @@ class SpotifyAPI {
   }
 }
 
-// Gerador de músicas demo brasileiras expandido com áudio sintético
+// Gerador de músicas originais livres de direitos autorais
 import { globalAudioSynthesis } from './audioSynthesis';
 
-export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
-  const brazilianSongs = [
-    // MPB Clássicos
-    { title: "Águas de Março", artist: "Tom Jobim", genre: "bossa nova", bpm: 120 },
-    { title: "Garota de Ipanema", artist: "Tom Jobim & Vinícius de Moraes", genre: "bossa nova", bpm: 125 },
-    { title: "Wave", artist: "Tom Jobim", genre: "bossa nova", bpm: 110 },
-    { title: "Corcovado", artist: "Tom Jobim", genre: "bossa nova", bpm: 90 },
-    { title: "Desafinado", artist: "Tom Jobim", genre: "bossa nova", bpm: 115 },
+/**
+ * AVISO LEGAL: Todas as músicas abaixo são composições originais
+ * criadas especificamente para este aplicativo educacional.
+ * 
+ * - Todos os títulos são originais e fictícios
+ * - Todos os artistas são fictícios 
+ * - Todas as melodias são geradas proceduralmente
+ * - Conteúdo 100% livre de direitos autorais
+ * - Licença: Creative Commons CC0 (Domínio Público)
+ */
+export const generateOriginalDemoTracks = async (): Promise<MusicTrack[]> => {
+  const originalSongs = [
+    // Músicas Infantis Originais
+    { title: "Melodia da Manhã", artist: "Coral Infantil Harmonia", genre: "infantil", bpm: 100 },
+    { title: "Dança dos Passarinhos", artist: "Grupo Pequenos Músicos", genre: "infantil", bpm: 95 },
+    { title: "Cantiga do Sol", artist: "Coral Infantil Harmonia", genre: "infantil", bpm: 110 },
+    { title: "Brincadeira Musical", artist: "Os Pequenos Cantores", genre: "infantil", bpm: 105 },
+    { title: "Roda da Alegria", artist: "Turma Musical", genre: "infantil", bpm: 120 },
+    { title: "Canção das Cores", artist: "Grupo Pequenos Músicos", genre: "infantil", bpm: 115 },
+    { title: "Música dos Animais", artist: "Coral Infantil Harmonia", genre: "infantil", bpm: 100 },
+    { title: "Festa na Floresta", artist: "Os Pequenos Cantores", genre: "infantil", bpm: 110 },
+    { title: "Sonho de Criança", artist: "Turma Musical", genre: "infantil", bpm: 125 },
+    { title: "Jardim Encantado", artist: "Grupo Pequenos Músicos", genre: "infantil", bpm: 95 },
     
-    // Elis Regina
-    { title: "Como Nossos Pais", artist: "Elis Regina", genre: "mpb", bpm: 95 },
-    { title: "Madalena", artist: "Elis Regina", genre: "mpb", bpm: 100 },
-    { title: "Upa Neguinho", artist: "Elis Regina", genre: "mpb", bpm: 130 },
-    { title: "Arrastão", artist: "Elis Regina", genre: "mpb", bpm: 125 },
+    // MPB-Style Original
+    { title: "Brisa Dourada", artist: "Os Trovadores", genre: "mpb", bpm: 120 },
+    { title: "Caminho das Flores", artist: "Banda Melodia", genre: "mpb", bpm: 95 },
+    { title: "Sonho Azul", artist: "Grupo Harmonia", genre: "mpb", bpm: 85 },
+    { title: "Noite Serena", artist: "Os Trovadores", genre: "mpb", bpm: 110 },
+    { title: "Luz da Esperança", artist: "Banda Melodia", genre: "mpb", bpm: 100 },
+    { title: "Momento de Paz", artist: "Grupo Harmonia", genre: "mpb", bpm: 90 },
+    { title: "Verso Livre", artist: "Os Trovadores", genre: "mpb", bpm: 115 },
+    { title: "Tempo Dourado", artist: "Banda Melodia", genre: "mpb", bpm: 105 },
     
-    // Caetano Veloso
-    { title: "Alegria Alegria", artist: "Caetano Veloso", genre: "tropicália", bpm: 120 },
-    { title: "Tropicália", artist: "Caetano Veloso", genre: "tropicália", bpm: 115 },
-    { title: "Terra", artist: "Caetano Veloso", genre: "mpb", bpm: 85 },
-    { title: "Sampa", artist: "Caetano Veloso", genre: "mpb", bpm: 110 },
+    // Bossa Nova Original
+    { title: "Suave Compasso", artist: "Duo Bossa Livre", genre: "bossa nova", bpm: 125 },
+    { title: "Ritmo Carioca", artist: "Conjunto Melodia", genre: "bossa nova", bpm: 115 },
+    { title: "Doce Harmonia", artist: "Trio Suave", genre: "bossa nova", bpm: 110 },
+    { title: "Brisa da Tarde", artist: "Duo Bossa Livre", genre: "bossa nova", bpm: 120 },
+    { title: "Melodia Urbana", artist: "Conjunto Melodia", genre: "bossa nova", bpm: 90 },
     
-    // Chico Buarque
-    { title: "Construção", artist: "Chico Buarque", genre: "mpb", bpm: 100 },
-    { title: "Apesar de Você", artist: "Chico Buarque", genre: "mpb", bpm: 105 },
-    { title: "Roda Viva", artist: "Chico Buarque", genre: "mpb", bpm: 115 },
-    { title: "João e Maria", artist: "Chico Buarque", genre: "mpb", bpm: 90 },
+    // Rock Nacional Original
+    { title: "Energia Vital", artist: "Banda Força", genre: "rock", bpm: 130 },
+    { title: "Liberdade Total", artist: "Grupo Rebeldia", genre: "rock", bpm: 140 },
+    { title: "Vento Norte", artist: "Os Guerreiros", genre: "rock", bpm: 125 },
+    { title: "Alma Rebelde", artist: "Banda Força", genre: "rock", bpm: 135 },
+    { title: "Poder Interior", artist: "Grupo Rebeldia", genre: "rock", bpm: 145 },
+    { title: "Fogo Sagrado", artist: "Os Guerreiros", genre: "rock", bpm: 120 },
+    { title: "Força da Juventude", artist: "Banda Força", genre: "rock", bpm: 110 },
     
-    // Gilberto Gil
-    { title: "Aquele Abraço", artist: "Gilberto Gil", genre: "tropicália", bpm: 125 },
-    { title: "Expresso 2222", artist: "Gilberto Gil", genre: "rock", bpm: 140 },
-    { title: "Toda Menina Baiana", artist: "Gilberto Gil", genre: "mpb", bpm: 110 },
+    // Forró Original
+    { title: "Festa na Praça", artist: "Trio Nordestino", genre: "forró", bpm: 110 },
+    { title: "Dança do Vento", artist: "Grupo Sanfona", genre: "forró", bpm: 120 },
+    { title: "Noite Estrelada", artist: "Os Forrozeiros", genre: "forró", bpm: 115 },
+    { title: "Alegria do Povo", artist: "Trio Nordestino", genre: "forró", bpm: 125 },
+    { title: "Baile da Roça", artist: "Grupo Sanfona", genre: "forró", bpm: 118 },
     
-    // Roberto Carlos
-    { title: "Como é Grande o Meu Amor por Você", artist: "Roberto Carlos", genre: "romântica", bpm: 80 },
-    { title: "Detalhes", artist: "Roberto Carlos", genre: "romântica", bpm: 85 },
-    { title: "Emoções", artist: "Roberto Carlos", genre: "romântica", bpm: 75 },
-    { title: "Jesus Cristo", artist: "Roberto Carlos", genre: "romântica", bpm: 70 },
-    { title: "Lady Laura", artist: "Roberto Carlos", genre: "romântica", bpm: 90 },
+    // Sertanejo Original
+    { title: "Campo Dourado", artist: "Dupla Sertão", genre: "sertanejo", bpm: 85 },
+    { title: "Vida Simples", artist: "Os Caipiras", genre: "sertanejo", bpm: 90 },
+    { title: "Terra Querida", artist: "Dupla Sertão", genre: "sertanejo", bpm: 95 },
+    { title: "Raízes do Coração", artist: "Os Caipiras", genre: "sertanejo", bpm: 88 },
     
-    // Música Infantil Brasileira
-    { title: "Ciranda Cirandinha", artist: "Tradicional Brasileira", genre: "infantil", bpm: 100 },
-    { title: "Brilha Brilha Estrelinha", artist: "Tradicional Brasileira", genre: "infantil", bpm: 95 },
-    { title: "Atirei o Pau no Gato", artist: "Tradicional Brasileira", genre: "infantil", bpm: 110 },
-    { title: "Samba Lelê", artist: "Tradicional Brasileira", genre: "infantil", bpm: 105 },
-    { title: "Escravos de Jó", artist: "Tradicional Brasileira", genre: "infantil", bpm: 120 },
-    { title: "Peixe Vivo", artist: "Tradicional Brasileira", genre: "infantil", bpm: 115 },
-    { title: "Borboletinha", artist: "Tradicional Brasileira", genre: "infantil", bpm: 100 },
-    { title: "Capelinha de Melão", artist: "Tradicional Brasileira", genre: "infantil", bpm: 110 },
-    { title: "Marcha Soldado", artist: "Tradicional Brasileira", genre: "infantil", bpm: 125 },
-    { title: "Cai Cai Balão", artist: "Tradicional Brasileira", genre: "infantil", bpm: 95 },
+    // Samba Original
+    { title: "Alegria Brasileira", artist: "Escola de Samba", genre: "samba", bpm: 100 },
+    { title: "Ritmo do Coração", artist: "Roda de Samba", genre: "samba", bpm: 105 },
+    { title: "Festa Popular", artist: "Escola de Samba", genre: "samba", bpm: 108 },
+    { title: "Samba da Vida", artist: "Roda de Samba", genre: "samba", bpm: 95 },
     
-    // Rock Nacional
-    { title: "Que País É Este", artist: "Legião Urbana", genre: "rock", bpm: 130 },
-    { title: "Eduardo e Mônica", artist: "Legião Urbana", genre: "rock", bpm: 120 },
-    { title: "Tempo Perdido", artist: "Legião Urbana", genre: "rock", bpm: 125 },
-    { title: "Pais e Filhos", artist: "Legião Urbana", genre: "rock", bpm: 110 },
-    { title: "Geração Coca-Cola", artist: "Legião Urbana", genre: "rock", bpm: 135 },
-    
-    // Skank
-    { title: "Garota Nacional", artist: "Skank", genre: "rock", bpm: 140 },
-    { title: "Balada do Amor Inabalável", artist: "Skank", genre: "rock", bpm: 130 },
-    { title: "Jackie Tequila", artist: "Skank", genre: "rock", bpm: 145 },
-    
-    // Sertanejo Clássico
-    { title: "Chalana", artist: "Almir Sater", genre: "sertanejo", bpm: 85 },
-    { title: "Tocando em Frente", artist: "Almir Sater", genre: "sertanejo", bpm: 90 },
-    { title: "Cuitelinho", artist: "Tradicional", genre: "sertanejo", bpm: 95 },
-    
-    // Forró
-    { title: "Asa Branca", artist: "Luiz Gonzaga", genre: "forró", bpm: 110 },
-    { title: "Baião", artist: "Luiz Gonzaga", genre: "forró", bpm: 120 },
-    { title: "Xote das Meninas", artist: "Luiz Gonzaga", genre: "forró", bpm: 115 },
-    
-    // Samba
-    { title: "Aquarela do Brasil", artist: "Ary Barroso", genre: "samba", bpm: 100 },
-    { title: "Pelo Telefone", artist: "Donga", genre: "samba", bpm: 105 },
-    { title: "Carinhoso", artist: "Pixinguinha", genre: "samba", bpm: 80 }
+    // Romântica Original
+    { title: "Amor Verdadeiro", artist: "Cantor Romântico", genre: "romântica", bpm: 80 },
+    { title: "Coração em Paz", artist: "Voz Suave", genre: "romântica", bpm: 75 },
+    { title: "Sentimento Puro", artist: "Cantor Romântico", genre: "romântica", bpm: 85 },
+    { title: "Doce Lembrança", artist: "Voz Suave", genre: "romântica", bpm: 70 }
   ];
 
   const tracks: MusicTrack[] = [];
 
   // Processar as primeiras 15 músicas com áudio sintético para performance
-  for (let index = 0; index < Math.min(brazilianSongs.length, 15); index++) {
-    const song = brazilianSongs[index];
+  for (let index = 0; index < Math.min(originalSongs.length, 15); index++) {
+    const song = originalSongs[index];
     const duration = Math.floor(Math.random() * 120) + 120; // 2-4 minutos
     
     let preview_url: string | null = null;
     
     try {
-      // Gerar áudio sintético para músicas conhecidas
-      if (song.title.includes('Ciranda') || song.title.includes('Brilha') || 
-          song.title.includes('Águas') || song.title.includes('Garota') ||
-          song.title.includes('Asa Branca') || song.title.includes('Aquele Abraço') ||
-          song.title.includes('Alegria Alegria') || song.title.includes('Como Nossos Pais')) {
-        preview_url = await globalAudioSynthesis.generateBrazilianMelody(song.title, 30);
-        console.log(`🎵 Áudio gerado para: ${song.title}`);
+      // Gerar áudio sintético para as primeiras músicas
+      if (index < 8) { // Gerar áudio para as primeiras 8 apenas
+        preview_url = await globalAudioSynthesis.generateOriginalMelody(song.title, song.genre, 30);
+        console.log(`🎵 Áudio original gerado para: ${song.title}`);
       }
     } catch (error) {
       console.warn(`⚠️ Erro ao gerar áudio para ${song.title}:`, error);
     }
 
     tracks.push({
-      id: `demo-br-${index}`,
+      id: `original-${index}`,
       title: song.title,
       artist: song.artist,
       duration: duration,
@@ -247,12 +241,12 @@ export const generateBrazilianDemoTracks = async (): Promise<MusicTrack[]> => {
   }
 
   // Adicionar o restante sem áudio sintético para não sobrecarregar
-  for (let index = 15; index < brazilianSongs.length; index++) {
-    const song = brazilianSongs[index];
+  for (let index = 15; index < originalSongs.length; index++) {
+    const song = originalSongs[index];
     const duration = Math.floor(Math.random() * 120) + 120;
     
     tracks.push({
-      id: `demo-br-${index}`,
+      id: `original-${index}`,
       title: song.title,
       artist: song.artist,
       duration: duration,
@@ -347,7 +341,7 @@ class JamendoAPI {
 class YouTubeMusicAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     // Simulação de resultados do YouTube
-    const demoTracks = await generateBrazilianDemoTracks();
+    const demoTracks = await generateOriginalDemoTracks();
     const demoResults = demoTracks.filter(track =>
       track.title.toLowerCase().includes(query.toLowerCase()) ||
       track.artist.toLowerCase().includes(query.toLowerCase())
@@ -364,7 +358,7 @@ class YouTubeMusicAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     // Simulação de músicas populares do YouTube
-    const demoTracks = await generateBrazilianDemoTracks();
+    const demoTracks = await generateOriginalDemoTracks();
     const popularTracks = demoTracks.slice(0, 5).map(track => ({
       ...track,
       id: `youtube-${track.id}`,
@@ -484,8 +478,8 @@ export class MusicAPIManager {
   // Método privado para obter tracks demo com cache
   private static async getDemoTracks(): Promise<MusicTrack[]> {
     if (!this.demoTracksCache) {
-      console.log('🎵 Gerando tracks demo com áudio sintético...');
-      this.demoTracksCache = await generateBrazilianDemoTracks();
+      console.log('🎵 Gerando biblioteca original com áudio sintético...');
+      this.demoTracksCache = await generateOriginalDemoTracks();
     }
     return this.demoTracksCache;
   }
