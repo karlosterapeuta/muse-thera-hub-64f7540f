@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Play, Pause, Volume2, VolumeX, RotateCcw } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, RotateCcw, SkipForward } from 'lucide-react';
 import { MusicTrack } from '../utils/musicAPIs';
 
 interface MusicPlayerProps {
@@ -10,6 +9,7 @@ interface MusicPlayerProps {
   isPlaying: boolean;
   onPlayPause: (playing: boolean) => void;
   onTrackEnd?: () => void;
+  onTrackFailed?: () => void;
   volume?: number;
   onVolumeChange?: (volume: number) => void;
 }
@@ -19,6 +19,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   isPlaying,
   onPlayPause,
   onTrackEnd,
+  onTrackFailed,
   volume = 0.5,
   onVolumeChange
 }) => {
@@ -28,9 +29,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [audioStatus, setAudioStatus] = useState<'loading' | 'ready' | 'error' | 'none'>('none');
   const [retryCount, setRetryCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const loadTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const MAX_RETRIES = 2;
+  const LOAD_TIMEOUT = 10000; // 10 seconds
 
   // Limpar áudio anterior
   const cleanupAudio = () => {
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+    
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -49,6 +59,10 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       console.log(`✅ Áudio carregado - Duração: ${audioRef.current.duration}s`);
       setDuration(audioRef.current.duration || track?.duration || 0);
       setAudioStatus('ready');
+      setErrorMessage('');
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
     }
   };
 
@@ -72,27 +86,49 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     setAudioStatus('error');
     onPlayPause(false);
     
-    // Tentar novamente após erro (máximo 2 tentativas)
-    if (retryCount < 2 && track?.preview_url) {
-      console.log(`🔄 Tentativa ${retryCount + 1} de recarregar áudio`);
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+    
+    // Tentar novamente se não excedeu o limite
+    if (retryCount < MAX_RETRIES && track?.preview_url) {
+      console.log(`🔄 Tentativa ${retryCount + 1} de ${MAX_RETRIES} para recarregar áudio`);
       setRetryCount(prev => prev + 1);
+      setErrorMessage(`Tentativa ${retryCount + 1}/${MAX_RETRIES}...`);
+      
       setTimeout(() => {
         initializeAudio();
-      }, 1000);
+      }, 2000 * (retryCount + 1)); // Delay progressivo
+    } else {
+      // Falhou definitivamente
+      console.error('❌ Áudio falhou após todas as tentativas');
+      setErrorMessage('Áudio não disponível');
+      
+      // Notificar o componente pai para trocar de música
+      if (onTrackFailed) {
+        setTimeout(() => {
+          onTrackFailed();
+        }, 3000);
+      }
     }
   };
 
   const handleCanPlay = () => {
     console.log('✅ Áudio pronto para tocar');
     setAudioStatus('ready');
+    setErrorMessage('');
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
   };
 
-  // Inicializar áudio
+  // Inicializar áudio com timeout
   const initializeAudio = () => {
     if (!track) {
       setDuration(0);
       setCurrentTime(0);
       setAudioStatus('none');
+      setErrorMessage('');
       return;
     }
 
@@ -102,6 +138,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     if (track.preview_url) {
       console.log(`🎵 Carregando áudio: ${track.preview_url}`);
       setAudioStatus('loading');
+      setErrorMessage('Carregando...');
+      
+      // Timeout para carregamento
+      loadTimeoutRef.current = setTimeout(() => {
+        console.error('❌ Timeout no carregamento do áudio');
+        handleError(new Event('timeout'));
+      }, LOAD_TIMEOUT);
       
       try {
         const audio = new Audio();
@@ -125,6 +168,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       } catch (error) {
         console.error('❌ Erro ao criar áudio:', error);
         setAudioStatus('error');
+        setErrorMessage('Erro ao criar player');
+        handleError(new Event('creation-error'));
       }
     } else {
       // Sem preview_url - usar duração da música
@@ -132,6 +177,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       setDuration(track.duration);
       setAudioStatus('ready');
       setCurrentTime(0);
+      setErrorMessage('');
     }
   };
 
@@ -152,6 +198,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       } catch (error) {
         console.error('❌ Erro ao controlar reprodução:', error);
         setAudioStatus('error');
+        setErrorMessage('Erro na reprodução');
+        handleError(new Event('playback-error'));
       }
     } else {
       // Para músicas sem preview, apenas alternar estado
@@ -162,6 +210,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   // Efeito principal para inicializar áudio
   useEffect(() => {
     setRetryCount(0);
+    setErrorMessage('');
     initializeAudio();
     return cleanupAudio;
   }, [track?.id, track?.preview_url]);
@@ -213,6 +262,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   const handleRetry = () => {
     setRetryCount(0);
+    setErrorMessage('');
     initializeAudio();
   };
 
@@ -232,24 +282,28 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  const getStatusMessage = () => {
+  const getStatusDisplay = () => {
     switch (audioStatus) {
       case 'loading':
-        return { text: '🔄 Carregando música...', color: 'text-blue-400' };
+        return { text: '🔄 Carregando...', color: 'text-blue-400', showSpinner: true };
       case 'error':
-        return { text: '⚠️ Erro no áudio - clique para tentar novamente', color: 'text-red-400' };
+        return { 
+          text: errorMessage || '⚠️ Erro no áudio', 
+          color: 'text-red-400', 
+          showSpinner: false 
+        };
       case 'ready':
         if (track.preview_url) {
-          return { text: '🎵 Áudio real carregado', color: 'text-green-400' };
+          return { text: '🎵 Áudio carregado', color: 'text-green-400', showSpinner: false };
         } else {
-          return { text: '🎵 Música de demonstração', color: 'text-yellow-400' };
+          return { text: '🎵 Modo demonstração', color: 'text-yellow-400', showSpinner: false };
         }
       default:
-        return { text: '', color: '' };
+        return { text: '', color: '', showSpinner: false };
     }
   };
 
-  const statusMessage = getStatusMessage();
+  const statusDisplay = getStatusDisplay();
 
   return (
     <div className="bg-black bg-opacity-80 p-4 rounded-lg">
@@ -257,21 +311,34 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         <div className="flex-1">
           <h3 className="text-lg font-bold text-white">{track.title}</h3>
           <p className="text-gray-300">{track.artist}</p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`text-sm ${statusMessage.color}`}>
-              {statusMessage.text}
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span className={`text-sm ${statusDisplay.color}`}>
+              {statusDisplay.text}
             </span>
-            {audioStatus === 'error' && (
-              <Button
-                onClick={handleRetry}
-                size="sm"
-                variant="outline"
-                className="text-xs h-6 px-2"
-              >
-                <RotateCcw className="w-3 h-3 mr-1" />
-                Tentar novamente
-              </Button>
-            )}
+            <div className="flex gap-1">
+              {audioStatus === 'error' && (
+                <>
+                  <Button
+                    onClick={handleRetry}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-6 px-2"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Tentar novamente
+                  </Button>
+                  <Button
+                    onClick={handleSkip}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-6 px-2"
+                  >
+                    <SkipForward className="w-3 h-3 mr-1" />
+                    Pular música
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
         
@@ -281,7 +348,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
             disabled={audioStatus === 'loading'}
             className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
           >
-            {audioStatus === 'loading' ? (
+            {statusDisplay.showSpinner ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : isPlaying ? (
               <Pause className="w-6 h-6" />

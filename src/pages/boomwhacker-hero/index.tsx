@@ -73,6 +73,7 @@ const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
   const [selectedSong, setSelectedSong] = useState<typeof ANGELS_SONG | MusicTrack | null>(null);
+  const [availableTracks, setAvailableTracks] = useState<MusicTrack[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [fallingNotes, setFallingNotes] = useState<FallingNote[]>([]);
   const [gameStats, setGameStats] = useState<GameStats>({
@@ -197,6 +198,44 @@ const BoomwhackerHero: React.FC = () => {
       description: `Pontuação final: ${gameStats.score.toLocaleString()}`,
     });
   }, [gameStats.score, toast]);
+
+  // Nova função para lidar com falha de música
+  const handleTrackFailed = useCallback(() => {
+    if (!selectedSong || !availableTracks.length) return;
+    
+    // Marcar música atual como falha
+    if ('source' in selectedSong) {
+      MusicAPIManager.markTrackAsFailed(selectedSong as MusicTrack);
+    }
+    
+    // Tentar próxima música válida
+    const nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
+    
+    if (nextTrack) {
+      console.log(`🔄 Trocando para próxima música: ${nextTrack.title}`);
+      setSelectedSong(nextTrack);
+      
+      toast({
+        title: "🔄 Música Alterada",
+        description: `Agora tocando: ${nextTrack.title}`,
+      });
+    } else {
+      // Se não há mais músicas válidas, carregar demos
+      console.log('⚠️ Sem mais músicas válidas, carregando demos...');
+      
+      MusicAPIManager.getPopular('demo').then(demoTracks => {
+        if (demoTracks.length > 0) {
+          setAvailableTracks(demoTracks);
+          setSelectedSong(demoTracks[0]);
+          
+          toast({
+            title: "🎵 Usando Música Demo",
+            description: `Tocando: ${demoTracks[0].title}`,
+          });
+        }
+      });
+    }
+  }, [selectedSong, availableTracks, toast]);
 
   // Função para controlar play/pause do player
   const handleMusicPlayPause = useCallback((playing: boolean) => {
@@ -409,6 +448,7 @@ const BoomwhackerHero: React.FC = () => {
             <MusicAPI 
               onTrackSelect={(track) => {
                 setSelectedSong(track);
+                setAvailableTracks([track]); // Simplesmente definir apenas esta música por enquanto
                 setShowMusicAPI(false);
                 toast({
                   title: "🎵 Música Selecionada!",
@@ -448,11 +488,11 @@ const BoomwhackerHero: React.FC = () => {
                         <Badge variant="default">Pronto para jogar!</Badge>
                       </div>
                       
-                      {/* Preview da música - melhorado */}
                       <MusicPlayer
                         track={selectedSong as MusicTrack}
                         isPlaying={false}
                         onPlayPause={() => {}}
+                        onTrackFailed={handleTrackFailed}
                         volume={musicVolume}
                         onVolumeChange={setMusicVolume}
                       />
@@ -599,6 +639,7 @@ const BoomwhackerHero: React.FC = () => {
             isPlaying={isMusicPlaying}
             onPlayPause={handleMusicPlayPause}
             onTrackEnd={handleTrackEnd}
+            onTrackFailed={handleTrackFailed}
             volume={musicVolume}
             onVolumeChange={setMusicVolume}
           />

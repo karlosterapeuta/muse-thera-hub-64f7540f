@@ -12,6 +12,7 @@ export interface MusicTrack {
   external_url?: string;
   source: 'spotify' | 'jamendo' | 'demo' | 'synthesized';
   bpm?: number;
+  failed?: boolean; // Para blacklist temporária
 }
 
 // Instância global para síntese de áudio
@@ -117,14 +118,15 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
-      // Busca mais ampla sem filtros restritivos
+      // Busca mais simples e genérica
       const searchParams = new URLSearchParams({
         client_id: API_KEY,
         format: 'json',
-        namesearch: query,
-        limit: '30',
-        audioformat: 'mp31',
-        order: 'popularity_total'
+        search: query, // Mudança: usar 'search' ao invés de 'namesearch'
+        limit: '20',
+        audioformat: 'mp32', // Mudança: usar mp32 ao invés de mp31
+        order: 'popularity_total',
+        include: 'musicinfo' // Incluir informações da música
       });
 
       console.log(`🔍 Buscando no Jamendo: ${query}`);
@@ -141,12 +143,16 @@ export class JamendoAPI {
       
       console.log(`✅ Jamendo retornou ${results.length} resultados`);
       
-      return results.map((item: any) => ({
+      // Filtrar apenas músicas com áudio válido
+      const validTracks = results.filter((item: any) => item.audio && item.audio.length > 0);
+      console.log(`🎵 Jamendo músicas com áudio: ${validTracks.length}`);
+      
+      return validTracks.map((item: any) => ({
         id: item.id.toString(),
         title: item.name,
         artist: item.artist_name,
         duration: item.duration,
-        preview_url: item.audio,
+        preview_url: item.audio, // URL direta do áudio
         image: item.album_image,
         popularity: Math.floor(Math.random() * 100),
         external_url: item.shareurl,
@@ -163,13 +169,14 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
-      // Busca por músicas populares sem filtros muito específicos
+      // Busca por músicas populares sem tags específicas
       const searchParams = new URLSearchParams({
         client_id: API_KEY,
         format: 'json',
-        limit: '30',
-        audioformat: 'mp31',
-        order: 'popularity_total'
+        limit: '25',
+        audioformat: 'mp32',
+        order: 'popularity_total',
+        include: 'musicinfo'
       });
 
       console.log('🔍 Buscando músicas populares no Jamendo');
@@ -186,7 +193,11 @@ export class JamendoAPI {
       
       console.log(`✅ Jamendo popular retornou ${results.length} resultados`);
       
-      return results.map((item: any) => ({
+      // Filtrar apenas músicas com áudio válido
+      const validTracks = results.filter((item: any) => item.audio && item.audio.length > 0);
+      console.log(`🎵 Jamendo popular com áudio: ${validTracks.length}`);
+      
+      return validTracks.map((item: any) => ({
         id: item.id.toString(),
         title: item.name,
         artist: item.artist_name,
@@ -314,12 +325,13 @@ export class DemoAPI {
   }
 }
 
-// Classe principal para gerenciar todas as APIs com fallback robusto
+// Classe principal com sistema de fallback melhorado
 export class MusicAPIManager {
+  private static failedTracks = new Set<string>(); // Blacklist temporária
+
   static async search(query: string, source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
     console.log(`🎵 Iniciando busca: "${query}" na fonte: ${source}`);
     
-    // Sempre tentar todas as fontes em cascata
     let results: MusicTrack[] = [];
     
     // 1. Tentar fonte especificada primeiro
@@ -331,28 +343,42 @@ export class MusicAPIManager {
       results = await DemoAPI.search(query);
     }
     
-    // 2. Se não encontrou resultados suficientes, tentar outras fontes
-    if (results.length < 5) {
+    // 2. Fallback inteligente se não encontrou resultados suficientes
+    if (results.length < 3) {
       console.log(`⚠️ Poucos resultados em ${source}, tentando fallbacks...`);
       
-      if (source !== 'spotify') {
-        const spotifyResults = await SpotifyAPI.search(query);
-        results.push(...spotifyResults);
-      }
+      // Tentar outras fontes em ordem de preferência
+      const fallbackOrder = this.getFallbackOrder(source);
       
-      if (source !== 'jamendo' && results.length < 10) {
-        const jamendoResults = await JamendoAPI.search(query);
-        results.push(...jamendoResults);
-      }
-      
-      if (source !== 'demo' && results.length < 15) {
-        const demoResults = await DemoAPI.search(query);
-        results.push(...demoResults);
+      for (const fallbackSource of fallbackOrder) {
+        if (results.length >= 10) break;
+        
+        try {
+          let fallbackResults: MusicTrack[] = [];
+          
+          if (fallbackSource === 'spotify') {
+            fallbackResults = await SpotifyAPI.search(query);
+          } else if (fallbackSource === 'jamendo') {
+            fallbackResults = await JamendoAPI.search(query);
+          } else if (fallbackSource === 'demo') {
+            fallbackResults = await DemoAPI.search(query);
+          }
+          
+          results.push(...fallbackResults);
+          console.log(`✅ Fallback ${fallbackSource}: +${fallbackResults.length} músicas`);
+        } catch (error) {
+          console.error(`❌ Erro no fallback ${fallbackSource}:`, error);
+        }
       }
     }
     
-    // 3. Remover duplicatas e limitar resultados
-    const uniqueResults = results.filter((track, index, self) => 
+    // 3. Filtrar músicas que falharam anteriormente
+    const validResults = results.filter(track => 
+      !this.failedTracks.has(`${track.source}-${track.id}`)
+    );
+    
+    // 4. Remover duplicatas e limitar resultados
+    const uniqueResults = validResults.filter((track, index, self) => 
       index === self.findIndex(t => t.id === track.id && t.source === track.source)
     ).slice(0, 20);
     
@@ -374,13 +400,13 @@ export class MusicAPIManager {
       results = await DemoAPI.getPopularTracks();
     }
     
-    // Fallback para outras fontes se necessário
-    if (results.length < 5) {
+    // Fallback se necessário
+    if (results.length < 3) {
       console.log(`⚠️ Poucos resultados populares em ${source}, usando fallbacks...`);
       
-      const fallbackSources = ['spotify', 'jamendo', 'demo'].filter(s => s !== source);
+      const fallbackOrder = this.getFallbackOrder(source);
       
-      for (const fallbackSource of fallbackSources) {
+      for (const fallbackSource of fallbackOrder) {
         if (results.length >= 15) break;
         
         try {
@@ -401,8 +427,13 @@ export class MusicAPIManager {
       }
     }
     
+    // Filtrar músicas que falharam
+    const validResults = results.filter(track => 
+      !this.failedTracks.has(`${track.source}-${track.id}`)
+    );
+    
     // Remover duplicatas e retornar
-    const uniqueResults = results.filter((track, index, self) => 
+    const uniqueResults = validResults.filter((track, index, self) => 
       index === self.findIndex(t => t.id === track.id && t.source === track.source)
     ).slice(0, 20);
     
@@ -410,6 +441,50 @@ export class MusicAPIManager {
     return uniqueResults;
   }
 
+  // Marcar música como falha
+  static markTrackAsFailed(track: MusicTrack) {
+    const key = `${track.source}-${track.id}`;
+    this.failedTracks.add(key);
+    console.log(`❌ Música marcada como falha: ${track.title} (${track.source})`);
+    
+    // Limpar blacklist após 5 minutos
+    setTimeout(() => {
+      this.failedTracks.delete(key);
+      console.log(`🔄 Música removida da blacklist: ${track.title}`);
+    }, 5 * 60 * 1000);
+  }
+
+  // Obter próxima música válida de uma lista
+  static getNextValidTrack(tracks: MusicTrack[], currentTrack: MusicTrack): MusicTrack | null {
+    const currentIndex = tracks.findIndex(t => 
+      t.id === currentTrack.id && t.source === currentTrack.source
+    );
+    
+    // Procurar próxima música válida
+    for (let i = currentIndex + 1; i < tracks.length; i++) {
+      const track = tracks[i];
+      if (!this.failedTracks.has(`${track.source}-${track.id}`)) {
+        return track;
+      }
+    }
+    
+    return null;
+  }
+
+  private static getFallbackOrder(source: string): string[] {
+    switch (source) {
+      case 'spotify':
+        return ['demo', 'jamendo'];
+      case 'jamendo':
+        return ['demo', 'spotify'];
+      case 'demo':
+        return ['spotify', 'jamendo'];
+      default:
+        return ['demo', 'spotify', 'jamendo'];
+    }
+  }
+
+  // ... keep existing code (getBPM function)
   static async getBPM(track: MusicTrack): Promise<number> {
     if (track.bpm) {
       return track.bpm;
