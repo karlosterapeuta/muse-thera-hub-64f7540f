@@ -12,6 +12,7 @@ const MusicComposer = lazy(() => import("./pages/music-composer"));
 const TeaHero = lazy(() => import("./pages/tea-hero"));
 const Musicogram = lazy(() => import("./pages/musicogram"));
 const Sprunki = lazy(() => import("./pages/sprunki"));
+const BoomwhackerHero = lazy(() => import("./pages/boomwhacker-hero"));
 const BinaralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
 const Finance = lazy(() => import("./pages/finance"));
 const FinancialRecords = lazy(() => import("./pages/finance/records"));
@@ -39,6 +40,7 @@ export const navItems = [
   { to: "/tea-hero", page: <TeaHero /> },
   { to: "/musicogram", page: <Musicogram /> },
   { to: "/sprunki", page: <Sprunki /> },
+  { to: "/boomwhacker-hero", page: <BoomwhackerHero /> },
   { to: "/binaural-frequencies", page: <BinaralFrequencies /> },
   { to: "/finance", page: <Finance /> },
   { to: "/finance/records", page: <FinancialRecords /> },
