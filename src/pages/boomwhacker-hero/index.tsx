@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target, Search, Heart, Settings } from 'lucide-react';
+import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target, Search, Heart, Settings, Square } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import MusicAPI from './components/MusicAPI';
 import MusicPlayer from './components/MusicPlayer';
@@ -116,12 +116,43 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, []);
 
+  // Nova função para parar música
+  const stopMusic = useCallback(() => {
+    console.log('⏹️ Parando música');
+    setIsMusicPlaying(false);
+    setMusicPlayerCurrentTime(0);
+    setCurrentTime(0);
+    
+    // Se estamos jogando, pausar o jogo também
+    if (gameState === 'playing') {
+      setGameState('paused');
+    }
+    
+    toast({
+      title: "⏹️ Música Parada",
+      description: "A reprodução foi interrompida",
+    });
+  }, [gameState, toast]);
+
   // Novo: Sincronização com o tempo do music player
   const handleMusicTimeUpdate = useCallback((time: number) => {
     setMusicPlayerCurrentTime(time);
     // Sincronizar o tempo do jogo com o player
     if (gameState === 'playing') {
       setCurrentTime(time * 1000); // converter para ms
+    }
+  }, [gameState]);
+
+  // Função melhorada para controlar play/pause
+  const handleMusicPlayPause = useCallback((playing: boolean) => {
+    console.log(`🎵 Player: ${playing ? 'Play' : 'Pause'}`);
+    setIsMusicPlaying(playing);
+    
+    // Sincronizar o estado do jogo com o player
+    if (gameState === 'playing' && !playing) {
+      setGameState('paused');
+    } else if (gameState === 'paused' && playing) {
+      setGameState('playing');
     }
   }, [gameState]);
 
@@ -276,19 +307,6 @@ const BoomwhackerHero: React.FC = () => {
       });
     }
   }, [selectedSong, availableTracks, toast]);
-
-  // Função para controlar play/pause do player
-  const handleMusicPlayPause = useCallback((playing: boolean) => {
-    console.log(`🎵 Player: ${playing ? 'Play' : 'Pause'}`);
-    setIsMusicPlaying(playing);
-    
-    // Se estamos no jogo, sincronizar o estado do jogo
-    if (gameState === 'playing' && !playing) {
-      setGameState('paused');
-    } else if (gameState === 'paused' && playing) {
-      setGameState('playing');
-    }
-  }, [gameState]);
 
   // Gerar notas baseadas no padrão da música
   const generateNotes = useCallback((time: number) => {
@@ -511,7 +529,7 @@ const BoomwhackerHero: React.FC = () => {
             />
           ) : (
             <>
-              {/* ... keep existing code (music selection card and difficulty selector) */}
+              {/* Music selection card and difficulty selector */}
 
               {selectedSong && (
                 <Card className="mb-6">
@@ -544,19 +562,39 @@ const BoomwhackerHero: React.FC = () => {
                       
                       <MusicPlayer
                         track={selectedSong as MusicTrack}
-                        isPlaying={false}
-                        onPlayPause={() => {}}
+                        isPlaying={isMusicPlaying}
+                        onPlayPause={handleMusicPlayPause}
                         onTrackFailed={handleTrackFailed}
                         onTimeUpdate={handleMusicTimeUpdate}
                         volume={musicVolume}
                         onVolumeChange={setMusicVolume}
                       />
+
+                      {/* Controles adicionais de música */}
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          onClick={() => handleMusicPlayPause(!isMusicPlaying)}
+                          className="bg-blue-500 hover:bg-blue-600"
+                        >
+                          {isMusicPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+                          {isMusicPlaying ? 'Pausar' : 'Tocar'}
+                        </Button>
+                        
+                        <Button
+                          onClick={stopMusic}
+                          variant="outline"
+                          className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        >
+                          <Square className="w-4 h-4 mr-2" />
+                          Parar
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* ... keep existing code (difficulty selector, instructions, start button) */}
+              {/* Difficulty selector, instructions, start button */}
             </>
           )}
         </div>
@@ -580,12 +618,25 @@ const BoomwhackerHero: React.FC = () => {
           >
             ← Menu
           </Button>
-          <Button
-            onClick={toggleGamePause}
-            className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
-          >
-            {gameState === 'playing' ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-          </Button>
+          
+          {/* Controles de música no jogo */}
+          <div className="flex gap-2">
+            <Button
+              onClick={toggleGamePause}
+              className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
+            >
+              {gameState === 'playing' ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+            </Button>
+            
+            <Button
+              onClick={stopMusic}
+              className="w-12 h-12 bg-red-500 hover:bg-red-600 rounded-full p-0"
+              title="Parar música"
+            >
+              <Square className="w-6 h-6" />
+            </Button>
+          </div>
+          
           <div>
             <h2 className="text-xl font-bold">{selectedSong?.title}</h2>
             <p className="text-gray-400">{selectedSong?.artist}</p>
