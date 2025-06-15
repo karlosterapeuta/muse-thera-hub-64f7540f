@@ -2,7 +2,7 @@ import { TraditionalSong } from '../data/traditionalSongs';
 
 interface AudioSource {
   url: string;
-  type: 'local' | 'cdn' | 'synthetic';
+  type: 'local' | 'cdn' | 'backup' | 'synthetic';
 }
 
 class GuitarHeroAudioManager {
@@ -13,6 +13,7 @@ class GuitarHeroAudioManager {
   private isInitialized: boolean = false;
   private loadingProgress: number = 0;
   private audioCache: Map<string, string> = new Map();
+  private retryAttempts: Map<string, number> = new Map();
 
   async initialize() {
     if (this.isInitialized) return;
@@ -35,45 +36,86 @@ class GuitarHeroAudioManager {
   private getAudioSources(song: TraditionalSong): AudioSource[] {
     const sources: AudioSource[] = [];
     
-    // Primeiro tenta arquivo local
-    if (song.audioFile) {
-      sources.push({ url: song.audioFile, type: 'local' });
-    }
-    
-    // Depois tenta CDN
+    // CDN primeiro (mais confiável)
     if (song.cdnUrl) {
       sources.push({ url: song.cdnUrl, type: 'cdn' });
+    }
+    
+    // URLs de backup
+    if (song.backupUrls) {
+      song.backupUrls.forEach(url => {
+        sources.push({ url, type: 'backup' });
+      });
+    }
+    
+    // Arquivo local por último
+    if (song.audioFile) {
+      sources.push({ url: song.audioFile, type: 'local' });
     }
     
     return sources;
   }
 
-  private async tryLoadAudioSource(source: AudioSource): Promise<HTMLAudioElement | null> {
+  private async tryLoadAudioSource(source: AudioSource, attempts: number = 0): Promise<HTMLAudioElement | null> {
     return new Promise((resolve) => {
       const audio = new Audio();
-      audio.crossOrigin = 'anonymous';
+      
+      // Configurações específicas por tipo de fonte
+      if (source.type === 'cdn' || source.type === 'backup') {
+        audio.crossOrigin = 'anonymous';
+      }
+      
       audio.preload = 'auto';
       audio.volume = this.musicVolume;
 
+      // Timeout mais generoso para CDN
+      const timeoutDuration = source.type === 'local' ? 5000 : 10000;
       const timeoutId = setTimeout(() => {
-        console.log(`⏰ Timeout loading ${source.type}: ${source.url}`);
+        console.log(`⏰ Timeout loading ${source.type}: ${source.url} (tentativa ${attempts + 1})`);
+        audio.src = '';
         resolve(null);
-      }, 8000);
+      }, timeoutDuration);
 
-      audio.addEventListener('canplaythrough', () => {
+      const cleanup = () => {
         clearTimeout(timeoutId);
+        audio.removeEventListener('canplaythrough', onSuccess);
+        audio.removeEventListener('error', onError);
+        audio.removeEventListener('loadeddata', onLoadedData);
+      };
+
+      const onSuccess = () => {
+        cleanup();
         console.log(`✅ Carregado com sucesso (${source.type}): ${source.url}`);
         resolve(audio);
-      }, { once: true });
+      };
 
-      audio.addEventListener('error', (e) => {
-        clearTimeout(timeoutId);
-        console.log(`❌ Erro ao carregar ${source.type}: ${source.url}`, e);
+      const onLoadedData = () => {
+        // Se temos dados suficientes, considerar sucesso
+        if (audio.readyState >= 2) {
+          cleanup();
+          console.log(`✅ Dados carregados (${source.type}): ${source.url}`);
+          resolve(audio);
+        }
+      };
+
+      const onError = (e: any) => {
+        cleanup();
+        console.log(`❌ Erro ao carregar ${source.type}: ${source.url}`, e?.message || 'erro desconhecido');
         resolve(null);
-      }, { once: true });
+      };
 
-      audio.src = source.url;
-      audio.load();
+      audio.addEventListener('canplaythrough', onSuccess, { once: true });
+      audio.addEventListener('loadeddata', onLoadedData, { once: true });
+      audio.addEventListener('error', onError, { once: true });
+
+      try {
+        audio.src = source.url;
+        audio.load();
+      } catch (error) {
+        cleanup();
+        console.log(`❌ Exceção ao definir src ${source.type}: ${source.url}`, error);
+        resolve(null);
+      }
     });
   }
 
@@ -91,31 +133,45 @@ class GuitarHeroAudioManager {
       const cacheKey = song.id;
       if (this.audioCache.has(cacheKey)) {
         const cachedUrl = this.audioCache.get(cacheKey)!;
+        console.log(`📦 Usando cache para: ${song.title}`);
         const audio = await this.tryLoadAudioSource({ url: cachedUrl, type: 'local' });
         if (audio) {
           this.currentTrack = audio;
+          this.loadingProgress = 100;
           return true;
+        } else {
+          // Cache inválido, remover
+          this.audioCache.delete(cacheKey);
         }
       }
 
       const sources = this.getAudioSources(song);
+      const attempts = this.retryAttempts.get(cacheKey) || 0;
+      
+      console.log(`🔄 Tentando carregar ${sources.length} fontes para: ${song.title}`);
       
       // Tentar carregar de cada fonte em ordem
-      for (const source of sources) {
-        this.loadingProgress = 25;
-        const audio = await this.tryLoadAudioSource(source);
+      for (let i = 0; i < sources.length; i++) {
+        const source = sources[i];
+        this.loadingProgress = 25 + (i * 50 / sources.length);
+        
+        console.log(`🎵 Tentando fonte ${i + 1}/${sources.length} (${source.type}): ${source.url}`);
+        const audio = await this.tryLoadAudioSource(source, attempts);
         
         if (audio) {
           this.currentTrack = audio;
           this.audioCache.set(cacheKey, source.url);
           this.loadingProgress = 100;
+          this.retryAttempts.delete(cacheKey);
+          console.log(`🎉 Sucesso! Música carregada: ${song.title} via ${source.type}`);
           return true;
         }
       }
 
-      // Se todas as fontes falharam, criar áudio sintético
-      console.log(`⚠️ Todas as fontes falharam para ${song.title}, gerando áudio sintético`);
-      this.loadingProgress = 50;
+      // Se todas as fontes falharam, incrementar tentativas e gerar áudio sintético
+      this.retryAttempts.set(cacheKey, attempts + 1);
+      console.log(`⚠️ Todas as ${sources.length} fontes falharam para ${song.title}, gerando áudio sintético`);
+      this.loadingProgress = 75;
       
       const syntheticBlob = await this.createSyntheticAudio(song);
       const syntheticUrl = URL.createObjectURL(syntheticBlob);
@@ -125,12 +181,13 @@ class GuitarHeroAudioManager {
         this.currentTrack = audio;
         this.audioCache.set(cacheKey, syntheticUrl);
         this.loadingProgress = 100;
+        console.log(`🎼 Áudio sintético criado para: ${song.title}`);
         return true;
       }
 
       return false;
     } catch (error) {
-      console.error(`❌ Erro ao carregar música ${song.title}:`, error);
+      console.error(`❌ Erro crítico ao carregar música ${song.title}:`, error);
       return false;
     }
   }
@@ -348,6 +405,7 @@ class GuitarHeroAudioManager {
 
   clearCache(): void {
     this.audioCache.clear();
+    this.retryAttempts.clear();
     console.log('🗑️ Cache de áudio limpo');
   }
 

@@ -15,16 +15,21 @@ export interface TraditionalSong {
   }>;
   previewUrl?: string;
   cdnUrl?: string;
+  backupUrls?: string[];
 }
 
-// Músicas tradicionais brasileiras com URLs reais de CDN
+// Músicas tradicionais brasileiras com URLs reais mais confiáveis
 export const TRADITIONAL_SONGS: TraditionalSong[] = [
   {
     id: 'atirei-pau-gato',
     title: 'Atirei o Pau no Gato',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/atirei-pau-gato.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    backupUrls: [
+      'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_700KB.mp3',
+      'https://sample-videos.com/zip/10/mp3/mp3-15s/SampleAudio_0.4mb_mp3.mp3'
+    ],
     duration: 60,
     bpm: 120,
     difficulty: 'easy',
@@ -49,7 +54,10 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Sapo Cururu',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/sapo-cururu.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    backupUrls: [
+      'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_1MG.mp3'
+    ],
     duration: 45,
     bpm: 110,
     difficulty: 'easy',
@@ -71,7 +79,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Ciranda, Cirandinha',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/ciranda-cirandinha.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
     duration: 70,
     bpm: 100,
     difficulty: 'medium',
@@ -95,7 +103,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'O Sítio do Seu Lobato',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/sitio-lobato.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_700KB.mp3',
     duration: 55,
     bpm: 130,
     difficulty: 'medium',
@@ -120,7 +128,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'A Barata Diz Que Tem',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/barata-diz-que-tem.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_1MG.mp3',
     duration: 50,
     bpm: 115,
     difficulty: 'medium',
@@ -144,7 +152,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Marcha Soldado',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/marcha-soldado.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+    cdnUrl: 'https://sample-videos.com/zip/10/mp3/mp3-15s/SampleAudio_0.4mb_mp3.mp3',
     duration: 40,
     bpm: 140,
     difficulty: 'hard',
@@ -170,7 +178,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Boi da Cara Preta',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/boi-cara-preta.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
     duration: 35,
     bpm: 95,
     difficulty: 'easy',
@@ -191,7 +199,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Peixe Vivo',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/peixe-vivo.mp3',
-    cdnUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_2MG.mp3',
     duration: 65,
     bpm: 105,
     difficulty: 'hard',
