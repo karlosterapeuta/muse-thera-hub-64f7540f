@@ -5,75 +5,48 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target, Search, Heart } from 'lucide-react';
+import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target, Search, Heart, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import MusicAPI from './components/MusicAPI';
+import { MusicTrack } from './utils/musicAPIs';
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
-  { note: 'C', color: '#FF0000', name: 'Dó', frequency: 261.63, track: 0 },
-  { note: 'D', color: '#FF7F00', name: 'Ré', frequency: 293.66, track: 1 },
-  { note: 'E', color: '#FFFF00', name: 'Mi', frequency: 329.63, track: 2 },
-  { note: 'F', color: '#00FF00', name: 'Fá', frequency: 349.23, track: 3 },
-  { note: 'G', color: '#0000FF', name: 'Sol', frequency: 392.00, track: 4 },
-  { note: 'A', color: '#8B00FF', name: 'Lá', frequency: 440.00, track: 5 },
-  { note: 'B', color: '#FF69B4', name: 'Si', frequency: 493.88, track: 6 },
-  { note: 'C2', color: '#8B0000', name: 'Dó²', frequency: 523.25, track: 7 }
+  { note: 'C', color: '#FF2D2D', name: 'Dó', frequency: 261.63, track: 0, key: 'a' },
+  { note: 'D', color: '#FF8A2D', name: 'Ré', frequency: 293.66, track: 1, key: 's' },
+  { note: 'E', color: '#FFD700', name: 'Mi', frequency: 329.63, track: 2, key: 'd' },
+  { note: 'F', color: '#5CFF2D', name: 'Fá', frequency: 349.23, track: 3, key: 'f' },
+  { note: 'G', color: '#2D8A5C', name: 'Sol', frequency: 392.00, track: 4, key: 'g' },
+  { note: 'A', color: '#8A2BE2', name: 'Lá', frequency: 440.00, track: 5, key: 'h' }
 ];
 
-// Músicas pré-definidas para demonstração
-const DEMO_SONGS = [
-  {
-    id: 'twinkle',
-    title: 'Twinkle Twinkle Little Star',
-    artist: 'Tradicional',
-    duration: 30,
-    bpm: 120,
-    difficulty: 'easy',
-    pattern: [
-      { time: 0, track: 0, duration: 500 }, // C
-      { time: 1000, track: 0, duration: 500 }, // C
-      { time: 2000, track: 4, duration: 500 }, // G
-      { time: 3000, track: 4, duration: 500 }, // G
-      { time: 4000, track: 5, duration: 500 }, // A
-      { time: 5000, track: 5, duration: 500 }, // A
-      { time: 6000, track: 4, duration: 1000 }, // G
-    ]
-  },
-  {
-    id: 'happy',
-    title: 'Happy Birthday',
-    artist: 'Tradicional',
-    duration: 25,
-    bpm: 140,
-    difficulty: 'medium',
-    pattern: [
-      { time: 0, track: 0, duration: 500 },
-      { time: 750, track: 0, duration: 500 },
-      { time: 1500, track: 1, duration: 500 },
-      { time: 2250, track: 0, duration: 500 },
-      { time: 3000, track: 3, duration: 500 },
-      { time: 4000, track: 2, duration: 1000 },
-    ]
-  },
-  {
-    id: 'scale',
-    title: 'Escala Musical',
-    artist: 'Exercício',
-    duration: 20,
-    bpm: 100,
-    difficulty: 'hard',
-    pattern: [
-      { time: 0, track: 0, duration: 400 },
-      { time: 500, track: 1, duration: 400 },
-      { time: 1000, track: 2, duration: 400 },
-      { time: 1500, track: 3, duration: 400 },
-      { time: 2000, track: 4, duration: 400 },
-      { time: 2500, track: 5, duration: 400 },
-      { time: 3000, track: 6, duration: 400 },
-      { time: 3500, track: 7, duration: 400 },
-    ]
-  }
-];
+// Música de exemplo "Anjos Que Temos Ouvido"
+const ANGELS_SONG = {
+  id: 'angels',
+  title: 'Anjos Que Temos Ouvido',
+  artist: 'Música Tradicional',
+  duration: 20,
+  bpm: 120,
+  difficulty: 'medium',
+  pattern: [
+    { time: 1000, track: 4, duration: 500 }, // G
+    { time: 2000, track: 1, duration: 500 }, // D
+    { time: 3000, track: 2, duration: 500 }, // E
+    { time: 4000, track: 4, duration: 500 }, // G
+    { time: 5000, track: 5, duration: 500 }, // A
+    { time: 6000, track: 4, duration: 500 }, // G
+    { time: 7000, track: 2, duration: 500 }, // E
+    { time: 8000, track: 1, duration: 500 }, // D
+    { time: 9000, track: 4, duration: 500 }, // G
+    { time: 10000, track: 1, duration: 500 }, // D
+    { time: 11000, track: 2, duration: 500 }, // E
+    { time: 12000, track: 4, duration: 500 }, // G
+    { time: 13000, track: 5, duration: 500 }, // A
+    { time: 14000, track: 4, duration: 500 }, // G
+    { time: 15000, track: 2, duration: 500 }, // E
+    { time: 16000, track: 1, duration: 500 }, // D
+  ]
+};
 
 interface FallingNote {
   id: string;
@@ -82,6 +55,7 @@ interface FallingNote {
   targetTime: number;
   hit: boolean;
   color: string;
+  startTime: number;
 }
 
 interface GameStats {
@@ -93,10 +67,12 @@ interface GameStats {
   accuracy: number;
 }
 
+type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
+
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
-  const [selectedSong, setSelectedSong] = useState<typeof DEMO_SONGS[0] | null>(null);
+  const [selectedSong, setSelectedSong] = useState<typeof ANGELS_SONG | MusicTrack | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [fallingNotes, setFallingNotes] = useState<FallingNote[]>([]);
   const [gameStats, setGameStats] = useState<GameStats>({
@@ -109,17 +85,19 @@ const BoomwhackerHero: React.FC = () => {
   });
   const [currentTime, setCurrentTime] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [difficulty, setDifficulty] = useState<GameDifficulty>('Todos');
+  const [showMusicAPI, setShowMusicAPI] = useState(false);
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const gameStartTime = useRef<number>(0);
 
   // Configurações do jogo
-  const TRACK_WIDTH = 80;
+  const TRACK_WIDTH = 100;
   const TRACK_HEIGHT = 500;
-  const NOTE_HEIGHT = 20;
-  const HIT_ZONE_Y = TRACK_HEIGHT - 80;
-  const NOTE_SPEED = 200; // pixels por segundo
-  const HIT_TOLERANCE = 50; // pixels de tolerância para acerto
+  const NOTE_HEIGHT = 30;
+  const HIT_ZONE_Y = TRACK_HEIGHT - 120;
+  const NOTE_SPEED = 200;
+  const HIT_TOLERANCE = 60;
 
   // Inicializar contexto de áudio
   const initializeAudio = useCallback(async () => {
@@ -187,9 +165,19 @@ const BoomwhackerHero: React.FC = () => {
   const generateNotes = useCallback((time: number) => {
     if (!selectedSong || gameState !== 'playing') return;
 
+    // Use ANGELS_SONG pattern if it's the default song, otherwise create a simple pattern
+    const pattern = 'pattern' in selectedSong ? selectedSong.pattern : [
+      { time: 1000, track: 0, duration: 500 },
+      { time: 2000, track: 1, duration: 500 },
+      { time: 3000, track: 2, duration: 500 },
+      { time: 4000, track: 3, duration: 500 },
+      { time: 5000, track: 4, duration: 500 },
+      { time: 6000, track: 5, duration: 500 },
+    ];
+
     const newNotes: FallingNote[] = [];
     
-    selectedSong.pattern.forEach(note => {
+    pattern.forEach(note => {
       const noteTime = note.time;
       const shouldGenerate = Math.abs(time - noteTime) < 100 && 
                            !fallingNotes.some(fn => Math.abs(fn.targetTime - noteTime) < 50);
@@ -204,7 +192,8 @@ const BoomwhackerHero: React.FC = () => {
           y: -NOTE_HEIGHT,
           targetTime: noteTime,
           hit: false,
-          color: trackNote.color
+          color: trackNote.color,
+          startTime: Date.now()
         });
       }
     });
@@ -233,17 +222,14 @@ const BoomwhackerHero: React.FC = () => {
     );
 
     if (hitNote) {
-      // Marcar nota como acertada
       setFallingNotes(prev => 
         prev.map(note => 
           note.id === hitNote.id ? { ...note, hit: true } : note
         )
       );
 
-      // Tocar som
       playBoomwhackerSound(trackIndex);
 
-      // Atualizar estatísticas
       setGameStats(prev => {
         const newCombo = prev.combo + 1;
         const baseScore = 100;
@@ -265,7 +251,6 @@ const BoomwhackerHero: React.FC = () => {
         description: `+${100 * Math.floor((gameStats.combo + 1) / 10 + 1)} pontos`,
       });
     } else {
-      // Miss - quebrar combo
       setGameStats(prev => ({
         ...prev,
         combo: 0,
@@ -283,13 +268,9 @@ const BoomwhackerHero: React.FC = () => {
     const elapsed = now - gameStartTime.current;
     setCurrentTime(elapsed);
 
-    // Gerar novas notas
     generateNotes(elapsed);
+    updateNotes(16);
 
-    // Atualizar posições das notas
-    updateNotes(16); // 60 FPS aproximadamente
-
-    // Verificar se o jogo terminou
     if (selectedSong && elapsed > selectedSong.duration * 1000) {
       setGameState('ended');
       toast({
@@ -302,22 +283,27 @@ const BoomwhackerHero: React.FC = () => {
     animationRef.current = requestAnimationFrame(gameLoop);
   }, [gameState, generateNotes, updateNotes, selectedSong, gameStats.score, toast]);
 
-  // Filtrar músicas por busca
-  const filteredSongs = DEMO_SONGS.filter(song =>
-    song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    song.artist.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   // Manipular clique na trilha
   const handleTrackClick = useCallback((trackIndex: number) => {
     if (gameState === 'playing') {
       checkHit(trackIndex);
+    } else {
+      playBoomwhackerSound(trackIndex);
     }
-  }, [gameState, checkHit]);
+  }, [gameState, checkHit, playBoomwhackerSound]);
+
+  // Manipular teclas do teclado
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    const note = BOOMWHACKER_NOTES.find(n => n.key === event.key.toLowerCase());
+    if (note) {
+      handleTrackClick(note.track);
+    }
+  }, [handleTrackClick]);
 
   // Efeitos
   useEffect(() => {
     initializeAudio();
+    setSelectedSong(ANGELS_SONG);
   }, [initializeAudio]);
 
   useEffect(() => {
@@ -332,62 +318,135 @@ const BoomwhackerHero: React.FC = () => {
     };
   }, [gameState, gameLoop]);
 
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleKeyPress]);
+
   // Renderizar menu de seleção de música
   if (gameState === 'menu') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-orange-500" style={{ fontFamily: 'Pacifico, cursive' }}>
+              MusicaFácil
+            </h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button 
+              onClick={() => setShowMusicAPI(!showMusicAPI)}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Music className="w-4 h-4 mr-2" />
+              Minhas Músicas
+            </Button>
+            <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-700">
+              <Settings className="w-4 h-4 mr-2" />
+              Configurações
+            </Button>
+          </div>
+        </header>
+
+        <div className="pt-20 px-4 max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-4">🎵 BOOMWHACKER HERO</h1>
+            <h1 className="text-4xl font-bold mb-4">🎵 BOOMWHACKER HERO</h1>
             <p className="text-xl text-purple-200">Escolha uma música e toque as notas que caem!</p>
           </div>
 
+          {showMusicAPI ? (
+            <MusicAPI 
+              onTrackSelect={(track) => {
+                setSelectedSong(track);
+                setShowMusicAPI(false);
+              }}
+              selectedTrack={selectedSong as MusicTrack}
+            />
+          ) : (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Music className="w-5 h-5" />
+                  Música Selecionada
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {selectedSong && (
+                  <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                    <div>
+                      <h3 className="text-lg font-semibold">{selectedSong.title}</h3>
+                      <p className="text-gray-600 dark:text-gray-300">{selectedSong.artist}</p>
+                      <div className="flex gap-2 mt-2">
+                        <Badge>Duração: {selectedSong.duration}s</Badge>
+                        {'bpm' in selectedSong && selectedSong.bpm && (
+                          <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Badge variant="default">Pronto para jogar!</Badge>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Seletor de Dificuldade */}
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Buscar Música
-              </CardTitle>
+              <CardTitle>Nível de Dificuldade</CardTitle>
             </CardHeader>
             <CardContent>
-              <Input
-                placeholder="Digite o nome da música ou artista..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mb-4"
-              />
+              <div className="flex gap-2 p-1 bg-gray-800 rounded-full">
+                {(['Todos', 'Iniciante', 'Intermediário', 'Avançado'] as GameDifficulty[]).map((level) => (
+                  <Button
+                    key={level}
+                    variant={difficulty === level ? 'default' : 'ghost'}
+                    className={`flex-1 rounded-full ${difficulty === level ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
+                    onClick={() => setDifficulty(level)}
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredSongs.map((song) => (
-              <Card 
-                key={song.id} 
-                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                  selectedSong?.id === song.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-                }`}
-                onClick={() => setSelectedSong(song)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg">{song.title}</CardTitle>
-                  <p className="text-sm text-gray-600">{song.artist}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge variant={song.difficulty === 'easy' ? 'default' : song.difficulty === 'medium' ? 'secondary' : 'destructive'}>
-                      {song.difficulty}
-                    </Badge>
-                    <span className="text-sm text-gray-500">{song.duration}s</span>
+          {/* Instruções */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Como Jogar</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Controles do Teclado:</h4>
+                  <div className="space-y-1 text-sm">
+                    {BOOMWHACKER_NOTES.map((note, index) => (
+                      <div key={note.note} className="flex items-center gap-2">
+                        <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">{note.key.toUpperCase()}</kbd>
+                        <span style={{ color: note.color }}>●</span>
+                        <span>{note.note} ({note.name})</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="text-sm text-gray-500">BPM: {song.bpm}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">Instruções:</h4>
+                  <ul className="space-y-1 text-sm">
+                    <li>• Pressione as teclas quando as notas chegarem na zona de acerto</li>
+                    <li>• Ou clique nos cilindros coloridos</li>
+                    <li>• Acerte no tempo certo para ganhar pontos</li>
+                    <li>• Mantenha combos para multiplicar a pontuação</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {selectedSong && (
-            <div className="text-center mt-8">
-              <Button onClick={startGame} size="lg" className="text-xl px-8 py-4">
+            <div className="text-center">
+              <Button onClick={startGame} size="lg" className="text-xl px-8 py-4 bg-orange-500 hover:bg-orange-600">
                 <Play className="w-6 h-6 mr-2" />
                 Iniciar Jogo
               </Button>
@@ -400,9 +459,9 @@ const BoomwhackerHero: React.FC = () => {
 
   // Renderizar jogo
   return (
-    <div className="min-h-screen bg-black text-white p-4">
+    <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Header do jogo */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center p-4 bg-black bg-opacity-80">
         <div className="flex items-center gap-4">
           <Button 
             variant="outline" 
@@ -411,16 +470,37 @@ const BoomwhackerHero: React.FC = () => {
           >
             ← Menu
           </Button>
+          <Button
+            onClick={() => gameState === 'playing' ? setGameState('paused') : setGameState('playing')}
+            className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
+          >
+            {gameState === 'playing' ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+          </Button>
           <div>
             <h2 className="text-xl font-bold">{selectedSong?.title}</h2>
             <p className="text-gray-400">{selectedSong?.artist}</p>
           </div>
         </div>
+
+        {/* Seletor de dificuldade no jogo */}
+        <div className="flex gap-2 p-1 bg-gray-800 bg-opacity-80 rounded-full">
+          {(['Todos', 'Iniciante', 'Intermediário', 'Avançado'] as GameDifficulty[]).map((level) => (
+            <Button
+              key={level}
+              variant={difficulty === level ? 'default' : 'ghost'}
+              size="sm"
+              className={`rounded-full ${difficulty === level ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
+              onClick={() => setDifficulty(level)}
+            >
+              {level}
+            </Button>
+          ))}
+        </div>
         
         <div className="flex items-center gap-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-400">{gameStats.score.toLocaleString()}</div>
-            <div className="text-sm text-gray-400">Pontos</div>
+            <div className="text-sm text-gray-400">Pontuação</div>
           </div>
           <div className="text-center">
             <div className="text-xl font-bold text-blue-400">{gameStats.combo}x</div>
@@ -430,11 +510,18 @@ const BoomwhackerHero: React.FC = () => {
             <div className="text-lg font-bold text-green-400">{gameStats.accuracy.toFixed(1)}%</div>
             <div className="text-sm text-gray-400">Precisão</div>
           </div>
+          <Button variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+            Próxima Música
+          </Button>
         </div>
       </div>
 
       {/* Área do jogo */}
-      <div className="relative mx-auto" style={{ width: TRACK_WIDTH * 8, height: TRACK_HEIGHT }}>
+      <div 
+        ref={gameRef}
+        className="relative mx-auto" 
+        style={{ width: TRACK_WIDTH * 6, height: TRACK_HEIGHT }}
+      >
         {/* Trilhas de fundo */}
         {BOOMWHACKER_NOTES.map((note, index) => (
           <div
@@ -452,12 +539,12 @@ const BoomwhackerHero: React.FC = () => {
             <div
               className="absolute w-full border-2 border-white rounded-lg bg-white bg-opacity-20"
               style={{
-                bottom: 60,
-                height: 40,
+                bottom: 100,
+                height: 80,
                 boxShadow: '0 0 20px rgba(255,255,255,0.5)'
               }}
             >
-              <div className="text-center text-white font-bold pt-2">
+              <div className="text-center text-white font-bold pt-6">
                 {note.note}
               </div>
             </div>
@@ -472,11 +559,11 @@ const BoomwhackerHero: React.FC = () => {
             style={{
               left: note.track * TRACK_WIDTH + 20,
               top: note.y,
-              width: 40,
+              width: 60,
               height: NOTE_HEIGHT,
               backgroundColor: note.color,
               boxShadow: `0 0 10px ${note.color}`,
-              opacity: note.hit ? 0.3 : 1,
+              opacity: note.hit ? 0.3 : 0.8,
               transform: note.hit ? 'scale(1.5)' : 'scale(1)',
               transition: note.hit ? 'all 0.3s ease-out' : 'none'
             }}
@@ -484,8 +571,47 @@ const BoomwhackerHero: React.FC = () => {
         ))}
       </div>
 
+      {/* Cilindros 3D na parte inferior */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex justify-center mb-6">
+        {BOOMWHACKER_NOTES.map((note, index) => (
+          <div
+            key={note.note}
+            className="mx-2 cursor-pointer"
+            style={{ perspective: '500px' }}
+            onClick={() => handleTrackClick(index)}
+          >
+            <div
+              className="relative"
+              style={{
+                width: '80px',
+                height: '80px',
+                transformStyle: 'preserve-3d',
+                transform: 'rotateX(60deg)'
+              }}
+            >
+              <div
+                className="absolute w-full h-full rounded-full flex items-center justify-center text-2xl font-bold text-white"
+                style={{ backgroundColor: note.color }}
+              >
+                {note.note}
+              </div>
+              <div
+                className="absolute w-full rounded-full opacity-70"
+                style={{
+                  height: '40px',
+                  backgroundColor: note.color,
+                  top: '0',
+                  transform: 'translateY(20px) rotateX(90deg)',
+                  transformOrigin: 'top center'
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Barra de progresso */}
-      <div className="mt-4">
+      <div className="absolute bottom-4 left-4 right-4">
         <Progress 
           value={selectedSong ? (currentTime / (selectedSong.duration * 1000)) * 100 : 0} 
           className="w-full h-2"
