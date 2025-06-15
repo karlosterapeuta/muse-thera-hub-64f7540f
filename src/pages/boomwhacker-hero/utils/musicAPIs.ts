@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface MusicTrack {
@@ -23,7 +24,8 @@ export const API_CONFIG = {
     searchUrl: 'https://api.spotify.com/v1/search'
   },
   jamendo: {
-    clientId: 'YOUR_JAMENDO_CLIENT_ID',
+    clientId: '5d9cbefe',
+    clientSecret: 'a062a2dba4d89577a089199a1b5c795a',
     searchUrl: 'https://api.jamendo.com/v3.0/tracks/'
   }
 };
@@ -101,12 +103,7 @@ export class SpotifyAPI {
 export class JamendoAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      const API_KEY = 'YOUR_JAMENDO_CLIENT_ID'; // Substitua pela sua chave real
-      
-      if (API_KEY === 'YOUR_JAMENDO_CLIENT_ID') {
-        console.log('❌ Chave do Jamendo não configurada');
-        return [];
-      }
+      const API_KEY = '5d9cbefe';
 
       const searchParams = new URLSearchParams({
         client_id: API_KEY,
@@ -143,6 +140,49 @@ export class JamendoAPI {
       }));
     } catch (error) {
       console.error('❌ Erro na busca do Jamendo:', error);
+      return [];
+    }
+  }
+
+  static async getPopular(): Promise<MusicTrack[]> {
+    try {
+      const API_KEY = '5d9cbefe';
+
+      const searchParams = new URLSearchParams({
+        client_id: API_KEY,
+        format: 'json',
+        limit: '20',
+        tags: 'children,kids,instrumental,happy,family',
+        audioformat: 'mp31',
+        order: 'popularity_total'
+      });
+
+      console.log('🔍 Buscando músicas populares no Jamendo');
+
+      const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?${searchParams}`);
+      
+      if (!response.ok) {
+        console.error('❌ Busca popular no Jamendo falhou:', response.status, response.statusText);
+        return [];
+      }
+
+      const data = await response.json();
+      console.log(`✅ Jamendo popular retornou ${data.results?.length || 0} resultados`);
+      
+      return (data.results || []).map((item: any) => ({
+        id: item.id.toString(),
+        title: item.name,
+        artist: item.artist_name,
+        duration: item.duration,
+        preview_url: item.audio,
+        image: item.album_image,
+        popularity: Math.floor(Math.random() * 100),
+        external_url: item.shareurl,
+        source: 'jamendo' as const,
+        bpm: undefined
+      }));
+    } catch (error) {
+      console.error('❌ Erro na busca popular do Jamendo:', error);
       return [];
     }
   }
