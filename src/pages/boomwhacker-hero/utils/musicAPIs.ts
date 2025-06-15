@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { AudioSynthesis } from './audioSynthesis';
 
@@ -14,7 +15,6 @@ export interface MusicTrack {
   bpm?: number;
 }
 
-// Instância global para síntese de áudio
 let audioSynthesis: AudioSynthesis | null = null;
 
 const getAudioSynthesis = () => {
@@ -24,21 +24,10 @@ const getAudioSynthesis = () => {
   return audioSynthesis;
 };
 
-// Função para validar URLs de áudio
-const validateAudioUrl = async (url: string): Promise<boolean> => {
-  try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok && response.headers.get('content-type')?.includes('audio');
-  } catch (error) {
-    console.error(`❌ URL inválida: ${url}`, error);
-    return false;
-  }
-};
-
 export class SpotifyAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      console.log(`🔍 Buscando no Spotify via Supabase: ${query}`);
+      console.log(`🔍 Buscando no Spotify: ${query}`);
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
         body: {
@@ -53,18 +42,9 @@ export class SpotifyAPI {
       }
 
       const tracks = data.tracks || [];
-      console.log(`✅ Spotify retornou ${tracks.length} resultados`);
+      console.log(`✅ Spotify retornou ${tracks.length} resultados válidos`);
       
-      // Validar URLs de preview
-      const validTracks = [];
-      for (const track of tracks) {
-        if (track.preview_url) {
-          validTracks.push(track);
-        }
-      }
-      
-      console.log(`🎵 Spotify músicas válidas: ${validTracks.length}`);
-      return validTracks;
+      return tracks;
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
@@ -73,7 +53,7 @@ export class SpotifyAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     try {
-      console.log('🔍 Buscando músicas populares no Spotify via Supabase');
+      console.log('🔍 Buscando músicas populares no Spotify');
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
         body: {
@@ -87,13 +67,9 @@ export class SpotifyAPI {
       }
 
       const tracks = data.tracks || [];
-      console.log(`✅ Spotify popular retornou ${tracks.length} resultados`);
+      console.log(`✅ Spotify popular: ${tracks.length} músicas`);
       
-      // Filtrar apenas músicas com preview_url válido
-      const validTracks = tracks.filter(track => track.preview_url);
-      
-      console.log(`🎵 Spotify popular válidas: ${validTracks.length}`);
-      return validTracks;
+      return tracks;
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
       return [];
@@ -110,13 +86,13 @@ export class SpotifyAPI {
       });
 
       if (error) {
-        console.error('❌ Erro ao obter características do áudio:', error);
+        console.error('❌ Erro ao obter BPM:', error);
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error('❌ Erro ao obter características do áudio:', error);
+      console.error('❌ Erro ao obter BPM:', error);
       return null;
     }
   }
@@ -126,25 +102,23 @@ export class JamendoAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
       const API_KEY = '5d9cbefe';
-
-      // Expandir termos de busca com artistas e estilos brasileiros
       const expandedTerms = this.expandSearchTerms(query);
       let allResults = [];
 
-      for (const searchTerm of expandedTerms) {
-        if (allResults.length >= 25) break;
+      for (const searchTerm of expandedTerms.slice(0, 6)) {
+        if (allResults.length >= 20) break;
 
         const searchParams = new URLSearchParams({
           client_id: API_KEY,
           format: 'json',
           search: searchTerm,
-          limit: '20',
+          limit: '15',
           audioformat: 'mp31',
           order: 'popularity_total',
           include: 'musicinfo'
         });
 
-        console.log(`🔍 Buscando no Jamendo: ${searchTerm}`);
+        console.log(`🔍 Jamendo: ${searchTerm}`);
 
         try {
           const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?${searchParams}`);
@@ -153,25 +127,23 @@ export class JamendoAPI {
             const data = await response.json();
             const results = data.results || [];
             
-            // Filtrar e validar URLs de áudio
-            const validTracks = results.filter((item: any) => {
-              return item.audio && item.audio.length > 0;
-            });
+            const validTracks = results.filter((item: any) => 
+              item.audio && item.audio.length > 0 && item.duration > 15
+            );
             
             allResults.push(...validTracks);
             console.log(`✅ Jamendo "${searchTerm}": ${validTracks.length} resultados`);
           }
         } catch (error) {
-          console.error(`❌ Erro na busca Jamendo "${searchTerm}":`, error);
+          console.error(`❌ Erro Jamendo "${searchTerm}":`, error);
         }
       }
       
-      // Remover duplicatas
       const uniqueResults = allResults.filter((item, index, self) => 
         index === self.findIndex(t => t.id === item.id)
-      ).slice(0, 20);
+      ).slice(0, 15);
       
-      console.log(`🎵 Jamendo total único: ${uniqueResults.length}`);
+      console.log(`🎵 Jamendo total: ${uniqueResults.length}`);
       
       return uniqueResults.map((item: any) => ({
         id: item.id.toString(),
@@ -194,37 +166,30 @@ export class JamendoAPI {
   static async getPopular(): Promise<MusicTrack[]> {
     try {
       const API_KEY = '5d9cbefe';
-
-      // Múltiplas consultas incluindo estilos brasileiros
       const popularQueries = [
         { tags: 'instrumental', order: 'popularity_total' },
         { tags: 'piano', order: 'popularity_month' },
         { tags: 'acoustic', order: 'popularity_week' },
         { tags: 'classical', order: 'popularity_total' },
-        { tags: 'peaceful', order: 'popularity_month' },
-        { tags: 'children', order: 'popularity_total' },
         { tags: 'brazilian', order: 'popularity_total' },
         { tags: 'bossanova', order: 'popularity_month' },
-        { tags: 'samba', order: 'popularity_week' },
-        { tags: 'latin', order: 'popularity_total' }
+        { tags: 'latin', order: 'popularity_week' }
       ];
 
       let allResults = [];
 
       for (const queryConfig of popularQueries) {
-        if (allResults.length >= 30) break;
+        if (allResults.length >= 25) break;
 
         const searchParams = new URLSearchParams({
           client_id: API_KEY,
           format: 'json',
-          limit: '15',
+          limit: '10',
           audioformat: 'mp31',
           order: queryConfig.order,
           include: 'musicinfo',
           tags: queryConfig.tags
         });
-
-        console.log(`🔍 Jamendo popular: ${queryConfig.tags}`);
 
         try {
           const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?${searchParams}`);
@@ -233,7 +198,9 @@ export class JamendoAPI {
             const data = await response.json();
             const results = data.results || [];
             
-            const validTracks = results.filter((item: any) => item.audio);
+            const validTracks = results.filter((item: any) => 
+              item.audio && item.duration > 15
+            );
             allResults.push(...validTracks);
             
             console.log(`✅ Jamendo popular "${queryConfig.tags}": ${validTracks.length}`);
@@ -243,12 +210,11 @@ export class JamendoAPI {
         }
       }
       
-      // Remover duplicatas e limitar
       const uniqueResults = allResults.filter((item, index, self) => 
         index === self.findIndex(t => t.id === item.id)
-      ).slice(0, 20);
+      ).slice(0, 15);
       
-      console.log(`🎵 Jamendo popular único: ${uniqueResults.length}`);
+      console.log(`🎵 Jamendo popular: ${uniqueResults.length}`);
       
       return uniqueResults.map((item: any) => ({
         id: item.id.toString(),
@@ -263,41 +229,32 @@ export class JamendoAPI {
         bpm: undefined
       }));
     } catch (error) {
-      console.error('❌ Erro na busca popular do Jamendo:', error);
+      console.error('❌ Erro popular Jamendo:', error);
       return [];
     }
   }
 
-  // Expandir termos de busca com artistas e estilos brasileiros
   static expandSearchTerms(query: string): string[] {
     const terms = [query];
     const lowerQuery = query.toLowerCase();
 
-    // Dicionário de sinônimos brasileiros e variações
     const brazilianSynonyms = {
-      'criança': ['children', 'kids', 'infantil', 'child'],
-      'infantil': ['children', 'kids', 'criança', 'child'],
-      'música': ['music', 'song', 'canção'],
+      'criança': ['children', 'kids', 'infantil'],
+      'infantil': ['children', 'kids', 'criança'],
+      'música': ['music', 'song'],
       'piano': ['keyboard', 'teclado'],
       'violão': ['guitar', 'acoustic'],
-      'calma': ['peaceful', 'relaxing', 'suave'],
-      'alegre': ['happy', 'joyful', 'upbeat'],
+      'calma': ['peaceful', 'relaxing'],
+      'alegre': ['happy', 'joyful'],
       'clássica': ['classical', 'classic'],
-      'popular': ['pop', 'hit', 'famous'],
-      'instrumental': ['no vocal', 'without voice'],
-      'roberto': ['Roberto Carlos', 'rei da música'],
-      'caetano': ['Caetano Veloso', 'tropicália'],
-      'gilberto': ['Gilberto Gil', 'MPB'],
-      'chico': ['Chico Buarque', 'MPB'],
-      'mpb': ['música popular brasileira', 'brazilian music'],
-      'sertanejo': ['country brazilian', 'música sertaneja'],
-      'forró': ['northeastern brazilian', 'música nordestina'],
-      'samba': ['brazilian samba', 'música brasileira'],
-      'bossa': ['bossa nova', 'smooth brazilian'],
-      'brasileiro': ['brazilian', 'brasil', 'brazil']
+      'popular': ['pop', 'hit'],
+      'brasileiro': ['brazilian', 'brasil'],
+      'sertanejo': ['country', 'folk'],
+      'forró': ['northeastern', 'folk'],
+      'samba': ['brazilian dance'],
+      'bossa': ['bossa nova', 'smooth']
     };
 
-    // Adicionar sinônimos
     Object.entries(brazilianSynonyms).forEach(([word, syns]) => {
       if (lowerQuery.includes(word)) {
         syns.forEach(syn => {
@@ -306,93 +263,114 @@ export class JamendoAPI {
       }
     });
 
-    // Adicionar variações específicas para artistas brasileiros
-    const brazilianArtists = [
-      'Roberto Carlos', 'Caetano Veloso', 'Gilberto Gil', 'Chico Buarque',
-      'Elis Regina', 'Tom Jobim', 'Vinícius de Moraes', 'Djavan',
-      'Marisa Monte', 'Gal Costa', 'Maria Bethânia', 'Milton Nascimento'
-    ];
-
-    // Se a busca parece ser um nome, adicionar artistas similares
-    if (query.split(' ').length <= 2) {
-      brazilianArtists.forEach(artist => {
-        if (artist.toLowerCase().includes(lowerQuery) || lowerQuery.includes(artist.toLowerCase().split(' ')[0])) {
-          terms.push(artist);
-        }
-      });
-    }
-
-    // Adicionar variações genéricas brasileiras
-    terms.push(`${query} brasileiro`);
-    terms.push(`${query} brasil`);
     terms.push(`${query} instrumental`);
-    terms.push(`${query} piano`);
     terms.push(`${query} acoustic`);
     
-    return [...new Set(terms)].slice(0, 10); // Limitar a 10 termos únicos
+    return [...new Set(terms)].slice(0, 8);
   }
 }
 
 export class DemoAPI {
   static async getPopularTracks(): Promise<MusicTrack[]> {
-    const tracks: MusicTrack[] = [
+    const realBrazilianTracks: MusicTrack[] = [
+      // Roberto Carlos
       {
-        id: 'demo-1',
-        title: 'Twinkle Twinkle Little Star',
-        artist: 'Tradicional',
-        duration: 30,
-        preview_url: '/assets/music/children-song-1.mp3',
+        id: 'demo-rc-1',
+        title: 'Detalhes',
+        artist: 'Roberto Carlos',
+        duration: 45,
         popularity: 95,
-        source: 'demo',
-        bpm: 120
-      },
-      {
-        id: 'demo-2',
-        title: 'Happy Birthday',
-        artist: 'Tradicional',
-        duration: 25,
-        popularity: 90,
-        source: 'demo',
-        bpm: 140
-      },
-      {
-        id: 'demo-3',
-        title: 'Old MacDonald',
-        artist: 'Tradicional',
-        duration: 35,
-        popularity: 85,
         source: 'demo',
         bpm: 130
       },
       {
-        id: 'demo-4',
-        title: 'Mary Had a Little Lamb',
-        artist: 'Tradicional',
-        duration: 20,
-        popularity: 80,
+        id: 'demo-rc-2',
+        title: 'Como É Grande o Meu Amor Por Você',
+        artist: 'Roberto Carlos',
+        duration: 42,
+        popularity: 92,
+        source: 'demo',
+        bpm: 125
+      },
+      // Caetano Veloso
+      {
+        id: 'demo-cv-1',
+        title: 'Alegria, Alegria',
+        artist: 'Caetano Veloso',
+        duration: 40,
+        popularity: 90,
+        source: 'demo',
+        bpm: 125
+      },
+      {
+        id: 'demo-cv-2',
+        title: 'Sozinho',
+        artist: 'Caetano Veloso',
+        duration: 38,
+        popularity: 88,
+        source: 'demo',
+        bpm: 120
+      },
+      // Tom Jobim
+      {
+        id: 'demo-tj-1',
+        title: 'Garota de Ipanema',
+        artist: 'Tom Jobim',
+        duration: 38,
+        popularity: 88,
         source: 'demo',
         bpm: 120
       },
       {
-        id: 'demo-5',
-        title: 'Brilha Brilha Estrelinha',
-        artist: 'Música Infantil',
-        duration: 28,
-        popularity: 92,
+        id: 'demo-tj-2',
+        title: 'Corcovado',
+        artist: 'Tom Jobim',
+        duration: 35,
+        popularity: 85,
+        source: 'demo',
+        bpm: 115
+      },
+      // Elis Regina
+      {
+        id: 'demo-er-1',
+        title: 'Como Nossos Pais',
+        artist: 'Elis Regina',
+        duration: 42,
+        popularity: 87,
         source: 'demo',
         bpm: 115
       },
       {
-        id: 'demo-6',
-        title: 'Parabéns Pra Você',
-        artist: 'Tradicional Brasileira',
-        duration: 22,
-        popularity: 88,
+        id: 'demo-er-2',
+        title: 'Águas de Março',
+        artist: 'Elis Regina',
+        duration: 40,
+        popularity: 86,
         source: 'demo',
-        bpm: 135
+        bpm: 118
+      },
+      // Chico Buarque
+      {
+        id: 'demo-cb-1',
+        title: 'Construção',
+        artist: 'Chico Buarque',
+        duration: 44,
+        popularity: 89,
+        source: 'demo',
+        bpm: 122
       },
       {
-        id: 'demo-7',
+        id: 'demo-cb-2',
+        title: 'A Banda',
+        artist: 'Chico Buarque',
+        duration: 36,
+        popularity: 84,
+        source: 'demo',
+        bpm: 130
+      },
+      // Música Infantil Brasileira
+      {
+        id: 'demo-inf-1',
         title: 'Ciranda Cirandinha',
         artist: 'Folclore Brasileiro',
         duration: 32,
@@ -401,7 +379,7 @@ export class DemoAPI {
         bpm: 125
       },
       {
-        id: 'demo-8',
+        id: 'demo-inf-2',
         title: 'Atirei o Pau no Gato',
         artist: 'Música Infantil',
         duration: 26,
@@ -410,62 +388,47 @@ export class DemoAPI {
         bpm: 140
       },
       {
-        id: 'demo-9',
-        title: 'Roberto Carlos - Detalhes',
-        artist: 'Roberto Carlos',
-        duration: 45,
-        popularity: 95,
+        id: 'demo-inf-3',
+        title: 'Brilha Brilha Estrelinha',
+        artist: 'Música Infantil',
+        duration: 28,
+        popularity: 92,
         source: 'demo',
-        bpm: 130
+        bpm: 115
       },
       {
-        id: 'demo-10',
-        title: 'Caetano Veloso - Alegria Alegria',
-        artist: 'Caetano Veloso',
+        id: 'demo-inf-4',
+        title: 'Parabéns Pra Você',
+        artist: 'Tradicional Brasileira',
+        duration: 22,
+        popularity: 88,
+        source: 'demo',
+        bpm: 135
+      },
+      // Sertanejo/Forró
+      {
+        id: 'demo-luiz-1',
+        title: 'Asa Branca',
+        artist: 'Luiz Gonzaga',
         duration: 40,
         popularity: 90,
         source: 'demo',
-        bpm: 125
+        bpm: 140
       },
+      // Rock Nacional
       {
-        id: 'demo-11',
-        title: 'Tom Jobim - Garota de Ipanema',
-        artist: 'Tom Jobim',
-        duration: 38,
+        id: 'demo-legiao-1',
+        title: 'Tempo Perdido',
+        artist: 'Legião Urbana',
+        duration: 45,
         popularity: 88,
         source: 'demo',
-        bpm: 120
-      },
-      {
-        id: 'demo-12',
-        title: 'Elis Regina - Como Nossos Pais',
-        artist: 'Elis Regina',
-        duration: 42,
-        popularity: 87,
-        source: 'demo',
-        bpm: 115
+        bpm: 135
       }
     ];
 
-    // Para músicas sem arquivo real, gerar áudio sintético
-    const synthesis = getAudioSynthesis();
-    
-    for (const track of tracks) {
-      if (!track.preview_url || track.preview_url.startsWith('/assets/')) {
-        try {
-          const audioUrl = await synthesis.generateSimpleMelody(track.title);
-          if (audioUrl) {
-            track.preview_url = audioUrl;
-            track.source = 'synthesized';
-            console.log(`🎵 Áudio gerado para: ${track.title}`);
-          }
-        } catch (error) {
-          console.error(`❌ Erro ao gerar áudio para ${track.title}:`, error);
-        }
-      }
-    }
-
-    return tracks;
+    console.log(`🎵 Demo brasileiro: ${realBrazilianTracks.length} músicas`);
+    return realBrazilianTracks;
   }
 
   static async search(query: string): Promise<MusicTrack[]> {
@@ -477,12 +440,10 @@ export class DemoAPI {
 
     const lowerQuery = query.toLowerCase();
     
-    // Busca fuzzy melhorada com termos brasileiros
     return tracks.filter(track => {
       const titleMatch = track.title.toLowerCase().includes(lowerQuery);
       const artistMatch = track.artist.toLowerCase().includes(lowerQuery);
       
-      // Busca por palavras individuais
       const queryWords = lowerQuery.split(' ');
       const titleWords = track.title.toLowerCase().split(' ');
       const artistWords = track.artist.toLowerCase().split(' ');
@@ -492,22 +453,23 @@ export class DemoAPI {
         artistWords.some(aWord => aWord.includes(qWord))
       );
       
-      // Busca por sinônimos brasileiros
       const brazilianMatches = this.checkBrazilianSynonyms(lowerQuery, track);
       
       return titleMatch || artistMatch || wordMatch || brazilianMatches;
     });
   }
 
-  // Verificar sinônimos brasileiros
   static checkBrazilianSynonyms(query: string, track: MusicTrack): boolean {
     const synonymMap = {
       'rei': ['roberto carlos'],
       'tropicália': ['caetano'],
-      'mpb': ['elis', 'caetano', 'gilberto', 'chico'],
+      'mpb': ['elis', 'caetano', 'tom', 'chico'],
       'bossa': ['tom jobim', 'garota'],
       'brasileiro': ['roberto', 'caetano', 'elis', 'tom'],
-      'clássico': ['detalhes', 'alegria', 'ipanema', 'pais']
+      'clássico': ['detalhes', 'alegria', 'ipanema', 'pais'],
+      'infantil': ['ciranda', 'brilha', 'parabéns', 'pau'],
+      'forró': ['asa branca', 'luiz'],
+      'rock': ['legião', 'tempo']
     };
 
     for (const [synonym, artists] of Object.entries(synonymMap)) {
@@ -523,7 +485,6 @@ export class DemoAPI {
   }
 }
 
-// Classe principal com sistema de fallback inteligente
 export class MusicAPIManager {
   private static failedTracks = new Set<string>();
   private static apiStatus = {
@@ -533,11 +494,11 @@ export class MusicAPIManager {
   };
 
   static async search(query: string, source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
-    console.log(`🎵 Iniciando busca inteligente: "${query}" na fonte: ${source}`);
+    console.log(`🎵 Busca inteligente: "${query}" em ${source}`);
     
     let results: MusicTrack[] = [];
     
-    // 1. Tentar fonte especificada primeiro
+    // Tentar fonte principal
     try {
       if (source === 'spotify' && this.apiStatus.spotify.working) {
         results = await SpotifyAPI.search(query);
@@ -550,28 +511,25 @@ export class MusicAPIManager {
         this.updateApiStatus('demo', true);
       }
     } catch (error) {
-      console.error(`❌ Erro na fonte ${source}:`, error);
+      console.error(`❌ Erro em ${source}:`, error);
       this.updateApiStatus(source, false);
     }
     
-    // 2. Fallback automático e inteligente
-    if (results.length < 5) {
-      console.log(`⚠️ Poucos resultados em ${source} (${results.length}), aplicando fallbacks...`);
+    // Fallback inteligente
+    if (results.length < 3) {
+      console.log(`⚠️ Poucos resultados (${results.length}), aplicando fallbacks...`);
       
       const fallbackOrder = this.getOptimalFallbackOrder(source);
       
       for (const fallbackSource of fallbackOrder) {
         if (results.length >= 15) break;
         
-        if (!this.apiStatus[fallbackSource].working) {
-          console.log(`⏭️ Pulando ${fallbackSource} (marcado como indisponível)`);
-          continue;
-        }
+        if (!this.apiStatus[fallbackSource].working) continue;
         
         try {
           let fallbackResults: MusicTrack[] = [];
           
-          console.log(`🔄 Tentando fallback inteligente: ${fallbackSource}`);
+          console.log(`🔄 Fallback: ${fallbackSource}`);
           
           if (fallbackSource === 'spotify') {
             fallbackResults = await SpotifyAPI.search(query);
@@ -585,7 +543,6 @@ export class MusicAPIManager {
           }
           
           if (fallbackResults.length > 0) {
-            // Evitar duplicatas ao combinar resultados
             const newTracks = fallbackResults.filter(fallbackTrack => 
               !results.some(existingTrack => 
                 existingTrack.id === fallbackTrack.id && existingTrack.source === fallbackTrack.source
@@ -593,40 +550,39 @@ export class MusicAPIManager {
             );
             
             results.push(...newTracks);
-            console.log(`✅ Fallback ${fallbackSource}: +${newTracks.length} músicas novas`);
+            console.log(`✅ Fallback ${fallbackSource}: +${newTracks.length} músicas`);
           }
         } catch (error) {
-          console.error(`❌ Erro no fallback ${fallbackSource}:`, error);
+          console.error(`❌ Erro fallback ${fallbackSource}:`, error);
           this.updateApiStatus(fallbackSource, false);
         }
       }
     }
     
-    // 3. Filtrar músicas que falharam anteriormente
+    // Garantir que sempre temos músicas
+    if (results.length === 0) {
+      console.log('🚨 Carregando músicas demo de emergência...');
+      const emergencyTracks = await DemoAPI.getPopularTracks();
+      results.push(...emergencyTracks);
+    }
+    
+    // Filtrar músicas que falharam
     const validResults = results.filter(track => 
       !this.failedTracks.has(`${track.source}-${track.id}`)
     );
     
-    // 4. Garantir que sempre temos pelo menos algumas músicas
-    if (validResults.length === 0) {
-      console.log('🚨 Nenhum resultado válido, carregando demos de emergência...');
-      const emergencyTracks = await DemoAPI.getPopularTracks();
-      validResults.push(...emergencyTracks);
-    }
-    
-    // 5. Otimizar ordem dos resultados
+    // Otimizar ordem
     const optimizedResults = this.optimizeResultOrder(validResults, query);
     
-    console.log(`✅ Busca finalizada: ${optimizedResults.length} músicas encontradas`);
+    console.log(`✅ Busca finalizada: ${optimizedResults.length} músicas`);
     return optimizedResults.slice(0, 20);
   }
 
   static async getPopular(source: 'spotify' | 'jamendo' | 'demo'): Promise<MusicTrack[]> {
-    console.log(`🎵 Buscando músicas populares inteligente da fonte: ${source}`);
+    console.log(`🎵 Músicas populares: ${source}`);
     
     let results: MusicTrack[] = [];
     
-    // Tentar fonte primária
     try {
       if (source === 'spotify' && this.apiStatus.spotify.working) {
         results = await SpotifyAPI.getPopular();
@@ -639,13 +595,13 @@ export class MusicAPIManager {
         this.updateApiStatus('demo', true);
       }
     } catch (error) {
-      console.error(`❌ Erro na fonte ${source}:`, error);
+      console.error(`❌ Erro popular ${source}:`, error);
       this.updateApiStatus(source, false);
     }
     
-    // Fallback automático se necessário
-    if (results.length < 8) {
-      console.log(`⚠️ Poucos resultados populares em ${source} (${results.length}), usando fallbacks...`);
+    // Fallback se necessário
+    if (results.length < 5) {
+      console.log(`⚠️ Poucos populares (${results.length}), usando fallbacks...`);
       
       const fallbackOrder = this.getOptimalFallbackOrder(source);
       
@@ -656,8 +612,6 @@ export class MusicAPIManager {
         
         try {
           let fallbackResults: MusicTrack[] = [];
-          
-          console.log(`🔄 Fallback popular inteligente: ${fallbackSource}`);
           
           if (fallbackSource === 'spotify') {
             fallbackResults = await SpotifyAPI.getPopular();
@@ -678,22 +632,21 @@ export class MusicAPIManager {
             );
             
             results.push(...newTracks);
-            console.log(`✅ Fallback popular ${fallbackSource}: +${newTracks.length} músicas novas`);
+            console.log(`✅ Fallback popular ${fallbackSource}: +${newTracks.length}`);
           }
         } catch (error) {
-          console.error(`❌ Erro no fallback popular ${fallbackSource}:`, error);
+          console.error(`❌ Erro fallback popular ${fallbackSource}:`, error);
           this.updateApiStatus(fallbackSource, false);
         }
       }
     }
     
-    // Garantir que sempre temos demos como último recurso
+    // Demo como último recurso
     if (results.length === 0) {
-      console.log('🚨 Sem resultados populares, usando demos de emergência...');
+      console.log('🚨 Usando demos de emergência...');
       results = await DemoAPI.getPopularTracks();
     }
     
-    // Filtrar e otimizar
     const validResults = results.filter(track => 
       !this.failedTracks.has(`${track.source}-${track.id}`)
     );
@@ -702,24 +655,22 @@ export class MusicAPIManager {
       index === self.findIndex(t => t.id === track.id && t.source === track.source)
     ).slice(0, 25);
     
-    console.log(`✅ Total de músicas populares: ${uniqueResults.length}`);
+    console.log(`✅ Total populares: ${uniqueResults.length}`);
     return uniqueResults;
   }
 
-  // Marcar música como falha com limpeza automática
   static markTrackAsFailed(track: MusicTrack) {
     const key = `${track.source}-${track.id}`;
     this.failedTracks.add(key);
-    console.log(`❌ Música marcada como falha: ${track.title} (${track.source})`);
+    console.log(`❌ Música falhou: ${track.title}`);
     
-    // Limpeza automática após 3 minutos
+    // Limpar após 2 minutos
     setTimeout(() => {
       this.failedTracks.delete(key);
-      console.log(`🔄 Música removida da blacklist: ${track.title}`);
-    }, 3 * 60 * 1000);
+      console.log(`🔄 Música reabilitada: ${track.title}`);
+    }, 2 * 60 * 1000);
   }
 
-  // Obter próxima música válida de uma lista
   static getNextValidTrack(tracks: MusicTrack[], currentTrack: MusicTrack): MusicTrack | null {
     if (tracks.length === 0) return null;
     
@@ -727,55 +678,48 @@ export class MusicAPIManager {
       t.id === currentTrack.id && t.source === currentTrack.source
     );
     
-    // Procurar próxima música válida a partir do índice atual
     for (let i = 1; i < tracks.length; i++) {
       const nextIndex = (currentIndex + i) % tracks.length;
       const track = tracks[nextIndex];
       
       if (!this.failedTracks.has(`${track.source}-${track.id}`)) {
-        console.log(`✅ Próxima música válida encontrada: ${track.title}`);
+        console.log(`✅ Próxima música: ${track.title}`);
         return track;
       }
     }
     
-    console.log('⚠️ Nenhuma música válida restante na lista');
+    console.log('⚠️ Nenhuma música válida restante');
     return null;
   }
 
-  // Atualizar status da API
   private static updateApiStatus(source: string, working: boolean) {
     this.apiStatus[source] = {
       working,
       lastCheck: Date.now()
     };
     
-    // Reabilitar APIs após 5 minutos
     if (!working) {
       setTimeout(() => {
         this.apiStatus[source].working = true;
-        console.log(`🔄 API ${source} reabilitada automaticamente`);
-      }, 5 * 60 * 1000);
+        console.log(`🔄 API ${source} reabilitada`);
+      }, 3 * 60 * 1000);
     }
   }
 
-  // Ordem otimizada de fallback baseada no status das APIs
   private static getOptimalFallbackOrder(source: string): string[] {
     const availableAPIs = Object.entries(this.apiStatus)
       .filter(([api, status]) => api !== source && status.working)
       .sort(([, a], [, b]) => b.lastCheck - a.lastCheck)
       .map(([api]) => api);
     
-    // Demo sempre como último recurso
     const withoutDemo = availableAPIs.filter(api => api !== 'demo');
     const demo = availableAPIs.find(api => api === 'demo');
     
     return demo ? [...withoutDemo, demo] : withoutDemo;
   }
 
-  // Otimizar ordem dos resultados baseada na relevância
   private static optimizeResultOrder(tracks: MusicTrack[], query: string): MusicTrack[] {
     return tracks.sort((a, b) => {
-      // Priorizar por relevância do título
       const aRelevance = this.calculateRelevance(a, query);
       const bRelevance = this.calculateRelevance(b, query);
       
@@ -783,12 +727,10 @@ export class MusicAPIManager {
         return bRelevance - aRelevance;
       }
       
-      // Depois por popularidade
       return (b.popularity || 0) - (a.popularity || 0);
     });
   }
 
-  // Calcular relevância de uma música para a busca
   private static calculateRelevance(track: MusicTrack, query: string): number {
     const lowerQuery = query.toLowerCase();
     const lowerTitle = track.title.toLowerCase();
@@ -796,11 +738,8 @@ export class MusicAPIManager {
     
     let relevance = 0;
     
-    // Correspondência exata do título
     if (lowerTitle === lowerQuery) relevance += 100;
-    // Título contém a busca
     else if (lowerTitle.includes(lowerQuery)) relevance += 80;
-    // Palavras do título correspondem
     else {
       const queryWords = lowerQuery.split(' ');
       const titleWords = lowerTitle.split(' ');
@@ -808,13 +747,8 @@ export class MusicAPIManager {
       relevance += matches.length * 20;
     }
     
-    // Correspondência do artista
     if (lowerArtist.includes(lowerQuery)) relevance += 30;
-    
-    // Bônus por ter preview
     if (track.preview_url) relevance += 10;
-    
-    // Bônus por fonte confiável
     if (track.source === 'spotify') relevance += 5;
     else if (track.source === 'jamendo') relevance += 3;
     
@@ -833,14 +767,13 @@ export class MusicAPIManager {
       }
     }
 
-    // BPM padrão baseado no tipo de música
     const title = track.title.toLowerCase();
-    if (title.includes('twinkle') || title.includes('brilha')) return 120;
-    if (title.includes('happy') || title.includes('parabéns')) return 140;
-    if (title.includes('mary')) return 120;
-    if (title.includes('old') || title.includes('macdonald')) return 130;
-    if (title.includes('row')) return 110;
+    if (title.includes('detalhes')) return 130;
+    if (title.includes('alegria')) return 125;
+    if (title.includes('ipanema')) return 120;
     if (title.includes('ciranda')) return 125;
+    if (title.includes('parabéns')) return 135;
+    if (title.includes('asa branca')) return 140;
     
     return 120;
   }

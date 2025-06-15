@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(false);
-  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo'>('demo');
+  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo'>('spotify');
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [searchStatus, setSearchStatus] = useState<'idle' | 'searching' | 'success' | 'error'>('idle');
   const [apiHealth, setApiHealth] = useState({
@@ -26,20 +27,19 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     demo: 'healthy'
   });
 
-  // Carregar músicas populares iniciais
+  // Carregar músicas populares brasileiras
   const loadPopularTracks = async () => {
     setLoading(true);
     setSearchStatus('searching');
     
     try {
-      console.log(`🔍 Carregando músicas populares da fonte: ${apiSource}`);
+      console.log(`🔍 Carregando populares brasileiras: ${apiSource}`);
       const popularTracks = await MusicAPIManager.getPopular(apiSource);
-      console.log(`✅ Músicas carregadas: ${popularTracks.length}`);
+      console.log(`✅ Populares carregadas: ${popularTracks.length}`);
       
       setTracks(popularTracks);
       setSearchStatus(popularTracks.length > 0 ? 'success' : 'error');
       
-      // Atualizar status de saúde da API
       setApiHealth(prev => ({
         ...prev,
         [apiSource]: popularTracks.length > 0 ? 'healthy' : 'degraded'
@@ -47,39 +47,40 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       
       if (popularTracks.length === 0) {
         toast({
-          title: "Sem músicas encontradas",
-          description: "Tentando outras fontes automaticamente...",
+          title: "⚠️ Sem músicas populares",
+          description: "Tentando outras fontes...",
         });
       } else {
+        const sourceCount = popularTracks.reduce((acc, track) => {
+          acc[track.source] = (acc[track.source] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        
+        const sourceInfo = Object.entries(sourceCount)
+          .map(([source, count]) => `${source}: ${count}`)
+          .join(', ');
+        
         toast({
-          title: `✅ ${popularTracks.length} músicas carregadas`,
-          description: `Fonte: ${apiSource}`,
+          title: `🎵 ${popularTracks.length} músicas brasileiras carregadas`,
+          description: sourceInfo,
         });
       }
     } catch (error) {
-      console.error('❌ Erro ao carregar músicas populares:', error);
+      console.error('❌ Erro ao carregar populares:', error);
       setSearchStatus('error');
       setApiHealth(prev => ({ ...prev, [apiSource]: 'error' }));
       
       toast({
-        title: "Erro ao carregar músicas",
-        description: "Verifique sua conexão e tente novamente.",
+        title: "❌ Erro ao carregar músicas",
+        description: "Tentando fontes alternativas...",
         variant: "destructive"
       });
-      
-      // Fallback automático para demo em caso de erro
-      if (apiSource !== 'demo') {
-        console.log('🔄 Fallback automático para demo...');
-        const demoTracks = await MusicAPIManager.getPopular('demo');
-        setTracks(demoTracks);
-        setApiHealth(prev => ({ ...prev, demo: 'healthy' }));
-      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Função principal de busca
+  // Busca inteligente de músicas brasileiras
   const searchTracks = async (query: string) => {
     if (!query.trim()) {
       loadPopularTracks();
@@ -90,7 +91,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     setSearchStatus('searching');
     
     try {
-      console.log(`🔍 Iniciando busca inteligente: "${query}" na fonte: ${apiSource}`);
+      console.log(`🔍 Busca brasileira: "${query}" em ${apiSource}`);
       
       const results = await MusicAPIManager.search(query, apiSource);
       console.log(`✅ Busca finalizada: ${results.length} resultados`);
@@ -98,7 +99,6 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       setTracks(results);
       setSearchStatus(results.length > 0 ? 'success' : 'error');
       
-      // Atualizar status de saúde baseado nos resultados
       const sourceResults = results.filter(track => track.source === apiSource);
       setApiHealth(prev => ({
         ...prev,
@@ -107,11 +107,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       
       if (results.length === 0) {
         toast({
-          title: "Nenhuma música encontrada",
-          description: "Tente termos diferentes ou use as sugestões abaixo",
+          title: "🔍 Nenhuma música encontrada",
+          description: "Tente 'Roberto Carlos', 'MPB' ou 'música infantil'",
         });
       } else {
-        // Mostrar estatísticas dos resultados
         const bySource = results.reduce((acc, track) => {
           acc[track.source] = (acc[track.source] || 0) + 1;
           return acc;
@@ -122,18 +121,18 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           .join(', ');
         
         toast({
-          title: `🎵 ${results.length} músicas encontradas`,
+          title: `🎵 ${results.length} músicas brasileiras encontradas`,
           description: sourceInfo,
         });
       }
     } catch (error) {
-      console.error('❌ Erro na busca inteligente:', error);
+      console.error('❌ Erro na busca:', error);
       setSearchStatus('error');
       setApiHealth(prev => ({ ...prev, [apiSource]: 'error' }));
       
       toast({
-        title: "Erro na busca",
-        description: "Problema na conexão. Tentando fontes alternativas...",
+        title: "❌ Erro na busca",
+        description: "Problema na conexão. Tentando outras fontes...",
         variant: "destructive"
       });
     } finally {
@@ -141,7 +140,6 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
-  // Parar áudio atual se estiver tocando
   const stopCurrentAudio = () => {
     if (currentAudio) {
       currentAudio.pause();
@@ -150,17 +148,15 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     }
   };
 
-  // Tocar preview com melhor tratamento de erro
   const playPreview = async (track: MusicTrack) => {
-    console.log(`🎵 Tentando tocar preview de: ${track.title}`);
+    console.log(`🎵 Preview: ${track.title}`);
     
-    // Parar áudio atual
     stopCurrentAudio();
     
     if (!track.preview_url) {
       toast({
-        title: "Preview não disponível",
-        description: "Esta música não possui preview de áudio.",
+        title: "⚠️ Preview não disponível",
+        description: "Esta música não tem áudio de preview.",
         variant: "destructive"
       });
       return;
@@ -171,61 +167,47 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       audio.crossOrigin = "anonymous";
       audio.volume = 0.5;
       
-      // Listeners de evento melhorados
-      const handleLoadStart = () => console.log('🔄 Carregando áudio...');
-      const handleCanPlay = () => console.log('✅ Áudio pronto para tocar');
-      const handleError = (e: Event) => {
-        console.error('❌ Erro no áudio:', e);
-        
-        // Marcar track como falho
+      const handleError = () => {
+        console.error('❌ Erro no preview');
         MusicAPIManager.markTrackAsFailed(track);
-        
         toast({
-          title: "Erro no áudio",
-          description: `Não foi possível reproduzir "${track.title}". Tentando próxima música...`,
+          title: "❌ Erro no áudio",
+          description: `Não foi possível tocar "${track.title}"`,
           variant: "destructive"
         });
-        
-        setCurrentAudio(null);
-      };
-      const handleEnded = () => {
-        console.log('🔚 Áudio terminou');
         setCurrentAudio(null);
       };
       
-      audio.addEventListener('loadstart', handleLoadStart);
-      audio.addEventListener('canplay', handleCanPlay);
+      const handleEnded = () => {
+        console.log('🔚 Preview terminou');
+        setCurrentAudio(null);
+      };
+      
       audio.addEventListener('error', handleError);
       audio.addEventListener('ended', handleEnded);
       
-      // Definir fonte de áudio
       audio.src = track.preview_url;
       setCurrentAudio(audio);
       
-      // Tentar reproduzir
       await audio.play();
       
-      console.log('▶️ Áudio iniciado com sucesso');
+      console.log('▶️ Preview iniciado');
       toast({
         title: "🎵 Tocando preview",
         description: `${track.title} - ${track.artist}`,
       });
       
     } catch (error) {
-      console.error('❌ Erro ao criar/tocar áudio:', error);
-      
-      // Marcar como falho
+      console.error('❌ Erro ao tocar preview:', error);
       MusicAPIManager.markTrackAsFailed(track);
-      
       toast({
-        title: "Erro no áudio",
-        description: "Não foi possível reproduzir esta música. Verifique se o áudio está habilitado no navegador.",
+        title: "❌ Erro no áudio",
+        description: "Não foi possível reproduzir. Verifique se o áudio está habilitado.",
         variant: "destructive"
       });
     }
   };
 
-  // Obter ícone do status da API
   const getApiStatusIcon = (status: string) => {
     switch (status) {
       case 'healthy': return <CheckCircle className="w-4 h-4 text-green-500" />;
@@ -240,8 +222,8 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     searchTracks(searchTerm);
   };
 
-  // Sugestões inteligentes baseadas no contexto brasileiro
-  const getSmartSuggestions = () => {
+  // Sugestões brasileiras
+  const getBrazilianSuggestions = () => {
     const suggestions = [
       'Roberto Carlos',
       'Caetano Veloso', 
@@ -249,7 +231,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       'bossa nova',
       'sertanejo',
       'forró',
-      'música infantil brasileira',
+      'música infantil',
       'piano brasileiro',
       'violão brasileiro',
       'samba',
@@ -257,11 +239,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       'Elis Regina',
       'Chico Buarque',
       'Gilberto Gil',
-      'música relaxante',
-      'canções populares'
+      'Legião Urbana',
+      'rock nacional'
     ];
     
-    // Adicionar sugestões baseadas no que já foi buscado
     if (tracks.length > 0) {
       const artists = [...new Set(tracks.map(t => t.artist).slice(0, 3))];
       suggestions.push(...artists.map(artist => `mais de ${artist}`));
@@ -270,12 +251,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     return suggestions.slice(0, 8);
   };
 
-  // Carregar músicas ao mudar fonte de API
   useEffect(() => {
     loadPopularTracks();
   }, [apiSource]);
 
-  // Limpar áudio ao desmontar componente
   useEffect(() => {
     return () => {
       stopCurrentAudio();
@@ -288,12 +267,12 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            Buscar Músicas Brasileiras
+            🇧🇷 Músicas Brasileiras - Boomwhacker Hero
             {searchStatus === 'searching' && <Loader className="w-4 h-4 animate-spin" />}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Seletor de API com status de saúde */}
+          {/* Seletor de API otimizado */}
           <div className="flex gap-2">
             <Button
               variant={apiSource === 'spotify' ? 'default' : 'outline'}
@@ -321,10 +300,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
             </Button>
           </div>
 
-          {/* Formulário de busca melhorado */}
+          {/* Busca aprimorada */}
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="Digite o nome da música, artista brasileiro ou estilo..."
+              placeholder="🎵 Digite: Roberto Carlos, MPB, sertanejo, música infantil..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1"
@@ -339,14 +318,14 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           {searchStatus === 'searching' && (
             <div className="flex items-center gap-2 text-blue-600">
               <Loader className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Buscando nas melhores fontes de música brasileira...</span>
+              <span className="text-sm">🔍 Buscando nas melhores fontes de música brasileira...</span>
             </div>
           )}
 
           {/* Sugestões brasileiras */}
           <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-600">Sugestões brasileiras:</span>
-            {getSmartSuggestions().map((suggestion) => (
+            <span className="text-sm text-gray-600">🇧🇷 Sugestões brasileiras:</span>
+            {getBrazilianSuggestions().map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
@@ -363,28 +342,28 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
             ))}
           </div>
 
-          {/* Informações sobre as fontes */}
+          {/* Informações do sistema */}
           <div className="text-xs text-gray-500 space-y-1">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-3 h-3 text-green-500" />
-              <span>Funcionando normalmente</span>
+              <span>Funcionando</span>
               <AlertCircle className="w-3 h-3 text-yellow-500" />
-              <span>Funcionamento limitado</span>
+              <span>Limitado</span>
               <WifiOff className="w-3 h-3 text-red-500" />
               <span>Indisponível</span>
             </div>
-            <p className="text-xs">🇧🇷 Sistema otimizado para música brasileira - MPB, Sertanejo, Bossa Nova, Forró e muito mais!</p>
+            <p className="text-xs">🎵 Sistema otimizado para música brasileira com fallback inteligente entre fontes!</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Grid de resultados melhorado */}
+      {/* Grid de resultados otimizado */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
         {loading && (
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Buscando nas melhores fontes...</p>
-            <p className="text-sm text-gray-500">Isso pode levar alguns segundos</p>
+            <p className="text-gray-600">🔍 Buscando músicas brasileiras...</p>
+            <p className="text-sm text-gray-500">Usando múltiplas fontes para melhores resultados</p>
           </div>
         )}
 
@@ -411,7 +390,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                     />
                   )}
                   <h3 className="font-semibold text-lg truncate">{track.title}</h3>
-                  <p className="text-gray-600 truncate">{track.artist}</p>
+                  <p className="text-gray-600 truncate">🎤 {track.artist}</p>
                   
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <Clock className="w-4 h-4 text-gray-400" />
@@ -430,19 +409,19 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                     
                     {track.popularity && (
                       <Badge variant="outline" className="text-xs">
-                        {track.popularity}% popular
+                        ⭐ {track.popularity}%
                       </Badge>
                     )}
 
                     {track.bpm && (
                       <Badge variant="outline" className="text-xs">
-                        {track.bpm} BPM
+                        🥁 {track.bpm} BPM
                       </Badge>
                     )}
 
                     {track.preview_url && (
                       <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                        ✓ Preview
+                        ✓ Com áudio
                       </Badge>
                     )}
                   </div>
@@ -500,16 +479,16 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         {!loading && tracks.length === 0 && searchStatus === 'error' && (
           <div className="col-span-full text-center py-8">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600 font-medium">Nenhuma música encontrada</p>
+            <p className="text-gray-600 font-medium">🔍 Nenhuma música brasileira encontrada</p>
             <p className="text-sm text-gray-500 mt-1">
-              Tente buscar por músicas populares, artistas conhecidos ou use as sugestões acima
+              Tente: Roberto Carlos, Caetano Veloso, MPB, sertanejo, bossa nova
             </p>
             <Button 
               variant="outline" 
               className="mt-3"
               onClick={() => loadPopularTracks()}
             >
-              Carregar Músicas Populares
+              🎵 Carregar Hits Brasileiros
             </Button>
           </div>
         )}
@@ -523,10 +502,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               <div>
                 <h4 className="font-semibold flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  Música Selecionada:
+                  🎵 Música Selecionada para o Jogo:
                 </h4>
                 <p className="text-lg">{selectedTrack.title}</p>
-                <p className="text-gray-600">{selectedTrack.artist}</p>
+                <p className="text-gray-600">🎤 {selectedTrack.artist}</p>
                 <div className="flex gap-2 mt-1">
                   <Badge 
                     variant="secondary"
@@ -536,22 +515,22 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                       'bg-blue-100 text-blue-800'
                     }
                   >
-                    Fonte: {selectedTrack.source}
+                    📡 {selectedTrack.source}
                   </Badge>
                   {selectedTrack.bpm && (
                     <Badge variant="outline">
-                      {selectedTrack.bpm} BPM
+                      🥁 {selectedTrack.bpm} BPM
                     </Badge>
                   )}
                   {selectedTrack.preview_url && (
                     <Badge variant="outline" className="bg-green-50 text-green-700">
-                      ✓ Com áudio
+                      ✓ Com áudio funcionando
                     </Badge>
                   )}
                 </div>
               </div>
               <Badge variant="default" className="bg-green-500">
-                Pronto para jogar!
+                🎮 Pronto para jogar!
               </Badge>
             </div>
           </CardContent>
