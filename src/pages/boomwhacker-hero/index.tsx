@@ -225,11 +225,13 @@ const BoomwhackerHero: React.FC = () => {
         const currentSource = 'source' in selectedSong ? selectedSong.source : 'demo';
         let sourceToTry: 'spotify' | 'jamendo' | 'demo' = 'jamendo';
         
-        // Se a música atual é 'synthesized', usar 'demo' como fallback
-        if (currentSource === 'synthesized') {
-          sourceToTry = 'demo';
-        } else if (currentSource === 'spotify' || currentSource === 'jamendo' || currentSource === 'demo') {
-          sourceToTry = currentSource;
+        // Se a música atual é 'synthesized' ou 'demo', usar 'jamendo' como fallback
+        if (currentSource === 'synthesized' || currentSource === 'demo') {
+          sourceToTry = 'jamendo';
+        } else if (currentSource === 'spotify') {
+          sourceToTry = 'spotify';
+        } else if (currentSource === 'jamendo') {
+          sourceToTry = 'jamendo';
         }
         
         // Primeiro tentar a fonte determinada
