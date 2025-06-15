@@ -392,7 +392,13 @@ const BoomwhackerHero: React.FC = () => {
     
     if (availableTracks.length > 1 && isMusicTrack(selectedSong)) {
       const currentTrack = selectedSong as MusicTrack;
-      nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, currentTrack);
+      const currentIndex = availableTracks.findIndex(track => 
+        track.id === currentTrack.id && track.source === currentTrack.source
+      );
+      
+      if (currentIndex !== -1) {
+        nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, currentIndex);
+      }
     }
     
     if (!nextTrack) {
