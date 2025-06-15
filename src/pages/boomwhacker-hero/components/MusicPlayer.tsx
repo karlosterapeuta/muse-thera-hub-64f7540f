@@ -207,6 +207,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
+  // Add the missing handleSkip function
+  const handleSkip = () => {
+    console.log('⏭️ Pulando música atual');
+    if (onTrackFailed) {
+      onTrackFailed();
+    }
+  };
+
   // Efeito principal para inicializar áudio
   useEffect(() => {
     setRetryCount(0);
