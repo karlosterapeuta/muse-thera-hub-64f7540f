@@ -104,6 +104,24 @@ const BoomwhackerHero: React.FC = () => {
   const [musicVolume, setMusicVolume] = useState(0.5);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number>(0);
+  
+  // Novos estados para funcionalidades aprimoradas
+  const [gameMode, setGameMode] = useState<'menu' | 'playing' | 'paused' | 'ended' | 'freeplay'>('menu');
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [activeNotes, setActiveNotes] = useState<Set<number>>(new Set());
+  
+  // Hook para modo livre
+  const {
+    isRecording,
+    recordedSequence,
+    isPlaying: isPlayingRecording,
+    startRecording,
+    stopRecording,
+    recordNote,
+    playRecording,
+    clearRecording
+  } = useFreePlayMode();
+
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const noteIdCounter = useRef<number>(0);
@@ -124,6 +142,41 @@ const BoomwhackerHero: React.FC = () => {
   const isMusicTrack = (song: typeof selectedSong): song is MusicTrack => {
     return song !== null && 'source' in song;
   };
+
+  // Função para criar partículas visuais
+  const createParticles = useCallback((noteIndex: number) => {
+    const note = BOOMWHACKER_NOTES[noteIndex];
+    const newParticles: Particle[] = [];
+    
+    for (let i = 0; i < 8; i++) {
+      particleIdCounter.current += 1;
+      newParticles.push({
+        id: `particle-${particleIdCounter.current}`,
+        x: noteIndex * TRACK_WIDTH + 50 + (Math.random() - 0.5) * 60,
+        y: TRACK_HEIGHT - 150 + (Math.random() - 0.5) * 40,
+        color: note.color,
+        life: 1,
+        velocity: {
+          x: (Math.random() - 0.5) * 4,
+          y: -Math.random() * 3 - 1
+        }
+      });
+    }
+    
+    setParticles(prev => [...prev, ...newParticles]);
+    
+    // Remover partículas após animação
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => !newParticles.includes(p)));
+    }, 2000);
+  }, [TRACK_WIDTH, TRACK_HEIGHT]);
+
+  // Função para reproduzir gravação
+  const handlePlayRecording = useCallback(() => {
+    playRecording((noteIndex: number) => {
+      playBoomwhackerSound(noteIndex);
+    });
+  }, [playRecording]);
 
   // Inicializar contexto de áudio
   const initializeAudio = useCallback(async () => {
@@ -184,7 +237,7 @@ const BoomwhackerHero: React.FC = () => {
     } catch (error) {
       console.error('Erro ao tocar nota:', error);
     }
-  }, [activeNotes, gameMode, isRecording, recordNote]);
+  }, [activeNotes, gameMode, isRecording, recordNote, createParticles]);
 
   // Gerar notas conforme a música
   const generateNotes = useCallback(() => {
@@ -590,23 +643,6 @@ const BoomwhackerHero: React.FC = () => {
     };
   }, [gameState, selectedSong, isMusicPlaying, handleTrackEnd]);
 
-  // Novos estados para funcionalidades aprimoradas
-  const [gameMode, setGameMode] = useState<'menu' | 'playing' | 'paused' | 'ended' | 'freeplay'>('menu');
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [activeNotes, setActiveNotes] = useState<Set<number>>(new Set());
-  
-  // Hook para modo livre
-  const {
-    isRecording,
-    recordedSequence,
-    isPlaying: isPlayingRecording,
-    startRecording,
-    stopRecording,
-    recordNote,
-    playRecording,
-    clearRecording
-  } = useFreePlayMode();
-
   // Renderizar menu de seleção de música
   if (gameState === 'menu') {
     return (
@@ -736,6 +772,14 @@ const BoomwhackerHero: React.FC = () => {
                 >
                   <Play className="w-6 h-6 mr-2" />
                   COMEÇAR JOGO
+                </Button>
+                
+                <Button
+                  onClick={() => setGameMode('freeplay')}
+                  className="ml-4 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 text-xl font-bold rounded-full"
+                >
+                  <Music className="w-6 h-6 mr-2" />
+                  MODO LIVRE
                 </Button>
               </div>
             </>
