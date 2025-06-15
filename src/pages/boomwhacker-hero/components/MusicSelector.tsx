@@ -86,12 +86,12 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
 
   const getAudioSourceIcon = (song: TraditionalSong) => {
     if (song.audioFile && song.audioFile.startsWith('/assets/music/')) {
-      return <FileAudio className="w-3 h-3 text-green-600" title="Arquivo local disponível" />;
+      return <FileAudio className="w-3 h-3 text-green-600" />;
     }
     if (song.cdnUrl) {
-      return <CheckCircle className="w-3 h-3 text-blue-600" title="CDN disponível" />;
+      return <CheckCircle className="w-3 h-3 text-blue-600" />;
     }
-    return <AlertCircle className="w-3 h-3 text-orange-600" title="Apenas backup" />;
+    return <AlertCircle className="w-3 h-3 text-orange-600" />;
   };
 
   useEffect(() => {
