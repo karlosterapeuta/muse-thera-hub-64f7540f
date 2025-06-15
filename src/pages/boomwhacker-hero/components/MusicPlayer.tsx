@@ -31,18 +31,29 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   // Inicializar áudio quando track muda
   useEffect(() => {
-    if (track?.preview_url) {
-      console.log(`🎵 Carregando áudio: ${track.title} - ${track.preview_url}`);
+    console.log(`🎵 Carregando música: ${track?.title}`);
+    
+    // Limpar áudio anterior
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+
+    if (!track) {
+      setDuration(0);
+      setCurrentTime(0);
+      setAudioError(false);
+      setIsLoading(false);
+      return;
+    }
+
+    // Se tem preview_url, tentar carregar áudio real
+    if (track.preview_url) {
+      console.log(`🎵 Carregando áudio real: ${track.preview_url}`);
       setIsLoading(true);
       setAudioError(false);
       
-      // Limpar áudio anterior
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current = null;
-      }
-
       try {
         const audio = new Audio();
         audio.crossOrigin = "anonymous";
@@ -51,7 +62,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         
         // Event listeners
         audio.addEventListener('loadedmetadata', () => {
-          console.log(`✅ Metadados carregados - Duração: ${audio.duration}s`);
+          console.log(`✅ Áudio carregado - Duração: ${audio.duration}s`);
           setDuration(audio.duration || track.duration);
           setAudioError(false);
           setIsLoading(false);
@@ -82,12 +93,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           setIsLoading(false);
         });
 
-        audio.addEventListener('loadstart', () => {
-          console.log('🔄 Iniciando carregamento do áudio');
-          setIsLoading(true);
-        });
-
-        // Tentar carregar o áudio
+        // Carregar o áudio
         audio.src = track.preview_url;
         audioRef.current = audio;
         
@@ -96,11 +102,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         setAudioError(true);
         setIsLoading(false);
       }
-    } else if (track) {
-      // Se não tem preview_url, usar duração padrão
+    } else {
+      // Sem preview_url - usar simulação
+      console.log(`🎵 Música sem preview - usando simulação: ${track.title}`);
       setDuration(track.duration);
       setAudioError(false);
       setIsLoading(false);
+      setCurrentTime(0);
     }
 
     return () => {
@@ -110,13 +118,42 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         audioRef.current = null;
       }
     };
-  }, [track?.preview_url, track?.id]);
+  }, [track?.id, track?.preview_url]);
 
-  // Controlar play/pause
+  // Simular progresso para músicas sem preview
   useEffect(() => {
-    if (audioRef.current && !audioError && !isLoading) {
+    let interval: NodeJS.Timeout;
+    
+    if (track && !track.preview_url && isPlaying && !audioError) {
+      console.log('🎵 Iniciando simulação de reprodução');
+      interval = setInterval(() => {
+        setCurrentTime(prev => {
+          const newTime = prev + 1;
+          if (newTime >= duration) {
+            console.log('🔚 Simulação de música terminou');
+            onPlayPause(false);
+            if (onTrackEnd) {
+              onTrackEnd();
+            }
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [track?.preview_url, isPlaying, duration, audioError, onPlayPause, onTrackEnd]);
+
+  // Controlar play/pause para áudio real
+  useEffect(() => {
+    if (audioRef.current && track?.preview_url && !audioError && !isLoading) {
       if (isPlaying) {
-        console.log('▶️ Iniciando reprodução');
+        console.log('▶️ Iniciando reprodução de áudio real');
         const playPromise = audioRef.current.play();
         
         if (playPromise !== undefined) {
@@ -127,11 +164,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           });
         }
       } else {
-        console.log('⏸️ Pausando reprodução');
+        console.log('⏸️ Pausando reprodução de áudio real');
         audioRef.current.pause();
       }
     }
-  }, [isPlaying, audioError, isLoading]);
+  }, [isPlaying, audioError, isLoading, track?.preview_url]);
 
   // Controlar volume
   useEffect(() => {
@@ -141,11 +178,12 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   }, [volume, isMuted]);
 
   const handleSeek = (value: number[]) => {
-    if (audioRef.current && duration > 0) {
-      const newTime = (value[0] / 100) * duration;
+    const newTime = (value[0] / 100) * duration;
+    
+    if (audioRef.current && track?.preview_url) {
       audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
     }
+    setCurrentTime(newTime);
   };
 
   const toggleMute = () => {
@@ -173,11 +211,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           {isLoading && (
             <p className="text-blue-400 text-sm">🔄 Carregando música...</p>
           )}
-          {audioError && (
-            <p className="text-red-400 text-sm">⚠️ Erro no áudio - usando música de demonstração</p>
+          {audioError && track.preview_url && (
+            <p className="text-red-400 text-sm">⚠️ Erro no áudio - usando simulação</p>
           )}
           {!track.preview_url && (
-            <p className="text-yellow-400 text-sm">🎵 Música sem preview - usando padrão do jogo</p>
+            <p className="text-yellow-400 text-sm">🎵 Música de demonstração - sem áudio real</p>
+          )}
+          {track.preview_url && !audioError && !isLoading && (
+            <p className="text-green-400 text-sm">🎵 Áudio real carregado</p>
           )}
         </div>
         
@@ -206,7 +247,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           max={100}
           step={1}
           className="w-full"
-          disabled={!audioRef.current || audioError}
+          disabled={isLoading}
         />
         <div className="flex justify-between text-sm text-gray-400 mt-1">
           <span>{formatTime(currentTime)}</span>

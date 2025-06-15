@@ -108,6 +108,7 @@ const BoomwhackerHero: React.FC = () => {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContextClass();
       setAudioContext(ctx);
+      console.log('🎵 Contexto de áudio inicializado');
     } catch (error) {
       console.error('Erro ao inicializar áudio:', error);
     }
@@ -144,6 +145,7 @@ const BoomwhackerHero: React.FC = () => {
   const startGame = useCallback(() => {
     if (!selectedSong) return;
     
+    console.log(`🎮 Iniciando jogo com música: ${selectedSong.title}`);
     setGameState('playing');
     setCurrentTime(0);
     setFallingNotes([]);
@@ -169,9 +171,11 @@ const BoomwhackerHero: React.FC = () => {
   // Pausar/Retomar jogo
   const toggleGamePause = useCallback(() => {
     if (gameState === 'playing') {
+      console.log('⏸️ Pausando jogo');
       setGameState('paused');
       setIsMusicPlaying(false);
     } else if (gameState === 'paused') {
+      console.log('▶️ Retomando jogo');
       setGameState('playing');
       setIsMusicPlaying(true);
     }
@@ -179,6 +183,7 @@ const BoomwhackerHero: React.FC = () => {
 
   // Função quando música termina
   const handleTrackEnd = useCallback(() => {
+    console.log('🏆 Música terminou - finalizando jogo');
     setGameState('ended');
     setIsMusicPlaying(false);
     toast({
@@ -298,18 +303,15 @@ const BoomwhackerHero: React.FC = () => {
     generateNotes(elapsed);
     updateNotes(16);
 
+    // Verificar se o jogo deve terminar baseado na duração da música
     if (selectedSong && elapsed > selectedSong.duration * 1000) {
-      setGameState('ended');
-      setIsMusicPlaying(false);
-      toast({
-        title: "🏆 Jogo Finalizado!",
-        description: `Pontuação final: ${gameStats.score}`,
-      });
+      console.log('⏱️ Tempo do jogo esgotado');
+      handleTrackEnd();
       return;
     }
 
     animationRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState, generateNotes, updateNotes, selectedSong, gameStats.score, toast]);
+  }, [gameState, generateNotes, updateNotes, selectedSong, handleTrackEnd]);
 
   // Manipular clique na trilha
   const handleTrackClick = useCallback((trackIndex: number) => {
@@ -332,6 +334,7 @@ const BoomwhackerHero: React.FC = () => {
   useEffect(() => {
     initializeAudio();
     setSelectedSong(ANGELS_SONG);
+    console.log('🎵 Jogo inicializado com música padrão');
   }, [initializeAudio]);
 
   useEffect(() => {
@@ -563,7 +566,7 @@ const BoomwhackerHero: React.FC = () => {
       </div>
 
       {/* Player de música durante o jogo */}
-      {selectedSong && 'preview_url' in selectedSong && (
+      {selectedSong && (gameState === 'playing' || gameState === 'paused') && (
         <div className="fixed top-20 right-4 z-40 w-80">
           <MusicPlayer
             track={selectedSong as MusicTrack}
