@@ -205,15 +205,11 @@ const BoomwhackerHero: React.FC = () => {
     
     console.log(`❌ Música falhou: ${selectedSong.title}`);
     
-    // Marcar música atual como falha se for do tipo MusicTrack
-    if ('source' in selectedSong) {
-      MusicAPIManager.markTrackAsFailed(selectedSong as MusicTrack);
-    }
-    
     // Tentar próxima música válida da lista atual
     let nextTrack = null;
     
-    if (availableTracks.length > 1) {
+    // Só tentar getNextValidTrack se a música atual não for synthesized e temos tracks disponíveis
+    if (availableTracks.length > 1 && 'source' in selectedSong && selectedSong.source !== 'synthesized') {
       nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
     }
     
