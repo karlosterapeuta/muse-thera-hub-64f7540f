@@ -225,15 +225,26 @@ const BoomwhackerHero: React.FC = () => {
         // Tentar carregar músicas de diferentes fontes
         let newTracks: MusicTrack[] = [];
         
-        // Primeiro tentar Jamendo
-        newTracks = await MusicAPIManager.getPopular('jamendo');
+        // Determinar qual fonte usar baseado no source da música atual
+        const currentSource = 'source' in selectedSong ? selectedSong.source : 'demo';
+        let sourceToTry: 'spotify' | 'jamendo' | 'demo' = 'jamendo';
         
-        // Se Jamendo falhar, tentar Spotify
-        if (newTracks.length === 0) {
-          newTracks = await MusicAPIManager.getPopular('spotify');
+        // Se a música atual é 'synthesized', usar 'demo' como fallback
+        if (currentSource === 'synthesized') {
+          sourceToTry = 'demo';
+        } else if (currentSource === 'spotify' || currentSource === 'jamendo' || currentSource === 'demo') {
+          sourceToTry = currentSource;
         }
         
-        // Se tudo falhar, usar demos
+        // Primeiro tentar a fonte determinada
+        newTracks = await MusicAPIManager.getPopular(sourceToTry);
+        
+        // Se falhar, tentar outras fontes
+        if (newTracks.length === 0 && sourceToTry !== 'jamendo') {
+          newTracks = await MusicAPIManager.getPopular('jamendo');
+        }
+        
+        // Se Jamendo falhar, tentar Demo
         if (newTracks.length === 0) {
           newTracks = await MusicAPIManager.getPopular('demo');
         }
