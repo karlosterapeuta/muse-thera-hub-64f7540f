@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { AudioSynthesis } from './audioSynthesis';
 
@@ -128,7 +127,7 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
-      // Expandir termos de busca com sinônimos e variações
+      // Expandir termos de busca com artistas e estilos brasileiros
       const expandedTerms = this.expandSearchTerms(query);
       let allResults = [];
 
@@ -196,14 +195,18 @@ export class JamendoAPI {
     try {
       const API_KEY = '5d9cbefe';
 
-      // Múltiplas consultas para obter variedade
+      // Múltiplas consultas incluindo estilos brasileiros
       const popularQueries = [
         { tags: 'instrumental', order: 'popularity_total' },
         { tags: 'piano', order: 'popularity_month' },
         { tags: 'acoustic', order: 'popularity_week' },
         { tags: 'classical', order: 'popularity_total' },
         { tags: 'peaceful', order: 'popularity_month' },
-        { tags: 'children', order: 'popularity_total' }
+        { tags: 'children', order: 'popularity_total' },
+        { tags: 'brazilian', order: 'popularity_total' },
+        { tags: 'bossanova', order: 'popularity_month' },
+        { tags: 'samba', order: 'popularity_week' },
+        { tags: 'latin', order: 'popularity_total' }
       ];
 
       let allResults = [];
@@ -265,13 +268,13 @@ export class JamendoAPI {
     }
   }
 
-  // Expandir termos de busca com sinônimos e variações
+  // Expandir termos de busca com artistas e estilos brasileiros
   static expandSearchTerms(query: string): string[] {
     const terms = [query];
     const lowerQuery = query.toLowerCase();
 
-    // Dicionário de sinônimos e variações
-    const synonyms = {
+    // Dicionário de sinônimos brasileiros e variações
+    const brazilianSynonyms = {
       'criança': ['children', 'kids', 'infantil', 'child'],
       'infantil': ['children', 'kids', 'criança', 'child'],
       'música': ['music', 'song', 'canção'],
@@ -281,11 +284,21 @@ export class JamendoAPI {
       'alegre': ['happy', 'joyful', 'upbeat'],
       'clássica': ['classical', 'classic'],
       'popular': ['pop', 'hit', 'famous'],
-      'instrumental': ['no vocal', 'without voice']
+      'instrumental': ['no vocal', 'without voice'],
+      'roberto': ['Roberto Carlos', 'rei da música'],
+      'caetano': ['Caetano Veloso', 'tropicália'],
+      'gilberto': ['Gilberto Gil', 'MPB'],
+      'chico': ['Chico Buarque', 'MPB'],
+      'mpb': ['música popular brasileira', 'brazilian music'],
+      'sertanejo': ['country brazilian', 'música sertaneja'],
+      'forró': ['northeastern brazilian', 'música nordestina'],
+      'samba': ['brazilian samba', 'música brasileira'],
+      'bossa': ['bossa nova', 'smooth brazilian'],
+      'brasileiro': ['brazilian', 'brasil', 'brazil']
     };
 
     // Adicionar sinônimos
-    Object.entries(synonyms).forEach(([word, syns]) => {
+    Object.entries(brazilianSynonyms).forEach(([word, syns]) => {
       if (lowerQuery.includes(word)) {
         syns.forEach(syn => {
           terms.push(query.replace(new RegExp(word, 'gi'), syn));
@@ -293,12 +306,30 @@ export class JamendoAPI {
       }
     });
 
-    // Adicionar variações genéricas
+    // Adicionar variações específicas para artistas brasileiros
+    const brazilianArtists = [
+      'Roberto Carlos', 'Caetano Veloso', 'Gilberto Gil', 'Chico Buarque',
+      'Elis Regina', 'Tom Jobim', 'Vinícius de Moraes', 'Djavan',
+      'Marisa Monte', 'Gal Costa', 'Maria Bethânia', 'Milton Nascimento'
+    ];
+
+    // Se a busca parece ser um nome, adicionar artistas similares
+    if (query.split(' ').length <= 2) {
+      brazilianArtists.forEach(artist => {
+        if (artist.toLowerCase().includes(lowerQuery) || lowerQuery.includes(artist.toLowerCase().split(' ')[0])) {
+          terms.push(artist);
+        }
+      });
+    }
+
+    // Adicionar variações genéricas brasileiras
+    terms.push(`${query} brasileiro`);
+    terms.push(`${query} brasil`);
     terms.push(`${query} instrumental`);
     terms.push(`${query} piano`);
     terms.push(`${query} acoustic`);
     
-    return [...new Set(terms)].slice(0, 8); // Limitar a 8 termos únicos
+    return [...new Set(terms)].slice(0, 10); // Limitar a 10 termos únicos
   }
 }
 
@@ -377,6 +408,42 @@ export class DemoAPI {
         popularity: 82,
         source: 'demo',
         bpm: 140
+      },
+      {
+        id: 'demo-9',
+        title: 'Roberto Carlos - Detalhes',
+        artist: 'Roberto Carlos',
+        duration: 45,
+        popularity: 95,
+        source: 'demo',
+        bpm: 130
+      },
+      {
+        id: 'demo-10',
+        title: 'Caetano Veloso - Alegria Alegria',
+        artist: 'Caetano Veloso',
+        duration: 40,
+        popularity: 90,
+        source: 'demo',
+        bpm: 125
+      },
+      {
+        id: 'demo-11',
+        title: 'Tom Jobim - Garota de Ipanema',
+        artist: 'Tom Jobim',
+        duration: 38,
+        popularity: 88,
+        source: 'demo',
+        bpm: 120
+      },
+      {
+        id: 'demo-12',
+        title: 'Elis Regina - Como Nossos Pais',
+        artist: 'Elis Regina',
+        duration: 42,
+        popularity: 87,
+        source: 'demo',
+        bpm: 115
       }
     ];
 
@@ -410,7 +477,7 @@ export class DemoAPI {
 
     const lowerQuery = query.toLowerCase();
     
-    // Busca fuzzy melhorada
+    // Busca fuzzy melhorada com termos brasileiros
     return tracks.filter(track => {
       const titleMatch = track.title.toLowerCase().includes(lowerQuery);
       const artistMatch = track.artist.toLowerCase().includes(lowerQuery);
@@ -425,8 +492,34 @@ export class DemoAPI {
         artistWords.some(aWord => aWord.includes(qWord))
       );
       
-      return titleMatch || artistMatch || wordMatch;
+      // Busca por sinônimos brasileiros
+      const brazilianMatches = this.checkBrazilianSynonyms(lowerQuery, track);
+      
+      return titleMatch || artistMatch || wordMatch || brazilianMatches;
     });
+  }
+
+  // Verificar sinônimos brasileiros
+  static checkBrazilianSynonyms(query: string, track: MusicTrack): boolean {
+    const synonymMap = {
+      'rei': ['roberto carlos'],
+      'tropicália': ['caetano'],
+      'mpb': ['elis', 'caetano', 'gilberto', 'chico'],
+      'bossa': ['tom jobim', 'garota'],
+      'brasileiro': ['roberto', 'caetano', 'elis', 'tom'],
+      'clássico': ['detalhes', 'alegria', 'ipanema', 'pais']
+    };
+
+    for (const [synonym, artists] of Object.entries(synonymMap)) {
+      if (query.includes(synonym)) {
+        return artists.some(artist => 
+          track.title.toLowerCase().includes(artist) || 
+          track.artist.toLowerCase().includes(artist)
+        );
+      }
+    }
+
+    return false;
   }
 }
 

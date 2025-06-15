@@ -14,7 +14,7 @@ serve(async (req) => {
   try {
     const { action, query, trackId } = await req.json()
     
-    // Credenciais corretas do Spotify
+    // Credenciais do Spotify (usar variáveis de ambiente em produção)
     const clientId = 'ca7261877c7848e6a2e8e7bb14f85e6e'
     const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET') || 'b93c7e8b936141d8b7fc0b6d4aa8b9b1'
     
@@ -43,9 +43,16 @@ serve(async (req) => {
     let result = {}
 
     if (action === 'search') {
-      // Buscar com termos mais amplos e diversos mercados
+      // Buscar com termos brasileiros e amplos
       const searchTerms = [
         query,
+        `${query} brasileiro`,
+        `${query} brasil`,
+        `${query} MPB`,
+        `${query} sertanejo`,
+        `${query} forró`,
+        `${query} bossa nova`,
+        `${query} samba`,
         `${query} instrumental`,
         `${query} piano`,
         `${query} acoustic`,
@@ -59,8 +66,8 @@ serve(async (req) => {
 
       let allTracks = []
 
-      // Tentar diferentes mercados para mais resultados
-      const markets = ['US', 'BR', 'GB', 'ES', 'DE']
+      // Tentar diferentes mercados, priorizando Brasil
+      const markets = ['BR', 'US', 'GB', 'ES', 'PT', 'AR']
 
       for (const searchTerm of searchTerms) {
         if (allTracks.length >= 30) break
@@ -100,31 +107,41 @@ serve(async (req) => {
         }
       }
 
-      // Se ainda não temos resultados suficientes, tentar buscas genéricas
+      // Se ainda não temos resultados suficientes, tentar buscas genéricas brasileiras
       if (allTracks.length < 10) {
-        console.log('🔄 Poucos resultados, tentando buscas genéricas...')
+        console.log('🔄 Poucos resultados, tentando buscas brasileiras...')
         
-        const genericTerms = [
-          'children music',
-          'kids songs',
-          'nursery rhymes',
-          'piano instrumental',
-          'acoustic covers',
-          'classical music',
-          'música infantil',
-          'canções populares',
-          'instrumental piano',
-          'easy listening'
+        const brazilianTerms = [
+          'Roberto Carlos',
+          'Caetano Veloso',
+          'Gilberto Gil',
+          'Chico Buarque',
+          'MPB clássicos',
+          'sertanejo universitário',
+          'forró tradicional',
+          'bossa nova clássica',
+          'samba brasileiro',
+          'música popular brasileira',
+          'Elis Regina',
+          'Tom Jobim',
+          'Vinícius de Moraes',
+          'Marisa Monte',
+          'Djavan',
+          'música infantil brasileira',
+          'canções populares brasil',
+          'instrumental brasileiro',
+          'piano brasileiro',
+          'violão brasileiro'
         ]
 
-        for (const genericTerm of genericTerms) {
+        for (const brazilianTerm of brazilianTerms) {
           if (allTracks.length >= 25) break
 
           try {
             const searchParams = new URLSearchParams({
-              q: genericTerm,
+              q: brazilianTerm,
               type: 'track',
-              market: 'US',
+              market: 'BR',
               limit: '15'
             })
 
@@ -140,10 +157,10 @@ serve(async (req) => {
               const tracksWithPreview = tracks.filter(item => item.preview_url)
               allTracks.push(...tracksWithPreview)
               
-              console.log(`🔍 Genérico "${genericTerm}": ${tracksWithPreview.length} com preview`)
+              console.log(`🔍 Brasileiro "${brazilianTerm}": ${tracksWithPreview.length} com preview`)
             }
           } catch (error) {
-            console.error(`❌ Erro na busca genérica "${genericTerm}":`, error)
+            console.error(`❌ Erro na busca brasileira "${brazilianTerm}":`, error)
           }
         }
       }
@@ -170,23 +187,28 @@ serve(async (req) => {
         }))
       }
     } else if (action === 'popular') {
-      // Buscar playlists populares com termos mais diversos
+      // Buscar playlists populares brasileiras
       const popularQueries = [
-        'top hits instrumental',
-        'piano covers',
-        'acoustic popular',
-        'children music playlist',
-        'kids songs collection',
-        'classical piano',
-        'easy listening',
-        'peaceful music',
-        'instrumental covers',
-        'popular melodies',
+        'top hits brasil',
+        'MPB clássicos',
+        'sertanejo hits',
+        'Roberto Carlos',
+        'Caetano Veloso',
+        'Gilberto Gil',
+        'bossa nova brasil',
+        'samba brasileiro',
+        'forró tradicional',
         'música popular brasileira',
-        'canções conhecidas',
-        'hits internacionais',
-        'música relaxante',
-        'piano suave'
+        'piano instrumental brasil',
+        'violão brasileiro',
+        'música infantil brasil',
+        'canções brasileiras',
+        'hits nacionais',
+        'Elis Regina',
+        'Tom Jobim',
+        'Chico Buarque',
+        'Djavan sucessos',
+        'Marisa Monte'
       ]
 
       let allTracks = []
@@ -198,7 +220,7 @@ serve(async (req) => {
           const searchParams = new URLSearchParams({
             q: popularQuery,
             type: 'track',
-            market: 'US',
+            market: 'BR',
             limit: '20'
           })
 
@@ -214,10 +236,10 @@ serve(async (req) => {
             const tracksWithPreview = tracks.filter(item => item.preview_url)
             allTracks.push(...tracksWithPreview)
             
-            console.log(`🔍 Popular "${popularQuery}": ${tracksWithPreview.length} com preview`)
+            console.log(`🔍 Popular brasileiro "${popularQuery}": ${tracksWithPreview.length} com preview`)
           }
         } catch (error) {
-          console.error(`❌ Erro na busca popular "${popularQuery}":`, error)
+          console.error(`❌ Erro na busca popular brasileira "${popularQuery}":`, error)
         }
       }
 
@@ -226,7 +248,7 @@ serve(async (req) => {
         index === self.findIndex(t => t.id === track.id)
       ).sort((a, b) => b.popularity - a.popularity).slice(0, 30)
 
-      console.log(`✅ Spotify popular encontrou ${uniqueTracks.length} músicas únicas`)
+      console.log(`✅ Spotify popular brasileiro encontrou ${uniqueTracks.length} músicas únicas`)
       
       result = {
         tracks: uniqueTracks.map((item: any) => ({

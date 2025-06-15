@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -241,15 +240,25 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     searchTracks(searchTerm);
   };
 
-  // Sugestões inteligentes baseadas no contexto
+  // Sugestões inteligentes baseadas no contexto brasileiro
   const getSmartSuggestions = () => {
     const suggestions = [
-      'música infantil',
-      'piano instrumental', 
-      'violão clássico',
+      'Roberto Carlos',
+      'Caetano Veloso', 
+      'MPB clássicos',
+      'bossa nova',
+      'sertanejo',
+      'forró',
+      'música infantil brasileira',
+      'piano brasileiro',
+      'violão brasileiro',
+      'samba',
+      'Tom Jobim',
+      'Elis Regina',
+      'Chico Buarque',
+      'Gilberto Gil',
       'música relaxante',
-      'canções populares',
-      'música brasileira'
+      'canções populares'
     ];
     
     // Adicionar sugestões baseadas no que já foi buscado
@@ -258,7 +267,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       suggestions.push(...artists.map(artist => `mais de ${artist}`));
     }
     
-    return suggestions.slice(0, 6);
+    return suggestions.slice(0, 8);
   };
 
   // Carregar músicas ao mudar fonte de API
@@ -279,7 +288,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            Buscar Músicas
+            Buscar Músicas Brasileiras
             {searchStatus === 'searching' && <Loader className="w-4 h-4 animate-spin" />}
           </CardTitle>
         </CardHeader>
@@ -292,7 +301,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               className="flex-1 flex items-center gap-2"
             >
               {getApiStatusIcon(apiHealth.spotify)}
-              Spotify
+              Spotify BR
             </Button>
             <Button
               variant={apiSource === 'jamendo' ? 'default' : 'outline'}
@@ -308,14 +317,14 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               className="flex-1 flex items-center gap-2"
             >
               {getApiStatusIcon(apiHealth.demo)}
-              Demo
+              Demo BR
             </Button>
           </div>
 
           {/* Formulário de busca melhorado */}
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="Digite o nome da música, artista ou estilo..."
+              placeholder="Digite o nome da música, artista brasileiro ou estilo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1"
@@ -330,13 +339,13 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           {searchStatus === 'searching' && (
             <div className="flex items-center gap-2 text-blue-600">
               <Loader className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Buscando nas melhores fontes de música...</span>
+              <span className="text-sm">Buscando nas melhores fontes de música brasileira...</span>
             </div>
           )}
 
-          {/* Sugestões inteligentes */}
+          {/* Sugestões brasileiras */}
           <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-600">Sugestões:</span>
+            <span className="text-sm text-gray-600">Sugestões brasileiras:</span>
             {getSmartSuggestions().map((suggestion) => (
               <Button
                 key={suggestion}
@@ -347,6 +356,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                   searchTracks(suggestion);
                 }}
                 disabled={loading}
+                className="text-xs"
               >
                 {suggestion}
               </Button>
@@ -363,6 +373,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               <WifiOff className="w-3 h-3 text-red-500" />
               <span>Indisponível</span>
             </div>
+            <p className="text-xs">🇧🇷 Sistema otimizado para música brasileira - MPB, Sertanejo, Bossa Nova, Forró e muito mais!</p>
           </div>
         </CardContent>
       </Card>
