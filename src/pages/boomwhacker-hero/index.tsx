@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target, Search, Heart, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import MusicAPI from './components/MusicAPI';
-import { MusicTrack } from './utils/musicAPIs';
+import MusicPlayer from './components/MusicPlayer';
+import { MusicTrack, MusicAPIManager } from './utils/musicAPIs';
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
@@ -87,6 +87,8 @@ const BoomwhackerHero: React.FC = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('Todos');
   const [showMusicAPI, setShowMusicAPI] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(0.5);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const gameStartTime = useRef<number>(0);
@@ -137,7 +139,7 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [audioContext]);
 
-  // Iniciar jogo
+  // Iniciar jogo com música
   const startGame = useCallback(() => {
     if (!selectedSong) return;
     
@@ -154,12 +156,34 @@ const BoomwhackerHero: React.FC = () => {
     });
     
     gameStartTime.current = Date.now();
+    setIsMusicPlaying(true);
     
     toast({
       title: "🎵 Jogo Iniciado!",
       description: `Tocando: ${selectedSong.title}`,
     });
   }, [selectedSong, toast]);
+
+  // Pausar/Retomar jogo
+  const toggleGamePause = useCallback(() => {
+    if (gameState === 'playing') {
+      setGameState('paused');
+      setIsMusicPlaying(false);
+    } else if (gameState === 'paused') {
+      setGameState('playing');
+      setIsMusicPlaying(true);
+    }
+  }, [gameState]);
+
+  // Função quando música termina
+  const handleTrackEnd = useCallback(() => {
+    setGameState('ended');
+    setIsMusicPlaying(false);
+    toast({
+      title: "🏆 Jogo Finalizado!",
+      description: `Pontuação final: ${gameStats.score}`,
+    });
+  }, [gameStats.score, toast]);
 
   // Gerar notas baseadas no padrão da música
   const generateNotes = useCallback((time: number) => {
@@ -364,93 +388,108 @@ const BoomwhackerHero: React.FC = () => {
               selectedTrack={selectedSong as MusicTrack}
             />
           ) : (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Music className="w-5 h-5" />
-                  Música Selecionada
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {selectedSong && (
-                  <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                    <div>
-                      <h3 className="text-lg font-semibold">{selectedSong.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-300">{selectedSong.artist}</p>
-                      <div className="flex gap-2 mt-2">
-                        <Badge>Duração: {selectedSong.duration}s</Badge>
-                        {'bpm' in selectedSong && selectedSong.bpm && (
-                          <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
-                        )}
+            <>
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Music className="w-5 h-5" />
+                    Música Selecionada
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedSong && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                        <div>
+                          <h3 className="text-lg font-semibold">{selectedSong.title}</h3>
+                          <p className="text-gray-600 dark:text-gray-300">{selectedSong.artist}</p>
+                          <div className="flex gap-2 mt-2">
+                            <Badge>Duração: {selectedSong.duration}s</Badge>
+                            {'bpm' in selectedSong && selectedSong.bpm && (
+                              <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
+                            )}
+                          </div>
+                        </div>
+                        <Badge variant="default">Pronto para jogar!</Badge>
                       </div>
+                      
+                      {/* Preview da música */}
+                      {'preview_url' in selectedSong && selectedSong.preview_url && (
+                        <MusicPlayer
+                          track={selectedSong as MusicTrack}
+                          isPlaying={false}
+                          onPlayPause={() => {}}
+                          volume={musicVolume}
+                          onVolumeChange={setMusicVolume}
+                        />
+                      )}
                     </div>
-                    <Badge variant="default">Pronto para jogar!</Badge>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                  )}
+                </CardContent>
+              </Card>
 
-          {/* Seletor de Dificuldade */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Nível de Dificuldade</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2 p-1 bg-gray-800 rounded-full">
-                {(['Todos', 'Iniciante', 'Intermediário', 'Avançado'] as GameDifficulty[]).map((level) => (
-                  <Button
-                    key={level}
-                    variant={difficulty === level ? 'default' : 'ghost'}
-                    className={`flex-1 rounded-full ${difficulty === level ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
-                    onClick={() => setDifficulty(level)}
-                  >
-                    {level}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Instruções */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Como Jogar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Controles do Teclado:</h4>
-                  <div className="space-y-1 text-sm">
-                    {BOOMWHACKER_NOTES.map((note, index) => (
-                      <div key={note.note} className="flex items-center gap-2">
-                        <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">{note.key.toUpperCase()}</kbd>
-                        <span style={{ color: note.color }}>●</span>
-                        <span>{note.note} ({note.name})</span>
-                      </div>
+              {/* Seletor de Dificuldade */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Nível de Dificuldade</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-2 p-1 bg-gray-800 rounded-full">
+                    {(['Todos', 'Iniciante', 'Intermediário', 'Avançado'] as GameDifficulty[]).map((level) => (
+                      <Button
+                        key={level}
+                        variant={difficulty === level ? 'default' : 'ghost'}
+                        className={`flex-1 rounded-full ${difficulty === level ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
+                        onClick={() => setDifficulty(level)}
+                      >
+                        {level}
+                      </Button>
                     ))}
                   </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Instruções:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Pressione as teclas quando as notas chegarem na zona de acerto</li>
-                    <li>• Ou clique nos cilindros coloridos</li>
-                    <li>• Acerte no tempo certo para ganhar pontos</li>
-                    <li>• Mantenha combos para multiplicar a pontuação</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {selectedSong && (
-            <div className="text-center">
-              <Button onClick={startGame} size="lg" className="text-xl px-8 py-4 bg-orange-500 hover:bg-orange-600">
-                <Play className="w-6 h-6 mr-2" />
-                Iniciar Jogo
-              </Button>
-            </div>
+              {/* Instruções */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Como Jogar</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Controles do Teclado:</h4>
+                      <div className="space-y-1 text-sm">
+                        {BOOMWHACKER_NOTES.map((note, index) => (
+                          <div key={note.note} className="flex items-center gap-2">
+                            <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">{note.key.toUpperCase()}</kbd>
+                            <span style={{ color: note.color }}>●</span>
+                            <span>{note.note} ({note.name})</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Instruções:</h4>
+                      <ul className="space-y-1 text-sm">
+                        <li>• Pressione as teclas quando as notas chegarem na zona de acerto</li>
+                        <li>• Ou clique nos cilindros coloridos</li>
+                        <li>• Acerte no tempo certo para ganhar pontos</li>
+                        <li>• Mantenha combos para multiplicar a pontuação</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {selectedSong && !showMusicAPI && (
+                <div className="text-center">
+                  <Button onClick={startGame} size="lg" className="text-xl px-8 py-4 bg-orange-500 hover:bg-orange-600">
+                    <Play className="w-6 h-6 mr-2" />
+                    Iniciar Jogo
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -465,13 +504,16 @@ const BoomwhackerHero: React.FC = () => {
         <div className="flex items-center gap-4">
           <Button 
             variant="outline" 
-            onClick={() => setGameState('menu')}
+            onClick={() => {
+              setGameState('menu');
+              setIsMusicPlaying(false);
+            }}
             className="text-white border-white hover:bg-white hover:text-black"
           >
             ← Menu
           </Button>
           <Button
-            onClick={() => gameState === 'playing' ? setGameState('paused') : setGameState('playing')}
+            onClick={toggleGamePause}
             className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
           >
             {gameState === 'playing' ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
@@ -515,6 +557,20 @@ const BoomwhackerHero: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Player de música durante o jogo */}
+      {selectedSong && 'preview_url' in selectedSong && (
+        <div className="fixed top-20 right-4 z-40 w-80">
+          <MusicPlayer
+            track={selectedSong as MusicTrack}
+            isPlaying={isMusicPlaying}
+            onPlayPause={setIsMusicPlaying}
+            onTrackEnd={handleTrackEnd}
+            volume={musicVolume}
+            onVolumeChange={setMusicVolume}
+          />
+        </div>
+      )}
 
       {/* Área do jogo */}
       <div 
