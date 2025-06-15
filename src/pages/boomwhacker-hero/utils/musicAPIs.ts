@@ -12,7 +12,6 @@ export interface MusicTrack {
   external_url?: string;
   source: 'spotify' | 'jamendo' | 'demo' | 'synthesized';
   bpm?: number;
-  failed?: boolean;
 }
 
 // Instância global para síntese de áudio

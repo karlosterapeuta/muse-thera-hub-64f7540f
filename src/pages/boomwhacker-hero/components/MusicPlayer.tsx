@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -29,18 +30,15 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
-  const [audioStatus, setAudioStatus] = useState<'loading' | 'ready' | 'error' | 'none'>('none');
-  const [retryCount, setRetryCount] = useState(0);
+  const [audioStatus, setAudioStatus] = useState<'loading' | 'ready' | 'error' | 'none' | 'simulation'>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const loadTimeoutRef = useRef<NodeJS.Timeout>();
-
-  const MAX_RETRIES = 2; // Aumentado para 2 tentativas
-  const LOAD_TIMEOUT = 8000; // Aumentado para 8 segundos
+  const simulationIntervalRef = useRef<NodeJS.Timeout>();
 
   // Limpar áudio anterior
   const cleanupAudio = () => {
-    if (loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
+    if (simulationIntervalRef.current) {
+      clearInterval(simulationIntervalRef.current);
+      simulationIntervalRef.current = undefined;
     }
     
     if (audioRef.current) {
@@ -55,17 +53,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
-  // Event handlers melhorados
+  // Event handlers
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       console.log(`✅ Áudio carregado com sucesso - Duração: ${audioRef.current.duration}s`);
       setDuration(audioRef.current.duration || track?.duration || 0);
       setAudioStatus('ready');
-      setErrorMessage('Pronto para tocar!');
-      setRetryCount(0);
-      if (loadTimeoutRef.current) {
-        clearTimeout(loadTimeoutRef.current);
-      }
+      setErrorMessage('Áudio carregado!');
     }
   };
 
@@ -73,7 +67,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     if (audioRef.current) {
       const time = audioRef.current.currentTime;
       setCurrentTime(time);
-      // Notificar o componente pai sobre a atualização do tempo
       if (onTimeUpdate) {
         onTimeUpdate(time);
       }
@@ -90,47 +83,19 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   };
 
   const handleError = (e: Event) => {
-    console.error('❌ Erro no áudio:', e);
-    setAudioStatus('error');
+    console.error('❌ Erro no áudio - Modo simulação ativado');
+    setAudioStatus('simulation');
+    setErrorMessage('Modo simulação (sem áudio)');
     onPlayPause(false);
-    
-    if (loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
-    }
-    
-    // Tentar novamente
-    if (retryCount < MAX_RETRIES && track?.preview_url) {
-      console.log(`🔄 Tentativa ${retryCount + 1} de ${MAX_RETRIES} para recarregar áudio`);
-      setRetryCount(prev => prev + 1);
-      setErrorMessage(`Tentando novamente... (${retryCount + 1}/${MAX_RETRIES})`);
-      
-      setTimeout(() => {
-        initializeAudio();
-      }, 2000); // Aguardar 2 segundos antes de tentar novamente
-    } else {
-      // Falhou definitivamente
-      console.error('❌ Áudio falhou após todas as tentativas');
-      setErrorMessage('Erro no áudio - trocando música...');
-      
-      if (onTrackFailed) {
-        setTimeout(() => {
-          onTrackFailed();
-        }, 3000);
-      }
-    }
   };
 
   const handleCanPlay = () => {
     console.log('✅ Áudio pronto para reprodução');
     setAudioStatus('ready');
     setErrorMessage('Áudio carregado!');
-    setRetryCount(0);
-    if (loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
-    }
   };
 
-  // Inicializar áudio melhorado
+  // Inicializar áudio com fallback para simulação
   const initializeAudio = () => {
     if (!track) {
       setDuration(0);
@@ -143,58 +108,55 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     console.log(`🎵 Carregando música: ${track.title} (${track.source})`);
     cleanupAudio();
 
-    if (track.preview_url) {
-      console.log(`🎵 Carregando áudio de: ${track.preview_url}`);
+    // Se não tem preview_url ou é synthesized, usar modo simulação
+    if (!track.preview_url || track.source === 'synthesized') {
+      console.log(`🎵 Modo simulação para: ${track.title}`);
+      setDuration(track.duration);
+      setAudioStatus('simulation');
+      setCurrentTime(0);
+      setErrorMessage('Modo simulação');
+      return;
+    }
+
+    // Tentar carregar áudio real
+    try {
+      console.log(`🎵 Tentando carregar áudio de: ${track.preview_url}`);
       setAudioStatus('loading');
       setErrorMessage('Carregando áudio...');
       
-      // Timeout para carregamento
-      loadTimeoutRef.current = setTimeout(() => {
-        console.error('❌ Timeout no carregamento do áudio (8s)');
-        handleError(new Event('timeout'));
-      }, LOAD_TIMEOUT);
+      const audio = new Audio();
       
-      try {
-        const audio = new Audio();
-        
-        // Configurar áudio com melhores opções
-        audio.crossOrigin = "anonymous";
-        audio.preload = "auto"; // Mudado para 'auto' para carregar completamente
-        audio.volume = isMuted ? 0 : volume;
-        
-        // Adicionar event listeners
-        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-        audio.addEventListener('timeupdate', handleTimeUpdate);
-        audio.addEventListener('ended', handleEnded);
-        audio.addEventListener('error', handleError);
-        audio.addEventListener('canplay', handleCanPlay);
-        audio.addEventListener('loadstart', () => {
-          console.log('🔄 Iniciando carregamento do áudio...');
-        });
-        audio.addEventListener('progress', () => {
-          console.log('📊 Progresso do carregamento...');
-        });
-        
-        // Carregar o áudio
-        audio.src = track.preview_url;
-        audioRef.current = audio;
-        
-        // Forçar carregamento
-        audio.load();
-        
-      } catch (error) {
-        console.error('❌ Erro ao criar áudio:', error);
-        setAudioStatus('error');
-        setErrorMessage('Erro ao criar player');
-        handleError(new Event('creation-error'));
-      }
-    } else {
-      // Sem preview_url - usar duração da música
-      console.log(`🎵 Música sem preview: ${track.title} (modo simulação)`);
-      setDuration(track.duration);
-      setAudioStatus('ready');
-      setCurrentTime(0);
-      setErrorMessage('Modo simulação');
+      // Configurar áudio
+      audio.crossOrigin = "anonymous";
+      audio.preload = "metadata";
+      audio.volume = isMuted ? 0 : volume;
+      
+      // Adicionar event listeners
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('error', handleError);
+      audio.addEventListener('canplay', handleCanPlay);
+      
+      // Configurar timeout para fallback
+      const timeoutId = setTimeout(() => {
+        console.log('⏰ Timeout no carregamento - usando simulação');
+        handleError(new Event('timeout'));
+      }, 5000);
+      
+      // Limpar timeout se carregar com sucesso
+      audio.addEventListener('canplay', () => {
+        clearTimeout(timeoutId);
+      }, { once: true });
+      
+      // Carregar o áudio
+      audio.src = track.preview_url;
+      audioRef.current = audio;
+      audio.load();
+      
+    } catch (error) {
+      console.error('❌ Erro ao criar áudio:', error);
+      handleError(new Event('creation-error'));
     }
   };
 
@@ -202,7 +164,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const handlePlayPause = async () => {
     if (!track) return;
 
-    if (track.preview_url && audioRef.current && audioStatus === 'ready') {
+    if (audioStatus === 'ready' && audioRef.current) {
       try {
         if (isPlaying) {
           console.log('⏸️ Pausando reprodução');
@@ -214,12 +176,10 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         onPlayPause(!isPlaying);
       } catch (error) {
         console.error('❌ Erro ao controlar reprodução:', error);
-        setAudioStatus('error');
-        setErrorMessage('Erro na reprodução');
         handleError(new Event('playback-error'));
       }
-    } else {
-      // Para músicas sem preview, apenas alternar estado
+    } else if (audioStatus === 'simulation') {
+      // Para modo simulação, apenas alternar estado
       onPlayPause(!isPlaying);
     }
   };
@@ -234,8 +194,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   // Efeito principal para inicializar áudio
   useEffect(() => {
-    setRetryCount(0);
-    setErrorMessage('');
     initializeAudio();
     return cleanupAudio;
   }, [track?.id, track?.preview_url]);
@@ -247,15 +205,16 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   }, [volume, isMuted]);
 
-  // Simular progresso para músicas sem preview
+  // Simular progresso para modo simulação
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (track && !track.preview_url && isPlaying && audioStatus === 'ready') {
+    if (track && audioStatus === 'simulation' && isPlaying && duration > 0) {
       console.log('🎵 Iniciando simulação de reprodução');
-      interval = setInterval(() => {
+      simulationIntervalRef.current = setInterval(() => {
         setCurrentTime(prev => {
           const newTime = prev + 1;
+          if (onTimeUpdate) {
+            onTimeUpdate(newTime);
+          }
           if (newTime >= duration) {
             console.log('🔚 Simulação terminou');
             onPlayPause(false);
@@ -267,11 +226,17 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           return newTime;
         });
       }, 1000);
+    } else {
+      if (simulationIntervalRef.current) {
+        clearInterval(simulationIntervalRef.current);
+        simulationIntervalRef.current = undefined;
+      }
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
+      if (simulationIntervalRef.current) {
+        clearInterval(simulationIntervalRef.current);
+        simulationIntervalRef.current = undefined;
       }
     };
   }, [track?.preview_url, isPlaying, duration, audioStatus, onPlayPause, onTrackEnd]);
@@ -279,14 +244,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const handleSeek = (value: number[]) => {
     const newTime = (value[0] / 100) * duration;
     
-    if (audioRef.current && track?.preview_url) {
+    if (audioRef.current && audioStatus === 'ready') {
       audioRef.current.currentTime = newTime;
     }
     setCurrentTime(newTime);
   };
 
   const handleRetry = () => {
-    setRetryCount(0);
     setErrorMessage('');
     initializeAudio();
   };
@@ -312,17 +276,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       case 'loading':
         return { text: '🔄 Carregando...', color: 'text-blue-400', showSpinner: true };
       case 'error':
-        return { 
-          text: errorMessage || '⚠️ Erro no áudio', 
-          color: 'text-red-400', 
-          showSpinner: false 
-        };
+        return { text: '⚠️ Erro no áudio', color: 'text-red-400', showSpinner: false };
       case 'ready':
-        if (track.preview_url) {
-          return { text: '🎵 Áudio carregado', color: 'text-green-400', showSpinner: false };
-        } else {
-          return { text: '🎵 Modo demonstração', color: 'text-yellow-400', showSpinner: false };
-        }
+        return { text: '🎵 Áudio carregado', color: 'text-green-400', showSpinner: false };
+      case 'simulation':
+        return { text: '🎮 Modo jogo (sem áudio)', color: 'text-yellow-400', showSpinner: false };
       default:
         return { text: '', color: '', showSpinner: false };
     }
@@ -340,30 +298,28 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <span className={`text-sm ${statusDisplay.color}`}>
               {statusDisplay.text}
             </span>
-            <div className="flex gap-1">
-              {audioStatus === 'error' && (
-                <>
-                  <Button
-                    onClick={handleRetry}
-                    size="sm"
-                    variant="outline"
-                    className="text-xs h-6 px-2"
-                  >
-                    <RotateCcw className="w-3 h-3 mr-1" />
-                    Tentar novamente
-                  </Button>
-                  <Button
-                    onClick={handleSkip}
-                    size="sm"
-                    variant="outline"
-                    className="text-xs h-6 px-2"
-                  >
-                    <SkipForward className="w-3 h-3 mr-1" />
-                    Pular música
-                  </Button>
-                </>
-              )}
-            </div>
+            {audioStatus === 'error' && (
+              <div className="flex gap-1">
+                <Button
+                  onClick={handleRetry}
+                  size="sm"
+                  variant="outline"
+                  className="text-xs h-6 px-2"
+                >
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Tentar novamente
+                </Button>
+                <Button
+                  onClick={handleSkip}
+                  size="sm"
+                  variant="outline"
+                  className="text-xs h-6 px-2"
+                >
+                  <SkipForward className="w-3 h-3 mr-1" />
+                  Pular música
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         
