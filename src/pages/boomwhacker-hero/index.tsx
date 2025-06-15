@@ -9,6 +9,10 @@ import { Input } from '@/components/ui/input';
 import MusicAPI from './components/MusicAPI';
 import MusicPlayer from './components/MusicPlayer';
 import { MusicTrack, MusicAPIManager } from './utils/musicAPIs';
+import Enhanced3DCylinders from './components/Enhanced3DCylinders';
+import VisualEffects from './components/VisualEffects';
+import { useFreePlayMode } from './hooks/useFreePlayMode';
+import { globalEnhancedAudio } from './utils/enhancedAudioSynthesis';
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
@@ -69,9 +73,18 @@ interface GameStats {
 
 type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
 
+interface Particle {
+  id: string;
+  x: number;
+  y: number;
+  color: string;
+  life: number;
+  velocity: { x: number; y: number };
+}
+
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
-  const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'paused' | 'ended' | 'freeplay'>('menu');
   const [selectedSong, setSelectedSong] = useState<typeof DEMO_SONG | MusicTrack | null>(null);
   const [availableTracks, setAvailableTracks] = useState<MusicTrack[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,6 +109,7 @@ const BoomwhackerHero: React.FC = () => {
   const noteIdCounter = useRef<number>(0);
   const gameLoopRef = useRef<number>();
   const timeSimulationRef = useRef<NodeJS.Timeout>();
+  const particleIdCounter = useRef<number>(0);
 
   // Configurações do jogo
   const TRACK_WIDTH = 100;
@@ -131,41 +145,46 @@ const BoomwhackerHero: React.FC = () => {
 
   // Tocar som do boomwhacker
   const playBoomwhackerSound = useCallback(async (noteIndex: number) => {
-    if (!audioContext || noteIndex < 0 || noteIndex >= BOOMWHACKER_NOTES.length) {
-      console.log('⚠️ AudioContext não disponível ou índice inválido');
+    if (noteIndex < 0 || noteIndex >= BOOMWHACKER_NOTES.length) {
+      console.log('⚠️ Índice de nota inválido');
       return;
     }
 
     try {
-      // Garantir que o contexto esteja ativo
-      if (audioContext.state === 'suspended') {
-        await audioContext.resume();
-        console.log('🔓 AudioContext desbloqueado');
-      }
-
       const note = BOOMWHACKER_NOTES[noteIndex];
       
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      // Usar áudio melhorado com harmonias
+      await globalEnhancedAudio.playBoomwhackerWithHarmony(
+        note.frequency, 
+        noteIndex, 
+        activeNotes
+      );
       
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(note.frequency, audioContext.currentTime);
+      // Adicionar à lista de notas ativas
+      setActiveNotes(prev => new Set([...prev, noteIndex]));
       
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
+      // Remover da lista após um tempo
+      setTimeout(() => {
+        setActiveNotes(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(noteIndex);
+          return newSet;
+        });
+      }, 600);
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      // Criar partículas visuais
+      createParticles(noteIndex);
       
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.6);
+      // Gravar nota se estiver no modo de gravação
+      if (gameMode === 'freeplay' && isRecording) {
+        recordNote(noteIndex);
+      }
       
-      console.log(`🎵 Tocando nota ${note.note} (${note.frequency}Hz)`);
+      console.log(`🎵 Tocando nota melhorada ${note.note} (${note.frequency}Hz)`);
     } catch (error) {
       console.error('Erro ao tocar nota:', error);
     }
-  }, [audioContext]);
+  }, [activeNotes, gameMode, isRecording, recordNote]);
 
   // Gerar notas conforme a música
   const generateNotes = useCallback(() => {
@@ -571,6 +590,23 @@ const BoomwhackerHero: React.FC = () => {
     };
   }, [gameState, selectedSong, isMusicPlaying, handleTrackEnd]);
 
+  // Novos estados para funcionalidades aprimoradas
+  const [gameMode, setGameMode] = useState<'menu' | 'playing' | 'paused' | 'ended' | 'freeplay'>('menu');
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [activeNotes, setActiveNotes] = useState<Set<number>>(new Set());
+  
+  // Hook para modo livre
+  const {
+    isRecording,
+    recordedSequence,
+    isPlaying: isPlayingRecording,
+    startRecording,
+    stopRecording,
+    recordNote,
+    playRecording,
+    clearRecording
+  } = useFreePlayMode();
+
   // Renderizar menu de seleção de música
   if (gameState === 'menu') {
     return (
@@ -709,7 +745,141 @@ const BoomwhackerHero: React.FC = () => {
     );
   }
 
-  // Renderizar jogo
+  // Renderizar modo livre
+  if (gameMode === 'freeplay') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white overflow-hidden">
+        {/* Header do modo livre */}
+        <div className="flex justify-between items-center p-4 bg-black bg-opacity-80">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setGameMode('menu')}
+              className="text-white border-white hover:bg-white hover:text-black"
+            >
+              ← Menu
+            </Button>
+            
+            <div>
+              <h2 className="text-xl font-bold">🎵 Modo Livre</h2>
+              <p className="text-gray-400">Toque livremente e grave suas criações</p>
+            </div>
+          </div>
+
+          {/* Controles de gravação */}
+          <div className="flex items-center gap-4">
+            <div className="flex gap-2">
+              {!isRecording ? (
+                <Button
+                  onClick={startRecording}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  <circle className="w-4 h-4 mr-2 fill-current" />
+                  Gravar
+                </Button>
+              ) : (
+                <Button
+                  onClick={stopRecording}
+                  className="bg-gray-500 hover:bg-gray-600 animate-pulse"
+                >
+                  <Square className="w-4 h-4 mr-2" />
+                  Parar Gravação
+                </Button>
+              )}
+              
+              <Button
+                onClick={handlePlayRecording}
+                disabled={recordedSequence.length === 0 || isPlayingRecording}
+                className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Reproduzir ({recordedSequence.length})
+              </Button>
+              
+              <Button
+                onClick={clearRecording}
+                disabled={recordedSequence.length === 0}
+                variant="outline"
+                className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white disabled:opacity-50"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Limpar
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Área visual do modo livre */}
+        <div className="relative mx-auto" style={{ width: TRACK_WIDTH * 6, height: TRACK_HEIGHT }}>
+          {/* Trilhas de fundo */}
+          {BOOMWHACKER_NOTES.map((note, index) => (
+            <div
+              key={note.note}
+              className="absolute border-l-2 border-gray-600 cursor-pointer transition-all duration-200 hover:bg-opacity-30"
+              style={{
+                left: index * TRACK_WIDTH,
+                width: TRACK_WIDTH,
+                height: TRACK_HEIGHT,
+                backgroundColor: activeNotes.has(index) ? `${note.color}30` : `${note.color}10`
+              }}
+              onClick={() => handleTrackClick(index)}
+            >
+              {/* Zona de toque visual */}
+              <div
+                className={`absolute w-full border-2 rounded-lg transition-all duration-200 ${
+                  activeNotes.has(index) 
+                    ? 'border-white bg-white bg-opacity-40 shadow-2xl' 
+                    : 'border-white bg-white bg-opacity-20'
+                }`}
+                style={{
+                  bottom: 100,
+                  height: 80,
+                  boxShadow: activeNotes.has(index) 
+                    ? `0 0 30px ${note.color}` 
+                    : '0 0 20px rgba(255,255,255,0.5)'
+                }}
+              >
+                <div className="text-center text-white font-bold pt-6">
+                  {note.note}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Efeitos visuais */}
+          <VisualEffects 
+            particles={particles} 
+            trackWidth={TRACK_WIDTH} 
+            trackHeight={TRACK_HEIGHT} 
+          />
+        </div>
+
+        {/* Cilindros 3D melhorados */}
+        <Enhanced3DCylinders 
+          notes={BOOMWHACKER_NOTES}
+          activeNotes={activeNotes}
+          onNoteClick={handleTrackClick}
+          gameMode="freeplay"
+        />
+
+        {/* Instruções */}
+        <div className="absolute bottom-4 left-4 right-4 text-center">
+          <div className="bg-black bg-opacity-60 rounded-lg p-4">
+            <p className="text-white mb-2">
+              <strong>Use as teclas:</strong> A, S, D, F, G, H | <strong>ou clique</strong> nos cilindros/trilhas
+            </p>
+            {isRecording && (
+              <p className="text-red-400 animate-pulse">
+                🔴 GRAVANDO - Toque as notas para criar sua sequência
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Renderizar jogo normal com melhorias visuais
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Header do jogo */}
@@ -798,32 +968,38 @@ const BoomwhackerHero: React.FC = () => {
         </div>
       )}
 
-      {/* Área do jogo */}
+      {/* Área do jogo com efeitos visuais */}
       <div 
         ref={gameRef}
         className="relative mx-auto" 
         style={{ width: TRACK_WIDTH * 6, height: TRACK_HEIGHT }}
       >
-        {/* Trilhas de fundo */}
+        {/* Trilhas de fundo melhoradas */}
         {BOOMWHACKER_NOTES.map((note, index) => (
           <div
             key={note.note}
-            className="absolute border-l-2 border-gray-600 cursor-pointer"
+            className="absolute border-l-2 border-gray-600 cursor-pointer transition-all duration-200"
             style={{
               left: index * TRACK_WIDTH,
               width: TRACK_WIDTH,
               height: TRACK_HEIGHT,
-              backgroundColor: `${note.color}10`
+              backgroundColor: activeNotes.has(index) ? `${note.color}30` : `${note.color}10`
             }}
             onClick={() => handleTrackClick(index)}
           >
-            {/* Hit zone */}
+            {/* Hit zone melhorada */}
             <div
-              className="absolute w-full border-2 border-white rounded-lg bg-white bg-opacity-20"
+              className={`absolute w-full border-2 rounded-lg transition-all duration-200 ${
+                activeNotes.has(index) 
+                  ? 'border-white bg-white bg-opacity-40 shadow-2xl' 
+                  : 'border-white bg-white bg-opacity-20'
+              }`}
               style={{
                 bottom: 100,
                 height: 80,
-                boxShadow: '0 0 20px rgba(255,255,255,0.5)'
+                boxShadow: activeNotes.has(index) 
+                  ? `0 0 30px ${note.color}` 
+                  : '0 0 20px rgba(255,255,255,0.5)'
               }}
             >
               <div className="text-center text-white font-bold pt-6">
@@ -853,44 +1029,20 @@ const BoomwhackerHero: React.FC = () => {
         ))}
       </div>
 
-      {/* Cilindros 3D na parte inferior */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex justify-center mb-6">
-        {BOOMWHACKER_NOTES.map((note, index) => (
-          <div
-            key={note.note}
-            className="mx-2 cursor-pointer"
-            style={{ perspective: '500px' }}
-            onClick={() => handleTrackClick(index)}
-          >
-            <div
-              className="relative"
-              style={{
-                width: '80px',
-                height: '80px',
-                transformStyle: 'preserve-3d',
-                transform: 'rotateX(60deg)'
-              }}
-            >
-              <div
-                className="absolute w-full h-full rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                style={{ backgroundColor: note.color }}
-              >
-                {note.note}
-              </div>
-              <div
-                className="absolute w-full rounded-full opacity-70"
-                style={{
-                  height: '40px',
-                  backgroundColor: note.color,
-                  top: '0',
-                  transform: 'translateY(20px) rotateX(90deg)',
-                  transformOrigin: 'top center'
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Cilindros 3D melhorados */}
+      <Enhanced3DCylinders 
+        notes={BOOMWHACKER_NOTES}
+        activeNotes={activeNotes}
+        onNoteClick={handleTrackClick}
+        gameMode="playing"
+      />
+
+      {/* Efeitos visuais */}
+      <VisualEffects 
+        particles={particles} 
+        trackWidth={TRACK_WIDTH} 
+        trackHeight={TRACK_HEIGHT} 
+      />
 
       {/* Barra de progresso */}
       <div className="absolute bottom-4 left-4 right-4">
