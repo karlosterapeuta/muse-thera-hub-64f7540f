@@ -1,5 +1,9 @@
-
 import { TraditionalSong } from '../data/traditionalSongs';
+
+interface AudioSource {
+  url: string;
+  type: 'local' | 'cdn' | 'synthetic';
+}
 
 class GuitarHeroAudioManager {
   private audioContext: AudioContext | null = null;
@@ -7,6 +11,8 @@ class GuitarHeroAudioManager {
   private musicVolume: number = 0.7;
   private effectsVolume: number = 0.5;
   private isInitialized: boolean = false;
+  private loadingProgress: number = 0;
+  private audioCache: Map<string, string> = new Map();
 
   async initialize() {
     if (this.isInitialized) return;
@@ -26,6 +32,51 @@ class GuitarHeroAudioManager {
     }
   }
 
+  private getAudioSources(song: TraditionalSong): AudioSource[] {
+    const sources: AudioSource[] = [];
+    
+    // Primeiro tenta arquivo local
+    if (song.audioFile) {
+      sources.push({ url: song.audioFile, type: 'local' });
+    }
+    
+    // Depois tenta CDN
+    if (song.cdnUrl) {
+      sources.push({ url: song.cdnUrl, type: 'cdn' });
+    }
+    
+    return sources;
+  }
+
+  private async tryLoadAudioSource(source: AudioSource): Promise<HTMLAudioElement | null> {
+    return new Promise((resolve) => {
+      const audio = new Audio();
+      audio.crossOrigin = 'anonymous';
+      audio.preload = 'auto';
+      audio.volume = this.musicVolume;
+
+      const timeoutId = setTimeout(() => {
+        console.log(`⏰ Timeout loading ${source.type}: ${source.url}`);
+        resolve(null);
+      }, 8000);
+
+      audio.addEventListener('canplaythrough', () => {
+        clearTimeout(timeoutId);
+        console.log(`✅ Carregado com sucesso (${source.type}): ${source.url}`);
+        resolve(audio);
+      }, { once: true });
+
+      audio.addEventListener('error', (e) => {
+        clearTimeout(timeoutId);
+        console.log(`❌ Erro ao carregar ${source.type}: ${source.url}`, e);
+        resolve(null);
+      }, { once: true });
+
+      audio.src = source.url;
+      audio.load();
+    });
+  }
+
   async loadTrack(song: TraditionalSong): Promise<boolean> {
     try {
       if (this.currentTrack) {
@@ -33,31 +84,51 @@ class GuitarHeroAudioManager {
         this.currentTrack = null;
       }
 
-      // Para demonstração, usar um áudio sintético se o arquivo não existir
-      const audio = new Audio();
-      audio.crossOrigin = 'anonymous';
-      audio.preload = 'auto';
-      audio.volume = this.musicVolume;
+      this.loadingProgress = 0;
+      console.log(`🎵 Carregando: ${song.title}`);
 
-      // Tentar carregar arquivo real, senão usar síntese
-      try {
-        audio.src = song.audioFile;
-        await new Promise((resolve, reject) => {
-          audio.addEventListener('canplaythrough', resolve, { once: true });
-          audio.addEventListener('error', reject, { once: true });
-          audio.load();
-        });
-        
-        console.log(`✅ Áudio carregado: ${song.title}`);
-      } catch (error) {
-        console.log(`⚠️ Arquivo não encontrado: ${song.audioFile}, usando síntese`);
-        // Criar áudio sintético se arquivo não existir
-        const syntheticBlob = await this.createSyntheticAudio(song);
-        audio.src = URL.createObjectURL(syntheticBlob);
+      // Verificar cache primeiro
+      const cacheKey = song.id;
+      if (this.audioCache.has(cacheKey)) {
+        const cachedUrl = this.audioCache.get(cacheKey)!;
+        const audio = await this.tryLoadAudioSource({ url: cachedUrl, type: 'local' });
+        if (audio) {
+          this.currentTrack = audio;
+          return true;
+        }
       }
 
-      this.currentTrack = audio;
-      return true;
+      const sources = this.getAudioSources(song);
+      
+      // Tentar carregar de cada fonte em ordem
+      for (const source of sources) {
+        this.loadingProgress = 25;
+        const audio = await this.tryLoadAudioSource(source);
+        
+        if (audio) {
+          this.currentTrack = audio;
+          this.audioCache.set(cacheKey, source.url);
+          this.loadingProgress = 100;
+          return true;
+        }
+      }
+
+      // Se todas as fontes falharam, criar áudio sintético
+      console.log(`⚠️ Todas as fontes falharam para ${song.title}, gerando áudio sintético`);
+      this.loadingProgress = 50;
+      
+      const syntheticBlob = await this.createSyntheticAudio(song);
+      const syntheticUrl = URL.createObjectURL(syntheticBlob);
+      
+      const audio = await this.tryLoadAudioSource({ url: syntheticUrl, type: 'synthetic' });
+      if (audio) {
+        this.currentTrack = audio;
+        this.audioCache.set(cacheKey, syntheticUrl);
+        this.loadingProgress = 100;
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error(`❌ Erro ao carregar música ${song.title}:`, error);
       return false;
@@ -86,7 +157,7 @@ class GuitarHeroAudioManager {
 
       for (let i = 0; i < durationSamples && (startSample + i) < data.length; i++) {
         const time = i / sampleRate;
-        const envelope = Math.exp(-time * 2) * intensity; // Decay exponencial
+        const envelope = Math.exp(-time * 2) * intensity;
         const oscillator = Math.sin(2 * Math.PI * frequency * time) * envelope;
         
         // Adicionar harmônicos para soar mais como boomwhacker
@@ -182,6 +253,14 @@ class GuitarHeroAudioManager {
     return this.currentTrack ? this.currentTrack.currentTime * 1000 : 0;
   }
 
+  getDuration(): number {
+    return this.currentTrack ? this.currentTrack.duration * 1000 : 0;
+  }
+
+  getLoadingProgress(): number {
+    return this.loadingProgress;
+  }
+
   setMusicVolume(volume: number): void {
     this.musicVolume = Math.max(0, Math.min(1, volume));
     if (this.currentTrack) {
@@ -205,6 +284,15 @@ class GuitarHeroAudioManager {
     if (this.currentTrack) {
       this.currentTrack.addEventListener('ended', callback);
     }
+  }
+
+  onLoadProgress(callback: (progress: number) => void): void {
+    const interval = setInterval(() => {
+      callback(this.loadingProgress);
+      if (this.loadingProgress >= 100) {
+        clearInterval(interval);
+      }
+    }, 100);
   }
 
   // Tocar efeito sonoro quando acerta nota
@@ -258,6 +346,11 @@ class GuitarHeroAudioManager {
     }
   }
 
+  clearCache(): void {
+    this.audioCache.clear();
+    console.log('🗑️ Cache de áudio limpo');
+  }
+
   dispose(): void {
     if (this.currentTrack) {
       this.currentTrack.pause();
@@ -269,6 +362,7 @@ class GuitarHeroAudioManager {
       this.audioContext = null;
     }
     
+    this.clearCache();
     this.isInitialized = false;
   }
 }

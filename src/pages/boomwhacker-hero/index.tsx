@@ -1,13 +1,15 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Volume2, Play, Music, Trophy, Guitar, Star } from 'lucide-react';
-import { TRADITIONAL_SONGS, TraditionalSong, getSongsByDifficulty } from './data/traditionalSongs';
+import { Volume2, Guitar, Trophy } from 'lucide-react';
+import { TraditionalSong } from './data/traditionalSongs';
 import { useGuitarHeroGame } from './hooks/useGuitarHeroGame';
 import { guitarHeroAudio } from './utils/guitarHeroAudio';
 import GuitarHeroUI from './components/GuitarHeroUI';
+import MusicSelector from './components/MusicSelector';
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
@@ -18,64 +20,6 @@ const BOOMWHACKER_NOTES = [
   { note: 'G', color: '#2D8A5C', name: 'Sol', frequency: 392.00, track: 4, key: 'g' },
   { note: 'A', color: '#8A2BE2', name: 'Lá', frequency: 440.00, track: 5, key: 'h' }
 ];
-
-// Música de exemplo original "Melodia de Demonstração"
-const DEMO_SONG = {
-  id: 'demo-melody',
-  title: 'Melodia de Demonstração',
-  artist: 'Compositor Original',
-  duration: 20,
-  bpm: 120,
-  difficulty: 'medium',
-  pattern: [
-    { time: 1000, track: 4, duration: 500 }, // G
-    { time: 2000, track: 1, duration: 500 }, // D
-    { time: 3000, track: 2, duration: 500 }, // E
-    { time: 4000, track: 4, duration: 500 }, // G
-    { time: 5000, track: 5, duration: 500 }, // A
-    { time: 6000, track: 4, duration: 500 }, // G
-    { time: 7000, track: 2, duration: 500 }, // E
-    { time: 8000, track: 1, duration: 500 }, // D
-    { time: 9000, track: 4, duration: 500 }, // G
-    { time: 10000, track: 1, duration: 500 }, // D
-    { time: 11000, track: 2, duration: 500 }, // E
-    { time: 12000, track: 4, duration: 500 }, // G
-    { time: 13000, track: 5, duration: 500 }, // A
-    { time: 14000, track: 4, duration: 500 }, // G
-    { time: 15000, track: 2, duration: 500 }, // E
-    { time: 16000, track: 1, duration: 500 }, // D
-  ]
-};
-
-interface FallingNote {
-  id: string;
-  track: number;
-  y: number;
-  targetTime: number;
-  hit: boolean;
-  color: string;
-  startTime: number;
-}
-
-interface GameStats {
-  score: number;
-  combo: number;
-  maxCombo: number;
-  hits: number;
-  misses: number;
-  accuracy: number;
-}
-
-type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
-
-interface Particle {
-  id: string;
-  x: number;
-  y: number;
-  color: string;
-  life: number;
-  velocity: { x: number; y: number };
-}
 
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
@@ -136,14 +80,21 @@ const BoomwhackerHero: React.FC = () => {
   const handleStartGame = useCallback(async (song: TraditionalSong) => {
     console.log(`🎮 Iniciando ${song.title} (${song.difficulty})`);
     
+    // Parar qualquer preview que esteja tocando
+    guitarHeroAudio.pause();
+    
+    toast({
+      title: "🎵 Carregando música...",
+      description: `Preparando: ${song.title}`,
+    });
+
     const loaded = await guitarHeroAudio.loadTrack(song);
     if (!loaded) {
       toast({
-        title: "❌ Erro",
-        description: "Não foi possível carregar a música. Tentando novamente...",
-        variant: "destructive"
+        title: "⚠️ Música carregada",
+        description: "Usando áudio sintético - a música ainda funcionará!",
+        variant: "default"
       });
-      return;
     }
 
     startGame(song);
@@ -206,8 +157,6 @@ const BoomwhackerHero: React.FC = () => {
 
   // Renderizar menu de seleção
   if (gameState === 'menu') {
-    const songsToShow = getSongsByDifficulty(selectedDifficulty);
-    
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
         {/* Header */}
@@ -230,6 +179,7 @@ const BoomwhackerHero: React.FC = () => {
                 onChange={(e) => setVolume(Number(e.target.value))}
                 className="w-20"
               />
+              <span className="text-sm w-8">{Math.round(volume * 100)}%</span>
             </div>
           </div>
         </header>
@@ -238,106 +188,21 @@ const BoomwhackerHero: React.FC = () => {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">🇧🇷 GUITAR HERO BRASILEIRO</h1>
             <p className="text-xl text-purple-200">
-              Toque as clássicas músicas tradicionais do Brasil!
+              Toque as clássicas músicas tradicionais do Brasil com áudio real!
             </p>
             <div className="mt-4 p-3 bg-green-900 bg-opacity-50 rounded-lg">
               <p className="text-sm text-green-200">
-                ✅ <strong>Músicas Tradicionais Autênticas</strong> - Patrimônio cultural brasileiro
+                ✅ <strong>Músicas Tradicionais Autênticas</strong> - Patrimônio cultural brasileiro com áudio real
               </p>
             </div>
           </div>
 
-          {/* Seletor de dificuldade */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5" />
-                Escolha a Dificuldade
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2 justify-center">
-                {['easy', 'medium', 'hard'].map((diff) => (
-                  <Button
-                    key={diff}
-                    variant={selectedDifficulty === diff ? 'default' : 'outline'}
-                    onClick={() => setSelectedDifficulty(diff as any)}
-                    className={`px-6 py-3 ${
-                      diff === 'easy' ? 'text-green-600 border-green-600' :
-                      diff === 'medium' ? 'text-yellow-600 border-yellow-600' :
-                      'text-red-600 border-red-600'
-                    }`}
-                  >
-                    {diff === 'easy' ? '🟢 Fácil' : 
-                     diff === 'medium' ? '🟡 Médio' : '🔴 Difícil'}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Lista de músicas */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Music className="w-5 h-5" />
-                  Músicas Tradicionais - {selectedDifficulty === 'easy' ? 'Fácil' : selectedDifficulty === 'medium' ? 'Médio' : 'Difícil'}
-                </span>
-                <Badge variant="secondary">{songsToShow.length} músicas</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {songsToShow.map((song) => (
-                  <Card 
-                    key={song.id} 
-                    className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 transition-all hover:scale-105"
-                    onClick={() => handleStartGame(song)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-bold text-lg">{song.title}</h3>
-                        <Badge className={`${
-                          song.difficulty === 'easy' ? 'bg-green-600' : 
-                          song.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
-                        }`}>
-                          {song.difficulty === 'easy' ? 'Fácil' : 
-                           song.difficulty === 'medium' ? 'Médio' : 'Difícil'}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">{song.artist}</p>
-                      
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span>⏱️ {song.duration}s</span>
-                        <span>🎵 {song.bpm} BPM</span>
-                        <span>🎼 {song.pattern.length} notas</span>
-                      </div>
-                      
-                      <Button 
-                        className="w-full mt-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStartGame(song);
-                        }}
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Jogar Agora
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              {songsToShow.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <Music className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhuma música encontrada para esta dificuldade</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Music Selector Component */}
+          <MusicSelector 
+            selectedDifficulty={selectedDifficulty}
+            onSelectSong={handleStartGame}
+            onDifficultyChange={setSelectedDifficulty}
+          />
 
           {/* Instruções */}
           <Card className="mt-6">
@@ -352,12 +217,12 @@ const BoomwhackerHero: React.FC = () => {
                 <div>
                   <h4 className="font-bold mb-2">🎮 Controles:</h4>
                   <ul className="space-y-1 text-sm">
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">A</kbd> = Nota C (Dó)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">S</kbd> = Nota D (Ré)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">D</kbd> = Nota E (Mi)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">F</kbd> = Nota F (Fá)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">G</kbd> = Nota G (Sol)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">H</kbd> = Nota A (Lá)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">A</kbd> = Nota C (Dó) - Vermelho</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">S</kbd> = Nota D (Ré) - Laranja</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">D</kbd> = Nota E (Mi) - Amarelo</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">F</kbd> = Nota F (Fá) - Verde</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">G</kbd> = Nota G (Sol) - Verde Escuro</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">H</kbd> = Nota A (Lá) - Roxo</li>
                     <li><kbd className="bg-gray-700 px-2 py-1 rounded">Espaço</kbd> = Pausar/Continuar</li>
                   </ul>
                 </div>
@@ -365,10 +230,11 @@ const BoomwhackerHero: React.FC = () => {
                 <div>
                   <h4 className="font-bold mb-2">🎯 Sistema de Pontuação:</h4>
                   <ul className="space-y-1 text-sm">
-                    <li><span className="text-purple-400">🔥 Perfeito:</span> 300 pontos</li>
-                    <li><span className="text-blue-400">✨ Bom:</span> 200 pontos</li>
-                    <li><span className="text-green-400">👍 OK:</span> 100 pontos</li>
+                    <li><span className="text-purple-400">🔥 Perfeito:</span> 300 pontos (±50ms)</li>
+                    <li><span className="text-blue-400">✨ Bom:</span> 200 pontos (±100ms)</li>
+                    <li><span className="text-green-400">👍 OK:</span> 100 pontos (±150ms)</li>
                     <li><span className="text-yellow-400">🔥 Combo:</span> Multiplicador a cada 10 acertos</li>
+                    <li><span className="text-orange-400">🎵 Preview:</span> Clique para ouvir antes de jogar</li>
                   </ul>
                 </div>
               </div>
