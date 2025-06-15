@@ -18,7 +18,7 @@ export interface MusicTrack {
 export class SpotifyAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      console.log(`🔍 Buscando no Spotify via Supabase: ${query}`);
+      console.log(`🔍 Buscando no Spotify: "${query}"`);
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
         body: {
@@ -32,9 +32,14 @@ export class SpotifyAPI {
         return [];
       }
 
-      const tracks = data.tracks || [];
+      const tracks = data?.tracks || [];
       console.log(`✅ Spotify retornou ${tracks.length} resultados`);
-      return tracks.filter(track => track.preview_url); // Só retornar músicas com preview
+      
+      // Filtrar apenas músicas com preview_url válida
+      const validTracks = tracks.filter(track => track.preview_url && track.preview_url.trim() !== '');
+      console.log(`✅ ${validTracks.length} músicas com preview válido`);
+      
+      return validTracks;
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
@@ -43,7 +48,7 @@ export class SpotifyAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     try {
-      console.log('🔍 Buscando músicas populares no Spotify via Supabase');
+      console.log('🔍 Buscando músicas populares no Spotify');
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
         body: {
@@ -56,9 +61,14 @@ export class SpotifyAPI {
         return [];
       }
 
-      const tracks = data.tracks || [];
+      const tracks = data?.tracks || [];
       console.log(`✅ Spotify popular retornou ${tracks.length} resultados`);
-      return tracks.filter(track => track.preview_url); // Só retornar músicas com preview
+      
+      // Filtrar apenas músicas com preview_url válida
+      const validTracks = tracks.filter(track => track.preview_url && track.preview_url.trim() !== '');
+      console.log(`✅ ${validTracks.length} músicas populares com preview válido`);
+      
+      return validTracks;
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
       return [];
@@ -76,18 +86,18 @@ export class SpotifyAPI {
 
       if (error) {
         console.error('❌ Erro ao obter características do áudio:', error);
-        return null;
+        return { bpm: 120 };
       }
 
-      return data;
+      return data || { bpm: 120 };
     } catch (error) {
       console.error('❌ Erro ao obter características do áudio:', error);
-      return null;
+      return { bpm: 120 };
     }
   }
 }
 
-// Classe principal simplificada para usar apenas Spotify
+// Classe principal para gerenciar API do Spotify
 export class MusicAPIManager {
   private static failedTracks = new Set<string>();
 

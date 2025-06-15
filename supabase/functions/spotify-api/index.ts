@@ -41,144 +41,96 @@ serve(async (req) => {
     let result = {}
 
     if (action === 'search') {
-      // Buscar com termos muito mais amplos e variados
-      const searchTerms = [
+      // Buscar no Spotify com múltiplas estratégias
+      const searchStrategies = [
         query,
+        `${query} children`,
+        `${query} kids`,
         `${query} instrumental`,
-        `${query} cover`,
-        `${query} acoustic`,
         `${query} piano`,
-        `children ${query}`,
-        `kids ${query}`,
-        `nursery ${query}`,
-        `classical ${query}`,
-        `simple ${query}`
+        `${query} cover`,
+        `children songs`,
+        `kids music`,
+        `nursery rhymes`,
+        `piano instrumental`,
+        `acoustic covers`,
+        `classical piano`
       ]
 
-      let allTracks = []
+      let allTracks = new Set()
 
-      for (const searchTerm of searchTerms) {
-        if (allTracks.length >= 25) break
-
+      for (const searchQuery of searchStrategies) {
         try {
           const searchParams = new URLSearchParams({
-            q: searchTerm,
+            q: searchQuery,
             type: 'track',
-            market: 'US', // Usar mercado US para mais resultados
-            limit: '15'
+            market: 'US',
+            limit: '20'
           })
 
           const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
             headers: {
-              'Authorization': `Bearer ${accessToken}`
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
             }
           })
 
           if (searchResponse.ok) {
             const searchData = await searchResponse.json()
-            const tracks = searchData.tracks.items || []
-            
-            // Filtrar apenas músicas com preview_url
-            const tracksWithPreview = tracks.filter(item => item.preview_url)
-            allTracks.push(...tracksWithPreview)
-            
-            console.log(`🔍 "${searchTerm}": ${tracksWithPreview.length} com preview`)
-          } else {
-            console.log(`⚠️ Busca falhou para: "${searchTerm}"`)
+            if (searchData.tracks && searchData.tracks.items) {
+              searchData.tracks.items.forEach(track => {
+                if (track.preview_url) {
+                  allTracks.add(JSON.stringify({
+                    id: track.id,
+                    title: track.name,
+                    artist: track.artists[0]?.name || 'Unknown Artist',
+                    duration: Math.floor(track.duration_ms / 1000),
+                    preview_url: track.preview_url,
+                    image: track.album?.images?.[0]?.url,
+                    popularity: track.popularity,
+                    external_url: track.external_urls?.spotify,
+                    source: 'spotify'
+                  }))
+                }
+              })
+              console.log(`🔍 "${searchQuery}": +${searchData.tracks.items.filter(t => t.preview_url).length} tracks`)
+            }
           }
         } catch (error) {
-          console.error(`❌ Erro na busca "${searchTerm}":`, error)
+          console.error(`❌ Erro na busca "${searchQuery}":`, error)
         }
+
+        if (allTracks.size >= 15) break
       }
 
-      // Se ainda não temos resultados suficientes, tentar buscas genéricas
-      if (allTracks.length < 10) {
-        console.log('🔄 Poucos resultados, tentando buscas genéricas...')
-        
-        const genericTerms = [
-          'children music instrumental',
-          'kids songs piano',
-          'nursery rhymes acoustic',
-          'classical piano simple',
-          'instrumental covers',
-          'easy listening piano'
-        ]
+      const tracks = Array.from(allTracks).map(trackStr => JSON.parse(trackStr))
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 15)
 
-        for (const genericTerm of genericTerms) {
-          if (allTracks.length >= 20) break
+      console.log(`✅ Total de ${tracks.length} músicas encontradas`)
+      result = { tracks }
 
-          try {
-            const searchParams = new URLSearchParams({
-              q: genericTerm,
-              type: 'track',
-              market: 'US',
-              limit: '10'
-            })
-
-            const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
-              headers: {
-                'Authorization': `Bearer ${accessToken}`
-              }
-            })
-
-            if (searchResponse.ok) {
-              const searchData = await searchResponse.json()
-              const tracks = searchData.tracks.items || []
-              const tracksWithPreview = tracks.filter(item => item.preview_url)
-              allTracks.push(...tracksWithPreview)
-              
-              console.log(`🔍 Genérico "${genericTerm}": ${tracksWithPreview.length} com preview`)
-            }
-          } catch (error) {
-            console.error(`❌ Erro na busca genérica "${genericTerm}":`, error)
-          }
-        }
-      }
-
-      // Remover duplicatas e ordenar por popularidade
-      const uniqueTracks = allTracks.filter((track, index, self) => 
-        index === self.findIndex(t => t.id === track.id)
-      ).sort((a, b) => b.popularity - a.popularity).slice(0, 20)
-
-      console.log(`✅ Spotify search encontrou ${uniqueTracks.length} músicas únicas com preview`)
-
-      result = {
-        tracks: uniqueTracks.map((item: any) => ({
-          id: item.id,
-          title: item.name,
-          artist: item.artists[0]?.name || 'Artista Desconhecido',
-          duration: Math.floor(item.duration_ms / 1000),
-          preview_url: item.preview_url,
-          image: item.album.images[0]?.url,
-          popularity: item.popularity,
-          external_url: item.external_urls.spotify,
-          source: 'spotify',
-          bpm: undefined
-        }))
-      }
     } else if (action === 'popular') {
-      // Buscar playlists populares de música infantil e instrumental
-      const popularQueries = [
-        'top 50 instrumental',
-        'piano covers popular',
-        'children music hits',
-        'nursery rhymes collection',
-        'classical piano peaceful',
-        'acoustic covers popular',
-        'kids instrumental music',
-        'peaceful piano music',
-        'simple piano melodies',
-        'easy listening instrumental'
+      // Buscar músicas populares com várias categorias
+      const popularCategories = [
+        'children music',
+        'kids songs',
+        'piano instrumental',
+        'acoustic covers',
+        'nursery rhymes',
+        'classical piano',
+        'peaceful music',
+        'educational songs',
+        'lullabies',
+        'simple melodies'
       ]
 
-      let allTracks = []
+      let allTracks = new Set()
 
-      for (const popularQuery of popularQueries) {
-        if (allTracks.length >= 30) break
-
+      for (const category of popularCategories) {
         try {
           const searchParams = new URLSearchParams({
-            q: popularQuery,
+            q: category,
             type: 'track',
             market: 'US',
             limit: '15'
@@ -186,57 +138,66 @@ serve(async (req) => {
 
           const searchResponse = await fetch(`https://api.spotify.com/v1/search?${searchParams}`, {
             headers: {
-              'Authorization': `Bearer ${accessToken}`
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
             }
           })
 
           if (searchResponse.ok) {
             const searchData = await searchResponse.json()
-            const tracks = searchData.tracks.items || []
-            const tracksWithPreview = tracks.filter(item => item.preview_url)
-            allTracks.push(...tracksWithPreview)
-            
-            console.log(`🔍 Popular "${popularQuery}": ${tracksWithPreview.length} com preview`)
+            if (searchData.tracks && searchData.tracks.items) {
+              searchData.tracks.items.forEach(track => {
+                if (track.preview_url) {
+                  allTracks.add(JSON.stringify({
+                    id: track.id,
+                    title: track.name,
+                    artist: track.artists[0]?.name || 'Unknown Artist',
+                    duration: Math.floor(track.duration_ms / 1000),
+                    preview_url: track.preview_url,
+                    image: track.album?.images?.[0]?.url,
+                    popularity: track.popularity,
+                    external_url: track.external_urls?.spotify,
+                    source: 'spotify'
+                  }))
+                }
+              })
+              console.log(`🔍 Popular "${category}": +${searchData.tracks.items.filter(t => t.preview_url).length} tracks`)
+            }
           }
         } catch (error) {
-          console.error(`❌ Erro na busca popular "${popularQuery}":`, error)
+          console.error(`❌ Erro na categoria "${category}":`, error)
         }
+
+        if (allTracks.size >= 20) break
       }
 
-      // Remover duplicatas e ordenar por popularidade
-      const uniqueTracks = allTracks.filter((track, index, self) => 
-        index === self.findIndex(t => t.id === track.id)
-      ).sort((a, b) => b.popularity - a.popularity).slice(0, 25)
+      const tracks = Array.from(allTracks).map(trackStr => JSON.parse(trackStr))
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 20)
 
-      console.log(`✅ Spotify popular encontrou ${uniqueTracks.length} músicas únicas`)
-      
-      result = {
-        tracks: uniqueTracks.map((item: any) => ({
-          id: item.id,
-          title: item.name,
-          artist: item.artists[0]?.name || 'Artista Desconhecido',
-          duration: Math.floor(item.duration_ms / 1000),
-          preview_url: item.preview_url,
-          image: item.album.images[0]?.url,
-          popularity: item.popularity,
-          external_url: item.external_urls.spotify,
-          source: 'spotify',
-          bpm: undefined
-        }))
-      }
+      console.log(`✅ Total de ${tracks.length} músicas populares encontradas`)
+      result = { tracks }
+
     } else if (action === 'audio-features' && trackId) {
       // Obter características do áudio
-      const featuresResponse = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
+      try {
+        const featuresResponse = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
 
-      if (featuresResponse.ok) {
-        const featuresData = await featuresResponse.json()
-        result = {
-          bpm: Math.round(featuresData.tempo)
+        if (featuresResponse.ok) {
+          const featuresData = await featuresResponse.json()
+          result = {
+            bpm: Math.round(featuresData.tempo || 120)
+          }
+        } else {
+          result = { bpm: 120 }
         }
+      } catch (error) {
+        console.error('❌ Erro ao obter features:', error)
+        result = { bpm: 120 }
       }
     }
 
@@ -252,10 +213,12 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('❌ Erro na função Spotify API:', error)
+    
+    // Retornar array vazio em caso de erro para não quebrar o frontend
     return new Response(
-      JSON.stringify({ error: error.message, tracks: [] }),
+      JSON.stringify({ tracks: [] }),
       { 
-        status: 500,
+        status: 200,
         headers: { 
           ...corsHeaders, 
           'Content-Type': 'application/json' 
