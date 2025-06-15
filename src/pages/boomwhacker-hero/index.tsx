@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -96,6 +97,7 @@ const BoomwhackerHero: React.FC = () => {
   const animationRef = useRef<number>();
   const noteIdCounter = useRef<number>(0);
   const gameLoopRef = useRef<number>();
+  const timeSimulationRef = useRef<NodeJS.Timeout>();
 
   // Configurações do jogo
   const TRACK_WIDTH = 100;
@@ -129,48 +131,7 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, []);
 
-  // CORRIGIDO: Sincronização com o tempo do music player
-  const handleMusicTimeUpdate = useCallback((timeInSeconds: number) => {
-    const timeInMs = timeInSeconds * 1000;
-    setCurrentTime(timeInMs);
-    console.log(`⏰ Tempo atualizado: ${timeInMs.toFixed(0)}ms`);
-  }, []);
-
-  // CORRIGIDO: Controlar play/pause com melhor sincronização
-  const handleMusicPlayPause = useCallback((playing: boolean) => {
-    console.log(`🎵 Player estado: ${playing ? 'Play' : 'Pause'}`);
-    setIsMusicPlaying(playing);
-    
-    if (gameState === 'playing' && !playing) {
-      setGameState('paused');
-      console.log('⏸️ Jogo pausado automaticamente');
-    } else if (gameState === 'paused' && playing) {
-      setGameState('playing');
-      console.log('▶️ Jogo retomado automaticamente');
-    }
-  }, [gameState]);
-
-  // CORRIGIDO: Parar música com reset completo
-  const stopMusic = useCallback(() => {
-    console.log('⏹️ Parando música e resetando jogo');
-    setIsMusicPlaying(false);
-    setCurrentTime(0);
-    setGameStartTime(0);
-    
-    if (gameState === 'playing') {
-      setGameState('paused');
-    }
-    
-    // Limpar notas
-    setFallingNotes([]);
-    
-    toast({
-      title: "⏹️ Música Parada",
-      description: "A reprodução foi interrompida",
-    });
-  }, [gameState, toast]);
-
-  // CORRIGIDO: Tocar som do boomwhacker com verificação de contexto
+  // Tocar som do boomwhacker
   const playBoomwhackerSound = useCallback(async (noteIndex: number) => {
     if (!audioContext || noteIndex < 0 || noteIndex >= BOOMWHACKER_NOTES.length) {
       console.log('⚠️ AudioContext não disponível ou índice inválido');
@@ -208,7 +169,7 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [audioContext]);
 
-  // CORRIGIDO: Gerar notas com timing preciso
+  // Gerar notas conforme a música
   const generateNotes = useCallback(() => {
     if (!selectedSong || gameState !== 'playing') return;
 
@@ -223,8 +184,6 @@ const BoomwhackerHero: React.FC = () => {
       { time: 8000, track: 1, duration: 500 },
     ];
 
-    const newNotes: FallingNote[] = [];
-    
     pattern.forEach(notePattern => {
       const noteTime = notePattern.time;
       const shouldGenerate = 
@@ -238,7 +197,7 @@ const BoomwhackerHero: React.FC = () => {
         
         console.log(`🎵 Gerando nota ${trackNote.note} para tempo ${noteTime}ms (atual: ${currentTime.toFixed(0)}ms)`);
         
-        newNotes.push({
+        setFallingNotes(prev => [...prev, {
           id: `note-${noteTime}-${notePattern.track}-${noteIdCounter.current}`,
           track: notePattern.track,
           y: -NOTE_HEIGHT,
@@ -246,16 +205,12 @@ const BoomwhackerHero: React.FC = () => {
           hit: false,
           color: trackNote.color,
           startTime: Date.now()
-        });
+        }]);
       }
     });
-
-    if (newNotes.length > 0) {
-      setFallingNotes(prev => [...prev, ...newNotes]);
-    }
   }, [selectedSong, gameState, currentTime, fallingNotes]);
 
-  // CORRIGIDO: Atualizar posições das notas com física melhorada
+  // Atualizar posições das notas
   const updateNotes = useCallback(() => {
     setFallingNotes(prev => {
       return prev.map(note => {
@@ -272,8 +227,13 @@ const BoomwhackerHero: React.FC = () => {
         const shouldKeep = timePastTarget < 1000 && !note.hit;
         
         if (!shouldKeep && !note.hit && timePastTarget >= 1000) {
-          // Nota perdida
           console.log(`❌ Nota perdida: ${BOOMWHACKER_NOTES[note.track].note}`);
+          setGameStats(prevStats => ({
+            ...prevStats,
+            combo: 0,
+            misses: prevStats.misses + 1,
+            accuracy: prevStats.hits > 0 ? (prevStats.hits / (prevStats.hits + prevStats.misses + 1)) * 100 : 0
+          }));
         }
         
         return shouldKeep;
@@ -281,7 +241,7 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [currentTime]);
 
-  // CORRIGIDO: Verificar acertos com melhor feedback
+  // Verificar acerto de nota
   const checkHit = useCallback(async (trackIndex: number) => {
     const hitNote = fallingNotes.find(note => 
       note.track === trackIndex && 
@@ -327,19 +287,10 @@ const BoomwhackerHero: React.FC = () => {
     } else {
       // Miss
       await playBoomwhackerSound(trackIndex);
-      
-      setGameStats(prev => ({
-        ...prev,
-        combo: 0,
-        misses: prev.misses + 1,
-        accuracy: prev.hits > 0 ? (prev.hits / (prev.hits + prev.misses + 1)) * 100 : 0
-      }));
-      
-      console.log(`❌ Miss na trilha ${trackIndex}`);
     }
   }, [fallingNotes, currentTime, gameStats.combo, playBoomwhackerSound, toast]);
 
-  // CORRIGIDO: Iniciar jogo com inicialização adequada
+  // Iniciar jogo
   const startGame = useCallback(async () => {
     if (!selectedSong) return;
     
@@ -364,7 +315,6 @@ const BoomwhackerHero: React.FC = () => {
     });
     
     noteIdCounter.current = 0;
-    setIsMusicPlaying(true);
     
     toast({
       title: "🎵 Jogo Iniciado!",
@@ -372,20 +322,47 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [selectedSong, audioContext, initializeAudio, toast]);
 
-  // CORRIGIDO: Toggle pause com melhor controle
+  // Toggle pause
   const toggleGamePause = useCallback(() => {
     if (gameState === 'playing') {
       console.log('⏸️ Pausando jogo');
       setGameState('paused');
-      setIsMusicPlaying(false);
     } else if (gameState === 'paused') {
       console.log('▶️ Retomando jogo');
       setGameState('playing');
-      setIsMusicPlaying(true);
     }
   }, [gameState]);
 
-  // Função quando música termina
+  // Parar música
+  const stopMusic = useCallback(() => {
+    console.log('⏹️ Parando música e resetando jogo');
+    setCurrentTime(0);
+    setGameStartTime(0);
+    setFallingNotes([]);
+    
+    if (gameState === 'playing') {
+      setGameState('paused');
+    }
+    
+    toast({
+      title: "⏹️ Música Parada",
+      description: "A reprodução foi interrompida",
+    });
+  }, [gameState, toast]);
+
+  // Controlar tempo do jogo
+  const handleMusicTimeUpdate = useCallback((timeInSeconds: number) => {
+    const timeInMs = timeInSeconds * 1000;
+    setCurrentTime(timeInMs);
+  }, []);
+
+  // Controlar play/pause
+  const handleMusicPlayPause = useCallback((playing: boolean) => {
+    console.log(`🎵 Player estado: ${playing ? 'Play' : 'Pause'}`);
+    setIsMusicPlaying(playing);
+  }, []);
+
+  // Quando música termina
   const handleTrackEnd = useCallback(() => {
     console.log('🏆 Música terminou - finalizando jogo');
     setGameState('ended');
@@ -397,7 +374,7 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [gameStats.score, toast]);
 
-  // Função para lidar com falha de música
+  // Lidar com falha de música
   const handleTrackFailed = useCallback(async () => {
     if (!selectedSong) return;
     
@@ -455,15 +432,9 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [selectedSong, availableTracks, toast]);
 
-  // NOVO: Loop do jogo com timing mais preciso
+  // Loop principal do jogo
   const gameLoop = useCallback(() => {
-    if (gameState !== 'playing') {
-      if (gameLoopRef.current) {
-        cancelAnimationFrame(gameLoopRef.current);
-        gameLoopRef.current = undefined;
-      }
-      return;
-    }
+    if (gameState !== 'playing') return;
 
     generateNotes();
     updateNotes();
@@ -474,40 +445,7 @@ const BoomwhackerHero: React.FC = () => {
       handleTrackEnd();
       return;
     }
-
-    gameLoopRef.current = requestAnimationFrame(gameLoop);
   }, [gameState, generateNotes, updateNotes, selectedSong, currentTime, handleTrackEnd]);
-
-  // CORRIGIDO: Loop de tempo para modo simulação
-  useEffect(() => {
-    let timeInterval: NodeJS.Timeout;
-    
-    if (gameState === 'playing' && isMusicPlaying) {
-      // Iniciar loop do jogo
-      gameLoopRef.current = requestAnimationFrame(gameLoop);
-      
-      // Para modo simulação, incrementar tempo manualmente se necessário
-      if (selectedSong && (!isMusicTrack(selectedSong) || !selectedSong.preview_url || selectedSong.source === 'synthesized')) {
-        console.log('🎮 Iniciando simulação de tempo para o jogo');
-        timeInterval = setInterval(() => {
-          setCurrentTime(prev => {
-            const newTime = prev + 100; // 100ms increment
-            return newTime;
-          });
-        }, 100);
-      }
-    }
-
-    return () => {
-      if (gameLoopRef.current) {
-        cancelAnimationFrame(gameLoopRef.current);
-        gameLoopRef.current = undefined;
-      }
-      if (timeInterval) {
-        clearInterval(timeInterval);
-      }
-    };
-  }, [gameState, isMusicPlaying, gameLoop, selectedSong]);
 
   // Manipular clique na trilha
   const handleTrackClick = useCallback((trackIndex: number) => {
@@ -526,7 +464,7 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [handleTrackClick]);
 
-  // Efeitos
+  // Efeito para inicialização
   useEffect(() => {
     initializeAudio();
     setSelectedSong(ANGELS_SONG);
@@ -539,10 +477,52 @@ const BoomwhackerHero: React.FC = () => {
     console.log('🎵 Jogo inicializado com música padrão');
   }, [initializeAudio]);
 
+  // Efeito para manipular teclas
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
+
+  // Efeito para loop do jogo
+  useEffect(() => {
+    let animationId: number;
+    
+    if (gameState === 'playing') {
+      const runGameLoop = () => {
+        gameLoop();
+        animationId = requestAnimationFrame(runGameLoop);
+      };
+      animationId = requestAnimationFrame(runGameLoop);
+    }
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [gameState, gameLoop]);
+
+  // Efeito para simulação de tempo quando não há áudio
+  useEffect(() => {
+    if (gameState === 'playing' && selectedSong && (!isMusicTrack(selectedSong) || !isMusicPlaying)) {
+      console.log('🎮 Iniciando simulação de tempo para o jogo');
+      timeSimulationRef.current = setInterval(() => {
+        setCurrentTime(prev => prev + 100);
+      }, 100);
+    } else {
+      if (timeSimulationRef.current) {
+        clearInterval(timeSimulationRef.current);
+        timeSimulationRef.current = undefined;
+      }
+    }
+
+    return () => {
+      if (timeSimulationRef.current) {
+        clearInterval(timeSimulationRef.current);
+        timeSimulationRef.current = undefined;
+      }
+    };
+  }, [gameState, selectedSong, isMusicPlaying]);
 
   // Renderizar menu de seleção de música
   if (gameState === 'menu') {
@@ -595,8 +575,6 @@ const BoomwhackerHero: React.FC = () => {
             />
           ) : (
             <>
-              {/* Music selection card and difficulty selector */}
-
               {selectedSong && (
                 <Card className="mb-6">
                   <CardHeader>
@@ -659,7 +637,6 @@ const BoomwhackerHero: React.FC = () => {
                 </Card>
               )}
 
-              {/* Difficulty selector, instructions, start button */}
               <div className="text-center">
                 <Button
                   onClick={startGame}
@@ -749,7 +726,7 @@ const BoomwhackerHero: React.FC = () => {
         </div>
       </div>
 
-      {/* Player de música durante o jogo - melhorado */}
+      {/* Player de música durante o jogo */}
       {selectedSong && (gameState === 'playing' || gameState === 'paused') && (
         <div className="fixed top-20 right-4 z-40 w-80">
           <MusicPlayer
@@ -911,3 +888,4 @@ const BoomwhackerHero: React.FC = () => {
 };
 
 export default BoomwhackerHero;
+
