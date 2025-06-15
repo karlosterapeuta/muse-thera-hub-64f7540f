@@ -90,6 +90,7 @@ const BoomwhackerHero: React.FC = () => {
   const [showMusicAPI, setShowMusicAPI] = useState(false);
   const [musicVolume, setMusicVolume] = useState(0.5);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [musicPlayerCurrentTime, setMusicPlayerCurrentTime] = useState(0);
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const gameStartTime = useRef<number>(0);
@@ -114,6 +115,15 @@ const BoomwhackerHero: React.FC = () => {
       console.error('Erro ao inicializar áudio:', error);
     }
   }, []);
+
+  // Novo: Sincronização com o tempo do music player
+  const handleMusicTimeUpdate = useCallback((time: number) => {
+    setMusicPlayerCurrentTime(time);
+    // Sincronizar o tempo do jogo com o player
+    if (gameState === 'playing') {
+      setCurrentTime(time * 1000); // converter para ms
+    }
+  }, [gameState]);
 
   // Tocar som do boomwhacker
   const playBoomwhackerSound = useCallback((noteIndex: number) => {
@@ -208,9 +218,11 @@ const BoomwhackerHero: React.FC = () => {
     // Tentar próxima música válida da lista atual
     let nextTrack = null;
     
-    // Só tentar getNextValidTrack se a música atual não for synthesized e temos tracks disponíveis
-    if (availableTracks.length > 1 && 'source' in selectedSong && selectedSong.source !== 'synthesized') {
-      nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
+    // Só tentar getNextValidTrack se a música atual tem source e temos tracks disponíveis
+    if (availableTracks.length > 1 && 'source' in selectedSong) {
+      // Corrigir o tipo para incluir synthesized
+      const currentTrack = selectedSong as MusicTrack;
+      nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, currentTrack);
     }
     
     // Se não há próxima música válida, carregar novas músicas
@@ -218,31 +230,18 @@ const BoomwhackerHero: React.FC = () => {
       console.log('🔄 Carregando novas músicas...');
       
       try {
-        // Tentar carregar músicas de diferentes fontes
+        // Tentar diferentes fontes
         let newTracks: MusicTrack[] = [];
         
-        // Determinar qual fonte usar baseado no source da música atual
-        const currentSource = 'source' in selectedSong ? selectedSong.source : 'demo';
-        let sourceToTry: 'spotify' | 'jamendo' | 'demo' = 'jamendo';
+        // Primeiro tentar Spotify
+        newTracks = await MusicAPIManager.getPopular('spotify');
         
-        // Se a música atual é 'synthesized' ou 'demo', usar 'jamendo' como fallback
-        if (currentSource === 'synthesized' || currentSource === 'demo') {
-          sourceToTry = 'jamendo';
-        } else if (currentSource === 'spotify') {
-          sourceToTry = 'spotify';
-        } else if (currentSource === 'jamendo') {
-          sourceToTry = 'jamendo';
-        }
-        
-        // Primeiro tentar a fonte determinada
-        newTracks = await MusicAPIManager.getPopular(sourceToTry);
-        
-        // Se falhar, tentar outras fontes
-        if (newTracks.length === 0 && sourceToTry !== 'jamendo') {
+        // Se Spotify falhar, tentar Jamendo
+        if (newTracks.length === 0) {
           newTracks = await MusicAPIManager.getPopular('jamendo');
         }
         
-        // Se Jamendo falhar, tentar Demo
+        // Se ambos falharem, usar Demo
         if (newTracks.length === 0) {
           newTracks = await MusicAPIManager.getPopular('demo');
         }
@@ -497,9 +496,11 @@ const BoomwhackerHero: React.FC = () => {
               onTrackSelect={(track) => {
                 setSelectedSong(track);
                 // Carregar mais músicas da mesma fonte para ter backups
-                MusicAPIManager.getPopular(track.source).then(tracks => {
-                  setAvailableTracks(tracks);
-                });
+                if (track.source !== 'synthesized') {
+                  MusicAPIManager.getPopular(track.source).then(tracks => {
+                    setAvailableTracks(tracks);
+                  });
+                }
                 setShowMusicAPI(false);
                 toast({
                   title: "🎵 Música Selecionada!",
@@ -510,15 +511,17 @@ const BoomwhackerHero: React.FC = () => {
             />
           ) : (
             <>
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Music className="w-5 h-5" />
-                    Música Selecionada
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {selectedSong && (
+              {/* ... keep existing code (music selection card and difficulty selector) */}
+
+              {selectedSong && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Music className="w-5 h-5" />
+                      Música Selecionada
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
                         <div>
@@ -544,75 +547,16 @@ const BoomwhackerHero: React.FC = () => {
                         isPlaying={false}
                         onPlayPause={() => {}}
                         onTrackFailed={handleTrackFailed}
+                        onTimeUpdate={handleMusicTimeUpdate}
                         volume={musicVolume}
                         onVolumeChange={setMusicVolume}
                       />
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Seletor de Dificuldade */}
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle>Nível de Dificuldade</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-2 p-1 bg-gray-800 rounded-full">
-                    {(['Todos', 'Iniciante', 'Intermediário', 'Avançado'] as GameDifficulty[]).map((level) => (
-                      <Button
-                        key={level}
-                        variant={difficulty === level ? 'default' : 'ghost'}
-                        className={`flex-1 rounded-full ${difficulty === level ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
-                        onClick={() => setDifficulty(level)}
-                      >
-                        {level}
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Instruções */}
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle>Como Jogar</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Controles do Teclado:</h4>
-                      <div className="space-y-1 text-sm">
-                        {BOOMWHACKER_NOTES.map((note, index) => (
-                          <div key={note.note} className="flex items-center gap-2">
-                            <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">{note.key.toUpperCase()}</kbd>
-                            <span style={{ color: note.color }}>●</span>
-                            <span>{note.note} ({note.name})</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Instruções:</h4>
-                      <ul className="space-y-1 text-sm">
-                        <li>• Pressione as teclas quando as notas chegarem na zona de acerto</li>
-                        <li>• Ou clique nos cilindros coloridos</li>
-                        <li>• Acerte no tempo certo para ganhar pontos</li>
-                        <li>• Mantenha combos para multiplicar a pontuação</li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {selectedSong && !showMusicAPI && (
-                <div className="text-center">
-                  <Button onClick={startGame} size="lg" className="text-xl px-8 py-4 bg-orange-500 hover:bg-orange-600">
-                    <Play className="w-6 h-6 mr-2" />
-                    Iniciar Jogo
-                  </Button>
-                </div>
+                  </CardContent>
+                </Card>
               )}
+
+              {/* ... keep existing code (difficulty selector, instructions, start button) */}
             </>
           )}
         </div>

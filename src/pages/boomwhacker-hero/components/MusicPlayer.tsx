@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -11,6 +10,7 @@ interface MusicPlayerProps {
   onPlayPause: (playing: boolean) => void;
   onTrackEnd?: () => void;
   onTrackFailed?: () => void;
+  onTimeUpdate?: (time: number) => void;
   volume?: number;
   onVolumeChange?: (volume: number) => void;
 }
@@ -21,6 +21,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   onPlayPause,
   onTrackEnd,
   onTrackFailed,
+  onTimeUpdate,
   volume = 0.5,
   onVolumeChange
 }) => {
@@ -33,8 +34,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const loadTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const MAX_RETRIES = 1; // Reduzido para evitar loops
-  const LOAD_TIMEOUT = 5000; // Reduzido para 5 segundos
+  const MAX_RETRIES = 2; // Aumentado para 2 tentativas
+  const LOAD_TIMEOUT = 8000; // Aumentado para 8 segundos
 
   // Limpar áudio anterior
   const cleanupAudio = () => {
@@ -54,14 +55,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
-  // Event handlers
+  // Event handlers melhorados
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
-      console.log(`✅ Áudio carregado - Duração: ${audioRef.current.duration}s`);
+      console.log(`✅ Áudio carregado com sucesso - Duração: ${audioRef.current.duration}s`);
       setDuration(audioRef.current.duration || track?.duration || 0);
       setAudioStatus('ready');
-      setErrorMessage('');
-      setRetryCount(0); // Reset retry count on success
+      setErrorMessage('Pronto para tocar!');
+      setRetryCount(0);
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
       }
@@ -70,7 +71,12 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
+      const time = audioRef.current.currentTime;
+      setCurrentTime(time);
+      // Notificar o componente pai sobre a atualização do tempo
+      if (onTimeUpdate) {
+        onTimeUpdate(time);
+      }
     }
   };
 
@@ -92,39 +98,39 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       clearTimeout(loadTimeoutRef.current);
     }
     
-    // Tentar novamente apenas uma vez
+    // Tentar novamente
     if (retryCount < MAX_RETRIES && track?.preview_url) {
       console.log(`🔄 Tentativa ${retryCount + 1} de ${MAX_RETRIES} para recarregar áudio`);
       setRetryCount(prev => prev + 1);
-      setErrorMessage(`Tentando novamente...`);
+      setErrorMessage(`Tentando novamente... (${retryCount + 1}/${MAX_RETRIES})`);
       
       setTimeout(() => {
         initializeAudio();
-      }, 1000);
+      }, 2000); // Aguardar 2 segundos antes de tentar novamente
     } else {
-      // Falhou definitivamente - trocar música automaticamente
-      console.error('❌ Áudio falhou após tentativas, trocando música...');
-      setErrorMessage('Trocando música...');
+      // Falhou definitivamente
+      console.error('❌ Áudio falhou após todas as tentativas');
+      setErrorMessage('Erro no áudio - trocando música...');
       
       if (onTrackFailed) {
         setTimeout(() => {
           onTrackFailed();
-        }, 2000);
+        }, 3000);
       }
     }
   };
 
   const handleCanPlay = () => {
-    console.log('✅ Áudio pronto para tocar');
+    console.log('✅ Áudio pronto para reprodução');
     setAudioStatus('ready');
-    setErrorMessage('');
+    setErrorMessage('Áudio carregado!');
     setRetryCount(0);
     if (loadTimeoutRef.current) {
       clearTimeout(loadTimeoutRef.current);
     }
   };
 
-  // Inicializar áudio com timeout reduzido
+  // Inicializar áudio melhorado
   const initializeAudio = () => {
     if (!track) {
       setDuration(0);
@@ -134,26 +140,26 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       return;
     }
 
-    console.log(`🎵 Carregando música: ${track.title}`);
+    console.log(`🎵 Carregando música: ${track.title} (${track.source})`);
     cleanupAudio();
 
     if (track.preview_url) {
-      console.log(`🎵 Carregando áudio: ${track.preview_url}`);
+      console.log(`🎵 Carregando áudio de: ${track.preview_url}`);
       setAudioStatus('loading');
-      setErrorMessage('Carregando...');
+      setErrorMessage('Carregando áudio...');
       
-      // Timeout mais agressivo para carregamento
+      // Timeout para carregamento
       loadTimeoutRef.current = setTimeout(() => {
-        console.error('❌ Timeout no carregamento do áudio');
+        console.error('❌ Timeout no carregamento do áudio (8s)');
         handleError(new Event('timeout'));
       }, LOAD_TIMEOUT);
       
       try {
         const audio = new Audio();
         
-        // Configurar áudio
+        // Configurar áudio com melhores opções
         audio.crossOrigin = "anonymous";
-        audio.preload = "metadata";
+        audio.preload = "auto"; // Mudado para 'auto' para carregar completamente
         audio.volume = isMuted ? 0 : volume;
         
         // Adicionar event listeners
@@ -162,10 +168,19 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
         audio.addEventListener('canplay', handleCanPlay);
+        audio.addEventListener('loadstart', () => {
+          console.log('🔄 Iniciando carregamento do áudio...');
+        });
+        audio.addEventListener('progress', () => {
+          console.log('📊 Progresso do carregamento...');
+        });
         
         // Carregar o áudio
         audio.src = track.preview_url;
         audioRef.current = audio;
+        
+        // Forçar carregamento
+        audio.load();
         
       } catch (error) {
         console.error('❌ Erro ao criar áudio:', error);
@@ -175,11 +190,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       }
     } else {
       // Sem preview_url - usar duração da música
-      console.log(`🎵 Música sem preview: ${track.title}`);
+      console.log(`🎵 Música sem preview: ${track.title} (modo simulação)`);
       setDuration(track.duration);
       setAudioStatus('ready');
       setCurrentTime(0);
-      setErrorMessage('');
+      setErrorMessage('Modo simulação');
     }
   };
 

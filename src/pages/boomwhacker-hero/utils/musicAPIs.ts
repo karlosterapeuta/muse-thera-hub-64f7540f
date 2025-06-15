@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { AudioSynthesis } from './audioSynthesis';
 
@@ -44,8 +43,19 @@ export class SpotifyAPI {
       }
 
       const tracks = data.tracks || [];
-      console.log(`✅ Spotify retornou ${tracks.length} resultados`);
-      return tracks.filter(track => track.preview_url); // Só retornar músicas com preview
+      console.log(`✅ Spotify retornou ${tracks.length} resultados com preview`);
+      
+      // Filtrar apenas músicas com preview_url válido
+      const validTracks = tracks.filter(track => {
+        const hasPreview = track.preview_url && track.preview_url.length > 0;
+        if (!hasPreview) {
+          console.log(`⚠️ Música sem preview: ${track.title}`);
+        }
+        return hasPreview;
+      });
+      
+      console.log(`🎵 Spotify músicas válidas: ${validTracks.length}`);
+      return validTracks;
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
@@ -69,7 +79,18 @@ export class SpotifyAPI {
 
       const tracks = data.tracks || [];
       console.log(`✅ Spotify popular retornou ${tracks.length} resultados`);
-      return tracks.filter(track => track.preview_url); // Só retornar músicas com preview
+      
+      // Filtrar apenas músicas com preview_url válido
+      const validTracks = tracks.filter(track => {
+        const hasPreview = track.preview_url && track.preview_url.length > 0;
+        if (!hasPreview) {
+          console.log(`⚠️ Música popular sem preview: ${track.title}`);
+        }
+        return hasPreview;
+      });
+      
+      console.log(`🎵 Spotify popular válidas: ${validTracks.length}`);
+      return validTracks;
     } catch (error) {
       console.error('❌ Erro na busca popular do Spotify:', error);
       return [];
@@ -446,7 +467,7 @@ export class MusicAPIManager {
     this.failedTracks.add(key);
     console.log(`❌ Música marcada como falha: ${track.title} (${track.source})`);
     
-    // Limpar blacklist após 2 minutos (reduzido para recuperação mais rápida)
+    // Limpeza automática após 2 minutos
     setTimeout(() => {
       this.failedTracks.delete(key);
       console.log(`🔄 Música removida da blacklist: ${track.title}`);
