@@ -3,6 +3,7 @@ import { TraditionalSong } from '../data/traditionalSongs';
 interface AudioSource {
   url: string;
   type: 'local' | 'cdn' | 'backup' | 'synthetic';
+  priority: number;
 }
 
 class GuitarHeroAudioManager {
@@ -14,6 +15,7 @@ class GuitarHeroAudioManager {
   private loadingProgress: number = 0;
   private audioCache: Map<string, string> = new Map();
   private retryAttempts: Map<string, number> = new Map();
+  private preloadedSongs: Set<string> = new Set();
 
   async initialize() {
     if (this.isInitialized) return;
@@ -28,36 +30,76 @@ class GuitarHeroAudioManager {
       
       this.isInitialized = true;
       console.log('🎵 Guitar Hero Audio Manager inicializado');
+      
+      // Preload popular songs
+      this.preloadPopularSongs();
     } catch (error) {
       console.error('❌ Erro ao inicializar áudio:', error);
+    }
+  }
+
+  private async preloadPopularSongs() {
+    // Preload easy songs for better UX
+    const easyIds = ['atirei-pau-gato', 'sapo-cururu', 'boi-cara-preta'];
+    
+    for (const songId of easyIds) {
+      try {
+        const audio = new Audio();
+        audio.preload = 'metadata';
+        audio.src = `/assets/music/${songId}.mp3`;
+        audio.load();
+        this.preloadedSongs.add(songId);
+      } catch (error) {
+        console.log(`⚠️ Preload falhou para ${songId}:`, error);
+      }
     }
   }
 
   private getAudioSources(song: TraditionalSong): AudioSource[] {
     const sources: AudioSource[] = [];
     
-    // CDN primeiro (mais confiável)
-    if (song.cdnUrl) {
-      sources.push({ url: song.cdnUrl, type: 'cdn' });
+    // Local files primeiro (maior prioridade)
+    if (song.audioFile) {
+      sources.push({ url: song.audioFile, type: 'local', priority: 1 });
     }
     
-    // URLs de backup
+    // CDN segundo (Archive.org é mais confiável)
+    if (song.cdnUrl) {
+      sources.push({ url: song.cdnUrl, type: 'cdn', priority: 2 });
+    }
+    
+    // URLs de backup por último
     if (song.backupUrls) {
-      song.backupUrls.forEach(url => {
-        sources.push({ url, type: 'backup' });
+      song.backupUrls.forEach((url, index) => {
+        sources.push({ url, type: 'backup', priority: 3 + index });
       });
     }
     
-    // Arquivo local por último
-    if (song.audioFile) {
-      sources.push({ url: song.audioFile, type: 'local' });
+    // Ordenar por prioridade
+    return sources.sort((a, b) => a.priority - b.priority);
+  }
+
+  private async checkFileExists(url: string): Promise<boolean> {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      return response.ok;
+    } catch {
+      return false;
     }
-    
-    return sources;
   }
 
   private async tryLoadAudioSource(source: AudioSource, attempts: number = 0): Promise<HTMLAudioElement | null> {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      // Para arquivos locais, verificar se existem primeiro
+      if (source.type === 'local') {
+        const exists = await this.checkFileExists(source.url);
+        if (!exists) {
+          console.log(`📁 Arquivo local não encontrado: ${source.url}`);
+          resolve(null);
+          return;
+        }
+      }
+
       const audio = new Audio();
       
       // Configurações específicas por tipo de fonte
@@ -68,8 +110,10 @@ class GuitarHeroAudioManager {
       audio.preload = 'auto';
       audio.volume = this.musicVolume;
 
-      // Timeout mais generoso para CDN
-      const timeoutDuration = source.type === 'local' ? 5000 : 10000;
+      // Timeout mais específico por tipo
+      const timeoutDuration = source.type === 'local' ? 3000 : 
+                             source.type === 'cdn' ? 8000 : 10000;
+      
       const timeoutId = setTimeout(() => {
         console.log(`⏰ Timeout loading ${source.type}: ${source.url} (tentativa ${attempts + 1})`);
         audio.src = '';
@@ -90,7 +134,6 @@ class GuitarHeroAudioManager {
       };
 
       const onLoadedData = () => {
-        // Se temos dados suficientes, considerar sucesso
         if (audio.readyState >= 2) {
           cleanup();
           console.log(`✅ Dados carregados (${source.type}): ${source.url}`);
@@ -134,13 +177,12 @@ class GuitarHeroAudioManager {
       if (this.audioCache.has(cacheKey)) {
         const cachedUrl = this.audioCache.get(cacheKey)!;
         console.log(`📦 Usando cache para: ${song.title}`);
-        const audio = await this.tryLoadAudioSource({ url: cachedUrl, type: 'local' });
+        const audio = await this.tryLoadAudioSource({ url: cachedUrl, type: 'local', priority: 0 });
         if (audio) {
           this.currentTrack = audio;
           this.loadingProgress = 100;
           return true;
         } else {
-          // Cache inválido, remover
           this.audioCache.delete(cacheKey);
         }
       }
@@ -150,10 +192,10 @@ class GuitarHeroAudioManager {
       
       console.log(`🔄 Tentando carregar ${sources.length} fontes para: ${song.title}`);
       
-      // Tentar carregar de cada fonte em ordem
+      // Tentar carregar de cada fonte em ordem de prioridade
       for (let i = 0; i < sources.length; i++) {
         const source = sources[i];
-        this.loadingProgress = 25 + (i * 50 / sources.length);
+        this.loadingProgress = 20 + (i * 60 / sources.length);
         
         console.log(`🎵 Tentando fonte ${i + 1}/${sources.length} (${source.type}): ${source.url}`);
         const audio = await this.tryLoadAudioSource(source, attempts);
@@ -168,15 +210,15 @@ class GuitarHeroAudioManager {
         }
       }
 
-      // Se todas as fontes falharam, incrementar tentativas e gerar áudio sintético
+      // Se todas as fontes falharam, gerar áudio sintético como último recurso
       this.retryAttempts.set(cacheKey, attempts + 1);
       console.log(`⚠️ Todas as ${sources.length} fontes falharam para ${song.title}, gerando áudio sintético`);
-      this.loadingProgress = 75;
+      this.loadingProgress = 80;
       
       const syntheticBlob = await this.createSyntheticAudio(song);
       const syntheticUrl = URL.createObjectURL(syntheticBlob);
       
-      const audio = await this.tryLoadAudioSource({ url: syntheticUrl, type: 'synthetic' });
+      const audio = await this.tryLoadAudioSource({ url: syntheticUrl, type: 'synthetic', priority: 999 });
       if (audio) {
         this.currentTrack = audio;
         this.audioCache.set(cacheKey, syntheticUrl);
@@ -352,7 +394,6 @@ class GuitarHeroAudioManager {
     }, 100);
   }
 
-  // Tocar efeito sonoro quando acerta nota
   async playHitEffect(noteIndex: number, hitType: 'perfect' | 'good' | 'ok'): Promise<void> {
     if (!this.audioContext) return;
 
@@ -379,7 +420,6 @@ class GuitarHeroAudioManager {
     }
   }
 
-  // Tocar efeito de miss
   async playMissEffect(): Promise<void> {
     if (!this.audioContext) return;
 
@@ -406,6 +446,7 @@ class GuitarHeroAudioManager {
   clearCache(): void {
     this.audioCache.clear();
     this.retryAttempts.clear();
+    this.preloadedSongs.clear();
     console.log('🗑️ Cache de áudio limpo');
   }
 

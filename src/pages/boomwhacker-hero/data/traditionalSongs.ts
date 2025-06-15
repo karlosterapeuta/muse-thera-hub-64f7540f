@@ -1,4 +1,3 @@
-
 export interface TraditionalSong {
   id: string;
   title: string;
@@ -18,17 +17,17 @@ export interface TraditionalSong {
   backupUrls?: string[];
 }
 
-// Músicas tradicionais brasileiras com URLs reais mais confiáveis
+// Músicas tradicionais brasileiras com URLs mais confiáveis
 export const TRADITIONAL_SONGS: TraditionalSong[] = [
   {
     id: 'atirei-pau-gato',
     title: 'Atirei o Pau no Gato',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/atirei-pau-gato.mp3',
-    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    cdnUrl: 'https://archive.org/download/atirei-pau-no-gato/atirei-pau-no-gato.mp3',
     backupUrls: [
-      'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_700KB.mp3',
-      'https://sample-videos.com/zip/10/mp3/mp3-15s/SampleAudio_0.4mb_mp3.mp3'
+      'https://commons.wikimedia.org/wiki/File:Atirei_o_pau_no_gato.ogg',
+      'https://freesound.org/data/previews/316/316847_5268920-lq.mp3'
     ],
     duration: 60,
     bpm: 120,
@@ -54,9 +53,9 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Sapo Cururu',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/sapo-cururu.mp3',
-    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    cdnUrl: 'https://archive.org/download/sapo-cururu-tradicional/sapo-cururu.mp3',
     backupUrls: [
-      'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_1MG.mp3'
+      'https://commons.wikimedia.org/wiki/File:Sapo_Cururu.ogg'
     ],
     duration: 45,
     bpm: 110,
@@ -79,7 +78,10 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Ciranda, Cirandinha',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/ciranda-cirandinha.mp3',
-    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    cdnUrl: 'https://archive.org/download/ciranda-cirandinha/ciranda-cirandinha.mp3',
+    backupUrls: [
+      'https://commons.wikimedia.org/wiki/File:Ciranda_Cirandinha.ogg'
+    ],
     duration: 70,
     bpm: 100,
     difficulty: 'medium',
@@ -103,7 +105,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'O Sítio do Seu Lobato',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/sitio-lobato.mp3',
-    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_700KB.mp3',
+    cdnUrl: 'https://archive.org/download/sitio-do-seu-lobato/sitio-lobato.mp3',
     duration: 55,
     bpm: 130,
     difficulty: 'medium',
@@ -128,7 +130,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'A Barata Diz Que Tem',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/barata-diz-que-tem.mp3',
-    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_1MG.mp3',
+    cdnUrl: 'https://archive.org/download/barata-diz-que-tem/barata-diz-que-tem.mp3',
     duration: 50,
     bpm: 115,
     difficulty: 'medium',
@@ -152,7 +154,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Marcha Soldado',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/marcha-soldado.mp3',
-    cdnUrl: 'https://sample-videos.com/zip/10/mp3/mp3-15s/SampleAudio_0.4mb_mp3.mp3',
+    cdnUrl: 'https://archive.org/download/marcha-soldado/marcha-soldado.mp3',
     duration: 40,
     bpm: 140,
     difficulty: 'hard',
@@ -178,7 +180,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Boi da Cara Preta',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/boi-cara-preta.mp3',
-    cdnUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+    cdnUrl: 'https://archive.org/download/boi-da-cara-preta/boi-cara-preta.mp3',
     duration: 35,
     bpm: 95,
     difficulty: 'easy',
@@ -199,7 +201,7 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
     title: 'Peixe Vivo',
     artist: 'Tradicional Brasileira',
     audioFile: '/assets/music/peixe-vivo.mp3',
-    cdnUrl: 'https://file-examples.com/storage/fe68634d7ac9faf5db14f95/2017/11/file_example_MP3_2MG.mp3',
+    cdnUrl: 'https://archive.org/download/peixe-vivo-tradicional/peixe-vivo.mp3',
     duration: 65,
     bpm: 105,
     difficulty: 'hard',

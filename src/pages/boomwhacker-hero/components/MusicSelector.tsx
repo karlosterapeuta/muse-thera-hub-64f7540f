@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Play, Pause, Volume2, Music, Clock, Zap } from 'lucide-react';
+import { Play, Pause, Volume2, Music, Clock, Zap, CheckCircle, AlertCircle, FileAudio } from 'lucide-react';
 import { TraditionalSong, getSongsByDifficulty } from '../data/traditionalSongs';
 import { guitarHeroAudio } from '../utils/guitarHeroAudio';
 
@@ -22,12 +22,12 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
   const [previewingSong, setPreviewingSong] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState<Record<string, number>>({});
   const [previewVolume, setPreviewVolume] = useState(0.3);
+  const [audioSourceStatus, setAudioSourceStatus] = useState<Record<string, string>>({});
 
   const songs = getSongsByDifficulty(selectedDifficulty);
 
   const handlePreview = async (song: TraditionalSong) => {
     if (previewingSong === song.id) {
-      // Stop preview
       guitarHeroAudio.pause();
       setPreviewingSong(null);
       return;
@@ -36,8 +36,8 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
     try {
       setPreviewingSong(song.id);
       setLoadingProgress(prev => ({ ...prev, [song.id]: 0 }));
+      setAudioSourceStatus(prev => ({ ...prev, [song.id]: 'Carregando...' }));
 
-      // Monitor loading progress
       guitarHeroAudio.onLoadProgress((progress) => {
         setLoadingProgress(prev => ({ ...prev, [song.id]: progress }));
       });
@@ -47,20 +47,22 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
       if (loaded) {
         guitarHeroAudio.setMusicVolume(previewVolume);
         guitarHeroAudio.play();
+        setAudioSourceStatus(prev => ({ ...prev, [song.id]: 'Carregado com sucesso' }));
         
-        // Stop preview after 30 seconds
         setTimeout(() => {
           if (previewingSong === song.id) {
             guitarHeroAudio.pause();
             setPreviewingSong(null);
           }
-        }, 30000);
+        }, 15000);
       } else {
         setPreviewingSong(null);
+        setAudioSourceStatus(prev => ({ ...prev, [song.id]: 'Erro no carregamento' }));
       }
     } catch (error) {
       console.error('Erro no preview:', error);
       setPreviewingSong(null);
+      setAudioSourceStatus(prev => ({ ...prev, [song.id]: 'Erro no carregamento' }));
     }
   };
 
@@ -80,6 +82,16 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
       case 'hard': return 'Difícil';
       default: return difficulty;
     }
+  };
+
+  const getAudioSourceIcon = (song: TraditionalSong) => {
+    if (song.audioFile && song.audioFile.startsWith('/assets/music/')) {
+      return <FileAudio className="w-3 h-3 text-green-600" title="Arquivo local disponível" />;
+    }
+    if (song.cdnUrl) {
+      return <CheckCircle className="w-3 h-3 text-blue-600" title="CDN disponível" />;
+    }
+    return <AlertCircle className="w-3 h-3 text-orange-600" title="Apenas backup" />;
   };
 
   useEffect(() => {
@@ -123,10 +135,10 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
         </CardContent>
       </Card>
 
-      {/* Preview Volume Control */}
+      {/* Audio Status Info */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mb-4">
             <Volume2 className="w-4 h-4" />
             <span className="text-sm">Volume do Preview:</span>
             <input
@@ -139,6 +151,15 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
               className="flex-1"
             />
             <span className="text-sm w-12">{Math.round(previewVolume * 100)}%</span>
+          </div>
+          
+          <div className="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg">
+            <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+              🎵 Músicas Tradicionais Brasileiras Autênticas
+            </p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              Sistema inteligente: prioriza arquivos locais → CDN → backups → áudio sintético
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -164,9 +185,12 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-lg">{song.title}</h3>
-                    <Badge className={getDifficultyColor(song.difficulty)}>
-                      {getDifficultyLabel(song.difficulty)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {getAudioSourceIcon(song)}
+                      <Badge className={getDifficultyColor(song.difficulty)}>
+                        {getDifficultyLabel(song.difficulty)}
+                      </Badge>
+                    </div>
                   </div>
                   
                   <p className="text-gray-600 dark:text-gray-300 mb-2">{song.artist}</p>
@@ -179,6 +203,15 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
                     <span>🎵 {song.bpm} BPM</span>
                     <span>🎼 {song.pattern.length} notas</span>
                   </div>
+
+                  {/* Audio Source Status */}
+                  {audioSourceStatus[song.id] && (
+                    <div className="mb-3">
+                      <div className="text-xs text-gray-500">
+                        Status: {audioSourceStatus[song.id]}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Loading Progress */}
                   {loadingProgress[song.id] !== undefined && loadingProgress[song.id] < 100 && (
@@ -235,6 +268,38 @@ const MusicSelector: React.FC<MusicSelectorProps> = ({
               <p>Nenhuma música encontrada para esta dificuldade</p>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Instructions for adding real music files */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileAudio className="w-5 h-5" />
+            Como Adicionar Músicas Reais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+            <h4 className="font-bold text-green-800 dark:text-green-200 mb-2">
+              📁 Para usar músicas reais (opcionalmente):
+            </h4>
+            <ol className="text-sm text-green-700 dark:text-green-300 space-y-1">
+              <li>1. Adicione arquivos MP3 na pasta <code>/public/assets/music/</code></li>
+              <li>2. Nomes dos arquivos:</li>
+              <ul className="ml-4 mt-1 space-y-1">
+                <li>• <code>atirei-pau-gato.mp3</code></li>
+                <li>• <code>sapo-cururu.mp3</code></li>
+                <li>• <code>ciranda-cirandinha.mp3</code></li>
+                <li>• <code>sitio-lobato.mp3</code></li>
+                <li>• <code>barata-diz-que-tem.mp3</code></li>
+                <li>• <code>marcha-soldado.mp3</code></li>
+                <li>• <code>boi-cara-preta.mp3</code></li>
+                <li>• <code>peixe-vivo.mp3</code></li>
+              </ul>
+              <li>3. O sistema funcionará automaticamente com áudio sintético como backup</li>
+            </ol>
+          </div>
         </CardContent>
       </Card>
     </div>
