@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -104,6 +105,11 @@ const BoomwhackerHero: React.FC = () => {
   const NOTE_SPEED = 200;
   const HIT_TOLERANCE = 60;
   const NOTE_FALL_TIME = 2000; // 2 segundos para nota cair
+
+  // Helper function to check if song is a MusicTrack
+  const isMusicTrack = (song: typeof selectedSong): song is MusicTrack => {
+    return song !== null && 'source' in song;
+  };
 
   // Inicializar contexto de áudio
   const initializeAudio = useCallback(async () => {
@@ -399,7 +405,7 @@ const BoomwhackerHero: React.FC = () => {
     
     let nextTrack = null;
     
-    if (availableTracks.length > 1 && 'source' in selectedSong) {
+    if (availableTracks.length > 1 && isMusicTrack(selectedSong)) {
       const currentTrack = selectedSong as MusicTrack;
       nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, currentTrack);
     }
@@ -481,7 +487,7 @@ const BoomwhackerHero: React.FC = () => {
       gameLoopRef.current = requestAnimationFrame(gameLoop);
       
       // Para modo simulação, incrementar tempo manualmente se necessário
-      if (selectedSong && (!selectedSong.preview_url || (selectedSong as MusicTrack).source === 'synthesized')) {
+      if (selectedSong && (!isMusicTrack(selectedSong) || !selectedSong.preview_url || selectedSong.source === 'synthesized')) {
         console.log('🎮 Iniciando simulação de tempo para o jogo');
         timeInterval = setInterval(() => {
           setCurrentTime(prev => {
@@ -610,9 +616,9 @@ const BoomwhackerHero: React.FC = () => {
                             {'bpm' in selectedSong && selectedSong.bpm && (
                               <Badge variant="outline">{selectedSong.bpm} BPM</Badge>
                             )}
-                            {(selectedSong as MusicTrack).source && (
+                            {isMusicTrack(selectedSong) && (
                               <Badge variant="secondary">
-                                {(selectedSong as MusicTrack).source}
+                                {selectedSong.source}
                               </Badge>
                             )}
                           </div>
