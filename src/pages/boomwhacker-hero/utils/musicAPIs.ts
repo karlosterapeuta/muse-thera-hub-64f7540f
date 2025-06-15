@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 
 export interface MusicTrack {
   id: string;
@@ -28,122 +29,70 @@ export const API_CONFIG = {
 };
 
 export class SpotifyAPI {
-  private static token: string | null = null;
-
-  static async getToken(): Promise<string | null> {
-    try {
-      // Verificar se as credenciais estão configuradas
-      if (API_CONFIG.spotify.clientSecret === 'YOUR_SPOTIFY_CLIENT_SECRET') {
-        console.log('❌ Credenciais do Spotify não configuradas');
-        return null;
-      }
-
-      const response = await fetch(API_CONFIG.spotify.tokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(`${API_CONFIG.spotify.clientId}:${API_CONFIG.spotify.clientSecret}`)
-        },
-        body: 'grant_type=client_credentials'
-      });
-
-      if (!response.ok) {
-        console.error('❌ Falha ao obter token do Spotify:', response.status, response.statusText);
-        return null;
-      }
-
-      const data = await response.json();
-      this.token = data.access_token;
-      console.log('✅ Token do Spotify obtido com sucesso');
-      return data.access_token;
-    } catch (error) {
-      console.error('❌ Erro ao obter token do Spotify:', error);
-      return null;
-    }
-  }
-
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      let token = this.token;
-      if (!token) {
-        token = await this.getToken();
-        if (!token) {
-          console.log('⚠️ Spotify não disponível, token não obtido');
-          return [];
-        }
-      }
+      console.log(`🔍 Buscando no Spotify via Supabase: ${query}`);
 
-      // Melhorar a query de busca para músicas infantis
-      const searchQuery = `${query} genre:children OR ${query} kids OR ${query} infantil`;
-      const searchParams = new URLSearchParams({
-        q: searchQuery,
-        type: 'track',
-        market: 'BR',
-        limit: '20'
-      });
-
-      console.log(`🔍 Buscando no Spotify: ${searchQuery}`);
-
-      const response = await fetch(`${API_CONFIG.spotify.searchUrl}?${searchParams}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: {
+          action: 'search',
+          query: query
         }
       });
 
-      if (!response.ok) {
-        console.error('❌ Busca no Spotify falhou:', response.status, response.statusText);
-        // Token pode ter expirado, tentar renovar
-        if (response.status === 401) {
-          this.token = null;
-        }
+      if (error) {
+        console.error('❌ Erro na função Spotify:', error);
         return [];
       }
 
-      const data = await response.json();
-      console.log(`✅ Spotify retornou ${data.tracks.items.length} resultados`);
-      
-      return data.tracks.items.map((item: any) => ({
-        id: item.id,
-        title: item.name,
-        artist: item.artists[0]?.name || 'Artista Desconhecido',
-        duration: Math.floor(item.duration_ms / 1000),
-        preview_url: item.preview_url,
-        image: item.album.images[0]?.url,
-        popularity: item.popularity,
-        external_url: item.external_urls.spotify,
-        source: 'spotify' as const,
-        bpm: undefined
-      }));
+      console.log(`✅ Spotify retornou ${data.tracks?.length || 0} resultados`);
+      return data.tracks || [];
     } catch (error) {
       console.error('❌ Erro na busca do Spotify:', error);
       return [];
     }
   }
 
-  static async getAudioFeatures(trackId: string): Promise<{ bpm?: number } | null> {
+  static async getPopular(): Promise<MusicTrack[]> {
     try {
-      let token = this.token;
-      if (!token) {
-        token = await this.getToken();
-        if (!token) return null;
-      }
+      console.log('🔍 Buscando músicas populares no Spotify via Supabase');
 
-      const response = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: {
+          action: 'popular'
         }
       });
 
-      if (!response.ok) {
+      if (error) {
+        console.error('❌ Erro na função Spotify popular:', error);
+        return [];
+      }
+
+      console.log(`✅ Spotify popular retornou ${data.tracks?.length || 0} resultados`);
+      return data.tracks || [];
+    } catch (error) {
+      console.error('❌ Erro na busca popular do Spotify:', error);
+      return [];
+    }
+  }
+
+  static async getAudioFeatures(trackId: string): Promise<{ bpm?: number } | null> {
+    try {
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: {
+          action: 'audio-features',
+          trackId: trackId
+        }
+      });
+
+      if (error) {
+        console.error('❌ Erro ao obter características do áudio:', error);
         return null;
       }
 
-      const data = await response.json();
-      return {
-        bpm: Math.round(data.tempo)
-      };
+      return data;
     } catch (error) {
-      console.error('Error getting audio features:', error);
+      console.error('❌ Erro ao obter características do áudio:', error);
       return null;
     }
   }
@@ -152,14 +101,15 @@ export class SpotifyAPI {
 export class JamendoAPI {
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      // Verificar se a chave está configurada
-      if (API_CONFIG.jamendo.clientId === 'YOUR_JAMENDO_CLIENT_ID') {
+      const API_KEY = 'YOUR_JAMENDO_CLIENT_ID'; // Substitua pela sua chave real
+      
+      if (API_KEY === 'YOUR_JAMENDO_CLIENT_ID') {
         console.log('❌ Chave do Jamendo não configurada');
         return [];
       }
 
       const searchParams = new URLSearchParams({
-        client_id: API_CONFIG.jamendo.clientId,
+        client_id: API_KEY,
         format: 'json',
         namesearch: query,
         limit: '20',
@@ -169,7 +119,7 @@ export class JamendoAPI {
 
       console.log(`🔍 Buscando no Jamendo: ${query}`);
 
-      const response = await fetch(`${API_CONFIG.jamendo.searchUrl}?${searchParams}`);
+      const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?${searchParams}`);
       
       if (!response.ok) {
         console.error('❌ Busca no Jamendo falhou:', response.status, response.statusText);
@@ -329,7 +279,7 @@ export class MusicAPIManager {
     
     switch (source) {
       case 'spotify':
-        const spotifyPopular = await SpotifyAPI.search('children songs popular');
+        const spotifyPopular = await SpotifyAPI.getPopular();
         if (spotifyPopular.length === 0) {
           console.log('⚠️ Spotify não disponível, usando demo');
           return DemoAPI.getPopularTracks();
