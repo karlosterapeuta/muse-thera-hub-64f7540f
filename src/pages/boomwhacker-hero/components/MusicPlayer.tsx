@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -32,8 +33,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const loadTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const MAX_RETRIES = 2;
-  const LOAD_TIMEOUT = 10000; // 10 seconds
+  const MAX_RETRIES = 1; // Reduzido para evitar loops
+  const LOAD_TIMEOUT = 5000; // Reduzido para 5 segundos
 
   // Limpar áudio anterior
   const cleanupAudio = () => {
@@ -60,6 +61,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       setDuration(audioRef.current.duration || track?.duration || 0);
       setAudioStatus('ready');
       setErrorMessage('');
+      setRetryCount(0); // Reset retry count on success
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
       }
@@ -90,25 +92,24 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       clearTimeout(loadTimeoutRef.current);
     }
     
-    // Tentar novamente se não excedeu o limite
+    // Tentar novamente apenas uma vez
     if (retryCount < MAX_RETRIES && track?.preview_url) {
       console.log(`🔄 Tentativa ${retryCount + 1} de ${MAX_RETRIES} para recarregar áudio`);
       setRetryCount(prev => prev + 1);
-      setErrorMessage(`Tentativa ${retryCount + 1}/${MAX_RETRIES}...`);
+      setErrorMessage(`Tentando novamente...`);
       
       setTimeout(() => {
         initializeAudio();
-      }, 2000 * (retryCount + 1)); // Delay progressivo
+      }, 1000);
     } else {
-      // Falhou definitivamente
-      console.error('❌ Áudio falhou após todas as tentativas');
-      setErrorMessage('Áudio não disponível');
+      // Falhou definitivamente - trocar música automaticamente
+      console.error('❌ Áudio falhou após tentativas, trocando música...');
+      setErrorMessage('Trocando música...');
       
-      // Notificar o componente pai para trocar de música
       if (onTrackFailed) {
         setTimeout(() => {
           onTrackFailed();
-        }, 3000);
+        }, 2000);
       }
     }
   };
@@ -117,12 +118,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     console.log('✅ Áudio pronto para tocar');
     setAudioStatus('ready');
     setErrorMessage('');
+    setRetryCount(0);
     if (loadTimeoutRef.current) {
       clearTimeout(loadTimeoutRef.current);
     }
   };
 
-  // Inicializar áudio com timeout
+  // Inicializar áudio com timeout reduzido
   const initializeAudio = () => {
     if (!track) {
       setDuration(0);
@@ -140,7 +142,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       setAudioStatus('loading');
       setErrorMessage('Carregando...');
       
-      // Timeout para carregamento
+      // Timeout mais agressivo para carregamento
       loadTimeoutRef.current = setTimeout(() => {
         console.error('❌ Timeout no carregamento do áudio');
         handleError(new Event('timeout'));
@@ -207,7 +209,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
-  // Add the missing handleSkip function
+  // Função para pular música
   const handleSkip = () => {
     console.log('⏭️ Pulando música atual');
     if (onTrackFailed) {

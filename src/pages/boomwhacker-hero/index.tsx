@@ -199,20 +199,58 @@ const BoomwhackerHero: React.FC = () => {
     });
   }, [gameStats.score, toast]);
 
-  // Nova função para lidar com falha de música
-  const handleTrackFailed = useCallback(() => {
-    if (!selectedSong || !availableTracks.length) return;
+  // Nova função melhorada para lidar com falha de música
+  const handleTrackFailed = useCallback(async () => {
+    if (!selectedSong) return;
     
-    // Marcar música atual como falha
+    console.log(`❌ Música falhou: ${selectedSong.title}`);
+    
+    // Marcar música atual como falha se for do tipo MusicTrack
     if ('source' in selectedSong) {
       MusicAPIManager.markTrackAsFailed(selectedSong as MusicTrack);
     }
     
-    // Tentar próxima música válida
-    const nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
+    // Tentar próxima música válida da lista atual
+    let nextTrack = null;
     
+    if (availableTracks.length > 1) {
+      nextTrack = MusicAPIManager.getNextValidTrack(availableTracks, selectedSong as MusicTrack);
+    }
+    
+    // Se não há próxima música válida, carregar novas músicas
+    if (!nextTrack) {
+      console.log('🔄 Carregando novas músicas...');
+      
+      try {
+        // Tentar carregar músicas de diferentes fontes
+        let newTracks: MusicTrack[] = [];
+        
+        // Primeiro tentar Jamendo
+        newTracks = await MusicAPIManager.getPopular('jamendo');
+        
+        // Se Jamendo falhar, tentar Spotify
+        if (newTracks.length === 0) {
+          newTracks = await MusicAPIManager.getPopular('spotify');
+        }
+        
+        // Se tudo falhar, usar demos
+        if (newTracks.length === 0) {
+          newTracks = await MusicAPIManager.getPopular('demo');
+        }
+        
+        if (newTracks.length > 0) {
+          setAvailableTracks(newTracks);
+          nextTrack = newTracks[0];
+          console.log(`✅ Novas músicas carregadas: ${newTracks.length}`);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar novas músicas:', error);
+      }
+    }
+    
+    // Se encontrou uma próxima música válida
     if (nextTrack) {
-      console.log(`🔄 Trocando para próxima música: ${nextTrack.title}`);
+      console.log(`🔄 Trocando para: ${nextTrack.title}`);
       setSelectedSong(nextTrack);
       
       toast({
@@ -220,19 +258,13 @@ const BoomwhackerHero: React.FC = () => {
         description: `Agora tocando: ${nextTrack.title}`,
       });
     } else {
-      // Se não há mais músicas válidas, carregar demos
-      console.log('⚠️ Sem mais músicas válidas, carregando demos...');
+      // Último recurso: voltar para a música padrão ANGELS_SONG
+      console.log('🚨 Voltando para música padrão...');
+      setSelectedSong(ANGELS_SONG);
       
-      MusicAPIManager.getPopular('demo').then(demoTracks => {
-        if (demoTracks.length > 0) {
-          setAvailableTracks(demoTracks);
-          setSelectedSong(demoTracks[0]);
-          
-          toast({
-            title: "🎵 Usando Música Demo",
-            description: `Tocando: ${demoTracks[0].title}`,
-          });
-        }
+      toast({
+        title: "🎵 Usando Música Padrão",
+        description: "Carregando música de demonstração",
       });
     }
   }, [selectedSong, availableTracks, toast]);
@@ -392,6 +424,13 @@ const BoomwhackerHero: React.FC = () => {
   useEffect(() => {
     initializeAudio();
     setSelectedSong(ANGELS_SONG);
+    
+    // Carregar músicas populares como backup
+    MusicAPIManager.getPopular('demo').then(tracks => {
+      setAvailableTracks(tracks);
+      console.log(`🎵 Músicas de backup carregadas: ${tracks.length}`);
+    });
+    
     console.log('🎵 Jogo inicializado com música padrão');
   }, [initializeAudio]);
 
@@ -448,7 +487,10 @@ const BoomwhackerHero: React.FC = () => {
             <MusicAPI 
               onTrackSelect={(track) => {
                 setSelectedSong(track);
-                setAvailableTracks([track]); // Simplesmente definir apenas esta música por enquanto
+                // Carregar mais músicas da mesma fonte para ter backups
+                MusicAPIManager.getPopular(track.source).then(tracks => {
+                  setAvailableTracks(tracks);
+                });
                 setShowMusicAPI(false);
                 toast({
                   title: "🎵 Música Selecionada!",
