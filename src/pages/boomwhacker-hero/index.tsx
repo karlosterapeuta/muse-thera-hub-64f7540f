@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -316,11 +314,21 @@ const BoomwhackerHero: React.FC = () => {
     
     noteIdCounter.current = 0;
     
+    // Iniciar música junto com o jogo
+    if (isMusicTrack(selectedSong) && selectedSong.preview_url) {
+      console.log('🎵 Iniciando música real junto com o jogo');
+      setIsMusicPlaying(true);
+      handleMusicPlayPause(true);
+    } else {
+      console.log('🎮 Iniciando modo simulação junto com o jogo');
+      setIsMusicPlaying(true);
+    }
+    
     toast({
       title: "🎵 Jogo Iniciado!",
       description: `Tocando: ${selectedSong.title}`,
     });
-  }, [selectedSong, audioContext, initializeAudio, toast]);
+  }, [selectedSong, audioContext, initializeAudio, toast, handleMusicPlayPause]);
 
   // Toggle pause
   const toggleGamePause = useCallback(() => {
@@ -502,13 +510,30 @@ const BoomwhackerHero: React.FC = () => {
     };
   }, [gameState, gameLoop]);
 
-  // Efeito para simulação de tempo quando não há áudio
+  // Efeito para simulação de tempo quando não há áudio real
   useEffect(() => {
-    if (gameState === 'playing' && selectedSong && (!isMusicTrack(selectedSong) || !isMusicPlaying)) {
-      console.log('🎮 Iniciando simulação de tempo para o jogo');
-      timeSimulationRef.current = setInterval(() => {
-        setCurrentTime(prev => prev + 100);
-      }, 100);
+    if (gameState === 'playing' && selectedSong && isMusicPlaying) {
+      // Se é MusicTrack sem preview_url ou ANGELS_SONG, usar simulação
+      if (!isMusicTrack(selectedSong) || !selectedSong.preview_url) {
+        console.log('🎮 Iniciando simulação de tempo sincronizada');
+        timeSimulationRef.current = setInterval(() => {
+          setCurrentTime(prev => {
+            const newTime = prev + 100;
+            // Verificar se chegou ao fim da música
+            if (newTime >= selectedSong.duration * 1000) {
+              console.log('🏆 Música simulada terminou');
+              setGameState('ended');
+              setIsMusicPlaying(false);
+              if (timeSimulationRef.current) {
+                clearInterval(timeSimulationRef.current);
+                timeSimulationRef.current = undefined;
+              }
+              return selectedSong.duration * 1000;
+            }
+            return newTime;
+          });
+        }, 100);
+      }
     } else {
       if (timeSimulationRef.current) {
         clearInterval(timeSimulationRef.current);
@@ -888,4 +913,3 @@ const BoomwhackerHero: React.FC = () => {
 };
 
 export default BoomwhackerHero;
-
