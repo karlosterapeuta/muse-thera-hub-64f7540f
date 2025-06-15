@@ -288,6 +288,18 @@ const BoomwhackerHero: React.FC = () => {
     }
   }, [fallingNotes, currentTime, gameStats.combo, playBoomwhackerSound, toast]);
 
+  // Controlar tempo do jogo
+  const handleMusicTimeUpdate = useCallback((timeInSeconds: number) => {
+    const timeInMs = timeInSeconds * 1000;
+    setCurrentTime(timeInMs);
+  }, []);
+
+  // Controlar play/pause - MOVED BEFORE startGame
+  const handleMusicPlayPause = useCallback((playing: boolean) => {
+    console.log(`🎵 Player estado: ${playing ? 'Play' : 'Pause'}`);
+    setIsMusicPlaying(playing);
+  }, []);
+
   // Iniciar jogo
   const startGame = useCallback(async () => {
     if (!selectedSong) return;
@@ -357,18 +369,6 @@ const BoomwhackerHero: React.FC = () => {
       description: "A reprodução foi interrompida",
     });
   }, [gameState, toast]);
-
-  // Controlar tempo do jogo
-  const handleMusicTimeUpdate = useCallback((timeInSeconds: number) => {
-    const timeInMs = timeInSeconds * 1000;
-    setCurrentTime(timeInMs);
-  }, []);
-
-  // Controlar play/pause
-  const handleMusicPlayPause = useCallback((playing: boolean) => {
-    console.log(`🎵 Player estado: ${playing ? 'Play' : 'Pause'}`);
-    setIsMusicPlaying(playing);
-  }, []);
 
   // Quando música termina
   const handleTrackEnd = useCallback(() => {
