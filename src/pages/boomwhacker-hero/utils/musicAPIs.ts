@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 // Definição do tipo para representar uma faixa de música
 export interface MusicTrack {
   id: string;
@@ -10,7 +8,7 @@ export interface MusicTrack {
   image: string | null;
   popularity: number | null;
   external_url: string | null;
-  source: 'spotify' | 'jamendo' | 'demo' | 'youtube';
+  source: 'spotify' | 'jamendo' | 'demo' | 'youtube' | 'synthesized';
   bpm?: number;
   failed?: boolean;
 }
@@ -21,8 +19,16 @@ class SpotifyAPI {
 
   static async search(query: string): Promise<MusicTrack[]> {
     try {
-      const response = await axios.post(this.apiUrl, { action: 'search', query });
-      return (response.data.tracks || []).map((track: any) => ({
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'search', query })
+      });
+      
+      const data = await response.json();
+      return (data.tracks || []).map((track: any) => ({
         id: track.id,
         title: track.title,
         artist: track.artist,
@@ -31,7 +37,7 @@ class SpotifyAPI {
         image: track.image,
         popularity: track.popularity,
         external_url: track.external_url,
-        source: 'spotify',
+        source: 'spotify' as const,
         bpm: track.bpm
       }));
     } catch (error: any) {
@@ -42,8 +48,16 @@ class SpotifyAPI {
 
   static async getPopular(): Promise<MusicTrack[]> {
     try {
-      const response = await axios.post(this.apiUrl, { action: 'popular' });
-      return (response.data.tracks || []).map((track: any) => ({
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'popular' })
+      });
+      
+      const data = await response.json();
+      return (data.tracks || []).map((track: any) => ({
         id: track.id,
         title: track.title,
         artist: track.artist,
@@ -52,7 +66,7 @@ class SpotifyAPI {
         image: track.image,
         popularity: track.popularity,
         external_url: track.external_url,
-        source: 'spotify',
+        source: 'spotify' as const,
         bpm: track.bpm
       }));
     } catch (error: any) {
@@ -63,8 +77,16 @@ class SpotifyAPI {
 
   static async getAudioFeatures(trackId: string): Promise<{ bpm?: number } | null> {
     try {
-      const response = await axios.post(this.apiUrl, { action: 'audio-features', trackId });
-      return response.data || null;
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'audio-features', trackId })
+      });
+      
+      const data = await response.json();
+      return data || null;
     } catch (error: any) {
       console.error('Erro ao obter audio features do Spotify:', error.message);
       return null;
@@ -162,13 +184,13 @@ export const generateBrazilianDemoTracks = (): MusicTrack[] => {
     popularity: Math.floor(Math.random() * 50) + 50, // 50-100
     external_url: null,
     source: 'demo' as const,
-    bpm: song.bpm // Corrigido: usando 'bpm' em vez de 'bmp'
+    bpm: song.bpm
   }));
 };
 
 // Classe para buscar músicas na API Jamendo
 class JamendoAPI {
-  private static clientId = Deno.env.get('JAMENDO_CLIENT_ID') || process.env.JAMENDO_CLIENT_ID;
+  private static clientId = process.env.JAMENDO_CLIENT_ID;
   private static baseUrl = 'https://api.jamendo.com/v3.0';
 
   static async search(query: string): Promise<MusicTrack[]> {
@@ -179,10 +201,11 @@ class JamendoAPI {
 
     try {
       const url = `${this.baseUrl}/tracks?client_id=${this.clientId}&format=jsonpretty&limit=20&searchtext=${encodeURIComponent(query)}`;
-      const response = await axios.get(url);
+      const response = await fetch(url);
+      const data = await response.json();
 
-      if (response.data.results && Array.isArray(response.data.results)) {
-        return response.data.results.map((track: any) => ({
+      if (data.results && Array.isArray(data.results)) {
+        return data.results.map((track: any) => ({
           id: track.id.toString(),
           title: track.name,
           artist: track.artist_name,
@@ -212,10 +235,11 @@ class JamendoAPI {
 
     try {
       const url = `${this.baseUrl}/tracks/radio?client_id=${this.clientId}&format=jsonpretty&limit=20`;
-      const response = await axios.get(url);
+      const response = await fetch(url);
+      const data = await response.json();
 
-      if (response.data.results && Array.isArray(response.data.results)) {
-        return response.data.results.map((track: any) => ({
+      if (data.results && Array.isArray(data.results)) {
+        return data.results.map((track: any) => ({
           id: track.id.toString(),
           title: track.name,
           artist: track.artist_name,
@@ -347,5 +371,14 @@ export class MusicAPIManager {
     // Implementar lógica para marcar a música como falha
     console.warn(`Música falhou: ${track.title} - ${track.artist}`);
     track.failed = true;
+  }
+
+  static getNextValidTrack(tracks: MusicTrack[], currentIndex: number): MusicTrack | null {
+    for (let i = currentIndex + 1; i < tracks.length; i++) {
+      if (!tracks[i].failed) {
+        return tracks[i];
+      }
+    }
+    return null;
   }
 }
