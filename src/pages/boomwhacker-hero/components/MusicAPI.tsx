@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Play, Heart, Clock, Music, Volume2, ExternalLink } from 'lucide-react';
+import { Search, Play, Heart, Clock, Music, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MusicAPIManager, MusicTrack } from '../utils/musicAPIs';
 
@@ -18,33 +18,31 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(false);
-  const [apiSource, setApiSource] = useState<'spotify' | 'jamendo' | 'demo'>('demo');
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 
   // Carregar músicas populares iniciais
   const loadPopularTracks = async () => {
     setLoading(true);
     try {
-      console.log(`🔍 Carregando músicas populares da fonte: ${apiSource}`);
-      const popularTracks = await MusicAPIManager.getPopular(apiSource);
+      console.log('🔍 Carregando músicas populares do Spotify');
+      const popularTracks = await MusicAPIManager.getPopular();
       console.log(`✅ Músicas carregadas: ${popularTracks.length}`);
       setTracks(popularTracks);
       
       if (popularTracks.length === 0) {
         toast({
           title: "Sem músicas encontradas",
-          description: "Carregando músicas demo como alternativa.",
+          description: "Não foi possível carregar músicas do Spotify.",
+          variant: "destructive"
         });
       }
     } catch (error) {
       console.error('❌ Erro ao carregar músicas populares:', error);
       toast({
         title: "Erro ao carregar músicas",
-        description: "Usando músicas demo como alternativa.",
+        description: "Não foi possível conectar com o Spotify.",
+        variant: "destructive"
       });
-      // Fallback para demo
-      const demoTracks = await MusicAPIManager.getPopular('demo');
-      setTracks(demoTracks);
     } finally {
       setLoading(false);
     }
@@ -59,8 +57,8 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     
     setLoading(true);
     try {
-      console.log(`🔍 Buscando por: "${query}" na fonte: ${apiSource}`);
-      const results = await MusicAPIManager.search(query, apiSource);
+      console.log(`🔍 Buscando por: "${query}" no Spotify`);
+      const results = await MusicAPIManager.search(query);
       console.log(`✅ Resultados encontrados: ${results.length}`);
       
       setTracks(results);
@@ -75,7 +73,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
       console.error('❌ Erro ao buscar músicas:', error);
       toast({
         title: "Erro na busca",
-        description: "Não foi possível buscar músicas. Tente novamente.",
+        description: "Não foi possível buscar músicas no Spotify. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -111,7 +109,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     try {
       const audio = new Audio(track.preview_url);
       audio.volume = 0.5;
-      audio.crossOrigin = "anonymous"; // Para evitar problemas de CORS
+      audio.crossOrigin = "anonymous";
       
       audio.addEventListener('loadstart', () => {
         console.log('🔄 Carregando áudio...');
@@ -167,10 +165,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
     searchTracks(searchTerm);
   };
 
-  // Carregar músicas ao mudar fonte de API
+  // Carregar músicas ao inicializar
   useEffect(() => {
     loadPopularTracks();
-  }, [apiSource]);
+  }, []);
 
   // Limpar áudio ao desmontar componente
   useEffect(() => {
@@ -185,35 +183,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            Buscar Músicas
+            Buscar Músicas no Spotify
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Seletor de API */}
-          <div className="flex gap-2">
-            <Button
-              variant={apiSource === 'spotify' ? 'default' : 'outline'}
-              onClick={() => setApiSource('spotify')}
-              className="flex-1"
-            >
-              Spotify
-            </Button>
-            <Button
-              variant={apiSource === 'jamendo' ? 'default' : 'outline'}
-              onClick={() => setApiSource('jamendo')}
-              className="flex-1"
-            >
-              Jamendo
-            </Button>
-            <Button
-              variant={apiSource === 'demo' ? 'default' : 'outline'}
-              onClick={() => setApiSource('demo')}
-              className="flex-1"
-            >
-              Demo
-            </Button>
-          </div>
-
           {/* Formulário de busca */}
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
@@ -230,7 +203,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
           {/* Sugestões de busca */}
           <div className="flex flex-wrap gap-2">
             <span className="text-sm text-gray-600">Sugestões:</span>
-            {['infantil', 'criança', 'twinkle', 'parabéns'].map((suggestion) => (
+            {['infantil', 'criança', 'twinkle', 'parabéns', 'piano instrumental'].map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
@@ -244,6 +217,10 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
               </Button>
             ))}
           </div>
+
+          <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+            🎵 Todas as músicas são fornecidas pelo Spotify
+          </div>
         </CardContent>
       </Card>
 
@@ -251,7 +228,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         {loading && (
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Buscando músicas...</p>
+            <p className="mt-2 text-gray-600">Buscando músicas no Spotify...</p>
           </div>
         )}
 
@@ -284,7 +261,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                     <span className="text-sm text-gray-500">{track.duration}s</span>
                     
                     <Badge variant="secondary" className="text-xs">
-                      {track.source}
+                      Spotify
                     </Badge>
                     
                     {track.popularity && (
@@ -324,7 +301,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                         e.stopPropagation();
                         window.open(track.external_url, '_blank');
                       }}
-                      title="Abrir no site original"
+                      title="Abrir no Spotify"
                     >
                       <ExternalLink className="w-3 h-3" />
                     </Button>
@@ -353,8 +330,8 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
         {!loading && tracks.length === 0 && (
           <div className="col-span-full text-center py-8">
             <Music className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600">Nenhuma música encontrada</p>
-            <p className="text-sm text-gray-500">Tente buscar por músicas infantis populares ou use as sugestões acima</p>
+            <p className="text-gray-600">Nenhuma música encontrada no Spotify</p>
+            <p className="text-sm text-gray-500">Tente buscar por músicas populares ou use as sugestões acima</p>
           </div>
         )}
       </div>
@@ -369,7 +346,7 @@ const MusicAPI: React.FC<MusicAPIProps> = ({ onTrackSelect, selectedTrack }) => 
                 <p className="text-gray-600">{selectedTrack.artist}</p>
                 <div className="flex gap-2 mt-1">
                   <Badge variant="secondary">
-                    Fonte: {selectedTrack.source}
+                    Spotify
                   </Badge>
                   {selectedTrack.bpm && (
                     <Badge variant="outline">
