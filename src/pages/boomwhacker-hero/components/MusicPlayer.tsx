@@ -27,29 +27,34 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [audioError, setAudioError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Inicializar áudio quando track muda
   useEffect(() => {
     if (track?.preview_url) {
       console.log(`🎵 Carregando áudio: ${track.title} - ${track.preview_url}`);
+      setIsLoading(true);
+      setAudioError(false);
       
       // Limpar áudio anterior
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.src = '';
         audioRef.current = null;
       }
 
       try {
         const audio = new Audio();
         audio.crossOrigin = "anonymous";
-        audio.preload = "auto";
+        audio.preload = "metadata";
         audio.volume = isMuted ? 0 : volume;
         
         // Event listeners
         audio.addEventListener('loadedmetadata', () => {
           console.log(`✅ Metadados carregados - Duração: ${audio.duration}s`);
-          setDuration(audio.duration);
+          setDuration(audio.duration || track.duration);
           setAudioError(false);
+          setIsLoading(false);
         });
 
         audio.addEventListener('timeupdate', () => {
@@ -67,47 +72,66 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         audio.addEventListener('error', (e) => {
           console.error('❌ Erro no áudio:', e);
           setAudioError(true);
+          setIsLoading(false);
           onPlayPause(false);
         });
 
         audio.addEventListener('canplay', () => {
           console.log('✅ Áudio pronto para tocar');
           setAudioError(false);
+          setIsLoading(false);
         });
 
+        audio.addEventListener('loadstart', () => {
+          console.log('🔄 Iniciando carregamento do áudio');
+          setIsLoading(true);
+        });
+
+        // Tentar carregar o áudio
         audio.src = track.preview_url;
         audioRef.current = audio;
         
       } catch (error) {
         console.error('❌ Erro ao criar áudio:', error);
         setAudioError(true);
+        setIsLoading(false);
       }
+    } else if (track) {
+      // Se não tem preview_url, usar duração padrão
+      setDuration(track.duration);
+      setAudioError(false);
+      setIsLoading(false);
     }
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.src = '';
         audioRef.current = null;
       }
     };
-  }, [track?.preview_url]);
+  }, [track?.preview_url, track?.id]);
 
   // Controlar play/pause
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying && !audioError) {
+    if (audioRef.current && !audioError && !isLoading) {
+      if (isPlaying) {
         console.log('▶️ Iniciando reprodução');
-        audioRef.current.play().catch(error => {
-          console.error('❌ Erro ao tocar:', error);
-          setAudioError(true);
-          onPlayPause(false);
-        });
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error('❌ Erro ao tocar:', error);
+            setAudioError(true);
+            onPlayPause(false);
+          });
+        }
       } else {
         console.log('⏸️ Pausando reprodução');
         audioRef.current.pause();
       }
     }
-  }, [isPlaying, audioError]);
+  }, [isPlaying, audioError, isLoading]);
 
   // Controlar volume
   useEffect(() => {
@@ -146,18 +170,30 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         <div className="flex-1">
           <h3 className="text-lg font-bold text-white">{track.title}</h3>
           <p className="text-gray-300">{track.artist}</p>
+          {isLoading && (
+            <p className="text-blue-400 text-sm">🔄 Carregando música...</p>
+          )}
           {audioError && (
-            <p className="text-red-400 text-sm">⚠️ Erro no áudio - usando música demo</p>
+            <p className="text-red-400 text-sm">⚠️ Erro no áudio - usando música de demonstração</p>
+          )}
+          {!track.preview_url && (
+            <p className="text-yellow-400 text-sm">🎵 Música sem preview - usando padrão do jogo</p>
           )}
         </div>
         
         <div className="flex items-center gap-4">
           <Button
             onClick={() => onPlayPause(!isPlaying)}
-            disabled={audioError && !track.preview_url}
+            disabled={isLoading}
             className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full p-0"
           >
-            {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+            {isLoading ? (
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : isPlaying ? (
+              <Pause className="w-6 h-6" />
+            ) : (
+              <Play className="w-6 h-6" />
+            )}
           </Button>
         </div>
       </div>
@@ -170,6 +206,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           max={100}
           step={1}
           className="w-full"
+          disabled={!audioRef.current || audioError}
         />
         <div className="flex justify-between text-sm text-gray-400 mt-1">
           <span>{formatTime(currentTime)}</span>

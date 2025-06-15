@@ -92,6 +92,7 @@ const BoomwhackerHero: React.FC = () => {
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const gameStartTime = useRef<number>(0);
+  const noteIdCounter = useRef<number>(0);
 
   // Configurações do jogo
   const TRACK_WIDTH = 100;
@@ -156,6 +157,7 @@ const BoomwhackerHero: React.FC = () => {
     });
     
     gameStartTime.current = Date.now();
+    noteIdCounter.current = 0;
     setIsMusicPlaying(true);
     
     toast({
@@ -207,7 +209,8 @@ const BoomwhackerHero: React.FC = () => {
                            !fallingNotes.some(fn => Math.abs(fn.targetTime - noteTime) < 50);
       
       if (shouldGenerate) {
-        const id = `note-${noteTime}-${note.track}`;
+        noteIdCounter.current += 1;
+        const id = `note-${noteTime}-${note.track}-${noteIdCounter.current}`;
         const trackNote = BOOMWHACKER_NOTES[note.track];
         
         newNotes.push({
@@ -297,6 +300,7 @@ const BoomwhackerHero: React.FC = () => {
 
     if (selectedSong && elapsed > selectedSong.duration * 1000) {
       setGameState('ended');
+      setIsMusicPlaying(false);
       toast({
         title: "🏆 Jogo Finalizado!",
         description: `Pontuação final: ${gameStats.score}`,
