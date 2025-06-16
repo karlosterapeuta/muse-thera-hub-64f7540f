@@ -759,12 +759,17 @@ const TeaHero = () => {
           </p>
         </div>
 
-        {/* Controle de Velocidade */}
+        {/* Controle de Velocidade - Interface melhorada */}
         <div className="mb-6 flex justify-center">
-          <div className="bg-white rounded-lg p-4 shadow-md max-w-md">
-            <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">⚡ Velocidade da Música</h3>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Devagar</span>
+          <div className="bg-white rounded-lg p-6 shadow-md max-w-lg w-full">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center flex items-center justify-center">
+              ⚡ Controle de Velocidade da Música
+            </h3>
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="text-center">
+                <span className="text-sm text-gray-500 block">Devagar</span>
+                <span className="text-xs text-gray-400">0.5x</span>
+              </div>
               <Slider
                 value={gameSpeed}
                 onValueChange={setGameSpeed}
@@ -773,14 +778,26 @@ const TeaHero = () => {
                 step={0.1}
                 className="flex-1"
               />
-              <span className="text-sm text-gray-500">Rápido</span>
+              <div className="text-center">
+                <span className="text-sm text-gray-500 block">Rápido</span>
+                <span className="text-xs text-gray-400">2.0x</span>
+              </div>
             </div>
-            <div className="text-center mt-2">
-              <span className="text-lg font-bold text-purple-600">{gameSpeed[0]}x</span>
+            <div className="text-center">
+              <span className="text-2xl font-bold text-purple-600">{gameSpeed[0]}x</span>
+              <p className="text-sm text-gray-600 mt-1">
+                {gameSpeed[0] < 0.8 ? "🐌 Muito devagar - ideal para iniciantes" :
+                 gameSpeed[0] < 1.2 ? "⚖️ Velocidade normal - equilibrada" :
+                 gameSpeed[0] < 1.6 ? "🏃 Rápido - desafio moderado" :
+                 "⚡ Muito rápido - para experts!"}
+              </p>
             </div>
-            <p className="text-xs text-gray-500 text-center mt-1">
-              Ajuste a velocidade conforme sua necessidade terapêutica
-            </p>
+            <div className="bg-blue-50 p-3 rounded-lg mt-4">
+              <p className="text-xs text-blue-800 text-center">
+                💡 <strong>Dica:</strong> Comece com velocidade baixa (0.5x-0.8x) para facilitar o aprendizado, 
+                depois aumente gradualmente conforme a coordenação melhora.
+              </p>
+            </div>
           </div>
         </div>
 
