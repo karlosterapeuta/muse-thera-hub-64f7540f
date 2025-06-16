@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,17 +121,21 @@ const TeaHero = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Música TEA (18 disponíveis)</label>
               <Select 
-                value={selectedSong?.id || ""} 
+                value={selectedSong?.id || "free-mode"} 
                 onValueChange={(value) => {
-                  const song = songs[selectedInstrument].find(s => s.id === value);
-                  setSelectedSong(song || null);
+                  if (value === "free-mode") {
+                    setSelectedSong(null);
+                  } else {
+                    const song = songs[selectedInstrument].find(s => s.id === value);
+                    setSelectedSong(song || null);
+                  }
                 }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione uma música..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">🎲 Modo Livre (Padrão Aleatório)</SelectItem>
+                  <SelectItem value="free-mode">🎲 Modo Livre (Padrão Aleatório)</SelectItem>
                   {songs[selectedInstrument].map((song) => (
                     <SelectItem key={song.id} value={song.id}>
                       🎼 {song.title}
