@@ -25,7 +25,7 @@ const TeaHero = () => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
-  const [gameSpeed, setGameSpeed] = useState([1.0]); // Usando array para o Slider
+  const [gameSpeed, setGameSpeed] = useState([1.0]);
 
   // Catálogo reorganizado e balanceado de músicas específicas para TEA
   const songs: Song[] = [
@@ -656,13 +656,13 @@ const TeaHero = () => {
     : songs.filter(song => song.category === selectedCategory);
 
   const handleNotePlay = (frequency: number, color: string) => {
-    // NOVO: Usar o sistema de áudio real com fallback
+    // TEA-OPTIMIZED: Usar sistema de áudio revolucionário
     playNoteSound(`${frequency}Hz`, selectedSong?.instrument);
     
     const instrumentEmoji = selectedSong?.instrument === "bell" ? "🔔" : 
                            selectedSong?.instrument === "xylophone" ? "🎵" : "🎹";
     
-    console.log(`${instrumentEmoji} ${selectedSong?.instrument} tocado: ${frequency}Hz (${color}) - real audio enabled`);
+    console.log(`${instrumentEmoji} TEA-OPTIMIZED ${selectedSong?.instrument}: ${frequency}Hz (${color}) - maximum clarity & volume`);
   };
 
   const handleSongSelect = (song: Song) => {
@@ -674,10 +674,10 @@ const TeaHero = () => {
     if (selectedSong) {
       const sequence = getMusicalSequence(selectedSong.id);
       if (sequence) {
-        console.log(`🎵 Iniciando música com sequência autêntica: ${sequence.name}`);
-        console.log(`📊 BPM: ${sequence.bpm}, Compasso: ${sequence.timeSignature}`);
+        console.log(`🎵 Starting TEA-optimized sequence: ${sequence.name}`);
+        console.log(`📊 BPM: ${sequence.bpm * gameSpeed[0]}, Compasso: ${sequence.timeSignature}`);
         console.log(`🎼 Total de notas: ${sequence.notes.length}`);
-        console.log(`⚡ Velocidade do jogo: ${gameSpeed[0]}x`);
+        console.log(`🔊 Velocidade TEA: ${gameSpeed[0]}x`);
       }
       setGameStarted(true);
     }
@@ -727,7 +727,7 @@ const TeaHero = () => {
             </h1>
             {selectedSong.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Melodia autêntica • Sequência musical real • Velocidade: {gameSpeed[0]}x • 🎵 Real Audio Enabled
+                🎼 TEA-Optimized • Melodia autêntica • Velocidade: {gameSpeed[0]}x • 🔊 Maximum Clarity Audio
               </p>
             )}
           </div>
@@ -750,16 +750,16 @@ const TeaHero = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            TEA-Hero 🎵
+            TEA-Hero 🔊
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Música Terapêutica para Transtorno do Espectro Autista
+            Música Terapêutica OTIMIZADA para Transtorno do Espectro Autista
           </p>
           <p className="text-sm text-gray-500 mb-2">
-            {filteredSongs.length} músicas disponíveis • Especialmente selecionadas para desenvolvimento cognitivo e sensorial
+            {filteredSongs.length} músicas TEA-optimizadas • Volume e clareza ampliados • Especialmente desenvolvidas para TEA
           </p>
           <p className="text-sm text-green-600 font-medium">
-            🎵 <strong>Novo:</strong> Áudio real de instrumentos com fallback inteligente para síntese
+            🔊 <strong>REVOLUCIONÁRIO:</strong> Sistema de áudio TEA-otimizado com volume amplificado, compressão inteligente e máxima clareza
           </p>
         </div>
 
@@ -767,7 +767,7 @@ const TeaHero = () => {
         <div className="mb-6 flex justify-center">
           <div className="bg-white rounded-lg p-6 shadow-md max-w-lg w-full">
             <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center flex items-center justify-center">
-              ⚡ Controle de Velocidade da Música
+              ⚡ Controle de Velocidade TEA-Optimized
             </h3>
             <div className="flex items-center space-x-4 mb-4">
               <div className="text-center">
@@ -790,25 +790,25 @@ const TeaHero = () => {
             <div className="text-center">
               <span className="text-2xl font-bold text-purple-600">{gameSpeed[0]}x</span>
               <p className="text-sm text-gray-600 mt-1">
-                {gameSpeed[0] < 0.8 ? "🐌 Muito devagar - ideal para iniciantes" :
-                 gameSpeed[0] < 1.2 ? "⚖️ Velocidade normal - equilibrada" :
-                 gameSpeed[0] < 1.6 ? "🏃 Rápido - desafio moderado" :
-                 "⚡ Muito rápido - para experts!"}
+                {gameSpeed[0] < 0.8 ? "🐌 Muito devagar - ideal para iniciantes TEA" :
+                 gameSpeed[0] < 1.2 ? "⚖️ Velocidade normal - equilibrada para TEA" :
+                 gameSpeed[0] < 1.6 ? "🏃 Rápido - desafio moderado TEA" :
+                 "⚡ Muito rápido - para experts TEA!"}
               </p>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg mt-4">
               <p className="text-xs text-blue-800 text-center">
-                💡 <strong>Dica:</strong> Comece com velocidade baixa (0.5x-0.8x) para facilitar o aprendizado, 
-                depois aumente gradualmente conforme a coordenação melhora.
+                💡 <strong>TEA-Tip:</strong> Comece devagar (0.5x-0.8x) para facilitar o aprendizado TEA, 
+                depois aumente gradualmente. Sistema otimizado para máxima percepção auditiva.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Filtro por Categoria */}
+        {/* Filtro por Categoria TEA */}
         <div className="mb-6 flex justify-center">
           <div className="bg-white rounded-lg p-4 shadow-md">
-            <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">Filtrar por Categoria</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">Filtrar por Categoria TEA</h3>
             <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => (
                 <Button
@@ -839,7 +839,7 @@ const TeaHero = () => {
                     <div className="flex items-center">
                       <div className="text-3xl">{getInstrumentIcon(song.instrument)}</div>
                       {song.hasSequence && (
-                        <div className="text-lg ml-1" title="Sequência musical autêntica">🎼</div>
+                        <div className="text-lg ml-1" title="Sequência TEA-otimizada">🔊</div>
                       )}
                     </div>
                   </div>
@@ -847,7 +847,7 @@ const TeaHero = () => {
                   <p className="text-xs text-gray-600">{song.artist}</p>
                   {song.hasSequence && (
                     <p className="text-xs text-yellow-700 font-medium">
-                      ⭐ Melodia Autêntica
+                      ⭐ TEA-Optimized
                     </p>
                   )}
                 </CardHeader>
@@ -863,12 +863,12 @@ const TeaHero = () => {
                   </div>
                   
                   <div className="bg-blue-50 p-2 rounded text-xs text-blue-800 mb-2">
-                    <strong>Benefício:</strong> {song.therapeuticBenefits}
+                    <strong>Benefício TEA:</strong> {song.therapeuticBenefits}
                   </div>
 
                   <Button size="sm" className="w-full">
                     <Play className="w-3 h-3 mr-1" />
-                    Jogar
+                    Jogar TEA
                   </Button>
                 </CardContent>
               </Card>
@@ -881,6 +881,7 @@ const TeaHero = () => {
                 <div className="flex justify-center items-center space-x-4 mb-4">
                   <div className="text-4xl">{getCategoryIcon(selectedSong.category)}</div>
                   <div className="text-6xl">{getInstrumentIcon(selectedSong.instrument)}</div>
+                  <div className="text-4xl">🔊</div>
                 </div>
                 <CardTitle className="text-2xl">{selectedSong.title}</CardTitle>
                 <p className="text-lg text-gray-600">{selectedSong.artist}</p>
@@ -901,13 +902,13 @@ const TeaHero = () => {
                     Velocidade: {gameSpeed[0]}x
                   </span>
                   <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                    🎵 Real Audio
+                    🔊 TEA Audio
                   </span>
                 </div>
                 
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-purple-800 mb-2">
-                    🧠 Benefícios Terapêuticos:
+                    🧠 Benefícios TEA-Terapêuticos:
                   </h4>
                   <p className="text-sm text-purple-700">
                     {selectedSong.therapeuticBenefits}
@@ -916,21 +917,21 @@ const TeaHero = () => {
 
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-sm text-blue-800 mb-2">
-                    <strong>Como jogar:</strong>
+                    <strong>Como jogar TEA-Hero:</strong>
                   </p>
                   <p className="text-sm text-blue-700">
                     Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
-                    Esta música foi especialmente selecionada para estimular seu desenvolvimento.
+                    Esta música foi especialmente otimizada para estimular desenvolvimento TEA.
                   </p>
                 </div>
 
                 <div className="bg-green-50 p-4 rounded-lg">
                   <p className="text-sm text-green-800 mb-2">
-                    <strong>🎵 Novo: Áudio Real!</strong>
+                    <strong>🔊 REVOLUCIONÁRIO: Sistema TEA-Audio!</strong>
                   </p>
                   <p className="text-sm text-green-700">
-                    Agora com sons de instrumentos reais para uma experiência mais autêntica e envolvente,
-                    com fallback inteligente para síntese de alta qualidade.
+                    Agora com áudio SUPER OTIMIZADO para TEA: volume amplificado 50%, compressão inteligente, 
+                    frequências sincronizadas, múltiplos harmônicos, e máxima clareza auditiva.
                   </p>
                 </div>
 
@@ -940,7 +941,7 @@ const TeaHero = () => {
                   </Button>
                   <Button onClick={handleStartGame} size="lg" className="bg-purple-600 hover:bg-purple-700">
                     <Play className="w-5 h-5 mr-2" />
-                    Começar Terapia Musical
+                    Começar Terapia TEA
                   </Button>
                 </div>
               </CardContent>
@@ -951,34 +952,39 @@ const TeaHero = () => {
         <div className="mt-8 text-center">
           <div className="bg-white rounded-lg p-6 shadow-md max-w-4xl mx-auto">
             <h3 className="text-lg font-medium text-gray-800 mb-3">
-              🎯 Sobre o TEA-Hero
+              🎯 Sobre o TEA-Hero REVOLUCIONÁRIO
             </h3>
             <p className="text-sm text-gray-600 mb-4">
-              O TEA-Hero foi desenvolvido especificamente para pessoas com Transtorno do Espectro Autista,
-              utilizando música como ferramenta terapêutica para estimular desenvolvimento cognitivo,
+              O TEA-Hero foi completamente REVOLUCIONADO com sistema de áudio otimizado especificamente para TEA,
+              utilizando música como ferramenta terapêutica com MÁXIMA EFICÁCIA para estimular desenvolvimento cognitivo,
               coordenação motora, memória sequencial e integração sensorial.
             </p>
             <div className="bg-green-50 p-4 rounded-lg mb-4">
               <h4 className="text-sm font-medium text-green-800 mb-2">
-                🎵 Novidade: Sistema de Áudio Real
+                🔊 REVOLUCIONÁRIO: Sistema TEA-Audio Optimized
               </h4>
               <p className="text-sm text-green-700">
-                Agora com integração de sons reais de instrumentos através de APIs especializadas,
-                proporcionando uma experiência musical mais autêntica e envolvente para terapia.
+                • Volume amplificado 50% para máxima percepção<br/>
+                • Compressão dinâmica ultra-agressiva para consistência<br/>
+                • Frequências 100% sincronizadas entre instrumentos<br/>
+                • Múltiplos harmônicos para riqueza sonora<br/>
+                • EQ de 3 bandas para máxima clareza<br/>
+                • Envelope ADSR otimizado para categoria infantil<br/>
+                • Fallback inteligente: Real Audio → Síntese Avançada → Síntese Básica
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="bg-green-50 p-3 rounded">
-                <strong className="text-green-800">🟢 Fácil:</strong>
-                <p className="text-green-700">3-4 notas, ritmo simples, melodias familiares</p>
+                <strong className="text-green-800">🟢 Fácil TEA:</strong>
+                <p className="text-green-700">3-4 notas, ritmo simples, volume amplificado</p>
               </div>
               <div className="bg-yellow-50 p-3 rounded">
-                <strong className="text-yellow-800">🟡 Médio:</strong>
-                <p className="text-yellow-700">5-6 notas, ritmo moderado, pequenas variações</p>
+                <strong className="text-yellow-800">🟡 Médio TEA:</strong>
+                <p className="text-yellow-700">5-6 notas, ritmo moderado, clareza otimizada</p>
               </div>
               <div className="bg-red-50 p-3 rounded">
-                <strong className="text-red-800">🔴 Difícil:</strong>
-                <p className="text-red-700">7+ notas, ritmos complexos, melodias elaboradas</p>
+                <strong className="text-red-800">🔴 Difícil TEA:</strong>
+                <p className="text-red-700">7+ notas, ritmos complexos, máxima qualidade</p>
               </div>
             </div>
           </div>

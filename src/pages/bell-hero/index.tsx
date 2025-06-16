@@ -5,11 +5,11 @@ import { playNoteSound } from "@/utils/audioUtils";
 
 const BellHero = () => {
   const handleNotePlay = (frequency: number, color: string) => {
-    // Usar o novo sistema de áudio real com fallback
+    // TEA-OPTIMIZED bell audio with real samples + enhanced synthesis fallback
     playNoteSound(`${frequency}Hz`, "bell");
     
-    // Feedback visual adicional para sinos
-    console.log(`🔔 Sino tocado: ${frequency}Hz (${color}) - real audio enabled`);
+    // Enhanced feedback for TEA
+    console.log(`🔔 TEA-OPTIMIZED Sino: ${frequency}Hz (${color}) - amplificado para TEA`);
   };
 
   return (

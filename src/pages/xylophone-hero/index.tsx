@@ -5,11 +5,11 @@ import { playNoteSound } from "@/utils/audioUtils";
 
 const XylophoneHero = () => {
   const handleNotePlay = (frequency: number, color: string) => {
-    // Usar o novo sistema de áudio real com fallback
+    // TEA-OPTIMIZED xylophone audio with real samples + enhanced synthesis fallback
     playNoteSound(`${frequency}Hz`, "xylophone");
     
-    // Feedback visual adicional para xilofone
-    console.log(`🎵 Xilofone tocado: ${frequency}Hz (${color}) - real audio enabled`);
+    // Enhanced feedback for TEA
+    console.log(`🎵 TEA-OPTIMIZED Xilofone: ${frequency}Hz (${color}) - amplificado para TEA`);
   };
 
   return (

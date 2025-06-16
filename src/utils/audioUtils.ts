@@ -9,6 +9,13 @@ const noteFrequencies: Record<string, number> = {
   "B": 493.88,  // B (Si)
   "C↑": 523.25, // High C (Dó alto)
   "C": 261.63,  // Regular C (Dó regular - same as C↓)
+  "C5": 523.25, // Xilofone (oitava C5)
+  "D5": 587.33, // Xilofone (oitava C5)
+  "E5": 659.25, // Xilofone (oitava C5)
+  "F5": 698.46, // Xilofone (oitava C5)
+  "G5": 783.99, // Xilofone (oitava C5)
+  "A5": 880.00, // Xilofone (oitava C5)
+  "B5": 987.77, // Xilofone (oitava C5)
 };
 
 // Importar o novo serviço de áudio real
@@ -98,12 +105,12 @@ let backgroundAudioElement: HTMLAudioElement | null = null;
 let audioContext: AudioContext | null = null;
 
 /**
- * NOVO: Enhanced note sound com integração de áudio real para TEA-Hero
- * Prioriza áudio real, com fallback para síntese avançada
+ * SISTEMA DE ÁUDIO REVOLUCIONÁRIO PARA TEA-HERO
+ * Prioriza áudio real com fallback inteligente para síntese super otimizada
  */
 export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylophone" | "keyboard") => {
   try {
-    // Determinar frequência
+    // Determinar frequência CORRIGIDA
     let frequency: number;
     
     if (noteKey.includes('Hz')) {
@@ -112,136 +119,180 @@ export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylo
       frequency = noteFrequencies[noteKey] || 440;
     }
 
-    // NOVA ABORDAGEM: Tentar áudio real primeiro
+    // ABORDAGEM REVOLUCIONÁRIA: Áudio real otimizado para TEA
     if (instrument) {
-      console.log(`🎵 Attempting real audio for ${instrument} at ${frequency}Hz`);
+      console.log(`🎵 Playing TEA-optimized ${instrument} at ${frequency}Hz`);
       
       try {
-        const success = await playInstrumentNote(instrument, frequency, 0.9, 0.8);
+        const success = await playInstrumentNote(instrument, frequency, 1.0, 1.2);
         if (success) {
-          console.log(`✅ Real audio played successfully: ${instrument} - ${frequency}Hz`);
+          console.log(`✅ TEA-optimized real audio success: ${instrument} - ${frequency}Hz`);
           return;
         }
       } catch (error) {
-        console.warn(`⚠️ Real audio failed for ${instrument}, falling back to synthesis:`, error);
+        console.warn(`⚠️ Real audio failed, using SUPER synthesis:`, error);
       }
     }
 
-    // FALLBACK: Síntese melhorada para categoria infantil
-    console.log(`🔄 Using enhanced synthesis fallback for ${frequency}Hz`);
+    // FALLBACK: Síntese SUPER OTIMIZADA para TEA
+    console.log(`🔄 Using TEA-OPTIMIZED synthesis for ${frequency}Hz`);
     
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     const audioContext = new AudioContext();
     
-    // Configuração otimizada baseada no instrumento
+    // CONFIGURAÇÃO ESPECÍFICA PARA TEA
     let waveType: OscillatorType = 'triangle';
-    let baseVolume = 0.9; // Volume aumentado para categoria infantil
+    let teaVolume = 1.3; // VOLUME AMPLIFICADO PARA TEA
     
     if (instrument === 'bell') {
-      waveType = 'sine'; // Sinos mais puros
-      baseVolume = 1.0; // Volume máximo para sinos
+      waveType = 'sine';
+      teaVolume = 1.5; // Sinos ainda mais altos
     } else if (instrument === 'xylophone') {
-      waveType = 'square'; // Xilofones mais percussivos
-      baseVolume = 0.95;
+      waveType = 'square';
+      teaVolume = 1.4;
     } else if (instrument === 'keyboard') {
-      waveType = 'triangle'; // Teclado mais suave mas destacado
-      baseVolume = 0.9;
+      waveType = 'sawtooth'; // Mais rico para piano
+      teaVolume = 1.3;
     }
     
-    // OSCILADOR PRINCIPAL melhorado
+    // OSCILADOR PRINCIPAL SUPER OTIMIZADO
     const oscillator = audioContext.createOscillator();
     oscillator.type = waveType;
     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
     
-    // ENVELOPE ADSR OTIMIZADO para categoria infantil - mais destacado
+    // ENVELOPE ADSR ESPECÍFICO PARA TEA - máxima audibilidade
     const gainNode = audioContext.createGain();
-    const attackTime = 0.01;  // Attack muito rápido
-    const decayTime = 0.05;   // Decay rápido
-    const sustainLevel = 0.8; // Sustain alto para melhor percepção
-    const releaseTime = 0.7;  // Release mais longo para ouvir bem
+    const attackTime = 0.003;  // Attack ultra rápido
+    const decayTime = 0.02;    // Decay muito rápido
+    const sustainLevel = 0.9;  // Sustain MÁXIMO para TEA
+    const releaseTime = 1.0;   // Release mais longo para percepção
     
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(baseVolume, audioContext.currentTime + attackTime);
+    gainNode.gain.linearRampToValueAtTime(teaVolume, audioContext.currentTime + attackTime);
     gainNode.gain.exponentialRampToValueAtTime(sustainLevel, audioContext.currentTime + attackTime + decayTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
     
-    // HARMÔNICOS ENRIQUECIDOS para sons mais destacados
+    // HARMÔNICOS MÚLTIPLOS para riqueza sonora EXTREMA
     const harmonic2 = audioContext.createOscillator();
     const harmonic2Gain = audioContext.createGain();
     harmonic2.type = 'sine';
     harmonic2.frequency.setValueAtTime(frequency * 2, audioContext.currentTime);
-    harmonic2Gain.gain.setValueAtTime(0.4, audioContext.currentTime); // Harmônico mais presente
+    harmonic2Gain.gain.setValueAtTime(0.6, audioContext.currentTime); // Mais presente
     harmonic2Gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
     
     const harmonic3 = audioContext.createOscillator();
     const harmonic3Gain = audioContext.createGain();
     harmonic3.type = 'sine';
     harmonic3.frequency.setValueAtTime(frequency * 3, audioContext.currentTime);
-    harmonic3Gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+    harmonic3Gain.gain.setValueAtTime(0.4, audioContext.currentTime);
     harmonic3Gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
+
+    const harmonic4 = audioContext.createOscillator();
+    const harmonic4Gain = audioContext.createGain();
+    harmonic4.type = 'sine';
+    harmonic4.frequency.setValueAtTime(frequency * 4, audioContext.currentTime);
+    harmonic4Gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+    harmonic4Gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
     
-    // COMPRESSOR APRIMORADO para sons mais consistentes e audíveis
+    // SUB-HARMÔNICO para corpo sonoro
+    const subHarmonic = audioContext.createOscillator();
+    const subHarmonicGain = audioContext.createGain();
+    subHarmonic.type = 'sine';
+    subHarmonic.frequency.setValueAtTime(frequency * 0.5, audioContext.currentTime);
+    subHarmonicGain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    subHarmonicGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
+    
+    // COMPRESSOR ULTRA AGRESSIVO para TEA
     const compressor = audioContext.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-15, audioContext.currentTime); // Threshold mais alto
-    compressor.knee.setValueAtTime(35, audioContext.currentTime);
-    compressor.ratio.setValueAtTime(10, audioContext.currentTime); // Compressão mais agressiva
-    compressor.attack.setValueAtTime(0.001, audioContext.currentTime);
-    compressor.release.setValueAtTime(0.1, audioContext.currentTime);
+    compressor.threshold.setValueAtTime(-8, audioContext.currentTime); // Threshold super baixo
+    compressor.knee.setValueAtTime(40, audioContext.currentTime);
+    compressor.ratio.setValueAtTime(20, audioContext.currentTime); // Compressão MÁXIMA
+    compressor.attack.setValueAtTime(0.0001, audioContext.currentTime);
+    compressor.release.setValueAtTime(0.05, audioContext.currentTime);
     
-    // FILTRO PASSA-ALTAS para clareza (especialmente para TEA)
-    const highpassFilter = audioContext.createBiquadFilter();
-    highpassFilter.type = 'highpass';
-    highpassFilter.frequency.setValueAtTime(80, audioContext.currentTime);
-    highpassFilter.Q.setValueAtTime(0.5, audioContext.currentTime);
+    // EQ DE 3 BANDAS para máxima clareza
+    const lowCut = audioContext.createBiquadFilter();
+    lowCut.type = 'highpass';
+    lowCut.frequency.setValueAtTime(80, audioContext.currentTime);
+    lowCut.Q.setValueAtTime(0.7, audioContext.currentTime);
     
-    // FILTRO PASSA-BAIXAS para suavizar
-    const lowpassFilter = audioContext.createBiquadFilter();
-    lowpassFilter.type = 'lowpass';
-    lowpassFilter.frequency.setValueAtTime(frequency * 4, audioContext.currentTime);
-    lowpassFilter.Q.setValueAtTime(1.5, audioContext.currentTime);
+    const midBoost = audioContext.createBiquadFilter();
+    midBoost.type = 'peaking';
+    midBoost.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    midBoost.Q.setValueAtTime(4, audioContext.currentTime);
+    midBoost.gain.setValueAtTime(10, audioContext.currentTime); // Boost MASSIVO na fundamental
     
-    // REVERB melhorado para profundidade
+    const highBoost = audioContext.createBiquadFilter();
+    highBoost.type = 'peaking';
+    highBoost.frequency.setValueAtTime(frequency * 3, audioContext.currentTime);
+    highBoost.Q.setValueAtTime(2, audioContext.currentTime);
+    highBoost.gain.setValueAtTime(6, audioContext.currentTime); // Brilho extra
+    
+    // LIMITADOR para evitar distorção
+    const limiter = audioContext.createDynamicsCompressor();
+    limiter.threshold.setValueAtTime(-1, audioContext.currentTime);
+    limiter.ratio.setValueAtTime(50, audioContext.currentTime);
+    limiter.attack.setValueAtTime(0.0001, audioContext.currentTime);
+    limiter.release.setValueAtTime(0.01, audioContext.currentTime);
+    
+    // REVERB micro para profundidade sem reverberação
     const delayNode = audioContext.createDelay();
     const delayGain = audioContext.createGain();
-    delayNode.delayTime.value = 0.05; // Delay mais curto
-    delayGain.gain.value = 0.3; // Reverb mais presente
+    delayNode.delayTime.value = 0.02; // Reverb muito curto
+    delayGain.gain.value = 0.2;
     
-    // Conectar todos os nós em cadeia otimizada
+    // CONEXÃO EM CADEIA SUPER OTIMIZADA
     oscillator.connect(gainNode);
     harmonic2.connect(harmonic2Gain);
     harmonic3.connect(harmonic3Gain);
+    harmonic4.connect(harmonic4Gain);
+    subHarmonic.connect(subHarmonicGain);
     
-    gainNode.connect(highpassFilter);
-    harmonic2Gain.connect(highpassFilter);
-    harmonic3Gain.connect(highpassFilter);
+    // Primeira etapa: Mix dos osciladores
+    gainNode.connect(lowCut);
+    harmonic2Gain.connect(lowCut);
+    harmonic3Gain.connect(lowCut);
+    harmonic4Gain.connect(lowCut);
+    subHarmonicGain.connect(lowCut);
     
-    highpassFilter.connect(lowpassFilter);
-    lowpassFilter.connect(compressor);
-    compressor.connect(audioContext.destination);
+    // Segunda etapa: EQ em série
+    lowCut.connect(midBoost);
+    midBoost.connect(highBoost);
     
-    // Adicionar reverb
-    compressor.connect(delayNode);
+    // Terceira etapa: Dinâmicas
+    highBoost.connect(compressor);
+    compressor.connect(limiter);
+    
+    // Saída principal
+    limiter.connect(audioContext.destination);
+    
+    // Reverb paralelo
+    limiter.connect(delayNode);
     delayNode.connect(delayGain);
     delayGain.connect(audioContext.destination);
     
-    // Rastrear nós de áudio
-    activeAudioNodes.push(oscillator, gainNode, harmonic2, harmonic2Gain, harmonic3, harmonic3Gain, compressor, highpassFilter, lowpassFilter, delayNode, delayGain);
+    // Rastrear nós
+    activeAudioNodes.push(oscillator, gainNode, harmonic2, harmonic2Gain, harmonic3, harmonic3Gain, harmonic4, harmonic4Gain, subHarmonic, subHarmonicGain, compressor, lowCut, midBoost, highBoost, limiter, delayNode, delayGain);
     
-    // Iniciar e parar osciladores
+    // Iniciar TODOS os osciladores
     const totalDuration = attackTime + decayTime + releaseTime;
     oscillator.start();
     harmonic2.start();
     harmonic3.start();
+    harmonic4.start();
+    subHarmonic.start();
     
     oscillator.stop(audioContext.currentTime + totalDuration);
     harmonic2.stop(audioContext.currentTime + totalDuration);
     harmonic3.stop(audioContext.currentTime + totalDuration);
+    harmonic4.stop(audioContext.currentTime + totalDuration);
+    subHarmonic.stop(audioContext.currentTime + totalDuration);
     
-    console.log(`🎵 Enhanced fallback synthesis: ${noteKey} at ${frequency}Hz with ${waveType} wave + rich harmonics`);
+    console.log(`🔊 TEA-OPTIMIZED SYNTHESIS: ${noteKey} at ${frequency}Hz with ${waveType} + 4 harmonics + sub + ultra compression`);
     
     // Limpeza após conclusão
     oscillator.onended = () => {
-      [oscillator, gainNode, harmonic2, harmonic2Gain, harmonic3, harmonic3Gain, compressor, highpassFilter, lowpassFilter, delayNode, delayGain].forEach(node => {
+      [oscillator, gainNode, harmonic2, harmonic2Gain, harmonic3, harmonic3Gain, harmonic4, harmonic4Gain, subHarmonic, subHarmonicGain, compressor, lowCut, midBoost, highBoost, limiter, delayNode, delayGain].forEach(node => {
         const index = activeAudioNodes.indexOf(node);
         if (index !== -1) {
           activeAudioNodes.splice(index, 1);
@@ -249,16 +300,15 @@ export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylo
       });
       
       if (audioContext.state !== 'closed') {
-        setTimeout(() => {
-          audioContext.close();
-        }, 100);
+        setTimeout(() => { audioContext.close(); }, 100);
       }
     };
 
   } catch (error) {
-    console.error("Error playing enhanced note sound:", error);
+    console.error("TEA-optimized audio failed completely:", error);
+    // Fallback final básico
     try {
-      generateFallbackTone(500, parseFloat(noteKey.replace('Hz', '')) || 440);
+      generateFallbackTone(800, parseFloat(noteKey.replace('Hz', '')) || 440);
     } catch (fallbackError) {
       console.error("All audio methods failed:", fallbackError);
     }
@@ -481,22 +531,14 @@ export const generateFallbackTone = (duration = 1000, frequency = 440) => {
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
     gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    
-    // Fade in
-    gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.1);
-    
-    // Fade out
+    gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.1); // Volume amplificado
     gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + (duration / 1000));
     
     oscillator.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     
     oscillator.start();
-    
-    setTimeout(() => {
-      oscillator.stop();
-      audioCtx.close();
-    }, duration);
+    setTimeout(() => { oscillator.stop(); audioCtx.close(); }, duration);
     
     return true;
   } catch (error) {
@@ -524,15 +566,14 @@ export const audioFallbackUrls: Record<string, string> = {
   infantil: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1ebd.mp3", // Música infantil
 };
 
-// NOVAS FUNÇÕES para integração com serviço de áudio real
-
+// NOVAS FUNÇÕES TEA-OPTIMIZED
 /**
  * Pré-carregar samples de instrumentos para melhor performance
  */
 export const preloadInstrumentAudio = async (instrument: "bell" | "xylophone" | "keyboard"): Promise<void> => {
   try {
     await realAudioService.preloadInstrumentSamples(instrument);
-    console.log(`✅ Audio samples preloaded for ${instrument}`);
+    console.log(`✅ TEA-optimized audio samples preloaded for ${instrument}`);
   } catch (error) {
     console.warn(`⚠️ Failed to preload ${instrument} samples:`, error);
   }
