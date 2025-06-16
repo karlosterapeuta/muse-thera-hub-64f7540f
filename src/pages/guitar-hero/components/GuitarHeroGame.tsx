@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -73,8 +74,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       setTotalNotes(seq.notes.length);
     }
   }, [selectedSong.id]);
-
-  const gameSpeed = gameSpeed || 1.0;
 
   const calculateNoteFrequency = useCallback((key: number) => {
     const baseFrequency = instrumentType === "bell" ? 261.63 : // C4 for bell
