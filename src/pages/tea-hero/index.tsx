@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import { Play, Music } from "lucide-react";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
@@ -17,13 +18,14 @@ interface Song {
   color: string;
   category: "infantil" | "clássico" | "brasileiro" | "terapêutico" | "desenhos";
   therapeuticBenefits: string;
-  hasSequence?: boolean; // Nova propriedade para indicar se tem sequência musical
+  hasSequence?: boolean;
 }
 
 const TeaHero = () => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
+  const [gameSpeed, setGameSpeed] = useState([1.0]); // Usando array para o Slider
 
   // Catálogo reorganizado e balanceado de músicas específicas para TEA
   const songs: Song[] = [
@@ -674,6 +676,7 @@ const TeaHero = () => {
         console.log(`🎵 Iniciando música com sequência autêntica: ${sequence.name}`);
         console.log(`📊 BPM: ${sequence.bpm}, Compasso: ${sequence.timeSignature}`);
         console.log(`🎼 Total de notas: ${sequence.notes.length}`);
+        console.log(`⚡ Velocidade do jogo: ${gameSpeed[0]}x`);
       }
       setGameStarted(true);
     }
@@ -723,7 +726,7 @@ const TeaHero = () => {
             </h1>
             {selectedSong.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Melodia autêntica • Sequência musical real
+                🎼 Melodia autêntica • Sequência musical real • Velocidade: {gameSpeed[0]}x
               </p>
             )}
           </div>
@@ -735,6 +738,7 @@ const TeaHero = () => {
           instrumentType={selectedSong.instrument} 
           onNotePlay={handleNotePlay}
           selectedSong={selectedSong}
+          gameSpeed={gameSpeed[0]}
         />
       </div>
     );
@@ -753,6 +757,31 @@ const TeaHero = () => {
           <p className="text-sm text-gray-500">
             {filteredSongs.length} músicas disponíveis • Especialmente selecionadas para desenvolvimento cognitivo e sensorial
           </p>
+        </div>
+
+        {/* Controle de Velocidade */}
+        <div className="mb-6 flex justify-center">
+          <div className="bg-white rounded-lg p-4 shadow-md max-w-md">
+            <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">⚡ Velocidade da Música</h3>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Devagar</span>
+              <Slider
+                value={gameSpeed}
+                onValueChange={setGameSpeed}
+                max={2.0}
+                min={0.5}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Rápido</span>
+            </div>
+            <div className="text-center mt-2">
+              <span className="text-lg font-bold text-purple-600">{gameSpeed[0]}x</span>
+            </div>
+            <p className="text-xs text-gray-500 text-center mt-1">
+              Ajuste a velocidade conforme sua necessidade terapêutica
+            </p>
+          </div>
         </div>
 
         {/* Filtro por Categoria */}
@@ -846,6 +875,9 @@ const TeaHero = () => {
                   <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 capitalize">
                     {selectedSong.instrument === "bell" ? "Sino" : 
                      selectedSong.instrument === "xylophone" ? "Xilofone" : "Teclado"}
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                    Velocidade: {gameSpeed[0]}x
                   </span>
                 </div>
                 

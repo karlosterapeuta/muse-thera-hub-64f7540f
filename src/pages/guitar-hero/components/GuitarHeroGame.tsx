@@ -22,15 +22,21 @@ interface GuitarHeroGameProps {
     title: string;
     hasSequence?: boolean;
   };
+  gameSpeed?: number; // Nova propriedade para controlar a velocidade
 }
 
-const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay, selectedSong }) => {
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ 
+  instrumentType, 
+  onNotePlay, 
+  selectedSong,
+  gameSpeed = 1.0 // Valor padrão
+}) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [notes, setNotes] = useState<Note[]>([]);
-  const [speed, setSpeed] = useState(2);
+  const [speed] = useState(2); // Velocidade base das notas
   const [hitZoneHeight] = useState(80);
   
   const gameRef = useRef<HTMLDivElement>(null);
@@ -105,28 +111,28 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         { freq: 523.25, time: 5, duration: 1 },      // C5
       ];
 
-      // Tocar a melodia
+      // Ajustar timing da melodia baseado na velocidade do jogo
       melody.forEach(note => {
-        playBackgroundTone(note.freq, note.time, note.duration);
+        playBackgroundTone(note.freq, note.time / gameSpeed, note.duration / gameSpeed);
       });
 
-      // Repetir a melodia a cada 6 segundos
+      // Repetir a melodia ajustada pela velocidade
       const interval = setInterval(() => {
         if (isPlaying) {
           melody.forEach(note => {
-            playBackgroundTone(note.freq, note.time, note.duration);
+            playBackgroundTone(note.freq, note.time / gameSpeed, note.duration / gameSpeed);
           });
         } else {
           clearInterval(interval);
         }
-      }, 6000);
+      }, (6000 / gameSpeed)); // Ajustar intervalo baseado na velocidade
 
-      console.log(`🎵 Background music started for ${instrumentType}`);
+      console.log(`🎵 Background music started for ${instrumentType} at ${gameSpeed}x speed`);
       
     } catch (error) {
       console.error("Error starting background music:", error);
     }
-  }, [instrumentType, isPlaying]);
+  }, [instrumentType, isPlaying, gameSpeed]);
 
   // Parar música de fundo
   const stopBackgroundMusic = useCallback(() => {
@@ -143,32 +149,32 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     if (selectedSong?.hasSequence) {
       const sequence = getMusicalSequence(selectedSong.id);
       if (sequence) {
-        console.log(`🎼 Carregando sequência musical: ${sequence.name}`);
-        console.log(`📊 BPM: ${sequence.bpm}, Notas: ${sequence.notes.length}`);
+        console.log(`🎼 Carregando sequência musical: ${sequence.name} at ${gameSpeed}x speed`);
+        console.log(`📊 BPM: ${sequence.bpm * gameSpeed}, Notas: ${sequence.notes.length}`);
         
         const gameNotes = generateGameNotes(sequence, instrumentType);
-        setNotes(gameNotes);
-        console.log(`Generated ${gameNotes.length} authentic notes for ${selectedSong.title}`);
+        // Ajustar timing das notas baseado na velocidade
+        const adjustedNotes = gameNotes.map(note => ({
+          ...note,
+          startTime: note.startTime / gameSpeed // Notas aparecem mais rápido/devagar
+        }));
+        setNotes(adjustedNotes);
+        console.log(`Generated ${adjustedNotes.length} authentic notes for ${selectedSong.title} at ${gameSpeed}x speed`);
         return;
       }
     }
 
-    // Fallback para padrão aleatório se não houver sequência
-    console.log(`⚠️ Usando padrão aleatório para ${selectedSong?.title || 'música desconhecida'}`);
+    // Fallback para padrão aleatório se não houver sequência (também ajustado)
+    console.log(`⚠️ Usando padrão aleatório para ${selectedSong?.title || 'música desconhecida'} at ${gameSpeed}x speed`);
     const newNotes: Note[] = [];
     const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol
-      [1, 3, 5], // Ré, Fá, Lá
-      [0, 1, 2], // Sequência simples
-      [4, 5, 6], // Notas agudas
-      [2, 4, 6], // Saltos
-      [0, 3, 6], // Acordes
+      [0, 2, 4], [1, 3, 5], [0, 1, 2], [4, 5, 6], [2, 4, 6], [0, 3, 6],
     ];
 
     let noteId = 0;
     for (let i = 0; i < 20; i++) {
       const pattern = patterns[i % patterns.length];
-      const baseTime = i * 4000; // 4 segundos entre padrões
+      const baseTime = (i * 4000) / gameSpeed; // Ajustar timing baseado na velocidade
       
       pattern.forEach((laneIndex, noteIndex) => {
         if (laneIndex < lanes.length) {
@@ -177,8 +183,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             lane: laneIndex,
             color: lanes[laneIndex].color,
             frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
-            duration: 600,
+            startTime: baseTime + (noteIndex * 1000) / gameSpeed, // Ajustar timing
+            duration: 600 / gameSpeed, // Ajustar duração
             y: -100 // Começar acima da tela
           });
         }
@@ -186,7 +192,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
     }
 
     setNotes(newNotes);
-  }, [instrumentType, lanes, selectedSong]);
+  }, [instrumentType, lanes, selectedSong, gameSpeed]);
 
   // Atualizar posição das notas
   const updateNotes = useCallback(() => {
@@ -200,7 +206,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
         .map(note => {
           // Calcular posição baseada no tempo
           const noteAge = currentGameTime - note.startTime;
-          const newY = noteAge * speed * 0.1; // Velocidade controlada
+          const newY = noteAge * speed * 0.1 * gameSpeed; // Velocidade controlada
           return {
             ...note,
             y: newY
@@ -221,7 +227,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
 
     lastUpdateTimeRef.current = now;
     animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed, combo]);
+  }, [isPlaying, speed, combo, gameSpeed]);
 
   // Detectar teclas pressionadas
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -309,10 +315,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
       startBackgroundMusic(); // Iniciar música de fundo
       
       if (selectedSong?.hasSequence) {
-        console.log(`🎵 Iniciando ${selectedSong.title} com sequência musical autêntica`);
-        toast(`🎼 Tocando: ${selectedSong.title}`, { duration: 2000 });
+        console.log(`🎵 Iniciando ${selectedSong.title} com sequência musical autêntica at ${gameSpeed}x speed`);
+        toast(`🎼 Tocando: ${selectedSong.title} (${gameSpeed}x)`, { duration: 2000 });
       } else {
-        console.log(`🎵 Iniciando ${instrumentType} game com padrão aleatório`);
+        console.log(`🎵 Iniciando ${instrumentType} game com padrão aleatório at ${gameSpeed}x speed`);
       }
       
       setIsPlaying(true);
@@ -383,7 +389,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
             </h1>
             {selectedSong?.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Sequência musical autêntica
+                🎼 Sequência musical autêntica • Velocidade: {gameSpeed}x
               </p>
             )}
           </div>
@@ -414,7 +420,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           </div>
           <div>
             <div className="text-sm opacity-80">Velocidade</div>
-            <div className="text-xl font-bold">{speed}x</div>
+            <div className="text-xl font-bold">{gameSpeed}x</div>
           </div>
         </div>
       </div>
@@ -425,7 +431,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNoteP
           Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
           {selectedSong?.hasSequence && (
             <span className="block mt-1 text-yellow-200">
-              🎼 Esta música toca a melodia autêntica de "{selectedSong.title}"
+              🎼 Esta música toca a melodia autêntica de "{selectedSong.title}" a {gameSpeed}x de velocidade
             </span>
           )}
         </p>
