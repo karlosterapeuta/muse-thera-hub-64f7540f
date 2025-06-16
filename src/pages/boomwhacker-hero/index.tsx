@@ -1,431 +1,460 @@
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Volume2, Play, Pause, RotateCcw, Trophy, Music, Target } from 'lucide-react';
+import { Volume2, Play, Music, Trophy, Guitar, Star } from 'lucide-react';
+import { TRADITIONAL_SONGS, TraditionalSong, getSongsByDifficulty } from './data/traditionalSongs';
+import { useGuitarHeroGame } from './hooks/useGuitarHeroGame';
+import { guitarHeroAudio } from './utils/guitarHeroAudio';
+import GuitarHeroUI from './components/GuitarHeroUI';
 
-// Boomwhacker color/note mapping
+// Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
-  { note: 'C', color: '#FF0000', name: 'Dó', frequency: 261.63 },
-  { note: 'D', color: '#FF7F00', name: 'Ré', frequency: 293.66 },
-  { note: 'E', color: '#FFFF00', name: 'Mi', frequency: 329.63 },
-  { note: 'F', color: '#00FF00', name: 'Fá', frequency: 349.23 },
-  { note: 'G', color: '#0000FF', name: 'Sol', frequency: 392.00 },
-  { note: 'A', color: '#8B00FF', name: 'Lá', frequency: 440.00 },
-  { note: 'B', color: '#FF69B4', name: 'Si', frequency: 493.88 },
-  { note: 'C2', color: '#8B0000', name: 'Dó²', frequency: 523.25 }
+  { note: 'C', color: '#FF2D2D', name: 'Dó', frequency: 261.63, track: 0, key: 'a' },
+  { note: 'D', color: '#FF8A2D', name: 'Ré', frequency: 293.66, track: 1, key: 's' },
+  { note: 'E', color: '#FFD700', name: 'Mi', frequency: 329.63, track: 2, key: 'd' },
+  { note: 'F', color: '#5CFF2D', name: 'Fá', frequency: 349.23, track: 3, key: 'f' },
+  { note: 'G', color: '#2D8A5C', name: 'Sol', frequency: 392.00, track: 4, key: 'g' },
+  { note: 'A', color: '#8A2BE2', name: 'Lá', frequency: 440.00, track: 5, key: 'h' }
 ];
 
-interface GameStats {
-  notesPlayed: number;
-  correctSequence: number;
-  sessionTime: number;
-  score: number;
+// Música de exemplo original "Melodia de Demonstração"
+const DEMO_SONG = {
+  id: 'demo-melody',
+  title: 'Melodia de Demonstração',
+  artist: 'Compositor Original',
+  duration: 20,
+  bpm: 120,
+  difficulty: 'medium',
+  pattern: [
+    { time: 1000, track: 4, duration: 500 }, // G
+    { time: 2000, track: 1, duration: 500 }, // D
+    { time: 3000, track: 2, duration: 500 }, // E
+    { time: 4000, track: 4, duration: 500 }, // G
+    { time: 5000, track: 5, duration: 500 }, // A
+    { time: 6000, track: 4, duration: 500 }, // G
+    { time: 7000, track: 2, duration: 500 }, // E
+    { time: 8000, track: 1, duration: 500 }, // D
+    { time: 9000, track: 4, duration: 500 }, // G
+    { time: 10000, track: 1, duration: 500 }, // D
+    { time: 11000, track: 2, duration: 500 }, // E
+    { time: 12000, track: 4, duration: 500 }, // G
+    { time: 13000, track: 5, duration: 500 }, // A
+    { time: 14000, track: 4, duration: 500 }, // G
+    { time: 15000, track: 2, duration: 500 }, // E
+    { time: 16000, track: 1, duration: 500 }, // D
+  ]
+};
+
+interface FallingNote {
+  id: string;
+  track: number;
+  y: number;
+  targetTime: number;
+  hit: boolean;
+  color: string;
+  startTime: number;
 }
 
-interface TubeAnimation {
+interface GameStats {
+  score: number;
+  combo: number;
+  maxCombo: number;
+  hits: number;
+  misses: number;
+  accuracy: number;
+}
+
+type GameDifficulty = 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado';
+
+interface Particle {
   id: string;
-  noteIndex: number;
-  startTime: number;
+  x: number;
+  y: number;
+  color: string;
+  life: number;
+  velocity: { x: number; y: number };
 }
 
 const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [gameMode, setGameMode] = useState<'free' | 'sequence' | 'challenge'>('free');
-  const [currentSequence, setCurrentSequence] = useState<number[]>([]);
-  const [userSequence, setUserSequence] = useState<number[]>([]);
-  const [gameStats, setGameStats] = useState<GameStats>({
-    notesPlayed: 0,
-    correctSequence: 0,
-    sessionTime: 0,
-    score: 0
-  });
-  const [tubeAnimations, setTubeAnimations] = useState<TubeAnimation[]>([]);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
+  const [volume, setVolume] = useState(0.7);
+  
+  const {
+    gameState,
+    currentSong,
+    fallingNotes,
+    gameStats,
+    currentTime,
+    isAudioPlaying,
+    TRACK_HEIGHT,
+    NOTE_HEIGHT,
+    HIT_ZONE_Y,
+    startGame,
+    togglePause,
+    stopGame,
+    backToMenu,
+    checkHit,
+    updateTime
+  } = useGuitarHeroGame();
 
-  // Initialize audio context
-  const initializeAudio = useCallback(async () => {
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass();
-      setAudioContext(ctx);
-      
-      toast({
-        title: "🎵 Boomwhacker Hero Ativo!",
-        description: "Toque nos tubos coloridos para criar música!",
-      });
-    } catch (error) {
-      console.error('Erro ao inicializar áudio:', error);
-    }
-  }, [toast]);
-
-  // Play boomwhacker sound
-  const playBoomwhackerNote = useCallback((noteIndex: number) => {
-    if (!audioContext || noteIndex < 0 || noteIndex >= BOOMWHACKER_NOTES.length) return;
-
-    const note = BOOMWHACKER_NOTES[noteIndex];
-    
-    try {
-      // Create oscillator for the tube sound
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      // Boomwhacker sound characteristics
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(note.frequency, audioContext.currentTime);
-      
-      // Envelope for tube-like sound
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1.5);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 1.5);
-      
-      // Add tube animation
-      const animationId = `tube-${Date.now()}-${noteIndex}`;
-      setTubeAnimations(prev => [...prev, {
-        id: animationId,
-        noteIndex,
-        startTime: Date.now()
-      }]);
-      
-      // Remove animation after duration
-      setTimeout(() => {
-        setTubeAnimations(prev => prev.filter(anim => anim.id !== animationId));
-      }, 1000);
-      
-    } catch (error) {
-      console.error('Erro ao tocar nota:', error);
-    }
-  }, [audioContext]);
-
-  // Handle tube click
-  const handleTubeClick = useCallback((noteIndex: number) => {
-    playBoomwhackerNote(noteIndex);
-    
-    setGameStats(prev => ({
-      ...prev,
-      notesPlayed: prev.notesPlayed + 1,
-      score: prev.score + 10
-    }));
-
-    if (gameMode === 'sequence') {
-      const newUserSequence = [...userSequence, noteIndex];
-      setUserSequence(newUserSequence);
-      
-      // Check if sequence matches
-      if (newUserSequence.length === currentSequence.length) {
-        const isCorrect = newUserSequence.every((note, index) => note === currentSequence[index]);
-        if (isCorrect) {
-          setGameStats(prev => ({
-            ...prev,
-            correctSequence: prev.correctSequence + 1,
-            score: prev.score + 100
-          }));
-          toast({
-            title: "🎉 Sequência Correta!",
-            description: "Excelente! Continue tocando!",
-          });
-          generateNewSequence();
-        } else {
-          toast({
-            title: "❌ Sequência Incorreta",
-            description: "Tente novamente! Ouça a sequência primeiro.",
-          });
-          setUserSequence([]);
-        }
-      }
-    }
-  }, [gameMode, userSequence, currentSequence, playBoomwhackerNote, toast]);
-
-  // Generate new sequence for sequence mode
-  const generateNewSequence = useCallback(() => {
-    const length = Math.min(3 + Math.floor(gameStats.correctSequence / 2), 8);
-    const sequence = Array.from({ length }, () => Math.floor(Math.random() * BOOMWHACKER_NOTES.length));
-    setCurrentSequence(sequence);
-    setUserSequence([]);
-  }, [gameStats.correctSequence]);
-
-  // Play current sequence
-  const playSequence = useCallback(() => {
-    if (currentSequence.length === 0) return;
-    
-    currentSequence.forEach((noteIndex, index) => {
-      setTimeout(() => {
-        playBoomwhackerNote(noteIndex);
-      }, index * 600);
-    });
-  }, [currentSequence, playBoomwhackerNote]);
-
-  // Canvas drawing
-  const drawTubes = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const tubeWidth = 60;
-    const tubeHeight = 200;
-    const spacing = 80;
-    const startX = (canvas.width - (BOOMWHACKER_NOTES.length * spacing - (spacing - tubeWidth))) / 2;
-    
-    BOOMWHACKER_NOTES.forEach((note, index) => {
-      const x = startX + index * spacing;
-      const y = canvas.height - tubeHeight - 50;
-      
-      // Check if tube is being animated
-      const isAnimated = tubeAnimations.some(anim => anim.noteIndex === index);
-      const animationProgress = isAnimated ? 
-        Math.sin((Date.now() % 500) / 500 * Math.PI * 4) * 10 : 0;
-      
-      // Draw tube
-      ctx.fillStyle = note.color;
-      ctx.fillRect(x, y + animationProgress, tubeWidth, tubeHeight);
-      
-      // Draw tube highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.fillRect(x, y + animationProgress, tubeWidth * 0.3, tubeHeight);
-      
-      // Draw note label
-      ctx.fillStyle = '#000';
-      ctx.font = 'bold 16px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(note.note, x + tubeWidth/2, y + tubeHeight + 25);
-      ctx.fillText(note.name, x + tubeWidth/2, y + tubeHeight + 45);
-      
-      // Draw glow effect if animated
-      if (isAnimated) {
-        ctx.shadowColor = note.color;
-        ctx.shadowBlur = 20;
-        ctx.strokeStyle = note.color;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(x - 3, y + animationProgress - 3, tubeWidth + 6, tubeHeight + 6);
-        ctx.shadowBlur = 0;
-      }
-    });
-  }, [tubeAnimations]);
-
-  // Animation loop
-  const animate = useCallback(() => {
-    drawTubes();
-    animationRef.current = requestAnimationFrame(animate);
-  }, [drawTubes]);
-
-  // Handle canvas click
-  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    
-    const tubeWidth = 60;
-    const spacing = 80;
-    const startX = (canvas.width - (BOOMWHACKER_NOTES.length * spacing - (spacing - tubeWidth))) / 2;
-    const tubeHeight = 200;
-    const tubeY = canvas.height - tubeHeight - 50;
-    
-    // Check which tube was clicked
-    BOOMWHACKER_NOTES.forEach((_, index) => {
-      const tubeX = startX + index * spacing;
-      if (x >= tubeX && x <= tubeX + tubeWidth && y >= tubeY && y <= tubeY + tubeHeight) {
-        handleTubeClick(index);
-      }
-    });
-  }, [handleTubeClick]);
-
-  // Start new game
-  const startNewGame = useCallback(() => {
-    setIsPlaying(true);
-    setGameStats({
-      notesPlayed: 0,
-      correctSequence: 0,
-      sessionTime: 0,
-      score: 0
-    });
-    
-    if (gameMode === 'sequence') {
-      generateNewSequence();
-    }
-  }, [gameMode, generateNewSequence]);
-
-  // Initialize
+  // Inicializar áudio
   useEffect(() => {
-    initializeAudio();
-    animationRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [initializeAudio, animate]);
-
-  // Resize canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = 800;
-      canvas.height = 400;
-    }
+    guitarHeroAudio.initialize();
+    return () => guitarHeroAudio.dispose();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-yellow-100 to-red-100 dark:from-orange-900/20 dark:via-yellow-900/20 dark:to-red-900/20 p-4">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white p-6 rounded-xl shadow-xl mb-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">🎵 BOOMWHACKER HERO</h1>
-          <p className="text-lg opacity-90">
-            Toque os tubos coloridos para criar música! Cada cor é uma nota diferente.
-          </p>
-        </div>
-      </div>
+  // Sincronizar tempo do áudio com o jogo
+  useEffect(() => {
+    if (gameState === 'playing' && currentSong) {
+      const interval = setInterval(() => {
+        const audioTime = guitarHeroAudio.getCurrentTime();
+        updateTime(audioTime);
+      }, 16); // ~60fps
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Controls */}
-        <div className="lg:col-span-1 space-y-4">
-          <Card>
+      return () => clearInterval(interval);
+    }
+  }, [gameState, currentSong, updateTime]);
+
+  // Controlar áudio conforme estado do jogo
+  useEffect(() => {
+    if (gameState === 'playing' && isAudioPlaying) {
+      guitarHeroAudio.resume();
+    } else {
+      guitarHeroAudio.pause();
+    }
+  }, [gameState, isAudioPlaying]);
+
+  // Atualizar volume
+  useEffect(() => {
+    guitarHeroAudio.setMusicVolume(volume);
+  }, [volume]);
+
+  // Iniciar jogo com música selecionada
+  const handleStartGame = useCallback(async (song: TraditionalSong) => {
+    console.log(`🎮 Iniciando ${song.title} (${song.difficulty})`);
+    
+    const loaded = await guitarHeroAudio.loadTrack(song);
+    if (!loaded) {
+      toast({
+        title: "❌ Erro",
+        description: "Não foi possível carregar a música. Tentando novamente...",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    startGame(song);
+    guitarHeroAudio.play();
+    
+    toast({
+      title: "🎵 Jogo Iniciado!",
+      description: `Tocando: ${song.title} - ${song.artist}`,
+    });
+  }, [startGame, toast]);
+
+  // Controlar clique nas trilhas
+  const handleTrackClick = useCallback(async (trackIndex: number) => {
+    if (gameState === 'playing') {
+      const result = checkHit(trackIndex);
+      
+      if (result && result.type !== 'miss') {
+        await guitarHeroAudio.playHitEffect(trackIndex, result.type);
+        
+        // Mostrar feedback visual
+        const messages = {
+          perfect: '🔥 PERFEITO!',
+          good: '✨ BOM!',
+          ok: '👍 OK!'
+        };
+        
+        toast({
+          title: messages[result.type],
+          description: `+${result.points} pontos`,
+          duration: 1000
+        });
+      } else {
+        await guitarHeroAudio.playMissEffect();
+      }
+    }
+  }, [gameState, checkHit, toast]);
+
+  // Controlar teclas do teclado
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const keyMap: Record<string, number> = {
+        'a': 0, 's': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5
+      };
+      
+      const trackIndex = keyMap[event.key.toLowerCase()];
+      if (trackIndex !== undefined) {
+        handleTrackClick(trackIndex);
+      }
+      
+      // Controles do jogo
+      if (event.key === ' ') { // Espaço para pausar
+        event.preventDefault();
+        togglePause();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleTrackClick, togglePause]);
+
+  // Renderizar menu de seleção
+  if (gameState === 'menu') {
+    const songsToShow = getSongsByDifficulty(selectedDifficulty);
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-black bg-opacity-80 backdrop-blur-sm">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-orange-500" style={{ fontFamily: 'Pacifico, cursive' }}>
+              🎵 Boomwhacker Hero
+            </h1>
+            <Badge className="ml-4 bg-green-600">Músicas Tradicionais Brasileiras</Badge>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4" />
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))}
+                className="w-20"
+              />
+            </div>
+          </div>
+        </header>
+
+        <div className="pt-20 px-4 max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-4">🇧🇷 GUITAR HERO BRASILEIRO</h1>
+            <p className="text-xl text-purple-200">
+              Toque as clássicas músicas tradicionais do Brasil!
+            </p>
+            <div className="mt-4 p-3 bg-green-900 bg-opacity-50 rounded-lg">
+              <p className="text-sm text-green-200">
+                ✅ <strong>Músicas Tradicionais Autênticas</strong> - Patrimônio cultural brasileiro
+              </p>
+            </div>
+          </div>
+
+          {/* Seletor de dificuldade */}
+          <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Music className="w-5 h-5" />
-                Controles
+                <Star className="w-5 h-5" />
+                Escolha a Dificuldade
               </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Modo de Jogo:</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {[
-                    { id: 'free', label: 'Livre', desc: 'Toque livremente' },
-                    { id: 'sequence', label: 'Sequência', desc: 'Repita a sequência' },
-                    { id: 'challenge', label: 'Desafio', desc: 'Modo avançado' }
-                  ].map((mode) => (
-                    <Button
-                      key={mode.id}
-                      variant={gameMode === mode.id ? "default" : "outline"}
-                      onClick={() => setGameMode(mode.id as any)}
-                      className="justify-start h-auto p-3"
-                    >
-                      <div className="text-left">
-                        <div className="font-medium">{mode.label}</div>
-                        <div className="text-xs opacity-70">{mode.desc}</div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button onClick={startNewGame} className="flex-1">
-                  <Play className="w-4 h-4 mr-2" />
-                  {isPlaying ? 'Reiniciar' : 'Iniciar'}
-                </Button>
-                
-                {gameMode === 'sequence' && currentSequence.length > 0 && (
-                  <Button onClick={playSequence} variant="outline">
-                    <Volume2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Estatísticas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span>Notas Tocadas:</span>
-                <Badge>{gameStats.notesPlayed}</Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Sequências Corretas:</span>
-                <Badge>{gameStats.correctSequence}</Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Pontuação:</span>
-                <Badge variant="secondary">{gameStats.score}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sequence Progress */}
-          {gameMode === 'sequence' && currentSequence.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5" />
-                  Sequência Atual
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Progresso:</span>
-                    <span>{userSequence.length}/{currentSequence.length}</span>
-                  </div>
-                  <Progress value={(userSequence.length / currentSequence.length) * 100} />
-                  
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {currentSequence.map((noteIndex, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 rounded"
-                        style={{ backgroundColor: BOOMWHACKER_NOTES[noteIndex]?.color }}
-                        title={BOOMWHACKER_NOTES[noteIndex]?.name}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Game Canvas */}
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Boomwhackers Interativos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative">
-                <canvas
-                  ref={canvasRef}
-                  onClick={handleCanvasClick}
-                  className="w-full max-w-4xl mx-auto border rounded-lg cursor-pointer"
-                  style={{ backgroundColor: '#f8f9fa' }}
-                />
+              <div className="flex gap-2 justify-center">
+                {['easy', 'medium', 'hard'].map((diff) => (
+                  <Button
+                    key={diff}
+                    variant={selectedDifficulty === diff ? 'default' : 'outline'}
+                    onClick={() => setSelectedDifficulty(diff as any)}
+                    className={`px-6 py-3 ${
+                      diff === 'easy' ? 'text-green-600 border-green-600' :
+                      diff === 'medium' ? 'text-yellow-600 border-yellow-600' :
+                      'text-red-600 border-red-600'
+                    }`}
+                  >
+                    {diff === 'easy' ? '🟢 Fácil' : 
+                     diff === 'medium' ? '🟡 Médio' : '🔴 Difícil'}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lista de músicas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Music className="w-5 h-5" />
+                  Músicas Tradicionais - {selectedDifficulty === 'easy' ? 'Fácil' : selectedDifficulty === 'medium' ? 'Médio' : 'Difícil'}
+                </span>
+                <Badge variant="secondary">{songsToShow.length} músicas</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {songsToShow.map((song) => (
+                  <Card 
+                    key={song.id} 
+                    className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 transition-all hover:scale-105"
+                    onClick={() => handleStartGame(song)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-lg">{song.title}</h3>
+                        <Badge className={`${
+                          song.difficulty === 'easy' ? 'bg-green-600' : 
+                          song.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
+                        }`}>
+                          {song.difficulty === 'easy' ? 'Fácil' : 
+                           song.difficulty === 'medium' ? 'Médio' : 'Difícil'}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-gray-600 dark:text-gray-300 mb-2">{song.artist}</p>
+                      
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>⏱️ {song.duration}s</span>
+                        <span>🎵 {song.bpm} BPM</span>
+                        <span>🎼 {song.pattern.length} notas</span>
+                      </div>
+                      
+                      <Button 
+                        className="w-full mt-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartGame(song);
+                        }}
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Jogar Agora
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {songsToShow.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Music className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhuma música encontrada para esta dificuldade</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Instruções */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Guitar className="w-5 h-5" />
+                Como Jogar
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-bold mb-2">🎮 Controles:</h4>
+                  <ul className="space-y-1 text-sm">
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">A</kbd> = Nota C (Dó)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">S</kbd> = Nota D (Ré)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">D</kbd> = Nota E (Mi)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">F</kbd> = Nota F (Fá)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">G</kbd> = Nota G (Sol)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">H</kbd> = Nota A (Lá)</li>
+                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">Espaço</kbd> = Pausar/Continuar</li>
+                  </ul>
+                </div>
                 
-                <div className="mt-4 text-center text-sm text-gray-600">
-                  Clique nos tubos coloridos para tocar as notas!
+                <div>
+                  <h4 className="font-bold mb-2">🎯 Sistema de Pontuação:</h4>
+                  <ul className="space-y-1 text-sm">
+                    <li><span className="text-purple-400">🔥 Perfeito:</span> 300 pontos</li>
+                    <li><span className="text-blue-400">✨ Bom:</span> 200 pontos</li>
+                    <li><span className="text-green-400">👍 OK:</span> 100 pontos</li>
+                    <li><span className="text-yellow-400">🔥 Combo:</span> Multiplicador a cada 10 acertos</li>
+                  </ul>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  // Renderizar tela de fim de jogo
+  if (gameState === 'ended') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white flex items-center justify-center">
+        <Card className="w-96 bg-black bg-opacity-80 border-2 border-yellow-500">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl">
+              🏆 Parabéns!
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <div className="text-4xl font-bold text-yellow-400">
+              {gameStats.score.toLocaleString()}
+            </div>
+            <p className="text-gray-300">Pontuação Final</p>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-gray-800 p-3 rounded">
+                <div className="font-bold text-blue-400">{gameStats.hits}</div>
+                <div>Acertos</div>
+              </div>
+              <div className="bg-gray-800 p-3 rounded">
+                <div className="font-bold text-red-400">{gameStats.misses}</div>
+                <div>Erros</div>
+              </div>
+              <div className="bg-gray-800 p-3 rounded">
+                <div className="font-bold text-purple-400">{gameStats.maxCombo}x</div>
+                <div>Combo Máximo</div>
+              </div>
+              <div className="bg-gray-800 p-3 rounded">
+                <div className="font-bold text-green-400">{gameStats.accuracy.toFixed(1)}%</div>
+                <div>Precisão</div>
+              </div>
+            </div>
+            
+            {currentSong && (
+              <div className="bg-blue-900 bg-opacity-50 p-3 rounded">
+                <p className="font-bold">{currentSong.title}</p>
+                <p className="text-sm text-gray-300">{currentSong.artist}</p>
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <Button onClick={backToMenu} className="flex-1">
+                Menu Principal
+              </Button>
+              <Button 
+                onClick={() => currentSong && handleStartGame(currentSong)} 
+                variant="outline" 
+                className="flex-1"
+              >
+                Jogar Novamente
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Renderizar jogo em execução
+  return (
+    <GuitarHeroUI
+      gameState={gameState}
+      currentSong={currentSong}
+      gameStats={gameStats}
+      fallingNotes={fallingNotes}
+      currentTime={currentTime}
+      TRACK_HEIGHT={TRACK_HEIGHT}
+      NOTE_HEIGHT={NOTE_HEIGHT}
+      HIT_ZONE_Y={HIT_ZONE_Y}
+      onTrackClick={handleTrackClick}
+      onTogglePause={togglePause}
+      onStop={stopGame}
+      onBackToMenu={backToMenu}
+    />
   );
 };
 

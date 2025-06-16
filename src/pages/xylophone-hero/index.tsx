@@ -12,25 +12,11 @@ const XylophoneHero = () => {
     console.log(`🎵 Xilofone tocado: ${frequency}Hz (${color})`);
   };
 
-  // Música padrão para Xylophone Hero
-  const defaultSong = {
-    id: "happy-birthday-xylophone",
-    title: "Parabéns para Você",
-    artist: "Tradicional",
-    difficulty: "Fácil" as const,
-    instrument: "xylophone" as const,
-    color: "bg-blue-100 border-blue-200",
-    category: "infantil" as const,
-    therapeuticBenefits: "Conecta música com eventos sociais importantes",
-    hasSequence: true
-  };
-
   return (
     <div className="h-screen flex flex-col">
       <GuitarHeroGame 
         instrumentType="xylophone" 
         onNotePlay={handleNotePlay}
-        selectedSong={defaultSong}
       />
     </div>
   );
