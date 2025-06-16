@@ -1,509 +1,272 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
-import { getMusicalSequence, generateGameNotes } from "@/data/musicalSequences";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { playNoteSound } from '@/utils/audioUtils';
+import { getMusicalSequence } from '@/data/musicalSequences';
 
-interface Note {
+type InstrumentType = "bell" | "xylophone" | "keyboard";
+
+interface Song {
   id: string;
-  lane: number;
+  title: string;
+  artist: string;
+  difficulty: "Fácil" | "Médio" | "Difícil";
+  instrument: InstrumentType;
   color: string;
-  frequency: number;
-  startTime: number;
-  duration: number;
-  y: number;
+  category: "infantil" | "clássico" | "brasileiro" | "terapêutico" | "desenhos";
+  therapeuticBenefits: string;
+  hasSequence?: boolean;
 }
 
 interface GuitarHeroGameProps {
-  instrumentType: "bell" | "xylophone" | "keyboard";
+  instrumentType: InstrumentType;
   onNotePlay: (frequency: number, color: string) => void;
-  selectedSong?: {
-    id: string;
-    title: string;
-    hasSequence?: boolean;
-  };
+  selectedSong: Song;
+  gameSpeed?: number;
 }
 
-const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ instrumentType, onNotePlay, selectedSong }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [score, setScore] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [maxCombo, setMaxCombo] = useState(0);
+interface Note {
+  id: string;
+  key: number;
+  color: string;
+  frequency: number;
+  position: number;
+  timestamp: number;
+}
+
+const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({ 
+  instrumentType, 
+  onNotePlay, 
+  selectedSong,
+  gameSpeed = 1.0
+}) => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [speed, setSpeed] = useState(2);
-  const [hitZoneHeight] = useState(80);
+  const [score, setScore] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [sequence, setSequence] = useState<{ name: string; bpm: number; timeSignature: string; notes: { key: number; time: number; }[]; } | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState(0);
+  const [accuracy, setAccuracy] = useState(100);
+  const [totalNotes, setTotalNotes] = useState(0);
+  const [hitNotes, setHitNotes] = useState(0);
+
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+  const comboRef = useRef(0);
+  const maxComboRef = useRef(0);
+
+  const notePositions = {
+    1: 10,
+    2: 23,
+    3: 36,
+    4: 49,
+    5: 62,
+    6: 75,
+    7: 88,
+  };
+
+  useEffect(() => {
+    const seq = getMusicalSequence(selectedSong.id);
+    setSequence(seq);
+    if (seq) {
+      setTotalNotes(seq.notes.length);
+    }
+  }, [selectedSong.id]);
+
+  const gameSpeed = gameSpeed || 1.0;
+
+  const calculateNoteFrequency = useCallback((key: number) => {
+    const baseFrequency = instrumentType === "bell" ? 261.63 : // C4 for bell
+                            instrumentType === "xylophone" ? 392.00 : // G4 for xylophone
+                            220.00; // A3 for keyboard
   
-  const gameRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
-  const gameStartTimeRef = useRef<number>(0);
-  const lastUpdateTimeRef = useRef<number>(0);
-  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
-
-  // Configuração das lanes (faixas) baseada no instrumento
-  const lanes = instrumentType === "bell" ? [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
-    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
-    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
-    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
-  ] : instrumentType === "xylophone" ? [
-    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
-    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
-    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
-    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
-    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
-    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
-    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
-  ] : [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
-    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
-    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
-    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
-  ];
-
-  // Função para iniciar música de fundo
-  const startBackgroundMusic = useCallback(() => {
-    try {
-      // Criar um áudio sintético animado para o jogo
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Criar osciladores para uma melodia de fundo simples
-      const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
-        
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.start(audioContext.currentTime + startTime);
-        oscillator.stop(audioContext.currentTime + startTime + duration);
-      };
-
-      // Melodia simples e animada
-      const melody = [
-        { freq: 523.25, time: 0, duration: 0.5 },    // C5
-        { freq: 587.33, time: 0.5, duration: 0.5 },  // D5
-        { freq: 659.25, time: 1, duration: 0.5 },    // E5
-        { freq: 523.25, time: 1.5, duration: 0.5 },  // C5
-        { freq: 587.33, time: 2, duration: 0.5 },    // D5
-        { freq: 659.25, time: 2.5, duration: 0.5 },  // E5
-        { freq: 783.99, time: 3, duration: 1 },      // G5
-        { freq: 659.25, time: 4, duration: 0.5 },    // E5
-        { freq: 587.33, time: 4.5, duration: 0.5 },  // D5
-        { freq: 523.25, time: 5, duration: 1 },      // C5
-      ];
-
-      // Tocar a melodia
-      melody.forEach(note => {
-        playBackgroundTone(note.freq, note.time, note.duration);
-      });
-
-      // Repetir a melodia a cada 6 segundos
-      const interval = setInterval(() => {
-        if (isPlaying) {
-          melody.forEach(note => {
-            playBackgroundTone(note.freq, note.time, note.duration);
-          });
-        } else {
-          clearInterval(interval);
-        }
-      }, 6000);
-
-      console.log(`🎵 Background music started for ${instrumentType}`);
-      
-    } catch (error) {
-      console.error("Error starting background music:", error);
-    }
-  }, [instrumentType, isPlaying]);
-
-  // Parar música de fundo
-  const stopBackgroundMusic = useCallback(() => {
-    if (backgroundMusicRef.current) {
-      backgroundMusicRef.current.pause();
-      backgroundMusicRef.current.currentTime = 0;
-      backgroundMusicRef.current = null;
-    }
-    console.log("🎵 Background music stopped");
-  }, []);
-
-  // Gerar padrão de notas
-  const generateNotes = useCallback(() => {
-    if (selectedSong?.hasSequence) {
-      const sequence = getMusicalSequence(selectedSong.id);
-      if (sequence) {
-        console.log(`🎼 Carregando sequência musical: ${sequence.name}`);
-        console.log(`📊 BPM: ${sequence.bpm}, Notas: ${sequence.notes.length}`);
-        
-        const gameNotes = generateGameNotes(sequence, instrumentType);
-        setNotes(gameNotes);
-        console.log(`Generated ${gameNotes.length} authentic notes for ${selectedSong.title}`);
-        return;
-      }
-    }
-
-    // Fallback para padrão aleatório se não houver sequência
-    console.log(`⚠️ Usando padrão aleatório para ${selectedSong?.title || 'música desconhecida'}`);
-    const newNotes: Note[] = [];
-    const patterns = [
-      [0, 2, 4], // Dó, Mi, Sol
-      [1, 3, 5], // Ré, Fá, Lá
-      [0, 1, 2], // Sequência simples
-      [4, 5, 6], // Notas agudas
-      [2, 4, 6], // Saltos
-      [0, 3, 6], // Acordes
-    ];
-
-    let noteId = 0;
-    for (let i = 0; i < 20; i++) {
-      const pattern = patterns[i % patterns.length];
-      const baseTime = i * 4000; // 4 segundos entre padrões
-      
-      pattern.forEach((laneIndex, noteIndex) => {
-        if (laneIndex < lanes.length) {
-          newNotes.push({
-            id: `note-${noteId++}`,
-            lane: laneIndex,
-            color: lanes[laneIndex].color,
-            frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + noteIndex * 1000, // 1 segundo entre notas
-            duration: 600,
-            y: -100 // Começar acima da tela
-          });
-        }
-      });
-    }
-
-    setNotes(newNotes);
-  }, [instrumentType, lanes, selectedSong]);
-
-  // Atualizar posição das notas
-  const updateNotes = useCallback(() => {
-    if (!isPlaying) return;
-
-    const now = Date.now();
-    const currentGameTime = now - gameStartTimeRef.current;
-    
-    setNotes(prevNotes => 
-      prevNotes
-        .map(note => {
-          // Calcular posição baseada no tempo
-          const noteAge = currentGameTime - note.startTime;
-          const newY = noteAge * speed * 0.1; // Velocidade controlada
-          return {
-            ...note,
-            y: newY
-          };
-        })
-        .filter(note => note.y < 600) // Remove notas que saíram da tela
-    );
-
-    // Remover notas que passaram da zona de acerto e perderam
-    setNotes(prevNotes => {
-      const missedNotes = prevNotes.filter(note => note.y > 500);
-      if (missedNotes.length > 0 && combo > 0) {
-        setCombo(0);
-        toast("Notas perdidas! Combo resetado", { duration: 1000 });
-      }
-      return prevNotes.filter(note => note.y <= 500);
-    });
-
-    lastUpdateTimeRef.current = now;
-    animationRef.current = requestAnimationFrame(updateNotes);
-  }, [isPlaying, speed, combo]);
-
-  // Detectar teclas pressionadas
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (!isPlaying) return;
-
-    const keyPressed = event.key;
-    const lane = lanes.find(l => l.key === keyPressed);
-    if (!lane) return;
-
-    event.preventDefault();
-
-    const laneIndex = lanes.indexOf(lane);
-    const hitZoneTop = 350; // Posição da zona de acerto
-    const hitZoneBottom = hitZoneTop + hitZoneHeight;
-
-    console.log(`Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
-
-    // Verificar se há uma nota na zona de acerto para esta lane
-    const hitNote = notes.find(note => 
-      note.lane === laneIndex && 
-      note.y >= hitZoneTop - 50 && 
-      note.y <= hitZoneBottom + 50
-    );
-
-    if (hitNote) {
-      // Acertou!
-      const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
-      let points = 100;
-      let feedback = "Good!";
-
-      if (precision < 15) {
-        points = 300;
-        feedback = "Perfect!";
-      } else if (precision < 30) {
-        points = 200;
-        feedback = "Great!";
-      }
-
-      const finalPoints = points * Math.max(1, combo + 1);
-      setScore(prev => prev + finalPoints);
-      setCombo(prev => prev + 1);
-      setMaxCombo(prev => Math.max(prev, combo + 1));
-
-      // Tocar o som
-      onNotePlay(lane.frequency, lane.color);
-
-      // Feedback visual
-      toast(`${feedback} +${finalPoints} pontos`, {
-        duration: 1000,
-      });
-
-      // Remover a nota acertada
-      setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
-      
-      console.log(`Hit note! Score: ${finalPoints}, Combo: ${combo + 1}`);
-    } else {
-      // Errou ou tocou sem nota
-      if (combo > 0) {
-        setCombo(0);
-        toast("Miss! Combo perdido", {
-          duration: 1000,
-        });
-      }
-      
-      // Ainda toca o som para feedback
-      onNotePlay(lane.frequency, lane.color);
-      console.log(`Missed note in lane ${laneIndex}`);
-    }
-  }, [lanes, isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
-
-  // Gerenciar eventos de teclado
-  useEffect(() => {
-    if (isPlaying) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
-    }
-  }, [isPlaying, handleKeyPress]);
-
-  // Iniciar/pausar o jogo
-  const togglePlay = () => {
-    if (!isPlaying) {
-      generateNotes();
-      gameStartTimeRef.current = Date.now();
-      lastUpdateTimeRef.current = Date.now();
-      startBackgroundMusic(); // Iniciar música de fundo
-      
-      if (selectedSong?.hasSequence) {
-        console.log(`🎵 Iniciando ${selectedSong.title} com sequência musical autêntica`);
-        toast(`🎼 Tocando: ${selectedSong.title}`, { duration: 2000 });
-      } else {
-        console.log(`🎵 Iniciando ${instrumentType} game com padrão aleatório`);
-      }
-      
-      setIsPlaying(true);
-    } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      stopBackgroundMusic(); // Parar música de fundo
-      setIsPlaying(false);
-      console.log(`Pausing ${instrumentType} game`);
-    }
-  };
-
-  // Iniciar animação quando o jogo começar
-  useEffect(() => {
-    if (isPlaying) {
-      updateNotes();
-    }
-  }, [isPlaying, updateNotes]);
-
-  // Resetar o jogo
-  const resetGame = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    stopBackgroundMusic(); // Parar música de fundo
-    setIsPlaying(false);
-    setScore(0);
-    setCombo(0);
-    setMaxCombo(0);
-    setNotes([]);
-    gameStartTimeRef.current = 0;
-    lastUpdateTimeRef.current = 0;
-    console.log(`Game reset for ${instrumentType}`);
-  };
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      stopBackgroundMusic();
+    const noteFrequencies = {
+      1: baseFrequency / 2,
+      2: baseFrequency / 1.75,
+      3: baseFrequency / 1.5,
+      4: baseFrequency,
+      5: baseFrequency * 1.25,
+      6: baseFrequency * 1.5,
+      7: baseFrequency * 2,
     };
-  }, [stopBackgroundMusic]);
+  
+    return noteFrequencies[key] || baseFrequency;
+  }, [instrumentType]);
 
-  const getInstrumentTitle = () => {
-    if (selectedSong?.hasSequence) {
-      return `🎼 ${selectedSong.title}`;
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (!isPlaying) return;
+
+    const keyMap = {
+      '1': 1,
+      '2': 2,
+      '3': 3,
+      '4': 4,
+      '5': 5,
+      '6': 6,
+      '7': 7,
+    };
+
+    const keyPressed = keyMap[event.key as keyof typeof keyMap];
+
+    if (keyPressed) {
+      const now = Date.now() - (startTime || 0);
+      const tolerance = 150 / gameSpeed;
+
+      const noteHit = notes.find(
+        (note) =>
+          note.key === keyPressed &&
+          Math.abs(note.timestamp - now) <= tolerance
+      );
+
+      if (noteHit) {
+        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteHit.id));
+        setScore((prevScore) => prevScore + 100);
+        onNotePlay(noteHit.frequency, noteHit.color);
+
+        comboRef.current += 1;
+        maxComboRef.current = Math.max(maxComboRef.current, comboRef.current);
+        setHitNotes(prevHitNotes => prevHitNotes + 1);
+      } else {
+        comboRef.current = 0;
+      }
+      setAccuracy(Math.max(0, (hitNotes / totalNotes) * 100));
     }
-    
-    switch (instrumentType) {
-      case "bell": return "🔔 Sino-Hero";
-      case "xylophone": return "🎵 Xilofone-Hero";
-      case "keyboard": return "🎹 Teclado-Hero";
-      default: return "TEA-Hero";
-    }
+  }, [isPlaying, notes, startTime, onNotePlay, totalNotes, hitNotes, gameSpeed]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
+  const startGame = () => {
+    if (!sequence) return;
+
+    setNotes([]);
+    setScore(0);
+    setIsPlaying(true);
+    setProgress(0);
+    setStartTime(Date.now());
+    setCurrentNoteIndex(0);
+    setHitNotes(0);
+    comboRef.current = 0;
+    maxComboRef.current = 0;
+
+    const initialNotes = sequence.notes.slice(0, 5).map((note, index) => ({
+      id: `note-${index}`,
+      key: note.key,
+      color: 'bg-blue-500',
+      frequency: calculateNoteFrequency(note.key),
+      position: 0,
+      timestamp: note.time
+    }));
+    setNotes(initialNotes);
   };
+
+  const stopGame = () => {
+    setIsPlaying(false);
+    setAccuracy(totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 100);
+  };
+
+  useEffect(() => {
+    if (isPlaying && sequence) {
+      const now = Date.now() - (startTime || 0);
+      const currentNote = sequence.notes[currentNoteIndex];
+
+      if (currentNote && now >= currentNote.time - (200 / gameSpeed)) {
+        const newNote = {
+          id: `note-${currentNoteIndex}`,
+          key: currentNote.key,
+          color: 'bg-blue-500',
+          frequency: calculateNoteFrequency(currentNote.key),
+          position: 0,
+          timestamp: currentNote.time,
+        };
+
+        setNotes(prevNotes => [...prevNotes, newNote]);
+        setCurrentNoteIndex(prevIndex => prevIndex + 1);
+      }
+
+      const gameDuration = sequence.notes[sequence.notes.length - 1]?.time || 0;
+      const currentProgress = startTime ? Math.min(((now) / gameDuration) * 100, 100) : 0;
+      setProgress(currentProgress);
+
+      if (currentProgress >= 100) {
+        stopGame();
+      }
+    }
+  }, [isPlaying, startTime, sequence, currentNoteIndex, calculateNoteFrequency, gameSpeed]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const interval = setInterval(() => {
+        setNotes(prevNotes => 
+          prevNotes.map(note => ({
+            ...note,
+            position: note.position + (2 * gameSpeed) // Apply speed multiplier
+          })).filter(note => note.position < 100)
+        );
+      }, 50 / gameSpeed); // Adjust interval timing based on speed
+
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying, gameSpeed]);
 
   return (
-    <div className="flex flex-col h-full bg-black">
-      {/* Header com controles e pontuação */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
-        <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col h-full">
+      <Card className="mb-4">
+        <CardContent className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">
-              {getInstrumentTitle()}
-            </h1>
-            {selectedSong?.hasSequence && (
-              <p className="text-sm opacity-90">
-                🎼 Sequência musical autêntica
-              </p>
-            )}
+            <h2 className="text-xl font-semibold">{selectedSong.title}</h2>
+            <p className="text-gray-500">{selectedSong.artist}</p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={togglePlay} variant="secondary" size="sm">
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isPlaying ? "Pausar" : "Jogar"}
-            </Button>
-            <Button onClick={resetGame} variant="secondary" size="sm">
-              <RotateCcw className="w-4 h-4" />
-              Reset
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-sm opacity-80">Pontuação</div>
-            <div className="text-xl font-bold">{score.toLocaleString()}</div>
-          </div>
-          <div>
-            <div className="text-sm opacity-80">Combo</div>
-            <div className="text-xl font-bold text-yellow-300">{combo}x</div>
-          </div>
-          <div>
-            <div className="text-sm opacity-80">Max Combo</div>
-            <div className="text-xl font-bold text-orange-300">{maxCombo}x</div>
-          </div>
-          <div>
-            <div className="text-sm opacity-80">Velocidade</div>
-            <div className="text-xl font-bold">{speed}x</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Instruções */}
-      <div className="bg-blue-600 p-3 text-center text-white">
-        <p className="text-sm">
-          Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
-          {selectedSong?.hasSequence && (
-            <span className="block mt-1 text-yellow-200">
-              🎼 Esta música toca a melodia autêntica de "{selectedSong.title}"
-            </span>
-          )}
-        </p>
-      </div>
-
-      {/* Game Area */}
-      <div 
-        ref={gameRef}
-        className="flex-1 relative bg-gradient-to-b from-gray-900 to-black overflow-hidden"
-        style={{ height: "500px" }}
-      >
-        {/* Lanes (faixas) */}
-        {lanes.map((lane, index) => (
-          <div
-            key={index}
-            className="absolute border-r border-gray-600"
-            style={{
-              left: `${(index / lanes.length) * 100}%`,
-              width: `${100 / lanes.length}%`,
-              height: "100%",
-              backgroundColor: `${lane.color}15`
-            }}
-          >
-            {/* Indicador da nota na parte inferior */}
-            <div
-              className="absolute bottom-0 w-full flex items-center justify-center text-white font-bold border-2 border-white/50 shadow-lg"
-              style={{
-                height: "70px",
-                backgroundColor: lane.color,
-              }}
-            >
-              <div className="text-center">
-                <div className="text-xs font-bold">{lane.key}</div>
-                <div className="text-2xl">{lane.symbol}</div>
-                <div className="text-xs font-bold">{lane.name}</div>
-              </div>
+          <div className="flex items-center space-x-4">
+            <div>
+              <div className="text-sm font-medium">Score</div>
+              <div className="text-lg">{score}</div>
+            </div>
+            <div>
+              <div className="text-sm font-medium">Accuracy</div>
+              <div className="text-lg">{accuracy}%</div>
+            </div>
+            <div>
+              <div className="text-sm font-medium">Max Combo</div>
+              <div className="text-lg">{maxComboRef.current}</div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex-grow relative overflow-hidden" ref={gameContainerRef}>
+        {Object.entries(notePositions).map(([key, position]) => (
+          <div
+            key={key}
+            className="absolute bottom-0 h-16 w-3 bg-gray-300 rounded-md transition-colors duration-200"
+            style={{ left: `calc(${position}% - 0.375rem)` }}
+          />
         ))}
-
-        {/* Zona de acerto */}
-        <div
-          className="absolute w-full border-4 border-yellow-400 bg-yellow-400/30 shadow-lg"
-          style={{
-            top: "350px",
-            height: `${hitZoneHeight}px`,
-          }}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-yellow-400 font-bold text-lg animate-pulse">ZONA DE ACERTO</div>
-          </div>
-        </div>
-
-        {/* Notas em queda */}
         {notes.map((note) => (
           <div
             key={note.id}
-            className="absolute rounded-lg border-2 border-white shadow-xl flex items-center justify-center text-white font-bold transition-transform"
-            style={{
-              left: `${(note.lane / lanes.length) * 100 + 1}%`,
-              width: `${100 / lanes.length - 2}%`,
-              top: `${note.y}px`,
-              height: "50px",
-              backgroundColor: note.color,
-              boxShadow: `0 0 20px ${note.color}50`,
-            }}
-          >
-            <div className="text-center">
-              <div className="text-lg">{lanes[note.lane].symbol}</div>
-            </div>
-          </div>
+            className={`absolute bottom-16 h-16 w-3 rounded-md ${note.color}`}
+            style={{ left: `calc(${notePositions[note.key]}% - 0.375rem)`, bottom: `${note.position}%` }}
+          />
         ))}
+        <div className="absolute bottom-16 h-16 w-3 bg-yellow-400 rounded-md" style={{ left: 'calc(50% - 0.375rem)' }} />
+      </div>
 
-        {/* Linha de referência */}
-        <div
-          className="absolute w-full border-t-4 border-yellow-400 opacity-50"
-          style={{ top: "380px" }}
-        />
+      <div className="mt-4">
+        <Progress value={progress} />
+      </div>
+
+      <div className="mt-4 flex justify-center">
+        {!isPlaying ? (
+          <Button onClick={startGame}>Start Game</Button>
+        ) : (
+          <Button onClick={stopGame} variant="destructive">Stop Game</Button>
+        )}
       </div>
     </div>
   );

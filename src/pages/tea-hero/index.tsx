@@ -1,6 +1,8 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import { Play, Music, Gauge } from "lucide-react";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
