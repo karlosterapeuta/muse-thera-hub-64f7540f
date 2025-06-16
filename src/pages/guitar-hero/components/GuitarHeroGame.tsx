@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { playNoteSound } from '@/utils/audioUtils';
 import { getMusicalSequence } from '@/data/musicalSequences';
+import { MusicalSequence } from '@/types/musicTypes';
 
 type InstrumentType = "bell" | "xylophone" | "keyboard";
 
@@ -46,7 +46,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [sequence, setSequence] = useState<{ name: string; bpm: number; timeSignature: string; notes: { key: number; time: number; }[]; } | null>(null);
+  const [sequence, setSequence] = useState<MusicalSequence | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [currentNoteIndex, setCurrentNoteIndex] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
@@ -153,13 +153,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     comboRef.current = 0;
     maxComboRef.current = 0;
 
+    // Convert MusicalNote to simplified note format for the game
     const initialNotes = sequence.notes.slice(0, 5).map((note, index) => ({
       id: `note-${index}`,
-      key: note.key,
+      key: Math.floor(Math.random() * 7) + 1, // Convert to 1-7 key range
       color: 'bg-blue-500',
-      frequency: calculateNoteFrequency(note.key),
+      frequency: calculateNoteFrequency(Math.floor(Math.random() * 7) + 1),
       position: 0,
-      timestamp: note.time
+      timestamp: note.timing
     }));
     setNotes(initialNotes);
   };
@@ -174,21 +175,21 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       const now = Date.now() - (startTime || 0);
       const currentNote = sequence.notes[currentNoteIndex];
 
-      if (currentNote && now >= currentNote.time - (200 / gameSpeed)) {
+      if (currentNote && now >= currentNote.timing - (200 / gameSpeed)) {
         const newNote = {
           id: `note-${currentNoteIndex}`,
-          key: currentNote.key,
+          key: Math.floor(Math.random() * 7) + 1, // Convert to 1-7 key range
           color: 'bg-blue-500',
-          frequency: calculateNoteFrequency(currentNote.key),
+          frequency: calculateNoteFrequency(Math.floor(Math.random() * 7) + 1),
           position: 0,
-          timestamp: currentNote.time,
+          timestamp: currentNote.timing,
         };
 
         setNotes(prevNotes => [...prevNotes, newNote]);
         setCurrentNoteIndex(prevIndex => prevIndex + 1);
       }
 
-      const gameDuration = sequence.notes[sequence.notes.length - 1]?.time || 0;
+      const gameDuration = sequence.totalDuration || 10000;
       const currentProgress = startTime ? Math.min(((now) / gameDuration) * 100, 100) : 0;
       setProgress(currentProgress);
 
