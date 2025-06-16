@@ -1,34 +1,32 @@
-
 import { MusicalSequence, MusicalNote, InstrumentConfig } from "@/types/musicTypes";
+import { TEA_MASTER_FREQUENCIES, getFrequencyByNote } from "@/constants/teaFrequencies";
 
-// Configurações CORRIGIDAS e SINCRONIZADAS para cada instrumento
+// CONFIGURAÇÕES SINCRONIZADAS COM A MASTER TABLE
 export const instrumentConfigs: Record<string, InstrumentConfig> = {
   bell: {
-    baseFrequencies: {
-      C: 261.63, D: 293.66, E: 329.63, F: 349.23, G: 392.00, A: 440.00, B: 493.88
-    },
+    baseFrequencies: Object.fromEntries(
+      TEA_MASTER_FREQUENCIES.bell.map(config => [config.note, config.frequency])
+    ),
     octaveMultiplier: 1
   },
   xylophone: {
-    baseFrequencies: {
-      C: 523.25, D: 587.33, E: 659.25, F: 698.46, G: 783.99, A: 880.00, B: 987.77
-    },
+    baseFrequencies: Object.fromEntries(
+      TEA_MASTER_FREQUENCIES.xylophone.map(config => [config.note, config.frequency])
+    ),
     octaveMultiplier: 2
   },
   keyboard: {
-    baseFrequencies: {
-      C: 261.63, D: 293.66, E: 329.63, F: 349.23, G: 392.00, A: 440.00, B: 493.88
-    },
+    baseFrequencies: Object.fromEntries(
+      TEA_MASTER_FREQUENCIES.keyboard.map(config => [config.note, config.frequency])
+    ),
     octaveMultiplier: 1
   }
 };
 
-// Função para criar nota com frequência SINCRONIZADA e timing autêntico
+// Função SINCRONIZADA para criar nota com frequência EXATA da master table
 const createNote = (note: string, octave: number, duration: number, timing: number, instrument: string): MusicalNote => {
-  const config = instrumentConfigs[instrument];
-  const baseFreq = config.baseFrequencies[note];
-  const frequency = baseFreq;
-  
+  const frequency = getFrequencyByNote(instrument as "bell" | "xylophone" | "keyboard", note);
+  console.log(`🎼 Creating note ${note} for ${instrument}: ${frequency}Hz`);
   return { note, octave, frequency, duration, timing };
 };
 
@@ -370,7 +368,7 @@ export const getAuthenticMusicalSequence = (songId: string): MusicalSequence | n
   return authenticMusicalSequences[songId] || null;
 };
 
-// Função SINCRONIZADA para gerar notas do jogo
+// Função SINCRONIZADA para gerar notas do jogo com SINCRONIZAÇÃO GARANTIDA
 export const generateAuthenticGameNotes = (sequence: MusicalSequence, instrumentType: string) => {
   const lanes = 7; // Sempre 7 lanes: C, D, E, F, G, A, B
   const noteToLane: Record<string, number> = {
@@ -380,23 +378,34 @@ export const generateAuthenticGameNotes = (sequence: MusicalSequence, instrument
   const gameNotes = [];
   let noteId = 0;
 
-  // Usar as notas exatas da sequência musical
+  // Usar as notas exatas da sequência musical COM VALIDAÇÃO
   sequence.notes.forEach((note) => {
     const lane = noteToLane[note.note];
     if (lane !== undefined) {
+      // VALIDAÇÃO: verificar se a frequência da sequência = frequência da lane
+      const expectedFrequency = getFrequencyByNote(instrumentType as "bell" | "xylophone" | "keyboard", note.note);
+      
+      if (Math.abs(note.frequency - expectedFrequency) > 0.1) {
+        console.warn(`⚠️ FREQUENCY MISMATCH: ${note.note} sequence=${note.frequency}Hz, expected=${expectedFrequency}Hz`);
+      }
+      
+      const laneConfig = TEA_MASTER_FREQUENCIES[instrumentType as keyof typeof TEA_MASTER_FREQUENCIES][lane];
+      
       gameNotes.push({
         id: `authentic-note-${noteId++}`,
         lane,
-        color: getColorForNote(note.note),
-        frequency: note.frequency, // Usar frequência EXATA da sequência
+        color: laneConfig.color,
+        frequency: laneConfig.frequency, // USAR SEMPRE FREQUÊNCIA DA MASTER TABLE
         startTime: note.timing,
         duration: note.duration,
         y: -100
       });
+      
+      console.log(`✅ Game note: lane=${lane}, note=${note.note}, freq=${laneConfig.frequency}Hz, color=${laneConfig.color}`);
     }
   });
 
-  console.log(`🎼 Generated ${gameNotes.length} AUTHENTIC notes for ${sequence.name}`);
+  console.log(`🎯 Generated ${gameNotes.length} SYNCHRONIZED notes for ${sequence.name} (${instrumentType})`);
   return gameNotes;
 };
 

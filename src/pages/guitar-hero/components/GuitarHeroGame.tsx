@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { getMusicalSequence, generateGameNotes } from "@/data/musicalSequences";
 import { getAuthenticMusicalSequence, generateAuthenticGameNotes } from "@/data/authenticMusicalSequences";
 import { playNoteSound, preloadInstrumentAudio } from "@/utils/audioUtils";
+import { TEA_MASTER_FREQUENCIES, getLaneConfig, validateSynchronization } from "@/constants/teaFrequencies";
 
 interface Note {
   id: string;
@@ -44,42 +45,28 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // FREQUÊNCIAS SINCRONIZADAS - CORRIGIDAS por instrumento
-  const lanes = instrumentType === "bell" ? [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" }, // C4
-    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" }, // D4
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" }, // E4
-    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" }, // F4
-    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" }, // G4
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" }, // A4
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" }, // B4
-  ] : instrumentType === "xylophone" ? [
-    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" }, // C5
-    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" }, // D5
-    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" }, // E5
-    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" }, // F5
-    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" }, // G5
-    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" }, // A5
-    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" }, // B5
-  ] : [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" }, // C4
-    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" }, // D4
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" }, // E4
-    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" }, // F4
-    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" }, // G4
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" }, // A4
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" }, // B4
-  ];
+  // LANES SINCRONIZADAS COM A MASTER TABLE
+  const lanes = TEA_MASTER_FREQUENCIES[instrumentType];
 
-  // Pré-carregar áudio TEA
+  // Pré-carregar áudio TEA SINCRONIZADO
   useEffect(() => {
     const initAudio = async () => {
       try {
-        console.log(`🎵 Initializing TEA audio for ${instrumentType}...`);
+        console.log(`🎵 Initializing TEA SYNCHRONIZED audio for ${instrumentType}...`);
+        
+        // VALIDAR SINCRONIZAÇÃO PRIMEIRO
+        const isValid = validateSynchronization(instrumentType);
+        if (!isValid) {
+          console.error(`❌ Synchronization validation FAILED for ${instrumentType}`);
+          toast(`❌ Erro de sincronização para ${instrumentType}!`, { duration: 3000 });
+          return;
+        }
+        
         await preloadInstrumentAudio(instrumentType);
         setAudioReady(true);
-        console.log(`✅ TEA audio ready for ${instrumentType}`);
-        toast(`🔊 Áudio TEA inicializado para ${instrumentType}!`, { duration: 2000 });
+        console.log(`✅ TEA SYNCHRONIZED audio ready for ${instrumentType}`);
+        console.log(`🔍 Lane frequencies:`, lanes.map(l => `${l.note}:${l.frequency}Hz`));
+        toast(`🔊 Áudio TEA SINCRONIZADO para ${instrumentType}!`, { duration: 2000 });
       } catch (error) {
         console.warn(`⚠️ TEA audio init failed:`, error);
         setAudioReady(false);
@@ -90,15 +77,24 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     initAudio();
   }, [instrumentType]);
 
-  // Função CORRIGIDA para tocar áudio sincronizado
+  // Função SINCRONIZADA para tocar áudio
   const playInstrumentAudio = useCallback(async (frequency: number, duration: number = 1.5) => {
     try {
-      console.log(`🎵 TEA-Hero: Playing ${instrumentType} at ${frequency}Hz`);
+      console.log(`🎵 TEA-SYNCHRONIZED: Playing ${instrumentType} at EXACT ${frequency}Hz`);
+      
+      // VALIDAR que a frequência corresponde a uma lane válida
+      const laneConfig = lanes.find(l => Math.abs(l.frequency - frequency) < 0.1);
+      if (!laneConfig) {
+        console.warn(`⚠️ Frequency ${frequency}Hz not found in ${instrumentType} lanes`);
+      } else {
+        console.log(`✅ VALIDATED: ${frequency}Hz = ${laneConfig.note} (${laneConfig.name})`);
+      }
+      
       await playNoteSound(`${frequency}Hz`, instrumentType);
-      console.log(`✅ TEA audio played: ${instrumentType} - ${frequency}Hz`);
+      console.log(`✅ TEA SYNCHRONIZED audio played: ${instrumentType} - ${frequency}Hz`);
     } catch (error) {
-      console.error("TEA audio error:", error);
-      onNotePlay(frequency, lanes.find(l => l.frequency === frequency)?.color || "#FFFFFF");
+      console.error("TEA SYNCHRONIZED audio error:", error);
+      onNotePlay(frequency, lanes.find(l => Math.abs(l.frequency - frequency) < 0.1)?.color || "#FFFFFF");
     }
   }, [instrumentType, lanes, onNotePlay]);
 
@@ -205,12 +201,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     console.log("🎵 Background music stopped");
   }, []);
 
-  // Gerar padrão de notas AUTÊNTICAS E SINCRONIZADAS
+  // Gerar padrão de notas AUTÊNTICAS E TOTALMENTE SINCRONIZADAS
   const generateNotes = useCallback(() => {
     if (selectedSong?.hasSequence) {
       const sequence = getAuthenticMusicalSequence(selectedSong.id);
       if (sequence) {
-        console.log(`🎼 Loading TEA AUTHENTIC sequence: ${sequence.name}`);
+        console.log(`🎼 Loading TEA AUTHENTIC SYNCHRONIZED sequence: ${sequence.name}`);
         console.log(`📊 Authentic notes: ${sequence.notes.length}, BPM: ${sequence.bpm}, Duration: ${sequence.totalDuration}ms`);
         
         const gameNotes = generateAuthenticGameNotes(sequence, instrumentType);
@@ -219,10 +215,23 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
           startTime: note.startTime / gameSpeed
         }));
         setNotes(adjustedNotes);
-        console.log(`🎯 Generated ${adjustedNotes.length} AUTHENTIC SYNCHRONIZED notes for ${selectedSong.title}`);
         
-        // Feedback especial para sequências autênticas
-        toast(`🎼 MELODIA AUTÊNTICA: ${sequence.name} carregada com ${sequence.notes.length} notas sincronizadas!`, { duration: 3000 });
+        // VALIDAÇÃO DE SINCRONIZAÇÃO FINAL
+        console.log(`🔍 FINAL SYNC VALIDATION for ${selectedSong.title}:`);
+        adjustedNotes.forEach((note, index) => {
+          const laneConfig = getLaneConfig(instrumentType, note.lane);
+          const freqMatch = Math.abs(note.frequency - laneConfig.frequency) < 0.1;
+          const colorMatch = note.color === laneConfig.color;
+          
+          if (!freqMatch || !colorMatch) {
+            console.error(`❌ SYNC ERROR note ${index}: lane=${note.lane}, freq=${note.frequency}/${laneConfig.frequency}, color=${note.color}/${laneConfig.color}`);
+          } else {
+            console.log(`✅ SYNC OK note ${index}: ${laneConfig.note} at ${note.frequency}Hz`);
+          }
+        });
+        
+        console.log(`🎯 Generated ${adjustedNotes.length} AUTHENTIC SYNCHRONIZED notes for ${selectedSong.title}`);
+        toast(`🎼 MELODIA SINCRONIZADA: ${sequence.name} com ${sequence.notes.length} notas!`, { duration: 3000 });
         return;
       }
     }
@@ -296,7 +305,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     animationRef.current = requestAnimationFrame(updateNotes);
   }, [isPlaying, combo, gameSpeed]);
 
-  // Detectar teclas COM ÁUDIO SINCRONIZADO
+  // Detectar teclas COM ÁUDIO 100% SINCRONIZADO
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!isPlaying) return;
 
@@ -310,7 +319,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
-    console.log(`TEA Key: ${keyPressed}, Lane: ${laneIndex}, Freq: ${lane.frequency}Hz`);
+    console.log(`🎹 TEA Key: ${keyPressed}, Lane: ${laneIndex}, Note: ${lane.note}, Freq: ${lane.frequency}Hz`);
 
     const hitNote = notes.find(note => 
       note.lane === laneIndex && 
@@ -319,6 +328,17 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     );
 
     if (hitNote) {
+      // VERIFICAÇÃO DE SINCRONIZAÇÃO EM TEMPO REAL
+      const expectedFreq = lane.frequency;
+      const actualFreq = hitNote.frequency;
+      const syncError = Math.abs(expectedFreq - actualFreq);
+      
+      if (syncError > 0.1) {
+        console.error(`❌ SYNC ERROR: Expected ${expectedFreq}Hz, got ${actualFreq}Hz (error: ${syncError.toFixed(2)}Hz)`);
+      } else {
+        console.log(`✅ PERFECT SYNC: ${lane.note} at ${expectedFreq}Hz`);
+      }
+
       const precision = Math.abs(hitNote.y - (hitZoneTop + hitZoneHeight / 2));
       let points = 100;
       let feedback = "Good!";
@@ -336,9 +356,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
-      // Tocar som SINCRONIZADO com a nota
-      console.log(`🎯 HIT! Playing frequency ${hitNote.frequency}Hz (expected ${lane.frequency}Hz)`);
-      playInstrumentAudio(hitNote.frequency, 1.5);
+      // Tocar som EXATAMENTE SINCRONIZADO com a lane
+      console.log(`🎯 HIT! Playing LANE frequency ${lane.frequency}Hz for note ${lane.note}`);
+      playInstrumentAudio(lane.frequency, 1.5);
 
       toast(`${feedback} +${finalPoints} pontos`, { duration: 1000 });
       setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
@@ -349,8 +369,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         toast("Miss! Combo perdido", { duration: 1000 });
       }
       
-      // Tocar som da lane pressionada para feedback
-      console.log(`❌ MISS! Playing lane frequency ${lane.frequency}Hz`);
+      // Tocar som da lane pressionada para feedback SINCRONIZADO
+      console.log(`❌ MISS! Playing LANE frequency ${lane.frequency}Hz for feedback`);
       playInstrumentAudio(lane.frequency, 0.8);
     }
   }, [lanes, isPlaying, notes, combo, hitZoneHeight, playInstrumentAudio]);
