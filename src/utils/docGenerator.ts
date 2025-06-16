@@ -29,7 +29,7 @@ export const generateDOC = async (
     console.log("📄 Gerando documento DOC...");
 
     const defaultOptions: DocGeneratorOptions = {
-      filename: `Relatorio_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`,
+      filename: `Relatorio_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.rtf`,
       pageOrientation: 'portrait',
       margins: {
         top: 720,
@@ -40,19 +40,16 @@ export const generateDOC = async (
       ...options
     };
 
-    // Gerar HTML formatado para conversão para DOC
-    const htmlContent = generateHTMLForDoc(content, patientName, professionalData, evaluatorEmail, evaluatorName);
+    // Gerar conteúdo RTF que pode ser aberto pelo Word
+    const rtfContent = generateRTFContent(content, patientName, professionalData, evaluatorEmail, evaluatorName);
 
-    // Usar html-docx-js para converter HTML em DOCX
-    const { default: HTMLtoDOCX } = await import('html-docx-js/dist/html-docx');
-    
-    const docxBlob = HTMLtoDOCX(htmlContent, {
-      orientation: defaultOptions.pageOrientation,
-      margins: defaultOptions.margins
+    // Criar blob RTF
+    const blob = new Blob([rtfContent], { 
+      type: 'application/rtf' 
     });
 
     // Fazer download do arquivo
-    saveAs(docxBlob, defaultOptions.filename);
+    saveAs(blob, defaultOptions.filename);
 
     console.log("✅ Documento DOC gerado com sucesso!");
 
@@ -62,7 +59,7 @@ export const generateDOC = async (
   }
 };
 
-const generateHTMLForDoc = (
+const generateRTFContent = (
   content: {
     patient_id: string;
     type: string;
@@ -77,134 +74,42 @@ const generateHTMLForDoc = (
   const reportDate = new Date(content.date).toLocaleDateString('pt-BR');
   const currentDate = new Date().toLocaleDateString('pt-BR');
   
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Relatório - ${patientName}</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-        }
-        .header {
-          text-align: center;
-          border-bottom: 2px solid #333;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
-        }
-        .title {
-          font-size: 24px;
-          font-weight: bold;
-          color: #2c3e50;
-          margin-bottom: 10px;
-        }
-        .subtitle {
-          font-size: 18px;
-          color: #7f8c8d;
-          margin-bottom: 5px;
-        }
-        .info-section {
-          background-color: #f8f9fa;
-          padding: 15px;
-          border-radius: 5px;
-          margin-bottom: 20px;
-        }
-        .info-row {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 10px;
-        }
-        .info-label {
-          font-weight: bold;
-          color: #2c3e50;
-        }
-        .content-section {
-          margin-bottom: 25px;
-        }
-        .section-title {
-          font-size: 18px;
-          font-weight: bold;
-          color: #2c3e50;
-          border-bottom: 1px solid #bdc3c7;
-          padding-bottom: 5px;
-          margin-bottom: 15px;
-        }
-        .content-text {
-          text-align: justify;
-          margin-bottom: 15px;
-        }
-        .footer {
-          border-top: 1px solid #bdc3c7;
-          padding-top: 20px;
-          margin-top: 40px;
-          text-align: center;
-          font-size: 12px;
-          color: #7f8c8d;
-        }
-        .signature-section {
-          margin-top: 40px;
-          text-align: center;
-        }
-        .signature-line {
-          border-top: 1px solid #333;
-          width: 300px;
-          margin: 40px auto 10px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="title">RELATÓRIO DE MUSICOTERAPIA</div>
-        <div class="subtitle">${getReportTypeName(content.type)}</div>
-      </div>
-
-      <div class="info-section">
-        <div class="info-row">
-          <span class="info-label">Paciente:</span>
-          <span>${patientName}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Data do Relatório:</span>
-          <span>${reportDate}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Profissional:</span>
-          <span>${evaluatorName || professionalData?.name || 'Não informado'}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Email:</span>
-          <span>${evaluatorEmail || professionalData?.email || 'Não informado'}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Data de Geração:</span>
-          <span>${currentDate}</span>
-        </div>
-      </div>
-
-      ${generateContentSections(content.content)}
-
-      <div class="signature-section">
-        <div class="signature-line"></div>
-        <div>
-          <strong>${evaluatorName || professionalData?.name || 'Profissional Responsável'}</strong><br>
-          ${professionalData?.specialty || 'Musicoterapeuta'}<br>
-          ${professionalData?.license_number ? `CRM: ${professionalData.license_number}` : ''}
-        </div>
-      </div>
-
-      <div class="footer">
-        <p>Documento gerado automaticamente pelo Sistema de Musicoterapia</p>
-        <p>Data de geração: ${currentDate}</p>
-      </div>
-    </body>
-    </html>
-  `;
+  // RTF header
+  let rtf = '{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}';
+  
+  // Title
+  rtf += '\\f0\\fs28\\b RELATÓRIO DE MUSICOTERAPIA\\b0\\par';
+  rtf += `\\fs24 ${getReportTypeName(content.type)}\\par\\par`;
+  
+  // Info section
+  rtf += '\\fs20\\b Informações do Relatório\\b0\\par';
+  rtf += `Paciente: ${patientName}\\par`;
+  rtf += `Data do Relatório: ${reportDate}\\par`;
+  rtf += `Profissional: ${evaluatorName || professionalData?.name || 'Não informado'}\\par`;
+  rtf += `Email: ${evaluatorEmail || professionalData?.email || 'Não informado'}\\par`;
+  rtf += `Data de Geração: ${currentDate}\\par\\par`;
+  
+  // Content sections
+  rtf += generateRTFContentSections(content.content);
+  
+  // Signature section
+  rtf += '\\par\\par\\par';
+  rtf += '________________________________\\par';
+  rtf += `\\b ${evaluatorName || professionalData?.name || 'Profissional Responsável'}\\b0\\par`;
+  rtf += `${professionalData?.specialty || 'Musicoterapeuta'}\\par`;
+  if (professionalData?.license_number) {
+    rtf += `CRM: ${professionalData.license_number}\\par`;
+  }
+  
+  // Footer
+  rtf += '\\par\\par';
+  rtf += '\\fs16 Documento gerado automaticamente pelo Sistema de Musicoterapia\\par';
+  rtf += `Data de geração: ${currentDate}\\par`;
+  
+  // RTF footer
+  rtf += '}';
+  
+  return rtf;
 };
 
 const getReportTypeName = (type: string): string => {
@@ -231,8 +136,8 @@ const getReportTypeName = (type: string): string => {
   return typeNames[type] || 'Relatório';
 };
 
-const generateContentSections = (content: Record<string, any>): string => {
-  let sectionsHtml = '';
+const generateRTFContentSections = (content: Record<string, any>): string => {
+  let rtfSections = '';
   
   // Mapear campos para seções organizadas
   const sectionMapping: Record<string, string> = {
@@ -260,27 +165,16 @@ const generateContentSections = (content: Record<string, any>): string => {
     if (value && typeof value === 'string' && value.trim() !== '') {
       const sectionTitle = sectionMapping[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
       
-      sectionsHtml += `
-        <div class="content-section">
-          <div class="section-title">${sectionTitle}</div>
-          <div class="content-text">${value.replace(/\n/g, '<br>')}</div>
-        </div>
-      `;
+      rtfSections += `\\b ${sectionTitle}\\b0\\par`;
+      rtfSections += `${value.replace(/\n/g, '\\par')}\\par\\par`;
     }
   }
 
   // Se não houver conteúdo específico, mostrar uma mensagem padrão
-  if (sectionsHtml === '') {
-    sectionsHtml = `
-      <div class="content-section">
-        <div class="section-title">Conteúdo do Relatório</div>
-        <div class="content-text">
-          Este relatório foi gerado automaticamente. 
-          O conteúdo detalhado pode ser adicionado através da edição deste documento.
-        </div>
-      </div>
-    `;
+  if (rtfSections === '') {
+    rtfSections = '\\b Conteúdo do Relatório\\b0\\par';
+    rtfSections += 'Este relatório foi gerado automaticamente. O conteúdo detalhado pode ser adicionado através da edição deste documento.\\par\\par';
   }
 
-  return sectionsHtml;
+  return rtfSections;
 };
