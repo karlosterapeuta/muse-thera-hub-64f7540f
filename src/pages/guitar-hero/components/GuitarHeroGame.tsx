@@ -34,7 +34,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const [maxCombo, setMaxCombo] = useState(0);
   const [notes, setNotes] = useState<Note[]>([]);
   const [hitZoneHeight] = useState(80);
-  const [audioPreloaded, setAudioPreloaded] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
@@ -43,7 +43,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // FREQUÊNCIAS CORRIGIDAS E SINCRONIZADAS por instrumento
+  // FREQUÊNCIAS SINCRONIZADAS - CORRIGIDAS por instrumento
   const lanes = instrumentType === "bell" ? [
     { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" }, // C4
     { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" }, // D4
@@ -70,39 +70,36 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" }, // B4
   ];
 
-  // Pré-carregar samples de áudio real TEA-OPTIMIZADO
+  // Pré-carregar áudio TEA
   useEffect(() => {
-    const preloadAudio = async () => {
+    const initAudio = async () => {
       try {
-        console.log(`🎵 Preloading TEA-optimized real audio for ${instrumentType}...`);
+        console.log(`🎵 Initializing TEA audio for ${instrumentType}...`);
         await preloadInstrumentAudio(instrumentType);
-        setAudioPreloaded(true);
-        console.log(`✅ TEA audio preloading complete for ${instrumentType}`);
-        toast(`🔊 Áudio TEA-optimizado carregado para ${instrumentType}!`, { duration: 2000 });
+        setAudioReady(true);
+        console.log(`✅ TEA audio ready for ${instrumentType}`);
+        toast(`🔊 Áudio TEA inicializado para ${instrumentType}!`, { duration: 2000 });
       } catch (error) {
-        console.warn(`⚠️ Audio preloading failed, using synthesis:`, error);
-        setAudioPreloaded(false);
-        toast(`🔊 Usando síntese TEA-optimizada para ${instrumentType}`, { duration: 2000 });
+        console.warn(`⚠️ TEA audio init failed:`, error);
+        setAudioReady(false);
+        toast(`🔊 Usando áudio TEA básico para ${instrumentType}`, { duration: 2000 });
       }
     };
 
-    preloadAudio();
+    initAudio();
   }, [instrumentType]);
 
-  // Função REVOLUCIONÁRIA para tocar áudio TEA-optimizado
-  const playInstrumentAudio = useCallback(async (frequency: number, duration: number = 1.2) => {
+  // Função CORRIGIDA para tocar áudio sincronizado
+  const playInstrumentAudio = useCallback(async (frequency: number, duration: number = 1.5) => {
     try {
-      // Usar o sistema de áudio TEA-OPTIMIZADO
+      console.log(`🎵 TEA-Hero: Playing ${instrumentType} at ${frequency}Hz`);
       await playNoteSound(`${frequency}Hz`, instrumentType);
-      
-      console.log(`🔊 TEA-OPTIMIZED audio: ${instrumentType} at ${frequency}Hz ${audioPreloaded ? '(real)' : '(synthesis)'}`);
-      
+      console.log(`✅ TEA audio played: ${instrumentType} - ${frequency}Hz`);
     } catch (error) {
-      console.error("TEA-optimized audio error:", error);
-      // Fallback final
+      console.error("TEA audio error:", error);
       onNotePlay(frequency, lanes.find(l => l.frequency === frequency)?.color || "#FFFFFF");
     }
-  }, [instrumentType, lanes, onNotePlay, audioPreloaded]);
+  }, [instrumentType, lanes, onNotePlay]);
 
   // Função melhorada para música de fundo com qualidade superior
   const startBackgroundMusic = useCallback(() => {
@@ -207,13 +204,13 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     console.log("🎵 Background music stopped");
   }, []);
 
-  // Gerar padrão de notas
+  // Gerar padrão de notas SINCRONIZADAS
   const generateNotes = useCallback(() => {
     if (selectedSong?.hasSequence) {
       const sequence = getMusicalSequence(selectedSong.id);
       if (sequence) {
-        console.log(`🎼 Loading TEA sequence: ${sequence.name} at ${gameSpeed}x speed`);
-        console.log(`📊 BPM: ${sequence.bpm * gameSpeed}, Notes: ${sequence.notes.length}`);
+        console.log(`🎼 Loading TEA sequence: ${sequence.name}`);
+        console.log(`📊 Notes: ${sequence.notes.length}, BPM: ${sequence.bpm}`);
         
         const gameNotes = generateGameNotes(sequence, instrumentType);
         const adjustedNotes = gameNotes.map(note => ({
@@ -221,19 +218,20 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
           startTime: note.startTime / gameSpeed
         }));
         setNotes(adjustedNotes);
-        console.log(`Generated ${adjustedNotes.length} TEA-optimized notes for ${selectedSong.title}`);
+        console.log(`Generated ${adjustedNotes.length} SYNCHRONIZED notes for ${selectedSong.title}`);
         return;
       }
     }
 
-    console.log(`⚠️ Using random pattern for ${selectedSong?.title || 'unknown'} at ${gameSpeed}x speed`);
+    // Fallback: padrão simples
+    console.log(`⚠️ Using simple pattern for ${selectedSong?.title || 'practice'}`);
     const newNotes: Note[] = [];
-    const patterns = [ [0, 2, 4], [1, 3, 5], [0, 1, 2], [4, 5, 6], [2, 4, 6], [0, 3, 6] ];
+    const patterns = [ [0, 2, 4], [1, 3, 5], [0, 1, 2], [4, 5, 6] ];
 
     let noteId = 0;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 15; i++) {
       const pattern = patterns[i % patterns.length];
-      const baseTime = (i * 4000) / gameSpeed;
+      const baseTime = (i * 3000) / gameSpeed;
       
       pattern.forEach((laneIndex, noteIndex) => {
         if (laneIndex < lanes.length) {
@@ -241,9 +239,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
             id: `note-${noteId++}`,
             lane: laneIndex,
             color: lanes[laneIndex].color,
-            frequency: lanes[laneIndex].frequency,
-            startTime: baseTime + (noteIndex * 1000) / gameSpeed,
-            duration: 600 / gameSpeed,
+            frequency: lanes[laneIndex].frequency, // Frequência EXATA da lane
+            startTime: baseTime + (noteIndex * 800) / gameSpeed,
+            duration: 500 / gameSpeed,
             y: -100
           });
         }
@@ -284,7 +282,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     animationRef.current = requestAnimationFrame(updateNotes);
   }, [isPlaying, combo, gameSpeed]);
 
-  // Detectar teclas COM ÁUDIO TEA-OPTIMIZADO
+  // Detectar teclas COM ÁUDIO SINCRONIZADO
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!isPlaying) return;
 
@@ -298,7 +296,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     const hitZoneTop = 350;
     const hitZoneBottom = hitZoneTop + hitZoneHeight;
 
-    console.log(`TEA Key pressed: ${keyPressed}, Lane: ${laneIndex}, Current notes: ${notes.length}`);
+    console.log(`TEA Key: ${keyPressed}, Lane: ${laneIndex}, Freq: ${lane.frequency}Hz`);
 
     const hitNote = notes.find(note => 
       note.lane === laneIndex && 
@@ -324,22 +322,22 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
-      // Tocar som TEA-OPTIMIZADO
-      playInstrumentAudio(lane.frequency, 1.2);
+      // Tocar som SINCRONIZADO com a nota
+      console.log(`🎯 HIT! Playing frequency ${hitNote.frequency}Hz (expected ${lane.frequency}Hz)`);
+      playInstrumentAudio(hitNote.frequency, 1.5);
 
       toast(`${feedback} +${finalPoints} pontos`, { duration: 1000 });
       setNotes(prevNotes => prevNotes.filter(n => n.id !== hitNote.id));
       
-      console.log(`TEA Hit! Score: ${finalPoints}, Combo: ${combo + 1}`);
     } else {
       if (combo > 0) {
         setCombo(0);
         toast("Miss! Combo perdido", { duration: 1000 });
       }
       
-      // Ainda toca som TEA-OPTIMIZADO para feedback
+      // Tocar som da lane pressionada para feedback
+      console.log(`❌ MISS! Playing lane frequency ${lane.frequency}Hz`);
       playInstrumentAudio(lane.frequency, 0.8);
-      console.log(`TEA Missed note in lane ${laneIndex}`);
     }
   }, [lanes, isPlaying, notes, combo, hitZoneHeight, playInstrumentAudio]);
 
@@ -360,10 +358,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       
       if (selectedSong?.hasSequence) {
         console.log(`🎵 Starting TEA ${selectedSong.title} with authentic sequence at ${gameSpeed}x speed`);
-        toast(`🎼 TEA-Optimized: ${selectedSong.title} (${gameSpeed}x) ${audioPreloaded ? '🔊 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
+        toast(`🎼 TEA-Optimized: ${selectedSong.title} (${gameSpeed}x) ${audioReady ? '🔊 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
       } else {
         console.log(`🎵 Starting TEA ${instrumentType} game with random pattern at ${gameSpeed}x speed`);
-        toast(`🔊 TEA ${instrumentType} game iniciado (${gameSpeed}x) ${audioPreloaded ? '🔊 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
+        toast(`🔊 TEA ${instrumentType} game iniciado (${gameSpeed}x) ${audioReady ? '🔊 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
       }
       
       setIsPlaying(true);
@@ -424,23 +422,21 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-black">
-      {/* Header com controles e pontuação */}
+      {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-2xl font-bold">
-              {getInstrumentTitle()}
+              {selectedSong?.hasSequence ? `🎼 ${selectedSong.title}` : `🔔 TEA ${instrumentType}-Hero`}
             </h1>
             {selectedSong?.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Sequência musical TEA-optimizada • Velocidade: {gameSpeed}x • {audioPreloaded ? '🔊 Real Audio' : '🔊 TEA Synthesis'}
+                🎼 Sequência musical TEA sincronizada • Velocidade: {gameSpeed}x
               </p>
             )}
-            {!audioPreloaded && (
-              <p className="text-xs text-yellow-300">
-                🔊 Usando síntese TEA-optimizada - máxima clareza e volume
-              </p>
-            )}
+            <p className="text-xs text-green-300">
+              🔊 Áudio TEA-optimizado {audioReady ? 'ATIVO' : 'BÁSICO'} - frequências 100% sincronizadas
+            </p>
           </div>
           <div className="flex gap-2">
             <Button onClick={togglePlay} variant="secondary" size="sm">
@@ -474,20 +470,18 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </div>
       </div>
 
-      {/* Instruções */}
+      {/* Instruções ATUALIZADAS */}
       <div className="bg-blue-600 p-3 text-center text-white">
         <p className="text-sm">
           Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
           {selectedSong?.hasSequence && (
             <span className="block mt-1 text-yellow-200">
-              🎼 Esta música toca a melodia TEA-optimizada de "{selectedSong.title}" a {gameSpeed}x de velocidade
+              🎼 Esta música toca a melodia autêntica de "{selectedSong.title}" com frequências sincronizadas
             </span>
           )}
-          {audioPreloaded && (
-            <span className="block mt-1 text-green-200">
-              🔊 <strong>Áudio real TEA-optimizado ativado!</strong> Sons de instrumentos reais otimizados para TEA
-            </span>
-          )}
+          <span className="block mt-1 text-green-200">
+            🔊 <strong>Áudio TEA sincronizado:</strong> Cada nota visual toca exatamente a frequência correta
+          </span>
         </p>
       </div>
 
