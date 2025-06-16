@@ -43,8 +43,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const gameStartTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Configuração das lanes (faixas) baseada no instrumento
+  // Configuração das lanes SINCRONIZADAS com as sequências musicais
   const lanes = instrumentType === "bell" ? [
     { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
     { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
@@ -62,6 +63,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
     { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
   ] : [
+    // CORRIGIDO: Frequências sincronizadas para categoria infantil
     { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
     { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
     { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
@@ -71,41 +73,140 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
   ];
 
-  // Função para iniciar música de fundo
+  // Função aprimorada para criar áudio de alta qualidade para TEA
+  const createEnhancedAudio = useCallback(async (frequency: number, duration: number = 0.8) => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const audioContext = audioContextRef.current;
+      const now = audioContext.currentTime;
+      
+      // Oscilador principal
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      // Configuração otimizada para categoria infantil
+      oscillator.type = instrumentType === "keyboard" ? 'triangle' : 'sine';
+      oscillator.frequency.setValueAtTime(frequency, now);
+      
+      // ENVELOPE ADSR MELHORADO para sons mais destacados
+      const attackTime = 0.02;
+      const decayTime = 0.1;
+      const sustainLevel = 0.6; // Aumentado para maior sustain
+      const releaseTime = duration - attackTime - decayTime;
+      
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.8, now + attackTime); // Volume inicial aumentado
+      gainNode.gain.exponentialRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      
+      // HARMÔNICOS para som mais rico e destacado
+      const harmonic2 = audioContext.createOscillator();
+      const harmonic2Gain = audioContext.createGain();
+      harmonic2.type = 'sine';
+      harmonic2.frequency.setValueAtTime(frequency * 2, now);
+      harmonic2Gain.gain.setValueAtTime(0.3, now); // Harmônico mais presente
+      harmonic2Gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      
+      const harmonic3 = audioContext.createOscillator();
+      const harmonic3Gain = audioContext.createGain();
+      harmonic3.type = 'sine';
+      harmonic3.frequency.setValueAtTime(frequency * 3, now);
+      harmonic3Gain.gain.setValueAtTime(0.15, now);
+      harmonic3Gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      
+      // COMPRESSOR para som mais consistente e destacado
+      const compressor = audioContext.createDynamicsCompressor();
+      compressor.threshold.setValueAtTime(-24, now);
+      compressor.knee.setValueAtTime(30, now);
+      compressor.ratio.setValueAtTime(12, now);
+      compressor.attack.setValueAtTime(0.003, now);
+      compressor.release.setValueAtTime(0.25, now);
+      
+      // REVERB sutil para categoria infantil
+      const convolver = audioContext.createConvolver();
+      const reverbGain = audioContext.createGain();
+      reverbGain.gain.setValueAtTime(0.2, now);
+      
+      // Conexões
+      oscillator.connect(gainNode);
+      harmonic2.connect(harmonic2Gain);
+      harmonic3.connect(harmonic3Gain);
+      
+      gainNode.connect(compressor);
+      harmonic2Gain.connect(compressor);
+      harmonic3Gain.connect(compressor);
+      
+      compressor.connect(audioContext.destination);
+      compressor.connect(reverbGain);
+      reverbGain.connect(audioContext.destination);
+      
+      // Iniciar e parar
+      oscillator.start(now);
+      harmonic2.start(now);
+      harmonic3.start(now);
+      
+      oscillator.stop(now + duration);
+      harmonic2.stop(now + duration);
+      harmonic3.stop(now + duration);
+      
+      console.log(`🎵 Enhanced audio: ${frequency}Hz for ${instrumentType} at volume boost`);
+      
+    } catch (error) {
+      console.error("Error creating enhanced audio:", error);
+      // Fallback simples se falhar
+      onNotePlay(frequency, lanes.find(l => l.frequency === frequency)?.color || "#FFFFFF");
+    }
+  }, [instrumentType, lanes, onNotePlay]);
+
+  // Função melhorada para música de fundo com qualidade superior
   const startBackgroundMusic = useCallback(() => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const audioContext = audioContextRef.current;
       
       const playBackgroundTone = (frequency: number, startTime: number, duration: number) => {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        const compressor = audioContext.createDynamicsCompressor();
         
-        oscillator.type = 'sine';
+        oscillator.type = 'triangle'; // Tipo de onda mais suave para fundo
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
         
+        // Volume da música de fundo aumentado mas balanceado
         gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + startTime + 0.1); // Volume aumentado
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
         
+        // Compressão suave
+        compressor.threshold.setValueAtTime(-30, audioContext.currentTime + startTime);
+        compressor.ratio.setValueAtTime(4, audioContext.currentTime + startTime);
+        
         oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        gainNode.connect(compressor);
+        compressor.connect(audioContext.destination);
         
         oscillator.start(audioContext.currentTime + startTime);
         oscillator.stop(audioContext.currentTime + startTime + duration);
       };
 
-      // Melodia ajustada pela velocidade
+      // Melodia com frequências SINCRONIZADAS
       const melody = [
-        { freq: 523.25, time: 0, duration: 0.5 },
-        { freq: 587.33, time: 0.5, duration: 0.5 },
-        { freq: 659.25, time: 1, duration: 0.5 },
-        { freq: 523.25, time: 1.5, duration: 0.5 },
-        { freq: 587.33, time: 2, duration: 0.5 },
-        { freq: 659.25, time: 2.5, duration: 0.5 },
-        { freq: 783.99, time: 3, duration: 1 },
-        { freq: 659.25, time: 4, duration: 0.5 },
-        { freq: 587.33, time: 4.5, duration: 0.5 },
-        { freq: 523.25, time: 5, duration: 1 },
+        { freq: 261.63, time: 0, duration: 0.5 },    // Dó
+        { freq: 293.66, time: 0.5, duration: 0.5 },  // Ré
+        { freq: 329.63, time: 1, duration: 0.5 },    // Mi
+        { freq: 261.63, time: 1.5, duration: 0.5 },  // Dó
+        { freq: 293.66, time: 2, duration: 0.5 },    // Ré
+        { freq: 329.63, time: 2.5, duration: 0.5 },  // Mi
+        { freq: 392.00, time: 3, duration: 1 },      // Sol
+        { freq: 329.63, time: 4, duration: 0.5 },    // Mi
+        { freq: 293.66, time: 4.5, duration: 0.5 },  // Ré
+        { freq: 261.63, time: 5, duration: 1 },      // Dó
       ];
 
       // Aplicar velocidade à melodia
@@ -128,10 +229,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         }
       }, 6000 / gameSpeed);
 
-      console.log(`🎵 Background music started for ${instrumentType} at ${gameSpeed}x speed`);
+      console.log(`🎵 Enhanced background music started for ${instrumentType} at ${gameSpeed}x speed`);
       
     } catch (error) {
-      console.error("Error starting background music:", error);
+      console.error("Error starting enhanced background music:", error);
     }
   }, [instrumentType, isPlaying, gameSpeed]);
 
@@ -231,7 +332,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     animationRef.current = requestAnimationFrame(updateNotes);
   }, [isPlaying, combo, gameSpeed]);
 
-  // Detectar teclas pressionadas
+  // Detectar teclas pressionadas COM ÁUDIO APRIMORADO
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!isPlaying) return;
 
@@ -273,8 +374,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
-      // Tocar o som
-      onNotePlay(lane.frequency, lane.color);
+      // Tocar o som APRIMORADO
+      createEnhancedAudio(lane.frequency, 0.8);
 
       // Feedback visual
       toast(`${feedback} +${finalPoints} pontos`, {
@@ -294,11 +395,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         });
       }
       
-      // Ainda toca o som para feedback
-      onNotePlay(lane.frequency, lane.color);
+      // Ainda toca o som APRIMORADO para feedback
+      createEnhancedAudio(lane.frequency, 0.6);
       console.log(`Missed note in lane ${laneIndex}`);
     }
-  }, [lanes, isPlaying, notes, combo, hitZoneHeight, onNotePlay]);
+  }, [lanes, isPlaying, notes, combo, hitZoneHeight, createEnhancedAudio]);
 
   // Gerenciar eventos de teclado
   useEffect(() => {
