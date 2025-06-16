@@ -1,4 +1,3 @@
-
 // Serviço de áudio real CORRIGIDO e FUNCIONAL para TEA-Hero
 export interface AudioSample {
   id: string;
@@ -134,6 +133,15 @@ class RealAudioService {
   // Método principal - usa síntese otimizada como padrão
   async playOptimizedAudio(config: RealAudioConfig): Promise<boolean> {
     return await this.playAdvancedSynthesis(config);
+  }
+
+  // Add missing getCacheInfo method
+  getCacheInfo() {
+    return {
+      cacheSize: this.sampleCache.size,
+      loadingPromises: this.loadingPromises.size,
+      cachedSamples: Array.from(this.sampleCache.keys())
+    };
   }
 
   clearCache(): void {
