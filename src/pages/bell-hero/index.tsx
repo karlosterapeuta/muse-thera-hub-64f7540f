@@ -5,11 +5,11 @@ import { playNoteSound } from "@/utils/audioUtils";
 
 const BellHero = () => {
   const handleNotePlay = (frequency: number, color: string) => {
-    // Simular som de sino com uma frequência específica
-    playNoteSound(`${frequency}Hz`);
+    // Usar o novo sistema de áudio real com fallback
+    playNoteSound(`${frequency}Hz`, "bell");
     
     // Feedback visual adicional para sinos
-    console.log(`🔔 Sino tocado: ${frequency}Hz (${color})`);
+    console.log(`🔔 Sino tocado: ${frequency}Hz (${color}) - real audio enabled`);
   };
 
   return (

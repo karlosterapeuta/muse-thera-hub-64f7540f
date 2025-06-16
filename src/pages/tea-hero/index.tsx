@@ -656,12 +656,13 @@ const TeaHero = () => {
     : songs.filter(song => song.category === selectedCategory);
 
   const handleNotePlay = (frequency: number, color: string) => {
-    playNoteSound(`${frequency}Hz`);
+    // NOVO: Usar o sistema de áudio real com fallback
+    playNoteSound(`${frequency}Hz`, selectedSong?.instrument);
     
     const instrumentEmoji = selectedSong?.instrument === "bell" ? "🔔" : 
                            selectedSong?.instrument === "xylophone" ? "🎵" : "🎹";
     
-    console.log(`${instrumentEmoji} ${selectedSong?.instrument} tocado: ${frequency}Hz (${color})`);
+    console.log(`${instrumentEmoji} ${selectedSong?.instrument} tocado: ${frequency}Hz (${color}) - real audio enabled`);
   };
 
   const handleSongSelect = (song: Song) => {
@@ -726,7 +727,7 @@ const TeaHero = () => {
             </h1>
             {selectedSong.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Melodia autêntica • Sequência musical real • Velocidade: {gameSpeed[0]}x
+                🎼 Melodia autêntica • Sequência musical real • Velocidade: {gameSpeed[0]}x • 🎵 Real Audio Enabled
               </p>
             )}
           </div>
@@ -754,8 +755,11 @@ const TeaHero = () => {
           <p className="text-lg text-gray-600 mb-4">
             Música Terapêutica para Transtorno do Espectro Autista
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-2">
             {filteredSongs.length} músicas disponíveis • Especialmente selecionadas para desenvolvimento cognitivo e sensorial
+          </p>
+          <p className="text-sm text-green-600 font-medium">
+            🎵 <strong>Novo:</strong> Áudio real de instrumentos com fallback inteligente para síntese
           </p>
         </div>
 
@@ -896,6 +900,9 @@ const TeaHero = () => {
                   <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
                     Velocidade: {gameSpeed[0]}x
                   </span>
+                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    🎵 Real Audio
+                  </span>
                 </div>
                 
                 <div className="bg-purple-50 p-4 rounded-lg">
@@ -914,6 +921,16 @@ const TeaHero = () => {
                   <p className="text-sm text-blue-700">
                     Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
                     Esta música foi especialmente selecionada para estimular seu desenvolvimento.
+                  </p>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <p className="text-sm text-green-800 mb-2">
+                    <strong>🎵 Novo: Áudio Real!</strong>
+                  </p>
+                  <p className="text-sm text-green-700">
+                    Agora com sons de instrumentos reais para uma experiência mais autêntica e envolvente,
+                    com fallback inteligente para síntese de alta qualidade.
                   </p>
                 </div>
 
@@ -941,6 +958,15 @@ const TeaHero = () => {
               utilizando música como ferramenta terapêutica para estimular desenvolvimento cognitivo,
               coordenação motora, memória sequencial e integração sensorial.
             </p>
+            <div className="bg-green-50 p-4 rounded-lg mb-4">
+              <h4 className="text-sm font-medium text-green-800 mb-2">
+                🎵 Novidade: Sistema de Áudio Real
+              </h4>
+              <p className="text-sm text-green-700">
+                Agora com integração de sons reais de instrumentos através de APIs especializadas,
+                proporcionando uma experiência musical mais autêntica e envolvente para terapia.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="bg-green-50 p-3 rounded">
                 <strong className="text-green-800">🟢 Fácil:</strong>

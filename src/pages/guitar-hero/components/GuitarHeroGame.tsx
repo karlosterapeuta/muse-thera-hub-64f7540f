@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { getMusicalSequence, generateGameNotes } from "@/data/musicalSequences";
+import { playNoteSound, preloadInstrumentAudio } from "@/utils/audioUtils";
 
 interface Note {
   id: string;
@@ -37,6 +38,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const [maxCombo, setMaxCombo] = useState(0);
   const [notes, setNotes] = useState<Note[]>([]);
   const [hitZoneHeight] = useState(80);
+  const [audioPreloaded, setAudioPreloaded] = useState(false);
   
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
@@ -45,121 +47,67 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Configuração das lanes SINCRONIZADAS com as sequências musicais
+  // FREQUÊNCIAS CORRIGIDAS E SINCRONIZADAS por instrumento
   const lanes = instrumentType === "bell" ? [
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" },
-    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" },
-    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" },
-    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" },
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "🔔" }, // C4
+    { color: "#FF6600", frequency: 293.66, name: "Ré", key: "2", symbol: "🔔" }, // D4
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "🔔" }, // E4
+    { color: "#00CC00", frequency: 349.23, name: "Fá", key: "4", symbol: "🔔" }, // F4
+    { color: "#0099FF", frequency: 392.00, name: "Sol", key: "5", symbol: "🔔" }, // G4
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "🔔" }, // A4
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "🔔" }, // B4
   ] : instrumentType === "xylophone" ? [
-    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" },
-    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" },
-    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" },
-    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" },
-    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" },
-    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" },
-    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" },
+    { color: "#E53935", frequency: 523.25, name: "Dó", key: "1", symbol: "🎵" }, // C5
+    { color: "#FF9800", frequency: 587.33, name: "Ré", key: "2", symbol: "🎵" }, // D5
+    { color: "#FFEB3B", frequency: 659.25, name: "Mi", key: "3", symbol: "🎵" }, // E5
+    { color: "#4CAF50", frequency: 698.46, name: "Fá", key: "4", symbol: "🎵" }, // F5
+    { color: "#2196F3", frequency: 783.99, name: "Sol", key: "5", symbol: "🎵" }, // G5
+    { color: "#000080", frequency: 880.00, name: "Lá", key: "6", symbol: "🎵" }, // A5
+    { color: "#800080", frequency: 987.77, name: "Si", key: "7", symbol: "🎵" }, // B5
   ] : [
-    // CORRIGIDO: Frequências sincronizadas para categoria infantil
-    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" },
-    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" },
-    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" },
-    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" },
-    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" },
-    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" },
-    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" },
+    // TECLADO/PIANO - Oitava C4 (mesma dos sinos mas com piano/teclado)
+    { color: "#FF0000", frequency: 261.63, name: "Dó", key: "1", symbol: "♩" }, // C4
+    { color: "#FF9933", frequency: 293.66, name: "Ré", key: "2", symbol: "♪" }, // D4
+    { color: "#FFFF00", frequency: 329.63, name: "Mi", key: "3", symbol: "♫" }, // E4
+    { color: "#33CC33", frequency: 349.23, name: "Fá", key: "4", symbol: "♬" }, // F4
+    { color: "#33CCFF", frequency: 392.00, name: "Sol", key: "5", symbol: "♩" }, // G4
+    { color: "#000080", frequency: 440.00, name: "Lá", key: "6", symbol: "♪" }, // A4
+    { color: "#800080", frequency: 493.88, name: "Si", key: "7", symbol: "♫" }, // B4
   ];
 
-  // Função aprimorada para criar áudio de alta qualidade para TEA
-  const createEnhancedAudio = useCallback(async (frequency: number, duration: number = 0.8) => {
-    try {
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+  // Pré-carregar samples de áudio real quando o componente monta
+  useEffect(() => {
+    const preloadAudio = async () => {
+      try {
+        console.log(`🎵 Preloading real audio samples for ${instrumentType}...`);
+        await preloadInstrumentAudio(instrumentType);
+        setAudioPreloaded(true);
+        console.log(`✅ Audio preloading complete for ${instrumentType}`);
+        toast(`🎵 Áudio real carregado para ${instrumentType}!`, { duration: 2000 });
+      } catch (error) {
+        console.warn(`⚠️ Audio preloading failed for ${instrumentType}:`, error);
+        setAudioPreloaded(false);
+        toast(`⚠️ Usando síntese como fallback para ${instrumentType}`, { duration: 2000 });
       }
+    };
+
+    preloadAudio();
+  }, [instrumentType]);
+
+  // Função aprimorada para tocar áudio real com fallback para síntese
+  const playInstrumentAudio = useCallback(async (frequency: number, duration: number = 0.8) => {
+    try {
+      // Usar o novo sistema de áudio que tenta real primeiro, depois síntese
+      await playNoteSound(`${frequency}Hz`, instrumentType);
       
-      const audioContext = audioContextRef.current;
-      const now = audioContext.currentTime;
-      
-      // Oscilador principal
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      // Configuração otimizada para categoria infantil
-      oscillator.type = instrumentType === "keyboard" ? 'triangle' : 'sine';
-      oscillator.frequency.setValueAtTime(frequency, now);
-      
-      // ENVELOPE ADSR MELHORADO para sons mais destacados
-      const attackTime = 0.02;
-      const decayTime = 0.1;
-      const sustainLevel = 0.6; // Aumentado para maior sustain
-      const releaseTime = duration - attackTime - decayTime;
-      
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.8, now + attackTime); // Volume inicial aumentado
-      gainNode.gain.exponentialRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
-      
-      // HARMÔNICOS para som mais rico e destacado
-      const harmonic2 = audioContext.createOscillator();
-      const harmonic2Gain = audioContext.createGain();
-      harmonic2.type = 'sine';
-      harmonic2.frequency.setValueAtTime(frequency * 2, now);
-      harmonic2Gain.gain.setValueAtTime(0.3, now); // Harmônico mais presente
-      harmonic2Gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-      
-      const harmonic3 = audioContext.createOscillator();
-      const harmonic3Gain = audioContext.createGain();
-      harmonic3.type = 'sine';
-      harmonic3.frequency.setValueAtTime(frequency * 3, now);
-      harmonic3Gain.gain.setValueAtTime(0.15, now);
-      harmonic3Gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-      
-      // COMPRESSOR para som mais consistente e destacado
-      const compressor = audioContext.createDynamicsCompressor();
-      compressor.threshold.setValueAtTime(-24, now);
-      compressor.knee.setValueAtTime(30, now);
-      compressor.ratio.setValueAtTime(12, now);
-      compressor.attack.setValueAtTime(0.003, now);
-      compressor.release.setValueAtTime(0.25, now);
-      
-      // REVERB sutil para categoria infantil
-      const convolver = audioContext.createConvolver();
-      const reverbGain = audioContext.createGain();
-      reverbGain.gain.setValueAtTime(0.2, now);
-      
-      // Conexões
-      oscillator.connect(gainNode);
-      harmonic2.connect(harmonic2Gain);
-      harmonic3.connect(harmonic3Gain);
-      
-      gainNode.connect(compressor);
-      harmonic2Gain.connect(compressor);
-      harmonic3Gain.connect(compressor);
-      
-      compressor.connect(audioContext.destination);
-      compressor.connect(reverbGain);
-      reverbGain.connect(audioContext.destination);
-      
-      // Iniciar e parar
-      oscillator.start(now);
-      harmonic2.start(now);
-      harmonic3.start(now);
-      
-      oscillator.stop(now + duration);
-      harmonic2.stop(now + duration);
-      harmonic3.stop(now + duration);
-      
-      console.log(`🎵 Enhanced audio: ${frequency}Hz for ${instrumentType} at volume boost`);
+      console.log(`🎵 Audio played: ${instrumentType} at ${frequency}Hz ${audioPreloaded ? '(real audio)' : '(synthesis)'}`);
       
     } catch (error) {
-      console.error("Error creating enhanced audio:", error);
-      // Fallback simples se falhar
+      console.error("Error playing instrument audio:", error);
+      // Fallback final para onNotePlay original
       onNotePlay(frequency, lanes.find(l => l.frequency === frequency)?.color || "#FFFFFF");
     }
-  }, [instrumentType, lanes, onNotePlay]);
+  }, [instrumentType, lanes, onNotePlay, audioPreloaded]);
 
   // Função melhorada para música de fundo com qualidade superior
   const startBackgroundMusic = useCallback(() => {
@@ -178,14 +126,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         oscillator.type = 'triangle'; // Tipo de onda mais suave para fundo
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
         
-        // Volume da música de fundo aumentado mas balanceado
+        // Volume da música de fundo balanceado com audio real
         gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
-        gainNode.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + startTime + 0.1); // Volume aumentado
+        gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + startTime + 0.1); // Volume reduzido para não competir
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
         
         // Compressão suave
-        compressor.threshold.setValueAtTime(-30, audioContext.currentTime + startTime);
-        compressor.ratio.setValueAtTime(4, audioContext.currentTime + startTime);
+        compressor.threshold.setValueAtTime(-35, audioContext.currentTime + startTime);
+        compressor.ratio.setValueAtTime(3, audioContext.currentTime + startTime);
         
         oscillator.connect(gainNode);
         gainNode.connect(compressor);
@@ -195,8 +143,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         oscillator.stop(audioContext.currentTime + startTime + duration);
       };
 
-      // Melodia com frequências SINCRONIZADAS
-      const melody = [
+      // Melodia com frequências SINCRONIZADAS com as lanes
+      const melody = instrumentType === "bell" ? [
         { freq: 261.63, time: 0, duration: 0.5 },    // Dó
         { freq: 293.66, time: 0.5, duration: 0.5 },  // Ré
         { freq: 329.63, time: 1, duration: 0.5 },    // Mi
@@ -207,6 +155,29 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         { freq: 329.63, time: 4, duration: 0.5 },    // Mi
         { freq: 293.66, time: 4.5, duration: 0.5 },  // Ré
         { freq: 261.63, time: 5, duration: 1 },      // Dó
+      ] : instrumentType === "xylophone" ? [
+        { freq: 523.25, time: 0, duration: 0.5 },    // Dó (C5)
+        { freq: 587.33, time: 0.5, duration: 0.5 },  // Ré (D5)
+        { freq: 659.25, time: 1, duration: 0.5 },    // Mi (E5)
+        { freq: 523.25, time: 1.5, duration: 0.5 },  // Dó (C5)
+        { freq: 587.33, time: 2, duration: 0.5 },    // Ré (D5)
+        { freq: 659.25, time: 2.5, duration: 0.5 },  // Mi (E5)
+        { freq: 783.99, time: 3, duration: 1 },      // Sol (G5)
+        { freq: 659.25, time: 4, duration: 0.5 },    // Mi (E5)
+        { freq: 587.33, time: 4.5, duration: 0.5 },  // Ré (D5)
+        { freq: 523.25, time: 5, duration: 1 },      // Dó (C5)
+      ] : [
+        // Teclado/Piano (C4 como sinos)
+        { freq: 261.63, time: 0, duration: 0.5 },
+        { freq: 293.66, time: 0.5, duration: 0.5 },
+        { freq: 329.63, time: 1, duration: 0.5 },
+        { freq: 349.23, time: 1.5, duration: 0.5 },
+        { freq: 392.00, time: 2, duration: 0.5 },
+        { freq: 440.00, time: 2.5, duration: 0.5 },
+        { freq: 493.88, time: 3, duration: 1 },
+        { freq: 392.00, time: 4, duration: 0.5 },
+        { freq: 329.63, time: 4.5, duration: 0.5 },
+        { freq: 261.63, time: 5, duration: 1 },
       ];
 
       // Aplicar velocidade à melodia
@@ -229,12 +200,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         }
       }, 6000 / gameSpeed);
 
-      console.log(`🎵 Enhanced background music started for ${instrumentType} at ${gameSpeed}x speed`);
+      console.log(`🎵 Enhanced background music started for ${instrumentType} at ${gameSpeed}x speed (${audioPreloaded ? 'with real audio support' : 'synthesis only'})`);
       
     } catch (error) {
       console.error("Error starting enhanced background music:", error);
     }
-  }, [instrumentType, isPlaying, gameSpeed]);
+  }, [instrumentType, isPlaying, gameSpeed, audioPreloaded]);
 
   // Parar música de fundo
   const stopBackgroundMusic = useCallback(() => {
@@ -332,7 +303,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     animationRef.current = requestAnimationFrame(updateNotes);
   }, [isPlaying, combo, gameSpeed]);
 
-  // Detectar teclas pressionadas COM ÁUDIO APRIMORADO
+  // Detectar teclas pressionadas COM ÁUDIO REAL APRIMORADO
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!isPlaying) return;
 
@@ -374,8 +345,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       setCombo(prev => prev + 1);
       setMaxCombo(prev => Math.max(prev, combo + 1));
 
-      // Tocar o som APRIMORADO
-      createEnhancedAudio(lane.frequency, 0.8);
+      // Tocar o som REAL + APRIMORADO
+      playInstrumentAudio(lane.frequency, 0.8);
 
       // Feedback visual
       toast(`${feedback} +${finalPoints} pontos`, {
@@ -395,11 +366,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         });
       }
       
-      // Ainda toca o som APRIMORADO para feedback
-      createEnhancedAudio(lane.frequency, 0.6);
+      // Ainda toca o som REAL para feedback
+      playInstrumentAudio(lane.frequency, 0.6);
       console.log(`Missed note in lane ${laneIndex}`);
     }
-  }, [lanes, isPlaying, notes, combo, hitZoneHeight, createEnhancedAudio]);
+  }, [lanes, isPlaying, notes, combo, hitZoneHeight, playInstrumentAudio]);
 
   // Gerenciar eventos de teclado
   useEffect(() => {
@@ -418,9 +389,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       
       if (selectedSong?.hasSequence) {
         console.log(`🎵 Iniciando ${selectedSong.title} com sequência musical autêntica at ${gameSpeed}x speed`);
-        toast(`🎼 Tocando: ${selectedSong.title} (${gameSpeed}x)`, { duration: 2000 });
+        toast(`🎼 Tocando: ${selectedSong.title} (${gameSpeed}x) ${audioPreloaded ? '🎵 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
       } else {
         console.log(`🎵 Iniciando ${instrumentType} game com padrão aleatório at ${gameSpeed}x speed`);
+        toast(`🎵 ${instrumentType} game iniciado (${gameSpeed}x) ${audioPreloaded ? '🎵 Real Audio' : '🔊 Synthesis'}`, { duration: 2000 });
       }
       
       setIsPlaying(true);
@@ -490,7 +462,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
             </h1>
             {selectedSong?.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Sequência musical autêntica • Velocidade: {gameSpeed}x
+                🎼 Sequência musical autêntica • Velocidade: {gameSpeed}x • {audioPreloaded ? '🎵 Real Audio' : '🔊 Synthesis'}
+              </p>
+            )}
+            {!audioPreloaded && (
+              <p className="text-xs text-yellow-300">
+                ⚠️ Usando síntese como fallback - alguns samples não carregaram
               </p>
             )}
           </div>
@@ -535,6 +512,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
               🎼 Esta música toca a melodia autêntica de "{selectedSong.title}" a {gameSpeed}x de velocidade
             </span>
           )}
+          {audioPreloaded && (
+            <span className="block mt-1 text-green-200">
+              🎵 <strong>Áudio real ativado!</strong> Sons de instrumentos reais para melhor experiência
+            </span>
+          )}
         </p>
       </div>
 
@@ -568,6 +550,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                 <div className="text-xs font-bold">{lane.key}</div>
                 <div className="text-2xl">{lane.symbol}</div>
                 <div className="text-xs font-bold">{lane.name}</div>
+                <div className="text-xs text-white/80">{Math.round(lane.frequency)}Hz</div>
               </div>
             </div>
           </div>

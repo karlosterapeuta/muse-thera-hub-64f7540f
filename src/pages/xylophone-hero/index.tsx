@@ -5,11 +5,11 @@ import { playNoteSound } from "@/utils/audioUtils";
 
 const XylophoneHero = () => {
   const handleNotePlay = (frequency: number, color: string) => {
-    // Simular som de xilofone com uma frequência específica
-    playNoteSound(`${frequency}Hz`);
+    // Usar o novo sistema de áudio real com fallback
+    playNoteSound(`${frequency}Hz`, "xylophone");
     
     // Feedback visual adicional para xilofone
-    console.log(`🎵 Xilofone tocado: ${frequency}Hz (${color})`);
+    console.log(`🎵 Xilofone tocado: ${frequency}Hz (${color}) - real audio enabled`);
   };
 
   return (
