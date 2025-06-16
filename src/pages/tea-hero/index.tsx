@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Music } from "lucide-react";
+import { Play, Music, Gauge } from "lucide-react";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
 import { getMusicalSequence } from "@/data/musicalSequences";
@@ -24,6 +24,7 @@ const TeaHero = () => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
+  const [gameSpeed, setGameSpeed] = useState(1.0); // 1.0 = velocidade normal
 
   // Catálogo reorganizado e balanceado de músicas específicas para TEA
   const songs: Song[] = [
@@ -674,6 +675,7 @@ const TeaHero = () => {
         console.log(`🎵 Iniciando música com sequência autêntica: ${sequence.name}`);
         console.log(`📊 BPM: ${sequence.bpm}, Compasso: ${sequence.timeSignature}`);
         console.log(`🎼 Total de notas: ${sequence.notes.length}`);
+        console.log(`⚡ Velocidade: ${gameSpeed}x`);
       }
       setGameStarted(true);
     }
@@ -682,6 +684,24 @@ const TeaHero = () => {
   const handleBackToSelection = () => {
     setSelectedSong(null);
     setGameStarted(false);
+  };
+
+  const getSpeedLabel = (speed: number) => {
+    if (speed <= 0.5) return "Muito Lento";
+    if (speed <= 0.7) return "Lento";
+    if (speed <= 0.9) return "Devagar";
+    if (speed === 1.0) return "Normal";
+    if (speed <= 1.2) return "Rápido";
+    if (speed <= 1.5) return "Muito Rápido";
+    return "Extremo";
+  };
+
+  const getSpeedColor = (speed: number) => {
+    if (speed <= 0.7) return "text-blue-600";
+    if (speed <= 0.9) return "text-green-600";
+    if (speed === 1.0) return "text-gray-800";
+    if (speed <= 1.2) return "text-orange-600";
+    return "text-red-600";
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -721,11 +741,14 @@ const TeaHero = () => {
             <h1 className="text-2xl font-bold">
               TEA-Hero - {selectedSong.title} {getInstrumentIcon(selectedSong.instrument)}
             </h1>
-            {selectedSong.hasSequence && (
-              <p className="text-sm opacity-90">
-                🎼 Melodia autêntica • Sequência musical real
-              </p>
-            )}
+            <div className="flex items-center gap-4 text-sm opacity-90">
+              {selectedSong.hasSequence && (
+                <span>🎼 Melodia autêntica • Sequência musical real</span>
+              )}
+              <span className={`font-medium ${getSpeedColor(gameSpeed)}`}>
+                ⚡ Velocidade: {getSpeedLabel(gameSpeed)} ({gameSpeed}x)
+              </span>
+            </div>
           </div>
           <Button onClick={handleBackToSelection} variant="secondary" size="sm">
             Voltar ao Menu
@@ -735,6 +758,7 @@ const TeaHero = () => {
           instrumentType={selectedSong.instrument} 
           onNotePlay={handleNotePlay}
           selectedSong={selectedSong}
+          gameSpeed={gameSpeed}
         />
       </div>
     );
@@ -848,6 +872,75 @@ const TeaHero = () => {
                      selectedSong.instrument === "xylophone" ? "Xilofone" : "Teclado"}
                   </span>
                 </div>
+
+                {/* Controle de Velocidade */}
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border-2 border-purple-200">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <Gauge className="w-5 h-5 text-purple-600" />
+                    <h4 className="text-lg font-medium text-purple-800">
+                      Controle de Velocidade
+                    </h4>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="text-sm text-gray-600 w-20">0.3x</span>
+                      <Slider
+                        value={[gameSpeed]}
+                        onValueChange={(value) => setGameSpeed(value[0])}
+                        min={0.3}
+                        max={2.0}
+                        step={0.1}
+                        className="flex-1 max-w-xs"
+                      />
+                      <span className="text-sm text-gray-600 w-20">2.0x</span>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className={`text-xl font-bold ${getSpeedColor(gameSpeed)}`}>
+                        {getSpeedLabel(gameSpeed)} ({gameSpeed}x)
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Ajuste a velocidade para seu ritmo de aprendizado
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-4 gap-2 text-xs">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setGameSpeed(0.5)}
+                        className={gameSpeed === 0.5 ? "bg-blue-100" : ""}
+                      >
+                        Lento (0.5x)
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setGameSpeed(0.8)}
+                        className={gameSpeed === 0.8 ? "bg-green-100" : ""}
+                      >
+                        Devagar (0.8x)
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setGameSpeed(1.0)}
+                        className={gameSpeed === 1.0 ? "bg-gray-100" : ""}
+                      >
+                        Normal (1.0x)
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setGameSpeed(1.3)}
+                        className={gameSpeed === 1.3 ? "bg-orange-100" : ""}
+                      >
+                        Rápido (1.3x)
+                      </Button>
+                    </div>
+                  </div>
+                </div>
                 
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-purple-800 mb-2">
@@ -864,7 +957,7 @@ const TeaHero = () => {
                   </p>
                   <p className="text-sm text-blue-700">
                     Use as teclas <strong>1-7</strong> para tocar as notas quando elas passarem pela zona dourada!
-                    Esta música foi especialmente selecionada para estimular seu desenvolvimento.
+                    Ajuste a velocidade conforme sua necessidade terapêutica.
                   </p>
                 </div>
 
@@ -892,7 +985,7 @@ const TeaHero = () => {
               utilizando música como ferramenta terapêutica para estimular desenvolvimento cognitivo,
               coordenação motora, memória sequencial e integração sensorial.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-4">
               <div className="bg-green-50 p-3 rounded">
                 <strong className="text-green-800">🟢 Fácil:</strong>
                 <p className="text-green-700">3-4 notas, ritmo simples, melodias familiares</p>
@@ -905,6 +998,12 @@ const TeaHero = () => {
                 <strong className="text-red-800">🔴 Difícil:</strong>
                 <p className="text-red-700">7+ notas, ritmos complexos, melodias elaboradas</p>
               </div>
+            </div>
+            <div className="bg-purple-50 p-3 rounded">
+              <strong className="text-purple-800">⚡ Controle de Velocidade:</strong>
+              <p className="text-purple-700">
+                Ajuste de 0.3x a 2.0x para personalizar a experiência conforme as necessidades terapêuticas individuais
+              </p>
             </div>
           </div>
         </div>
