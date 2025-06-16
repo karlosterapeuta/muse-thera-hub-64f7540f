@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { getMusicalSequence, generateGameNotes } from "@/data/musicalSequences";
+import { getAuthenticMusicalSequence, generateAuthenticGameNotes } from "@/data/authenticMusicalSequences";
 import { playNoteSound, preloadInstrumentAudio } from "@/utils/audioUtils";
 
 interface Note {
@@ -204,44 +205,56 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     console.log("🎵 Background music stopped");
   }, []);
 
-  // Gerar padrão de notas SINCRONIZADAS
+  // Gerar padrão de notas AUTÊNTICAS E SINCRONIZADAS
   const generateNotes = useCallback(() => {
     if (selectedSong?.hasSequence) {
-      const sequence = getMusicalSequence(selectedSong.id);
+      const sequence = getAuthenticMusicalSequence(selectedSong.id);
       if (sequence) {
-        console.log(`🎼 Loading TEA sequence: ${sequence.name}`);
-        console.log(`📊 Notes: ${sequence.notes.length}, BPM: ${sequence.bpm}`);
+        console.log(`🎼 Loading TEA AUTHENTIC sequence: ${sequence.name}`);
+        console.log(`📊 Authentic notes: ${sequence.notes.length}, BPM: ${sequence.bpm}, Duration: ${sequence.totalDuration}ms`);
         
-        const gameNotes = generateGameNotes(sequence, instrumentType);
+        const gameNotes = generateAuthenticGameNotes(sequence, instrumentType);
         const adjustedNotes = gameNotes.map(note => ({
           ...note,
           startTime: note.startTime / gameSpeed
         }));
         setNotes(adjustedNotes);
-        console.log(`Generated ${adjustedNotes.length} SYNCHRONIZED notes for ${selectedSong.title}`);
+        console.log(`🎯 Generated ${adjustedNotes.length} AUTHENTIC SYNCHRONIZED notes for ${selectedSong.title}`);
+        
+        // Feedback especial para sequências autênticas
+        toast(`🎼 MELODIA AUTÊNTICA: ${sequence.name} carregada com ${sequence.notes.length} notas sincronizadas!`, { duration: 3000 });
         return;
       }
     }
 
-    // Fallback: padrão simples
-    console.log(`⚠️ Using simple pattern for ${selectedSong?.title || 'practice'}`);
+    // Fallback: padrão simples melhorado
+    console.log(`⚠️ Using enhanced practice pattern for ${selectedSong?.title || 'practice'}`);
     const newNotes: Note[] = [];
-    const patterns = [ [0, 2, 4], [1, 3, 5], [0, 1, 2], [4, 5, 6] ];
+    
+    // Padrões mais musicais para prática
+    const musicalPatterns = [
+      [0, 2, 4, 2], // C-E-G-E (acorde maior)
+      [4, 3, 2, 1], // G-F-E-D (descida)
+      [0, 1, 2, 3], // C-D-E-F (subida)
+      [4, 5, 6, 4], // G-A-B-G
+      [2, 1, 0, 1], // E-D-C-D
+      [6, 5, 4, 3]  // B-A-G-F
+    ];
 
     let noteId = 0;
-    for (let i = 0; i < 15; i++) {
-      const pattern = patterns[i % patterns.length];
-      const baseTime = (i * 3000) / gameSpeed;
+    for (let i = 0; i < 20; i++) {
+      const pattern = musicalPatterns[i % musicalPatterns.length];
+      const baseTime = (i * 4000) / gameSpeed;
       
       pattern.forEach((laneIndex, noteIndex) => {
         if (laneIndex < lanes.length) {
           newNotes.push({
-            id: `note-${noteId++}`,
+            id: `practice-note-${noteId++}`,
             lane: laneIndex,
             color: lanes[laneIndex].color,
             frequency: lanes[laneIndex].frequency, // Frequência EXATA da lane
-            startTime: baseTime + (noteIndex * 800) / gameSpeed,
-            duration: 500 / gameSpeed,
+            startTime: baseTime + (noteIndex * 1000) / gameSpeed,
+            duration: 800 / gameSpeed,
             y: -100
           });
         }
@@ -249,6 +262,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     }
 
     setNotes(newNotes);
+    toast(`🎯 Padrão de prática musical carregado com ${newNotes.length} notas`, { duration: 2000 });
   }, [instrumentType, lanes, selectedSong, gameSpeed]);
 
   // Atualizar posição das notas
@@ -409,7 +423,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
 
   const getInstrumentTitle = () => {
     if (selectedSong?.hasSequence) {
-      return `🎼 ${selectedSong.title}`;
+      return `🎼 ${selectedSong.title} (AUTÊNTICA)`;
     }
     
     switch (instrumentType) {
@@ -427,15 +441,15 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-2xl font-bold">
-              {selectedSong?.hasSequence ? `🎼 ${selectedSong.title}` : `🔔 TEA ${instrumentType}-Hero`}
+              {getInstrumentTitle()}
             </h1>
             {selectedSong?.hasSequence && (
               <p className="text-sm opacity-90">
-                🎼 Sequência musical TEA sincronizada • Velocidade: {gameSpeed}x
+                🎼 Melodia autêntica TEA sincronizada • Velocidade: {gameSpeed}x
               </p>
             )}
             <p className="text-xs text-green-300">
-              🔊 Áudio TEA-optimizado {audioReady ? 'ATIVO' : 'BÁSICO'} - frequências 100% sincronizadas
+              🔊 Áudio TEA-autêntico {audioReady ? 'ATIVO' : 'BÁSICO'} - melodias 100% reconhecíveis
             </p>
           </div>
           <div className="flex gap-2">
@@ -480,7 +494,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
             </span>
           )}
           <span className="block mt-1 text-green-200">
-            🔊 <strong>Áudio TEA sincronizado:</strong> Cada nota visual toca exatamente a frequência correta
+            🔊 <strong>Sistema TEA-Autêntico:</strong> Cada nota visual = frequência musical exata + melodias reconhecíveis
           </span>
         </p>
       </div>

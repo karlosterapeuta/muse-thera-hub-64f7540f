@@ -1,7 +1,7 @@
-// Sistema de áudio TEA-HERO CORRIGIDO e SINCRONIZADO
+// Sistema de áudio TEA-HERO TOTALMENTE REFORMULADO
 
-// Frequências EXATAS sincronizadas com lanes do jogo
-const noteFrequencies: Record<string, number> = {
+// Frequências EXATAS sincronizadas com as sequências musicais
+const authenticNoteFrequencies: Record<string, number> = {
   // Sino (Bell) - C4 a B4
   "C": 261.63, "D": 293.66, "E": 329.63, "F": 349.23, "G": 392.00, "A": 440.00, "B": 493.88,
   // Xilofone - C5 a B5  
@@ -10,9 +10,10 @@ const noteFrequencies: Record<string, number> = {
   "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, "G4": 392.00, "A4": 440.00, "B4": 493.88,
 };
 
-import { playInstrumentNote, realAudioService } from '@/services/realAudioService';
+import { playAuthenticTEANote, teaAudioEngine } from './teaAudioEngine';
+import { realAudioService } from '@/services/realAudioService';
 
-// FUNÇÃO PRINCIPAL - TEA-OPTIMIZED
+// FUNÇÃO PRINCIPAL - TEA-OPTIMIZED COM SEQUÊNCIAS AUTÊNTICAS
 export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylophone" | "keyboard") => {
   try {
     // Determinar frequência CORRIGIDA baseada no instrumento
@@ -23,95 +24,126 @@ export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylo
     } else {
       // Mapear nota para frequência CORRETA do instrumento
       if (instrument === 'xylophone') {
-        frequency = noteFrequencies[noteKey + '5'] || noteFrequencies[noteKey] || 523.25;
+        frequency = authenticNoteFrequencies[noteKey + '5'] || authenticNoteFrequencies[noteKey] || 523.25;
       } else {
-        frequency = noteFrequencies[noteKey] || 261.63;
+        frequency = authenticNoteFrequencies[noteKey] || 261.63;
       }
     }
 
-    // USAR SÍNTESE TEA-OPTIMIZADA
+    // USAR MOTOR TEA AUTÊNTICO
     if (instrument) {
-      console.log(`🎵 TEA-Hero: Playing ${instrument} at ${frequency}Hz`);
+      console.log(`🎼 TEA-Authentic: Playing ${instrument} at ${frequency}Hz`);
       
-      const success = await playInstrumentNote(instrument, frequency, 1.2, 1.5);
+      const success = await playAuthenticTEANote(instrument, frequency, 1.3, 1.8);
       if (success) {
-        console.log(`✅ TEA audio success: ${instrument} - ${frequency}Hz`);
+        console.log(`✅ TEA authentic audio success: ${instrument} - ${frequency}Hz`);
         return;
       }
     }
 
     // FALLBACK: Síntese BÁSICA mas OTIMIZADA
     console.log(`🔄 TEA fallback synthesis for ${frequency}Hz`);
-    
+    await playBasicTEASynthesis(frequency, instrument);
+
+  } catch (error) {
+    console.error("TEA audio completely failed:", error);
+  }
+};
+
+// Síntese básica otimizada para TEA
+const playBasicTEASynthesis = async (frequency: number, instrument?: string) => {
+  try {
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     const audioContext = new AudioContext();
     
-    // CONFIGURAÇÃO TEA-ESPECÍFICA
+    // CONFIGURAÇÃO TEA-ESPECÍFICA MELHORADA
     let waveType: OscillatorType = 'triangle';
-    let teaVolume = 1.4; // Volume amplificado para TEA
+    let teaVolume = 1.6; // Volume amplificado para TEA
     
     if (instrument === 'bell') {
       waveType = 'sine';
-      teaVolume = 1.6;
+      teaVolume = 1.8;
     } else if (instrument === 'xylophone') {
-      waveType = 'square';
-      teaVolume = 1.5;
+      waveType = 'triangle';
+      teaVolume = 1.7;
     } else if (instrument === 'keyboard') {
       waveType = 'sawtooth';
-      teaVolume = 1.4;
+      teaVolume = 1.6;
     }
     
-    // Oscilador PRINCIPAL
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = waveType;
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    // Oscilador PRINCIPAL com harmônicos
+    const oscillator1 = audioContext.createOscillator();
+    const oscillator2 = audioContext.createOscillator();
     
-    // Envelope ADSR para TEA
-    const gainNode = audioContext.createGain();
-    const attackTime = 0.002;
-    const decayTime = 0.015;
-    const sustainLevel = 0.95;
-    const releaseTime = 1.2;
+    oscillator1.type = waveType;
+    oscillator1.frequency.setValueAtTime(frequency, audioContext.currentTime);
     
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(teaVolume, audioContext.currentTime + attackTime);
-    gainNode.gain.exponentialRampToValueAtTime(sustainLevel, audioContext.currentTime + attackTime + decayTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
+    oscillator2.type = 'sine';
+    oscillator2.frequency.setValueAtTime(frequency * 2, audioContext.currentTime); // Harmônico
     
-    // COMPRESSOR para consistência
+    // Envelope ADSR TEA-optimized
+    const gainNode1 = audioContext.createGain();
+    const gainNode2 = audioContext.createGain();
+    const masterGain = audioContext.createGain();
+    
+    const attackTime = 0.001;
+    const decayTime = 0.01;
+    const sustainLevel = 0.9;
+    const releaseTime = 1.5;
+    
+    // Principal
+    gainNode1.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode1.gain.linearRampToValueAtTime(teaVolume, audioContext.currentTime + attackTime);
+    gainNode1.gain.exponentialRampToValueAtTime(sustainLevel, audioContext.currentTime + attackTime + decayTime);
+    gainNode1.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
+    
+    // Harmônico (mais sutil)
+    gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode2.gain.linearRampToValueAtTime(teaVolume * 0.3, audioContext.currentTime + attackTime);
+    gainNode2.gain.exponentialRampToValueAtTime(sustainLevel * 0.3, audioContext.currentTime + attackTime + decayTime);
+    gainNode2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + attackTime + decayTime + releaseTime);
+    
+    masterGain.gain.setValueAtTime(1, audioContext.currentTime);
+    
+    // COMPRESSOR SUPER para TEA
     const compressor = audioContext.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-6, audioContext.currentTime);
-    compressor.ratio.setValueAtTime(15, audioContext.currentTime);
+    compressor.threshold.setValueAtTime(-4, audioContext.currentTime);
+    compressor.ratio.setValueAtTime(25, audioContext.currentTime);
     compressor.attack.setValueAtTime(0.0001, audioContext.currentTime);
-    compressor.release.setValueAtTime(0.04, audioContext.currentTime);
+    compressor.release.setValueAtTime(0.02, audioContext.currentTime);
     
-    // EQ para clareza
+    // EQ para clareza auditiva TEA
     const filter = audioContext.createBiquadFilter();
     filter.type = 'peaking';
-    filter.frequency.setValueAtTime(frequency * 1.5, audioContext.currentTime);
-    filter.Q.setValueAtTime(2, audioContext.currentTime);
-    filter.gain.setValueAtTime(6, audioContext.currentTime);
+    filter.frequency.setValueAtTime(frequency * 1.8, audioContext.currentTime);
+    filter.Q.setValueAtTime(3, audioContext.currentTime);
+    filter.gain.setValueAtTime(10, audioContext.currentTime);
     
-    // Conectar
-    oscillator.connect(gainNode);
-    gainNode.connect(filter);
+    // Conectar pipeline
+    oscillator1.connect(gainNode1);
+    oscillator2.connect(gainNode2);
+    gainNode1.connect(masterGain);
+    gainNode2.connect(masterGain);
+    masterGain.connect(filter);
     filter.connect(compressor);
     compressor.connect(audioContext.destination);
     
     const totalDuration = attackTime + decayTime + releaseTime;
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + totalDuration);
+    oscillator1.start();
+    oscillator2.start();
+    oscillator1.stop(audioContext.currentTime + totalDuration);
+    oscillator2.stop(audioContext.currentTime + totalDuration);
     
-    console.log(`🔊 TEA fallback: ${noteKey} at ${frequency}Hz with ${waveType}`);
+    console.log(`🔊 TEA enhanced fallback: ${frequency}Hz with harmonics and ${waveType}`);
     
-    oscillator.onended = () => {
+    oscillator1.onended = () => {
       if (audioContext.state !== 'closed') {
         setTimeout(() => { audioContext.close(); }, 100);
       }
     };
 
   } catch (error) {
-    console.error("TEA audio completely failed:", error);
+    console.error("TEA enhanced synthesis failed:", error);
   }
 };
 
@@ -449,21 +481,22 @@ export const audioFallbackUrls: Record<string, string> = {
   infantil: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1ebd.mp3", // Música infantil
 };
 
-// NOVA função para pré-carregar áudio por instrumento
+// NOVA função para pré-carregar áudio TEA otimizado
 export const preloadInstrumentAudio = async (instrument: "bell" | "xylophone" | "keyboard"): Promise<void> => {
   try {
-    console.log(`🎵 Initializing TEA audio for ${instrument}...`);
-    // Por enquanto só inicializa o serviço
-    await realAudioService.playOptimizedAudio({
-      instrument,
-      note: 'C',
-      frequency: instrument === 'xylophone' ? 523.25 : 261.63,
-      volume: 0.01, // Volume mínimo para teste
-      duration: 0.01
-    });
-    console.log(`✅ TEA audio ready for ${instrument}`);
+    console.log(`🎵 Initializing TEA authentic audio for ${instrument}...`);
+    
+    // Inicializar motor TEA
+    await teaAudioEngine.initialize();
+    
+    // Teste de áudio com volume mínimo
+    await playAuthenticTEANote(instrument, instrument === 'xylophone' ? 523.25 : 261.63, 0.01, 0.01);
+    
+    console.log(`✅ TEA authentic audio ready for ${instrument}`);
+    console.log(`🎯 Motor TEA status:`, teaAudioEngine.getStatus());
+    
   } catch (error) {
-    console.warn(`⚠️ TEA audio preload failed for ${instrument}:`, error);
+    console.warn(`⚠️ TEA authentic audio preload failed for ${instrument}:`, error);
   }
 };
 

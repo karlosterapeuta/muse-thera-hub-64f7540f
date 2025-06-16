@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
+import { getAuthenticMusicalSequence } from "@/data/authenticMusicalSequences";
 
 const TeaHero = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
@@ -13,11 +14,11 @@ const TeaHero = () => {
   const [gameSpeed, setGameSpeed] = useState(1.0);
   const [gameStarted, setGameStarted] = useState(false);
 
-  // 18 MÚSICAS INFANTIS COMPLETAS com sequências sincronizadas
+  // 18 MÚSICAS INFANTIS AUTÊNTICAS com sequências musicais reconhecíveis
   const songs = {
     bell: [
       { id: "twinkle-bell", title: "Brilha, Brilha Estrelinha", hasSequence: true },
-      { id: "mary-lamb-bell", title: "Maria, Maria", hasSequence: true },
+      { id: "mary-lamb-bell", title: "Maria, Maria (Elis Regina)", hasSequence: true },
       { id: "borboletinha-bell", title: "Borboletinha", hasSequence: true },
       { id: "galinha-pintadinha-bell", title: "Galinha Pintadinha", hasSequence: true },
       { id: "atirei-pau-bell", title: "Atirei o Pau no Gato", hasSequence: true },
@@ -78,15 +79,16 @@ const TeaHero = () => {
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          🎵 TEA-Hero
+          🎵 TEA-Hero AUTÊNTICO
         </h1>
         <p className="text-lg text-muted-foreground">
-          Jogo musical terapêutico com áudio 100% sincronizado para TEA
+          Jogo musical terapêutico com melodias 100% autênticas e reconhecíveis para TEA
         </p>
         <div className="flex justify-center gap-2">
+          <Badge variant="secondary">🎼 Melodias Autênticas</Badge>
           <Badge variant="secondary">🔊 Áudio TEA-Optimizado</Badge>
-          <Badge variant="secondary">🎼 18 Melodias Infantis</Badge>
-          <Badge variant="secondary">🎯 Frequências Sincronizadas</Badge>
+          <Badge variant="secondary">🎯 18 Canções Reconhecíveis</Badge>
+          <Badge variant="secondary">🎵 Sincronização Perfeita</Badge>
         </div>
       </div>
 
@@ -95,10 +97,10 @@ const TeaHero = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🎛️ Configurações TEA
+              🎛️ Configurações TEA-Autênticas
             </CardTitle>
             <CardDescription>
-              Configure instrumento, música e velocidade para a experiência TEA ideal
+              Configure instrumento, música autêntica e velocidade para a experiência TEA ideal
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -117,9 +119,9 @@ const TeaHero = () => {
               </Select>
             </div>
 
-            {/* Seleção de Música */}
+            {/* Seleção de Música AUTÊNTICA */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Música TEA (18 disponíveis)</label>
+              <label className="text-sm font-medium">Música TEA Autêntica (18 disponíveis)</label>
               <Select 
                 value={selectedSong?.id || "free-mode"} 
                 onValueChange={(value) => {
@@ -132,13 +134,13 @@ const TeaHero = () => {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma música..." />
+                  <SelectValue placeholder="Selecione uma música autêntica..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="free-mode">🎲 Modo Livre (Padrão Aleatório)</SelectItem>
+                  <SelectItem value="free-mode">🎲 Modo Livre (Padrão Musical)</SelectItem>
                   {songs[selectedInstrument].map((song) => (
                     <SelectItem key={song.id} value={song.id}>
-                      🎼 {song.title}
+                      🎼 {song.title} (AUTÊNTICA)
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -174,30 +176,30 @@ const TeaHero = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              ℹ️ Sobre o TEA-Hero
+              ℹ️ Sobre o TEA-Hero Autêntico
             </CardTitle>
             <CardDescription>
-              Sistema de áudio musical terapêutico otimizado para TEA
+              Sistema de melodias musicais autênticas otimizado para TEA
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <div className="text-2xl">🔊</div>
+                <div className="text-2xl">🎼</div>
                 <div>
-                  <h4 className="font-medium">Áudio TEA-Optimizado</h4>
+                  <h4 className="font-medium">Melodias 100% Autênticas</h4>
                   <p className="text-sm text-muted-foreground">
-                    Volume 60% amplificado, compressão dinâmica e frequências sincronizadas
+                    Cada música toca a melodia exata e reconhecível da canção original
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="text-2xl">🎼</div>
+                <div className="text-2xl">🔊</div>
                 <div>
-                  <h4 className="font-medium">18 Melodias Infantis</h4>
+                  <h4 className="font-medium">Áudio TEA-Otimizado</h4>
                   <p className="text-sm text-muted-foreground">
-                    Sequências musicais autênticas e reconhecíveis para cada instrumento
+                    Volume amplificado, compressão dinâmica e frequências sincronizadas
                   </p>
                 </div>
               </div>
@@ -205,9 +207,9 @@ const TeaHero = () => {
               <div className="flex items-start gap-3">
                 <div className="text-2xl">🎯</div>
                 <div>
-                  <h4 className="font-medium">Sincronização Perfeita</h4>
+                  <h4 className="font-medium">Sincronização Musical Perfeita</h4>
                   <p className="text-sm text-muted-foreground">
-                    Cada nota visual toca exatamente a frequência correspondente
+                    Cada nota visual toca exatamente a frequência e timing da música original
                   </p>
                 </div>
               </div>
@@ -217,23 +219,26 @@ const TeaHero = () => {
                 <div>
                   <h4 className="font-medium">Como Jogar</h4>
                   <p className="text-sm text-muted-foreground">
-                    Use as teclas 1-7 para tocar as notas quando passarem pela zona dourada
+                    Use as teclas 1-7 para tocar as notas e formar melodias autênticas reconhecíveis
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Status da música selecionada */}
+            {/* Status da música selecionada MELHORADO */}
             {selectedSong && (
               <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border">
                 <h4 className="font-medium text-blue-900 dark:text-blue-100">
-                  🎼 Música Selecionada:
+                  🎼 Melodia Autêntica Selecionada:
                 </h4>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   {selectedSong.title} para {selectedInstrument}
                 </p>
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                  ✅ Sequência musical autêntica com frequências sincronizadas
+                  ✅ Melodia original com frequências autênticas e timing sincronizado
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  🎵 Esta música será 100% reconhecível quando tocada corretamente
                 </p>
               </div>
             )}
@@ -241,10 +246,10 @@ const TeaHero = () => {
             {!selectedSong && (
               <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg border">
                 <h4 className="font-medium text-yellow-900 dark:text-yellow-100">
-                  🎲 Modo Livre Ativo
+                  🎲 Modo Prática Musical Ativo
                 </h4>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  Padrão de notas aleatório para prática livre
+                  Padrões musicais harmoniosos para prática livre
                 </p>
               </div>
             )}
