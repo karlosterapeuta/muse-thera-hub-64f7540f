@@ -1,10 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { generatePDF } from "../utils/pdfGenerator";
+import { generateDOC } from "@/utils/docGenerator";
 import type { Database } from "@/integrations/supabase/types";
 
 type ReportType = Database["public"]["Enums"]["report_type"];
@@ -141,90 +142,95 @@ export function ReportSubmission({
     return true;
   };
 
+  const saveReport = async () => {
+    console.log("=== Iniciando salvamento de relatório ===");
+    console.log("Dados do formulário:", formData);
+    
+    if (!validateRequiredData()) {
+      return null;
+    }
+
+    toast({
+      title: "Processando...",
+      description: "Verificando dados do profissional...",
+    });
+
+    const professionalId = await ensureProfessionalExists();
+    await validateProfessionalExists(professionalId);
+
+    toast({
+      title: "Processando...",
+      description: "Salvando relatório...",
+    });
+
+    const safeContent = formData.content && typeof formData.content === 'object' 
+      ? formData.content 
+      : {};
+
+    console.log("Preparando dados do relatório com professionalId:", professionalId);
+
+    const reportData = {
+      patient_id: formData.patient_id!,
+      professional_id: professionalId,
+      type: formData.type!,
+      content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log("Dados do relatório a serem salvos:", reportData);
+
+    let result;
+    if (reportId) {
+      console.log("Atualizando relatório existente:", reportId);
+      result = await supabase
+        .from("reports")
+        .update(reportData)
+        .eq("id", reportId)
+        .select()
+        .single();
+    } else {
+      console.log("Criando novo relatório");
+      result = await supabase
+        .from("reports")
+        .insert({
+          ...reportData,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+    }
+
+    if (result.error) {
+      console.error("Erro detalhado do Supabase:", result.error);
+      console.error("Código do erro:", result.error.code);
+      console.error("Mensagem do erro:", result.error.message);
+      console.error("Detalhes do erro:", result.error.details);
+      throw new Error(`Erro ao salvar relatório: ${result.error.message}`);
+    }
+
+    console.log("Relatório salvo com sucesso:", result.data);
+
+    if (onSaveSuccess && result.data) {
+      onSaveSuccess(result.data.id);
+    }
+
+    return {
+      patient_id: formData.patient_id!,
+      type: formData.type!,
+      date: formData.date || new Date(),
+      content: safeContent,
+    };
+  };
+
   const handleSaveAndGeneratePDF = async () => {
     try {
-      console.log("=== Iniciando salvamento de relatório ===");
-      console.log("Dados do formulário:", formData);
-      
-      if (!validateRequiredData()) {
-        return;
-      }
-
-      toast({
-        title: "Processando...",
-        description: "Verificando dados do profissional...",
-      });
-
-      const professionalId = await ensureProfessionalExists();
-      await validateProfessionalExists(professionalId);
-
-      toast({
-        title: "Processando...",
-        description: "Salvando relatório...",
-      });
-
-      const safeContent = formData.content && typeof formData.content === 'object' 
-        ? formData.content 
-        : {};
-
-      console.log("Preparando dados do relatório com professionalId:", professionalId);
-
-      const reportData = {
-        patient_id: formData.patient_id!,
-        professional_id: professionalId,
-        type: formData.type!,
-        content: safeContent as Database["public"]["Tables"]["reports"]["Insert"]["content"],
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log("Dados do relatório a serem salvos:", reportData);
-
-      let result;
-      if (reportId) {
-        console.log("Atualizando relatório existente:", reportId);
-        result = await supabase
-          .from("reports")
-          .update(reportData)
-          .eq("id", reportId)
-          .select()
-          .single();
-      } else {
-        console.log("Criando novo relatório");
-        result = await supabase
-          .from("reports")
-          .insert({
-            ...reportData,
-            created_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
-      }
-
-      if (result.error) {
-        console.error("Erro detalhado do Supabase:", result.error);
-        console.error("Código do erro:", result.error.code);
-        console.error("Mensagem do erro:", result.error.message);
-        console.error("Detalhes do erro:", result.error.details);
-        throw new Error(`Erro ao salvar relatório: ${result.error.message}`);
-      }
-
-      console.log("Relatório salvo com sucesso:", result.data);
+      const pdfData = await saveReport();
+      if (!pdfData) return;
 
       toast({
         title: "Relatório salvo!",
         description: "Gerando PDF...",
       });
-
-      if (onSaveSuccess && result.data) {
-        onSaveSuccess(result.data.id);
-      }
-
-      const pdfData = {
-        patient_id: formData.patient_id!,
-        type: formData.type!,
-        date: formData.date || new Date(),
-        content: safeContent,
-      };
       
       await generatePDF(selectedPatient.name, pdfData, professionalData, userEmail, userName);
 
@@ -263,8 +269,52 @@ export function ReportSubmission({
     }
   };
 
+  const handleSaveAndGenerateDOC = async () => {
+    try {
+      const docData = await saveReport();
+      if (!docData) return;
+
+      toast({
+        title: "Relatório salvo!",
+        description: "Gerando documento Word...",
+      });
+      
+      await generateDOC(docData, selectedPatient.name, professionalData, userEmail, userName);
+
+      toast({
+        title: "Concluído!",
+        description: "Relatório salvo e documento Word gerado com sucesso.",
+      });
+
+      navigate("/processes/reports");
+
+    } catch (error) {
+      console.error("=== Erro no processo completo (DOC) ===");
+      console.error("Erro:", error);
+      
+      let errorMessage = "Erro desconhecido";
+      let suggestion = "Tente novamente ou entre em contato com o suporte.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        if (error.message.includes("professional")) {
+          suggestion = "Tente fazer logout e login novamente, ou entre em contato com o administrador.";
+        } else if (error.message.includes("network") || error.message.includes("fetch")) {
+          suggestion = "Verifique sua conexão com a internet e tente novamente.";
+        }
+      }
+
+      toast({
+        variant: "destructive",
+        title: "Erro ao processar relatório",
+        description: `${errorMessage}. ${suggestion}`,
+      });
+    }
+  };
+
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end gap-3">
       <Button
         onClick={handleSaveAndGeneratePDF}
         className="w-48"
@@ -272,6 +322,16 @@ export function ReportSubmission({
       >
         <Download className="mr-2 h-4 w-4" />
         Salvar e Baixar PDF
+      </Button>
+      
+      <Button
+        onClick={handleSaveAndGenerateDOC}
+        variant="outline"
+        className="w-48"
+        disabled={isContentEmpty}
+      >
+        <FileText className="mr-2 h-4 w-4" />
+        Salvar e Baixar DOC
       </Button>
     </div>
   );
