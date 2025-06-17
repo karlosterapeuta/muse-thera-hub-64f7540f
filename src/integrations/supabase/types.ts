@@ -546,6 +546,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          license_number: string | null
           name: string
           phone: string | null
           register: string | null
@@ -559,6 +560,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          license_number?: string | null
           name: string
           phone?: string | null
           register?: string | null
@@ -572,6 +574,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          license_number?: string | null
           name?: string
           phone?: string | null
           register?: string | null

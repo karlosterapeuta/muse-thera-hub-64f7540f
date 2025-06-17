@@ -27,6 +27,8 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { ProfessionalAvatar } from "./ProfessionalAvatar";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -35,6 +37,7 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { data: isAdmin } = useAdmin();
+  const { data: professional } = useProfessionalData();
 
   // Buscar o email do usuário atual
   const { data: userEmail } = useQuery({
@@ -81,12 +84,18 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     );
   }
 
-  const getUserDisplayName = () => {
-    if (!userEmail) return "Carregando...";
+  const getProfessionalInfo = () => {
+    if (!professional) {
+      return {
+        name: "Carregando...",
+        role: "Profissional"
+      };
+    }
     
-    // Extrair apenas a parte antes do @ para economizar espaço
-    const username = userEmail.split('@')[0];
-    return username;
+    return {
+      name: professional.name || "Profissional",
+      role: professional.specialty || "Musicoterapeuta"
+    };
   };
 
   const handleLogout = async () => {
@@ -182,6 +191,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     </div>
   );
 
+  const professionalInfo = getProfessionalInfo();
+
   return (
     <div
       className={cn(
@@ -208,8 +219,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
               <span className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 MuseTera
               </span>
-              <span className="text-xs text-slate-500/80 font-medium -mt-1" title={userEmail || "Usuário não identificado"}>
-                {getUserDisplayName()}
+              <span className="text-xs text-slate-500/80 font-medium -mt-1">
+                Sistema de Musicoterapia
               </span>
             </div>
           )}
@@ -228,6 +239,28 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
             )} 
           />
         </Button>
+      </div>
+
+      {/* Professional Info Section */}
+      <div className="relative p-4 border-b border-white/20 bg-white/10 backdrop-blur-sm">
+        <div className="flex items-center space-x-3">
+          <ProfessionalAvatar size="md" editable={!collapsed} />
+          {!collapsed && (
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-sm font-semibold text-slate-800 truncate">
+                {professionalInfo.name}
+              </span>
+              <span className="text-xs text-slate-500/80 truncate">
+                {professionalInfo.role}
+              </span>
+              {professional?.license_number && (
+                <span className="text-xs text-slate-400/80 truncate">
+                  {professional.license_number}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}
