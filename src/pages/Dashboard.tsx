@@ -1,34 +1,97 @@
-
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Clock } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
 import { Card } from "@/components/ui/card";
 import { useDashboardData } from "./Dashboard/hooks/useDashboardData";
 import { DashboardStats } from "./Dashboard/components/DashboardStats";
 import { UnifiedWeeklySchedule } from "./Dashboard/components/UnifiedWeeklySchedule";
 import { FinancialAgenda } from "./Dashboard/components/FinancialAgenda";
+import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
   const dashboardData = useDashboardData();
+  const { data: professional, isLoading: isLoadingProfessional } = useProfessionalData();
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  // Update current date time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 60000);
+    
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(date);
+  };
+
+  const formatTime = (date: Date) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-6 space-y-8 animate-fadeIn">
-        {/* Hero Section */}
-        <div className="text-center space-y-6">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 blur-3xl rounded-full"></div>
-            <LogoRound size="lg" className="relative animate-pulse-gentle" />
+        {/* Custom Header Section */}
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
+          <div className="p-6 md:p-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              {/* System Information (Left Side) */}
+              <div className="flex items-center gap-4">
+                <LogoRound size="md" className="animate-pulse-gentle" />
+                <div className="space-y-1">
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Sistema MuseTera
+                  </h1>
+                  <p className="text-md text-gray-600">
+                    Plataforma de Musicoterapia
+                  </p>
+                </div>
+              </div>
+
+              {/* Professional Information (Right Side) */}
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="text-right order-2 md:order-1">
+                  <div className="flex flex-col items-end">
+                    <h2 className="font-semibold text-lg text-gray-800">
+                      {isLoadingProfessional ? "Carregando..." : professional?.name}
+                    </h2>
+                    <p className="text-gray-600">
+                      {professional?.specialty || "Musicoterapeuta"}
+                    </p>
+                    {professional?.license_number && (
+                      <p className="text-sm text-gray-500">
+                        Registro: {professional.license_number}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
+                      <CalendarDays className="h-3.5 w-3.5" />
+                      <span>{formatDate(currentDateTime)}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{formatTime(currentDateTime)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="order-1 md:order-2">
+                  <ProfessionalAvatar size="lg" editable={true} />
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Dashboard
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Bem-vindo ao seu painel de controle musicoterapêutico
-            </p>
-          </div>
-        </div>
+        </Card>
 
         {/* Stats Cards */}
         <DashboardStats
