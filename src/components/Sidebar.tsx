@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -203,27 +204,14 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/3 to-pink-500/3"></div>
       
-      {/* Header */}
-      <div className="relative flex items-center justify-between p-4 border-b border-white/20 bg-white/20 backdrop-blur-sm">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
-              alt="MuseTera"
-              className="h-8 w-8 rounded-lg shadow-md ring-1 ring-white/40"
-            />
-            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col">
-              <span className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                MuseTera
-              </span>
-              <span className="text-xs text-slate-500/80 font-medium -mt-1">
-                Sistema de Musicoterapia
-              </span>
-            </div>
-          )}
+      {/* Simplified Header */}
+      <div className="relative flex items-center justify-between p-3 border-b border-white/20 bg-white/20 backdrop-blur-sm">
+        <div className="flex items-center">
+          <img
+            src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+            alt="MuseTera"
+            className="h-8 w-8 rounded-lg shadow-md ring-1 ring-white/40"
+          />
         </div>
         <Button
           variant="ghost"
@@ -247,6 +235,11 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           <ProfessionalAvatar size="md" editable={!collapsed} />
           {!collapsed && (
             <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">
+                  MuseTera
+                </span>
+              </div>
               <span className="text-sm font-semibold text-slate-800 truncate">
                 {professionalInfo.name}
               </span>
