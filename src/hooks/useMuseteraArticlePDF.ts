@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import html2pdf from 'html2pdf.js';
 import { toast } from 'sonner';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import React from 'react';
 import { MuseteraScientificArticle } from '@/components/MuseteraScientificArticle';
 
 export const useMuseteraArticlePDF = () => {
@@ -16,13 +17,6 @@ export const useMuseteraArticlePDF = () => {
     try {
       toast.loading("Gerando artigo científico em PDF...");
 
-      // Criar o conteúdo do artigo
-      const articleContent = (
-        <div id="article-content" style={{ display: 'block' }}>
-          <MuseteraScientificArticle />
-        </div>
-      );
-
       // Criar container temporário
       const container = document.createElement('div');
       container.style.position = 'absolute';
@@ -31,10 +25,13 @@ export const useMuseteraArticlePDF = () => {
       document.body.appendChild(container);
 
       const root = document.createElement('div');
+      root.id = 'article-content';
+      root.style.display = 'block';
       container.appendChild(root);
 
-      // Renderizar o componente
-      ReactDOM.render(articleContent, root);
+      // Criar e renderizar o componente usando createRoot
+      const reactRoot = createRoot(root);
+      reactRoot.render(React.createElement(MuseteraScientificArticle));
 
       // Aguardar renderização
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -72,6 +69,7 @@ export const useMuseteraArticlePDF = () => {
       await html2pdf().set(opt).from(root).save();
       
       // Limpar
+      reactRoot.unmount();
       document.body.removeChild(container);
       
       toast.success("Artigo científico gerado com sucesso!");
