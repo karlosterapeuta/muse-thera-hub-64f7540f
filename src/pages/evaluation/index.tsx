@@ -42,6 +42,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useMuseteraArticlePDF } from "@/hooks/useMuseteraArticlePDF";
+import { FileText as ArticleIcon, BookOpen } from "lucide-react";
 
 interface Patient {
   id: string;
@@ -58,6 +60,7 @@ export default function Evaluation() {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("evaluation");
+  const { generateArticlePDF, isGenerating } = useMuseteraArticlePDF();
 
   useEffect(() => {
     async function fetchPatients() {
@@ -600,6 +603,25 @@ export default function Evaluation() {
                   <SelectItem value="4">Avaliação Final</SelectItem>
                 </SelectContent>
               </Select>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={generateArticlePDF}
+                      disabled={isGenerating}
+                      variant="outline"
+                      className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      {isGenerating ? "Gerando..." : "Artigo Científico"}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Baixa artigo científico completo sobre a Escala MuseTera</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
               
               <TooltipProvider>
                 <TooltipComponent>
