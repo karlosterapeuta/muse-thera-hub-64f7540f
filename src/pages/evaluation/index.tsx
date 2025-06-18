@@ -517,6 +517,15 @@ export default function Evaluation() {
     <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
       <EvaluationLevelsHero />
       
+      <div className="text-center mb-6">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">
+          Escala MuseTera
+        </h1>
+        <p className="text-sm sm:text-base text-gray-600">
+          Instrumento de Avaliação Musicoterapêutica
+        </p>
+      </div>
+      
       <Card className="p-4 sm:p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
