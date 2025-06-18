@@ -102,6 +102,7 @@ export default function Evaluation() {
       title: "Domínio Musical",
       description: "Avaliação das habilidades e respostas musicais",
       icon: "🎵",
+      color: "from-purple-500 to-pink-500",
       subdomains: [
         {
           title: "Percepção Musical",
@@ -131,6 +132,7 @@ export default function Evaluation() {
       title: "Domínio Psicossocial",
       description: "Avaliação dos aspectos psicológicos e sociais",
       icon: "👥",
+      color: "from-blue-500 to-cyan-500",
       subdomains: [
         {
           title: "Interação Social",
@@ -160,6 +162,7 @@ export default function Evaluation() {
       title: "Domínio Cognitivo",
       description: "Avaliação das funções cognitivas",
       icon: "🧠",
+      color: "from-emerald-500 to-teal-500",
       subdomains: [
         {
           title: "Funções Executivas",
@@ -189,6 +192,7 @@ export default function Evaluation() {
       title: "Domínio Sensório-Motor",
       description: "Avaliação da integração sensorial e motora",
       icon: "👐",
+      color: "from-orange-500 to-red-500",
       subdomains: [
         {
           title: "Coordenação Motora",
@@ -218,6 +222,7 @@ export default function Evaluation() {
       title: "Domínio Desenvolvimento da Fala",
       description: "Avaliação específica para pacientes com atraso na fala",
       icon: "🗣️",
+      color: "from-indigo-500 to-purple-500",
       subdomains: [
         {
           title: "Desenvolvimento Fonológico",
@@ -360,7 +365,7 @@ export default function Evaluation() {
     { name: "A desenvolver", value: 100 - overallScore.percentage },
   ];
 
-  const COLORS = ['#4ade80', '#ffa1b5'];
+  const COLORS = ['#10b981', '#f97316'];
 
   const [userName, setUserName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
@@ -514,372 +519,413 @@ export default function Evaluation() {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
-      <EvaluationLevelsHero />
-      
-      <div className="text-center mb-6">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">
-          Escala MuseTera
-        </h1>
-        <p className="text-sm sm:text-base text-gray-600">
-          Instrumento de Avaliação Musicoterapêutica
-        </p>
-      </div>
-      
-      <Card className="p-4 sm:p-6 shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <PatientSelect
-              patients={patients}
-              selectedPatient={selectedPatient}
-              onSelect={setSelectedPatient}
-              isLoading={isLoading}
-              emptyMessage="Nenhum paciente cadastrado por você"
-            />
-            {selectedPatientData && (
-              <div>
-                <p className="text-sm sm:text-base text-gray-600">
-                  Idade: {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
-                </p>
-              </div>
-            )}
-            
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Data da Avaliação</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[200px] justify-start text-left font-normal",
-                      !evaluationDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={evaluationDate}
-                    onSelect={(date) => date && setEvaluationDate(date)}
-                    disabled={(date) => date > new Date()}
-                    initialFocus
-                    className="pointer-events-auto"
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
+        <EvaluationLevelsHero />
+        
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+            Escala MuseTera
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-600 font-medium">
+            Instrumento de Avaliação Musicoterapêutica
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
+        </div>
+        
+        <Card className="backdrop-blur-sm bg-white/90 border-0 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
+            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+              <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
+                <div className="bg-white rounded-xl p-4">
+                  <PatientSelect
+                    patients={patients}
+                    selectedPatient={selectedPatient}
+                    onSelect={setSelectedPatient}
+                    isLoading={isLoading}
+                    emptyMessage="Nenhum paciente cadastrado por você"
                   />
-                </PopoverContent>
-              </Popover>
+                </div>
+              </div>
+              
+              {selectedPatientData && (
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200">
+                  <p className="text-sm font-medium text-emerald-800">
+                    <span className="text-emerald-600">Idade:</span> {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
+                  </p>
+                </div>
+              )}
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700">Data da Avaliação</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[220px] justify-start text-left font-normal bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300",
+                        !evaluationDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
+                      {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 border-0 shadow-xl" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={evaluationDate}
+                      onSelect={(date) => date && setEvaluationDate(date)}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto rounded-xl"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Select
+                value={selectedEvaluation}
+                onValueChange={setSelectedEvaluation}
+              >
+                <SelectTrigger className="w-full sm:w-[200px] bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100 transition-all duration-300">
+                  <SelectValue placeholder="Selecione a avaliação" />
+                </SelectTrigger>
+                <SelectContent className="border-0 shadow-xl">
+                  <SelectItem value="1">Avaliação Inicial</SelectItem>
+                  <SelectItem value="2">Avaliação de Progresso</SelectItem>
+                  <SelectItem value="3">Avaliação Periódica</SelectItem>
+                  <SelectItem value="4">Avaliação Final</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleGenerateParametersPDF}
+                      variant="outline"
+                      className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <FileBarChart className="h-4 w-4" />
+                      Parâmetros
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Gera PDF com gráficos e dados quantitativos</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleGenerateMuseteraPDF}
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Relatório MuseTera
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Gera relatório completo com análise e recomendações</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Select
-              value={selectedEvaluation}
-              onValueChange={setSelectedEvaluation}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Selecione a avaliação" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">Avaliação Inicial</SelectItem>
-                <SelectItem value="2">Avaliação de Progresso</SelectItem>
-                <SelectItem value="3">Avaliação Periódica</SelectItem>
-                <SelectItem value="4">Avaliação Final</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <TooltipProvider>
-              <TooltipComponent>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={handleGenerateParametersPDF}
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
-                    <FileBarChart className="h-4 w-4" />
-                    Parâmetros e Gráficos
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Gera PDF com gráficos e dados quantitativos</p>
-                </TooltipContent>
-              </TooltipComponent>
-            </TooltipProvider>
 
-            <TooltipProvider>
-              <TooltipComponent>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={handleGenerateMuseteraPDF}
-                    variant="default"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    Relatório MuseTera
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Gera relatório completo com análise e recomendações</p>
-                </TooltipContent>
-              </TooltipComponent>
-            </TooltipProvider>
-          </div>
-        </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 p-1 rounded-2xl h-14">
+              <TabsTrigger 
+                value="evaluation" 
+                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-purple-600 transition-all duration-300"
+              >
+                Avaliação
+              </TabsTrigger>
+              <TabsTrigger 
+                value="results" 
+                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all duration-300"
+              >
+                Resultados
+              </TabsTrigger>
+              <TabsTrigger 
+                value="comparison" 
+                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 transition-all duration-300"
+              >
+                Comparação
+              </TabsTrigger>
+            </TabsList>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="evaluation">Avaliação</TabsTrigger>
-            <TabsTrigger value="results">Resultados</TabsTrigger>
-            <TabsTrigger value="comparison">Comparação</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="evaluation" className="space-y-8 mt-6">
-            {evaluationDomains.map((domain, domainIndex) => (
-              <div key={domainIndex} className="border rounded-md p-4 sm:p-6 bg-card">
-                <div className="flex items-center mb-4 gap-2">
-                  <div className="text-2xl">{domain.icon}</div>
-                  <h2 className="text-lg sm:text-xl font-semibold">{domain.title}</h2>
-                  <TooltipProvider>
-                    <TooltipComponent>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <HelpCircle className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs text-sm">{domain.description}</p>
-                      </TooltipContent>
-                    </TooltipComponent>
-                  </TooltipProvider>
-                </div>
-                
-                {domain.subdomains.map((subdomain, subdomainIndex) => (
-                  <div key={subdomainIndex} className="mb-6 border-l-2 pl-4 ml-2">
-                    <div className="flex items-center mb-3">
-                      <h3 className="text-base sm:text-lg font-medium">{subdomain.title}</h3>
+            <TabsContent value="evaluation" className="space-y-8 mt-8">
+              {evaluationDomains.map((domain, domainIndex) => (
+                <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
+                  <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 group-hover:bg-opacity-10`}>
+                    <div className="flex items-center mb-6 gap-3">
+                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
+                        {domain.icon}
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{domain.title}</h2>
                       <TooltipProvider>
                         <TooltipComponent>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-1">
-                              <Info className="h-3.5 w-3.5" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
+                              <HelpCircle className="h-5 w-5 text-gray-600" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs text-sm">{subdomain.description}</p>
+                          <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
+                            <p className="text-sm">{domain.description}</p>
                           </TooltipContent>
                         </TooltipComponent>
                       </TooltipProvider>
                     </div>
                     
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="min-w-[150px]">Habilidades</TableHead>
-                            <TableHead className="w-20 text-center">
-                              <span className="block text-xs font-normal">Ausente</span>
-                              <span className="block text-xs font-normal">(0)</span>
-                            </TableHead>
-                            <TableHead className="w-20 text-center">
-                              <span className="block text-xs font-normal">Emergente</span>
-                              <span className="block text-xs font-normal">(1)</span>
-                            </TableHead>
-                            <TableHead className="w-20 text-center">
-                              <span className="block text-xs font-normal">Inconsistente</span>
-                              <span className="block text-xs font-normal">(2)</span>
-                            </TableHead>
-                            <TableHead className="w-20 text-center">
-                              <span className="block text-xs font-normal">Consistente</span>
-                              <span className="block text-xs font-normal">(3)</span>
-                            </TableHead>
-                            <TableHead className="w-20 text-center">
-                              <span className="block text-xs font-normal">Independente</span>
-                              <span className="block text-xs font-normal">(4)</span>
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {subdomain.parameters.map((parameter, paramIndex) => (
-                            <TableRow key={paramIndex}>
-                              <TableCell className="text-sm sm:text-base">{parameter}</TableCell>
-                              {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
-                                <TableCell key={level} className="text-center p-2 sm:p-4">
-                                  <RadioGroup
-                                    value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
-                                    onValueChange={(value) => 
-                                      setSelections(prev => ({
-                                        ...prev,
-                                        [`${domain.title}-${subdomain.title}-${parameter}`]: value
-                                      }))
-                                    }
-                                    className="flex justify-center"
-                                  >
-                                    <div className="relative">
-                                      <RadioGroupItem
-                                        value={level}
-                                        id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                        className="sr-only"
-                                      />
-                                      <label
-                                        htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                        className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${
-                                          level === "ausente" ? "border-red-500" :
-                                          level === "emergente" ? "border-orange-400" :
-                                          level === "inconsistente" ? "border-yellow-400" :
-                                          level === "consistente" ? "border-blue-500" : "border-green-500"
-                                        } ${
-                                          selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                            ? level === "ausente" ? "bg-red-500" :
-                                              level === "emergente" ? "bg-orange-400" :
-                                              level === "inconsistente" ? "bg-yellow-400" :
-                                              level === "consistente" ? "bg-blue-500" : "bg-green-500"
-                                            : "bg-white"
-                                        }`}
-                                      />
+                    {domain.subdomains.map((subdomain, subdomainIndex) => (
+                      <div key={subdomainIndex} className="mb-8 last:mb-0">
+                        <Card className="border-l-4 border-l-purple-400 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                          <div className="flex items-center mb-4">
+                            <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
+                            <TooltipProvider>
+                              <TooltipComponent>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 rounded-full">
+                                    <Info className="h-4 w-4 text-purple-600" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
+                                  <p className="text-sm">{subdomain.description}</p>
+                                </TooltipContent>
+                              </TooltipComponent>
+                            </TooltipProvider>
+                          </div>
+                          
+                          <div className="overflow-x-auto rounded-xl shadow-inner">
+                            <Table className="min-w-full">
+                              <TableHeader>
+                                <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100">
+                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 text-base">Habilidades</TableHead>
+                                  <TableHead className="w-24 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-xs font-semibold text-red-600">Ausente</span>
+                                      <span className="text-xs text-red-500">(0)</span>
                                     </div>
-                                  </RadioGroup>
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </TabsContent>
+                                  </TableHead>
+                                  <TableHead className="w-24 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-xs font-semibold text-orange-600">Emergente</span>
+                                      <span className="text-xs text-orange-500">(1)</span>
+                                    </div>
+                                  </TableHead>
+                                  <TableHead className="w-24 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-xs font-semibold text-yellow-600">Inconsistente</span>
+                                      <span className="text-xs text-yellow-500">(2)</span>
+                                    </div>
+                                  </TableHead>
+                                  <TableHead className="w-24 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-xs font-semibold text-blue-600">Consistente</span>
+                                      <span className="text-xs text-blue-500">(3)</span>
+                                    </div>
+                                  </TableHead>
+                                  <TableHead className="w-24 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-xs font-semibold text-green-600">Independente</span>
+                                      <span className="text-xs text-green-500">(4)</span>
+                                    </div>
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {subdomain.parameters.map((parameter, paramIndex) => (
+                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
+                                    <TableCell className="text-sm sm:text-base font-medium text-gray-800 py-4">{parameter}</TableCell>
+                                    {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
+                                      <TableCell key={level} className="text-center p-4">
+                                        <RadioGroup
+                                          value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
+                                          onValueChange={(value) => 
+                                            setSelections(prev => ({
+                                              ...prev,
+                                              [`${domain.title}-${subdomain.title}-${parameter}`]: value
+                                            }))
+                                          }
+                                          className="flex justify-center"
+                                        >
+                                          <div className="relative">
+                                            <RadioGroupItem
+                                              value={level}
+                                              id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                              className="sr-only"
+                                            />
+                                            <label
+                                              htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                              className={`block w-5 h-5 rounded-full cursor-pointer border-3 transition-all duration-300 transform hover:scale-110 ${
+                                                level === "ausente" ? "border-red-400 hover:border-red-500" :
+                                                level === "emergente" ? "border-orange-400 hover:border-orange-500" :
+                                                level === "inconsistente" ? "border-yellow-400 hover:border-yellow-500" :
+                                                level === "consistente" ? "border-blue-400 hover:border-blue-500" : "border-green-400 hover:border-green-500"
+                                              } ${
+                                                selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
+                                                  ? level === "ausente" ? "bg-red-500 shadow-lg shadow-red-200" :
+                                                    level === "emergente" ? "bg-orange-500 shadow-lg shadow-orange-200" :
+                                                    level === "inconsistente" ? "bg-yellow-500 shadow-lg shadow-yellow-200" :
+                                                    level === "consistente" ? "bg-blue-500 shadow-lg shadow-blue-200" : "bg-green-500 shadow-lg shadow-green-200"
+                                                  : "bg-white hover:bg-gray-50"
+                                              }`}
+                                            />
+                                          </div>
+                                        </RadioGroup>
+                                      </TableCell>
+                                    ))}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </Card>
+                      </div>
+                    ))}
+                  </Card>
+                </div>
+              ))}
+            </TabsContent>
 
-          <TabsContent value="results" className="space-y-6 mt-6">
-            <Card className="p-4 sm:p-6">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
-                Resultados da Avaliação Musicoterapêutica
-              </h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-                <Card className="p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-                    Perfil de Habilidades
+            <TabsContent value="results" className="space-y-8 mt-8">
+              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  Resultados da Avaliação Musicoterapêutica
+                </h2>
+                
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800">
+                      Perfil de Habilidades
+                    </h3>
+                    <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={domainScores}>
+                          <PolarGrid stroke="#e0e7ff" />
+                          <PolarAngleAxis dataKey="name" tick={{ fontSize: 12, fill: '#6366f1' }} />
+                          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10, fill: '#6366f1' }} />
+                          <Radar name="Perfil" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} strokeWidth={3} />
+                          <Legend />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </Card>
+
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800">
+                      Pontuação Global
+                    </h3>
+                    <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
+                      <div className="h-[250px] sm:h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={pieData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius="60%"
+                              outerRadius="90%"
+                              paddingAngle={5}
+                              dataKey="value"
+                              label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
+                        <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                        <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+                
+                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50">
+                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800">
+                    Desempenho por Subdomínios
                   </h3>
-                  <div className="h-[300px] sm:h-[350px] w-full flex items-center justify-center">
+                  <div className="h-[450px] sm:h-[500px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={domainScores}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="name" />
-                        <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                        <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      <BarChart
+                        data={subdomainScores}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
+                        <XAxis 
+                          dataKey="name" 
+                          angle={-45} 
+                          textAnchor="end" 
+                          height={100}
+                          tick={{ fontSize: 11, fill: '#0369a1' }}
+                        />
+                        <YAxis domain={[0, 100]} tick={{ fill: '#0369a1' }} />
+                        <Tooltip content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-white p-4 border-0 rounded-xl shadow-xl">
+                                <p className="text-sm font-semibold text-gray-800">{data.name}</p>
+                                <p className="text-sm text-blue-600">Domínio: {data.domain}</p>
+                                <p className="text-sm font-bold text-green-600">Pontuação: {data.value}%</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} />
+                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                          {subdomainScores.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={
+                                entry.domain === "Musical" ? "#8b5cf6" :
+                                entry.domain === "Psicossocial" ? "#10b981" : 
+                                entry.domain === "Cognitivo" ? "#f59e0b" : 
+                                entry.domain === "Sensório-Motor" ? "#ef4444" : "#6366f1"
+                              } 
+                            />
+                          ))}
+                        </Bar>
                         <Legend />
-                      </RadarChart>
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </Card>
-
-                <Card className="p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-                    Pontuação Global
-                  </h3>
-                  <div className="h-[300px] sm:h-[350px] w-full flex flex-col items-center justify-center">
-                    <div className="h-[200px] sm:h-[250px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius="60%"
-                            outerRadius="80%"
-                            paddingAngle={5}
-                            dataKey="value"
-                            label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {pieData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="comparison" className="mt-8">
+              <Card className="border-0 shadow-2xl p-8 rounded-3xl bg-gradient-to-br from-white via-gray-50 to-slate-50">
+                <div className="flex justify-center items-center h-[400px]">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <FileBarChart className="h-10 w-10 text-white" />
                     </div>
-                    <div className="text-center mt-4">
-                      <p className="text-lg font-medium">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
-                      <p className="text-sm text-gray-600">Percentil de desenvolvimento: {overallScore.percentage}%</p>
-                    </div>
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">Comparação entre Avaliações</h3>
+                    <p className="text-gray-600 mb-6 max-w-md">
+                      Selecione ao menos duas avaliações para visualizar a comparação de progresso ao longo do tempo.
+                    </p>
+                    <Button variant="outline" className="bg-gradient-to-r from-gray-100 to-slate-100 hover:from-gray-200 hover:to-slate-200 border-gray-300" disabled>
+                      Carregar Avaliações Anteriores
+                    </Button>
                   </div>
-                </Card>
-              </div>
-              
-              <div className="mt-8">
-                <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-                  Desempenho por Subdomínios
-                </h3>
-                <div className="h-[400px] sm:h-[450px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={subdomainScores}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="name" 
-                        angle={-45} 
-                        textAnchor="end" 
-                        height={100}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          return (
-                            <div className="bg-white p-3 border rounded shadow-md">
-                              <p className="text-sm font-medium">{data.name}</p>
-                              <p className="text-sm">Domínio: {data.domain}</p>
-                              <p className="text-sm text-blue-600">Pontuação: {data.value}%</p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }} />
-                      <Bar dataKey="value" fill="#6D28D9">
-                        {subdomainScores.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={
-                              entry.domain === "Musical" ? "#8884d8" :
-                              entry.domain === "Psicossocial" ? "#82ca9d" : 
-                              entry.domain === "Cognitivo" ? "#ffc658" : 
-                              entry.domain === "Sensório-Motor" ? "#ff8042" : "#9966cc"
-                            } 
-                          />
-                        ))}
-                      </Bar>
-                      <Legend />
-                    </BarChart>
-                  </ResponsiveContainer>
                 </div>
-              </div>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="comparison" className="mt-6">
-            <Card className="p-6">
-              <div className="flex justify-center items-center h-[300px]">
-                <div className="text-center">
-                  <h3 className="text-lg font-medium mb-4">Comparação entre Avaliações</h3>
-                  <p className="text-gray-600">
-                    Selecione ao menos duas avaliações para visualizar a comparação de progresso ao longo do tempo.
-                  </p>
-                  <Button variant="outline" className="mt-4" disabled>
-                    Carregar Avaliações Anteriores
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </Card>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </div>
     </div>
   );
 }
