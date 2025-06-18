@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -207,6 +206,57 @@ export default function Evaluation() {
             "Resposta tátil a instrumentos",
             "Propriocepção durante atividades",
             "Tolerância a estímulos sonoros"
+          ]
+        }
+      ]
+    },
+    {
+      title: "Domínio Desenvolvimento da Fala",
+      description: "Avaliação específica para pacientes com atraso na fala",
+      icon: "🗣️",
+      subdomains: [
+        {
+          title: "Desenvolvimento Fonológico",
+          description: "Capacidade de produção e discriminação de sons da fala",
+          parameters: [
+            "Produção de sons isolados",
+            "Sequências sonoras simples",
+            "Padrões silábicos",
+            "Articulação de fonemas",
+            "Discriminação auditiva de sons da fala"
+          ]
+        },
+        {
+          title: "Desenvolvimento Lexical",
+          description: "Capacidade de compreensão e uso de palavras",
+          parameters: [
+            "Vocabulário receptivo",
+            "Vocabulário expressivo",
+            "Nomeação de objetos/ações",
+            "Compreensão de palavras",
+            "Uso funcional de palavras"
+          ]
+        },
+        {
+          title: "Desenvolvimento Sintático",
+          description: "Capacidade de organizar palavras em estruturas frasais",
+          parameters: [
+            "Estruturas frasais simples",
+            "Combinação de palavras",
+            "Uso de conectivos básicos",
+            "Ordem das palavras",
+            "Expansão de frases"
+          ]
+        },
+        {
+          title: "Desenvolvimento Pragmático",
+          description: "Uso social e funcional da comunicação",
+          parameters: [
+            "Intenção comunicativa",
+            "Turnos conversacionais",
+            "Gestos comunicativos",
+            "Contato visual durante comunicação",
+            "Uso social da fala"
           ]
         }
       ]
