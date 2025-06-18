@@ -213,6 +213,57 @@ export default function Evaluation() {
           ]
         }
       ]
+    },
+    {
+      title: "Domínio Desenvolvimento da Fala",
+      description: "Avaliação específica para pacientes com atraso na fala",
+      icon: "🗣️",
+      subdomains: [
+        {
+          title: "Desenvolvimento Fonológico",
+          description: "Capacidade de produção e discriminação de sons da fala",
+          parameters: [
+            "Produção de sons isolados",
+            "Sequências sonoras simples",
+            "Padrões silábicos",
+            "Articulação de fonemas",
+            "Discriminação auditiva de sons da fala"
+          ]
+        },
+        {
+          title: "Desenvolvimento Lexical",
+          description: "Capacidade de compreensão e uso de palavras",
+          parameters: [
+            "Vocabulário receptivo",
+            "Vocabulário expressivo",
+            "Nomeação de objetos/ações",
+            "Compreensão de palavras",
+            "Uso funcional de palavras"
+          ]
+        },
+        {
+          title: "Desenvolvimento Sintático",
+          description: "Capacidade de organizar palavras em estruturas frasais",
+          parameters: [
+            "Estruturas frasais simples",
+            "Combinação de palavras",
+            "Uso de conectivos básicos",
+            "Ordem das palavras",
+            "Expansão de frases"
+          ]
+        },
+        {
+          title: "Desenvolvimento Pragmático",
+          description: "Uso social e funcional da comunicação",
+          parameters: [
+            "Intenção comunicativa",
+            "Turnos conversacionais",
+            "Gestos comunicativos",
+            "Contato visual durante comunicação",
+            "Uso social da fala"
+          ]
+        }
+      ]
     }
   ];
 
@@ -789,7 +840,8 @@ export default function Evaluation() {
                             fill={
                               entry.domain === "Musical" ? "#8884d8" :
                               entry.domain === "Psicossocial" ? "#82ca9d" : 
-                              entry.domain === "Cognitivo" ? "#ffc658" : "#ff8042"
+                              entry.domain === "Cognitivo" ? "#ffc658" : 
+                              entry.domain === "Sensório-Motor" ? "#ff8042" : "#9966cc"
                             } 
                           />
                         ))}
