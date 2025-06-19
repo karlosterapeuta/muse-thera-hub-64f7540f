@@ -56,7 +56,7 @@ export default defineConfig(({ mode }) => ({
         name: 'MuseTera - Plataforma Para Musicoterapeutas',
         short_name: 'MuseTera',
         description: 'Plataforma completa para musicoterapeutas com ferramentas terapêuticas interativas',
-        theme_color: '#6366f1',
+        theme_color: '#1e40af',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
