@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { DollarSign, CalendarDays } from "lucide-react";
-import { FinancialAgendaItem } from "../hooks/useDashboardData";
+import { FinancialAgendaItem } from "../types/dashboardTypes";
 
 interface FinancialAgendaProps {
   financialSchedule: FinancialAgendaItem[];
