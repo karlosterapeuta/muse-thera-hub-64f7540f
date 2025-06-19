@@ -19,7 +19,17 @@ export function PWAInstallPrompt() {
     dismissInstallPrompt 
   } = usePWA();
 
-  if (isInstalled || !isInstallable || !showInstallPrompt) return null;
+  console.log('🎨 PWAInstallPrompt render:', {
+    isInstalled,
+    isInstallable,
+    showInstallPrompt,
+    shouldShow: !isInstalled && isInstallable && showInstallPrompt
+  });
+
+  // Não mostrar se já estiver instalado, não for instalável ou se o prompt não deveria aparecer
+  if (isInstalled || !isInstallable || !showInstallPrompt) {
+    return null;
+  }
 
   const deviceType = isMobile ? 'celular' : 'computador';
   const DeviceIcon = isMobile ? Smartphone : Monitor;
