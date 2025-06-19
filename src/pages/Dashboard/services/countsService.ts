@@ -19,20 +19,29 @@ export async function getPatientsCount(professionalId: string): Promise<number> 
 
 export async function getAnamnesisCount(professionalId: string): Promise<number> {
   console.log("🔍 Buscando anamneses...");
+  
+  // Get the current user first
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.log("❌ Usuário não encontrado para buscar anamneses");
+    return 0;
+  }
+
+  // Try with professional_id first
   const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
     .from("anamnesis")
     .select('id', { count: 'exact', head: true })
     .eq('professional_id', professionalId);
 
   if (anamnesisError) {
-    console.error("❌ Erro ao buscar anamneses:", anamnesisError);
+    console.error("❌ Erro ao buscar anamneses com professional_id:", anamnesisError);
     console.log("🔄 Tentando busca alternativa de anamneses usando user_id...");
     
-    // Fallback: try with user_id if professional_id fails
+    // Fallback: try with user_id directly (in case professional_id doesn't match)
     const { data: anamnesisDataFallback, error: anamnesisErrorFallback, count: totalAnamnesisAlt } = await supabase
       .from("anamnesis")
       .select('id', { count: 'exact', head: true })
-      .eq('professional_id', professionalId); // Note: keeping same ID as it was user.id in fallback
+      .eq('professional_id', user.id);
 
     if (anamnesisErrorFallback) {
       console.error("❌ Erro na busca alternativa de anamneses:", anamnesisErrorFallback);
