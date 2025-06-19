@@ -237,7 +237,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
             <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">
-                  MuseTera
+                  Para Musicoterapeutas
                 </span>
               </div>
               <span className="text-sm font-semibold text-slate-800 truncate">
