@@ -27,6 +27,21 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
     return 0;
   }
 
+  console.log("👤 User ID para busca de anamneses:", user.id);
+  console.log("👨‍⚕️ Professional ID para busca de anamneses:", professionalId);
+
+  // First, let's try to get all anamnesis records to understand the data structure
+  const { data: allAnamnesis, error: debugError } = await supabase
+    .from("anamnesis")
+    .select('id, professional_id')
+    .limit(5);
+
+  if (debugError) {
+    console.error("❌ Erro ao fazer debug das anamneses:", debugError);
+  } else {
+    console.log("🔍 Primeiras 5 anamneses para debug:", allAnamnesis);
+  }
+
   // Try with professional_id first
   const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
     .from("anamnesis")
