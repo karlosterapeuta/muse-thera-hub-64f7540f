@@ -95,23 +95,8 @@ export function useDashboardData(): DashboardData {
           professionalId = professional.id;
           console.log("👨‍⚕️ Profissional encontrado:", professionalId);
         } else {
-          console.log("⚠️ Perfil profissional não encontrado, tentando buscar por profiles...");
-          
-          // Fallback to profiles table
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            professionalId = profile.id;
-            console.log("👤 Profile encontrado:", professionalId);
-          } else {
-            console.log("❌ Nenhum perfil encontrado:", profileError);
-            setData(prev => ({ ...prev, isLoading: false }));
-            return;
-          }
+          console.log("⚠️ Perfil profissional não encontrado, usando user_id diretamente...");
+          professionalId = user.id;
         }
 
         // Get current week dates
@@ -134,7 +119,7 @@ export function useDashboardData(): DashboardData {
           console.log("✅ Total de pacientes encontrados:", totalPatients);
         }
 
-        // Query anamnesis with better error handling
+        // Query anamnesis with corrected professional_id field
         console.log("🔍 Buscando anamneses...");
         const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
           .from("anamnesis")
@@ -143,6 +128,19 @@ export function useDashboardData(): DashboardData {
 
         if (anamnesisError) {
           console.error("❌ Erro ao buscar anamneses:", anamnesisError);
+          console.log("🔄 Tentando busca alternativa de anamneses usando user_id...");
+          
+          // Fallback: try with user_id if professional_id fails
+          const { data: anamnesisDataFallback, error: anamnesisErrorFallback, count: totalAnamnesisAlt } = await supabase
+            .from("anamnesis")
+            .select('id', { count: 'exact', head: true })
+            .eq('professional_id', user.id);
+          
+          if (anamnesisErrorFallback) {
+            console.error("❌ Erro na busca alternativa de anamneses:", anamnesisErrorFallback);
+          } else {
+            console.log("✅ Total de anamneses encontradas (busca alternativa):", totalAnamnesisAlt);
+          }
         } else {
           console.log("✅ Total de anamneses encontradas:", totalAnamnesis);
         }
