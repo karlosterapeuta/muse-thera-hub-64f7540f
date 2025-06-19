@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
               },
-              cacheKeyWillBeUsed: async ({ request }) => {
+              cacheKeyWillBeUsed: async ({ request }: { request: Request }) => {
                 return `${request.url}?${Date.now()}`;
               }
             }
