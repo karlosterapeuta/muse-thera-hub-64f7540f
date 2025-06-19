@@ -13,6 +13,11 @@ export function usePWA() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
+  // Detectar tipo de dispositivo
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isDesktop = !isMobile;
 
   useEffect(() => {
     // Check if app is already installed
@@ -25,6 +30,16 @@ export function usePWA() {
       e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
+      
+      // Mostrar popup após 5 segundos se não foi rejeitado recentemente
+      const lastDismissed = localStorage.getItem('pwa-install-dismissed');
+      const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+      
+      if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
+        setTimeout(() => {
+          setShowInstallPrompt(true);
+        }, 5000);
+      }
     };
 
     // Listen for app installed
@@ -32,6 +47,7 @@ export function usePWA() {
       setIsInstalled(true);
       setIsInstallable(false);
       setInstallPrompt(null);
+      setShowInstallPrompt(false);
     };
 
     // Listen for online/offline
@@ -71,7 +87,13 @@ export function usePWA() {
     if (result.outcome === 'accepted') {
       setIsInstallable(false);
       setInstallPrompt(null);
+      setShowInstallPrompt(false);
     }
+  };
+
+  const dismissInstallPrompt = () => {
+    setShowInstallPrompt(false);
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString());
   };
 
   const updateApp = () => {
@@ -83,7 +105,11 @@ export function usePWA() {
     isInstalled,
     isOnline,
     updateAvailable,
+    showInstallPrompt,
+    isMobile,
+    isDesktop,
     installApp,
-    updateApp
+    updateApp,
+    dismissInstallPrompt
   };
 }
