@@ -61,10 +61,23 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
 
 export async function getReportsCount(professionalId: string): Promise<number> {
   console.log("🔍 Buscando relatórios...");
+  
+  // Get the current user first
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.log("❌ Usuário não encontrado para buscar relatórios");
+    return 0;
+  }
+
+  console.log("👤 User ID para busca de relatórios:", user.id);
+  console.log("👨‍⚕️ Professional ID para busca de relatórios:", professionalId);
+
+  // Based on the pattern from anamneses and patients, reports are likely associated with user.id
+  // So we'll search using the user.id directly
   const { data: reportsData, error: reportsError, count: totalReports } = await supabase
     .from("reports")
     .select('id', { count: 'exact', head: true })
-    .eq('professional_id', professionalId);
+    .eq('professional_id', user.id);
 
   if (reportsError) {
     console.error("❌ Erro ao buscar relatórios:", reportsError);
