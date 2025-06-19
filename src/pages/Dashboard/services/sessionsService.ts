@@ -4,6 +4,19 @@ import { format } from "date-fns";
 
 export async function getWeekSessions(professionalId: string, startDate: Date, endDate: Date) {
   console.log("🔍 Buscando sessões da semana...");
+  
+  // Get the current user first
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.log("❌ Usuário não encontrado para buscar sessões");
+    return [];
+  }
+
+  console.log("👤 User ID para busca de sessões:", user.id);
+  console.log("👨‍⚕️ Professional ID para busca de sessões:", professionalId);
+
+  // Based on the pattern from anamneses and patients, sessions are likely associated with user.id
+  // So we'll search using the user.id directly for the patients relationship
   const { data: sessions, error: sessionsError } = await supabase
     .from("sessions")
     .select(`
@@ -17,7 +30,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
         professional_id
       )
     `)
-    .eq('patients.professional_id', professionalId)
+    .eq('patients.professional_id', user.id)
     .gte('date', format(startDate, "yyyy-MM-dd"))
     .lte('date', format(endDate, "yyyy-MM-dd"))
     .order('date');
