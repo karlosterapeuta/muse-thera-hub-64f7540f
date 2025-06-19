@@ -6,19 +6,6 @@ import { FinancialAgendaItem } from "../types/dashboardTypes";
 
 export async function getWeekFinancialRecords(professionalId: string, startDate: Date, endDate: Date) {
   console.log("🔍 Buscando registros financeiros da semana...");
-  
-  // Get the current user first
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    console.log("❌ Usuário não encontrado para buscar registros financeiros");
-    return [];
-  }
-
-  console.log("👤 User ID para busca de registros financeiros:", user.id);
-  console.log("👨‍⚕️ Professional ID para busca de registros financeiros:", professionalId);
-
-  // Based on the pattern from anamneses and patients, financial records are likely associated with user.id
-  // So we'll search using the user.id directly
   const { data: financialRecords, error: financialError } = await supabase
     .from("financial_records")
     .select(`
@@ -28,7 +15,7 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
       description,
       professional_id
     `)
-    .eq('professional_id', user.id)
+    .eq('professional_id', professionalId)
     .gte('session_date', format(startDate, "yyyy-MM-dd"))
     .lte('session_date', format(endDate, "yyyy-MM-dd"));
 
@@ -43,19 +30,6 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
 
 export async function getFinancialSchedule(professionalId: string): Promise<FinancialAgendaItem[]> {
   console.log("🔍 Buscando agenda financeira...");
-  
-  // Get the current user first
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    console.log("❌ Usuário não encontrado para buscar agenda financeira");
-    return [];
-  }
-
-  console.log("👤 User ID para busca de agenda financeira:", user.id);
-  console.log("👨‍⚕️ Professional ID para busca de agenda financeira:", professionalId);
-
-  // Based on the pattern from anamneses and patients, financial records are likely associated with user.id
-  // So we'll search using the user.id directly
   const { data: financialScheduleData, error: financialScheduleError } = await supabase
     .from("financial_records")
     .select(`
@@ -67,7 +41,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       patients:patient_id (name),
       clinics:clinic_id (name)
     `)
-    .eq('professional_id', user.id)
+    .eq('professional_id', professionalId)
     .gte('session_date', format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
     .order('session_date', { ascending: false })
     .limit(10);
