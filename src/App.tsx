@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
+import { PWAStatus } from "./components/PWAStatus";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import MusicalBells from "./pages/musical-bells";
@@ -26,6 +27,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAStatus />
       <BrowserRouter>
         <AuthStatusChecker />
         <Suspense fallback={<LoadingSpinner />}>
