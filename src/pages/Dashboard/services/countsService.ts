@@ -3,10 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 
 export async function getPatientsCount(professionalId: string): Promise<number> {
   console.log("🔍 Buscando pacientes...");
+  
+  // Get the current user first
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.log("❌ Usuário não encontrado para buscar pacientes");
+    return 0;
+  }
+
+  console.log("👤 User ID para busca de pacientes:", user.id);
+  console.log("👨‍⚕️ Professional ID para busca de pacientes:", professionalId);
+
+  // Based on the pattern from anamneses, patients are likely associated with user.id
+  // So we'll search using the user.id directly
   const { data: patientsData, error: patientsError, count: totalPatients } = await supabase
     .from("patients")
     .select('id', { count: 'exact', head: true })
-    .eq('professional_id', professionalId);
+    .eq('professional_id', user.id);
 
   if (patientsError) {
     console.error("❌ Erro ao buscar pacientes:", patientsError);
