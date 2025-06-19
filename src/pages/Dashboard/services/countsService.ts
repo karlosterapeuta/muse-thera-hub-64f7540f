@@ -30,41 +30,16 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
   console.log("👤 User ID para busca de anamneses:", user.id);
   console.log("👨‍⚕️ Professional ID para busca de anamneses:", professionalId);
 
-  // First, let's try to get all anamnesis records to understand the data structure
-  const { data: allAnamnesis, error: debugError } = await supabase
-    .from("anamnesis")
-    .select('id, professional_id')
-    .limit(5);
-
-  if (debugError) {
-    console.error("❌ Erro ao fazer debug das anamneses:", debugError);
-  } else {
-    console.log("🔍 Primeiras 5 anamneses para debug:", allAnamnesis);
-  }
-
-  // Try with professional_id first
+  // Based on the debug logs, anamneses are associated with user.id, not professionalId
+  // So we'll search using the user.id directly
   const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
     .from("anamnesis")
     .select('id', { count: 'exact', head: true })
-    .eq('professional_id', professionalId);
+    .eq('professional_id', user.id);
 
   if (anamnesisError) {
-    console.error("❌ Erro ao buscar anamneses com professional_id:", anamnesisError);
-    console.log("🔄 Tentando busca alternativa de anamneses usando user_id...");
-    
-    // Fallback: try with user_id directly (in case professional_id doesn't match)
-    const { data: anamnesisDataFallback, error: anamnesisErrorFallback, count: totalAnamnesisAlt } = await supabase
-      .from("anamnesis")
-      .select('id', { count: 'exact', head: true })
-      .eq('professional_id', user.id);
-
-    if (anamnesisErrorFallback) {
-      console.error("❌ Erro na busca alternativa de anamneses:", anamnesisErrorFallback);
-      return 0;
-    } else {
-      console.log("✅ Total de anamneses encontradas (busca alternativa):", totalAnamnesisAlt);
-      return totalAnamnesisAlt || 0;
-    }
+    console.error("❌ Erro ao buscar anamneses:", anamnesisError);
+    return 0;
   } else {
     console.log("✅ Total de anamneses encontradas:", totalAnamnesis);
     return totalAnamnesis || 0;
