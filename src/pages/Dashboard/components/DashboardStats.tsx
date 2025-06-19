@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Users, DollarSign, TrendingUp, Activity, FileText, ClipboardList, UserCheck } from "lucide-react";
+import { Users, DollarSign, TrendingUp, FileText, ClipboardList, UserCheck } from "lucide-react";
 
 interface DashboardStatsProps {
   totalSessions: number;
@@ -87,15 +87,6 @@ export function DashboardStats({
       icon: TrendingUp,
       gradient: "from-purple-500 via-purple-600 to-indigo-700",
       change: 12,
-      changeLabel: "vs. semana anterior"
-    },
-    {
-      title: "Taxa de Conclusão",
-      value: `${completionRate}%`,
-      subtitle: "Sessões finalizadas",
-      icon: Activity,
-      gradient: "from-orange-500 via-orange-600 to-red-700",
-      change: completionRate > 80 ? 5 : -2,
       changeLabel: "vs. semana anterior"
     }
   ];
