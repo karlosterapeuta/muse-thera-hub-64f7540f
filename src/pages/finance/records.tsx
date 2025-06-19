@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
@@ -137,6 +137,48 @@ export default function FinancialRecords() {
     const timeB = getAppointmentTime(b.description);
     return timeA.localeCompare(timeB);
   });
+  
+  // Smart weekly agenda organization - group by current week
+  const organizeWeeklyAgenda = () => {
+    const today = new Date();
+    const startDate = startOfWeek(today, { weekStartsOn: 0 });
+    const endDate = endOfWeek(today, { weekStartsOn: 0 });
+    
+    // Filter records for current week
+    const weekRecords = filteredRecords.filter(record => {
+      const recordDate = parseISO(record.session_date);
+      return recordDate >= startDate && recordDate <= endDate;
+    });
+    
+    // Create week structure
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(startDate, i);
+      const dayRecords = weekRecords.filter(record => 
+        isSameDay(parseISO(record.session_date), date)
+      ).sort((a, b) => {
+        const timeA = getAppointmentTime(a.description) || "00:00";
+        const timeB = getAppointmentTime(b.description) || "00:00";
+        return timeA.localeCompare(timeB);
+      });
+      
+      const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
+      
+      weekDays.push({
+        date,
+        dayName: format(date, "EEEE", { locale: ptBR }),
+        dayShort: format(date, "EEE", { locale: ptBR }).toUpperCase(),
+        formatted: format(date, "dd/MM", { locale: ptBR }),
+        records: dayRecords,
+        total: dayTotal,
+        isToday: isToday(date)
+      });
+    }
+    
+    return weekDays;
+  };
+  
+  const weeklyAgenda = organizeWeeklyAgenda();
   
   const recordsByWeekday = {
     "SEG": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
@@ -297,6 +339,83 @@ export default function FinancialRecords() {
     );
   };
   
+  const renderSmartAppointmentCard = (record: FinancialRecord) => {
+    const time = getAppointmentTime(record.description);
+    const duration = getAppointmentDuration(record.description);
+    
+    return (
+      <div 
+        key={record.id} 
+        className="bg-white border border-primary/20 rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-primary/40 relative group"
+      >
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="flex items-center cursor-pointer"
+                onClick={() => handleEditRecord(record)}
+              >
+                <PencilIcon className="mr-2 h-4 w-4 text-primary" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                onClick={() => handleDeleteClick(record.id)}
+              >
+                <TrashIcon className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+            <ClockIcon className="h-3.5 w-3.5 mr-1" />
+            {time || "Sem horário"}
+          </div>
+          {duration && (
+            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+              {duration}
+            </div>
+          )}
+        </div>
+        
+        <div className="space-y-1 mb-3">
+          <div className="font-semibold text-gray-900 line-clamp-1">
+            {record.patient_name || 'Sem paciente'}
+          </div>
+          <div className="text-sm text-muted-foreground line-clamp-1 flex items-center">
+            <BuildingIcon className="h-3 w-3 mr-1" />
+            {record.clinic_name}
+          </div>
+        </div>
+        
+        {getCleanDescription(record.description) && (
+          <div className="text-xs text-muted-foreground mb-2 line-clamp-2 bg-gray-50 p-2 rounded-md">
+            {getCleanDescription(record.description)}
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <div className="text-xs text-muted-foreground">
+            Dia da semana: {getWeekdayLabel(record.description) || format(parseISO(record.session_date), "EEEE", { locale: ptBR })}
+          </div>
+          <div className="font-bold text-primary text-lg">
+            {formatCurrency(record.amount)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
   const handleClinicFormSuccess = () => {
     setClinicFormOpen(false);
     toast({
@@ -397,9 +516,16 @@ export default function FinancialRecords() {
       
       <Card className="shadow-md border-gray-100 overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
-          <CardTitle className="flex items-center">
-            <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
-            {viewMode === "agenda" ? "Agenda Semanal" : "Registros"} 
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center">
+              <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
+              {viewMode === "agenda" ? "Agenda Semanal Inteligente" : "Registros"} 
+            </div>
+            {viewMode === "agenda" && (
+              <div className="text-sm text-muted-foreground">
+                Semana de {format(weeklyAgenda[0]?.date, "dd/MM", { locale: ptBR })} - {format(weeklyAgenda[6]?.date, "dd/MM", { locale: ptBR })}
+              </div>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-2 md:p-4">
@@ -411,48 +537,71 @@ export default function FinancialRecords() {
           ) : sortedRecords.length > 0 ? (
             <>
               {viewMode === "agenda" ? (
-                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-5 gap-4'}`}>
+                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-7 gap-3'}`}>
                   {isMobile ? (
-                    <Tabs defaultValue="SEG" className="w-full">
-                      <TabsList className="w-full grid grid-cols-5">
-                        {weekdays.map(day => (
-                          <TabsTrigger key={day} value={day} className="text-xs">
-                            {day}
+                    <Tabs defaultValue="0" className="w-full">
+                      <TabsList className="w-full grid grid-cols-7 text-xs">
+                        {weeklyAgenda.map((day, index) => (
+                          <TabsTrigger 
+                            key={index} 
+                            value={index.toString()} 
+                            className={`text-xs ${day.isToday ? 'bg-primary text-white' : ''}`}
+                          >
+                            {day.dayShort}
                           </TabsTrigger>
                         ))}
                       </TabsList>
-                      {weekdays.map(day => (
-                        <TabsContent key={day} value={day} className="animate-fade-in">
-                          <div className="bg-muted/20 p-2 rounded-md min-h-64 max-h-[500px] overflow-y-auto">
-                            {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
-                              recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
-                                renderAppointmentCard(record)
-                              )
-                            ) : (
-                              <div className="text-center py-8 text-muted-foreground text-sm">
-                                Nenhum registro para este dia
+                      {weeklyAgenda.map((day, index) => (
+                        <TabsContent key={index} value={index.toString()} className="animate-fade-in">
+                          <div className="space-y-2">
+                            <div className={`p-3 rounded-lg ${day.isToday ? 'bg-primary text-white' : 'bg-muted'}`}>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="font-semibold">{day.dayName}</div>
+                                  <div className="text-sm opacity-75">{day.formatted}</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-sm">{day.records.length} sessões</div>
+                                  <div className="font-bold">{formatCurrency(day.total)}</div>
+                                </div>
                               </div>
-                            )}
+                            </div>
+                            <ScrollArea className="max-h-[400px]">
+                              {day.records.length > 0 ? (
+                                day.records.map(record => renderSmartAppointmentCard(record))
+                              ) : (
+                                <div className="text-center py-8 text-muted-foreground text-sm">
+                                  {day.isToday ? 'Nenhuma sessão hoje' : 'Nenhuma sessão agendada'}
+                                </div>
+                              )}
+                            </ScrollArea>
                           </div>
                         </TabsContent>
                       ))}
                     </Tabs>
                   ) : (
-                    weekdays.map((day) => (
-                      <div key={day} className="animate-fade-in">
-                        <div className="bg-primary rounded-t-md py-2 text-center text-white font-bold">
-                          {day}
+                    weeklyAgenda.map((day, index) => (
+                      <div key={index} className="animate-fade-in">
+                        <div className={`rounded-t-lg py-3 px-2 text-center text-white font-bold ${
+                          day.isToday ? 'bg-gradient-to-r from-primary to-primary/80' : 'bg-primary/70'
+                        }`}>
+                          <div className="text-sm">{day.dayShort}</div>
+                          <div className="text-xs opacity-90">{day.formatted}</div>
                         </div>
-                        <div className="bg-muted/20 p-2 rounded-b-md min-h-64 max-h-[500px] overflow-y-auto">
-                          {recordsByWeekday[day as keyof typeof recordsByWeekday].length > 0 ? (
-                            recordsByWeekday[day as keyof typeof recordsByWeekday].map(record => 
-                              renderAppointmentCard(record)
-                            )
-                          ) : (
-                            <div className="text-center py-8 text-muted-foreground text-sm">
-                              Nenhum registro para este dia
-                            </div>
-                          )}
+                        <div className="bg-gray-50 border border-t-0 rounded-b-lg">
+                          <div className="p-2 bg-white border-b flex justify-between items-center text-xs">
+                            <span>{day.records.length} sessões</span>
+                            <span className="font-semibold text-primary">{formatCurrency(day.total)}</span>
+                          </div>
+                          <ScrollArea className="h-[400px] p-2">
+                            {day.records.length > 0 ? (
+                              day.records.map(record => renderSmartAppointmentCard(record))
+                            ) : (
+                              <div className="text-center py-8 text-muted-foreground text-sm">
+                                {day.isToday ? 'Nenhuma sessão hoje' : 'Nenhuma sessão'}
+                              </div>
+                            )}
+                          </ScrollArea>
                         </div>
                       </div>
                     ))
