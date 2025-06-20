@@ -11,8 +11,8 @@ export const generateScientificArticlePDF = async (): Promise<boolean> => {
 
     return await generateStaticPDF(component, {
       filename: `Artigo_Cientifico_Escala_MuseTera_${new Date().toISOString().split('T')[0]}.pdf`,
-      waitTime: 4000,
-      quality: 2.0,
+      waitTime: 6000, // Aumentado para aguardar renderização das figuras
+      quality: 2.5, // Aumentada a qualidade
       format: 'a4',
       orientation: 'portrait'
     });

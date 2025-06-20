@@ -31,6 +31,7 @@ export const generateStaticPDF = async (
     container.style.top = '0';
     container.style.width = '800px';
     container.style.backgroundColor = '#ffffff';
+    container.style.minHeight = '100vh';
     document.body.appendChild(container);
 
     const root = document.createElement('div');
@@ -39,12 +40,15 @@ export const generateStaticPDF = async (
     // Renderizar componente
     ReactDOM.render(component, root);
 
-    // Aguardar renderização
+    // Aguardar renderização completa
     await new Promise(resolve => setTimeout(resolve, waitTime));
 
-    // Configurações do PDF
+    // Aguardar um pouco mais para garantir que todas as imagens e estilos sejam aplicados
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Configurações aprimoradas do PDF
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin: [15, 15, 15, 15],
       filename,
       pagebreak: { 
         mode: ['avoid-all', 'css', 'legacy'],
@@ -64,11 +68,15 @@ export const generateStaticPDF = async (
         logging: false,
         letterRendering: true,
         removeContainer: true,
-        imageTimeout: 15000,
-        height: window.innerHeight,
+        imageTimeout: 20000, // Aumentado timeout para imagens
+        height: window.innerHeight * 2, // Aumentada altura
         width: window.innerWidth,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        foreignObjectRendering: true,
+        ignoreElements: function(element) {
+          return element.tagName === 'SCRIPT';
+        }
       },
       jsPDF: { 
         unit: 'mm', 
