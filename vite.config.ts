@@ -19,6 +19,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/jztbkimlcrfndooyhohg\.supabase\.co\/.*$/,
@@ -63,6 +65,7 @@ export default defineConfig(({ mode }) => ({
         scope: '/',
         start_url: '/',
         categories: ['health', 'medical', 'music', 'therapy'],
+        prefer_related_applications: false,
         icons: [
           {
             src: '/musetera-icon-192.png',
@@ -114,7 +117,8 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       devOptions: {
-        enabled: mode === 'development'
+        enabled: mode === 'development',
+        type: 'module'
       }
     })
   ].filter(Boolean),

@@ -10,6 +10,7 @@
   "scope": "/",
   "start_url": "/",
   "categories": ["health", "medical", "music", "therapy"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/musetera-icon-192.png",

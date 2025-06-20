@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield } from 'lucide-react';
+import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield, Share, Plus, BookOpen } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,12 @@ export function PWAInstallPrompt() {
     showInstallPrompt,
     isMobile, 
     isDesktop,
+    isChrome,
+    isEdge,
+    isSafari,
+    isIOS,
+    isAndroid,
+    pwaCapabilities,
     installApp, 
     dismissInstallPrompt 
   } = usePWA();
@@ -23,7 +29,8 @@ export function PWAInstallPrompt() {
     isInstalled,
     isInstallable,
     showInstallPrompt,
-    shouldShow: !isInstalled && isInstallable && showInstallPrompt
+    shouldShow: !isInstalled && isInstallable && showInstallPrompt,
+    browser: { isChrome, isEdge, isSafari, isIOS, isAndroid }
   });
 
   // Não mostrar se já estiver instalado, não for instalável ou se o prompt não deveria aparecer
@@ -33,6 +40,89 @@ export function PWAInstallPrompt() {
 
   const deviceType = isMobile ? 'celular' : 'computador';
   const DeviceIcon = isMobile ? Smartphone : Monitor;
+
+  // Instruções específicas por navegador/plataforma
+  const getInstallInstructions = () => {
+    if (isIOS && isSafari) {
+      return {
+        title: 'Como instalar no iPhone/iPad',
+        steps: [
+          'Toque no botão de compartilhar (quadrado com seta)',
+          'Role para baixo e toque em "Adicionar à Tela de Início"',
+          'Toque em "Adicionar" no canto superior direito'
+        ],
+        icon: Share,
+        canUseNativeInstall: false
+      };
+    }
+    
+    if (isAndroid && (isChrome || isEdge)) {
+      return {
+        title: 'Instalação automática disponível',
+        steps: [
+          'Clique no botão "Instalar" abaixo',
+          'Confirme a instalação na janela que aparecer',
+          'O app será adicionado à sua tela inicial'
+        ],
+        icon: Download,
+        canUseNativeInstall: true
+      };
+    }
+    
+    if (isAndroid) {
+      return {
+        title: 'Como instalar no Android',
+        steps: [
+          'Toque no menu do navegador (3 pontos)',
+          'Selecione "Instalar app" ou "Adicionar à tela inicial"',
+          'Confirme a instalação'
+        ],
+        icon: Plus,
+        canUseNativeInstall: false
+      };
+    }
+    
+    if (isDesktop && (isChrome || isEdge)) {
+      return {
+        title: 'Instalação automática disponível',
+        steps: [
+          'Clique no botão "Instalar" abaixo',
+          'Confirme a instalação na janela que aparecer',
+          'O app será adicionado à sua área de trabalho'
+        ],
+        icon: Download,
+        canUseNativeInstall: true
+      };
+    }
+    
+    if (isDesktop && isSafari) {
+      return {
+        title: 'Como adicionar aos favoritos',
+        steps: [
+          'Pressione Cmd + D (ou vá em Favoritos > Adicionar Favorito)',
+          'Escolha a pasta "Favoritos"',
+          'Acesse rapidamente pela barra de favoritos'
+        ],
+        icon: BookOpen,
+        canUseNativeInstall: false
+      };
+    }
+    
+    // Fallback para outros navegadores
+    return {
+      title: 'Como acessar rapidamente',
+      steps: [
+        'Adicione esta página aos seus favoritos',
+        'Crie um atalho na área de trabalho',
+        'Use o menu do navegador para "Instalar" se disponível'
+      ],
+      icon: BookOpen,
+      canUseNativeInstall: false
+    };
+  };
+
+  const instructions = getInstallInstructions();
+  const InstructionIcon = instructions.icon;
 
   return (
     <>
@@ -77,8 +167,8 @@ export function PWAInstallPrompt() {
 
             {/* Content */}
             <div className="p-6 space-y-6">
-              {/* Status Badge */}
-              <div className="flex items-center justify-center">
+              {/* Status Badges */}
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <Badge 
                   variant={isOnline ? "default" : "destructive"}
                   className={cn(
@@ -98,6 +188,34 @@ export function PWAInstallPrompt() {
                     </>
                   )}
                 </Badge>
+                
+                {pwaCapabilities.canInstall && (
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <Shield className="w-3 h-3 mr-1" />
+                    PWA Compatível
+                  </Badge>
+                )}
+              </div>
+
+              {/* Installation Instructions */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 rounded-lg p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <InstructionIcon className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-sm text-indigo-800 dark:text-indigo-200">
+                    {instructions.title}
+                  </h3>
+                </div>
+                
+                <ol className="space-y-2 text-sm text-indigo-700 dark:text-indigo-300">
+                  {instructions.steps.map((step, index) => (
+                    <li key={index} className="flex gap-2">
+                      <span className="font-medium text-indigo-500 flex-shrink-0">{index + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
 
               {/* Benefits */}
@@ -135,22 +253,57 @@ export function PWAInstallPrompt() {
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <Button 
-                  onClick={installApp}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Instalar no {deviceType}
-                </Button>
+                {instructions.canUseNativeInstall ? (
+                  <Button 
+                    onClick={installApp}
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Instalar no {deviceType}
+                  </Button>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      Siga as instruções acima para instalar
+                    </p>
+                    <Button 
+                      onClick={dismissInstallPrompt}
+                      variant="outline"
+                      className="w-full border-2 border-purple-200 hover:bg-purple-50 dark:border-purple-700 dark:hover:bg-purple-900"
+                    >
+                      Entendi, fechar
+                    </Button>
+                  </div>
+                )}
                 
-                <Button
-                  variant="outline"
-                  onClick={dismissInstallPrompt}
-                  className="w-full border-2 border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                >
-                  Agora não
-                </Button>
+                {instructions.canUseNativeInstall && (
+                  <Button
+                    variant="outline"
+                    onClick={dismissInstallPrompt}
+                    className="w-full border-2 border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                  >
+                    Agora não
+                  </Button>
+                )}
               </div>
+
+              {/* Debug Info (apenas em desenvolvimento) */}
+              {process.env.NODE_ENV === 'development' && (
+                <details className="text-xs text-gray-500 dark:text-gray-400">
+                  <summary className="cursor-pointer">Debug Info</summary>
+                  <pre className="mt-2 bg-gray-100 dark:bg-gray-800 p-2 rounded text-xs overflow-auto">
+                    {JSON.stringify({
+                      isChrome,
+                      isEdge,
+                      isSafari,
+                      isIOS,
+                      isAndroid,
+                      pwaCapabilities,
+                      canUseNativeInstall: instructions.canUseNativeInstall
+                    }, null, 2)}
+                  </pre>
+                </details>
+              )}
 
               {/* Footer note */}
               <p className="text-xs text-center text-gray-500 dark:text-gray-400">
