@@ -24,36 +24,6 @@ export function AdditionalSections() {
           de referência nacionais.
         </p>
       </section>
-
-      {/* Agradecimentos */}
-      <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">AGRADECIMENTOS</h2>
-        <p className="text-justify text-gray-700 leading-relaxed">
-          Agradecemos aos musicoterapeutas especialistas que participaram da validação, aos 
-          centros terapêuticos colaboradores e à Associação Brasileira de Musicoterapia pelo 
-          apoio institucional. Agradecimentos especiais aos pacientes e famílias que tornaram 
-          possível este estudo.
-        </p>
-      </section>
-
-      {/* Conflito de Interesses */}
-      <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">CONFLITO DE INTERESSES</h2>
-        <p className="text-justify text-gray-700 leading-relaxed">
-          Os autores declaram não haver conflitos de interesse relacionados à publicação 
-          deste artigo. A Escala MuseTera é disponibilizada gratuitamente para uso clínico 
-          e acadêmico sob licença Creative Commons.
-        </p>
-      </section>
-
-      {/* Financiamento */}
-      <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">FINANCIAMENTO</h2>
-        <p className="text-justify text-gray-700 leading-relaxed">
-          Este estudo foi financiado com recursos próprios da equipe de desenvolvimento. 
-          Não houve financiamento externo de agências de fomento ou instituições comerciais.
-        </p>
-      </section>
     </>
   );
 }
