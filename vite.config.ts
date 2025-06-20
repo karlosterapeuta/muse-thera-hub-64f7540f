@@ -19,8 +19,6 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/jztbkimlcrfndooyhohg\.supabase\.co\/.*$/,
@@ -30,6 +28,9 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              },
+              cacheKeyWillBeUsed: async ({ request }) => {
+                return `${request.url}?${Date.now()}`;
               }
             }
           },
@@ -53,40 +54,39 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'musetera-icon-192.png', 'musetera-icon-512.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'MuseTera - Plataforma Para Musicoterapeutas',
         short_name: 'MuseTera',
         description: 'Plataforma completa para musicoterapeutas com ferramentas terapêuticas interativas',
-        theme_color: '#4A90E2',
+        theme_color: '#6366f1',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
         categories: ['health', 'medical', 'music', 'therapy'],
-        prefer_related_applications: false,
         icons: [
           {
-            src: '/musetera-icon-192.png',
+            src: 'pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/musetera-icon-512.png',
+            src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/musetera-icon-192-maskable.png',
+            src: 'pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable'
           },
           {
-            src: '/musetera-icon-512-maskable.png',
+            src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
@@ -98,27 +98,26 @@ export default defineConfig(({ mode }) => ({
             short_name: 'Dashboard',
             description: 'Acesso rápido ao dashboard',
             url: '/dashboard',
-            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
           },
           {
             name: 'Pacientes',
             short_name: 'Pacientes',
             description: 'Gerenciar pacientes',
             url: '/patients',
-            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
           },
           {
             name: 'Atividades',
             short_name: 'Atividades',
             description: 'Ferramentas terapêuticas',
             url: '/activities',
-            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
           }
         ]
       },
       devOptions: {
-        enabled: mode === 'development',
-        type: 'module'
+        enabled: mode === 'development'
       }
     })
   ].filter(Boolean),

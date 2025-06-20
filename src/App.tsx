@@ -9,7 +9,6 @@ import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import { PWAStatus } from "./components/PWAStatus";
-import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import MusicalBells from "./pages/musical-bells";
@@ -29,7 +28,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <PWAStatus />
-      <PWAInstallPrompt />
       <BrowserRouter>
         <AuthStatusChecker />
         <Suspense fallback={<LoadingSpinner />}>

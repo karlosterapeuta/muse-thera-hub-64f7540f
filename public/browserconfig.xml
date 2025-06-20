@@ -3,8 +3,8 @@
 <browserconfig>
     <msapplication>
         <tile>
-            <square150x150logo src="/musetera-icon-192.png"/>
-            <TileColor>#4A90E2</TileColor>
+            <square150x150logo src="/pwa-192x192.png"/>
+            <TileColor>#6366f1</TileColor>
         </tile>
     </msapplication>
 </browserconfig>
