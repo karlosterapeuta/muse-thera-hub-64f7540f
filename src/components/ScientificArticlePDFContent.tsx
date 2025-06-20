@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export function ScientificArticlePDFContent() {
@@ -504,4 +503,3 @@ export function ScientificArticlePDFContent() {
     </div>
   );
 }
-```
