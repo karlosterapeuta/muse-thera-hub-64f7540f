@@ -17,34 +17,43 @@ export const generateStaticPDF = async (
 ): Promise<boolean> => {
   const {
     filename = 'documento.pdf',
-    waitTime = 2000,
-    quality = 1.5,
+    waitTime = 4000,
+    quality = 2.0,
     format = 'a4',
     orientation = 'portrait'
   } = options;
 
   try {
-    // Criar container temporário
+    // Criar container temporário com estilos específicos para PDF
     const container = document.createElement('div');
     container.style.position = 'absolute';
     container.style.left = '-9999px';
     container.style.top = '0';
-    container.style.width = '800px';
+    container.style.width = '210mm'; // A4 width
+    container.style.minHeight = '297mm'; // A4 height
     container.style.backgroundColor = '#ffffff';
+    container.style.fontFamily = 'Times New Roman, serif';
+    container.style.fontSize = '12px';
+    container.style.lineHeight = '1.6';
+    container.style.color = '#000000';
+    container.style.padding = '20mm';
+    container.style.boxSizing = 'border-box';
     document.body.appendChild(container);
 
     const root = document.createElement('div');
+    root.style.width = '100%';
+    root.style.minHeight = '100%';
     container.appendChild(root);
 
     // Renderizar componente
     ReactDOM.render(component, root);
 
-    // Aguardar renderização
+    // Aguardar renderização completa
     await new Promise(resolve => setTimeout(resolve, waitTime));
 
-    // Configurações do PDF
+    // Configurações otimizadas do PDF para artigos acadêmicos
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin: [15, 15, 15, 15], // margem em mm
       filename,
       pagebreak: { 
         mode: ['avoid-all', 'css', 'legacy'],
@@ -64,11 +73,13 @@ export const generateStaticPDF = async (
         logging: false,
         letterRendering: true,
         removeContainer: true,
-        imageTimeout: 15000,
-        height: window.innerHeight,
-        width: window.innerWidth,
+        imageTimeout: 20000,
+        height: container.scrollHeight,
+        width: container.scrollWidth,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        windowWidth: 794, // A4 width in pixels at 96 DPI
+        windowHeight: 1123 // A4 height in pixels at 96 DPI
       },
       jsPDF: { 
         unit: 'mm', 
