@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'musetera-icon-192.png', 'musetera-icon-512.png'],
       manifest: {
         name: 'MuseTera - Plataforma Para Musicoterapeutas',
         short_name: 'MuseTera',
@@ -65,27 +65,27 @@ export default defineConfig(({ mode }) => ({
         categories: ['health', 'medical', 'music', 'therapy'],
         icons: [
           {
-            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
+            src: '/musetera-icon-192.png',
             sizes: '192x192',
-            type: 'image/jpeg',
+            type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
+            src: '/musetera-icon-512.png',
             sizes: '512x512',
-            type: 'image/jpeg',
+            type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
+            src: '/musetera-icon-192-maskable.png',
             sizes: '192x192',
-            type: 'image/jpeg',
+            type: 'image/png',
             purpose: 'maskable'
           },
           {
-            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
+            src: '/musetera-icon-512-maskable.png',
             sizes: '512x512',
-            type: 'image/jpeg',
+            type: 'image/png',
             purpose: 'maskable'
           }
         ],
@@ -95,21 +95,21 @@ export default defineConfig(({ mode }) => ({
             short_name: 'Dashboard',
             description: 'Acesso rápido ao dashboard',
             url: '/dashboard',
-            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
+            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
           },
           {
             name: 'Pacientes',
             short_name: 'Pacientes',
             description: 'Gerenciar pacientes',
             url: '/patients',
-            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
+            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
           },
           {
             name: 'Atividades',
             short_name: 'Atividades',
             description: 'Ferramentas terapêuticas',
             url: '/activities',
-            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
+            icons: [{ src: '/musetera-icon-192.png', sizes: '192x192' }]
           }
         ]
       },
