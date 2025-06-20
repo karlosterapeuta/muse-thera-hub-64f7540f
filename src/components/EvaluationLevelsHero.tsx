@@ -125,42 +125,46 @@ export function EvaluationLevelsHero() {
               <div
                 key={level.level}
                 className={cn(
-                  "p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md min-h-[120px] flex flex-col",
+                  "p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md min-h-[140px] overflow-hidden",
                   level.color
                 )}
               >
-                <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-shrink-0">
-                  <div className={cn(
-                    "w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold flex-shrink-0",
-                    level.circleColor
-                  )}>
-                    {level.level}
+                <div className="h-full flex flex-col">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-shrink-0">
+                    <div className={cn(
+                      "w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold flex-shrink-0",
+                      level.circleColor
+                    )}>
+                      {level.level}
+                    </div>
+                    <h3 className="font-semibold text-sm sm:text-base leading-tight break-words flex-1">
+                      {level.name}
+                    </h3>
                   </div>
-                  <h3 className="font-semibold text-sm sm:text-base leading-tight break-words">{level.name}</h3>
+                  <p className="text-xs sm:text-sm leading-relaxed flex-1 break-words overflow-hidden">
+                    {level.description}
+                  </p>
                 </div>
-                <p className="text-xs sm:text-sm leading-relaxed flex-1 break-words hyphens-auto">
-                  {level.description}
-                </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/60 rounded-lg border border-gray-200">
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/60 rounded-lg border border-gray-200 overflow-hidden">
             <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
               <Info className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
               Como usar a Escala MuseTera (0-6):
             </h4>
             <ul className="text-xs sm:text-sm text-gray-700 space-y-1">
-              <li className="break-words">• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
-              <li className="break-words">• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
-              <li className="break-words">• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
-              <li className="break-words">• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
-              <li className="break-words">• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
-              <li className="break-words">• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
-              <li className="break-words">• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
+              <li className="break-words overflow-hidden">• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
+              <li className="break-words overflow-hidden">• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
+              <li className="break-words overflow-hidden">• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
+              <li className="break-words overflow-hidden">• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
+              <li className="break-words overflow-hidden">• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
+              <li className="break-words overflow-hidden">• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
+              <li className="break-words overflow-hidden">• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
             </ul>
             <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
-              <p className="text-xs text-blue-800 font-medium break-words">
+              <p className="text-xs text-blue-800 font-medium break-words overflow-hidden">
                 💡 <strong>Dica:</strong> Considere o contexto individual de cada paciente e use evidências observáveis para justificar sua pontuação.
               </p>
             </div>
