@@ -14,10 +14,56 @@ export function usePWA() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [browserInfo, setBrowserInfo] = useState<{
+    name: string;
+    isMobile: boolean;
+    isDesktop: boolean;
+    supportsInstall: boolean;
+  }>({
+    name: 'unknown',
+    isMobile: false,
+    isDesktop: false,
+    supportsInstall: false
+  });
 
-  // Detectar tipo de dispositivo
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const isDesktop = !isMobile;
+  // Detectar navegador e dispositivo
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const isDesktop = !isMobile;
+    
+    let browserName = 'unknown';
+    let supportsInstall = false;
+
+    if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+      browserName = 'chrome';
+      supportsInstall = true;
+    } else if (userAgent.includes('Edg')) {
+      browserName = 'edge';
+      supportsInstall = true;
+    } else if (userAgent.includes('Firefox')) {
+      browserName = 'firefox';
+      supportsInstall = false; // Firefox não suporta instalação PWA nativa
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+      browserName = 'safari';
+      supportsInstall = isMobile; // Safari iOS suporta "Add to Home Screen"
+    }
+
+    setBrowserInfo({
+      name: browserName,
+      isMobile,
+      isDesktop,
+      supportsInstall
+    });
+
+    console.log('🔍 Detecção de navegador:', {
+      userAgent,
+      browserName,
+      isMobile,
+      isDesktop,
+      supportsInstall
+    });
+  }, []);
 
   useEffect(() => {
     console.log('🔧 Inicializando PWA hook...');
@@ -27,24 +73,40 @@ export function usePWA() {
     const isInWebAppIOS = (window.navigator as any).standalone === true;
     const appInstalled = isStandalone || isInWebAppIOS;
     
-    console.log('📱 App já instalado?', appInstalled);
+    console.log('📱 Status de instalação:', { isStandalone, isInWebAppIOS, appInstalled });
     setIsInstalled(appInstalled);
+
+    // Verificar requisitos PWA
+    const checkPWARequirements = () => {
+      const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+      const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
+      
+      console.log('✅ Requisitos PWA:', {
+        isHTTPS,
+        hasManifest,
+        hasServiceWorker: 'serviceWorker' in navigator
+      });
+
+      return isHTTPS && hasManifest;
+    };
+
+    const pwaRequirements = checkPWARequirements();
 
     // Listen for install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('🎯 Evento beforeinstallprompt detectado!');
+      console.log('🎯 Evento beforeinstallprompt detectado!', e);
       e.preventDefault();
-      setInstallPrompt(e as BeforeInstallPromptEvent);
+      
+      const promptEvent = e as BeforeInstallPromptEvent;
+      setInstallPrompt(promptEvent);
       setIsInstallable(true);
       
       // Verificar se não foi rejeitado recentemente
       const lastDismissed = localStorage.getItem('pwa-install-dismissed');
       const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
       
-      console.log('⏰ Último dismiss:', lastDismissed);
-      
       if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
-        console.log('✅ Mostrando popup em 3 segundos...');
+        console.log('✅ Mostrando popup de instalação...');
         setTimeout(() => {
           setShowInstallPrompt(true);
         }, 3000);
@@ -94,13 +156,15 @@ export function usePWA() {
       });
     }
 
-    // Para teste em desenvolvimento, simular o evento se não estiver instalado e não for localhost com HTTPS
-    if (!appInstalled && location.hostname !== 'localhost') {
-      console.log('🧪 Simulando evento de instalação para desenvolvimento...');
+    // Para navegadores que suportam PWA mas não dispararam o evento
+    if (!appInstalled && pwaRequirements && browserInfo.supportsInstall) {
       setTimeout(() => {
-        setIsInstallable(true);
-        setShowInstallPrompt(true);
-      }, 5000);
+        if (!installPrompt) {
+          console.log('⚠️ Navegador suporta PWA mas evento não foi capturado, forçando exibição');
+          setIsInstallable(true);
+          setTimeout(() => setShowInstallPrompt(true), 5000);
+        }
+      }, 2000);
     }
 
     return () => {
@@ -109,17 +173,19 @@ export function usePWA() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [browserInfo.supportsInstall]);
 
   const installApp = async () => {
     console.log('🚀 Tentando instalar app...');
+    
     if (!installPrompt) {
       console.log('❌ Sem prompt de instalação disponível');
-      return;
+      // Fallback: mostrar instruções manuais
+      return false;
     }
 
     try {
-      installPrompt.prompt();
+      await installPrompt.prompt();
       const result = await installPrompt.userChoice;
       
       console.log('📊 Resultado da instalação:', result.outcome);
@@ -128,9 +194,12 @@ export function usePWA() {
         setIsInstallable(false);
         setInstallPrompt(null);
         setShowInstallPrompt(false);
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('❌ Erro durante instalação:', error);
+      return false;
     }
   };
 
@@ -145,27 +214,13 @@ export function usePWA() {
     window.location.reload();
   };
 
-  // Log do estado atual para debug
-  useEffect(() => {
-    console.log('📊 Estado PWA:', {
-      isInstallable,
-      isInstalled,
-      isOnline,
-      showInstallPrompt,
-      hasInstallPrompt: !!installPrompt,
-      isMobile,
-      isDesktop
-    });
-  }, [isInstallable, isInstalled, isOnline, showInstallPrompt, installPrompt, isMobile, isDesktop]);
-
   return {
     isInstallable,
     isInstalled,
     isOnline,
     updateAvailable,
     showInstallPrompt,
-    isMobile,
-    isDesktop,
+    browserInfo,
     installApp,
     updateApp,
     dismissInstallPrompt
