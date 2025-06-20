@@ -76,7 +76,7 @@ export function EvaluationLevelsHero() {
   const getGridCols = () => {
     if (isMobile) return "grid-cols-1";
     if (isTablet) return "grid-cols-2";
-    return "grid-cols-7";
+    return "grid-cols-4"; // Reduzido de 7 para 4 colunas
   };
 
   return (
@@ -118,30 +118,30 @@ export function EvaluationLevelsHero() {
 
         <div className={cn(
           "transition-all duration-300 overflow-hidden",
-          isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
         )}>
-          <div className={cn("grid gap-2 sm:gap-3 lg:gap-4", getGridCols())}>
+          <div className={cn("grid gap-3 sm:gap-4 lg:gap-6", getGridCols())}>
             {developmentLevels.map((level) => (
               <div
                 key={level.level}
                 className={cn(
-                  "p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md min-h-[140px] overflow-hidden",
+                  "p-4 sm:p-5 rounded-lg border-2 transition-all duration-200 hover:shadow-md h-auto min-h-[160px] sm:min-h-[180px]",
                   level.color
                 )}
               >
-                <div className="h-full flex flex-col">
-                  <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-shrink-0">
+                <div className="h-full flex flex-col justify-between">
+                  <div className="flex items-start gap-3 mb-3 flex-shrink-0">
                     <div className={cn(
-                      "w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold flex-shrink-0",
+                      "w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0",
                       level.circleColor
                     )}>
                       {level.level}
                     </div>
-                    <h3 className="font-semibold text-sm sm:text-base leading-tight break-words flex-1">
+                    <h3 className="font-semibold text-sm sm:text-base leading-tight flex-1 hyphens-auto">
                       {level.name}
                     </h3>
                   </div>
-                  <p className="text-xs sm:text-sm leading-relaxed flex-1 break-words overflow-hidden">
+                  <p className="text-xs sm:text-sm leading-relaxed text-justify hyphens-auto flex-1">
                     {level.description}
                   </p>
                 </div>
@@ -149,22 +149,22 @@ export function EvaluationLevelsHero() {
             ))}
           </div>
 
-          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/60 rounded-lg border border-gray-200 overflow-hidden">
-            <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
-              <Info className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
+          <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-white/60 rounded-lg border border-gray-200">
+            <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+              <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />
               Como usar a Escala MuseTera (0-6):
             </h4>
-            <ul className="text-xs sm:text-sm text-gray-700 space-y-1">
-              <li className="break-words overflow-hidden">• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
-              <li className="break-words overflow-hidden">• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
-              <li className="break-words overflow-hidden">• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
-              <li className="break-words overflow-hidden">• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
-              <li className="break-words overflow-hidden">• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
-              <li className="break-words overflow-hidden">• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
-              <li className="break-words overflow-hidden">• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
+            <ul className="text-xs sm:text-sm text-gray-700 space-y-2">
+              <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
+              <li className="leading-relaxed">• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
+              <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
+              <li className="leading-relaxed">• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
+              <li className="leading-relaxed">• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
+              <li className="leading-relaxed">• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
+              <li className="leading-relaxed">• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
             </ul>
-            <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
-              <p className="text-xs text-blue-800 font-medium break-words overflow-hidden">
+            <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+              <p className="text-xs sm:text-sm text-blue-800 font-medium leading-relaxed">
                 💡 <strong>Dica:</strong> Considere o contexto individual de cada paciente e use evidências observáveis para justificar sua pontuação.
               </p>
             </div>
