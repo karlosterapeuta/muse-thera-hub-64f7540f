@@ -69,7 +69,7 @@ const generateScientificArticleRTF = (): string => {
          'by a panel of 15 music therapy specialists with minimum 5 years of experience. The scale was structured ' +
          'in 7 developmental domains with 7 scoring levels. Pilot application performed with 120 patients in ' +
          '8 Brazilian therapeutic centers. Statistical analysis included Content Validity Index (CVI), ' +
-         'Cronbach\\'s Alpha, and exploratory factorial analysis. \\b Results:\\b0 The MuseTera Scale demonstrated ' +
+         'Cronbach Alpha, and exploratory factorial analysis. \\b Results:\\b0 The MuseTera Scale demonstrated ' +
          'excellent content validity (CVI=0.89), high internal reliability (α=0.92), and adequate factorial ' +
          'structure. It showed 32% greater sensitivity in detecting subtle changes compared to traditional 4-5 ' +
          'point scales (p menor que 0.001). Domains encompass cognitive, motor, communicative, social, emotional, ' +
