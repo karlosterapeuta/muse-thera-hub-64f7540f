@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,13 +100,30 @@ export function EvaluationLevelsHero() {
           </div>
           <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
             <Button
-              variant="ghost"
-              size={isMobile ? "sm" : "default"}
               onClick={() => navigate('/scientific-article')}
-              className="text-purple-600 hover:text-purple-800 hover:bg-purple-100"
+              className={cn(
+                "relative overflow-hidden",
+                "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700",
+                "hover:from-purple-700 hover:via-pink-700 hover:to-purple-800",
+                "text-white font-semibold shadow-lg",
+                "border-2 border-purple-400",
+                "animate-blink-glow",
+                "transition-all duration-300 hover:scale-105",
+                "motion-reduce:animate-none motion-reduce:transform-none",
+                isMobile ? "text-xs px-3 py-2" : "text-sm px-4 py-2"
+              )}
+              size={isMobile ? "sm" : "default"}
             >
-              <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-              {!isMobile && "Artigo Científico"}
+              <div className="relative z-10 flex items-center gap-1">
+                <BookOpen className={cn(
+                  "animate-icon-bounce motion-reduce:animate-none",
+                  isMobile ? "h-3 w-3" : "h-4 w-4"
+                )} />
+                <span className="font-bold tracking-wide">
+                  {isMobile ? "Artigo" : "Artigo Científico"}
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-pink-400/20 animate-pulse" />
             </Button>
             <Button
               variant="ghost"
