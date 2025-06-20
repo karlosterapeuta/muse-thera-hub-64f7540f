@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export function ScientificArticlePDFContent() {
@@ -151,31 +150,31 @@ export function ScientificArticlePDFContent() {
         </p>
       </section>
 
-      {/* FIGURAS E ILUSTRAÇÕES - SEÇÃO COMPLETA PARA PDF */}
+      {/* FIGURAS E ILUSTRAÇÕES - SEÇÃO COLORIDA */}
       <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '20px', color: '#000' }}>4. FIGURAS E ILUSTRAÇÕES</h2>
         
-        {/* Figura 1 - Sistema de Pontuação */}
-        <div style={{ marginBottom: '25px', border: '1px solid #ccc', padding: '15px', backgroundColor: '#f9f9f9' }}>
-          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px' }}>
+        {/* Figura 1 - Sistema de Pontuação COLORIDA */}
+        <div style={{ marginBottom: '25px', border: '2px solid #3b82f6', padding: '15px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
+          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#1e40af' }}>
             Figura 1. Sistema de Pontuação Expandido da Escala MuseTera (0-6)
           </h3>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', flexWrap: 'wrap' }}>
             {[
-              { level: '0', name: 'Não Observado', desc: 'Ausência completa da habilidade' },
-              { level: '1', name: 'Emergente', desc: 'Sinais iniciais da habilidade' },
-              { level: '2', name: 'Inconsistente', desc: 'Habilidade presente ocasionalmente' },
-              { level: '3', name: 'Moderado', desc: 'Habilidade em desenvolvimento' },
-              { level: '4', name: 'Consistente', desc: 'Habilidade estável e regular' },
-              { level: '5', name: 'Avançado', desc: 'Habilidade bem desenvolvida' },
-              { level: '6', name: 'Excepcional', desc: 'Habilidade superior ao esperado' }
+              { level: '0', name: 'Não Observado', desc: 'Ausência completa da habilidade', color: '#ef4444' },
+              { level: '1', name: 'Emergente', desc: 'Sinais iniciais da habilidade', color: '#f97316' },
+              { level: '2', name: 'Inconsistente', desc: 'Habilidade presente ocasionalmente', color: '#eab308' },
+              { level: '3', name: 'Moderado', desc: 'Habilidade em desenvolvimento', color: '#84cc16' },
+              { level: '4', name: 'Consistente', desc: 'Habilidade estável e regular', color: '#22c55e' },
+              { level: '5', name: 'Avançado', desc: 'Habilidade bem desenvolvida', color: '#06b6d4' },
+              { level: '6', name: 'Excepcional', desc: 'Habilidade superior ao esperado', color: '#8b5cf6' }
             ].map((item) => (
               <div key={item.level} style={{ textAlign: 'center', width: '13%', marginBottom: '10px' }}>
                 <div style={{ 
                   width: '30px', 
                   height: '30px', 
-                  backgroundColor: '#333', 
+                  backgroundColor: item.color, 
                   color: 'white', 
                   borderRadius: '50%', 
                   display: 'flex', 
@@ -183,154 +182,193 @@ export function ScientificArticlePDFContent() {
                   justifyContent: 'center', 
                   fontWeight: 'bold',
                   fontSize: '12px',
-                  margin: '0 auto 5px auto'
+                  margin: '0 auto 5px auto',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                 }}>
                   {item.level}
                 </div>
-                <div style={{ fontSize: '9px', fontWeight: 'bold', marginBottom: '3px' }}>{item.name}</div>
-                <div style={{ fontSize: '8px', color: '#666' }}>{item.desc}</div>
+                <div style={{ fontSize: '9px', fontWeight: 'bold', marginBottom: '3px', color: '#1e40af' }}>{item.name}</div>
+                <div style={{ fontSize: '8px', color: '#475569' }}>{item.desc}</div>
               </div>
             ))}
           </div>
           
-          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#666', marginTop: '10px' }}>
+          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#64748b', marginTop: '10px' }}>
             Sistema expandido permite maior precisão na detecção de mudanças sutis no desenvolvimento terapêutico
           </p>
         </div>
 
-        {/* Figura 2 - Domínios da Escala */}
-        <div style={{ marginBottom: '25px', border: '1px solid #ccc', padding: '15px', backgroundColor: '#f9f9f9' }}>
-          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px' }}>
+        {/* Figura 2 - Domínios da Escala COLORIDA */}
+        <div style={{ marginBottom: '25px', border: '2px solid #10b981', padding: '15px', backgroundColor: '#f0fdf4', borderRadius: '8px' }}>
+          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#065f46' }}>
             Figura 2. Estrutura Multidimensional dos 7 Domínios da Escala MuseTera
           </h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '15px' }}>
             {[
-              { domain: 'Cognitivo', icon: '🧠', desc: 'Atenção, memória, funções executivas' },
-              { domain: 'Motor', icon: '🏃‍♂️', desc: 'Coordenação motora fina e grossa' },
-              { domain: 'Comunicativo', icon: '💬', desc: 'Linguagem verbal e não-verbal' },
-              { domain: 'Social', icon: '👥', desc: 'Interação interpessoal e cooperação' },
-              { domain: 'Emocional', icon: '😊', desc: 'Regulação emocional e autocontrole' },
-              { domain: 'Sensorial', icon: '👂', desc: 'Processamento auditivo, visual, tátil' },
-              { domain: 'Criativo', icon: '🎨', desc: 'Expressão artística e improvisação' }
+              { domain: 'Cognitivo', icon: '🧠', desc: 'Atenção, memória, funções executivas', color: '#3b82f6' },
+              { domain: 'Motor', icon: '🏃‍♂️', desc: 'Coordenação motora fina e grossa', color: '#ef4444' },
+              { domain: 'Comunicativo', icon: '💬', desc: 'Linguagem verbal e não-verbal', color: '#10b981' },
+              { domain: 'Social', icon: '👥', desc: 'Interação interpessoal e cooperação', color: '#f59e0b' },
+              { domain: 'Emocional', icon: '😊', desc: 'Regulação emocional e autocontrole', color: '#ec4899' },
+              { domain: 'Sensorial', icon: '👂', desc: 'Processamento auditivo, visual, tátil', color: '#8b5cf6' },
+              { domain: 'Criativo', icon: '🎨', desc: 'Expressão artística e improvisação', color: '#06b6d4' }
             ].map((item) => (
               <div key={item.domain} style={{ 
-                border: '1px solid #ddd', 
-                padding: '8px', 
+                border: `2px solid ${item.color}`, 
+                padding: '12px', 
                 textAlign: 'center', 
                 backgroundColor: 'white',
-                borderRadius: '5px'
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transform: 'scale(1)',
+                transition: 'all 0.2s'
               }}>
-                <div style={{ fontSize: '16px', marginBottom: '5px' }}>{item.icon}</div>
-                <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '3px' }}>{item.domain}</div>
-                <div style={{ fontSize: '8px', color: '#666' }}>{item.desc}</div>
+                <div style={{ fontSize: '20px', marginBottom: '8px' }}>{item.icon}</div>
+                <div style={{ 
+                  fontSize: '10px', 
+                  fontWeight: 'bold', 
+                  marginBottom: '5px', 
+                  color: item.color,
+                  textTransform: 'uppercase'
+                }}>{item.domain}</div>
+                <div style={{ fontSize: '8px', color: '#64748b', lineHeight: '1.3' }}>{item.desc}</div>
               </div>
             ))}
           </div>
           
-          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#666' }}>
+          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#64748b' }}>
             Estrutura multidimensional contempla aspectos centrais do desenvolvimento em musicoterapia
           </p>
         </div>
 
-        {/* Figura 3 - Resultados de Validação */}
-        <div style={{ marginBottom: '25px', border: '1px solid #ccc', padding: '15px', backgroundColor: '#f9f9f9' }}>
-          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px' }}>
+        {/* Figura 3 - Resultados de Validação COLORIDA */}
+        <div style={{ marginBottom: '25px', border: '2px solid #8b5cf6', padding: '15px', backgroundColor: '#faf5ff', borderRadius: '8px' }}>
+          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#581c87' }}>
             Figura 3. Principais Resultados da Validação Psicométrica (n=120)
           </h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
-            <div>
-              <h4 style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '10px' }}>Indicadores de Confiabilidade</h4>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '15px', 
+              borderRadius: '8px', 
+              border: '1px solid #c4b5fd',
+              boxShadow: '0 2px 4px rgba(139, 92, 246, 0.1)'
+            }}>
+              <h4 style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '10px', color: '#581c87' }}>Indicadores de Confiabilidade</h4>
               <div style={{ fontSize: '10px', lineHeight: '1.4' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>IVC Global:</span>
-                  <span style={{ fontWeight: 'bold' }}>0,89 (IC95%: 0,84-0,94)</span>
+                  <span style={{ fontWeight: 'bold', color: '#059669' }}>0,89 (IC95%: 0,84-0,94)</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>Alpha de Cronbach:</span>
-                  <span style={{ fontWeight: 'bold' }}>0,92</span>
+                  <span style={{ fontWeight: 'bold', color: '#059669' }}>0,92</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>Teste-Reteste:</span>
-                  <span style={{ fontWeight: 'bold' }}>r=0,88 (p&lt;0,001)</span>
+                  <span style={{ fontWeight: 'bold', color: '#059669' }}>r=0,88 (p&lt;0,001)</span>
                 </div>
               </div>
             </div>
             
-            <div>
-              <h4 style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '10px' }}>Análise Fatorial</h4>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '15px', 
+              borderRadius: '8px', 
+              border: '1px solid #c4b5fd',
+              boxShadow: '0 2px 4px rgba(139, 92, 246, 0.1)'
+            }}>
+              <h4 style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '10px', color: '#581c87' }}>Análise Fatorial</h4>
               <div style={{ fontSize: '10px', lineHeight: '1.4' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>KMO:</span>
-                  <span style={{ fontWeight: 'bold' }}>0,91</span>
+                  <span style={{ fontWeight: 'bold', color: '#2563eb' }}>0,91</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>Variância Explicada:</span>
-                  <span style={{ fontWeight: 'bold' }}>78,3%</span>
+                  <span style={{ fontWeight: 'bold', color: '#2563eb' }}>78,3%</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', padding: '3px 0' }}>
                   <span>Fatores Extraídos:</span>
-                  <span style={{ fontWeight: 'bold' }}>7</span>
+                  <span style={{ fontWeight: 'bold', color: '#2563eb' }}>7</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: 'white', border: '1px solid #ddd' }}>
+          <div style={{ 
+            marginTop: '15px', 
+            padding: '15px', 
+            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', 
+            border: '1px solid #d97706',
+            borderRadius: '8px',
+            color: 'white'
+          }}>
             <div style={{ fontSize: '11px', fontWeight: 'bold', textAlign: 'center', marginBottom: '5px' }}>
-              Sensibilidade Comparativa
+              🎯 Sensibilidade Comparativa
             </div>
             <div style={{ fontSize: '10px', textAlign: 'center' }}>
               <strong>32% maior sensibilidade</strong> na detecção de mudanças sutis comparado a escalas tradicionais (p&lt;0,001)
             </div>
           </div>
           
-          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#666', marginTop: '10px' }}>
+          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#64748b', marginTop: '10px' }}>
             Resultados demonstram excelentes propriedades psicométricas do instrumento
           </p>
         </div>
 
-        {/* Figura 4 - Exemplo de Aplicação */}
-        <div style={{ marginBottom: '25px', border: '1px solid #ccc', padding: '15px', backgroundColor: '#f9f9f9' }}>
-          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px' }}>
+        {/* Figura 4 - Exemplo de Aplicação COLORIDA */}
+        <div style={{ marginBottom: '25px', border: '2px solid #ec4899', padding: '15px', backgroundColor: '#fdf2f8', borderRadius: '8px' }}>
+          <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#9d174d' }}>
             Figura 4. Exemplo de Perfil de Desenvolvimento - Paciente com TEA (8 anos)
           </h3>
           
           <div style={{ marginBottom: '15px' }}>
             {[
-              { domain: 'Cognitivo', score: 3, desc: 'Atenção sustentada em atividades musicais estruturadas' },
-              { domain: 'Motor', score: 4, desc: 'Coordenação rítmica consistente com instrumentos percussivos' },
-              { domain: 'Comunicativo', score: 2, desc: 'Expressão vocal emergente durante improvisações' },
-              { domain: 'Social', score: 3, desc: 'Interação com terapeuta em atividades dirigidas' },
-              { domain: 'Emocional', score: 4, desc: 'Autorregulação através de músicas conhecidas' },
-              { domain: 'Sensorial', score: 5, desc: 'Processamento auditivo refinado e discriminação tonal' },
-              { domain: 'Criativo', score: 2, desc: 'Exploração instrumental com padrões repetitivos' }
+              { domain: 'Cognitivo', score: 3, desc: 'Atenção sustentada em atividades musicais estruturadas', color: '#3b82f6' },
+              { domain: 'Motor', score: 4, desc: 'Coordenação rítmica consistente com instrumentos percussivos', color: '#ef4444' },
+              { domain: 'Comunicativo', score: 2, desc: 'Expressão vocal emergente durante improvisações', color: '#10b981' },
+              { domain: 'Social', score: 3, desc: 'Interação com terapeuta em atividades dirigidas', color: '#f59e0b' },
+              { domain: 'Emocional', score: 4, desc: 'Autorregulação através de músicas conhecidas', color: '#ec4899' },
+              { domain: 'Sensorial', score: 5, desc: 'Processamento auditivo refinado e discriminação tonal', color: '#8b5cf6' },
+              { domain: 'Criativo', score: 2, desc: 'Exploração instrumental com padrões repetitivos', color: '#06b6d4' }
             ].map((item) => (
               <div key={item.domain} style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
-                marginBottom: '8px',
-                padding: '5px',
+                marginBottom: '10px',
+                padding: '10px',
                 backgroundColor: 'white',
-                border: '1px solid #ddd'
+                border: `2px solid ${item.color}`,
+                borderRadius: '8px',
+                boxShadow: `0 2px 4px ${item.color}20`
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{item.domain}</div>
-                  <div style={{ fontSize: '9px', color: '#666' }}>{item.desc}</div>
+                  <div style={{ 
+                    fontSize: '10px', 
+                    fontWeight: 'bold', 
+                    color: item.color,
+                    textTransform: 'uppercase',
+                    marginBottom: '3px'
+                  }}>{item.domain}</div>
+                  <div style={{ fontSize: '9px', color: '#64748b', lineHeight: '1.3' }}>{item.desc}</div>
                 </div>
                 <div style={{ 
-                  width: '25px', 
-                  height: '25px', 
-                  backgroundColor: '#333', 
+                  width: '30px', 
+                  height: '30px', 
+                  backgroundColor: item.color, 
                   color: 'white', 
                   borderRadius: '50%', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center', 
                   fontWeight: 'bold',
-                  fontSize: '11px'
+                  fontSize: '12px',
+                  boxShadow: `0 2px 8px ${item.color}40`,
+                  border: '2px solid white'
                 }}>
                   {item.score}
                 </div>
@@ -338,7 +376,7 @@ export function ScientificArticlePDFContent() {
             ))}
           </div>
           
-          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#666' }}>
+          <p style={{ fontSize: '10px', textAlign: 'center', fontStyle: 'italic', color: '#64748b' }}>
             Perfil individual demonstra aplicação prática da escala em contexto terapêutico real
           </p>
         </div>
