@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield, Share, Plus } from 'lucide-react';
+import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield, Share, Plus, Info } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 import { cn } from '@/lib/utils';
 
@@ -35,22 +35,52 @@ export function PWAInstallPrompt() {
   const DeviceIcon = browserInfo.isMobile ? Smartphone : Monitor;
 
   const handleInstall = async () => {
+    console.log('🎯 Botão de instalar clicado');
     const success = await installApp();
     
-    if (!success && !browserInfo.supportsInstall) {
-      // Mostrar instruções manuais se a instalação automática falhar
-      console.log('📱 Mostrando instruções manuais para', browserInfo.name);
+    if (!success && browserInfo.name === 'chrome' && !browserInfo.isMobile) {
+      // Para Chrome desktop, mostrar instruções específicas
+      console.log('🔧 Mostrando instruções específicas para Chrome desktop');
+      // O popup já será mostrado pelo installApp, não precisamos duplicar
     }
   };
 
   const getManualInstructions = () => {
     switch (browserInfo.name) {
+      case 'chrome':
+        if (browserInfo.isDesktop) {
+          return {
+            title: 'Como instalar no Chrome',
+            steps: [
+              'Procure o ícone de instalação (⊕) na barra de endereços',
+              'Ou clique nos 3 pontos no canto superior direito',
+              'Selecione "Instalar MuseTera..."',
+              'Clique em "Instalar" para confirmar'
+            ],
+            icon: Download
+          };
+        }
+        break;
+      case 'edge':
+        if (browserInfo.isDesktop) {
+          return {
+            title: 'Como instalar no Edge',
+            steps: [
+              'Procure o ícone de instalação na barra de endereços',
+              'Ou clique nos 3 pontos no canto superior direito',
+              'Selecione "Aplicativos" > "Instalar este site como aplicativo"',
+              'Clique em "Instalar" para confirmar'
+            ],
+            icon: Download
+          };
+        }
+        break;
       case 'safari':
         if (browserInfo.isMobile) {
           return {
             title: 'Adicionar à Tela Inicial',
             steps: [
-              'Toque no botão de compartilhar',
+              'Toque no botão de compartilhar (⬆)',
               'Role para baixo e toque em "Adicionar à Tela Inicial"',
               'Toque em "Adicionar" para confirmar'
             ],
@@ -186,34 +216,33 @@ export function PWAInstallPrompt() {
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                {browserInfo.supportsInstall ? (
-                  <Button 
-                    onClick={handleInstall}
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Instalar no {deviceType}
-                  </Button>
-                ) : manualInstructions ? (
-                  <div className="space-y-3">
-                    <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                      <div className="flex items-center gap-2 mb-3">
-                        <manualInstructions.icon className="w-5 h-5 text-amber-600" />
-                        <h3 className="font-semibold text-amber-800 dark:text-amber-200">
-                          {manualInstructions.title}
-                        </h3>
-                      </div>
-                      <ol className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
-                        {manualInstructions.steps.map((step, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="font-medium">{index + 1}.</span>
-                            <span>{step}</span>
-                          </li>
-                        ))}
-                      </ol>
+                <Button 
+                  onClick={handleInstall}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Instalar no {deviceType}
+                </Button>
+
+                {/* Manual Instructions */}
+                {manualInstructions && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Info className="w-5 h-5 text-amber-600" />
+                      <h3 className="font-semibold text-amber-800 dark:text-amber-200">
+                        {manualInstructions.title}
+                      </h3>
                     </div>
+                    <ol className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                      {manualInstructions.steps.map((step, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="font-medium text-amber-600">{index + 1}.</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
-                ) : null}
+                )}
                 
                 <Button
                   variant="outline"

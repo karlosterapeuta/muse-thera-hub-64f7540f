@@ -43,10 +43,10 @@ export function usePWA() {
       supportsInstall = true;
     } else if (userAgent.includes('Firefox')) {
       browserName = 'firefox';
-      supportsInstall = false; // Firefox não suporta instalação PWA nativa
+      supportsInstall = false;
     } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
       browserName = 'safari';
-      supportsInstall = isMobile; // Safari iOS suporta "Add to Home Screen"
+      supportsInstall = isMobile;
     }
 
     setBrowserInfo({
@@ -76,21 +76,34 @@ export function usePWA() {
     console.log('📱 Status de instalação:', { isStandalone, isInWebAppIOS, appInstalled });
     setIsInstalled(appInstalled);
 
+    // Se já está instalado, não precisa continuar
+    if (appInstalled) {
+      console.log('✅ App já está instalado');
+      return;
+    }
+
     // Verificar requisitos PWA
     const checkPWARequirements = () => {
       const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
       const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
+      const hasServiceWorker = 'serviceWorker' in navigator;
       
       console.log('✅ Requisitos PWA:', {
         isHTTPS,
         hasManifest,
-        hasServiceWorker: 'serviceWorker' in navigator
+        hasServiceWorker,
+        protocol: location.protocol,
+        hostname: location.hostname
       });
 
-      return isHTTPS && hasManifest;
+      return isHTTPS && hasManifest && hasServiceWorker;
     };
 
     const pwaRequirements = checkPWARequirements();
+    console.log('📋 Requisitos PWA atendidos:', pwaRequirements);
+
+    // Forçar variáveis globais para debug
+    let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
     // Listen for install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -98,6 +111,7 @@ export function usePWA() {
       e.preventDefault();
       
       const promptEvent = e as BeforeInstallPromptEvent;
+      deferredPrompt = promptEvent;
       setInstallPrompt(promptEvent);
       setIsInstallable(true);
       
@@ -106,7 +120,7 @@ export function usePWA() {
       const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
       
       if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
-        console.log('✅ Mostrando popup de instalação...');
+        console.log('✅ Mostrando popup de instalação em 3 segundos...');
         setTimeout(() => {
           setShowInstallPrompt(true);
         }, 3000);
@@ -122,6 +136,7 @@ export function usePWA() {
       setIsInstallable(false);
       setInstallPrompt(null);
       setShowInstallPrompt(false);
+      deferredPrompt = null;
     };
 
     // Listen for online/offline
@@ -135,38 +150,54 @@ export function usePWA() {
       setIsOnline(false);
     };
 
+    // Adicionar listeners
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
     // Register service worker
-    if ('serviceWorker' in navigator) {
-      const wb = new Workbox('/sw.js');
-      
-      wb.addEventListener('waiting', () => {
-        console.log('🔄 Atualização disponível');
-        setUpdateAvailable(true);
-      });
-
-      wb.register().then(() => {
-        console.log('✅ Service Worker registrado');
-      }).catch((error) => {
-        console.error('❌ Erro ao registrar Service Worker:', error);
-      });
+    if ('serviceWorker' in navigator && pwaRequirements) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('✅ Service Worker registrado:', registration);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            console.log('🔄 Atualização do Service Worker encontrada');
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🔄 Atualização disponível');
+                  setUpdateAvailable(true);
+                }
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          console.error('❌ Erro ao registrar Service Worker:', error);
+        });
     }
 
-    // Para navegadores que suportam PWA mas não dispararam o evento
-    if (!appInstalled && pwaRequirements && browserInfo.supportsInstall) {
+    // Fallback para navegadores que suportam PWA mas não dispararam o evento
+    if (pwaRequirements && browserInfo.supportsInstall) {
       setTimeout(() => {
-        if (!installPrompt) {
-          console.log('⚠️ Navegador suporta PWA mas evento não foi capturado, forçando exibição');
+        if (!deferredPrompt && !appInstalled) {
+          console.log('⚠️ Navegador suporta PWA mas evento não foi capturado, simulando disponibilidade');
           setIsInstallable(true);
-          setTimeout(() => setShowInstallPrompt(true), 5000);
+          setTimeout(() => {
+            if (!deferredPrompt) {
+              console.log('🔧 Forçando exibição do prompt sem evento nativo');
+              setShowInstallPrompt(true);
+            }
+          }, 5000);
         }
       }, 2000);
     }
 
+    // Cleanup
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
@@ -176,25 +207,37 @@ export function usePWA() {
   }, [browserInfo.supportsInstall]);
 
   const installApp = async () => {
-    console.log('🚀 Tentando instalar app...');
+    console.log('🚀 Tentando instalar app...', {
+      hasInstallPrompt: !!installPrompt,
+      browserSupportsInstall: browserInfo.supportsInstall,
+      browserName: browserInfo.name
+    });
     
     if (!installPrompt) {
-      console.log('❌ Sem prompt de instalação disponível');
-      // Fallback: mostrar instruções manuais
+      console.log('❌ Sem prompt de instalação disponível, usando fallback');
+      
+      // Para Chrome/Edge desktop sem evento nativo, mostrar instruções
+      if (browserInfo.supportsInstall && !browserInfo.isMobile) {
+        alert(`Para instalar o MuseTera no seu ${browserInfo.name}:\n\n1. Clique no ícone de instalação na barra de endereços (se disponível)\n2. Ou acesse o menu do navegador > "Instalar MuseTera"\n3. Ou adicione aos favoritos para acesso rápido`);
+      }
       return false;
     }
 
     try {
+      console.log('📱 Chamando prompt de instalação...');
       await installPrompt.prompt();
       const result = await installPrompt.userChoice;
       
       console.log('📊 Resultado da instalação:', result.outcome);
       
       if (result.outcome === 'accepted') {
+        console.log('✅ Instalação aceita pelo usuário');
         setIsInstallable(false);
         setInstallPrompt(null);
         setShowInstallPrompt(false);
         return true;
+      } else {
+        console.log('❌ Instalação rejeitada pelo usuário');
       }
       return false;
     } catch (error) {
