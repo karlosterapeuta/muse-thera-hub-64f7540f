@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -42,6 +43,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Patient {
   id: string;
@@ -56,6 +58,7 @@ export default function Evaluation() {
   const [selectedEvaluation, setSelectedEvaluation] = useState("1");
   const [evaluationDate, setEvaluationDate] = useState<Date>(new Date());
   const [selections, setSelections] = useState<Record<string, string>>({});
+  const [observations, setObservations] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("evaluation");
 
@@ -100,7 +103,7 @@ export default function Evaluation() {
   const evaluationDomains = [
     {
       title: "Domínio Musical",
-      description: "Avaliação das habilidades e respostas musicais",
+      description: "Avaliação das habilidades e respostas musicais do paciente",
       icon: "🎵",
       color: "from-purple-500 to-pink-500",
       subdomains: [
@@ -108,29 +111,49 @@ export default function Evaluation() {
           title: "Percepção Musical",
           description: "Capacidade de perceber e discriminar elementos musicais",
           parameters: [
-            "Discriminação de altura sonora",
-            "Reconhecimento de timbres",
-            "Percepção rítmica",
-            "Memória musical",
-            "Atenção aos estímulos sonoros"
+            "Discriminação de altura sonora (grave/agudo)",
+            "Reconhecimento de timbres instrumentais",
+            "Percepção rítmica e pulsação",
+            "Memória musical a curto prazo",
+            "Memória musical a longo prazo",
+            "Atenção sustentada aos estímulos sonoros",
+            "Discriminação de intensidade (forte/fraco)",
+            "Reconhecimento de padrões melódicos"
           ]
         },
         {
           title: "Expressão Musical",
           description: "Capacidade de se expressar através da música",
           parameters: [
-            "Expressividade vocal/instrumental",
-            "Criatividade musical",
-            "Improvisação",
-            "Sincronização com o pulso",
-            "Qualidade da produção sonora"
+            "Expressividade vocal espontânea",
+            "Expressividade instrumental",
+            "Criatividade musical livre",
+            "Improvisação vocal",
+            "Improvisação instrumental",
+            "Sincronização com o pulso musical",
+            "Qualidade da produção sonora",
+            "Iniciativa para criação musical"
+          ]
+        },
+        {
+          title: "Compreensão Musical",
+          description: "Entendimento de estruturas e conceitos musicais",
+          parameters: [
+            "Compreensão de início e fim musical",
+            "Reconhecimento de diferentes estilos",
+            "Identificação de instrumentos familiares",
+            "Compreensão de dinâmicas musicais",
+            "Associação música-emoção",
+            "Seguimento de comandos musicais",
+            "Antecipação de eventos musicais",
+            "Compreensão de estruturas simples"
           ]
         }
       ]
     },
     {
       title: "Domínio Psicossocial",
-      description: "Avaliação dos aspectos psicológicos e sociais",
+      description: "Avaliação dos aspectos psicológicos, emocionais e sociais",
       icon: "👥",
       color: "from-blue-500 to-cyan-500",
       subdomains: [
@@ -138,59 +161,99 @@ export default function Evaluation() {
           title: "Interação Social",
           description: "Qualidade das interações sociais durante as atividades musicais",
           parameters: [
-            "Engajamento com o terapeuta",
-            "Interação com pares",
-            "Compartilhamento de experiências",
-            "Iniciativa social",
-            "Reciprocidade"
+            "Engajamento com o musicoterapeuta",
+            "Interação com pares no grupo",
+            "Compartilhamento de instrumentos",
+            "Iniciativa para interação social",
+            "Reciprocidade nas trocas musicais",
+            "Espera de turno em atividades",
+            "Aceitação de liderança musical",
+            "Cooperação em atividades conjunto"
           ]
         },
         {
           title: "Regulação Emocional",
           description: "Capacidade de utilizar a música para regulação emocional",
           parameters: [
-            "Expressão de emoções",
+            "Expressão adequada de emoções",
             "Auto-regulação através da música",
             "Resposta emocional apropriada",
-            "Modulação do humor",
-            "Tolerância à frustração"
+            "Modulação do humor pela música",
+            "Tolerância à frustração musical",
+            "Controle de impulsos durante atividades",
+            "Adaptação a mudanças no repertório",
+            "Estabilidade emocional na sessão"
+          ]
+        },
+        {
+          title: "Autoestima e Autoconceito",
+          description: "Percepção de si mesmo em contextos musicais",
+          parameters: [
+            "Confiança para experimentar sons",
+            "Aceitação de suas produções musicais",
+            "Disposição para se expor musicalmente",
+            "Orgulho de suas criações",
+            "Persistência diante de desafios",
+            "Autonomia nas escolhas musicais",
+            "Senso de competência musical",
+            "Valorização de seu potencial"
           ]
         }
       ]
     },
     {
       title: "Domínio Cognitivo",
-      description: "Avaliação das funções cognitivas",
+      description: "Avaliação das funções cognitivas estimuladas pela música",
       icon: "🧠",
       color: "from-emerald-500 to-teal-500",
       subdomains: [
         {
           title: "Funções Executivas",
-          description: "Capacidade de planejamento, organização e execução",
+          description: "Capacidades de planejamento, organização e execução",
           parameters: [
-            "Atenção sustentada",
-            "Planejamento musical",
-            "Flexibilidade cognitiva",
+            "Atenção sustentada em atividades",
+            "Planejamento de sequências musicais",
+            "Flexibilidade cognitiva musical",
             "Resolução de problemas musicais",
-            "Tomada de decisão"
+            "Tomada de decisão musical",
+            "Controle inibitório de respostas",
+            "Organização temporal de ações",
+            "Monitoramento de desempenho"
           ]
         },
         {
           title: "Processamento da Informação",
           description: "Capacidade de processar e responder a estímulos musicais",
           parameters: [
-            "Velocidade de processamento",
-            "Capacidade de sequenciamento",
-            "Integração sensorial",
-            "Memória de trabalho",
-            "Capacidade de generalização"
+            "Velocidade de processamento auditivo",
+            "Capacidade de sequenciamento temporal",
+            "Integração sensorial multimodal",
+            "Memória de trabalho auditiva",
+            "Capacidade de generalização musical",
+            "Transferência de aprendizagem",
+            "Categorização de estímulos sonoros",
+            "Abstração de padrões musicais"
+          ]
+        },
+        {
+          title: "Aprendizagem Musical",
+          description: "Capacidade de adquirir e reter conhecimentos musicais",
+          parameters: [
+            "Aquisição de novas habilidades",
+            "Retenção de informações musicais",
+            "Aplicação de conhecimentos prévios",
+            "Adaptação a novos repertórios",
+            "Consolidação de aprendizagens",
+            "Transferência entre modalidades",
+            "Insight musical",
+            "Metacognição musical"
           ]
         }
       ]
     },
     {
       title: "Domínio Sensório-Motor",
-      description: "Avaliação da integração sensorial e motora",
+      description: "Avaliação da integração sensorial e capacidades motoras",
       icon: "👐",
       color: "from-orange-500 to-red-500",
       subdomains: [
@@ -198,74 +261,206 @@ export default function Evaluation() {
           title: "Coordenação Motora",
           description: "Qualidade dos movimentos relacionados à música",
           parameters: [
-            "Coordenação bimanual",
-            "Controle motor fino",
-            "Planejamento motor",
+            "Coordenação bimanual em instrumentos",
+            "Controle motor fino para detalhes",
+            "Planejamento motor de sequências",
             "Precisão rítmica motora",
-            "Integração de movimento e música"
+            "Integração movimento-música",
+            "Coordenação motora global",
+            "Dissociação de movimentos",
+            "Fluidez de gestos musicais"
           ]
         },
         {
           title: "Processamento Sensorial",
-          description: "Resposta aos estímulos sensoriais musicais",
+          description: "Resposta e integração de estímulos sensoriais musicais",
           parameters: [
-            "Resposta auditiva",
+            "Resposta auditiva adequada",
             "Integração audiovisual",
             "Resposta tátil a instrumentos",
             "Propriocepção durante atividades",
-            "Tolerância a estímulos sonoros"
+            "Tolerância a estímulos sonoros",
+            "Modulação sensorial",
+            "Discriminação sensorial fina",
+            "Integração vestibular-auditiva"
+          ]
+        },
+        {
+          title: "Desenvolvimento Motor",
+          description: "Evolução das habilidades motoras através da música",
+          parameters: [
+            "Desenvolvimento da motricidade fina",
+            "Evolução da coordenação global",
+            "Aperfeiçoamento gestual",
+            "Refinamento de movimentos",
+            "Economia de movimento",
+            "Precisão crescente",
+            "Automatização de padrões",
+            "Criatividade motora"
           ]
         }
       ]
     },
     {
-      title: "Domínio Desenvolvimento da Fala",
-      description: "Avaliação específica para pacientes com atraso na fala",
+      title: "Domínio Comunicativo-Interativo",
+      description: "Avaliação das habilidades de comunicação e interação através da música",
       icon: "🗣️",
       color: "from-indigo-500 to-purple-500",
       subdomains: [
         {
-          title: "Desenvolvimento Fonológico",
-          description: "Capacidade de produção e discriminação de sons da fala",
+          title: "Comunicação Verbal",
+          description: "Uso da linguagem verbal em contextos musicais",
           parameters: [
-            "Produção de sons isolados",
-            "Sequências sonoras simples",
-            "Padrões silábicos",
-            "Articulação de fonemas",
-            "Discriminação auditiva de sons da fala"
+            "Produção vocal intencional",
+            "Articulação de palavras cantadas",
+            "Vocabulário musical expressivo",
+            "Narrativas através de canções",
+            "Comentários sobre experiências musicais",
+            "Solicitações verbais relacionadas à música",
+            "Descrição de sensações musicais",
+            "Expressão de preferências verbalmente"
           ]
         },
         {
-          title: "Desenvolvimento Lexical",
-          description: "Capacidade de compreensão e uso de palavras",
+          title: "Comunicação Não-Verbal",
+          description: "Expressão através de gestos, expressões e movimentos",
           parameters: [
-            "Vocabulário receptivo",
-            "Vocabulário expressivo",
-            "Nomeação de objetos/ações",
-            "Compreensão de palavras",
-            "Uso funcional de palavras"
+            "Gestos comunicativos musicais",
+            "Expressões faciais adequadas",
+            "Postura corporal expressiva",
+            "Contato visual durante atividades",
+            "Movimentos corporais intencionais",
+            "Mímica e imitação musical",
+            "Apontamento e indicação",
+            "Proximidade física apropriada"
           ]
         },
         {
-          title: "Desenvolvimento Sintático",
-          description: "Capacidade de organizar palavras em estruturas frasais",
+          title: "Pragmática Comunicativa",
+          description: "Uso social e funcional da comunicação musical",
           parameters: [
-            "Estruturas frasais simples",
-            "Combinação de palavras",
-            "Uso de conectivos básicos",
-            "Ordem das palavras",
-            "Expansão de frases"
+            "Intenção comunicativa clara",
+            "Turnos conversacionais musicais",
+            "Iniciativa comunicativa",
+            "Resposta a iniciativas de outros",
+            "Manutenção de tópicos musicais",
+            "Uso de música para necessidades",
+            "Reparação comunicativa",
+            "Adequação contextual"
           ]
         },
         {
-          title: "Desenvolvimento Pragmático",
-          description: "Uso social e funcional da comunicação",
+          title: "Interação Terapêutica",
+          description: "Qualidade da relação estabelecida no setting musicoterapêutico",
           parameters: [
-            "Intenção comunicativa",
-            "Turnos conversacionais",
-            "Gestos comunicativos",
-            "Contato visual durante comunicação",
-            "Uso social da fala"
+            "Vínculo com o musicoterapeuta",
+            "Confiança no setting terapêutico",
+            "Colaboração nas atividades",
+            "Aceita sugestões e orientações",
+            "Manifesta necessidades claramente",
+            "Participa do processo terapêutico",
+            "Demonstra progressos conquistados",
+            "Transfere aprendizagens para outros contextos"
+          ]
+        }
+      ]
+    },
+    {
+      title: "Domínio Neurofisiológico",
+      description: "Avaliação das respostas neurológicas e fisiológicas à música",
+      icon: "🧬",
+      color: "from-teal-500 to-green-500",
+      subdomains: [
+        {
+          title: "Respostas Neurológicas",
+          description: "Indicadores de funcionamento neurológico através da música",
+          parameters: [
+            "Sincronização neural com ritmos",
+            "Ativação de redes neurais musicais",
+            "Plasticidade neural evidenciada",
+            "Integração hemisférica cerebral",
+            "Processamento temporal neural",
+            "Conectividade funcional",
+            "Neuroplasticidade induzida",
+            "Reorganização cortical"
+          ]
+        },
+        {
+          title: "Respostas Fisiológicas",
+          description: "Mudanças corporais em resposta à música",
+          parameters: [
+            "Alterações na frequência cardíaca",
+            "Modificações respiratórias",
+            "Tensão e relaxamento muscular",
+            "Resposta de orientação auditiva",
+            "Reflexos acústicos preservados",
+            "Regulação do tônus muscular",
+            "Sincronização fisiológica",
+            "Homeostase corporal"
+          ]
+        },
+        {
+          title: "Arousal e Alerta",
+          description: "Níveis de ativação e vigilância durante atividades musicais",
+          parameters: [
+            "Nível de alerta apropriado",
+            "Modulação do arousal pela música",
+            "Sustentação da vigilância",
+            "Transições adequadas de estado",
+            "Responsividade a estímulos",
+            "Regulação da ativação",
+            "Flexibilidade do arousal",
+            "Estabilidade atencional"
+          ]
+        }
+      ]
+    },
+    {
+      title: "Domínio Executivo-Adaptativo",
+      description: "Avaliação das capacidades executivas e adaptativas em contextos musicais",
+      icon: "⚙️",
+      color: "from-pink-500 to-rose-500",
+      subdomains: [
+        {
+          title: "Funções Executivas Complexas",
+          description: "Habilidades executivas de alta ordem aplicadas à música",
+          parameters: [
+            "Planejamento estratégico musical",
+            "Execução de planos complexos",
+            "Monitoramento de resultados",
+            "Correção de erros musicais",
+            "Gestão de múltiplas tarefas",
+            "Priorização de objetivos",
+            "Flexibilidade estratégica",
+            "Avaliação de desempenho"
+          ]
+        },
+        {
+          title: "Adaptação e Generalização",
+          description: "Capacidade de adaptar e generalizar aprendizagens musicais",
+          parameters: [
+            "Adaptação a novos contextos",
+            "Generalização de habilidades",
+            "Transferência entre domínios",
+            "Flexibilidade comportamental",
+            "Ajuste a demandas variáveis",
+            "Resposta a feedback",
+            "Modificação de estratégias",
+            "Aplicação criativa de conhecimentos"
+          ]
+        },
+        {
+          title: "Autonomia e Independência",
+          description: "Desenvolvimento da autonomia através de experiências musicais",
+          parameters: [
+            "Iniciativa para atividades musicais",
+            "Independência na execução",
+            "Autogerenciamento de atividades",
+            "Tomada de decisões autônomas",
+            "Autorregulação comportamental",
+            "Autodirecionamento musical",
+            "Responsabilidade por instrumentos",
+            "Autoavaliação de progressos"
           ]
         }
       ]
@@ -278,14 +473,16 @@ export default function Evaluation() {
     
     if (!value) return 0;
     
-    return value === "ausente" ? 0 : 
+    return value === "nao_observado" ? 0 : 
            value === "emergente" ? 1 : 
            value === "inconsistente" ? 2 : 
-           value === "consistente" ? 3 : 4;
+           value === "moderado" ? 3 :
+           value === "consistente" ? 4 : 
+           value === "avancado" ? 5 : 6;
   };
 
   const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
-    const maxPossible = parameters.length * 4;
+    const maxPossible = parameters.length * 6;
     
     const totalScore = parameters.reduce((acc, param) => {
       return acc + calculateScore(domain, subdomain, param);
@@ -304,7 +501,7 @@ export default function Evaluation() {
     domain.subdomains.forEach((subdomain: any) => {
       const score = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
       totalScore += score.raw;
-      maxPossible += subdomain.parameters.length * 4;
+      maxPossible += subdomain.parameters.length * 6;
     });
     
     return {
@@ -322,7 +519,7 @@ export default function Evaluation() {
         subdomain.parameters.forEach(param => {
           const score = calculateScore(domain.title, subdomain.title, param);
           totalScore += score;
-          maxPossible += 4;
+          maxPossible += 6;
         });
       });
     });
@@ -518,6 +715,47 @@ export default function Evaluation() {
     }
   };
 
+  const getScoreLabel = (score: number) => {
+    switch(score) {
+      case 0: return "Não Observado";
+      case 1: return "Emergente";
+      case 2: return "Inconsistente";
+      case 3: return "Moderado";
+      case 4: return "Consistente";
+      case 5: return "Avançado";
+      case 6: return "Excepcional";
+      default: return "Não Observado";
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    switch(score) {
+      case 0: return "border-gray-400";
+      case 1: return "border-red-500";
+      case 2: return "border-orange-400";
+      case 3: return "border-yellow-400";
+      case 4: return "border-blue-500";
+      case 5: return "border-green-500";
+      case 6: return "border-purple-500";
+      default: return "border-gray-400";
+    }
+  };
+
+  const getScoreBgColor = (score: number, isSelected: boolean) => {
+    if (!isSelected) return "bg-white";
+    
+    switch(score) {
+      case 0: return "bg-gray-400";
+      case 1: return "bg-red-500";
+      case 2: return "bg-orange-400";
+      case 3: return "bg-yellow-400";
+      case 4: return "bg-blue-500";
+      case 5: return "bg-green-500";
+      case 6: return "bg-purple-500";
+      default: return "bg-white";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
@@ -528,7 +766,7 @@ export default function Evaluation() {
             Escala MuseTera
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 font-medium">
-            Instrumento de Avaliação Musicoterapêutica
+            Instrumento de Avaliação Musicoterapêutica Profissional
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
@@ -644,7 +882,7 @@ export default function Evaluation() {
                 value="evaluation" 
                 className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-purple-600 transition-all duration-300"
               >
-                Avaliação
+                Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
@@ -661,6 +899,14 @@ export default function Evaluation() {
             </TabsList>
 
             <TabsContent value="evaluation" className="space-y-8 mt-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
+                <p className="text-blue-700 text-sm">
+                  Sistema de pontuação expandido (0-6): Não Observado (0), Emergente (1), Inconsistente (2), 
+                  Moderado (3), Consistente (4), Avançado (5), Excepcional (6)
+                </p>
+              </div>
+
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
                   <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 group-hover:bg-opacity-10`}>
@@ -706,36 +952,34 @@ export default function Evaluation() {
                             <Table className="min-w-full">
                               <TableHeader>
                                 <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100">
-                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 text-base">Habilidades</TableHead>
-                                  <TableHead className="w-24 text-center">
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-xs font-semibold text-red-600">Ausente</span>
-                                      <span className="text-xs text-red-500">(0)</span>
-                                    </div>
+                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 text-base">Parâmetros Avaliados</TableHead>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Não Obs.</span>
+                                    <span className="block text-xs font-normal">(0)</span>
                                   </TableHead>
-                                  <TableHead className="w-24 text-center">
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-xs font-semibold text-orange-600">Emergente</span>
-                                      <span className="text-xs text-orange-500">(1)</span>
-                                    </div>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Emergente</span>
+                                    <span className="block text-xs font-normal">(1)</span>
                                   </TableHead>
-                                  <TableHead className="w-24 text-center">
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-xs font-semibold text-yellow-600">Inconsistente</span>
-                                      <span className="text-xs text-yellow-500">(2)</span>
-                                    </div>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Inconsist.</span>
+                                    <span className="block text-xs font-normal">(2)</span>
                                   </TableHead>
-                                  <TableHead className="w-24 text-center">
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-xs font-semibold text-blue-600">Consistente</span>
-                                      <span className="text-xs text-blue-500">(3)</span>
-                                    </div>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Moderado</span>
+                                    <span className="block text-xs font-normal">(3)</span>
                                   </TableHead>
-                                  <TableHead className="w-24 text-center">
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-xs font-semibold text-green-600">Independente</span>
-                                      <span className="text-xs text-green-500">(4)</span>
-                                    </div>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Consistente</span>
+                                    <span className="block text-xs font-normal">(4)</span>
+                                  </TableHead>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Avançado</span>
+                                    <span className="block text-xs font-normal">(5)</span>
+                                  </TableHead>
+                                  <TableHead className="w-16 text-center">
+                                    <span className="block text-xs font-normal">Excepcional</span>
+                                    <span className="block text-xs font-normal">(6)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
@@ -743,8 +987,8 @@ export default function Evaluation() {
                                 {subdomain.parameters.map((parameter, paramIndex) => (
                                   <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
                                     <TableCell className="text-sm sm:text-base font-medium text-gray-800 py-4">{parameter}</TableCell>
-                                    {["ausente", "emergente", "inconsistente", "consistente", "independente"].map((level) => (
-                                      <TableCell key={level} className="text-center p-4">
+                                    {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "avancado", "excepcional"].map((level, levelIndex) => (
+                                      <TableCell key={level} className="text-center p-2 sm:p-4">
                                         <RadioGroup
                                           value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
                                           onValueChange={(value) => 
@@ -763,18 +1007,10 @@ export default function Evaluation() {
                                             />
                                             <label
                                               htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                              className={`block w-5 h-5 rounded-full cursor-pointer border-3 transition-all duration-300 transform hover:scale-110 ${
-                                                level === "ausente" ? "border-red-400 hover:border-red-500" :
-                                                level === "emergente" ? "border-orange-400 hover:border-orange-500" :
-                                                level === "inconsistente" ? "border-yellow-400 hover:border-yellow-500" :
-                                                level === "consistente" ? "border-blue-400 hover:border-blue-500" : "border-green-400 hover:border-green-500"
-                                              } ${
+                                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelIndex)} ${
                                                 selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                                  ? level === "ausente" ? "bg-red-500 shadow-lg shadow-red-200" :
-                                                    level === "emergente" ? "bg-orange-500 shadow-lg shadow-orange-200" :
-                                                    level === "inconsistente" ? "bg-yellow-500 shadow-lg shadow-yellow-200" :
-                                                    level === "consistente" ? "bg-blue-500 shadow-lg shadow-blue-200" : "bg-green-500 shadow-lg shadow-green-200"
-                                                  : "bg-white hover:bg-gray-50"
+                                                  ? getScoreBgColor(levelIndex, true)
+                                                  : "bg-white"
                                               }`}
                                             />
                                           </div>
@@ -785,6 +1021,22 @@ export default function Evaluation() {
                                 ))}
                               </TableBody>
                             </Table>
+                          </div>
+
+                          {/* Campo de observações qualitativas */}
+                          <div className="mt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Observações Qualitativas - {subdomain.title}
+                            </label>
+                            <Textarea
+                              placeholder={`Registre observações específicas sobre ${subdomain.title.toLowerCase()}, comportamentos significativos, progressos notados e recomendações...`}
+                              value={observations[`${domain.title}-${subdomain.title}`] || ""}
+                              onChange={(e) => setObservations(prev => ({
+                                ...prev,
+                                [`${domain.title}-${subdomain.title}`]: e.target.value
+                              }))}
+                              className="min-h-[80px]"
+                            />
                           </div>
                         </Card>
                       </div>
@@ -797,13 +1049,13 @@ export default function Evaluation() {
             <TabsContent value="results" className="space-y-8 mt-8">
               <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-blue-50 to-indigo-50">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  Resultados da Avaliação Musicoterapêutica
+                  Resultados da Escala MuseTera
                 </h2>
                 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
                   <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50">
                     <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800">
-                      Perfil de Habilidades
+                      Perfil Musicoterapêutico
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
@@ -820,7 +1072,7 @@ export default function Evaluation() {
 
                   <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50">
                     <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800">
-                      Pontuação Global
+                      Desenvolvimento Global
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
                       <div className="h-[250px] sm:h-[300px] w-full">
@@ -854,7 +1106,7 @@ export default function Evaluation() {
                 
                 <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50">
                   <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800">
-                    Desempenho por Subdomínios
+                    Análise Detalhada por Subdomínios
                   </h3>
                   <div className="h-[450px] sm:h-[500px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -892,7 +1144,9 @@ export default function Evaluation() {
                                 entry.domain === "Musical" ? "#8b5cf6" :
                                 entry.domain === "Psicossocial" ? "#10b981" : 
                                 entry.domain === "Cognitivo" ? "#f59e0b" : 
-                                entry.domain === "Sensório-Motor" ? "#ef4444" : "#6366f1"
+                                entry.domain === "Sensório-Motor" ? "#ef4444" :
+                                entry.domain === "Comunicativo-Interativo" ? "#6366f1" :
+                                entry.domain === "Neurofisiológico" ? "#14b8a6" : "#ec4899"
                               } 
                             />
                           ))}
@@ -912,9 +1166,9 @@ export default function Evaluation() {
                     <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6">
                       <FileBarChart className="h-10 w-10 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4 text-gray-800">Comparação entre Avaliações</h3>
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">Comparação Evolutiva</h3>
                     <p className="text-gray-600 mb-6 max-w-md">
-                      Selecione ao menos duas avaliações para visualizar a comparação de progresso ao longo do tempo.
+                      Realize múltiplas avaliações para visualizar a evolução do paciente ao longo do tempo.
                     </p>
                     <Button variant="outline" className="bg-gradient-to-r from-gray-100 to-slate-100 hover:from-gray-200 hover:to-slate-200 border-gray-300" disabled>
                       Carregar Avaliações Anteriores
