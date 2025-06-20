@@ -26,6 +26,7 @@ const Intervention = lazy(() => import("./pages/intervention"));
 const Reevaluation = lazy(() => import("./pages/reevaluation"));
 const ProcessReports = lazy(() => import("./pages/processes/reports"));
 const ReportForm = lazy(() => import("./pages/processes/report"));
+const ScientificArticle = lazy(() => import("./pages/scientific-article"));
 const Login = lazy(() => import("./pages/Login"));
 
 export const navItems = [
@@ -55,5 +56,6 @@ export const navItems = [
   { to: "/processes/reports", page: <ProcessReports /> },
   { to: "/processes/report", page: <ReportForm /> },
   { to: "/processes/report/:reportId", page: <ReportForm /> },
+  { to: "/scientific-article", page: <ScientificArticle /> },
   { to: "/login", page: <Login /> },
 ];

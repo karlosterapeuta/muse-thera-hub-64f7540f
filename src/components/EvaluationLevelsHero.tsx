@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, Info, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 
 const developmentLevels = [
   {
@@ -66,6 +66,7 @@ export function EvaluationLevelsHero() {
 
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
+  const navigate = useNavigate();
 
   const toggleExpanded = () => {
     const newState = !isExpanded;
@@ -76,7 +77,7 @@ export function EvaluationLevelsHero() {
   const getGridCols = () => {
     if (isMobile) return "grid-cols-1";
     if (isTablet) return "grid-cols-2";
-    return "grid-cols-4"; // Reduzido de 7 para 4 colunas
+    return "grid-cols-3";
   };
 
   return (
@@ -96,24 +97,35 @@ export function EvaluationLevelsHero() {
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size={isMobile ? "sm" : "default"}
-            onClick={toggleExpanded}
-            className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 self-start sm:self-center flex-shrink-0"
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                {!isMobile && "Recolher"}
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                {!isMobile && "Expandir"}
-              </>
-            )}
-          </Button>
+          <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
+            <Button
+              variant="ghost"
+              size={isMobile ? "sm" : "default"}
+              onClick={() => navigate('/scientific-article')}
+              className="text-purple-600 hover:text-purple-800 hover:bg-purple-100"
+            >
+              <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+              {!isMobile && "Artigo Científico"}
+            </Button>
+            <Button
+              variant="ghost"
+              size={isMobile ? "sm" : "default"}
+              onClick={toggleExpanded}
+              className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  {!isMobile && "Recolher"}
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  {!isMobile && "Expandir"}
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         <div className={cn(
