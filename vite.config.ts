@@ -56,7 +56,7 @@ export default defineConfig(({ mode }) => ({
         name: 'MuseTera - Plataforma Para Musicoterapeutas',
         short_name: 'MuseTera',
         description: 'Plataforma completa para musicoterapeutas com ferramentas terapêuticas interativas',
-        theme_color: '#1e40af',
+        theme_color: '#4A90E2',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
@@ -65,27 +65,27 @@ export default defineConfig(({ mode }) => ({
         categories: ['health', 'medical', 'music', 'therapy'],
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any'
           },
           {
-            src: 'pwa-192x192.png',
+            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'maskable'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'maskable'
           }
         ],
@@ -95,21 +95,21 @@ export default defineConfig(({ mode }) => ({
             short_name: 'Dashboard',
             description: 'Acesso rápido ao dashboard',
             url: '/dashboard',
-            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
           },
           {
             name: 'Pacientes',
             short_name: 'Pacientes',
             description: 'Gerenciar pacientes',
             url: '/patients',
-            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
           },
           {
             name: 'Atividades',
             short_name: 'Atividades',
             description: 'Ferramentas terapêuticas',
             url: '/activities',
-            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+            icons: [{ src: '/lovable-uploads/YRDruod9Pu6v6ZwZH48HSE.jpeg', sizes: '192x192' }]
           }
         ]
       },
