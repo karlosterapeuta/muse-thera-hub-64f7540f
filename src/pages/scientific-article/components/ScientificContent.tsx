@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { FiguresSection } from './FiguresSection';
 
 export function ScientificContent() {
   return (
@@ -216,6 +216,11 @@ export function ScientificContent() {
               para domínios comunicativo (38% superior) e criativo (45% superior).
             </p>
           </section>
+
+          {/* Seção de Figuras */}
+          <FiguresSection />
+
+          <Separator />
 
           {/* Discussão */}
           <section>
