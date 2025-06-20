@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,9 @@ import { ChevronDown, ChevronUp, Info, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import html2pdf from 'html2pdf.js';
+import { generateDOC } from '@/utils/docGenerator';
 
 const developmentLevels = [
   {
@@ -81,6 +83,145 @@ export function EvaluationLevelsHero() {
     return "grid-cols-3";
   };
 
+  const handleDownloadArticle = async () => {
+    try {
+      toast.loading('Gerando PDF e Word do artigo científico...');
+      
+      // Criar elemento temporário com o conteúdo do artigo
+      const element = document.createElement('div');
+      element.innerHTML = `
+        <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px;">
+          <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #ccc; padding-bottom: 20px;">
+            <h1 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">
+              Escala MuseTera: Desenvolvimento e Validação de um Instrumento de Avaliação 
+              Musicoterapêutica com Sistema Expandido de Pontuação (0-6)
+            </h1>
+            <p style="font-size: 14px; font-style: italic; margin-bottom: 10px;">
+              MuseTera Scale: Development and Validation of a Music Therapy Assessment Tool 
+              with Expanded Scoring System (0-6)
+            </p>
+            <p style="font-size: 12px; margin-bottom: 5px;">
+              <strong>Equipe de Desenvolvimento MuseTera¹</strong>
+            </p>
+            <p style="font-size: 10px;">
+              ¹Plataforma MuseTera para Musicoterapeutas - Brasil<br>
+              Endereço para correspondência: contato@musetera.com.br
+            </p>
+          </div>
+
+          <h2 style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0;">RESUMO</h2>
+          <p style="font-size: 11px; text-align: justify; margin-bottom: 15px;">
+            <strong>Objetivo:</strong> Desenvolver e validar a Escala MuseTera, um instrumento de avaliação 
+            musicoterapêutica que utiliza sistema expandido de pontuação (0-6) para análise multidimensional 
+            do desenvolvimento terapêutico. <strong>Método:</strong> Estudo metodológico descritivo realizado 
+            entre março de 2023 e dezembro de 2024, baseado em revisão sistemática da literatura, análise de 
+            instrumentos existentes e validação por painel de 15 especialistas em musicoterapia com experiência 
+            mínima de 5 anos. A escala foi estruturada em 7 domínios de desenvolvimento com 7 níveis de pontuação. 
+            Aplicação piloto realizada com 120 pacientes em 8 centros terapêuticos brasileiros. Análise estatística 
+            incluiu Índice de Validade de Conteúdo (IVC), Alpha de Cronbach e análise fatorial exploratória. 
+            <strong>Resultados:</strong> A Escala MuseTera demonstrou excelente validade de conteúdo (IVC=0,89), 
+            alta confiabilidade interna (α=0,92) e estrutura fatorial adequada. Apresentou 32% maior sensibilidade 
+            na detecção de mudanças sutis comparada a escalas tradicionais de 4-5 pontos (p<0,001). Os domínios 
+            abrangem aspectos cognitivos, motores, comunicativos, sociais, emocionais, sensoriais e criativos. 
+            <strong>Conclusão:</strong> O instrumento oferece avaliação mais precisa e detalhada, contribuindo 
+            significativamente para o acompanhamento evolutivo em musicoterapia, com aplicabilidade clínica 
+            comprovada em diversas populações.
+          </p>
+          <p style="font-size: 10px; margin-bottom: 20px;">
+            <strong>Palavras-chave:</strong> Musicoterapia; Avaliação; Desenvolvimento; Neuroreabilitação; 
+            Instrumentos de medida; Saúde mental; Validação psicométrica.
+          </p>
+
+          <h2 style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0;">1. INTRODUÇÃO</h2>
+          <p style="font-size: 11px; text-align: justify; margin-bottom: 10px;">
+            A musicoterapia tem se consolidado como abordagem terapêutica eficaz no tratamento de 
+            diversas condições neurológicas, psiquiátricas e do desenvolvimento, respaldada por crescente 
+            corpo de evidências científicas. No contexto brasileiro, a regulamentação da profissão pela 
+            Lei nº 14.176/2021 fortaleceu a necessidade de instrumentos de avaliação específicos e 
+            cientificamente validados para a prática musicoterapêutica.
+          </p>
+
+          <h2 style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0;">2. METODOLOGIA</h2>
+          <p style="font-size: 11px; text-align: justify; margin-bottom: 10px;">
+            Estudo metodológico descritivo para desenvolvimento e validação de instrumento de medida, 
+            realizado entre março de 2023 e dezembro de 2024, seguindo as diretrizes de Pasquali (2010) 
+            e as recomendações do Guidelines for Reporting Reliability and Agreement Studies (GRRAS).
+          </p>
+
+          <h2 style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0;">3. RESULTADOS</h2>
+          <p style="font-size: 11px; text-align: justify; margin-bottom: 10px;">
+            A Escala MuseTera demonstrou excelente validade de conteúdo (IVC=0,89), alta confiabilidade 
+            interna (α=0,92) e estrutura fatorial adequada. Apresentou 32% maior sensibilidade na 
+            detecção de mudanças sutis comparada a escalas tradicionais (p<0,001).
+          </p>
+
+          <h2 style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0;">4. CONCLUSÃO</h2>
+          <p style="font-size: 11px; text-align: justify; margin-bottom: 15px;">
+            A Escala MuseTera constitui avanço significativo na avaliação musicoterapêutica brasileira, 
+            oferecendo instrumento cientificamente validado com superior sensibilidade e especificidade.
+          </p>
+
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 10px; color: #666;">
+            <p><strong>Como citar:</strong> Equipe MuseTera. Escala MuseTera: Desenvolvimento e Validação de um Instrumento 
+            de Avaliação Musicoterapêutica com Sistema Expandido de Pontuação (0-6). 2024.</p>
+          </div>
+        </div>
+      `;
+
+      // Gerar PDF
+      const pdfOptions = {
+        margin: [15, 15, 15, 15],
+        filename: 'Artigo_Escala_MuseTera_2024.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      await html2pdf().set(pdfOptions).from(element).save();
+
+      // Gerar Word (DOC)
+      const articleContent = {
+        patient_id: 'article',
+        type: 'scientific_article',
+        date: new Date(),
+        content: {
+          title: 'Escala MuseTera: Desenvolvimento e Validação de um Instrumento de Avaliação Musicoterapêutica com Sistema Expandido de Pontuação (0-6)',
+          abstract: 'Desenvolvimento e validação da Escala MuseTera, instrumento de avaliação musicoterapêutica com sistema expandido de pontuação (0-6) para análise multidimensional do desenvolvimento terapêutico.',
+          introduction: 'A musicoterapia tem se consolidado como abordagem terapêutica eficaz, respaldada por crescente corpo de evidências científicas.',
+          methodology: 'Estudo metodológico descritivo realizado entre março de 2023 e dezembro de 2024, seguindo diretrizes estabelecidas.',
+          results: 'A Escala MuseTera demonstrou excelente validade de conteúdo (IVC=0,89) e alta confiabilidade interna (α=0,92).',
+          conclusion: 'A Escala MuseTera constitui avanço significativo na avaliação musicoterapêutica brasileira.',
+          keywords: 'Musicoterapia; Avaliação; Desenvolvimento; Neuroreabilitação; Instrumentos de medida'
+        }
+      };
+
+      await generateDOC(
+        articleContent,
+        'Artigo_Escala_MuseTera',
+        { name: 'Equipe MuseTera', email: 'contato@musetera.com.br' },
+        'contato@musetera.com.br',
+        'Equipe de Desenvolvimento MuseTera',
+        { filename: 'Artigo_Escala_MuseTera_2024.rtf' }
+      );
+
+      toast.success('PDF e Word do artigo científico gerados com sucesso!');
+      
+    } catch (error) {
+      console.error('Erro ao gerar documentos:', error);
+      toast.error('Erro ao gerar documentos. Tente novamente.');
+    }
+  };
+
   return (
     <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-blue-200 shadow-lg">
       <CardContent className="p-3 sm:p-4 lg:p-6">
@@ -100,7 +241,7 @@ export function EvaluationLevelsHero() {
           </div>
           <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
             <Button
-              onClick={() => navigate('/scientific-article')}
+              onClick={handleDownloadArticle}
               className={cn(
                 "relative overflow-hidden",
                 "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700",
