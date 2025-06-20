@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/jztbkimlcrfndooyhohg\.supabase\.co\/.*$/,
@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'lovable-uploads/*.jpeg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'MuseTera - Plataforma Para Musicoterapeutas',
         short_name: 'MuseTera',
@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#4A90E2',
         background_color: '#ffffff',
         display: 'standalone',
-        orientation: 'portrait-primary',
+        orientation: 'portrait',
         scope: '/',
         start_url: '/',
         categories: ['health', 'medical', 'music', 'therapy'],
@@ -114,8 +114,7 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       devOptions: {
-        enabled: true,
-        type: 'module'
+        enabled: mode === 'development'
       }
     })
   ].filter(Boolean),
