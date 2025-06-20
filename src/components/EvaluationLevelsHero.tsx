@@ -9,38 +9,52 @@ import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 const developmentLevels = [
   {
     level: 0,
-    name: "Ausente",
-    description: "Habilidade não demonstrada",
-    color: "border-red-500 bg-red-50 text-red-700",
-    circleColor: "bg-red-500"
+    name: "Não Observado",
+    description: "Habilidade não demonstrada ou não observada durante a avaliação",
+    color: "border-gray-500 bg-gray-50 text-gray-700",
+    circleColor: "bg-gray-500"
   },
   {
     level: 1,
     name: "Emergente", 
-    description: "Início do desenvolvimento",
-    color: "border-orange-400 bg-orange-50 text-orange-700",
-    circleColor: "bg-orange-400"
+    description: "Início do desenvolvimento da habilidade, demonstrações esporádicas",
+    color: "border-red-500 bg-red-50 text-red-700",
+    circleColor: "bg-red-500"
   },
   {
     level: 2,
     name: "Inconsistente",
-    description: "Demonstrada ocasionalmente",
+    description: "Habilidade demonstrada ocasionalmente, com variação na qualidade",
+    color: "border-orange-400 bg-orange-50 text-orange-700",
+    circleColor: "bg-orange-400"
+  },
+  {
+    level: 3,
+    name: "Moderado",
+    description: "Habilidade demonstrada de forma moderada, com apoio ou orientação",
     color: "border-yellow-400 bg-yellow-50 text-yellow-700",
     circleColor: "bg-yellow-400"
   },
   {
-    level: 3,
+    level: 4,
     name: "Consistente",
-    description: "Demonstrada regularmente",
+    description: "Habilidade demonstrada regularmente e de forma independente",
     color: "border-blue-500 bg-blue-50 text-blue-700",
     circleColor: "bg-blue-500"
   },
   {
-    level: 4,
-    name: "Independente",
-    description: "Totalmente desenvolvida",
+    level: 5,
+    name: "Avançado",
+    description: "Habilidade bem desenvolvida, demonstrada com qualidade superior",
     color: "border-green-500 bg-green-50 text-green-700",
     circleColor: "bg-green-500"
+  },
+  {
+    level: 6,
+    name: "Excepcional",
+    description: "Habilidade altamente desenvolvida, performance exemplar e criativa",
+    color: "border-purple-500 bg-purple-50 text-purple-700",
+    circleColor: "bg-purple-500"
   }
 ];
 
@@ -62,7 +76,7 @@ export function EvaluationLevelsHero() {
   const getGridCols = () => {
     if (isMobile) return "grid-cols-1";
     if (isTablet) return "grid-cols-2";
-    return "grid-cols-5";
+    return "grid-cols-7";
   };
 
   return (
@@ -75,10 +89,10 @@ export function EvaluationLevelsHero() {
             </div>
             <div className="min-w-0 flex-1">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 leading-tight">
-                Guia de Níveis de Desenvolvimento
+                Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                Entenda como aplicar cada nível na escala de avaliação
+                Sistema de pontuação expandido (0-6) para avaliação musicoterapêutica profissional
               </p>
             </div>
           </div>
@@ -134,14 +148,22 @@ export function EvaluationLevelsHero() {
           <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/60 rounded-lg border border-gray-200">
             <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
               <Info className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
-              Como usar esta escala:
+              Como usar a Escala MuseTera (0-6):
             </h4>
             <ul className="text-xs sm:text-sm text-gray-700 space-y-1">
-              <li>• Observe atentamente o comportamento do paciente durante as atividades musicais</li>
-              <li>• Considere a frequência e consistência com que a habilidade é demonstrada</li>
-              <li>• Use evidências observáveis para justificar sua avaliação</li>
-              <li>• Quando em dúvida, opte pelo nível mais conservador</li>
+              <li>• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
+              <li>• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
+              <li>• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
+              <li>• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
+              <li>• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
+              <li>• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
+              <li>• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
             </ul>
+            <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+              <p className="text-xs text-blue-800 font-medium">
+                💡 <strong>Dica:</strong> Considere o contexto individual de cada paciente e use evidências observáveis para justificar sua pontuação.
+              </p>
+            </div>
           </div>
         </div>
       </CardContent>
