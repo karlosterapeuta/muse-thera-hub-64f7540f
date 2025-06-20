@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { Workbox } from 'workbox-window';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -56,7 +55,7 @@ export function usePWA() {
       supportsInstall
     });
 
-    console.log('🔍 Detecção de navegador:', {
+    console.log('🔍 Browser detection:', {
       userAgent,
       browserName,
       isMobile,
@@ -66,48 +65,26 @@ export function usePWA() {
   }, []);
 
   useEffect(() => {
-    console.log('🔧 Inicializando PWA hook...');
+    console.log('🔧 Initializing PWA hook...');
     
     // Check if app is already installed
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const isInWebAppIOS = (window.navigator as any).standalone === true;
     const appInstalled = isStandalone || isInWebAppIOS;
     
-    console.log('📱 Status de instalação:', { isStandalone, isInWebAppIOS, appInstalled });
+    console.log('📱 Installation status:', { isStandalone, isInWebAppIOS, appInstalled });
     setIsInstalled(appInstalled);
 
-    // Se já está instalado, não precisa continuar
     if (appInstalled) {
-      console.log('✅ App já está instalado');
+      console.log('✅ App already installed');
       return;
     }
 
-    // Verificar requisitos PWA
-    const checkPWARequirements = () => {
-      const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
-      const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
-      const hasServiceWorker = 'serviceWorker' in navigator;
-      
-      console.log('✅ Requisitos PWA:', {
-        isHTTPS,
-        hasManifest,
-        hasServiceWorker,
-        protocol: location.protocol,
-        hostname: location.hostname
-      });
-
-      return isHTTPS && hasManifest && hasServiceWorker;
-    };
-
-    const pwaRequirements = checkPWARequirements();
-    console.log('📋 Requisitos PWA atendidos:', pwaRequirements);
-
-    // Forçar variáveis globais para debug
     let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-    // Listen for install prompt
+    // Listen for install prompt with improved handling
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('🎯 Evento beforeinstallprompt detectado!', e);
+      console.log('🎯 beforeinstallprompt event captured!', e);
       e.preventDefault();
       
       const promptEvent = e as BeforeInstallPromptEvent;
@@ -115,23 +92,23 @@ export function usePWA() {
       setInstallPrompt(promptEvent);
       setIsInstallable(true);
       
-      // Verificar se não foi rejeitado recentemente
+      // Check if not dismissed recently
       const lastDismissed = localStorage.getItem('pwa-install-dismissed');
       const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
       
       if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
-        console.log('✅ Mostrando popup de instalação em 3 segundos...');
+        console.log('✅ Showing install popup in 2 seconds...');
         setTimeout(() => {
           setShowInstallPrompt(true);
-        }, 3000);
+        }, 2000);
       } else {
-        console.log('❌ Popup foi dismissado recentemente');
+        console.log('❌ Popup was dismissed recently');
       }
     };
 
     // Listen for app installed
     const handleAppInstalled = () => {
-      console.log('🎉 App instalado com sucesso!');
+      console.log('🎉 App installed successfully!');
       setIsInstalled(true);
       setIsInstallable(false);
       setInstallPrompt(null);
@@ -150,51 +127,64 @@ export function usePWA() {
       setIsOnline(false);
     };
 
-    // Adicionar listeners
+    // Add event listeners
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Register service worker
-    if ('serviceWorker' in navigator && pwaRequirements) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('✅ Service Worker registrado:', registration);
+    // Register service worker with retry mechanism
+    if ('serviceWorker' in navigator) {
+      const registerSW = async (retries = 3) => {
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/'
+          });
+          
+          console.log('✅ Service Worker registered:', registration);
           
           // Check for updates
           registration.addEventListener('updatefound', () => {
-            console.log('🔄 Atualização do Service Worker encontrada');
+            console.log('🔄 Service Worker update found');
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('🔄 Atualização disponível');
+                  console.log('🔄 Update available');
                   setUpdateAvailable(true);
                 }
               });
             }
           });
-        })
-        .catch((error) => {
-          console.error('❌ Erro ao registrar Service Worker:', error);
-        });
+        } catch (error) {
+          console.error('❌ Service Worker registration failed:', error);
+          if (retries > 0) {
+            console.log(`🔄 Retrying registration... (${retries} attempts left)`);
+            setTimeout(() => registerSW(retries - 1), 1000);
+          }
+        }
+      };
+
+      registerSW();
     }
 
-    // Fallback para navegadores que suportam PWA mas não dispararam o evento
-    if (pwaRequirements && browserInfo.supportsInstall) {
+    // Fallback for browsers that support PWA but didn't trigger event
+    if (browserInfo.supportsInstall && !appInstalled) {
       setTimeout(() => {
-        if (!deferredPrompt && !appInstalled) {
-          console.log('⚠️ Navegador suporta PWA mas evento não foi capturado, simulando disponibilidade');
+        if (!deferredPrompt) {
+          console.log('⚠️ Browser supports PWA but event not captured, showing fallback');
           setIsInstallable(true);
-          setTimeout(() => {
-            if (!deferredPrompt) {
-              console.log('🔧 Forçando exibição do prompt sem evento nativo');
+          
+          const lastDismissed = localStorage.getItem('pwa-install-dismissed');
+          const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+          
+          if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
+            setTimeout(() => {
               setShowInstallPrompt(true);
-            }
-          }, 5000);
+            }, 3000);
+          }
         }
-      }, 2000);
+      }, 1000);
     }
 
     // Cleanup
@@ -207,53 +197,49 @@ export function usePWA() {
   }, [browserInfo.supportsInstall]);
 
   const installApp = async () => {
-    console.log('🚀 Tentando instalar app...', {
+    console.log('🚀 Attempting to install app...', {
       hasInstallPrompt: !!installPrompt,
       browserSupportsInstall: browserInfo.supportsInstall,
       browserName: browserInfo.name
     });
     
     if (!installPrompt) {
-      console.log('❌ Sem prompt de instalação disponível, usando fallback');
-      
-      // Para Chrome/Edge desktop sem evento nativo, mostrar instruções
-      if (browserInfo.supportsInstall && !browserInfo.isMobile) {
-        alert(`Para instalar o MuseTera no seu ${browserInfo.name}:\n\n1. Clique no ícone de instalação na barra de endereços (se disponível)\n2. Ou acesse o menu do navegador > "Instalar MuseTera"\n3. Ou adicione aos favoritos para acesso rápido`);
-      }
+      console.log('❌ No install prompt available, using fallback');
       return false;
     }
 
     try {
-      console.log('📱 Chamando prompt de instalação...');
+      console.log('📱 Calling install prompt...');
       await installPrompt.prompt();
       const result = await installPrompt.userChoice;
       
-      console.log('📊 Resultado da instalação:', result.outcome);
+      console.log('📊 Installation result:', result.outcome);
       
       if (result.outcome === 'accepted') {
-        console.log('✅ Instalação aceita pelo usuário');
+        console.log('✅ Installation accepted by user');
         setIsInstallable(false);
         setInstallPrompt(null);
         setShowInstallPrompt(false);
         return true;
       } else {
-        console.log('❌ Instalação rejeitada pelo usuário');
+        console.log('❌ Installation rejected by user');
+        localStorage.setItem('pwa-install-dismissed', Date.now().toString());
       }
       return false;
     } catch (error) {
-      console.error('❌ Erro durante instalação:', error);
+      console.error('❌ Error during installation:', error);
       return false;
     }
   };
 
   const dismissInstallPrompt = () => {
-    console.log('❌ Popup dismissado pelo usuário');
+    console.log('❌ Popup dismissed by user');
     setShowInstallPrompt(false);
     localStorage.setItem('pwa-install-dismissed', Date.now().toString());
   };
 
   const updateApp = () => {
-    console.log('🔄 Atualizando app...');
+    console.log('🔄 Updating app...');
     window.location.reload();
   };
 

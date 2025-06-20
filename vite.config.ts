@@ -115,7 +115,11 @@ export default defineConfig(({ mode }) => ({
       },
       devOptions: {
         enabled: mode === 'development'
-      }
+      },
+      // Corrigir configuração do service worker
+      filename: 'sw.js',
+      strategies: 'generateSW',
+      injectRegister: 'auto'
     })
   ].filter(Boolean),
   resolve: {

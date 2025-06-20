@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield, Share, Plus, Info } from 'lucide-react';
+import { Download, Smartphone, Monitor, X, Wifi, WifiOff, Star, Zap, Shield, Share, Plus, Info, Chrome, MoreVertical } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +18,8 @@ export function PWAInstallPrompt() {
     dismissInstallPrompt 
   } = usePWA();
 
+  const [showManualInstructions, setShowManualInstructions] = useState(false);
+
   console.log('🎨 PWAInstallPrompt render:', {
     isInstalled,
     isInstallable,
@@ -26,7 +28,6 @@ export function PWAInstallPrompt() {
     shouldShow: !isInstalled && isInstallable && showInstallPrompt
   });
 
-  // Não mostrar se já estiver instalado, não for instalável ou se o prompt não deveria aparecer
   if (isInstalled || !isInstallable || !showInstallPrompt) {
     return null;
   }
@@ -35,13 +36,12 @@ export function PWAInstallPrompt() {
   const DeviceIcon = browserInfo.isMobile ? Smartphone : Monitor;
 
   const handleInstall = async () => {
-    console.log('🎯 Botão de instalar clicado');
+    console.log('🎯 Install button clicked');
     const success = await installApp();
     
-    if (!success && browserInfo.name === 'chrome' && !browserInfo.isMobile) {
-      // Para Chrome desktop, mostrar instruções específicas
-      console.log('🔧 Mostrando instruções específicas para Chrome desktop');
-      // O popup já será mostrado pelo installApp, não precisamos duplicar
+    if (!success) {
+      console.log('🔧 Showing manual instructions');
+      setShowManualInstructions(true);
     }
   };
 
@@ -50,63 +50,94 @@ export function PWAInstallPrompt() {
       case 'chrome':
         if (browserInfo.isDesktop) {
           return {
-            title: 'Como instalar no Chrome',
+            title: 'Como instalar no Chrome Desktop',
             steps: [
-              'Procure o ícone de instalação (⊕) na barra de endereços',
-              'Ou clique nos 3 pontos no canto superior direito',
-              'Selecione "Instalar MuseTera..."',
-              'Clique em "Instalar" para confirmar'
+              '1. Procure o ícone de instalação (⊕) na barra de endereços (lado direito)',
+              '2. OU clique nos 3 pontos (⋮) no canto superior direito',
+              '3. Selecione "Instalar MuseTera..." no menu',
+              '4. Clique em "Instalar" na janela que aparecer',
+              '5. O MuseTera será adicionado à sua área de trabalho'
             ],
-            icon: Download
+            icon: Chrome,
+            tips: 'Dica: Após instalar, você pode acessar o MuseTera diretamente pela área de trabalho, sem abrir o navegador!'
+          };
+        } else {
+          return {
+            title: 'Como instalar no Chrome Mobile',
+            steps: [
+              '1. Toque nos 3 pontos (⋮) no canto superior direito',
+              '2. Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"',
+              '3. Toque em "Instalar" para confirmar',
+              '4. O ícone do MuseTera aparecerá na sua tela inicial'
+            ],
+            icon: Smartphone,
+            tips: 'Dica: O aplicativo funcionará mesmo sem internet após a instalação!'
           };
         }
-        break;
       case 'edge':
         if (browserInfo.isDesktop) {
           return {
-            title: 'Como instalar no Edge',
+            title: 'Como instalar no Microsoft Edge',
             steps: [
-              'Procure o ícone de instalação na barra de endereços',
-              'Ou clique nos 3 pontos no canto superior direito',
-              'Selecione "Aplicativos" > "Instalar este site como aplicativo"',
-              'Clique em "Instalar" para confirmar'
+              '1. Procure o ícone de instalação na barra de endereços',
+              '2. OU clique nos 3 pontos (⋯) no canto superior direito',
+              '3. Selecione "Aplicativos" > "Instalar este site como aplicativo"',
+              '4. Digite um nome (pode manter "MuseTera") e clique em "Instalar"',
+              '5. O aplicativo será adicionado ao menu Iniciar e área de trabalho'
             ],
-            icon: Download
+            icon: Monitor,
+            tips: 'Dica: No Edge, você pode fixar o aplicativo na barra de tarefas para acesso ainda mais rápido!'
           };
         }
         break;
       case 'safari':
         if (browserInfo.isMobile) {
           return {
-            title: 'Adicionar à Tela Inicial',
+            title: 'Adicionar à Tela Inicial (Safari iOS)',
             steps: [
-              'Toque no botão de compartilhar (⬆)',
-              'Role para baixo e toque em "Adicionar à Tela Inicial"',
-              'Toque em "Adicionar" para confirmar'
+              '1. Toque no botão de compartilhar (⬆) na parte inferior da tela',
+              '2. Role para baixo e toque em "Adicionar à Tela Inicial"',
+              '3. Edite o nome se desejar e toque em "Adicionar"',
+              '4. O ícone do MuseTera aparecerá na sua tela inicial'
             ],
-            icon: Share
+            icon: Share,
+            tips: 'Dica: No iOS, o aplicativo funcionará em tela cheia, como um app nativo!'
           };
         }
         return {
-          title: 'Adicionar aos Favoritos',
+          title: 'Adicionar aos Favoritos (Safari Desktop)',
           steps: [
-            'Pressione Cmd+D para adicionar aos favoritos',
-            'Acesse rapidamente através da barra de favoritos'
+            '1. Pressione Cmd+D ou vá em Favoritos > Adicionar Favorito',
+            '2. Escolha "Barra de Favoritos" como localização',
+            '3. Clique em "Adicionar"',
+            '4. Acesse rapidamente pela barra de favoritos'
           ],
-          icon: Star
+          icon: Star,
+          tips: 'Dica: Você pode arrastar o ícone do MuseTera para a Dock para acesso rápido!'
         };
       case 'firefox':
         return {
-          title: 'Adicionar Atalho',
+          title: 'Criar Atalho (Firefox)',
           steps: [
-            'Clique no menu (☰) no canto superior direito',
-            'Selecione "Adicionar à área de trabalho"',
-            'Confirme a criação do atalho'
+            '1. Clique no menu (☰) no canto superior direito',
+            '2. Selecione "Mais ferramentas" > "Adicionar à área de trabalho"',
+            '3. OU arraste a URL para a área de trabalho',
+            '4. Confirme a criação do atalho'
           ],
-          icon: Plus
+          icon: Plus,
+          tips: 'Dica: No Firefox, você pode fixar a aba para acesso rápido!'
         };
       default:
-        return null;
+        return {
+          title: 'Criar Atalho',
+          steps: [
+            '1. Adicione esta página aos favoritos',
+            '2. Ou crie um atalho na área de trabalho',
+            '3. Para melhor experiência, use Chrome ou Edge'
+          ],
+          icon: Star,
+          tips: 'Para a melhor experiência PWA, recomendamos usar Chrome ou Microsoft Edge.'
+        };
     }
   };
 
@@ -170,7 +201,7 @@ export function PWAInstallPrompt() {
                   {isOnline ? (
                     <>
                       <Wifi className="w-3 h-3 mr-1" />
-                      Conectado
+                      Online
                     </>
                   ) : (
                     <>
@@ -224,23 +255,37 @@ export function PWAInstallPrompt() {
                   Instalar no {deviceType}
                 </Button>
 
+                {/* Show manual instructions button if needed */}
+                {!showManualInstructions && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowManualInstructions(true)}
+                    className="w-full border-2 border-purple-200 hover:bg-purple-50 dark:border-purple-700 dark:hover:bg-purple-800"
+                  >
+                    <Info className="w-4 h-4 mr-2" />
+                    Ver instruções manuais
+                  </Button>
+                )}
+
                 {/* Manual Instructions */}
-                {manualInstructions && (
+                {(showManualInstructions || !browserInfo.supportsInstall) && manualInstructions && (
                   <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
                     <div className="flex items-center gap-2 mb-3">
-                      <Info className="w-5 h-5 text-amber-600" />
+                      <manualInstructions.icon className="w-5 h-5 text-amber-600" />
                       <h3 className="font-semibold text-amber-800 dark:text-amber-200">
                         {manualInstructions.title}
                       </h3>
                     </div>
-                    <ol className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                    <div className="text-sm text-amber-700 dark:text-amber-300 space-y-2">
                       {manualInstructions.steps.map((step, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="font-medium text-amber-600">{index + 1}.</span>
-                          <span>{step}</span>
-                        </li>
+                        <p key={index} className="leading-relaxed">{step}</p>
                       ))}
-                    </ol>
+                      {manualInstructions.tips && (
+                        <div className="mt-3 p-2 bg-amber-100 dark:bg-amber-900/30 rounded border border-amber-300 dark:border-amber-700">
+                          <p className="text-xs font-medium">{manualInstructions.tips}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 

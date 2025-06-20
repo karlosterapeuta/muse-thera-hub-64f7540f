@@ -3,13 +3,23 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Wifi, WifiOff, RefreshCw, X } from 'lucide-react';
+import { Wifi, WifiOff, RefreshCw, X, Download } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 import { cn } from '@/lib/utils';
 
 export function PWAStatus() {
-  const { isOnline, updateAvailable, updateApp } = usePWA();
+  const { 
+    isOnline, 
+    updateAvailable, 
+    updateApp, 
+    isInstallable, 
+    isInstalled, 
+    installApp,
+    browserInfo 
+  } = usePWA();
+  
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(true);
+  const [showQuickInstall, setShowQuickInstall] = useState(true);
 
   return (
     <div className="fixed bottom-4 right-4 z-40 space-y-2">
@@ -35,6 +45,38 @@ export function PWAStatus() {
           )}
         </Badge>
       </div>
+
+      {/* Quick Install (smaller prompt for corner) */}
+      {!isInstalled && isInstallable && showQuickInstall && (
+        <Card className="w-64 shadow-lg">
+          <CardContent className="p-3">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm">Instalar MuseTera</h4>
+                <p className="text-xs text-muted-foreground">
+                  Acesso rápido no seu {browserInfo.isMobile ? 'celular' : 'computador'}
+                </p>
+                <Button 
+                  size="sm" 
+                  onClick={installApp}
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Instalar
+                </Button>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 -mt-1 -mr-1"
+                onClick={() => setShowQuickInstall(false)}
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Update Available */}
       {updateAvailable && showUpdatePrompt && (
