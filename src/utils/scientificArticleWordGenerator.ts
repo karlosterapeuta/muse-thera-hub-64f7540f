@@ -1,6 +1,6 @@
 
 import { toast } from 'sonner';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, TableLayoutType, ImageRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, TableLayoutType } from 'docx';
 
 export const generateScientificArticleWord = async (): Promise<boolean> => {
   try {
@@ -428,6 +428,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
               size: 100,
               type: WidthType.PERCENTAGE,
             },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              left: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              right: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+              insideVertical: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+            },
             rows: [
               new TableRow({
                 children: [
@@ -436,7 +444,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Pontuação",
+                            text: "🔢 Pontuação",
                             bold: true,
                           }),
                         ],
@@ -444,13 +452,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 15, type: WidthType.PERCENTAGE },
+                    shading: { fill: "E3F2FD" },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Nível",
+                            text: "📊 Nível",
                             bold: true,
                           }),
                         ],
@@ -458,13 +467,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 25, type: WidthType.PERCENTAGE },
+                    shading: { fill: "E3F2FD" },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Descrição",
+                            text: "📝 Descrição",
                             bold: true,
                           }),
                         ],
@@ -472,17 +482,18 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 60, type: WidthType.PERCENTAGE },
+                    shading: { fill: "E3F2FD" },
                   }),
                 ],
               }),
               ...([
-                { score: "0", level: "Não Observado", desc: "Ausência completa da habilidade" },
-                { score: "1", level: "Emergente", desc: "Sinais iniciais da habilidade" },
-                { score: "2", level: "Inconsistente", desc: "Habilidade presente ocasionalmente" },
-                { score: "3", level: "Moderado", desc: "Habilidade em desenvolvimento" },
-                { score: "4", level: "Consistente", desc: "Habilidade estável e regular" },
-                { score: "5", level: "Avançado", desc: "Habilidade bem desenvolvida" },
-                { score: "6", level: "Excepcional", desc: "Habilidade superior ao esperado" },
+                { score: "0️⃣", level: "❌ Não Observado", desc: "Ausência completa da habilidade", color: "FFEBEE" },
+                { score: "1️⃣", level: "🌱 Emergente", desc: "Sinais iniciais da habilidade", color: "FFF3E0" },
+                { score: "2️⃣", level: "⚡ Inconsistente", desc: "Habilidade presente ocasionalmente", color: "FFFDE7" },
+                { score: "3️⃣", level: "📈 Moderado", desc: "Habilidade em desenvolvimento", color: "F1F8E9" },
+                { score: "4️⃣", level: "✅ Consistente", desc: "Habilidade estável e regular", color: "E8F5E8" },
+                { score: "5️⃣", level: "🚀 Avançado", desc: "Habilidade bem desenvolvida", color: "E0F2F1" },
+                { score: "6️⃣", level: "⭐ Excepcional", desc: "Habilidade superior ao esperado", color: "F3E5F5" },
               ].map(item => new TableRow({
                 children: [
                   new TableCell({
@@ -497,6 +508,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         alignment: AlignmentType.CENTER,
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                   new TableCell({
                     children: [
@@ -509,6 +521,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         ],
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                   new TableCell({
                     children: [
@@ -520,6 +533,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         ],
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                 ],
               }))),
@@ -639,6 +653,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
               size: 100,
               type: WidthType.PERCENTAGE,
             },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              left: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              right: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+              insideVertical: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+            },
             rows: [
               new TableRow({
                 children: [
@@ -647,7 +669,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Domínio",
+                            text: "🎯 Domínio",
                             bold: true,
                           }),
                         ],
@@ -655,13 +677,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 30, type: WidthType.PERCENTAGE },
+                    shading: { fill: "E8F5E8" },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Descrição",
+                            text: "📋 Descrição",
                             bold: true,
                           }),
                         ],
@@ -669,17 +692,18 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 70, type: WidthType.PERCENTAGE },
+                    shading: { fill: "E8F5E8" },
                   }),
                 ],
               }),
               ...([
-                { domain: "🧠 Cognitivo", desc: "Atenção, memória, processamento de informações e funções executivas" },
-                { domain: "🏃‍♂️ Motor", desc: "Coordenação motora fina e grossa, equilíbrio e habilidades motoras" },
-                { domain: "💬 Comunicativo", desc: "Linguagem verbal e não-verbal, expressão e compreensão" },
-                { domain: "👥 Social", desc: "Interação interpessoal, cooperação e habilidades sociais" },
-                { domain: "😊 Emocional", desc: "Regulação emocional, expressão afetiva e autocontrole" },
-                { domain: "👂 Sensorial", desc: "Processamento auditivo, visual, tátil e integração sensorial" },
-                { domain: "🎨 Criativo", desc: "Expressão artística, improvisação e criatividade musical" },
+                { domain: "🧠 Cognitivo", desc: "Atenção, memória, processamento de informações e funções executivas", color: "E3F2FD" },
+                { domain: "🏃‍♂️ Motor", desc: "Coordenação motora fina e grossa, equilíbrio e habilidades motoras", color: "FFEBEE" },
+                { domain: "💬 Comunicativo", desc: "Linguagem verbal e não-verbal, expressão e compreensão", color: "E8F5E8" },
+                { domain: "👥 Social", desc: "Interação interpessoal, cooperação e habilidades sociais", color: "FFF3E0" },
+                { domain: "😊 Emocional", desc: "Regulação emocional, expressão afetiva e autocontrole", color: "FCE4EC" },
+                { domain: "👂 Sensorial", desc: "Processamento auditivo, visual, tátil e integração sensorial", color: "F3E5F5" },
+                { domain: "🎨 Criativo", desc: "Expressão artística, improvisação e criatividade musical", color: "E0F2F1" },
               ].map(item => new TableRow({
                 children: [
                   new TableCell({
@@ -693,6 +717,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         ],
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                   new TableCell({
                     children: [
@@ -704,6 +729,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         ],
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                 ],
               }))),
@@ -728,6 +754,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
               size: 100,
               type: WidthType.PERCENTAGE,
             },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              left: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              right: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+              insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+              insideVertical: { style: BorderStyle.SINGLE, size: 2, color: "000000" },
+            },
             rows: [
               new TableRow({
                 children: [
@@ -736,7 +770,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Indicador",
+                            text: "📊 Indicador",
                             bold: true,
                           }),
                         ],
@@ -744,13 +778,14 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 50, type: WidthType.PERCENTAGE },
+                    shading: { fill: "F3E5F5" },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: "Resultado",
+                            text: "🎯 Resultado",
                             bold: true,
                           }),
                         ],
@@ -758,17 +793,18 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                       }),
                     ],
                     width: { size: 50, type: WidthType.PERCENTAGE },
+                    shading: { fill: "F3E5F5" },
                   }),
                 ],
               }),
               ...([
-                { indicator: "📊 IVC Global", result: "0,89 (IC95%: 0,84-0,94)" },
-                { indicator: "🔗 Alpha de Cronbach", result: "0,92" },
-                { indicator: "🔄 Teste-Reteste", result: "r=0,88 (p<0,001)" },
-                { indicator: "📈 KMO", result: "0,91" },
-                { indicator: "📉 Variância Explicada", result: "78,3%" },
-                { indicator: "🎯 Fatores Extraídos", result: "7" },
-                { indicator: "⚡ Sensibilidade Superior", result: "32% maior (p<0,001)" },
+                { indicator: "📊 IVC Global", result: "0,89 (IC95%: 0,84-0,94)", color: "E8F5E8" },
+                { indicator: "🔗 Alpha de Cronbach", result: "0,92", color: "E3F2FD" },
+                { indicator: "🔄 Teste-Reteste", result: "r=0,88 (p<0,001)", color: "FFF3E0" },
+                { indicator: "📈 KMO", result: "0,91", color: "FFEBEE" },
+                { indicator: "📉 Variância Explicada", result: "78,3%", color: "FCE4EC" },
+                { indicator: "🎯 Fatores Extraídos", result: "7", color: "E0F2F1" },
+                { indicator: "⚡ Sensibilidade Superior", result: "32% maior (p<0,001)", color: "FFFDE7" },
               ].map(item => new TableRow({
                 children: [
                   new TableCell({
@@ -782,6 +818,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         ],
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                   new TableCell({
                     children: [
@@ -795,6 +832,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                         alignment: AlignmentType.CENTER,
                       }),
                     ],
+                    shading: { fill: item.color },
                   }),
                 ],
               }))),
@@ -967,9 +1005,8 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
       }],
     });
 
-    // Generate and download the document
-    const buffer = await Packer.toBuffer(doc);
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    // Generate and download the document using toBlob instead of toBuffer
+    const blob = await Packer.toBlob(doc);
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
