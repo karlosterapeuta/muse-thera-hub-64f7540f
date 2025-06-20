@@ -11,30 +11,35 @@ import { FiguresSection } from './FiguresSection';
 import { DiscussionSection } from './DiscussionSection';
 import { AdditionalSections } from './AdditionalSections';
 import { ReferencesSection } from './ReferencesSection';
+import { PDFDownloadSection } from './PDFDownloadSection';
 
 export function ScientificContent() {
   return (
-    <Card className="prose prose-sm max-w-none">
-      <CardContent className="p-8">
-        <div className="space-y-8">
-          <HeaderSection />
-          <AbstractSection />
-          
-          <Separator />
-          
-          <IntroductionSection />
-          <MethodologySection />
-          <ResultsSection />
-          
-          <FiguresSection />
-          
-          <Separator />
-          
-          <DiscussionSection />
-          <AdditionalSections />
-          <ReferencesSection />
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <Card className="prose prose-sm max-w-none">
+        <CardContent className="p-8">
+          <div className="space-y-8">
+            <HeaderSection />
+            <AbstractSection />
+            
+            <Separator />
+            
+            <IntroductionSection />
+            <MethodologySection />
+            <ResultsSection />
+            
+            <FiguresSection />
+            
+            <Separator />
+            
+            <DiscussionSection />
+            <AdditionalSections />
+            <ReferencesSection />
+          </div>
+        </CardContent>
+      </Card>
+
+      <PDFDownloadSection />
+    </>
   );
 }
