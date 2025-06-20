@@ -41,7 +41,7 @@ export function ScientificContent() {
               incluiu Índice de Validade de Conteúdo (IVC), Alpha de Cronbach e análise fatorial exploratória. 
               <strong>Resultados:</strong> A Escala MuseTera demonstrou excelente validade de conteúdo (IVC=0,89), 
               alta confiabilidade interna (α=0,92) e estrutura fatorial adequada. Apresentou 32% maior sensibilidade 
-              na detecção de mudanças sutis comparada a escalas tradicionais de 4-5 pontos (p<0,001). Os domínios 
+              na detecção de mudanças sutis comparada a escalas tradicionais de 4-5 pontos (p menor que 0,001). Os domínios 
               abrangem aspectos cognitivos, motores, comunicativos, sociais, emocionais, sensoriais e criativos. 
               <strong>Conclusão:</strong> O instrumento oferece avaliação mais precisa e detalhada, contribuindo 
               significativamente para o acompanhamento evolutivo em musicoterapia, com aplicabilidade clínica 
@@ -69,7 +69,7 @@ export function ScientificContent() {
               Index (CVI), Cronbach's Alpha, and exploratory factorial analysis. <strong>Results:</strong> The 
               MuseTera Scale demonstrated excellent content validity (CVI=0.89), high internal reliability (α=0.92), 
               and adequate factorial structure. It showed 32% greater sensitivity in detecting subtle changes 
-              compared to traditional 4-5 point scales (p<0.001). Domains encompass cognitive, motor, communicative, 
+              compared to traditional 4-5 point scales (p less than 0.001). Domains encompass cognitive, motor, communicative, 
               social, emotional, sensory, and creative aspects. <strong>Conclusion:</strong> The instrument offers 
               more precise and detailed assessment, contributing significantly to evolutionary monitoring in music 
               therapy, with proven clinical applicability across diverse populations.
@@ -170,7 +170,7 @@ export function ScientificContent() {
               experiência média de 12,4 anos. A aplicação piloto envolveu 120 pacientes (idade: 8-65 anos) 
               em 8 centros terapêuticos. Análises incluíram IVC, Alpha de Cronbach, análise fatorial 
               exploratória (KMO) e testes de sensibilidade. Utilizou-se SPSS 28.0 com nível de 
-              significância p<0,05.
+              significância p menor que 0,05.
             </p>
           </section>
 
@@ -181,7 +181,7 @@ export function ScientificContent() {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">3.1 Validação de Conteúdo</h3>
             <p className="text-justify text-gray-700 leading-relaxed mb-4">
               O painel de especialistas atingiu IVC global de 0,89 (IC95%: 0,84-0,94), considerado 
-              excelente. Todos os domínios obtiveram IVC ≥0,80: Cognitivo (0,92), Motor (0,88), 
+              excelente. Todos os domínios obtiveram IVC maior ou igual a 0,80: Cognitivo (0,92), Motor (0,88), 
               Comunicativo (0,91), Social (0,87), Emocional (0,89), Sensorial (0,85) e Criativo (0,90).
             </p>
 
@@ -199,20 +199,20 @@ export function ScientificContent() {
             <p className="text-justify text-gray-700 leading-relaxed mb-4">
               A análise de confiabilidade demonstrou excelente consistência interna (α=0,92). 
               A confiabilidade teste-reteste (n=30, intervalo 2 semanas) mostrou forte correlação 
-              (r=0,88, p<0,001). A concordância inter-avaliadores foi substancial (κ=0,84).
+              (r=0,88, p menor que 0,001). A concordância inter-avaliadores foi substancial (κ=0,84).
             </p>
 
             <h3 className="text-lg font-semibold text-gray-800 mb-3">3.3 Análise Fatorial</h3>
             <p className="text-justify text-gray-700 leading-relaxed mb-4">
               A análise fatorial exploratória confirmou estrutura de 7 fatores (KMO=0,91; 
-              Teste de Bartlett p<0,001), explicando 78,3% da variância total. As cargas 
+              Teste de Bartlett p menor que 0,001), explicando 78,3% da variância total. As cargas 
               fatoriais variaram de 0,65 a 0,89, confirmando a adequação teórica dos domínios.
             </p>
 
             <h3 className="text-lg font-semibold text-gray-800 mb-3">3.4 Sensibilidade Comparativa</h3>
             <p className="text-justify text-gray-700 leading-relaxed mb-4">
               Comparação com escalas tradicionais demonstrou superioridade da Escala MuseTera 
-              na detecção de mudanças: 32% maior sensibilidade geral (p<0,001), com destaque 
+              na detecção de mudanças: 32% maior sensibilidade geral (p menor que 0,001), com destaque 
               para domínios comunicativo (38% superior) e criativo (45% superior).
             </p>
           </section>
