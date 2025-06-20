@@ -19,7 +19,7 @@ export function ScientificContent() {
               with Expanded Scoring System (0-6)
             </p>
             <div className="text-gray-700">
-              <p className="font-medium">Equipe de Desenvolvimento MuseTera¹</p>
+              <p className="font-medium">José Carlos Batista da Silva¹</p>
               <p className="text-sm">¹Plataforma MuseTera para Musicoterapeutas - Brasil</p>
               <p className="text-xs mt-2">
                 Endereço para correspondência: contato@musetera.com.br
