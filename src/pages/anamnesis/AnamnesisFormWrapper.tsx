@@ -1,14 +1,13 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
-import { Download, Save, ArrowLeft } from "lucide-react";
-import html2pdf from "html2pdf.js";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
+import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
+import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
+import { ModernActionButtons } from "./components/ModernActionButtons";
 
 type Patient = {
   id: string;
@@ -402,87 +401,56 @@ export default function AnamnesisFormWrapper({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando formulário...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6 max-w-4xl">
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>
-                {editAnamnesisId ? "Editar Anamnese" : "Nova Anamnese Musicoterapêutica"}
-              </CardTitle>
-            </div>
-            {onBack && (
-              <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
-                <ArrowLeft size={16} />
-                Voltar
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <PatientSelect
-              patients={patients}
-              selectedPatient={selectedPatient}
-              onSelect={setSelectedPatient}
-              disabled={!!editPatientId}
-            />
-            
-            <InitialEvaluationForm
-              content={formData}
-              onChange={updateFormData}
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50">
+      <div className="container mx-auto p-4 space-y-6 max-w-6xl">
+        <Card className="border-0 shadow-2xl overflow-hidden">
+          <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
+          
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Patient Selection */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <PatientSelect
+                  patients={patients}
+                  selectedPatient={selectedPatient}
+                  onSelect={setSelectedPatient}
+                  disabled={!!editPatientId}
+                />
+              </div>
+              
+              {/* Form Content in Tabs */}
+              <ModernTabsNavigation>
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <InitialEvaluationForm
+                    content={formData}
+                    onChange={updateFormData}
+                  />
+                </div>
+              </ModernTabsNavigation>
 
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onBack ? onBack() : navigate("/processes")}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isSubmitting}
-                onClick={saveAnamnesis}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2" />
-                    Salvar
-                  </>
-                )}
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Processando...
-                  </>
-                ) : (
-                  "Salvar e Voltar"
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              {/* Action Buttons */}
+              <ModernActionButtons
+                onSave={saveAnamnesis}
+                onCancel={() => onBack ? onBack() : navigate("/processes")}
+                onSubmit={() => {}}
+                isSaving={isSubmitting}
+                isSubmitting={isSubmitting}
+                showBack={!!onBack}
+              />
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
