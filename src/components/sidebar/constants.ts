@@ -51,7 +51,7 @@ export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | u
   const adminMenuItems = [];
   if (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) {
     adminMenuItems.push(
-      { icon: UsersRound, text: "Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
+      { icon: UsersRound, text: "Gestão de Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
       { icon: Key, text: "Códigos de Convite", path: "/invite-codes", gradient: "from-amber-500 to-yellow-600" }
     );
   }
