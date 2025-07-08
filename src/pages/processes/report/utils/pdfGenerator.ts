@@ -164,6 +164,12 @@ export async function generatePDF(
     
     const element = document.createElement('div');
     
+    // Formatação da data do relatório com destaque especial
+    const reportDate = format(formValues.date, 'PPP', { locale: ptBR });
+    const reportDateShort = format(formValues.date, "dd/MM/yyyy", { locale: ptBR });
+    const currentDateTime = format(new Date(), 'PPP', { locale: ptBR });
+    const currentTime = new Date().toLocaleTimeString('pt-BR');
+    
     element.innerHTML = `
       <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background: #ffffff; color: #333333;">
         
@@ -185,11 +191,84 @@ export async function generatePDF(
           <div style="height: 3px; background-color: #3498db; margin: 0 auto; width: 100px;"></div>
           
           <div style="margin-top: 25px; padding: 20px; background-color: rgba(255,255,255,0.1); border-radius: 8px;">
-            <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 10px 0; font-weight: bold;">
+            <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 15px 0; font-weight: bold;">
               ${patientName}
             </h2>
-            <div style="color: #ecf0f1; font-size: 16px;">
-              📅 ${format(formValues.date, 'PPP', { locale: ptBR })}
+            
+            <!-- Data do Relatório com Destaque Especial -->
+            <div style="background-color: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.3);">
+              <div style="color: #ffffff; font-size: 14px; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 18px; margin-right: 10px;">📅</span>
+                <span>DATA DO RELATÓRIO</span>
+              </div>
+              <div style="color: #ecf0f1; font-size: 20px; font-weight: bold; text-align: center;">
+                ${reportDate}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção de Informações do Documento com Data Destacada -->
+        <div style="padding: 0 30px; margin-bottom: 30px;">
+          <div style="background-color: #f8f9fa; padding: 25px; border: 2px solid #007bff; border-radius: 8px; margin-bottom: 30px;">
+            <h3 style="color: #2c3e50; font-size: 20px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center;">
+              <span style="margin-right: 10px; font-size: 24px;">📋</span>
+              Informações do Documento
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+              <div>
+                <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
+                  Paciente
+                </div>
+                <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
+                  ${patientName}
+                </div>
+              </div>
+              <div>
+                <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
+                  Tipo de Relatório
+                </div>
+                <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
+                  ${getReportTypeTitle(formValues.type)}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Data do Relatório em Destaque -->
+            <div style="background-color: #007bff; color: white; padding: 15px; border-radius: 6px; margin: 20px 0; text-align: center;">
+              <div style="font-size: 14px; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 18px; margin-right: 8px;">📅</span>
+                <span>DATA DO RELATÓRIO</span>
+              </div>
+              <div style="font-size: 18px; font-weight: bold;">
+                ${reportDate}
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
+                  Profissional Responsável
+                </div>
+                <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
+                  ${userName || 'N/A'}
+                </div>
+                <div style="color: #6c757d; font-size: 14px;">
+                  ${userEmail || 'N/A'}
+                </div>
+              </div>
+              <div>
+                <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
+                  Data de Geração
+                </div>
+                <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
+                  ${currentDateTime}
+                </div>
+                <div style="color: #6c757d; font-size: 14px;">
+                  ${currentTime}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -211,15 +290,30 @@ export async function generatePDF(
               seguindo as diretrizes profissionais da área. As informações apresentadas refletem 
               a evolução e desenvolvimento do paciente durante o período avaliado.
             </div>
+            
+            <!-- Data do Relatório no Resumo -->
+            <div style="margin-top: 15px; padding: 12px; background-color: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
+              <div style="font-size: 13px; color: #1976d2; font-weight: bold;">
+                📅 Data do Relatório: ${reportDate}
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Footer -->
         <div style="background-color: #f8f9fa; padding: 25px 30px; margin-top: 30px; border-top: 3px solid #3498db;">
           <div style="text-align: center;">
+            <!-- Data do Relatório no Rodapé -->
+            <div style="background-color: #007bff; color: white; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+              <div style="font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+                <span style="margin-right: 8px;">📅</span>
+                <span>RELATÓRIO DE ${reportDateShort}</span>
+              </div>
+            </div>
+            
             <div style="margin-bottom: 15px; padding: 15px; background-color: #ffffff; border-radius: 8px; border: 1px solid #dee2e6;">
               <div style="color: #6c757d; font-size: 12px; margin-bottom: 5px;">
-                📄 Documento gerado em ${format(new Date(), 'PPP', { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
+                📄 Documento gerado em ${currentDateTime} às ${currentTime}
               </div>
               <div style="color: #6c757d; font-size: 12px;">
                 🎵 Sistema MuseTera - Plataforma Especializada em Musicoterapia
@@ -242,6 +336,10 @@ export async function generatePDF(
                 <td style="padding: 15px; text-align: right;">
                   <div style="color: #6c757d; font-size: 11px; margin-bottom: 8px;">Assinatura Digital</div>
                   <div style="width: 120px; height: 2px; background-color: #3498db; margin-left: auto;"></div>
+                  <!-- Data do Relatório na Assinatura -->
+                  <div style="color: #6c757d; font-size: 10px; margin-top: 5px;">
+                    Relatório de ${reportDateShort}
+                  </div>
                 </td>
               </tr>
             </table>
@@ -256,6 +354,13 @@ export async function generatePDF(
                 </div>
               </div>
             </div>
+            
+            <!-- Data Final no Rodapé -->
+            <div style="margin-top: 15px; padding: 10px; background-color: #e8f5e8; border: 1px solid #4caf50; border-radius: 6px;">
+              <div style="color: #2e7d32; font-size: 12px; font-weight: bold; text-align: center;">
+                📅 Data do Relatório: ${reportDate} | Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -263,7 +368,7 @@ export async function generatePDF(
 
     const opt = {
       margin: [15, 15, 15, 15],
-      filename: `${getReportTypeTitle(formValues.type)} - ${patientName}.pdf`,
+      filename: `${getReportTypeTitle(formValues.type)} - ${patientName} - ${reportDateShort}.pdf`,
       pagebreak: { 
         mode: ['avoid-all', 'css'],
         before: '.page-break'
