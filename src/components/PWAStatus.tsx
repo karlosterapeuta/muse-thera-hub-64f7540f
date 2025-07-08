@@ -46,15 +46,15 @@ export function PWAStatus() {
         </Badge>
       </div>
 
-      {/* Quick Install (smaller prompt for corner) */}
-      {!isInstalled && isInstallable && showQuickInstall && (
+      {/* Quick Install (only show on mobile) */}
+      {!isInstalled && isInstallable && showQuickInstall && browserInfo.isMobile && (
         <Card className="w-64 shadow-lg">
           <CardContent className="p-3">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
                 <h4 className="font-semibold text-sm">Instalar MuseTera</h4>
                 <p className="text-xs text-muted-foreground">
-                  Acesso rápido no seu {browserInfo.isMobile ? 'celular' : 'computador'}
+                  Acesso rápido no seu celular
                 </p>
                 <Button 
                   size="sm" 

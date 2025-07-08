@@ -25,15 +25,13 @@ export function PWAInstallPrompt() {
     isInstallable,
     showInstallPrompt,
     browserInfo,
-    shouldShow: !isInstalled && isInstallable && showInstallPrompt
+    shouldShow: !isInstalled && isInstallable && showInstallPrompt && browserInfo.isMobile
   });
 
-  if (isInstalled || !isInstallable || !showInstallPrompt) {
+  // Only show on mobile devices
+  if (isInstalled || !isInstallable || !showInstallPrompt || !browserInfo.isMobile) {
     return null;
   }
-
-  const deviceType = browserInfo.isMobile ? 'celular' : 'computador';
-  const DeviceIcon = browserInfo.isMobile ? Smartphone : Monitor;
 
   const handleInstall = async () => {
     console.log('🎯 Install button clicked');
@@ -48,84 +46,28 @@ export function PWAInstallPrompt() {
   const getManualInstructions = () => {
     switch (browserInfo.name) {
       case 'chrome':
-        if (browserInfo.isDesktop) {
-          return {
-            title: 'Como instalar no Chrome Desktop',
-            steps: [
-              '1. Procure o ícone de instalação (⊕) na barra de endereços (lado direito)',
-              '2. OU clique nos 3 pontos (⋮) no canto superior direito',
-              '3. Selecione "Instalar MuseTera..." no menu',
-              '4. Clique em "Instalar" na janela que aparecer',
-              '5. O MuseTera será adicionado à sua área de trabalho'
-            ],
-            icon: Chrome,
-            tips: 'Dica: Após instalar, você pode acessar o MuseTera diretamente pela área de trabalho, sem abrir o navegador!'
-          };
-        } else {
-          return {
-            title: 'Como instalar no Chrome Mobile',
-            steps: [
-              '1. Toque nos 3 pontos (⋮) no canto superior direito',
-              '2. Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"',
-              '3. Toque em "Instalar" para confirmar',
-              '4. O ícone do MuseTera aparecerá na sua tela inicial'
-            ],
-            icon: Smartphone,
-            tips: 'Dica: O aplicativo funcionará mesmo sem internet após a instalação!'
-          };
-        }
-      case 'edge':
-        if (browserInfo.isDesktop) {
-          return {
-            title: 'Como instalar no Microsoft Edge',
-            steps: [
-              '1. Procure o ícone de instalação na barra de endereços',
-              '2. OU clique nos 3 pontos (⋯) no canto superior direito',
-              '3. Selecione "Aplicativos" > "Instalar este site como aplicativo"',
-              '4. Digite um nome (pode manter "MuseTera") e clique em "Instalar"',
-              '5. O aplicativo será adicionado ao menu Iniciar e área de trabalho'
-            ],
-            icon: Monitor,
-            tips: 'Dica: No Edge, você pode fixar o aplicativo na barra de tarefas para acesso ainda mais rápido!'
-          };
-        }
-        break;
-      case 'safari':
-        if (browserInfo.isMobile) {
-          return {
-            title: 'Adicionar à Tela Inicial (Safari iOS)',
-            steps: [
-              '1. Toque no botão de compartilhar (⬆) na parte inferior da tela',
-              '2. Role para baixo e toque em "Adicionar à Tela Inicial"',
-              '3. Edite o nome se desejar e toque em "Adicionar"',
-              '4. O ícone do MuseTera aparecerá na sua tela inicial'
-            ],
-            icon: Share,
-            tips: 'Dica: No iOS, o aplicativo funcionará em tela cheia, como um app nativo!'
-          };
-        }
         return {
-          title: 'Adicionar aos Favoritos (Safari Desktop)',
+          title: 'Como instalar no Chrome Mobile',
           steps: [
-            '1. Pressione Cmd+D ou vá em Favoritos > Adicionar Favorito',
-            '2. Escolha "Barra de Favoritos" como localização',
-            '3. Clique em "Adicionar"',
-            '4. Acesse rapidamente pela barra de favoritos'
+            '1. Toque nos 3 pontos (⋮) no canto superior direito',
+            '2. Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"',
+            '3. Toque em "Instalar" para confirmar',
+            '4. O ícone do MuseTera aparecerá na sua tela inicial'
           ],
-          icon: Star,
-          tips: 'Dica: Você pode arrastar o ícone do MuseTera para a Dock para acesso rápido!'
+          icon: Smartphone,
+          tips: 'Dica: O aplicativo funcionará mesmo sem internet após a instalação!'
         };
-      case 'firefox':
+      case 'safari':
         return {
-          title: 'Criar Atalho (Firefox)',
+          title: 'Adicionar à Tela Inicial (Safari iOS)',
           steps: [
-            '1. Clique no menu (☰) no canto superior direito',
-            '2. Selecione "Mais ferramentas" > "Adicionar à área de trabalho"',
-            '3. OU arraste a URL para a área de trabalho',
-            '4. Confirme a criação do atalho'
+            '1. Toque no botão de compartilhar (⬆) na parte inferior da tela',
+            '2. Role para baixo e toque em "Adicionar à Tela Inicial"',
+            '3. Edite o nome se desejar e toque em "Adicionar"',
+            '4. O ícone do MuseTera aparecerá na sua tela inicial'
           ],
-          icon: Plus,
-          tips: 'Dica: No Firefox, você pode fixar a aba para acesso rápido!'
+          icon: Share,
+          tips: 'Dica: No iOS, o aplicativo funcionará em tela cheia, como um app nativo!'
         };
       default:
         return {
@@ -133,10 +75,10 @@ export function PWAInstallPrompt() {
           steps: [
             '1. Adicione esta página aos favoritos',
             '2. Ou crie um atalho na área de trabalho',
-            '3. Para melhor experiência, use Chrome ou Edge'
+            '3. Para melhor experiência, use Chrome ou Safari'
           ],
           icon: Star,
-          tips: 'Para a melhor experiência PWA, recomendamos usar Chrome ou Microsoft Edge.'
+          tips: 'Para a melhor experiência PWA, recomendamos usar Chrome ou Safari.'
         };
     }
   };
@@ -161,11 +103,11 @@ export function PWAInstallPrompt() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                      <DeviceIcon className="w-6 h-6" />
+                      <Smartphone className="w-6 h-6" />
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Instale o MuseTera</h2>
-                      <p className="text-purple-100 text-sm">no seu {deviceType}</p>
+                      <p className="text-purple-100 text-sm">no seu celular</p>
                     </div>
                   </div>
                   <Button
@@ -179,7 +121,7 @@ export function PWAInstallPrompt() {
                 </div>
 
                 <p className="text-purple-100 text-sm leading-relaxed">
-                  Acesse rapidamente suas ferramentas de musicoterapia direto da área de trabalho
+                  Acesse rapidamente suas ferramentas de musicoterapia direto da tela inicial
                 </p>
               </div>
             </div>
@@ -189,7 +131,7 @@ export function PWAInstallPrompt() {
               {/* Browser Info */}
               <div className="flex items-center justify-center gap-2">
                 <Badge variant="outline" className="capitalize">
-                  {browserInfo.name} {browserInfo.isMobile ? 'Mobile' : 'Desktop'}
+                  {browserInfo.name} Mobile
                 </Badge>
                 <Badge 
                   variant={isOnline ? "default" : "destructive"}
@@ -239,7 +181,7 @@ export function PWAInstallPrompt() {
                     <Star className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm text-purple-800 dark:text-purple-200">Ícone na área de trabalho</p>
+                    <p className="font-medium text-sm text-purple-800 dark:text-purple-200">Ícone na tela inicial</p>
                     <p className="text-xs text-purple-600 dark:text-purple-400">Como um aplicativo nativo</p>
                   </div>
                 </div>
@@ -252,7 +194,7 @@ export function PWAInstallPrompt() {
                   className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Instalar no {deviceType}
+                  Instalar no celular
                 </Button>
 
                 {/* Show manual instructions button if needed */}

@@ -92,17 +92,22 @@ export function usePWA() {
       setInstallPrompt(promptEvent);
       setIsInstallable(true);
       
-      // Check if not dismissed recently
-      const lastDismissed = localStorage.getItem('pwa-install-dismissed');
-      const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-      
-      if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
-        console.log('✅ Showing install popup in 2 seconds...');
-        setTimeout(() => {
-          setShowInstallPrompt(true);
-        }, 2000);
+      // Only show prompt on mobile devices
+      if (browserInfo.isMobile) {
+        // Check if not dismissed recently
+        const lastDismissed = localStorage.getItem('pwa-install-dismissed');
+        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+        
+        if (!lastDismissed || parseInt(lastDismissed) < oneDayAgo) {
+          console.log('✅ Showing install popup in 2 seconds...');
+          setTimeout(() => {
+            setShowInstallPrompt(true);
+          }, 2000);
+        } else {
+          console.log('❌ Popup was dismissed recently');
+        }
       } else {
-        console.log('❌ Popup was dismissed recently');
+        console.log('❌ Desktop device - not showing install prompt');
       }
     };
 
@@ -168,11 +173,11 @@ export function usePWA() {
       registerSW();
     }
 
-    // Fallback for browsers that support PWA but didn't trigger event
-    if (browserInfo.supportsInstall && !appInstalled) {
+    // Fallback for mobile browsers that support PWA but didn't trigger event
+    if (browserInfo.supportsInstall && !appInstalled && browserInfo.isMobile) {
       setTimeout(() => {
         if (!deferredPrompt) {
-          console.log('⚠️ Browser supports PWA but event not captured, showing fallback');
+          console.log('⚠️ Mobile browser supports PWA but event not captured, showing fallback');
           setIsInstallable(true);
           
           const lastDismissed = localStorage.getItem('pwa-install-dismissed');
@@ -194,7 +199,7 @@ export function usePWA() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [browserInfo.supportsInstall]);
+  }, [browserInfo.supportsInstall, browserInfo.isMobile]);
 
   const installApp = async () => {
     console.log('🚀 Attempting to install app...', {
