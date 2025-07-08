@@ -17,15 +17,19 @@ type SelectFieldProps = {
 
 export function SelectField({ label, value, onChange, options }: SelectFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
+    <div className="space-y-3">
+      <Label className="text-base font-medium text-gray-700">{label}</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger>
+        <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200">
           <SelectValue placeholder="Selecione uma opção" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-60">
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+            <SelectItem 
+              key={option.value} 
+              value={option.value}
+              className="py-3 cursor-pointer hover:bg-primary/5"
+            >
               {option.label}
             </SelectItem>
           ))}

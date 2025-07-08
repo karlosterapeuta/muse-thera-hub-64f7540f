@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SelectField } from "./components/SelectField";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
+import { ModernFormCard } from "../anamnesis/components/ModernFormCard";
 import html2pdf from "html2pdf.js";
+import { 
+  FileText, 
+  Settings, 
+  Target, 
+  Zap, 
+  Download,
+  ArrowLeft,
+  Music,
+  Brain,
+  Heart,
+  Users,
+  Clock,
+  Stethoscope
+} from "lucide-react";
 
 type Patient = {
   id: string;
@@ -406,6 +422,8 @@ export default function TreatmentPlanForm() {
   const sections = [
     {
       title: "Configuração do Tratamento",
+      icon: Settings,
+      gradient: "from-blue-500 to-blue-600",
       fields: [
         {
           key: "approach_type",
@@ -443,6 +461,8 @@ export default function TreatmentPlanForm() {
     },
     {
       title: "Metodologia e Recursos",
+      icon: Music,
+      gradient: "from-purple-500 to-purple-600",
       fields: [
         {
           key: "treatment_model",
@@ -469,6 +489,8 @@ export default function TreatmentPlanForm() {
     },
     {
       title: "Objetivos e Avaliação",
+      icon: Target,
+      gradient: "from-green-500 to-green-600",
       fields: [
         {
           key: "therapeutic_focus",
@@ -497,6 +519,8 @@ export default function TreatmentPlanForm() {
     },
     {
       title: "Estratégias e Recursos",
+      icon: Zap,
+      gradient: "from-orange-500 to-orange-600",
       fields: [
         {
           key: "intervention_strategies",
@@ -526,20 +550,39 @@ export default function TreatmentPlanForm() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-slate-600 font-medium">Carregando dados...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6 max-w-4xl">
-      <Card>
-        <CardHeader>
-          <CardTitle>Plano Terapêutico Musicoterapêutico</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
+      <div className="container mx-auto p-6 space-y-8 max-w-6xl">
+        {/* Header */}
+        <div className="text-center space-y-4 pt-8 pb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg">
+            <Stethoscope className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+            Plano Terapêutico Musicoterapêutico
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Elabore um plano terapêutico personalizado e baseado em evidências científicas
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Patient Selection Card */}
+          <ModernFormCard
+            title="Seleção do Paciente"
+            icon={Users}
+            gradient="from-teal-500 to-teal-600"
+            className="transform hover:scale-[1.02] transition-all duration-300"
+          >
             <PatientSelect
               patients={patients}
               selectedPatient={selectedPatient}
@@ -547,54 +590,72 @@ export default function TreatmentPlanForm() {
               isLoading={isLoading}
               emptyMessage="Nenhum paciente encontrado para sua conta"
             />
+          </ModernFormCard>
 
-            {sections.map((section) => (
-              <div key={section.title} className="space-y-4">
-                <h3 className="text-lg font-semibold pt-4">{section.title}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {section.fields.map((field) => (
-                    <SelectField
-                      key={field.key}
-                      label={field.label}
-                      value={formData[field.key as keyof typeof formData]}
-                      onChange={(value) => handleInputChange(field.key as keyof typeof formData, value)}
-                      options={field.options}
-                    />
-                  ))}
-                </div>
+          {/* Dynamic Sections */}
+          {sections.map((section) => (
+            <ModernFormCard
+              key={section.title}
+              title={section.title}
+              icon={section.icon}
+              gradient={section.gradient}
+              className="transform hover:scale-[1.02] transition-all duration-300"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {section.fields.map((field) => (
+                  <SelectField
+                    key={field.key}
+                    label={field.label}
+                    value={formData[field.key as keyof typeof formData]}
+                    onChange={(value) => handleInputChange(field.key as keyof typeof formData, value)}
+                    options={field.options}
+                  />
+                ))}
               </div>
-            ))}
+            </ModernFormCard>
+          ))}
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold pt-4">Observações Adicionais</h3>
-              <div>
-                <Label>Notas Complementares</Label>
-                <Textarea
-                  value={formData.additional_notes}
-                  onChange={(e) => handleInputChange("additional_notes", e.target.value)}
-                  placeholder="Adicione informações complementares relevantes para o plano terapêutico"
-                />
-              </div>
+          {/* Additional Notes */}
+          <ModernFormCard
+            title="Observações Complementares"
+            icon={FileText}
+            gradient="from-indigo-500 to-indigo-600"
+            className="transform hover:scale-[1.02] transition-all duration-300"
+          >
+            <div className="space-y-3">
+              <Label className="text-base font-medium text-gray-700">
+                Notas Complementares
+              </Label>
+              <Textarea
+                value={formData.additional_notes}
+                onChange={(e) => handleInputChange("additional_notes", e.target.value)}
+                placeholder="Adicione informações complementares relevantes para o plano terapêutico, observações especiais, considerações importantes ou instruções específicas..."
+                className="min-h-32 resize-y border-2 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all duration-200"
+              />
             </div>
+          </ModernFormCard>
 
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/processes")}
-              >
-                Cancelar
-              </Button>
-              <Button 
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Salvar e Baixar PDF
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 pb-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/processes")}
+              className="flex items-center gap-2 px-8 py-3 text-lg font-medium border-2 hover:bg-gray-50 transition-all duration-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Cancelar
+            </Button>
+            <Button 
+              type="submit"
+              className="flex items-center gap-2 px-8 py-3 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            >
+              <Download className="w-5 h-5" />
+              Salvar e Baixar PDF
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
