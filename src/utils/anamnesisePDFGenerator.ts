@@ -66,7 +66,21 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "IV. COMPORTAMENTO MUSICAL OBSERVADO",
+          title: "IV. HISTÓRIA SONORA E MUSICAL DETALHADA",
+          icon: "🎼",
+          fields: [
+            { key: "pregnancy_sound_experiences", label: "Vivências sonoras durante a gravidez" },
+            { key: "mother_movements_songs", label: "Movimentos corporais e canções da mãe" },
+            { key: "childhood_sound_environment", label: "Ambiente sonoro durante a infância" },
+            { key: "parents_sound_reactions", label: "Reações dos pais aos sons e aos ruídos" },
+            { key: "typical_house_sounds", label: "Os sons típicos da casa (bater de portas, gritos, prantos, ruídos de mastigar, tiques com sons, murmúrios, assobios, etc...)" },
+            { key: "night_body_sounds", label: "Sons durante a noite e sons corporais" },
+            { key: "family_musical_history", label: "História Musical da família" },
+            { key: "patient_musical_history", label: "História musical do paciente" }
+          ]
+        },
+        {
+          title: "V. COMPORTAMENTO MUSICAL OBSERVADO",
           icon: "🎶",
           checkboxes: [
             { id: "active_musical_listening", label: "Escuta Musical Ativa" },
@@ -78,7 +92,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "V. PROCESSAMENTO AUDITIVO E SENSORIAL",
+          title: "VI. PROCESSAMENTO AUDITIVO E SENSORIAL",
           icon: "👂",
           checkboxes: [
             { id: "auditory_hypersensitivity", label: "Hipersensibilidade Auditiva" },
@@ -90,8 +104,8 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "VI. PREFERÊNCIAS MUSICAIS",
-          icon: "🎼",
+          title: "VII. PREFERÊNCIAS MUSICAIS",
+          icon: "🎤",
           checkboxes: [
             { id: "children_repertoire", label: "Repertório Infantil" },
             { id: "rock_genre", label: "Rock/Pop" },
@@ -103,7 +117,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "VII. DESENVOLVIMENTO NEUROPSICOMOTOR",
+          title: "VIII. DESENVOLVIMENTO NEUROPSICOMOTOR",
           icon: "🧠",
           checkboxes: [
             { id: "cervical_control", label: "Controle Cervical Adequado" },
@@ -115,7 +129,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "VIII. DESENVOLVIMENTO DA LINGUAGEM",
+          title: "IX. DESENVOLVIMENTO DA LINGUAGEM",
           icon: "💬",
           checkboxes: [
             { id: "babbling", label: "Presença de Balbucios" },
@@ -127,7 +141,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "IX. COMPORTAMENTO E INTERAÇÃO SOCIAL",
+          title: "X. COMPORTAMENTO E INTERAÇÃO SOCIAL",
           icon: "👥",
           checkboxes: [
             { id: "visual_contact", label: "Estabelecimento de Contato Visual" },
@@ -139,7 +153,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "X. REGULAÇÃO EMOCIONAL E COMPORTAMENTAL",
+          title: "XI. REGULAÇÃO EMOCIONAL E COMPORTAMENTAL",
           icon: "😊",
           checkboxes: [
             { id: "irritability", label: "Episódios de Irritabilidade" },
@@ -151,7 +165,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "XI. DIAGNÓSTICOS E CONDIÇÕES DE SAÚDE",
+          title: "XII. DIAGNÓSTICOS E CONDIÇÕES DE SAÚDE",
           icon: "🩺",
           checkboxes: [
             { id: "autism_spectrum", label: "Transtorno do Espectro Autista (TEA)" },
@@ -166,7 +180,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "XII. INTERVENÇÕES E ACOMPANHAMENTOS ATUAIS",
+          title: "XIII. INTERVENÇÕES E ACOMPANHAMENTOS ATUAIS",
           icon: "🔧",
           fields: [
             { key: "current_medication", label: "Medicações em Uso" }
@@ -181,7 +195,7 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "XIII. CONTEXTO EDUCACIONAL E SOCIAL",
+          title: "XIV. CONTEXTO EDUCACIONAL E SOCIAL",
           icon: "🏫",
           fields: [
             { key: "school_enrollment", label: "Situação Escolar" },
