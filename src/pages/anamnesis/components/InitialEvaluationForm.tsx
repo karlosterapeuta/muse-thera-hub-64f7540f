@@ -107,6 +107,68 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         ]}
       />
 
+      <FormSection
+        title="História Sonora e Musical Detalhada"
+        fields={[
+          {
+            key: "pregnancy_sound_experiences",
+            label: "Vivências sonoras durante a gravidez",
+            placeholder: "Descreva as vivências sonoras durante a gravidez",
+            value: content.pregnancy_sound_experiences || "",
+            onChange: (value) => updateField("pregnancy_sound_experiences", value),
+          },
+          {
+            key: "mother_movements_songs",
+            label: "Movimentos corporais e canções da mãe",
+            placeholder: "Descreva os movimentos corporais e canções da mãe",
+            value: content.mother_movements_songs || "",
+            onChange: (value) => updateField("mother_movements_songs", value),
+          },
+          {
+            key: "childhood_sound_environment",
+            label: "Ambiente sonoro durante a infância",
+            placeholder: "Descreva o ambiente sonoro durante a infância",
+            value: content.childhood_sound_environment || "",
+            onChange: (value) => updateField("childhood_sound_environment", value),
+          },
+          {
+            key: "parents_sound_reactions",
+            label: "Reações dos pais aos sons e aos ruídos",
+            placeholder: "Descreva as reações dos pais aos sons e ruídos",
+            value: content.parents_sound_reactions || "",
+            onChange: (value) => updateField("parents_sound_reactions", value),
+          },
+          {
+            key: "typical_house_sounds",
+            label: "Os sons típicos da casa (bater de portas, gritos, prantos, ruídos de mastigar, tiques com sons, murmúrios, assobios, etc...)",
+            placeholder: "Descreva os sons típicos da casa",
+            value: content.typical_house_sounds || "",
+            onChange: (value) => updateField("typical_house_sounds", value),
+          },
+          {
+            key: "night_body_sounds",
+            label: "Sons durante a noite e sons corporais",
+            placeholder: "Descreva os sons durante a noite e sons corporais",
+            value: content.night_body_sounds || "",
+            onChange: (value) => updateField("night_body_sounds", value),
+          },
+          {
+            key: "family_musical_history",
+            label: "História Musical da família",
+            placeholder: "Descreva a história musical da família",
+            value: content.family_musical_history || "",
+            onChange: (value) => updateField("family_musical_history", value),
+          },
+          {
+            key: "patient_musical_history",
+            label: "História musical do paciente",
+            placeholder: "Descreva a história musical do paciente",
+            value: content.patient_musical_history || "",
+            onChange: (value) => updateField("patient_musical_history", value),
+          },
+        ]}
+      />
+
       <CheckboxSection
         title="Comportamento Musical"
         fields={[
