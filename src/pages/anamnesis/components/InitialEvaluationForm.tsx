@@ -411,6 +411,12 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         title="Transtornos Mentais"
         fields={[
           {
+            id: "autism_spectrum",
+            label: "Transtornos do espectro autista",
+            checked: getBooleanValue("autism_spectrum"),
+            onChange: (value) => updateField("autism_spectrum", value),
+          },
+          {
             id: "adhd",
             label: "TDAH",
             checked: getBooleanValue("adhd"),
