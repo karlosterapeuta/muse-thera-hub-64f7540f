@@ -40,6 +40,16 @@ export const generateProfessionalAnamnesePDF = async (
   patientName: string
 ): Promise<boolean> => {
   try {
+    // Debug log para verificar dados recebidos
+    console.log("🔍 Dados recebidos no gerador de PDF:", anamnesisData);
+    console.log("🎵 História Sonora no PDF - pregnancy_sound_experiences:", anamnesisData.pregnancy_sound_experiences);
+    console.log("🎵 História Sonora no PDF - mother_movements_songs:", anamnesisData.mother_movements_songs);
+    console.log("🎵 História Sonora no PDF - childhood_sound_environment:", anamnesisData.childhood_sound_environment);
+    console.log("🎵 História Sonora no PDF - parents_sound_reactions:", anamnesisData.parents_sound_reactions);
+    console.log("🎵 História Sonora no PDF - typical_house_sounds:", anamnesisData.typical_house_sounds);
+    console.log("🎵 História Sonora no PDF - night_body_sounds:", anamnesisData.night_body_sounds);
+    console.log("🎵 História Sonora no PDF - family_musical_history:", anamnesisData.family_musical_history);
+    console.log("🎵 História Sonora no PDF - patient_musical_history:", anamnesisData.patient_musical_history);
     console.log("🎯 Iniciando geração do PDF profissional...");
     
     const element = document.createElement('div');
@@ -75,20 +85,6 @@ export const generateProfessionalAnamnesePDF = async (
             { id: "vocal_expression", label: "Expressão Vocal" },
             { id: "choral_activities", label: "Participação em Atividades Corais" },
             { id: "no_musical_experience", label: "Ausência de Experiência Musical" }
-          ]
-        },
-        {
-          title: "IV. HISTÓRIA SONORA E MUSICAL DETALHADA",
-          icon: "🎼",
-          fields: [
-            { key: "pregnancy_sound_experiences", label: "Vivências sonoras durante a gravidez" },
-            { key: "mother_movements_songs", label: "Movimentos corporais e canções da mãe" },
-            { key: "childhood_sound_environment", label: "Ambiente sonoro durante a infância" },
-            { key: "parents_sound_reactions", label: "Reações dos pais aos sons e aos ruídos" },
-            { key: "typical_house_sounds", label: "Os sons típicos da casa (bater de portas, gritos, prantos, ruídos de mastigar, tiques com sons, murmúrios, assobios, etc...)" },
-            { key: "night_body_sounds", label: "Sons durante a noite e sons corporais" },
-            { key: "family_musical_history", label: "História Musical da família" },
-            { key: "patient_musical_history", label: "História musical do paciente" }
           ]
         },
         {
@@ -204,6 +200,20 @@ export const generateProfessionalAnamnesePDF = async (
             { id: "occupational_therapy", label: "Terapia Ocupacional" },
             { id: "physiotherapy", label: "Fisioterapia" },
             { id: "equine_therapy", label: "Equoterapia" }
+          ]
+        },
+        {
+          title: "IV. HISTÓRIA SONORA E MUSICAL DETALHADA",
+          icon: "🎵",
+          fields: [
+            { key: "pregnancy_sound_experiences", label: "Experiências sonoras durante a gravidez" },
+            { key: "mother_movements_songs", label: "Movimentos e canções da mãe" },
+            { key: "childhood_sound_environment", label: "Ambiente sonoro da infância" },
+            { key: "parents_sound_reactions", label: "Reações sonoras dos pais" },
+            { key: "typical_house_sounds", label: "Sons típicos da casa" },
+            { key: "night_body_sounds", label: "Sons corporais noturnos" },
+            { key: "family_musical_history", label: "História musical familiar" },
+            { key: "patient_musical_history", label: "História musical do paciente" }
           ]
         },
         {
