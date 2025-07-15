@@ -15,11 +15,23 @@ interface AnamnesisData {
   extracurricular_activities?: string;
   therapeutic_goals?: string;
   treatment_approach?: string;
+  // História Sonora e Musical Detalhada
+  pregnancy_sound_experiences?: string;
+  mother_movements_songs?: string;
+  childhood_sound_environment?: string;
+  parents_sound_reactions?: string;
+  typical_house_sounds?: string;
+  night_body_sounds?: string;
+  family_musical_history?: string;
+  patient_musical_history?: string;
 }
 
 interface ProfessionalData {
   name?: string;
   email: string;
+  specialty?: string;
+  license_number?: string;
+  register?: string;
 }
 
 export const generateProfessionalAnamnesePDF = async (
@@ -205,16 +217,17 @@ export const generateProfessionalAnamnesePDF = async (
         }
       ];
 
-      // Renderizar campo de texto
+      // Renderizar campo de texto - SEMPRE mostra o campo, mesmo se vazio
       const renderTextField = (field: { key: string; label: string }) => {
-        if (!anamnesisData[field.key]) return '';
+        const value = anamnesisData[field.key] || 'Não informado';
+        console.log(`📝 Campo ${field.key}: "${value}"`); // Debug log
         return `
           <div style="margin-bottom: 12px;">
             <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
               ${field.label}:
             </div>
-            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: #1f2937; min-height: 20px;">
-              ${anamnesisData[field.key]}
+            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: ${value === 'Não informado' ? '#9ca3af' : '#1f2937'}; min-height: 20px;">
+              ${value}
             </div>
           </div>
         `;
@@ -239,19 +252,15 @@ export const generateProfessionalAnamnesePDF = async (
         `;
       };
 
-      // Renderizar seções
+      // Renderizar seções - SEMPRE mostra todas as seções
       const renderSections = () => {
         return sections.map(section => {
-          let hasContent = false;
           let sectionHTML = '';
 
-          // Verificar se há campos de texto
+          // Verificar se há campos de texto - SEMPRE renderiza
           if (section.fields) {
-            const textFieldsHTML = section.fields.map(renderTextField).filter(html => html).join('');
-            if (textFieldsHTML) {
-              sectionHTML += textFieldsHTML;
-              hasContent = true;
-            }
+            const textFieldsHTML = section.fields.map(renderTextField).join('');
+            sectionHTML += textFieldsHTML;
           }
 
           // Verificar se há checkboxes marcados
@@ -259,12 +268,19 @@ export const generateProfessionalAnamnesePDF = async (
             const checkboxHTML = renderCheckboxSection(section.checkboxes);
             if (checkboxHTML) {
               sectionHTML += checkboxHTML;
-              hasContent = true;
+            } else {
+              // Se não há checkboxes marcados, mostrar mensagem
+              sectionHTML += `
+                <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+                  <div style="font-size: 11px; color: #9ca3af; font-style: italic;">
+                    Nenhum item selecionado nesta seção
+                  </div>
+                </div>
+              `;
             }
           }
 
-          if (!hasContent) return '';
-
+          // SEMPRE retorna a seção, mesmo sem conteúdo preenchido
           return `
             <div style="margin-bottom: 20px; page-break-inside: avoid;">
               <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 13px;">
@@ -272,7 +288,11 @@ export const generateProfessionalAnamnesePDF = async (
                 ${section.title}
               </div>
               <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px;">
-                ${sectionHTML}
+                ${sectionHTML || `
+                  <div style="font-size: 11px; color: #9ca3af; font-style: italic;">
+                    Seção não preenchida
+                  </div>
+                `}
               </div>
             </div>
           `;
