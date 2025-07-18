@@ -3,13 +3,13 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { StaticChart } from './StaticChart';
 import { format } from 'date-fns';
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface MuseteraReportPDFProps {
   categoryData: any[];
   pieData: any[];
   patientName?: string;
-  evaluatorName?: string;
-  evaluatorEmail?: string;
+  professionalData?: ProfessionalData | null;
   radarData?: any[];
   selectedParameters?: any;
   overallScore?: {
@@ -25,8 +25,7 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
   categoryData,
   pieData,
   patientName,
-  evaluatorName,
-  evaluatorEmail,
+  professionalData,
   radarData,
   selectedParameters,
   overallScore,
@@ -99,9 +98,21 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
               <p className="text-sm text-gray-600">
                 Data da Avaliação: {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
               </p>
-              <p className="text-sm text-gray-600">
-                Musicoterapeuta: {evaluatorName || 'Não informado'}
-              </p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p><strong>Musicoterapeuta:</strong> {professionalData?.name || 'Não informado'}</p>
+                {professionalData?.specialty && (
+                  <p><strong>Especialidade:</strong> {professionalData.specialty}</p>
+                )}
+                {professionalData?.email && (
+                  <p><strong>Email:</strong> {professionalData.email}</p>
+                )}
+                {professionalData?.phone && (
+                  <p><strong>Telefone:</strong> {professionalData.phone}</p>
+                )}
+                {professionalData?.register && (
+                  <p><strong>Registro:</strong> {professionalData.register}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

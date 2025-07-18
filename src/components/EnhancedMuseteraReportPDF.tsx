@@ -3,6 +3,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface EnhancedMuseteraReportPDFProps {
   categoryData: any[];
@@ -16,8 +17,7 @@ interface EnhancedMuseteraReportPDFProps {
   };
   evaluationDomains: any[];
   patientName?: string;
-  evaluatorName?: string;
-  evaluatorEmail?: string;
+  professionalData?: ProfessionalData | null;
   evaluationDate?: Date;
   patientData?: {
     age?: number;
@@ -39,8 +39,7 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
   overallScore,
   evaluationDomains,
   patientName = "Paciente",
-  evaluatorName = "Musicoterapeuta",
-  evaluatorEmail = "",
+  professionalData,
   evaluationDate = new Date(),
   patientData = {}
 }) => {
@@ -578,12 +577,41 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
               }}>
                 👨‍⚕️ Profissional Responsável
               </h3>
-              <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>
-                {evaluatorName}
-              </p>
-              <p style={{ margin: '0', fontSize: '12px', color: '#6B7280' }}>
-                📧 {evaluatorEmail}
-              </p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>
+                  {professionalData?.name || 'Não informado'}
+                </p>
+                {professionalData?.specialty && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    <strong>Especialidade:</strong> {professionalData.specialty}
+                  </p>
+                )}
+                {professionalData?.email && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    📧 {professionalData.email}
+                  </p>
+                )}
+                {professionalData?.phone && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    📞 {professionalData.phone}
+                  </p>
+                )}
+                {professionalData?.register && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    <strong>Registro:</strong> {professionalData.register}
+                  </p>
+                )}
+                {professionalData?.license_number && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    <strong>Licença:</strong> {professionalData.license_number}
+                  </p>
+                )}
+                {professionalData?.association && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    <strong>Associação:</strong> {professionalData.association}
+                  </p>
+                )}
+              </div>
             </div>
             
             <div style={{ textAlign: 'right' }}>

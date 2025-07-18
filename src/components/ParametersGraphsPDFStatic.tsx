@@ -3,13 +3,13 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { StaticChart } from './StaticChart';
 import { format } from 'date-fns';
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface ParametersGraphsPDFStaticProps {
   categoryData: any[];
   pieData: any[];
   patientName?: string;
-  evaluatorName?: string;
-  evaluatorEmail?: string;
+  professionalData?: ProfessionalData | null;
   radarData?: any[];
   overallScore?: {
     raw: number;
@@ -23,8 +23,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
   categoryData,
   pieData,
   patientName,
-  evaluatorName,
-  evaluatorEmail,
+  professionalData,
   radarData,
   overallScore,
   evaluationDate
@@ -148,11 +147,13 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
             MuseTera - Parâmetros e Gráficos
           </p>
           <p className="text-xs text-gray-500 mb-1">
-            Musicoterapeuta: {evaluatorName || 'Não informado'}
+            Musicoterapeuta: {professionalData?.name || 'Não informado'}
           </p>
-          <p className="text-xs text-gray-500">
-            Email: {evaluatorEmail || 'Não informado'}
-          </p>
+          {professionalData?.email && (
+            <p className="text-xs text-gray-500">
+              Email: {professionalData.email}
+            </p>
+          )}
         </div>
       </div>
     </div>

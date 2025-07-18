@@ -3,13 +3,13 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
 import { format } from 'date-fns';
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface ParametersGraphsPDFProps {
   categoryData: any[];
   pieData: any[];
   patientName?: string;
-  evaluatorName?: string;
-  evaluatorEmail?: string;
+  professionalData?: ProfessionalData | null;
   radarData?: any[];
   overallScore?: {
     raw: number;
@@ -23,8 +23,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   categoryData,
   pieData,
   patientName,
-  evaluatorName,
-  evaluatorEmail,
+  professionalData,
   radarData,
   overallScore,
   evaluationDate
@@ -195,12 +194,21 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           <p className="text-xs text-gray-500 mb-1">
             MuseTera - Parâmetros e Gráficos
           </p>
-          <p className="text-xs text-gray-500 mb-1">
-            Musicoterapeuta: {evaluatorName || 'Não informado'}
-          </p>
-          <p className="text-xs text-gray-500">
-            Email: {evaluatorEmail || 'Não informado'}
-          </p>
+          <div className="text-xs text-gray-500 space-y-1">
+            <p><strong>Musicoterapeuta:</strong> {professionalData?.name || 'Não informado'}</p>
+            {professionalData?.specialty && (
+              <p><strong>Especialidade:</strong> {professionalData.specialty}</p>
+            )}
+            {professionalData?.email && (
+              <p><strong>Email:</strong> {professionalData.email}</p>
+            )}
+            {professionalData?.phone && (
+              <p><strong>Telefone:</strong> {professionalData.phone}</p>
+            )}
+            {professionalData?.register && (
+              <p><strong>Registro:</strong> {professionalData.register}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

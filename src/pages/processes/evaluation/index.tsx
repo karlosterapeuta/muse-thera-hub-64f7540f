@@ -48,6 +48,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
 
 interface Patient {
   id: string;
@@ -568,28 +569,7 @@ export default function Evaluation() {
 
   const COLORS = ['#10b981', '#f97316'];
 
-  const [userName, setUserName] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email || "");
-        setUserName(formatNameFromEmail(user.email || ""));
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  const formatNameFromEmail = (email: string) => {
-    const namePart = email.split('@')[0];
-    return namePart
-      .split(/[._-]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
+  const { data: professionalData } = useProfessionalData();
 
   const handleGenerateParametersPDF = async () => {
     try {
@@ -599,8 +579,7 @@ export default function Evaluation() {
             categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
-            evaluatorName={userName}
-            evaluatorEmail={userEmail}
+            professionalData={professionalData}
             radarData={domainScores}
             overallScore={overallScore}
             evaluationDate={evaluationDate}
@@ -659,8 +638,7 @@ export default function Evaluation() {
             categoryData={subdomainScores}
             pieData={pieData}
             patientName={selectedPatientData?.name}
-            evaluatorName={userName}
-            evaluatorEmail={userEmail}
+            professionalData={professionalData}
             radarData={domainScores}
             selectedParameters={selections}
             overallScore={overallScore}

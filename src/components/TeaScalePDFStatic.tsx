@@ -2,13 +2,13 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { StaticChart } from './StaticChart';
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface TeaScalePDFStaticProps {
   categoryData: any[];
   pieData: any[];
   patientName?: string;
-  evaluatorName?: string;
-  evaluatorEmail?: string;
+  professionalData?: ProfessionalData | null;
   radarData?: any[];
   selectedParameters?: any;
   overallScore?: {
@@ -23,8 +23,7 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
   categoryData,
   pieData,
   patientName,
-  evaluatorName,
-  evaluatorEmail,
+  professionalData,
   radarData,
   selectedParameters,
   overallScore,
@@ -246,10 +245,10 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
             Musetera - Sistema de Gestão para Musicoterapia
           </p>
           <p className="text-xs text-gray-500 mb-1">
-            Musicoterapeuta: {evaluatorName || 'Não informado'}
+            Musicoterapeuta: {professionalData?.name || 'Não informado'}
           </p>
           <p className="text-xs text-gray-500">
-            Email: {evaluatorEmail || 'Não informado'}
+            Email: {professionalData?.email || 'Não informado'}
           </p>
           <p className="text-sm text-gray-500 mt-2">Página 3/3</p>
         </div>

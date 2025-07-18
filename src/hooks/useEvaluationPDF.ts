@@ -5,6 +5,7 @@ import { TeaScalePDFStatic } from '@/components/TeaScalePDFStatic';
 import { ParametersGraphsPDFStatic } from '@/components/ParametersGraphsPDFStatic';
 import { EnhancedMuseteraReportPDF } from '@/components/EnhancedMuseteraReportPDF';
 import React from 'react';
+import { ProfessionalData } from '@/hooks/useProfessionalData';
 
 interface EvaluationData {
   categoryData: any[];
@@ -18,8 +19,7 @@ interface EvaluationData {
   };
   evaluationDomains: any[];
   patientName: string;
-  evaluatorName: string;
-  evaluatorEmail: string;
+  professionalData?: ProfessionalData | null;
   evaluationDate: Date;
   patientData?: {
     age?: number;
@@ -49,8 +49,7 @@ export const useEvaluationPDF = () => {
         overallScore: data.overallScore,
         evaluationDomains: data.evaluationDomains,
         patientName: data.patientName,
-        evaluatorName: data.evaluatorName,
-        evaluatorEmail: data.evaluatorEmail
+        professionalData: data.professionalData
       });
 
       return await generateStaticPDF(component, {
@@ -78,8 +77,7 @@ export const useEvaluationPDF = () => {
         radarData: data.radarData,
         overallScore: data.overallScore,
         patientName: data.patientName,
-        evaluatorName: data.evaluatorName,
-        evaluatorEmail: data.evaluatorEmail,
+        professionalData: data.professionalData,
         evaluationDate: data.evaluationDate
       });
 
@@ -110,8 +108,7 @@ export const useEvaluationPDF = () => {
         overallScore: data.overallScore,
         evaluationDomains: data.evaluationDomains,
         patientName: data.patientName,
-        evaluatorName: data.evaluatorName,
-        evaluatorEmail: data.evaluatorEmail,
+        professionalData: data.professionalData,
         evaluationDate: data.evaluationDate,
         patientData: data.patientData
       });
