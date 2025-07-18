@@ -30,8 +30,10 @@ interface ProfessionalData {
   name?: string;
   email: string;
   specialty?: string;
+  phone?: string;
   license_number?: string;
   register?: string;
+  association?: string;
 }
 
 export const generateProfessionalAnamnesePDF = async (
@@ -362,7 +364,12 @@ export const generateProfessionalAnamnesePDF = async (
                   MUSICOTERAPEUTA RESPONSÁVEL:
                 </div>
                 <div style="font-size: 14px; color: #1f2937;">
-                  ${professional.name || 'Não informado'} | ${professional.email}
+                  <strong>Nome:</strong> ${professional.name || 'Não informado'}<br>
+                  <strong>Email:</strong> ${professional.email}<br>
+                  <strong>Telefone:</strong> ${professional.phone || 'Não informado'}<br>
+                  <strong>Registro:</strong> ${professional.register || professional.license_number || 'Não informado'}
+                  ${professional.specialty ? `<br><strong>Especialidade:</strong> ${professional.specialty}` : ''}
+                  ${professional.association ? `<br><strong>Associação:</strong> ${professional.association}` : ''}
                 </div>
               </div>
             </div>

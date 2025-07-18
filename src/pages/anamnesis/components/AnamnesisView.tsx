@@ -80,12 +80,42 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     try {
       setIsGeneratingPDF(true);
       
-      // Get professional data
+      // Get complete professional data from the professionals table
       const { data: { user } } = await supabase.auth.getUser();
-      const professionalData = {
-        name: user?.email ? formatNameFromEmail(user.email) : 'Profissional',
-        email: user?.email || 'profissional@musetera.app'
+      let professionalData = {
+        name: 'Profissional',
+        email: 'profissional@musetera.app',
+        specialty: '',
+        phone: '',
+        register: '',
+        license_number: '',
+        association: ''
       };
+
+      if (user) {
+        // Try to fetch professional data from the professionals table
+        const { data: professional, error } = await supabase
+          .from('professionals')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (professional && !error) {
+          professionalData = {
+            name: professional.name || formatNameFromEmail(user.email || ''),
+            email: professional.email || user.email || 'profissional@musetera.app',
+            specialty: professional.specialty || '',
+            phone: professional.phone || '',
+            register: professional.register || '',
+            license_number: professional.license_number || '',
+            association: professional.association || ''
+          };
+        } else {
+          // Fallback to user data if professional not found
+          professionalData.name = formatNameFromEmail(user.email || '');
+          professionalData.email = user.email || 'profissional@musetera.app';
+        }
+      }
 
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {

@@ -39,7 +39,15 @@ interface ViewAnamnesisDialogProps {
 export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnesisDialogProps) {
   const [anamnesis, setAnamnesis] = useState<Anamnesis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [professional, setProfessional] = useState<{ email: string; name?: string } | null>(null);
+  const [professional, setProfessional] = useState<{ 
+    name?: string; 
+    email: string; 
+    specialty?: string; 
+    phone?: string; 
+    register?: string; 
+    license_number?: string; 
+    association?: string;
+  } | null>(null);
   const { toast } = useToast();
 
   const formatNameFromEmail = (email: string) => {
@@ -76,29 +84,61 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
         if (data) {
           setAnamnesis(data);
           
-          // Load professional data
+          // Load complete professional data
           try {
-            // First try to get the user with auth.getUser()
             const { data: authData } = await supabase.auth.getUser();
             
             if (authData.user) {
-              setProfessional({
-                email: authData.user.email || '',
-                name: formatNameFromEmail(authData.user.email || '')
-              });
+              // Try to fetch professional data from the professionals table
+              const { data: professionalData, error } = await supabase
+                .from('professionals')
+                .select('*')
+                .eq('user_id', authData.user.id)
+                .maybeSingle();
+
+              if (professionalData && !error) {
+                setProfessional({
+                  name: professionalData.name || formatNameFromEmail(authData.user.email || ''),
+                  email: professionalData.email || authData.user.email || '',
+                  specialty: professionalData.specialty || '',
+                  phone: professionalData.phone || '',
+                  register: professionalData.register || '',
+                  license_number: professionalData.license_number || '',
+                  association: professionalData.association || ''
+                });
+              } else {
+                // Fallback to user data if professional not found
+                setProfessional({
+                  email: authData.user.email || '',
+                  name: formatNameFromEmail(authData.user.email || ''),
+                  specialty: '',
+                  phone: '',
+                  register: '',
+                  license_number: '',
+                  association: ''
+                });
+              }
             } else {
-              // Fallback to just using the ID without profile data
               setProfessional({
                 email: 'profissional@musetera.app',
-                name: 'Profissional'
+                name: 'Profissional',
+                specialty: '',
+                phone: '',
+                register: '',
+                license_number: '',
+                association: ''
               });
             }
           } catch (userError) {
             console.error("Error fetching user data:", userError);
-            // Set a fallback value
             setProfessional({
               email: 'profissional@musetera.app',
-              name: 'Profissional'
+              name: 'Profissional',
+              specialty: '',
+              phone: '',
+              register: '',
+              license_number: '',
+              association: ''
             });
           }
         }
