@@ -2,10 +2,10 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "rec
 import { CalendarDays, Clock } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
 import { Card } from "@/components/ui/card";
-import { useDashboardData } from "./Dashboard/hooks/useDashboardData";
-import { DashboardStats } from "./Dashboard/components/DashboardStats";
-import { UnifiedWeeklySchedule } from "./Dashboard/components/UnifiedWeeklySchedule";
-import { FinancialAgenda } from "./Dashboard/components/FinancialAgenda";
+import { useDashboardData } from "./hooks/useDashboardData";
+import { DashboardStats } from "./components/DashboardStats";
+import { UnifiedWeeklySchedule } from "./components/UnifiedWeeklySchedule";
+import { FinancialAgenda } from "./components/FinancialAgenda";
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useState, useEffect } from "react";
