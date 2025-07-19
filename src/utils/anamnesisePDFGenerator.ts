@@ -57,6 +57,33 @@ export const generateProfessionalAnamnesePDF = async (
     const element = document.createElement('div');
     
     const generateProfessionalHTML = () => {
+      // Campos da História Sonora e Musical Detalhada (campos novos que podem não estar preenchidos)
+      const soundHistoryFields = [
+        'pregnancy_sound_experiences',
+        'mother_movements_songs', 
+        'childhood_sound_environment',
+        'parents_sound_reactions',
+        'typical_house_sounds',
+        'night_body_sounds',
+        'family_musical_history',
+        'patient_musical_history'
+      ];
+
+      // Função para determinar a mensagem apropriada para campos vazios
+      const getEmptyFieldMessage = (fieldKey: string, value: any) => {
+        // Se o campo é da História Sonora e Musical e está vazio/null
+        if (soundHistoryFields.includes(fieldKey) && (!value || value.trim() === '')) {
+          return 'Campo disponível para preenchimento posterior';
+        }
+        
+        // Para outros campos vazios
+        if (!value || (typeof value === 'string' && value.trim() === '')) {
+          return 'Não informado';
+        }
+        
+        return value;
+      };
+
       // Seções organizadas logicamente
       const sections = [
         {
@@ -88,6 +115,21 @@ export const generateProfessionalAnamnesePDF = async (
             { id: "choral_activities", label: "Participação em Atividades Corais" },
             { id: "no_musical_experience", label: "Ausência de Experiência Musical" }
           ]
+        },
+        {
+          title: "IV. HISTÓRIA SONORA E MUSICAL DETALHADA",
+          icon: "🎵",
+          fields: [
+            { key: "pregnancy_sound_experiences", label: "Experiências sonoras durante a gravidez" },
+            { key: "mother_movements_songs", label: "Movimentos e canções da mãe" },
+            { key: "childhood_sound_environment", label: "Ambiente sonoro da infância" },
+            { key: "parents_sound_reactions", label: "Reações sonoras dos pais" },
+            { key: "typical_house_sounds", label: "Sons típicos da casa" },
+            { key: "night_body_sounds", label: "Sons corporais noturnos" },
+            { key: "family_musical_history", label: "História musical familiar" },
+            { key: "patient_musical_history", label: "História musical do paciente" }
+          ],
+          isNewSection: true
         },
         {
           title: "V. COMPORTAMENTO MUSICAL OBSERVADO",
@@ -205,20 +247,6 @@ export const generateProfessionalAnamnesePDF = async (
           ]
         },
         {
-          title: "IV. HISTÓRIA SONORA E MUSICAL DETALHADA",
-          icon: "🎵",
-          fields: [
-            { key: "pregnancy_sound_experiences", label: "Experiências sonoras durante a gravidez" },
-            { key: "mother_movements_songs", label: "Movimentos e canções da mãe" },
-            { key: "childhood_sound_environment", label: "Ambiente sonoro da infância" },
-            { key: "parents_sound_reactions", label: "Reações sonoras dos pais" },
-            { key: "typical_house_sounds", label: "Sons típicos da casa" },
-            { key: "night_body_sounds", label: "Sons corporais noturnos" },
-            { key: "family_musical_history", label: "História musical familiar" },
-            { key: "patient_musical_history", label: "História musical do paciente" }
-          ]
-        },
-        {
           title: "XIV. CONTEXTO EDUCACIONAL E SOCIAL",
           icon: "🏫",
           fields: [
@@ -229,17 +257,22 @@ export const generateProfessionalAnamnesePDF = async (
         }
       ];
 
-      // Renderizar campo de texto - SEMPRE mostra o campo, mesmo se vazio
-      const renderTextField = (field: { key: string; label: string }) => {
-        const value = anamnesisData[field.key] || 'Não informado';
-        console.log(`📝 Campo ${field.key}: "${value}"`); // Debug log
+      // Renderizar campo de texto com lógica melhorada para campos vazios
+      const renderTextField = (field: { key: string; label: string }, isNewSection = false) => {
+        const rawValue = anamnesisData[field.key];
+        const displayValue = getEmptyFieldMessage(field.key, rawValue);
+        const isEmpty = !rawValue || (typeof rawValue === 'string' && rawValue.trim() === '');
+        
+        console.log(`📝 Campo ${field.key}: valor="${rawValue}" | exibição="${displayValue}" | vazio=${isEmpty}`);
+        
         return `
           <div style="margin-bottom: 12px;">
             <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
               ${field.label}:
             </div>
-            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: ${value === 'Não informado' ? '#9ca3af' : '#1f2937'}; min-height: 20px;">
-              ${value}
+            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: ${isEmpty ? '#9ca3af' : '#1f2937'}; min-height: 20px; ${isEmpty && isNewSection ? 'border-left: 3px solid #fbbf24;' : ''}">
+              ${displayValue}
+              ${isEmpty && isNewSection ? ' <span style="color: #f59e0b; font-size: 10px;">(Seção adicionada recentemente)</span>' : ''}
             </div>
           </div>
         `;
@@ -271,7 +304,9 @@ export const generateProfessionalAnamnesePDF = async (
 
           // Verificar se há campos de texto - SEMPRE renderiza
           if (section.fields) {
-            const textFieldsHTML = section.fields.map(renderTextField).join('');
+            const textFieldsHTML = section.fields.map(field => 
+              renderTextField(field, section.isNewSection || false)
+            ).join('');
             sectionHTML += textFieldsHTML;
           }
 
@@ -298,6 +333,7 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 13px;">
                 <span style="margin-right: 8px; font-size: 14px;">${section.icon}</span>
                 ${section.title}
+                ${section.isNewSection ? ' <span style="background-color: rgba(251, 191, 36, 0.3); color: #fbbf24; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 8px;">NOVA SEÇÃO</span>' : ''}
               </div>
               <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px;">
                 ${sectionHTML || `
@@ -371,6 +407,21 @@ export const generateProfessionalAnamnesePDF = async (
                   ${professional.specialty ? `<br><strong>Especialidade:</strong> ${professional.specialty}` : ''}
                   ${professional.association ? `<br><strong>Associação:</strong> ${professional.association}` : ''}
                 </div>
+              </div>
+            </div>
+
+            <!-- Aviso sobre campos não preenchidos -->
+            <div style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 12px; margin-bottom: 24px; border-radius: 8px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 16px; margin-right: 8px;">ℹ️</span>
+                <div style="font-weight: 600; font-size: 12px; color: #92400e;">
+                  INFORMAÇÕES SOBRE PREENCHIMENTO
+                </div>
+              </div>
+              <div style="font-size: 11px; color: #92400e; line-height: 1.4;">
+                • <strong>"Não informado":</strong> Campo padrão não preenchido<br>
+                • <strong>"Campo disponível para preenchimento posterior":</strong> Seção adicionada recentemente que pode ser preenchida em futuras atualizações da anamnese<br>
+                • <strong>"Nenhum item selecionado":</strong> Seção de múltipla escolha sem seleções
               </div>
             </div>
 
