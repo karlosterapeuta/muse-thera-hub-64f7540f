@@ -39,13 +39,13 @@ const App = () => (
             <Route path="/musical-bells" element={<Layout><MusicalBells /></Layout>} />
             <Route path="/bell-hero" element={<Layout><BellHero /></Layout>} />
             <Route path="/" element={<Layout />}>
-              {navItems.map(({ to, page }) => (
+              {navItems.map(({ to, page: PageComponent }) => (
                 <Route 
                   key={to} 
                   path={to} 
                   element={
                     <Suspense fallback={<LoadingSpinner />}>
-                      {page}
+                      <PageComponent />
                     </Suspense>
                   } 
                 />

@@ -1,8 +1,8 @@
 
-import { lazy } from "react";
+import { lazy, ComponentType } from "react";
 
 // Lazy load pages for better performance
-const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Professional = lazy(() => import("./pages/Professional"));
 const Patients = lazy(() => import("./pages/patients"));
 const Processes = lazy(() => import("./pages/processes"));
@@ -29,33 +29,33 @@ const ReportForm = lazy(() => import("./pages/processes/report"));
 const ScientificArticle = lazy(() => import("./pages/scientific-article"));
 const Login = lazy(() => import("./pages/Login"));
 
-export const navItems = [
-  { to: "/", page: <Dashboard /> },
-  { to: "/dashboard", page: <Dashboard /> },
-  { to: "/professional", page: <Professional /> },
-  { to: "/patients", page: <Patients /> },
-  { to: "/processes", page: <Processes /> },
-  { to: "/activities", page: <Activities /> },
-  { to: "/activities/category/:categoryId", page: <CategoryPage /> },
-  { to: "/music-composer", page: <MusicComposer /> },
-  { to: "/tea-hero", page: <TeaHero /> },
-  { to: "/musicogram", page: <Musicogram /> },
-  { to: "/sprunki", page: <Sprunki /> },
-  { to: "/boomwhacker-hero", page: <BoomwhackerHero /> },
-  { to: "/binaural-frequencies", page: <BinaralFrequencies /> },
-  { to: "/finance", page: <Finance /> },
-  { to: "/finance/records", page: <FinancialRecords /> },
-  { to: "/finance/clinics", page: <ClinicsManagement /> },
-  { to: "/users", page: <Users /> },
-  { to: "/invite-codes", page: <InviteCodes /> },
-  { to: "/anamnesis", page: <Anamnesis /> },
-  { to: "/evaluation", page: <Evaluation /> },
-  { to: "/treatment-plan", page: <TreatmentPlan /> },
-  { to: "/intervention", page: <Intervention /> },
-  { to: "/reevaluation", page: <Reevaluation /> },
-  { to: "/processes/reports", page: <ProcessReports /> },
-  { to: "/processes/report", page: <ReportForm /> },
-  { to: "/processes/report/:reportId", page: <ReportForm /> },
-  { to: "/scientific-article", page: <ScientificArticle /> },
-  { to: "/login", page: <Login /> },
+export const navItems: { to: string; page: ComponentType<any> }[] = [
+  { to: "/", page: Dashboard },
+  { to: "/dashboard", page: Dashboard },
+  { to: "/professional", page: Professional },
+  { to: "/patients", page: Patients },
+  { to: "/processes", page: Processes },
+  { to: "/activities", page: Activities },
+  { to: "/activities/category/:categoryId", page: CategoryPage },
+  { to: "/music-composer", page: MusicComposer },
+  { to: "/tea-hero", page: TeaHero },
+  { to: "/musicogram", page: Musicogram },
+  { to: "/sprunki", page: Sprunki },
+  { to: "/boomwhacker-hero", page: BoomwhackerHero },
+  { to: "/binaural-frequencies", page: BinaralFrequencies },
+  { to: "/finance", page: Finance },
+  { to: "/finance/records", page: FinancialRecords },
+  { to: "/finance/clinics", page: ClinicsManagement },
+  { to: "/users", page: Users },
+  { to: "/invite-codes", page: InviteCodes },
+  { to: "/anamnesis", page: Anamnesis },
+  { to: "/evaluation", page: Evaluation },
+  { to: "/treatment-plan", page: TreatmentPlan },
+  { to: "/intervention", page: Intervention },
+  { to: "/reevaluation", page: Reevaluation },
+  { to: "/processes/reports", page: ProcessReports },
+  { to: "/processes/report", page: ReportForm },
+  { to: "/processes/report/:reportId", page: ReportForm },
+  { to: "/scientific-article", page: ScientificArticle },
+  { to: "/login", page: Login },
 ];
