@@ -684,67 +684,6 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       {/* História Sonora e Musical Detalhada */}
-      <FormSection
-        title="História Sonora e Musical Detalhada"
-        fields={[
-          {
-            key: "pregnancy_sound_experiences",
-            label: "Experiências sonoras durante a gravidez",
-            placeholder: "Descreva as experiências sonoras da mãe durante a gravidez",
-            value: content.pregnancy_sound_experiences || "",
-            onChange: (value) => updateField("pregnancy_sound_experiences", value),
-          },
-          {
-            key: "mother_movements_songs",
-            label: "Movimentos e canções da mãe",
-            placeholder: "Descreva os movimentos e canções da mãe durante a gravidez",
-            value: content.mother_movements_songs || "",
-            onChange: (value) => updateField("mother_movements_songs", value),
-          },
-          {
-            key: "childhood_sound_environment",
-            label: "Ambiente sonoro da infância",
-            placeholder: "Descreva o ambiente sonoro durante a infância",
-            value: content.childhood_sound_environment || "",
-            onChange: (value) => updateField("childhood_sound_environment", value),
-          },
-          {
-            key: "parents_sound_reactions",
-            label: "Reações sonoras dos pais",
-            placeholder: "Descreva as reações dos pais aos sons",
-            value: content.parents_sound_reactions || "",
-            onChange: (value) => updateField("parents_sound_reactions", value),
-          },
-          {
-            key: "typical_house_sounds",
-            label: "Sons típicos da casa",
-            placeholder: "Descreva os sons típicos do ambiente doméstico",
-            value: content.typical_house_sounds || "",
-            onChange: (value) => updateField("typical_house_sounds", value),
-          },
-          {
-            key: "night_body_sounds",
-            label: "Sons corporais noturnos",
-            placeholder: "Descreva os sons corporais durante a noite",
-            value: content.night_body_sounds || "",
-            onChange: (value) => updateField("night_body_sounds", value),
-          },
-          {
-            key: "family_musical_history",
-            label: "História musical familiar",
-            placeholder: "Descreva a história musical da família",
-            value: content.family_musical_history || "",
-            onChange: (value) => updateField("family_musical_history", value),
-          },
-          {
-            key: "patient_musical_history",
-            label: "História musical do paciente",
-            placeholder: "Descreva a história musical do paciente",
-            value: content.patient_musical_history || "",
-            onChange: (value) => updateField("patient_musical_history", value),
-          },
-        ]}
-      />
     </div>
   );
 }
