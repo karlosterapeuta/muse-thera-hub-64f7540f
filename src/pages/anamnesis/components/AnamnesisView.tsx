@@ -259,22 +259,22 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   };
 
   const renderTextSection = (title: string, icon: any, gradient: string, fields: Array<{key: string, label: string}>) => {
-    const hasContent = fields.some(field => anamnesisData[field.key] && anamnesisData[field.key].trim() !== '');
-    
-    if (!hasContent) return null;
-
     return (
       <ModernFormCard title={title} icon={icon} gradient={gradient}>
         <div className="space-y-4">
           {fields.map(field => {
             const value = anamnesisData[field.key];
-            if (!value || value.trim() === '') return null;
+            const isEmpty = !value || value.trim() === '';
             
             return (
               <div key={field.key}>
                 <h4 className="font-medium text-sm text-muted-foreground mb-1">{field.label}</h4>
-                <div className="bg-muted/50 p-3 rounded-md border">
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{value}</p>
+                <div className={`p-3 rounded-md border ${isEmpty ? 'bg-muted/30' : 'bg-muted/50'}`}>
+                  {isEmpty ? (
+                    <p className="text-sm text-muted-foreground italic">Campo disponível para preenchimento</p>
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{value}</p>
+                  )}
                 </div>
               </div>
             );
