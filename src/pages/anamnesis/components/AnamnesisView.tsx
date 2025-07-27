@@ -4,8 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Download, Edit, Calendar, User } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Download, 
+  Edit, 
+  Calendar, 
+  User, 
+  Heart,
+  Brain,
+  Music,
+  Baby,
+  MessageCircle,
+  Users,
+  Stethoscope,
+  Home,
+  FileText,
+  Activity,
+  Palette,
+  Volume2,
+  Headphones,
+  UserCheck,
+  Clock,
+  CheckCircle2,
+  AlertTriangle
+} from "lucide-react";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
+import { ModernFormCard } from "./ModernFormCard";
 
 type AnamnesisItem = {
   id: string;
@@ -168,29 +192,125 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     });
   };
 
+  // Helper functions for organized data display
+  const calculateAge = () => {
+    if (!anamnesisData.birth_date) return null;
+    const birthDate = new Date(anamnesisData.birth_date);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
+
+  const getCompletionStats = () => {
+    const totalBooleanFields = Object.entries(anamnesisData).filter(([key, value]) => 
+      typeof value === 'boolean' && !['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(key)
+    ).length;
+    
+    const checkedFields = Object.entries(anamnesisData).filter(([key, value]) => 
+      typeof value === 'boolean' && value === true
+    ).length;
+
+    const textFields = [
+      'legal_guardian', 'family_relationship', 'referral_professional', 'main_clinical_demand',
+      'current_medication', 'school_enrollment', 'school_adaptation', 'extracurricular_activities',
+      'pregnancy_sound_experiences', 'mother_movements_songs', 'childhood_sound_environment',
+      'parents_sound_reactions', 'typical_house_sounds', 'night_body_sounds',
+      'family_musical_history', 'patient_musical_history', 'therapeutic_goals', 'treatment_approach'
+    ];
+    
+    const completedTextFields = textFields.filter(field => 
+      anamnesisData[field] && anamnesisData[field].trim() !== ''
+    ).length;
+
+    return {
+      totalBooleanFields,
+      checkedFields,
+      totalTextFields: textFields.length,
+      completedTextFields,
+      overallCompletion: Math.round(((checkedFields + completedTextFields) / (totalBooleanFields + textFields.length)) * 100)
+    };
+  };
+
+  const renderBooleanSection = (title: string, icon: any, gradient: string, fields: string[], labels: Record<string, string>) => {
+    const hasAnyTrue = fields.some(field => anamnesisData[field] === true);
+    
+    if (!hasAnyTrue) return null;
+
+    return (
+      <ModernFormCard title={title} icon={icon} gradient={gradient}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {fields.map(field => {
+            if (!anamnesisData[field]) return null;
+            return (
+              <div key={field} className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <span className="text-sm">{labels[field] || field.replace(/_/g, ' ')}</span>
+              </div>
+            );
+          })}
+        </div>
+      </ModernFormCard>
+    );
+  };
+
+  const renderTextSection = (title: string, icon: any, gradient: string, fields: Array<{key: string, label: string}>) => {
+    const hasContent = fields.some(field => anamnesisData[field.key] && anamnesisData[field.key].trim() !== '');
+    
+    if (!hasContent) return null;
+
+    return (
+      <ModernFormCard title={title} icon={icon} gradient={gradient}>
+        <div className="space-y-4">
+          {fields.map(field => {
+            const value = anamnesisData[field.key];
+            if (!value || value.trim() === '') return null;
+            
+            return (
+              <div key={field.key}>
+                <h4 className="font-medium text-sm text-muted-foreground mb-1">{field.label}</h4>
+                <div className="bg-muted/50 p-3 rounded-md border">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{value}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </ModernFormCard>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
+  const stats = getCompletionStats();
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
             <ArrowLeft size={16} />
             Voltar
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Visualizar Anamnese</h1>
-            <p className="text-gray-600">Paciente: {anamnesis.patient_name}</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Anamnese Detalhada
+            </h1>
+            <p className="text-muted-foreground">Paciente: {anamnesis.patient_name}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             onClick={() => onEdit(anamnesis.id, anamnesis.patient_id)}
@@ -202,7 +322,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           <Button
             onClick={generatePDF}
             disabled={isGeneratingPDF}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            className="flex items-center gap-2"
           >
             {isGeneratingPDF ? (
               <>
@@ -219,106 +339,301 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         </div>
       </div>
 
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Data de Criação</p>
+                <p className="text-sm text-muted-foreground">Criado em</p>
                 <p className="font-semibold">{formatDate(anamnesis.created_at)}</p>
               </div>
               <Calendar className="text-blue-500" size={20} />
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Última Atualização</p>
+                <p className="text-sm text-muted-foreground">Atualizado em</p>
                 <p className="font-semibold">{formatDate(anamnesis.updated_at)}</p>
               </div>
-              <Calendar className="text-green-500" size={20} />
+              <Clock className="text-green-500" size={20} />
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">ID do Paciente</p>
-                <Badge variant="secondary">{anamnesis.patient_id.slice(-8)}</Badge>
+                <p className="text-sm text-muted-foreground">Completude</p>
+                <p className="font-semibold">{stats.overallCompletion}%</p>
               </div>
-              <User className="text-purple-500" size={20} />
+              <Activity className="text-orange-500" size={20} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Aspectos Marcados</p>
+                <p className="font-semibold">{stats.checkedFields}</p>
+              </div>
+              <CheckCircle2 className="text-purple-500" size={20} />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados da Anamnese</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Dados Pessoais */}
-            {(anamnesisData.legal_guardian || anamnesisData.family_relationship || 
-              anamnesisData.referral_professional || anamnesisData.main_clinical_demand) && (
+      {/* Patient Info Section */}
+      {(anamnesisData.legal_guardian || anamnesisData.family_relationship || 
+        anamnesisData.referral_professional || anamnesisData.main_clinical_demand) && (
+        <ModernFormCard title="Informações do Paciente" icon={User} gradient="from-blue-500 to-cyan-500">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {anamnesisData.legal_guardian && (
               <div>
-                <h3 className="text-lg font-semibold mb-3 pb-2 border-b">Dados Pessoais</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {anamnesisData.legal_guardian && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Responsável Legal</p>
-                      <p className="text-gray-900">{anamnesisData.legal_guardian}</p>
-                    </div>
-                  )}
-                  {anamnesisData.family_relationship && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Parentesco</p>
-                      <p className="text-gray-900">{anamnesisData.family_relationship}</p>
-                    </div>
-                  )}
-                  {anamnesisData.referral_professional && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Profissional que Encaminhou</p>
-                      <p className="text-gray-900">{anamnesisData.referral_professional}</p>
-                    </div>
-                  )}
-                  {anamnesisData.main_clinical_demand && (
-                    <div className="md:col-span-2">
-                      <p className="text-sm font-medium text-gray-700">Demanda Clínica Principal</p>
-                      <p className="text-gray-900">{anamnesisData.main_clinical_demand}</p>
-                    </div>
-                  )}
+                <p className="text-sm font-medium text-muted-foreground">Responsável Legal</p>
+                <p className="font-medium">{anamnesisData.legal_guardian}</p>
+              </div>
+            )}
+            {anamnesisData.family_relationship && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Parentesco</p>
+                <p className="font-medium">{anamnesisData.family_relationship}</p>
+              </div>
+            )}
+            {anamnesisData.referral_professional && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Profissional que Encaminhou</p>
+                <p className="font-medium">{anamnesisData.referral_professional}</p>
+              </div>
+            )}
+            {anamnesisData.main_clinical_demand && (
+              <div className="md:col-span-2">
+                <p className="text-sm font-medium text-muted-foreground">Demanda Clínica Principal</p>
+                <div className="bg-muted/50 p-3 rounded-md border mt-1">
+                  <p className="leading-relaxed">{anamnesisData.main_clinical_demand}</p>
                 </div>
               </div>
             )}
+          </div>
+        </ModernFormCard>
+      )}
 
-            {/* Show a summary of checked items */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3 pb-2 border-b">Aspectos Avaliados</h3>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(anamnesisData)
-                  .filter(([key, value]) => 
-                    typeof value === 'boolean' && 
-                    value === true &&
-                    !['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(key)
-                  )
-                  .map(([key]) => (
-                    <Badge key={key} variant="secondary" className="text-xs">
-                      {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </Badge>
-                  ))
-                }
-              </div>
-              {Object.entries(anamnesisData).filter(([key, value]) => 
-                typeof value === 'boolean' && value === true
-              ).length === 0 && (
-                <p className="text-gray-500 italic">Nenhum aspecto específico foi marcado nesta anamnese.</p>
-              )}
+      {/* Detailed Sound and Musical History */}
+      {renderTextSection(
+        "História Sonora e Musical Detalhada",
+        Headphones,
+        "from-purple-500 to-pink-500",
+        [
+          { key: 'pregnancy_sound_experiences', label: 'Experiências sonoras durante a gravidez' },
+          { key: 'mother_movements_songs', label: 'Movimentos da mãe com canções' },
+          { key: 'childhood_sound_environment', label: 'Ambiente sonoro na infância' },
+          { key: 'parents_sound_reactions', label: 'Reações dos pais aos sons' },
+          { key: 'typical_house_sounds', label: 'Sons típicos da casa' },
+          { key: 'night_body_sounds', label: 'Sons corporais noturnos' },
+          { key: 'family_musical_history', label: 'História musical da família' },
+          { key: 'patient_musical_history', label: 'História musical do paciente' }
+        ]
+      )}
+
+      {/* Other Text Sections */}
+      {renderTextSection(
+        "Informações Escolares e Sociais",
+        Home,
+        "from-green-500 to-teal-500",
+        [
+          { key: 'school_enrollment', label: 'Matrícula escolar' },
+          { key: 'school_adaptation', label: 'Adaptação escolar' },
+          { key: 'extracurricular_activities', label: 'Atividades extracurriculares' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Tratamento e Medicação",
+        Stethoscope,
+        "from-red-500 to-orange-500",
+        [
+          { key: 'current_medication', label: 'Medicação atual' },
+          { key: 'therapeutic_goals', label: 'Objetivos terapêuticos' },
+          { key: 'treatment_approach', label: 'Abordagem de tratamento' }
+        ]
+      )}
+
+      {/* Boolean Sections */}
+      {renderBooleanSection(
+        "Terapias e Suporte",
+        Heart,
+        "from-pink-500 to-rose-500",
+        ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy'],
+        {
+          psychological_support: 'Apoio psicológico',
+          psychopedagogical: 'Psicopedagógico',
+          occupational_therapy: 'Terapia ocupacional',
+          physiotherapy: 'Fisioterapia',
+          equine_therapy: 'Equoterapia',
+          speech_therapy: 'Fonoaudiologia'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Experiências Musicais",
+        Music,
+        "from-violet-500 to-purple-500",
+        ['musical_education', 'instrumental_practice', 'body_musical_expression', 'vocal_expression', 'choral_activities', 'no_musical_experience'],
+        {
+          musical_education: 'Educação musical',
+          instrumental_practice: 'Prática instrumental',
+          body_musical_expression: 'Expressão corporal musical',
+          vocal_expression: 'Expressão vocal',
+          choral_activities: 'Atividades corais',
+          no_musical_experience: 'Sem experiência musical'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Comportamento Musical",
+        Volume2,
+        "from-indigo-500 to-blue-500",
+        ['active_musical_listening', 'body_expression', 'sound_responsiveness', 'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity', 'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response', 'active_sound_search', 'specific_sound_aversion', 'sound_source_location'],
+        {
+          active_musical_listening: 'Escuta musical ativa',
+          body_expression: 'Expressão corporal',
+          sound_responsiveness: 'Responsividade sonora',
+          spontaneous_vocal: 'Vocalização espontânea',
+          instrumental_exploration: 'Exploração instrumental',
+          adverse_sound_reactivity: 'Reatividade sonora adversa',
+          auditory_hypersensitivity: 'Hipersensibilidade auditiva',
+          positive_musical_response: 'Resposta musical positiva',
+          nominal_call_response: 'Resposta ao chamado nominal',
+          active_sound_search: 'Busca ativa por sons',
+          specific_sound_aversion: 'Aversão a sons específicos',
+          sound_source_location: 'Localização da fonte sonora'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Preferências Musicais",
+        Palette,
+        "from-cyan-500 to-blue-500",
+        ['children_repertoire', 'rock_genre', 'sacred_gospel', 'other_musical_genres', 'brazilian_popular', 'country_music', 'classical_music'],
+        {
+          children_repertoire: 'Repertório infantil',
+          rock_genre: 'Rock',
+          sacred_gospel: 'Sacro/Gospel',
+          other_musical_genres: 'Outros gêneros musicais',
+          brazilian_popular: 'MPB',
+          country_music: 'Country',
+          classical_music: 'Música clássica'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Desenvolvimento Motor",
+        Activity,
+        "from-emerald-500 to-green-500",
+        ['cervical_control', 'crawling_pattern', 'fine_motor_dev', 'independent_sitting', 'autonomous_walking', 'broad_motor_dev'],
+        {
+          cervical_control: 'Controle cervical',
+          crawling_pattern: 'Padrão de engatinhar',
+          fine_motor_dev: 'Desenvolvimento motor fino',
+          independent_sitting: 'Sentar independente',
+          autonomous_walking: 'Marcha autônoma',
+          broad_motor_dev: 'Desenvolvimento motor amplo'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Desenvolvimento da Linguagem",
+        MessageCircle,
+        "from-amber-500 to-yellow-500",
+        ['babbling', 'simple_phrases', 'echolalia', 'first_words', 'nonverbal_communication', 'verbal_language_absence'],
+        {
+          babbling: 'Balbucio',
+          simple_phrases: 'Frases simples',
+          echolalia: 'Ecolalia',
+          first_words: 'Primeiras palavras',
+          nonverbal_communication: 'Comunicação não verbal',
+          verbal_language_absence: 'Ausência de linguagem verbal'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Aspectos Sociais",
+        Users,
+        "from-teal-500 to-cyan-500",
+        ['visual_contact', 'shared_play', 'stereotyped_behavior', 'peer_interaction', 'social_isolation', 'restricted_interests'],
+        {
+          visual_contact: 'Contato visual',
+          shared_play: 'Brincadeira compartilhada',
+          stereotyped_behavior: 'Comportamento estereotipado',
+          peer_interaction: 'Interação com pares',
+          social_isolation: 'Isolamento social',
+          restricted_interests: 'Interesses restritos'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Regulação Emocional",
+        Heart,
+        "from-pink-500 to-red-500",
+        ['heteroaggressive', 'emotional_ability', 'anxiety', 'frequent_crying', 'low_frustration_tolerance', 'irritability'],
+        {
+          heteroaggressive: 'Heteroagressividade',
+          emotional_ability: 'Habilidade emocional',
+          anxiety: 'Ansiedade',
+          frequent_crying: 'Choro frequente',
+          low_frustration_tolerance: 'Baixa tolerância à frustração',
+          irritability: 'Irritabilidade'
+        }
+      )}
+
+      {renderBooleanSection(
+        "Transtornos e Condições",
+        Brain,
+        "from-orange-500 to-red-500",
+        ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders'],
+        {
+          autism_spectrum: 'Espectro autista',
+          down_syndrome: 'Síndrome de Down',
+          intellectual_disability: 'Deficiência intelectual',
+          other_diagnoses: 'Outros diagnósticos',
+          adhd: 'TDAH',
+          chronic_encephalopathy: 'Encefalopatia crônica',
+          anxiety_disorders: 'Transtornos de ansiedade'
+        }
+      )}
+
+      {/* Completion Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Resumo da Avaliação
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <p className="text-2xl font-bold text-primary">{stats.checkedFields}</p>
+              <p className="text-sm text-muted-foreground">Aspectos Avaliados</p>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <p className="text-2xl font-bold text-green-600">{stats.completedTextFields}</p>
+              <p className="text-sm text-muted-foreground">Campos Preenchidos</p>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <p className="text-2xl font-bold text-orange-600">{stats.overallCompletion}%</p>
+              <p className="text-sm text-muted-foreground">Completude Geral</p>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <p className="text-2xl font-bold text-blue-600">{anamnesis.patient_id.slice(-8)}</p>
+              <p className="text-sm text-muted-foreground">ID do Paciente</p>
             </div>
           </div>
         </CardContent>
