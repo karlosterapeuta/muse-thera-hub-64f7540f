@@ -100,9 +100,7 @@ export const generateProfessionalAnamnesePDF = async (
           title: "II. DEMANDA CLÍNICA E ENCAMINHAMENTO",
           icon: "🏥",
           fields: [
-            { key: "main_clinical_demand", label: "Demanda Clínica Principal" },
-            { key: "therapeutic_goals", label: "Objetivos Terapêuticos" },
-            { key: "treatment_approach", label: "Abordagem de Tratamento" }
+            { key: "main_clinical_demand", label: "Demanda Clínica Principal" }
           ]
         },
         {
