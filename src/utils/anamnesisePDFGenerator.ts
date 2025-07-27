@@ -71,16 +71,17 @@ export const generateProfessionalAnamnesePDF = async (
 
       // Função para determinar a mensagem apropriada para campos vazios
       const getEmptyFieldMessage = (fieldKey: string, value: any) => {
-        // Se o campo é da História Sonora e Musical e está vazio/null
-        if (soundHistoryFields.includes(fieldKey) && (!value || value.trim() === '')) {
-          return 'Campo disponível para preenchimento posterior';
-        }
-        
-        // Para outros campos vazios
+        // Para campos vazios ou nulos
         if (!value || (typeof value === 'string' && value.trim() === '')) {
+          // Se o campo é da História Sonora e Musical
+          if (soundHistoryFields.includes(fieldKey)) {
+            return 'Campo disponível para preenchimento posterior';
+          }
+          // Para outros campos vazios
           return 'Não informado';
         }
         
+        // Retorna o valor se não estiver vazio
         return value;
       };
 
@@ -257,7 +258,7 @@ export const generateProfessionalAnamnesePDF = async (
         }
       ];
 
-      // Renderizar campo de texto com lógica melhorada para campos vazios
+      // Renderizar campo de texto
       const renderTextField = (field: { key: string; label: string }, isNewSection = false) => {
         const rawValue = anamnesisData[field.key];
         const displayValue = getEmptyFieldMessage(field.key, rawValue);
@@ -270,9 +271,8 @@ export const generateProfessionalAnamnesePDF = async (
             <div style="font-weight: 600; font-size: 12px; color: #374151; margin-bottom: 4px;">
               ${field.label}:
             </div>
-            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: ${isEmpty ? '#9ca3af' : '#1f2937'}; min-height: 20px; ${isEmpty && isNewSection ? 'border-left: 3px solid #fbbf24;' : ''}">
+            <div style="background-color: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.4; color: ${isEmpty ? '#9ca3af' : '#1f2937'}; min-height: 20px;">
               ${displayValue}
-              ${isEmpty && isNewSection ? ' <span style="color: #f59e0b; font-size: 10px;">(Seção adicionada recentemente)</span>' : ''}
             </div>
           </div>
         `;
@@ -333,7 +333,6 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 13px;">
                 <span style="margin-right: 8px; font-size: 14px;">${section.icon}</span>
                 ${section.title}
-                ${section.isNewSection ? ' <span style="background-color: rgba(251, 191, 36, 0.3); color: #fbbf24; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 8px;">NOVA SEÇÃO</span>' : ''}
               </div>
               <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px;">
                 ${sectionHTML || `
