@@ -42,7 +42,11 @@ const basicDatabaseFields = [
   'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'current_medication', 
   'speech_therapy', 'psychological_support', 'psychopedagogical', 'occupational_therapy', 
   'physiotherapy', 'equine_therapy', 'school_enrollment', 'school_adaptation', 
-  'extracurricular_activities'
+  'extracurricular_activities',
+  // Campos da História Sonora e Musical Detalhada
+  'pregnancy_sound_experiences', 'mother_movements_songs', 'childhood_sound_environment',
+  'parents_sound_reactions', 'typical_house_sounds', 'night_body_sounds',
+  'family_musical_history', 'patient_musical_history'
 ];
 
 // Campos que podem não existir (dependem da migração)
