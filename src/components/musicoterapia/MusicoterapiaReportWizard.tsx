@@ -20,38 +20,59 @@ interface MusicoterapiaReportWizardProps {
 const STEPS = [
   {
     id: 'basic_info',
-    title: 'Informações Básicas',
-    description: 'Dados do paciente e sessão',
+    title: '1. Informações Básicas',
+    description: 'Dados do paciente e profissional',
     icon: Target,
-    fields: ['patient_info', 'session_date', 'professional_info']
+    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'session_date', 'professional_name', 'professional_registry']
   },
   {
-    id: 'objectives_activities',
-    title: 'Objetivos e Atividades',
-    description: 'Planejamento terapêutico musical',
+    id: 'therapeutic_objectives',
+    title: '2. Objetivos Terapêuticos',
+    description: 'Metas e planejamento terapêutico',
+    icon: Target,
+    fields: ['therapeutic_objectives', 'specific_goals']
+  },
+  {
+    id: 'session_activities',
+    title: '3. Descrição das Sessões/Atividades Realizadas',
+    description: 'Detalhamento das atividades musicais',
     icon: Music,
-    fields: ['therapeutic_objectives', 'instruments_used', 'musical_techniques', 'session_activities', 'musical_genres']
+    fields: ['session_activities', 'instruments_used', 'musical_techniques', 'musical_genres']
   },
   {
-    id: 'assessment_scales',
-    title: 'Escalas de Avaliação',
-    description: 'Avaliação quantitativa musical',
-    icon: Brain,
-    fields: ['musical_response_scale', 'rhythm_coordination', 'musical_communication', 'emotional_regulation', 'social_interaction', 'attention_focus']
-  },
-  {
-    id: 'evolution_response',
-    title: 'Evolução e Resposta',
-    description: 'Progressos e observações',
+    id: 'patient_evolution',
+    title: '4. Evolução do Paciente',
+    description: 'Progressos e desenvolvimentos observados',
     icon: Heart,
-    fields: ['patient_evolution', 'sensory_response']
+    fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements']
   },
   {
     id: 'recommendations',
-    title: 'Recomendações',
-    description: 'Continuidade e orientações',
+    title: '5. Encaminhamentos e Recomendações',
+    description: 'Orientações e próximos passos',
     icon: Home,
-    fields: ['recommendations', 'home_activities', 'conclusion']
+    fields: ['recommendations', 'home_activities', 'family_guidance']
+  },
+  {
+    id: 'conclusion',
+    title: '6. Conclusão',
+    description: 'Síntese dos resultados',
+    icon: Brain,
+    fields: ['conclusion', 'treatment_summary']
+  },
+  {
+    id: 'complementary_observations',
+    title: '7. Observações Complementares',
+    description: 'Informações adicionais relevantes',
+    icon: Heart,
+    fields: ['complementary_observations', 'additional_notes']
+  },
+  {
+    id: 'final_review',
+    title: '8. Revisão Final',
+    description: 'Verificação e finalização',
+    icon: Target,
+    fields: ['signature', 'review_notes']
   }
 ];
 
@@ -162,30 +183,40 @@ export function MusicoterapiaReportWizard({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Progress Header */}
+      {/* Header com as 8 etapas */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
-                <StepIcon className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">{currentStepData.title}</CardTitle>
-                <CardDescription>{currentStepData.description}</CardDescription>
-              </div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Etapa {currentStep + 1} de {STEPS.length}
-            </div>
-          </div>
+          <CardTitle className="text-xl mb-4">Relatório de Musicoterapia</CardTitle>
+          <CardDescription className="mb-6">Dados do paciente e profissional</CardDescription>
           
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Progresso do relatório</span>
+              <span>Progresso</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="h-2" />
+            
+            {/* Grid das 8 etapas */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+              {STEPS.map((step, index) => {
+                const isCompleted = index < currentStep;
+                const isCurrent = index === currentStep;
+                
+                return (
+                  <Button
+                    key={step.id}
+                    variant={isCurrent ? "default" : isCompleted ? "secondary" : "outline"}
+                    size="sm"
+                    className="h-auto p-3 text-xs"
+                    onClick={() => setCurrentStep(index)}
+                  >
+                    <div className="text-center">
+                      <div className="font-medium">{step.title}</div>
+                    </div>
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -195,58 +226,54 @@ export function MusicoterapiaReportWizard({
         {/* Main Content */}
         <div className="lg:col-span-3">
           <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Music className="h-5 w-5 text-primary" />
-                    <span>Relatório de Musicoterapia</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Especializado para Transtorno do Espectro Autista (TEA)
-                  </CardDescription>
-                </div>
-                
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowQuickFill(!showQuickFill)}
-                  >
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Quick Fill
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAIGeneration}
-                    disabled={isGeneratingWithAI}
-                  >
-                    {isGeneratingWithAI ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
-                        Gerando...
-                      </>
-                    ) : (
-                      <>
-                        <Brain className="h-4 w-4 mr-2" />
-                        IA Assistente
-                      </>
-                    )}
-                  </Button>
-                </div>
+            <CardContent className="p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2">{currentStepData.title}</h2>
+                <p className="text-muted-foreground">{currentStepData.description}</p>
               </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-6">
+              
               {renderStepFields()}
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar - Ações Rápidas */}
         <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Ações Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setShowQuickFill(!showQuickFill)}
+              >
+                <Wand2 className="h-4 w-4 mr-2" />
+                Salvar Rascunho
+              </Button>
+              
+              <Button
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={handleAIGeneration}
+                disabled={isGeneratingWithAI}
+              >
+                {isGeneratingWithAI ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                    Visualizando...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4 mr-2" />
+                    Visualizar
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Quick Fill Panel */}
           {showQuickFill && (
             <MusicoterapiaQuickFill
@@ -255,44 +282,6 @@ export function MusicoterapiaReportWizard({
               onClose={() => setShowQuickFill(false)}
             />
           )}
-
-          {/* Step Navigation */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Navegação</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {STEPS.map((step, index) => {
-                const StepIcon = step.icon;
-                const isCompleted = index < currentStep;
-                const isCurrent = index === currentStep;
-                
-                return (
-                  <button
-                    key={step.id}
-                    onClick={() => setCurrentStep(index)}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-colors ${
-                      isCurrent
-                        ? 'bg-primary text-primary-foreground'
-                        : isCompleted
-                        ? 'bg-muted hover:bg-muted/80'
-                        : 'hover:bg-muted/50'
-                    }`}
-                  >
-                    <StepIcon className="h-4 w-4 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm truncate">
-                        {step.title}
-                      </div>
-                    </div>
-                    {isCompleted && (
-                      <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </CardContent>
-          </Card>
         </div>
       </div>
 

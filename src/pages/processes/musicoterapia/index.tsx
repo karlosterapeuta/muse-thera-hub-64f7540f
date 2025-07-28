@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Music, FileText, Wand2, Download, Save, ArrowLeft, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -236,6 +237,98 @@ export default function MusicoterapiaPage() {
             </div>
           </div>
         </CardHeader>
+      </Card>
+
+      {/* Seleção de Área e Paciente */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <FileText className="h-5 w-5" />
+            <span>Criar Relatório Personalizado</span>
+          </CardTitle>
+          <CardDescription>
+            Selecione sua área de atuação e o paciente para gerar um relatório técnico especializado para TEA
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Área de Atuação</label>
+              <Select value="musicoterapia" disabled>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a área" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="musicoterapia">Musicoterapia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Paciente</label>
+              <Select 
+                value={reportData.selectedPatientId || ''} 
+                onValueChange={(value) => {
+                  const selectedPatient = patients.find(p => p.id === value);
+                  if (selectedPatient) {
+                    // Calculate age from birth_date if available
+                    let age = '';
+                    if ((selectedPatient as any).birth_date) {
+                      const today = new Date();
+                      const birthDate = new Date((selectedPatient as any).birth_date);
+                      const ageYears = today.getFullYear() - birthDate.getFullYear();
+                      const monthDiff = today.getMonth() - birthDate.getMonth();
+                      
+                      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age = `${ageYears - 1} anos`;
+                      } else {
+                        age = `${ageYears} anos`;
+                      }
+                    }
+
+                    updateReportData({
+                      selectedPatientId: value,
+                      fieldValues: {
+                        ...reportData.fieldValues,
+                        patient_name: selectedPatient.name,
+                        patient_age: age,
+                        patient_diagnosis: 'TEA - Transtorno do Espectro Autista'
+                      }
+                    });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Novo paciente (entrada manual)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manual">Novo paciente (entrada manual)</SelectItem>
+                  {patients.map(patient => (
+                    <SelectItem key={patient.id} value={patient.id}>
+                      {patient.name} - {(patient as any).birth_date ? 
+                        (() => {
+                          const today = new Date();
+                          const birthDate = new Date((patient as any).birth_date);
+                          const ageYears = today.getFullYear() - birthDate.getFullYear();
+                          const monthDiff = today.getMonth() - birthDate.getMonth();
+                          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                            return `${ageYears - 1} anos`;
+                          }
+                          return `${ageYears} anos`;
+                        })() : 'Idade não informada'
+                      }
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <Button className="w-full" onClick={() => setActiveTab('wizard')}>
+            <Wand2 className="h-4 w-4 mr-2" />
+            Wizard Passo-a-Passo
+          </Button>
+        </CardContent>
       </Card>
 
       {/* Main Content */}
