@@ -31,8 +31,11 @@ export function FinalReviewSection({
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [stampUrl, setStampUrl] = useState<string | null>(null);
   const [isUploadingStamp, setIsUploadingStamp] = useState(false);
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
+  const [isUploadingSignature, setIsUploadingSignature] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const stampInputRef = useRef<HTMLInputElement>(null);
+  const signatureInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportPDF = async () => {
     setIsExporting(true);
@@ -213,6 +216,76 @@ export function FinalReviewSection({
     });
   };
 
+  const handleSignatureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Tipo de arquivo inválido",
+        description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
+      });
+      return;
+    }
+
+    // Validar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Arquivo muito grande",
+        description: "A imagem deve ter no máximo 5MB",
+      });
+      return;
+    }
+
+    setIsUploadingSignature(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `signature-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('digital-signatures')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      // Obter URL pública da imagem
+      const { data: { publicUrl } } = supabase.storage
+        .from('digital-signatures')
+        .getPublicUrl(fileName);
+
+      setSignatureUrl(publicUrl);
+      
+      toast({
+        title: "Assinatura enviada com sucesso!",
+        description: "A assinatura digital será incluída no PDF gerado.",
+      });
+      
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro no upload",
+        description: "Não foi possível enviar a assinatura. Tente novamente.",
+      });
+    } finally {
+      setIsUploadingSignature(false);
+    }
+  };
+
+  const removeSignature = () => {
+    setSignatureUrl(null);
+    if (signatureInputRef.current) {
+      signatureInputRef.current.value = '';
+    }
+    toast({
+      title: "Assinatura removida",
+      description: "A assinatura digital foi removida do relatório.",
+    });
+  };
+
   const generatePDFContent = () => {
     const fields = reportData.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
@@ -287,6 +360,7 @@ export function FinalReviewSection({
 
       <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
         <p style="margin: 15px 0;"><strong>Assinatura:</strong> ${reportData.signature || reportData.professionalName || 'Não informado'}</p>
+        ${signatureUrl ? `<div style="margin: 20px 0;"><img src="${signatureUrl}" style="max-width: 200px; max-height: 80px;" alt="Assinatura Digital" /></div>` : ''}
         ${stampUrl ? `<div style="margin: 20px 0;"><img src="${stampUrl}" style="max-width: 120px; max-height: 60px;" alt="Carimbo Digital" /></div>` : ''}
         <p style="color: #666; font-size: 12px; margin-top: 20px;">
           Documento gerado automaticamente pelo Relatório TEA em ${currentDate}
@@ -720,6 +794,70 @@ export function FinalReviewSection({
             )}
           </CardContent>
         </Card>
+
+        {/* Upload de Assinatura Digital */}
+        <Card className="text-center">
+          <CardHeader className="pb-4">
+            <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
+              <Upload className="h-6 w-6 text-indigo-600" />
+            </div>
+            <CardTitle className="text-lg">Assinatura Digital</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Adicione sua assinatura digital ao PDF
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {signatureUrl ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <img 
+                    src={signatureUrl} 
+                    alt="Assinatura Digital" 
+                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={removeSignature}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <p className="text-xs text-green-600 font-medium">Assinatura carregada!</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={signatureInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleSignatureUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => signatureInputRef.current?.click()}
+                  disabled={isUploadingSignature}
+                >
+                  {isUploadingSignature ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Enviar Assinatura
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Visualizar Relatório */}
         <Card className="text-center">
           <CardHeader className="pb-4">
