@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import type { ReportField } from '@/data/musicoterapiaTemplate';
 import { TherapeuticObjectivesField } from './TherapeuticObjectivesField';
 import { SessionActivitiesField } from './SessionActivitiesField';
+import { PatientEvolutionField } from './PatientEvolutionField';
 
 interface MusicoterapiaFormFieldProps {
   field: ReportField;
@@ -55,6 +56,16 @@ export function MusicoterapiaFormField({
     if (field.id === 'session_activities') {
       return (
         <SessionActivitiesField
+          value={(value as string[]) || []}
+          onChange={onChange}
+        />
+      );
+    }
+
+    // Campo especializado para evolução do paciente
+    if (field.id === 'patient_evolution') {
+      return (
+        <PatientEvolutionField
           value={(value as string[]) || []}
           onChange={onChange}
         />
