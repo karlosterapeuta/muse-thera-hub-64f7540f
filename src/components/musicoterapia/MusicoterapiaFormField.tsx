@@ -14,6 +14,7 @@ import { TherapeuticObjectivesField } from './TherapeuticObjectivesField';
 import { SessionActivitiesField } from './SessionActivitiesField';
 import { PatientEvolutionField } from './PatientEvolutionField';
 import { RecommendationsField } from './RecommendationsField';
+import { ConclusionField } from './ConclusionField';
 
 interface MusicoterapiaFormFieldProps {
   field: ReportField;
@@ -77,6 +78,16 @@ export function MusicoterapiaFormField({
     if (field.id === 'recommendations') {
       return (
         <RecommendationsField
+          value={(value as string[]) || []}
+          onChange={onChange}
+        />
+      );
+    }
+
+    // Campo especializado para conclusão
+    if (field.id === 'conclusion') {
+      return (
+        <ConclusionField
           value={(value as string[]) || []}
           onChange={onChange}
         />
