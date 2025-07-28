@@ -57,7 +57,7 @@ export default function Processes() {
       bgGradient: "from-indigo-50 to-purple-50"
     },
     {
-      title: "Musicoterapia",
+      title: "Relatório TEA",
       description: "Relatórios especializados em Musicoterapia para TEA",
       icon: Music,
       path: "/processes/musicoterapia",
