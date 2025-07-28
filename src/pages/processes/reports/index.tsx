@@ -94,6 +94,7 @@ const reportTypeLabels: Record<string, string> = {
   discharge_summary: "Resumo de Alta",
   administrative_discharge: "Alta Administrativa",
   tea_scale: "Escala TEA",
+  musicoterapia: "Relatório TEA - Musicoterapia",
 };
 
 const reportTypeColors: Record<string, string> = {
@@ -113,6 +114,7 @@ const reportTypeColors: Record<string, string> = {
   discharge_summary: "bg-amber-500",
   administrative_discharge: "bg-slate-500",
   tea_scale: "bg-teal-500",
+  musicoterapia: "bg-purple-600",
 };
 
 export default function ReportsPage() {
