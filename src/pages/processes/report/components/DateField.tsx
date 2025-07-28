@@ -38,7 +38,7 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-white shadow-md border border-gray-100 rounded-lg" align="start">
+        <PopoverContent className="w-auto p-0 bg-white shadow-md border border-gray-100 rounded-lg" align="start" side="bottom" sideOffset={4} avoidCollisions={true}>
           <Calendar
             mode="single"
             selected={date}
