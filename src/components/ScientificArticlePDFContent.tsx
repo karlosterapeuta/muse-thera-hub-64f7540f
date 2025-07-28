@@ -44,7 +44,7 @@ export function ScientificArticlePDFContent() {
           diferentes populações clínicas. <strong>Método:</strong> Estudo de desenvolvimento e validação 
           psicométrica envolvendo 847 participantes em 23 centros brasileiros. A escala foi estruturada 
           em 5 domínios principais: Musical, Psicossocial, Cognitivo, Sensório-Motor e Comunicativo-Interativo, 
-          totalizando 14 subdomínios e 112 parâmetros específicos. O sistema de pontuação expandido utiliza 
+          totalizando 16 subdomínios e 128 parâmetros específicos. O sistema de pontuação expandido utiliza 
           escala de 7 pontos (0-6: ausente, emergente, inconsistente, desenvolvimento, consistente, avançado, 
           superior) com critérios objetivos definidos. Implementação pioneira de avaliação parcial permitindo 
           análise de domínios específicos. <strong>Resultados:</strong> A Escala MuseTera demonstrou excelentes 
@@ -73,7 +73,7 @@ export function ScientificArticlePDFContent() {
           clinical populations. <strong>Method:</strong> Psychometric development and validation study 
           involving 847 participants across 23 Brazilian centers. The scale was structured into 5 main 
           domains: Musical, Psychosocial, Cognitive, Sensory-Motor, and Communicative-Interactive, totaling 
-          14 subdomains and 112 specific parameters. The expanded scoring system uses a 7-point scale 
+          16 subdomains and 128 specific parameters. The expanded scoring system uses a 7-point scale 
           (0-6: absent, emergent, inconsistent, developing, consistent, advanced, superior) with defined 
           objective criteria. Pioneer implementation of partial evaluation allowing specific domain analysis. 
           <strong>Results:</strong> The MuseTera Scale demonstrated excellent psychometric properties: 
@@ -152,8 +152,8 @@ export function ScientificArticlePDFContent() {
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.3 Estrutura da Escala</h3>
         <div style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           <p style={{ marginBottom: '10px' }}>
-            A Escala MuseTera foi estruturada em 5 domínios principais, totalizando 14 subdomínios 
-            e 112 parâmetros específicos de avaliação:
+            A Escala MuseTera foi estruturada em 5 domínios principais, totalizando 16 subdomínios 
+            e 128 parâmetros específicos de avaliação:
           </p>
           <ul style={{ marginLeft: '20px', marginBottom: '10px' }}>
             <li><strong>Domínio Musical:</strong> Percepção Musical, Expressão Musical, Compreensão Musical (24 parâmetros)</li>
@@ -205,8 +205,8 @@ export function ScientificArticlePDFContent() {
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           O Índice de Validade de Conteúdo (IVC) global foi de 0,96, indicando excelente concordância 
           entre especialistas. Todos os domínios alcançaram IVC≥0,88, com destaque para o Domínio 
-          Musical (IVC=0,98) e Comunicativo-Interativo (IVC=0,97). A estrutura de 5 domínios e 14 
-          subdomínios recebeu aprovação unânime dos especialistas.
+           Musical (IVC=0,98) e Comunicativo-Interativo (IVC=0,97). A estrutura de 5 domínios e 16 
+           subdomínios recebeu aprovação unânime dos especialistas.
         </p>
 
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>3.3 Confiabilidade</h3>
@@ -340,8 +340,8 @@ export function ScientificArticlePDFContent() {
             }}>
               <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '5px', color: '#3730a3' }}>Avaliação Completa</div>
               <div style={{ fontSize: '9px', color: '#4338ca' }}>5 Domínios</div>
-              <div style={{ fontSize: '9px', color: '#4338ca' }}>14 Subdomínios</div>
-              <div style={{ fontSize: '9px', color: '#4338ca' }}>112 Parâmetros</div>
+              <div style={{ fontSize: '9px', color: '#4338ca' }}>16 Subdomínios</div>
+              <div style={{ fontSize: '9px', color: '#4338ca' }}>128 Parâmetros</div>
             </div>
             
             <div style={{ fontSize: '16px', color: '#7c3aed' }}>→</div>
