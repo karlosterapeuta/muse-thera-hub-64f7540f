@@ -31,7 +31,8 @@ const formSchema = z.object({
     "assessment_report",
     "discharge_summary",
     "administrative_discharge",
-    "tea_scale"
+    "tea_scale",
+    "musicoterapia"
   ] as const, {
     required_error: "Por favor, selecione o tipo de relatório",
   }),

@@ -7,6 +7,7 @@ import {
   ChartBar,
   Edit,
   ArrowRight,
+  Music,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -62,6 +63,14 @@ export default function Processes() {
       path: "/processes/reports",
       gradient: "from-amber-500 to-yellow-500",
       bgGradient: "from-amber-50 to-yellow-50"
+    },
+    {
+      title: "Musicoterapia",
+      description: "Relatórios especializados em Musicoterapia para TEA",
+      icon: Music,
+      path: "/processes/musicoterapia",
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-purple-50 to-pink-50"
     },
   ];
 
