@@ -201,26 +201,6 @@ export const musicoterapiaTemplate: ReportTemplate = {
       required: true,
       guidance: 'Inclua sugestões de continuidade e uso da música no cotidiano'
     },
-    {
-      id: 'home_activities',
-      type: 'textarea',
-      label: 'Atividades para Casa',
-      description: 'Sugestões de atividades musicais para o ambiente familiar',
-      placeholder: 'Ex: Escuta de playlist específica, momentos de dança livre, exploração de objetos sonoros em casa...',
-      required: false,
-      guidance: 'Atividades simples que a família pode implementar'
-    },
-    // Encaminhamentos e Recomendações (Etapa 5) - continuação
-    {
-      id: 'family_guidance',
-      type: 'textarea',
-      label: 'Orientações para a Família',
-      description: 'Orientações específicas para os familiares',
-      placeholder: 'Ex: Incluir música nas rotinas diárias, estimular exploração de instrumentos em casa...',
-      required: false,
-      guidance: 'Orientações práticas para os familiares sobre o uso da música no cotidiano'
-    },
-    
     // Conclusão (Etapa 6)
     {
       id: 'conclusion',
