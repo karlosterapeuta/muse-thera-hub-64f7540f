@@ -128,13 +128,29 @@ export function MusicoterapiaReportWizard({
   };
 
   const validateCurrentStep = () => {
+    // Validação especial para a primeira etapa (Informações Básicas)
+    if (currentStep === 0) {
+      const missingFields = [];
+      
+      if (!reportData.patientName?.trim()) {
+        missingFields.push({ id: 'patient_name', label: 'Nome do Paciente' });
+      }
+      
+      if (!reportData.professionalName?.trim()) {
+        missingFields.push({ id: 'professional_name', label: 'Nome do Profissional' });
+      }
+      
+      return missingFields;
+    }
+
+    // Validação padrão para outras etapas
     const requiredFields = musicoterapiaTemplate.fields.filter(field => 
       field.required && currentStepData.fields.includes(field.id)
     );
 
     const missingFields = requiredFields.filter(field => {
       const value = reportData.fieldValues?.[field.id];
-      return !value || (Array.isArray(value) && value.length === 0);
+      return !value || (Array.isArray(value) && value.length === 0) || (typeof value === 'string' && !value.trim());
     });
 
     return missingFields;
