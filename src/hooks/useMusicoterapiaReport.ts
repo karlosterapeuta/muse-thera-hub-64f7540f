@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemplate';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
+import { supabase } from '@/integrations/supabase/client';
 
 export function useMusicoterapiaReport() {
   const { toast } = useToast();
@@ -23,37 +24,74 @@ export function useMusicoterapiaReport() {
     setReportData(prev => ({ ...prev, ...updates }));
   }, []);
 
-  const generateWithAI = useCallback(async (keyPoints: string) => {
+  const generateWithAI = useCallback(async () => {
     setIsGeneratingWithAI(true);
     
     try {
-      // Simulated AI generation with musicotherapy-specific content
-      const aiContent = {
-        therapeutic_objectives: `Baseado nas observações "${keyPoints}", os objetivos incluem desenvolver expressão musical como comunicação alternativa, promover autorregulação emocional através de atividades rítmicas estruturadas, e estimular interação social por meio de dinâmicas musicais colaborativas específicas para TEA.`,
-        
-        session_activities: `Durante a sessão, considerando "${keyPoints}", foram implementadas atividades de exploração dirigida de instrumentos de percussão com diferentes texturas, exercícios de imitação rítmica utilizando movimento corporal integrado, e momentos de improvisação musical dirigida para expressão emocional autêntica.`,
-        
-        patient_evolution: `O paciente demonstrou "${keyPoints}" e apresentou resposta musical progressiva, evidenciando maior engajamento com atividades rítmicas estruturadas, desenvolvimento na capacidade de imitação de padrões musicais simples, e utilização crescente da música como recurso de autorregulação emocional.`,
-        
-        recommendations: `Baseado na evolução observada e considerando "${keyPoints}", recomenda-se manutenção da frequência semanal com expansão gradual do repertório instrumental, implementação de atividades musicais estruturadas no ambiente familiar, e desenvolvimento de playlist personalizada para momentos de autorregulação no cotidiano.`,
-        
-        conclusion: `A musicoterapia tem se mostrado ferramenta fundamental para este perfil específico. Considerando "${keyPoints}", os resultados evidenciam potencial significativo da abordagem musical, justificando continuidade e aprofundamento das intervenções musicoterapêuticas especializadas para TEA.`
-      };
-
-      updateReportData({
-        fieldValues: { ...reportData.fieldValues, ...aiContent }
+      console.log('Iniciando organização com IA...', reportData);
+      
+      const { data, error } = await supabase.functions.invoke('organize-musicoterapia-report', {
+        body: { reportData }
       });
 
-      toast({
-        title: "Relatório de Musicoterapia gerado!",
-        description: "Conteúdo especializado criado com base nas suas observações.",
-      });
+      if (error) {
+        console.error('Erro na edge function:', error);
+        throw new Error(error.message || 'Erro ao chamar serviço de IA');
+      }
+
+      console.log('Resposta da edge function:', data);
+
+      if (data.success && data.organizedContent) {
+        // Converter texto organizado em arrays se necessário
+        const organizedFields: Record<string, any> = {};
+        
+        Object.entries(data.organizedContent).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            // Para campos que esperam arrays, converter texto em array com um item
+            const arrayFields = ['therapeutic_objectives', 'session_activities', 'patient_evolution', 'recommendations', 'conclusion'];
+            if (arrayFields.includes(key)) {
+              organizedFields[key] = [value];
+            } else {
+              organizedFields[key] = value;
+            }
+          } else {
+            organizedFields[key] = value;
+          }
+        });
+
+        updateReportData({
+          fieldValues: { ...reportData.fieldValues, ...organizedFields }
+        });
+
+        toast({
+          title: "Relatório Organizado com IA!",
+          description: "O conteúdo foi estruturado automaticamente com inteligência artificial.",
+        });
+      } else if (data.fallbackContent) {
+        // Usar conteúdo de fallback em caso de erro
+        const fallbackFields: Record<string, any> = {};
+        Object.entries(data.fallbackContent).forEach(([key, value]) => {
+          fallbackFields[key] = [value as string];
+        });
+
+        updateReportData({
+          fieldValues: { ...reportData.fieldValues, ...fallbackFields }
+        });
+
+        toast({
+          title: "Conteúdo Básico Adicionado",
+          description: "Foi adicionado conteúdo básico. Revise e complemente conforme necessário.",
+        });
+      } else {
+        throw new Error('Resposta inválida da IA');
+      }
 
     } catch (error) {
+      console.error('Erro completo:', error);
       toast({
         variant: "destructive",
-        title: "Erro na geração",
-        description: "Não foi possível gerar o relatório automaticamente.",
+        title: "Erro na Organização com IA",
+        description: error instanceof Error ? error.message : "Não foi possível organizar o relatório automaticamente.",
       });
     } finally {
       setIsGeneratingWithAI(false);
