@@ -25,7 +25,10 @@ export function FinalReviewSection({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [stampUrl, setStampUrl] = useState<string | null>(null);
+  const [isUploadingStamp, setIsUploadingStamp] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const stampInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportPDF = async () => {
     setIsExporting(true);
@@ -136,6 +139,76 @@ export function FinalReviewSection({
     });
   };
 
+  const handleStampUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Tipo de arquivo inválido",
+        description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
+      });
+      return;
+    }
+
+    // Validar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Arquivo muito grande",
+        description: "A imagem deve ter no máximo 5MB",
+      });
+      return;
+    }
+
+    setIsUploadingStamp(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `stamp-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('report-logos')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      // Obter URL pública da imagem
+      const { data: { publicUrl } } = supabase.storage
+        .from('report-logos')
+        .getPublicUrl(fileName);
+
+      setStampUrl(publicUrl);
+      
+      toast({
+        title: "Carimbo enviado com sucesso!",
+        description: "O carimbo será incluído no PDF gerado.",
+      });
+      
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro no upload",
+        description: "Não foi possível enviar o carimbo. Tente novamente.",
+      });
+    } finally {
+      setIsUploadingStamp(false);
+    }
+  };
+
+  const removeStamp = () => {
+    setStampUrl(null);
+    if (stampInputRef.current) {
+      stampInputRef.current.value = '';
+    }
+    toast({
+      title: "Carimbo removido",
+      description: "O carimbo foi removido do relatório.",
+    });
+  };
+
   const generatePDFContent = () => {
     const fields = reportData.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
@@ -210,6 +283,7 @@ export function FinalReviewSection({
 
       <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
         <p style="margin: 15px 0;"><strong>Assinatura:</strong> ${reportData.signature || reportData.professionalName || 'Não informado'}</p>
+        ${stampUrl ? `<div style="margin: 20px 0;"><img src="${stampUrl}" style="max-width: 120px; max-height: 60px;" alt="Carimbo Digital" /></div>` : ''}
         <p style="color: #666; font-size: 12px; margin-top: 20px;">
           Documento gerado automaticamente pelo Relatório TEA em ${currentDate}
         </p>
@@ -449,7 +523,7 @@ export function FinalReviewSection({
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         {/* Upload de Logo */}
         <Card className="text-center">
           <CardHeader className="pb-4">
@@ -505,6 +579,69 @@ export function FinalReviewSection({
                     <>
                       <Upload className="h-4 w-4 mr-2" />
                       Enviar Logo
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Upload de Carimbo */}
+        <Card className="text-center">
+          <CardHeader className="pb-4">
+            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+              <Image className="h-6 w-6 text-orange-600" />
+            </div>
+            <CardTitle className="text-lg">Carimbo Digital</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Adicione seu carimbo ao PDF
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {stampUrl ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <img 
+                    src={stampUrl} 
+                    alt="Carimbo" 
+                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={removeStamp}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <p className="text-xs text-green-600 font-medium">Carimbo carregado!</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={stampInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleStampUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => stampInputRef.current?.click()}
+                  disabled={isUploadingStamp}
+                >
+                  {isUploadingStamp ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Enviar Carimbo
                     </>
                   )}
                 </Button>
