@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Eye, Zap, Download, FileText, Loader2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import html2pdf from 'html2pdf.js';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 
@@ -22,6 +23,9 @@ export function FinalReviewSection({
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportPDF = async () => {
     setIsExporting(true);
@@ -62,12 +66,83 @@ export function FinalReviewSection({
     }
   };
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Tipo de arquivo inválido",
+        description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
+      });
+      return;
+    }
+
+    // Validar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Arquivo muito grande",
+        description: "A imagem deve ter no máximo 5MB",
+      });
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('report-logos')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      // Obter URL pública da imagem
+      const { data: { publicUrl } } = supabase.storage
+        .from('report-logos')
+        .getPublicUrl(fileName);
+
+      setLogoUrl(publicUrl);
+      
+      toast({
+        title: "Logo enviada com sucesso!",
+        description: "A logo será incluída no PDF gerado.",
+      });
+      
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro no upload",
+        description: "Não foi possível enviar a logo. Tente novamente.",
+      });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast({
+      title: "Logo removida",
+      description: "A logo foi removida do relatório.",
+    });
+  };
+
   const generatePDFContent = () => {
     const fields = reportData.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
     return `
       <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 20px;">
+        ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px;" alt="Logo" />` : ''}
         <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatório TEA</h1>
         <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
       </div>
@@ -374,7 +449,69 @@ export function FinalReviewSection({
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Upload de Logo */}
+        <Card className="text-center">
+          <CardHeader className="pb-4">
+            <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+              <Image className="h-6 w-6 text-yellow-600" />
+            </div>
+            <CardTitle className="text-lg">Upload de Logo</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Adicione sua logo ao PDF
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {logoUrl ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <img 
+                    src={logoUrl} 
+                    alt="Logo" 
+                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={removeLogo}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <p className="text-xs text-green-600 font-medium">Logo carregada!</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingLogo}
+                >
+                  {isUploadingLogo ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Enviar Logo
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
         {/* Visualizar Relatório */}
         <Card className="text-center">
           <CardHeader className="pb-4">
