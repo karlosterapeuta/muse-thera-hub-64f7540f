@@ -6,17 +6,19 @@ export function HeaderSection() {
     <div className="text-center border-b pb-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
         Escala MuseTera: Desenvolvimento e Validação de um Instrumento de Avaliação 
-        Musicoterapêutica com Sistema Expandido de Pontuação (0-6)
+        Musicoterapêutica com Sistema Expandido de Pontuação (0-6) para Análise 
+        Multidimensional do Desenvolvimento Terapêutico
       </h1>
       <p className="text-lg text-gray-600 mb-4">
         MuseTera Scale: Development and Validation of a Music Therapy Assessment Tool 
-        with Expanded Scoring System (0-6)
+        with Expanded Scoring System (0-6) for Multidimensional Analysis of Therapeutic Development
       </p>
       <div className="text-gray-700">
-        <p className="font-medium">José Carlos Batista da Silva¹</p>
+        <p className="font-medium">José Carlos Batista da Silva¹, Dr.</p>
         <p className="text-sm">¹Plataforma MuseTera para Musicoterapeutas - Brasil</p>
+        <p className="text-sm">Especialista em Musicoterapia Neurológica e Desenvolvimento</p>
         <p className="text-xs mt-2">
-          Endereço para correspondência: contato@musetera.com.br
+          Endereço para correspondência: josecarlos@musetera.com.br
         </p>
       </div>
     </div>

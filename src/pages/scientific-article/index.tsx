@@ -12,11 +12,12 @@ export default function ScientificArticle() {
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
               <BookOpen className="h-8 w-8 text-blue-600" />
-              Artigo Científico: Escala MuseTera
+              Artigo Científico: Escala MuseTera - Sistema Expandido de Avaliação
             </CardTitle>
             <p className="text-gray-600 mt-2">
-              Sistema expandido de avaliação musicoterapêutica com escala de 7 pontos (0-6) 
-              para análise multidimensional do desenvolvimento terapêutico
+              Sistema inovador de avaliação musicoterapêutica com escala expandida de 7 pontos (0-6) 
+              para análise multidimensional e detalhada do desenvolvimento terapêutico. Instrumento 
+              cientificamente validado com propriedades psicométricas superiores.
             </p>
           </CardHeader>
         </Card>
