@@ -210,26 +210,6 @@ export const musicoterapiaTemplate: ReportTemplate = {
       required: false,
       guidance: 'Atividades simples que a família pode implementar'
     },
-    // Evolução do Paciente (Etapa 4) - continuação
-    {
-      id: 'behavioral_changes',
-      type: 'textarea',
-      label: 'Mudanças Comportamentais',
-      description: 'Alterações comportamentais observadas',
-      placeholder: 'Ex: Redução de comportamentos estereotipados durante atividades musicais, aumento do contato visual...',
-      required: false,
-      guidance: 'Descreva mudanças comportamentais positivas relacionadas à musicoterapia'
-    },
-    {
-      id: 'skill_improvements',
-      type: 'textarea',
-      label: 'Melhorias nas Habilidades',
-      description: 'Desenvolvimento de habilidades específicas',
-      placeholder: 'Ex: Melhoria na coordenação motora fina, desenvolvimento da linguagem através do canto...',
-      required: false,
-      guidance: 'Habilidades específicas que evoluíram com a musicoterapia'
-    },
-    
     // Encaminhamentos e Recomendações (Etapa 5) - continuação
     {
       id: 'family_guidance',
