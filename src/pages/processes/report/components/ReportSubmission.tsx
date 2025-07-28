@@ -313,6 +313,11 @@ export function ReportSubmission({
     }
   };
 
+  // Não mostrar ações rápidas para relatório TEA
+  if (formData.type === 'tea_scale') {
+    return null;
+  }
+
   return (
     <div className="flex justify-end gap-3">
       <Button
