@@ -5,7 +5,7 @@ import { lazy, ComponentType } from "react";
 const Dashboard = lazy(() => import("./pages/Dashboard/index"));
 const Professional = lazy(() => import("./pages/Professional"));
 const Patients = lazy(() => import("./pages/patients"));
-const Processes = lazy(() => import("./pages/processes"));
+const Processes = lazy(() => import("./pages/processes.tsx"));
 const Activities = lazy(() => import("./pages/activities"));
 const CategoryPage = lazy(() => import("./pages/activities/category"));
 const MusicComposer = lazy(() => import("./pages/music-composer"));
