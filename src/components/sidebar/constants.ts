@@ -34,12 +34,12 @@ export const clinicalMenuItems = [
 ];
 
 export const toolsMenuItems = [
-  { icon: Piano, text: "Compositor Musical", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
+  { icon: Piano, text: "Compositor Musical - em construção", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
   { icon: Bell, text: "Sinos Musicais", path: "/musical-bells", gradient: "from-yellow-500 to-amber-600" },
-  { icon: Music, text: "TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
-  { icon: Grid3X3, text: "Musicograma", path: "/musicogram", gradient: "from-emerald-500 to-teal-600" },
-  { icon: Music2, text: "Sprunki Musical", path: "/sprunki", gradient: "from-rose-500 to-pink-600" },
-  { icon: Waves, text: "Boomwhacker Hero", path: "/boomwhacker-hero", gradient: "from-orange-500 to-red-600" },
+  { icon: Music, text: "TEA-Hero - em construção", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
+  { icon: Grid3X3, text: "Musicograma - em construção", path: "/musicogram", gradient: "from-emerald-500 to-teal-600" },
+  { icon: Music2, text: "Sprunki Musical - em construção", path: "/sprunki", gradient: "from-rose-500 to-pink-600" },
+  { icon: Waves, text: "Boomwhacker Hero - em construção", path: "/boomwhacker-hero", gradient: "from-orange-500 to-red-600" },
   { icon: Waves, text: "Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-emerald-500 to-green-600" },
 ];
 
