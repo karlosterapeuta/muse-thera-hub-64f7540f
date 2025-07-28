@@ -510,20 +510,87 @@ export function FinalReviewSection({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Revisão Final</h2>
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold text-primary">Relatório Pronto para Finalização</h3>
-          <p className="text-muted-foreground">
-            Revise as informações, organize com IA e finalize seu relatório
-          </p>
+    <div className="space-y-8">
+      {/* Hero Header da Revisão Final */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-2xl">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-white/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
+        </div>
+        
+        <div className="relative p-8 lg:p-12">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
+              <FileText className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+                Revisão Final
+              </h1>
+              <p className="text-lg text-white/90">
+                Personalize, visualize e exporte seu relatório profissional
+              </p>
+            </div>
+          </div>
+          
+          {/* Progress Indicator */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="flex items-center justify-between">
+              <span className="text-white font-medium">Relatório Concluído</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                  <Download className="h-3 w-3 text-white" />
+                </div>
+                <span className="text-white text-lg font-bold">Pronto para exportar!</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Estatísticas do Relatório - Card Hero */}
+      <Card className="relative overflow-hidden border-0 shadow-xl">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+        <CardHeader className="bg-gradient-to-br from-gray-50 to-white">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+            Resumo do Relatório
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600 mb-1">
+                {Object.keys(reportData.fieldValues || {}).length}
+              </div>
+              <div className="text-sm font-medium text-blue-700">Campos Preenchidos</div>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+              <div className="text-3xl font-bold text-green-600 mb-1">
+                {reportData.patientName ? '✓' : '✗'}
+              </div>
+              <div className="text-sm font-medium text-green-700">Dados do Paciente</div>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+              <div className="text-3xl font-bold text-purple-600 mb-1">
+                {reportData.professionalName ? '✓' : '✗'}
+              </div>
+              <div className="text-sm font-medium text-purple-700">Dados do Profissional</div>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+              <div className="text-3xl font-bold text-orange-600 mb-1">
+                {reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : '--'}
+              </div>
+              <div className="text-sm font-medium text-orange-700">Data da Sessão</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Upload de Logo */}
         <Card className="text-center">
           <CardHeader className="pb-4">
