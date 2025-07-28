@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface SessionActivitiesFieldProps {
@@ -13,84 +14,58 @@ interface SessionActivitiesFieldProps {
 }
 
 const SESSION_ACTIVITIES_DATA = {
-  "Atividades Rítmicas": [
-    "Exploração de instrumentos de percussão",
-    "Imitação de padrões rítmicos simples",
-    "Criação de sequências rítmicas",
-    "Jogos rítmicos com movimento corporal",
-    "Uso de metrônomo para sincronização",
-    "Atividades de pulsação com diferentes andamentos",
-    "Exercícios de coordenação motora com ritmo",
-    "Improvisação rítmica livre"
+  "Expressão Musical": [
+    "Foram realizadas atividades de improvisação musical livre utilizando diversos instrumentos de percussão, cordas e sopro para expressão criativa espontânea.",
+    "Implementaram-se exercícios de criação musical colaborativa através de composição de melodias simples e construção de arranjos grupais.",
+    "Desenvolveram-se técnicas de canto terapêutico com foco na expressão vocal, respiração e projeção da voz de forma saudável.",
+    "Aplicaram-se atividades de exploração instrumental direcionada, favorecendo descoberta sonora e desenvolvimento da sensibilidade musical."
   ],
-  "Atividades Melódicas": [
-    "Canto de melodias simples",
-    "Exploração vocal com diferentes alturas",
-    "Uso de instrumentos melódicos (xilofone, metalofone)",
-    "Imitação de contornos melódicos",
-    "Criação de melodias simples",
-    "Exercícios de respiração com sons vocais",
-    "Vocalização com vogais e consoantes",
-    "Canções temáticas adaptadas"
+  "Regulação Emocional Musical": [
+    "Realizaram-se técnicas de relaxamento musical através de audição direcionada, visualização guiada e respiração sincronizada com elementos musicais.",
+    "Implementaram-se exercícios de modulação emocional utilizando diferentes gêneros musicais, andamentos e dinâmicas para regulação do estado afetivo.",
+    "Desenvolveram-se atividades de catarse musical através da expressão livre de sentimentos e emoções por meio de improvisação direcionada.",
+    "Aplicaram-se técnicas de ancoragem emocional positiva associando experiências musicais prazerosas a estados de bem-estar e tranquilidade."
   ],
-  "Atividades de Escuta": [
-    "Identificação de sons do ambiente",
-    "Discriminação auditiva de timbres",
-    "Reconhecimento de diferentes estilos musicais",
-    "Relaxamento com música instrumental",
-    "Atividades de atenção auditiva dirigida",
-    "Escuta ativa de diferentes texturas sonoras",
-    "Jogos de identificação de instrumentos",
-    "Momentos de silêncio e pausa musical"
+  "Comunicação Musical": [
+    "Foram implementadas atividades de diálogo musical através de conversas instrumentais, imitação sonora e complementaridade rítmica.",
+    "Desenvolveram-se exercícios de turnos musicais com alternância de liderança, escuta ativa e responsividade aos estímulos sonoros do parceiro.",
+    "Aplicaram-se técnicas de comunicação não-verbal musical utilizando gestos, movimentos corporais e expressões faciais sincronizadas com a música.",
+    "Realizaram-se atividades de expressão musical de necessidades e sentimentos através de códigos sonoros e simbolismo musical personalizado."
   ],
-  "Atividades de Movimento": [
-    "Dança livre com música",
-    "Movimentos dirigidos com instrumentos",
-    "Expressão corporal rítmica",
-    "Jogos de imitação gestual",
-    "Coordenação de movimentos bilaterais",
-    "Atividades de lateralidade com música",
-    "Exercícios de equilíbrio com apoio musical",
-    "Caminhada rítmica no espaço"
-  ],
-  "Atividades de Interação Social": [
-    "Jogos musicais em grupo",
-    "Atividades de turnos musicais",
-    "Comunicação através de instrumentos",
-    "Dinâmicas de imitação musical",
-    "Construção coletiva de músicas",
-    "Exercícios de contato visual com música",
-    "Atividades de cooperação musical",
-    "Momentos de partilha e expressão"
-  ],
-  "Atividades de Autorregulação": [
-    "Exercícios de respiração com música",
-    "Técnicas de relaxamento sonoro",
-    "Atividades para gestão de ansiedade",
-    "Música para transições e mudanças",
-    "Exercícios de foco e concentração",
-    "Atividades de autocontrole com ritmo",
-    "Técnicas de acalmia com sons suaves",
-    "Momentos de introspecção musical"
+  "Integração Social Musical": [
+    "Implementaram-se atividades musicais em grupo com foco na cooperação, sincronização e construção coletiva de experiências sonoras.",
+    "Desenvolveram-se exercícios de ensemble musical promovendo escuta mútua, complementaridade e senso de pertencimento ao grupo.",
+    "Aplicaram-se técnicas de liderança musical alternada, favorecendo iniciativa, responsabilidade e reconhecimento das contribuições individuais.",
+    "Realizaram-se atividades de criação musical coletiva através de projetos colaborativos e apresentações musicais estruturadas."
   ]
 };
 
+const CATEGORY_FILTERS = [
+  "Todas as Categorias",
+  "Expressão Musical", 
+  "Regulação Emocional Musical",
+  "Comunicação Musical",
+  "Integração Social Musical"
+];
+
 export function SessionActivitiesField({ value, onChange }: SessionActivitiesFieldProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
-
-  const toggleCategory = (category: string) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [category]: !prev[category]
-    }));
-  };
+  const [selectedCategory, setSelectedCategory] = useState('Todas as Categorias');
 
   const filteredData = useMemo(() => {
-    if (!searchTerm) return SESSION_ACTIVITIES_DATA;
+    let data: Record<string, string[]> = SESSION_ACTIVITIES_DATA;
+    
+    // Filter by category
+    if (selectedCategory !== 'Todas as Categorias') {
+      const categoryData = SESSION_ACTIVITIES_DATA[selectedCategory as keyof typeof SESSION_ACTIVITIES_DATA];
+      data = categoryData ? { [selectedCategory]: categoryData } : {};
+    }
+    
+    // Filter by search term
+    if (!searchTerm) return data;
     
     const filtered: Record<string, string[]> = {};
-    Object.entries(SESSION_ACTIVITIES_DATA).forEach(([category, activities]) => {
+    Object.entries(data).forEach(([category, activities]) => {
       const filteredActivities = activities.filter(activity =>
         activity.toLowerCase().includes(searchTerm.toLowerCase()) ||
         category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -100,7 +75,7 @@ export function SessionActivitiesField({ value, onChange }: SessionActivitiesFie
       }
     });
     return filtered;
-  }, [searchTerm]);
+  }, [searchTerm, selectedCategory]);
 
   const handleActivityChange = (activity: string, checked: boolean) => {
     if (checked) {
@@ -117,35 +92,78 @@ export function SessionActivitiesField({ value, onChange }: SessionActivitiesFie
   const selectedCount = value.length;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">
-          Atividades Selecionadas ({selectedCount})
-        </Label>
-      </div>
+    <div className="space-y-6">
+      {/* Orientações para Preenchimento */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-blue-700 text-sm">
+            <Info className="h-4 w-4" />
+            Orientações para Preenchimento
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-2">
+          <div>
+            <span className="font-medium text-sm text-blue-900">Descrição:</span>
+            <span className="text-sm text-blue-800 ml-2">Atividades musicoterapêuticas implementadas</span>
+          </div>
+          <div>
+            <span className="font-medium text-sm text-blue-900">Orientação:</span>
+            <span className="text-sm text-blue-800 ml-2">Descreva técnicas e instrumentos musicais específicos utilizados</span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Selected Activities */}
       {selectedCount > 0 && (
-        <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
-          {value.map((activity) => (
-            <Badge
-              key={activity}
-              variant="secondary"
-              className="text-xs py-1 px-2"
-            >
-              {activity}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                onClick={() => removeActivity(activity)}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            Atividades Selecionadas ({selectedCount})
+          </Label>
+          <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
+            {value.map((activity) => (
+              <Badge
+                key={activity}
+                variant="secondary"
+                className="text-xs py-1 px-2 leading-relaxed"
               >
-                ×
-              </Button>
-            </Badge>
-          ))}
+                {activity.length > 100 ? `${activity.substring(0, 100)}...` : activity}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
+                  onClick={() => removeActivity(activity)}
+                >
+                  ×
+                </Button>
+              </Badge>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Category Filters */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">📂</span>
+          </div>
+          <Label className="text-sm font-medium">Categorias de Preenchimento</Label>
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {CATEGORY_FILTERS.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(category)}
+              className="text-xs"
+            >
+              {category === "Todas as Categorias" ? "📋 Todas as Categorias" : category}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       {/* Search */}
       <div className="relative">
@@ -158,55 +176,54 @@ export function SessionActivitiesField({ value, onChange }: SessionActivitiesFie
         />
       </div>
 
-      {/* Categories and Activities */}
-      <div className="space-y-2 max-h-96 overflow-y-auto">
+      {/* Activities by Category */}
+      <div className="space-y-4">
         {Object.entries(filteredData).map(([category, activities]) => (
-          <Collapsible
-            key={category}
-            open={openCategories[category] ?? true}
-            onOpenChange={() => toggleCategory(category)}
-          >
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full justify-between p-3 h-auto font-medium"
-              >
-                <span className="text-left">
-                  {category} ({activities.length})
+          <Card key={category} className="border">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-blue-600 text-sm">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                  {Object.keys(SESSION_ACTIVITIES_DATA).indexOf(category) + 1}
+                </div>
+                {category}
+                <span className="text-xs text-muted-foreground font-normal">
+                  {activities.length} opções
                 </span>
-                {openCategories[category] === false ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronUp className="h-4 w-4" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-            
-            <CollapsibleContent className="pl-4 pr-2 pb-2">
-              <div className="grid grid-cols-1 gap-2">
-                {activities.map((activity) => {
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-3">
+                {activities.map((activity, index) => {
                   const isSelected = value.includes(activity);
                   return (
-                    <div key={activity} className="flex items-center space-x-2 py-1">
-                      <Checkbox
-                        id={`activity-${activity}`}
-                        checked={isSelected}
-                        onCheckedChange={(checked) => 
-                          handleActivityChange(activity, checked as boolean)
-                        }
-                      />
-                      <Label
-                        htmlFor={`activity-${activity}`}
-                        className="text-sm font-normal cursor-pointer flex-1"
-                      >
-                        {activity}
-                      </Label>
+                    <div key={activity} className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs mt-0.5">
+                        •
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start space-x-2">
+                          <Checkbox
+                            id={`activity-${category}-${index}`}
+                            checked={isSelected}
+                            onCheckedChange={(checked) => 
+                              handleActivityChange(activity, checked as boolean)
+                            }
+                            className="mt-1"
+                          />
+                          <Label
+                            htmlFor={`activity-${category}-${index}`}
+                            className="text-sm font-normal cursor-pointer flex-1 leading-relaxed"
+                          >
+                            {activity}
+                          </Label>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
-            </CollapsibleContent>
-          </Collapsible>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
