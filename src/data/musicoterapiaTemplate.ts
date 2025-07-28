@@ -112,48 +112,6 @@ export const musicoterapiaTemplate: ReportTemplate = {
       guidance: 'Defina metas mensuráveis e específicas para o paciente'
     },
     {
-      id: 'instruments_used',
-      type: 'multiselect',
-      label: 'Instrumentos Utilizados',
-      description: 'Instrumentos musicais trabalhados na sessão',
-      required: false,
-      options: [
-        'Piano/Teclado',
-        'Violão/Guitarra',
-        'Tambores/Percussão',
-        'Xilofone/Metalofone',
-        'Chocalhos/Maracas',
-        'Pandeiro',
-        'Flauta doce',
-        'Teclado eletrônico',
-        'Instrumentos de sopro adaptados',
-        'Instrumentos texturizados',
-        'Boomwhackers',
-        'Outros instrumentos melódicos'
-      ],
-      guidance: 'Selecione todos os instrumentos utilizados durante a sessão'
-    },
-    {
-      id: 'musical_techniques',
-      type: 'multiselect',
-      label: 'Técnicas Musicoterapêuticas',
-      description: 'Técnicas específicas aplicadas',
-      required: true,
-      options: [
-        'Improvisação musical dirigida',
-        'Imitação rítmica',
-        'Canções funcionais',
-        'Jogos musicais interativos',
-        'Expressão corporal musical',
-        'Escuta ativa musicoterapêutica',
-        'Composição musical assistida',
-        'Técnicas vocais terapêuticas',
-        'Sincronização rítmica',
-        'Movimento e música'
-      ],
-      guidance: 'Indique as técnicas musicoterapêuticas utilizadas na sessão'
-    },
-    {
       id: 'session_activities',
       type: 'textarea',
       label: 'Descrição das Sessões/Atividades Realizadas',
@@ -197,26 +155,6 @@ export const musicoterapiaTemplate: ReportTemplate = {
       required: true,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Não consegue se regular, 10 = Autorregula-se efetivamente com música'
-    },
-    {
-      id: 'musical_genres',
-      type: 'multiselect',
-      label: 'Gêneros Musicais Trabalhados',
-      description: 'Estilos musicais utilizados na sessão',
-      required: false,
-      options: [
-        'Música clássica',
-        'MPB',
-        'Música infantil',
-        'Rock',
-        'Jazz',
-        'Música eletrônica',
-        'Música instrumental',
-        'Canções populares',
-        'Música ambiente',
-        'World music'
-      ],
-      guidance: 'Indique os gêneros musicais que geraram melhor resposta'
     },
     {
       id: 'patient_evolution',
