@@ -57,14 +57,6 @@ export default function Processes() {
       bgGradient: "from-indigo-50 to-purple-50"
     },
     {
-      title: "Relatório",
-      description: "Documentação e registro dos resultados",
-      icon: Edit,
-      path: "/processes/reports",
-      gradient: "from-amber-500 to-yellow-500",
-      bgGradient: "from-amber-50 to-yellow-50"
-    },
-    {
       title: "Musicoterapia",
       description: "Relatórios especializados em Musicoterapia para TEA",
       icon: Music,
