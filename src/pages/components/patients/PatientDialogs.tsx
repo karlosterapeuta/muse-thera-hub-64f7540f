@@ -33,10 +33,8 @@ const FormSchema = z.object({
   name: z.string().min(2, {
     message: "Nome deve ter pelo menos 2 caracteres.",
   }),
-  age: z.coerce.number().min(0, {
-    message: "Idade deve ser um número positivo.",
-  }).max(120, {
-    message: "Idade deve ser menor que 120 anos.",
+  birth_date: z.string().min(1, {
+    message: "Data de nascimento é obrigatória.",
   }),
   responsible: z.string().min(2, {
     message: "Nome do responsável deve ter pelo menos 2 caracteres.",
@@ -61,7 +59,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      age: 0,
+      birth_date: "",
       responsible: "",
       contact: "",
     },
@@ -81,7 +79,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
       
-      console.log("Idade fornecida:", values.age);
+      console.log("Data de nascimento fornecida:", values.birth_date);
 
       const { data, error } = await supabase
         .from("patients")
@@ -89,7 +87,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           { 
             name: values.name,
             professional_id: user.id,
-            age: values.age,
+            birth_date: values.birth_date,
             responsible: values.responsible,
             contact: values.contact
           },
@@ -140,16 +138,14 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         />
         <FormField
           control={form.control}
-          name="age"
+          name="birth_date"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Data de Nascimento</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  placeholder="Data de nascimento do paciente"
-                  min={0} 
-                  max={120} 
+                  type="date" 
+                  placeholder="Data de nascimento do paciente" 
                   {...field} 
                 />
               </FormControl>
@@ -207,10 +203,8 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     name: z.string().min(2, {
       message: "Nome deve ter pelo menos 2 caracteres.",
     }),
-    age: z.coerce.number().min(0, {
-      message: "Idade deve ser um número positivo.",
-    }).max(120, {
-      message: "Idade deve ser menor que 120 anos.",
+    birth_date: z.string().min(1, {
+      message: "Data de nascimento é obrigatória.",
     }),
     responsible: z.string().min(2, {
       message: "Nome do responsável deve ter pelo menos 2 caracteres.",
@@ -226,7 +220,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     resolver: zodResolver(EditFormSchema),
     defaultValues: {
       name: patient.name,
-      age: patient.age || 0,
+      birth_date: patient.birth_date || "",
       responsible: patient.responsible || "",
       contact: patient.contact || "",
     },
@@ -236,13 +230,13 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     try {
       setIsSubmitting(true);
       
-      console.log("Idade fornecida para edição:", values.age);
+      console.log("Data de nascimento fornecida para edição:", values.birth_date);
       
       const { error, data } = await supabase
         .from("patients")
         .update({
           name: values.name,
-          age: values.age,
+          birth_date: values.birth_date,
           responsible: values.responsible,
           contact: values.contact,
           updated_at: new Date().toISOString(),
@@ -294,16 +288,14 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
         />
         <FormField
           control={form.control}
-          name="age"
+          name="birth_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Idade</FormLabel>
+              <FormLabel>Data de Nascimento</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  placeholder="Idade do paciente" 
-                  min={0} 
-                  max={120} 
+                  type="date" 
+                  placeholder="Data de nascimento do paciente" 
                   {...field} 
                 />
               </FormControl>
