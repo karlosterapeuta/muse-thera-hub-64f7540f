@@ -143,11 +143,11 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           name="age"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Idade</FormLabel>
+              <FormLabel>Data de Nascimento</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 
-                  placeholder="Idade do paciente" 
+                  placeholder="Data de nascimento do paciente"
                   min={0} 
                   max={120} 
                   {...field} 
