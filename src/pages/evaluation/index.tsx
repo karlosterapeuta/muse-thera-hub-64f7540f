@@ -368,6 +368,38 @@ export default function Evaluation() {
     }
   ];
 
+  // Helper functions for partial evaluation
+  const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean => {
+    const key = `${domain}-${subdomain}-${parameter}`;
+    return selections[key] && selections[key] !== 'nao_observado';
+  };
+
+  const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]): boolean => {
+    return parameters.some(param => isParameterEvaluated(domain, subdomain, param));
+  };
+
+  const isDomainEvaluated = (domain: any): boolean => {
+    return domain.subdomains.some((subdomain: any) => 
+      isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)
+    );
+  };
+
+  const getEvaluatedDomainsCount = (): number => {
+    return evaluationDomains.filter(domain => isDomainEvaluated(domain)).length;
+  };
+
+  const getEvaluatedSubdomainsCount = (): number => {
+    let count = 0;
+    evaluationDomains.forEach(domain => {
+      domain.subdomains.forEach((subdomain: any) => {
+        if (isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)) {
+          count++;
+        }
+      });
+    });
+    return count;
+  };
+
   const calculateScore = (domain: string, subdomain: string, parameter: string) => {
     const key = `${domain}-${subdomain}-${parameter}`;
     const value = selections[key];
@@ -414,44 +446,56 @@ export default function Evaluation() {
   const calculateOverallScore = () => {
     let totalScore = 0;
     let maxPossible = 0;
+    let evaluatedDomainsCount = 0;
     
     evaluationDomains.forEach(domain => {
-      domain.subdomains.forEach(subdomain => {
-        subdomain.parameters.forEach(param => {
-          const score = calculateScore(domain.title, subdomain.title, param);
-          totalScore += score;
-          maxPossible += 6;
+      if (isDomainEvaluated(domain)) {
+        domain.subdomains.forEach(subdomain => {
+          subdomain.parameters.forEach(param => {
+            const score = calculateScore(domain.title, subdomain.title, param);
+            totalScore += score;
+            maxPossible += 6;
+          });
         });
-      });
+        evaluatedDomainsCount++;
+      }
     });
     
     return {
       raw: totalScore,
       max: maxPossible,
-      percentage: Math.round((totalScore / maxPossible) * 100)
+      percentage: Math.round((totalScore / maxPossible) * 100),
+      evaluatedDomains: evaluatedDomainsCount,
+      totalDomains: evaluationDomains.length
     };
   };
 
   const getDomainAverages = () => {
-    const averages = evaluationDomains.map(domain => {
-      const score = calculateDomainScore(domain);
-      return {
-        name: domain.title.replace("Domínio ", ""),
-        value: score.percentage,
-        fullMark: 100
-      };
-    });
+    const averages = evaluationDomains
+      .filter(domain => isDomainEvaluated(domain))
+      .map(domain => {
+        const score = calculateDomainScore(domain);
+        return {
+          name: domain.title.replace("Domínio ", ""),
+          value: score.percentage,
+          fullMark: 100
+        };
+      });
     return averages;
   };
 
   const getSubdomainData = () => {
-    const subdomainScores = evaluationDomains.flatMap(domain => 
-      domain.subdomains.map(subdomain => ({
-        name: subdomain.title,
-        value: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage,
-        domain: domain.title.replace("Domínio ", "")
-      }))
-    );
+    const subdomainScores = evaluationDomains
+      .filter(domain => isDomainEvaluated(domain))
+      .flatMap(domain => 
+        domain.subdomains
+          .filter(subdomain => isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters))
+          .map(subdomain => ({
+            name: subdomain.title,
+            value: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage,
+            domain: domain.title.replace("Domínio ", "")
+          }))
+      );
     return subdomainScores;
   };
 
@@ -793,6 +837,37 @@ export default function Evaluation() {
                 </p>
               </div>
 
+              {/* Estatísticas da Avaliação Parcial */}
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-emerald-800 mb-2">Status da Avaliação</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-emerald-600">{getEvaluatedDomainsCount()}</p>
+                    <p className="text-sm text-emerald-700">Domínios Avaliados</p>
+                    <p className="text-xs text-emerald-600">de {evaluationDomains.length} total</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-teal-600">{getEvaluatedSubdomainsCount()}</p>
+                    <p className="text-sm text-teal-700">Subdomínios Avaliados</p>
+                    <p className="text-xs text-teal-600">
+                      de {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)} total
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-blue-600">
+                      {Math.round((getEvaluatedDomainsCount() / evaluationDomains.length) * 100)}%
+                    </p>
+                    <p className="text-sm text-blue-700">Completude</p>
+                    <p className="text-xs text-blue-600">da avaliação</p>
+                  </div>
+                </div>
+                <div className="mt-3 text-center">
+                  <p className="text-sm text-emerald-700">
+                    💡 Apenas domínios avaliados impactam na pontuação final
+                  </p>
+                </div>
+              </div>
+
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
                   <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 group-hover:bg-opacity-10`}>
@@ -801,37 +876,64 @@ export default function Evaluation() {
                         {domain.icon}
                       </div>
                       <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{domain.title}</h2>
-                      <TooltipProvider>
-                        <TooltipComponent>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
-                              <HelpCircle className="h-5 w-5 text-gray-600" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
-                            <p className="text-sm">{domain.description}</p>
-                          </TooltipContent>
-                        </TooltipComponent>
-                      </TooltipProvider>
+                      
+                      {/* Badge indicador de status do domínio */}
+                      <div className="ml-auto flex items-center gap-2">
+                        {isDomainEvaluated(domain) ? (
+                          <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-200">
+                            ✓ Avaliado
+                          </div>
+                        ) : (
+                          <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium border border-gray-200">
+                            Não Avaliado
+                          </div>
+                        )}
+                        
+                        <TooltipProvider>
+                          <TooltipComponent>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
+                                <HelpCircle className="h-5 w-5 text-gray-600" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
+                              <p className="text-sm">{domain.description}</p>
+                            </TooltipContent>
+                          </TooltipComponent>
+                        </TooltipProvider>
+                      </div>
                     </div>
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
                         <Card className="border-l-4 border-l-purple-400 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
-                          <div className="flex items-center mb-4">
-                            <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
-                            <TooltipProvider>
-                              <TooltipComponent>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 rounded-full">
-                                    <Info className="h-4 w-4 text-purple-600" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
-                                  <p className="text-sm">{subdomain.description}</p>
-                                </TooltipContent>
-                              </TooltipComponent>
-                            </TooltipProvider>
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center">
+                              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
+                              <TooltipProvider>
+                                <TooltipComponent>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 rounded-full">
+                                      <Info className="h-4 w-4 text-purple-600" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
+                                    <p className="text-sm">{subdomain.description}</p>
+                                  </TooltipContent>
+                                </TooltipComponent>
+                              </TooltipProvider>
+                            </div>
+                            
+                            {/* Badge indicador de status do subdomínio */}
+                            {isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters) ? (
+                              <div className="bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md text-xs font-medium border border-emerald-200">
+                                ✓ Avaliado
+                              </div>
+                            ) : (
+                              <div className="bg-gray-50 text-gray-500 px-2 py-1 rounded-md text-xs font-medium border border-gray-200">
+                                Pendente
+                              </div>
+                            )}
                           </div>
                           
                           <div className="overflow-x-auto rounded-xl shadow-inner">
@@ -933,9 +1035,35 @@ export default function Evaluation() {
             </TabsContent>
 
             <TabsContent value="results" className="space-y-8 mt-8">
+              {/* Informações sobre Avaliação Parcial */}
+              {getEvaluatedDomainsCount() < evaluationDomains.length && (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-amber-800 mb-2">⚡ Avaliação Parcial Detectada</h3>
+                  <p className="text-amber-700 text-sm mb-2">
+                    Esta é uma avaliação parcial onde nem todos os domínios foram pontuados. 
+                    Os resultados refletem apenas os domínios efetivamente avaliados.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 text-center mt-3">
+                    <div className="bg-amber-100 p-2 rounded">
+                      <p className="text-sm font-semibold text-amber-800">Avaliados</p>
+                      <p className="text-lg font-bold text-amber-700">{getEvaluatedDomainsCount()}</p>
+                    </div>
+                    <div className="bg-gray-100 p-2 rounded">
+                      <p className="text-sm font-semibold text-gray-600">Não Avaliados</p>
+                      <p className="text-lg font-bold text-gray-500">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-blue-50 to-indigo-50">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
+                  {getEvaluatedDomainsCount() < evaluationDomains.length && (
+                    <span className="block text-sm font-normal text-amber-600 mt-1">
+                      (Avaliação Parcial - {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios)
+                    </span>
+                  )}
                 </h2>
                 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
@@ -982,10 +1110,20 @@ export default function Evaluation() {
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
-                        <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
-                        <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
-                      </div>
+                       <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
+                         <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                         <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                         {overallScore.evaluatedDomains && overallScore.totalDomains && (
+                           <div className="mt-3 pt-3 border-t border-gray-200">
+                             <p className="text-xs text-gray-600">
+                               📊 Avaliação Parcial: {overallScore.evaluatedDomains} de {overallScore.totalDomains} domínios avaliados
+                             </p>
+                             <p className="text-xs text-blue-600 font-medium">
+                               * Apenas domínios avaliados impactam na pontuação final
+                             </p>
+                           </div>
+                         )}
+                       </div>
                     </div>
                   </Card>
                 </div>
