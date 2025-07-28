@@ -12,6 +12,7 @@ export type ReportFormData = {
     | 'tea_scale'
     | 'family_report'
     | 'team_report'
-    | 'technical_report';
+    | 'technical_report'
+    | 'musicoterapia';
   content: Record<string, any>;
 };
