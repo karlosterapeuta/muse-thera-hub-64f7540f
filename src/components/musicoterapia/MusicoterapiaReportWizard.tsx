@@ -8,6 +8,7 @@ import { musicoterapiaTemplate, type ReportData, type ReportField } from '@/data
 import { MusicoterapiaFormField } from './MusicoterapiaFormField';
 import { MusicoterapiaQuickFill } from './MusicoterapiaQuickFill';
 import { FinalReviewSection } from './FinalReviewSection';
+import { BasicInformationSection } from './BasicInformationSection';
 import { MusicoterapiaGuidance } from './MusicoterapiaGuidance';
 
 interface MusicoterapiaReportWizardProps {
@@ -153,6 +154,16 @@ export function MusicoterapiaReportWizard({
   };
 
   const renderStepFields = () => {
+    // Se for a primeira etapa (Informações Básicas), renderizar o componente especializado
+    if (currentStep === 0) {
+      return (
+        <BasicInformationSection
+          reportData={reportData}
+          onUpdateData={onUpdateData}
+        />
+      );
+    }
+
     // Se for a última etapa (Revisão Final), renderizar o componente especial
     if (currentStep === STEPS.length - 1) {
       return (
