@@ -52,7 +52,14 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                     ? "text-white" 
                     : "text-slate-700 group-hover:text-slate-800"
                 )}>
-                  {item.text}
+                  {item.text.includes("em construção") ? (
+                    <>
+                      {item.text.split(" - em construção")[0]}
+                      <span className="text-red-500 font-bold ml-1">- em construção</span>
+                    </>
+                  ) : (
+                    item.text
+                  )}
                 </span>
               )}
               
