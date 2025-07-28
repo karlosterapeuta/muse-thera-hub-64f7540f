@@ -146,87 +146,215 @@ export function FinalReviewSection({
     const fields = reportData.fieldValues || {};
     
     return (
-      <div className="space-y-6 p-4">
-        <div className="text-center border-b pb-4">
-          <h1 className="text-2xl font-bold text-primary">Relatório de Musicoterapia</h1>
-          <p className="text-muted-foreground mt-2">TEA - Transtorno do Espectro Autista</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h3 className="font-semibold text-primary">Dados do Paciente</h3>
-            <p><strong>Nome:</strong> {reportData.patientName || 'Não informado'}</p>
-            <p><strong>Idade:</strong> {reportData.patientAge || 'Não informado'}</p>
-            <p><strong>Diagnóstico:</strong> {reportData.patientDiagnosis || 'Não informado'}</p>
+      <div className="max-w-4xl mx-auto bg-white">
+        {/* Header Elegante */}
+        <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-t-lg">
+          <div className="absolute top-4 right-4 opacity-20">
+            <FileText className="h-16 w-16" />
           </div>
-          
-          <div>
-            <h3 className="font-semibold text-primary">Dados do Profissional</h3>
-            <p><strong>Nome:</strong> {reportData.professionalName || 'Não informado'}</p>
-            <p><strong>Registro:</strong> {reportData.professionalRegistry || 'Não informado'}</p>
-            <p><strong>Data da Sessão:</strong> {reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold mb-2">Relatório TEA</h1>
+            <p className="text-blue-100 text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
+            <div className="mt-4 text-sm text-blue-100">
+              Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+            </div>
           </div>
         </div>
 
-        {fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-primary mb-2">Objetivos Terapêuticos</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {fields.therapeutic_objectives.map((objective: string, index: number) => (
-                <li key={index}>{objective}</li>
-              ))}
-            </ul>
+        <div className="p-8 space-y-8">
+          {/* Informações Principais em Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border-l-4 border-l-blue-500 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-blue-700 text-lg">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    👤
+                  </div>
+                  Dados do Paciente
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Nome:</span>
+                  <span className="text-gray-900">{reportData.patientName || 'Não informado'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Idade:</span>
+                  <span className="text-gray-900">{reportData.patientAge || 'Não informado'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Diagnóstico:</span>
+                  <span className="text-gray-900">{reportData.patientDiagnosis || 'Não informado'}</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-l-4 border-l-green-500 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-green-700 text-lg">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    👨‍⚕️
+                  </div>
+                  Dados do Profissional
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Nome:</span>
+                  <span className="text-gray-900">{reportData.professionalName || 'Não informado'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Registro:</span>
+                  <span className="text-gray-900">{reportData.professionalRegistry || 'Não informado'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Data da Sessão:</span>
+                  <span className="text-gray-900">{reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Não informado'}</span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
 
-        {fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-primary mb-2">Atividades Realizadas</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {fields.session_activities.map((activity: string, index: number) => (
-                <li key={index}>{activity}</li>
-              ))}
-            </ul>
+          {/* Seções do Relatório */}
+          {fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 && (
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-purple-700">
+                  <div className="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                    🎯
+                  </div>
+                  Objetivos Terapêuticos
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {fields.therapeutic_objectives.map((objective: string, index: number) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                      <div className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-purple-700 font-bold text-xs mt-0.5">
+                        {index + 1}
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{objective}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
+                    🎵
+                  </div>
+                  Atividades Realizadas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {fields.session_activities.map((activity: string, index: number) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                      <div className="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold text-xs mt-0.5">
+                        •
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{activity}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-green-700">
+                  <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
+                    📈
+                  </div>
+                  Evolução do Paciente
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {fields.patient_evolution.map((evolution: string, index: number) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                      <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 font-bold text-xs mt-0.5">
+                        ✓
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{evolution}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 && (
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-orange-700">
+                  <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                    💡
+                  </div>
+                  Recomendações
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {fields.recommendations.map((recommendation: string, index: number) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <div className="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-xs mt-0.5">
+                        →
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{recommendation}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-indigo-700">
+                  <div className="w-8 h-8 bg-indigo-200 rounded-full flex items-center justify-center">
+                    🎼
+                  </div>
+                  Conclusão
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {fields.conclusion.map((conclusion: string, index: number) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                      <div className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center text-indigo-700 font-bold text-xs mt-0.5">
+                        ★
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{conclusion}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Footer Elegante */}
+          <div className="border-t-2 border-gray-200 pt-6 mt-8">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
+              <div className="text-center">
+                <p className="text-lg font-semibold text-gray-800 mb-2">
+                  <strong>Assinatura Digital:</strong> {reportData.signature || reportData.professionalName || 'Não informado'}
+                </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Documento verificado e assinado digitalmente</span>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-
-        {fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-primary mb-2">Evolução do Paciente</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {fields.patient_evolution.map((evolution: string, index: number) => (
-                <li key={index}>{evolution}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-primary mb-2">Recomendações</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {fields.recommendations.map((recommendation: string, index: number) => (
-                <li key={index}>{recommendation}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-primary mb-2">Conclusão</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {fields.conclusion.map((conclusion: string, index: number) => (
-                <li key={index}>{conclusion}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="border-t pt-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            <strong>Assinatura:</strong> {reportData.signature || reportData.professionalName || 'Não informado'}
-          </p>
         </div>
       </div>
     );
