@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Eye, Zap, Download, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import html2pdf from 'html2pdf.js';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 
 interface FinalReviewSectionProps {
@@ -25,14 +26,32 @@ export function FinalReviewSection({
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      // Simulated PDF export - in real implementation, this would generate actual PDF
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Criar um elemento HTML temporário com o conteúdo do relatório
+      const tempDiv = document.createElement('div');
+      tempDiv.style.padding = '40px';
+      tempDiv.style.fontFamily = 'Arial, sans-serif';
+      tempDiv.style.color = '#000';
+      tempDiv.style.backgroundColor = '#fff';
+      tempDiv.innerHTML = generatePDFContent();
+      
+      // Configurações do PDF
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `relatorio-musicoterapia-${reportData.patientName?.replace(/\s+/g, '-').toLowerCase() || 'paciente'}-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Gerar e baixar o PDF
+      await html2pdf().set(opt).from(tempDiv).save();
       
       toast({
         title: "PDF Exportado com Sucesso!",
-        description: "O relatório de musicoterapia foi gerado em formato PDF.",
+        description: "O relatório de musicoterapia foi baixado em formato PDF.",
       });
     } catch (error) {
+      console.error('Erro na exportação PDF:', error);
       toast({
         variant: "destructive",
         title: "Erro na Exportação",
@@ -41,6 +60,86 @@ export function FinalReviewSection({
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const generatePDFContent = () => {
+    const fields = reportData.fieldValues || {};
+    const currentDate = new Date().toLocaleDateString('pt-BR');
+    
+    return `
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 20px;">
+        <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatório TEA</h1>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.patientName || 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Idade:</strong> ${reportData.patientAge || 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Diagnóstico:</strong> ${reportData.patientDiagnosis || 'Não informado'}</p>
+        </div>
+        
+        <div>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.professionalName || 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Data da Sessão:</strong> ${reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+        </div>
+      </div>
+
+      ${fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Objetivos Terapêuticos</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">• ${obj}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.session_activities.map(act => `<p style="margin: 12px 0;">• ${act}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Evolução do Paciente</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">• ${evo}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Recomendações</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">• ${rec}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Conclusão</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.conclusion.map(con => `<p style="margin: 12px 0;">• ${con}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
+        <p style="margin: 15px 0;"><strong>Assinatura:</strong> ${reportData.signature || reportData.professionalName || 'Não informado'}</p>
+        <p style="color: #666; font-size: 12px; margin-top: 20px;">
+          Documento gerado automaticamente pelo Relatório TEA em ${currentDate}
+        </p>
+      </div>
+    `;
   };
 
   const renderPreviewContent = () => {
@@ -170,6 +269,9 @@ export function FinalReviewSection({
               <DialogContent className="max-w-4xl max-h-[80vh]">
                 <DialogHeader>
                   <DialogTitle>Prévia do Relatório de Musicoterapia</DialogTitle>
+                  <DialogDescription>
+                    Visualização completa do relatório antes da exportação
+                  </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[70vh]">
                   {renderPreviewContent()}
