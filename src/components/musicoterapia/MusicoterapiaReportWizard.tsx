@@ -276,44 +276,8 @@ export function MusicoterapiaReportWizard({
           </Card>
         </div>
 
-        {/* Sidebar - Ações Rápidas */}
+        {/* Quick Fill Panel */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => setShowQuickFill(!showQuickFill)}
-              >
-                <Wand2 className="h-4 w-4 mr-2" />
-                Salvar Rascunho
-              </Button>
-              
-              <Button
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={handleAIGeneration}
-                disabled={isGeneratingWithAI}
-              >
-                {isGeneratingWithAI ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
-                    Visualizando...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="h-4 w-4 mr-2" />
-                    Visualizar
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Quick Fill Panel */}
           {showQuickFill && (
             <MusicoterapiaQuickFill
               activeField={activeField}
