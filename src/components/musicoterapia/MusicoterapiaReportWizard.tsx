@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData, type ReportField } from '@/data/musicoterapiaTemplate';
 import { MusicoterapiaFormField } from './MusicoterapiaFormField';
 import { MusicoterapiaQuickFill } from './MusicoterapiaQuickFill';
+import { FinalReviewSection } from './FinalReviewSection';
 import { MusicoterapiaGuidance } from './MusicoterapiaGuidance';
 
 interface MusicoterapiaReportWizardProps {
@@ -152,6 +153,17 @@ export function MusicoterapiaReportWizard({
   };
 
   const renderStepFields = () => {
+    // Se for a última etapa (Revisão Final), renderizar o componente especial
+    if (currentStep === STEPS.length - 1) {
+      return (
+        <FinalReviewSection
+          reportData={reportData}
+          onOrganizeWithAI={handleAIGeneration}
+          isGeneratingWithAI={isGeneratingWithAI}
+        />
+      );
+    }
+
     const stepFields = musicoterapiaTemplate.fields.filter(field =>
       currentStepData.fields.includes(field.id)
     );
