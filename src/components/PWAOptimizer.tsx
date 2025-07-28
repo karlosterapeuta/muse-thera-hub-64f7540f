@@ -11,17 +11,33 @@ export function PWAOptimizer() {
   const { isInstalled, browserInfo } = usePWA();
 
   useEffect(() => {
-    // Aplicar estilos específicos para PWA quando instalado
-    if (isInstalled) {
-      document.body.classList.add('pwa-installed');
+    // Enhanced PWA optimization with better mobile support
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // Detect various PWA installation states
+    const isPWAInstalled = window.matchMedia('(display-mode: standalone)').matches;
+    const isIOSStandalone = (window.navigator as any).standalone === true;
+    const isFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+    
+    if (isInstalled || isPWAInstalled || isIOSStandalone || isFullscreen) {
+      body.classList.add('pwa-installed');
+      console.log('🔧 PWA optimizations activated');
       
-      // Configurações específicas para iOS standalone
-      if (browserInfo.name === 'safari' && (window.navigator as any).standalone) {
-        document.body.classList.add('ios-standalone');
+      // Enhanced PWA-specific optimizations
+      body.style.setProperty('user-select', 'none');
+      body.style.setProperty('-webkit-user-select', 'none');
+      body.style.setProperty('-webkit-touch-callout', 'none');
+      body.style.setProperty('-webkit-tap-highlight-color', 'transparent');
+      body.style.setProperty('overscroll-behavior', 'none');
+      
+      // iOS specific optimizations
+      if (browserInfo.name === 'safari' || isIOSStandalone) {
+        body.classList.add('ios-standalone');
         
-        // Prevenir zoom duplo toque no iOS
+        // Enhanced iOS touch handling
         let lastTouchEnd = 0;
-        const preventZoom = (e: TouchEvent) => {
+        const preventDoubleTouch = (e: TouchEvent) => {
           const now = Date.now();
           if (now - lastTouchEnd <= 300) {
             e.preventDefault();
@@ -29,29 +45,66 @@ export function PWAOptimizer() {
           lastTouchEnd = now;
         };
         
-        document.addEventListener('touchend', preventZoom, { passive: false });
+        // Prevent pull-to-refresh
+        const preventPullToRefresh = (e: TouchEvent) => {
+          if (e.touches.length === 1 && window.scrollY === 0) {
+            e.preventDefault();
+          }
+        };
+        
+        document.addEventListener('touchend', preventDoubleTouch, { passive: false });
+        document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
         
         return () => {
-          document.removeEventListener('touchend', preventZoom);
+          document.removeEventListener('touchend', preventDoubleTouch);
+          document.removeEventListener('touchstart', preventPullToRefresh);
         };
       }
     }
 
-    // Configurar viewport dinâmico para mobile
+    // Enhanced mobile viewport handling
     if (browserInfo.isMobile) {
-      const setViewportHeight = () => {
-        // Usar CSS custom property para altura real da viewport
+      body.classList.add('mobile-optimized');
+      
+      const setEnhancedViewport = () => {
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        const vw = window.innerWidth * 0.01;
+        
+        html.style.setProperty('--vh', `${vh}px`);
+        html.style.setProperty('--vw', `${vw}px`);
+        html.style.setProperty('--actual-height', `${window.innerHeight}px`);
+        html.style.setProperty('--actual-width', `${window.innerWidth}px`);
+        
+        // Fix iOS viewport issues
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          setTimeout(() => {
+            window.scrollTo(0, 1);
+            window.scrollTo(0, 0);
+          }, 100);
+        }
       };
 
-      setViewportHeight();
-      window.addEventListener('resize', setViewportHeight);
-      window.addEventListener('orientationchange', setViewportHeight);
+      setEnhancedViewport();
+      
+      // Throttled resize handler for better performance
+      let resizeTimeout: NodeJS.Timeout;
+      const throttledResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(setEnhancedViewport, 150);
+      };
+      
+      const orientationChangeHandler = () => {
+        // Delay for orientation change to complete
+        setTimeout(setEnhancedViewport, 300);
+      };
+
+      window.addEventListener('resize', throttledResize);
+      window.addEventListener('orientationchange', orientationChangeHandler);
 
       return () => {
-        window.removeEventListener('resize', setViewportHeight);
-        window.removeEventListener('orientationchange', setViewportHeight);
+        window.removeEventListener('resize', throttledResize);
+        window.removeEventListener('orientationchange', orientationChangeHandler);
+        clearTimeout(resizeTimeout);
       };
     }
   }, [isInstalled, browserInfo]);

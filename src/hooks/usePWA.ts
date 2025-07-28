@@ -25,11 +25,13 @@ export function usePWA() {
     supportsInstall: false
   });
 
-  // Detectar navegador e dispositivo
+  // Detectar navegador e dispositivo com melhor precisão
   useEffect(() => {
     const userAgent = navigator.userAgent;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-    const isDesktop = !isMobile;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || 
+                     (window.innerWidth <= 768 && 'ontouchstart' in window);
+    const isTablet = /iPad|Android/i.test(userAgent) && window.innerWidth >= 768;
+    const isDesktop = !isMobile && !isTablet;
     
     let browserName = 'unknown';
     let supportsInstall = false;
@@ -42,10 +44,13 @@ export function usePWA() {
       supportsInstall = true;
     } else if (userAgent.includes('Firefox')) {
       browserName = 'firefox';
-      supportsInstall = false;
+      supportsInstall = false; // Firefox ainda não suporta bem PWA install
     } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
       browserName = 'safari';
-      supportsInstall = isMobile;
+      supportsInstall = isMobile || isTablet; // Safari mobile/tablet suporta Add to Home Screen
+    } else if (userAgent.includes('SamsungBrowser')) {
+      browserName = 'samsung';
+      supportsInstall = true;
     }
 
     setBrowserInfo({
@@ -55,12 +60,16 @@ export function usePWA() {
       supportsInstall
     });
 
-    console.log('🔍 Browser detection:', {
-      userAgent,
+    console.log('🔍 Enhanced browser detection:', {
+      userAgent: userAgent.substring(0, 100) + '...',
       browserName,
       isMobile,
+      isTablet,
       isDesktop,
-      supportsInstall
+      supportsInstall,
+      screenSize: `${window.innerWidth}x${window.innerHeight}`,
+      touchSupport: 'ontouchstart' in window,
+      standalone: window.matchMedia('(display-mode: standalone)').matches
     });
   }, []);
 
