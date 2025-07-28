@@ -17,6 +17,8 @@ interface MusicoterapiaReportWizardProps {
   onGenerateWithAI: (keyPoints: string) => void;
   isGeneratingWithAI: boolean;
   patients: any[];
+  onSaveReport: () => void;
+  isSaving: boolean;
 }
 
 const STEPS = [
@@ -78,12 +80,14 @@ const STEPS = [
   }
 ];
 
-export function MusicoterapiaReportWizard({
-  reportData,
-  onUpdateData,
-  onGenerateWithAI,
+export function MusicoterapiaReportWizard({ 
+  reportData, 
+  onUpdateData, 
+  onGenerateWithAI, 
   isGeneratingWithAI,
-  patients
+  patients,
+  onSaveReport,
+  isSaving
 }: MusicoterapiaReportWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showQuickFill, setShowQuickFill] = useState(false);
@@ -187,6 +191,8 @@ export function MusicoterapiaReportWizard({
           reportData={reportData}
           onOrganizeWithAI={handleAIGeneration}
           isGeneratingWithAI={isGeneratingWithAI}
+          onSaveReport={onSaveReport}
+          isSaving={isSaving}
         />
       );
     }

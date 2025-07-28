@@ -351,6 +351,8 @@ export default function MusicoterapiaPage() {
             onGenerateWithAI={generateWithAI}
             isGeneratingWithAI={isGeneratingWithAI}
             patients={patients}
+            onSaveReport={handleSaveReport}
+            isSaving={isSaving}
           />
         </TabsContent>
 

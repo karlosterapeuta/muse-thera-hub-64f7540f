@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X } from 'lucide-react';
+import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -13,12 +13,16 @@ interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
   onOrganizeWithAI: () => void;
   isGeneratingWithAI: boolean;
+  onSaveReport: () => void;
+  isSaving: boolean;
 }
 
 export function FinalReviewSection({ 
   reportData, 
   onOrganizeWithAI, 
-  isGeneratingWithAI 
+  isGeneratingWithAI,
+  onSaveReport,
+  isSaving
 }: FinalReviewSectionProps) {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
@@ -776,6 +780,38 @@ export function FinalReviewSection({
                 <>
                   <Zap className="h-4 w-4 mr-2" />
                   Organizar
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Salvar Relatório */}
+        <Card className="text-center">
+          <CardHeader className="pb-4">
+            <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
+              <Save className="h-6 w-6 text-emerald-600" />
+            </div>
+            <CardTitle className="text-lg">Salvar Relatório</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Salve o relatório no sistema
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={onSaveReport}
+              disabled={isSaving}
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar
                 </>
               )}
             </Button>
