@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import { PWAStatus } from "./components/PWAStatus";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { PWAOptimizer } from "./components/PWAOptimizer";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import MusicalBells from "./pages/musical-bells";
@@ -28,6 +29,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAOptimizer />
       <PWAStatus />
       <PWAInstallPrompt />
       <BrowserRouter>

@@ -5,6 +5,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA Specific Optimizations */
+@layer base {
+  /* Mobile viewport handling */
+  :root {
+    --vh: 1vh;
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-right: env(safe-area-inset-right);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
+  }
+
+  /* Base responsive font sizing */
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* PWA body optimizations */
+  body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+
+  /* PWA installed state */
+  .pwa-installed {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  /* Mobile responsive scaling */
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    html {
+      font-size: 13px;
+    }
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -233,5 +285,109 @@
   .music-note,
   .loading-pulse {
     animation: none;
+  }
+}
+
+/* PWA Specific Utilities */
+@layer utilities {
+  /* Mobile viewport height fix */
+  .min-h-screen-mobile {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  .h-screen-mobile {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* Touch-friendly interactive elements */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    @apply inline-flex items-center justify-center;
+  }
+
+  /* iOS safe area support */
+  .safe-top {
+    padding-top: var(--safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .safe-area {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  /* Smooth scrolling for containers */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Optimized font rendering */
+  .crisp-text {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* PWA specific animations */
+  .pwa-fade-in {
+    animation: pwaFadeIn 0.4s ease-out;
+  }
+
+  .pwa-slide-up {
+    animation: pwaSlideUp 0.4s ease-out;
+  }
+
+  @keyframes pwaFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pwaSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Landscape orientation optimizations */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact {
+      @apply py-2;
+    }
+  }
+
+  /* High DPI optimization */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .high-dpi-crisp {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
   }
 }
