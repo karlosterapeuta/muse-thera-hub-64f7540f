@@ -68,15 +68,27 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <div className="w-full max-w-lg bg-blue-600 p-8 sm:p-8 lg:p-10 rounded-lg min-h-[600px] sm:min-h-[450px]">
-      <div className="mb-10 sm:mb-10">
-        <h2 className="text-3xl sm:text-3xl font-semibold text-white mb-4">Acesso ao MuseTera</h2>
-        <p className="text-lg sm:text-lg text-blue-100">Olá, use os campos abaixo para acessar sua conta MuseTera.</p>
+    <div className="w-full max-w-lg">
+      {/* Header with Logo */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl shadow-lg mb-6 transform hover:scale-105 transition-transform duration-300">
+          <img 
+            src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png" 
+            alt="MuseTera Logo" 
+            className="w-12 h-12 object-contain"
+          />
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">
+          Bem-vindo ao MuseTera
+        </h2>
+        <p className="text-muted-foreground text-lg">
+          Faça login para acessar sua conta
+        </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-8 sm:space-y-8">
-        <div>
-          <label htmlFor="email" className="block text-lg font-medium text-white mb-4">
+      <form onSubmit={handleLogin} className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground">
             Email
           </label>
           <Input
@@ -84,14 +96,14 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-5 sm:px-5 py-4 sm:py-4 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-lg sm:text-lg"
+            className="h-12 px-4 text-base rounded-xl border-2 border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
             placeholder="seu@email.com"
             required
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-lg font-medium text-white mb-4">
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground">
             Senha
           </label>
           <div className="relative">
@@ -100,16 +112,16 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 sm:px-5 py-4 sm:py-4 pr-14 sm:pr-14 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent bg-white text-lg sm:text-lg"
+              className="h-12 px-4 pr-12 text-base rounded-xl border-2 border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
               placeholder="••••••••"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
             >
-              {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         </div>
@@ -118,7 +130,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
           <button
             type="button"
             onClick={onSwitchToPasswordReset}
-            className="text-base sm:text-base text-blue-100 hover:text-white"
+            className="text-sm text-primary hover:text-primary/80 font-medium transition-colors duration-200"
           >
             Esqueci minha senha
           </button>
@@ -126,18 +138,25 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
 
         <Button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-4 sm:py-4 px-4 rounded-md transition-colors text-lg sm:text-lg"
+          className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground font-semibold text-base rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
           disabled={isLoading}
         >
-          {isLoading ? "Carregando..." : "Acessar conta"}
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+              Carregando...
+            </div>
+          ) : (
+            "Acessar conta"
+          )}
         </Button>
 
-        <div className="mt-8 sm:mt-8 text-center">
-          <p className="text-base sm:text-base text-blue-100">Ainda não possui uma conta?</p>
+        <div className="text-center pt-4 border-t border-border/20">
+          <p className="text-sm text-muted-foreground mb-2">Ainda não possui uma conta?</p>
           <button
             type="button"
             onClick={onSwitchToRegister}
-            className="text-lg sm:text-lg text-white hover:text-blue-100 font-medium"
+            className="text-base font-semibold text-primary hover:text-primary/80 transition-colors duration-200"
           >
             Criar uma conta
           </button>
