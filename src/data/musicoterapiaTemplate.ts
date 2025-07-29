@@ -43,7 +43,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Nome do Paciente',
       description: 'Nome completo do paciente',
       placeholder: 'Nome completo do paciente',
-      required: true,
+      required: false,
       guidance: 'Digite o nome completo do paciente que recebe a musicoterapia'
     },
     {
@@ -52,7 +52,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Idade',
       description: 'Idade atual do paciente',
       placeholder: 'Idade do paciente',
-      required: true,
+      required: false,
       guidance: 'Informe a idade atual do paciente'
     },
     {
@@ -61,7 +61,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Diagnóstico',
       description: 'Diagnóstico principal',
       placeholder: 'Diagnóstico principal',
-      required: true,
+      required: false,
       guidance: 'Informe o diagnóstico principal do paciente'
     },
     {
@@ -70,7 +70,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Data da Sessão',
       description: 'Data da sessão avaliada',
       placeholder: 'DD/MM/AAAA',
-      required: true,
+      required: false,
       guidance: 'Data da sessão que está sendo reportada'
     },
     {
@@ -79,7 +79,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Nome do Profissional',
       description: 'Nome do musicoterapeuta',
       placeholder: 'Seu nome completo',
-      required: true,
+      required: false,
       guidance: 'Digite seu nome completo como musicoterapeuta responsável'
     },
     {
@@ -88,7 +88,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Registro Profissional',
       description: 'Registro profissional',
       placeholder: 'CRP, CRFa, CREFITO, etc.',
-      required: true,
+      required: false,
       guidance: 'Informe seu número de registro profissional'
     },
     
@@ -248,7 +248,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Assinatura Digital',
       description: 'Assinatura do profissional responsável',
       placeholder: 'Nome completo do profissional',
-      required: true,
+      required: false,
       guidance: 'Digite seu nome completo como assinatura digital do relatório'
     },
     {
