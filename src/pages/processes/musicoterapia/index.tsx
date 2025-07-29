@@ -35,6 +35,29 @@ export default function MusicoterapiaPage() {
   } = useMusicoterapiaReport();
 
   const { patients, isLoadingPatients, userId } = useReportData();
+  const [professionalId, setProfessionalId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    async function fetchProfessionalId() {
+      if (userId) {
+        try {
+          const { data, error } = await supabase
+            .from('professionals')
+            .select('id')
+            .eq('user_id', userId)
+            .single();
+          
+          if (data && !error) {
+            setProfessionalId(data.id);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar professional_id:', error);
+        }
+      }
+    }
+    
+    fetchProfessionalId();
+  }, [userId]);
 
   React.useEffect(() => {
     if (patientIdFromQuery && patients.length > 0) {
@@ -82,7 +105,7 @@ export default function MusicoterapiaPage() {
         .from('reports')
         .insert({
           patient_id: reportData.selectedPatientId,
-          professional_id: userId,
+          professional_id: professionalId,
           type: 'musicoterapia',
           content: {
             template_id: reportData.templateId,
