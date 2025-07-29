@@ -95,7 +95,7 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
         {/* Data da Sessão */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">
-            Data da Sessão
+            Data do Relatório
           </Label>
           <Popover>
             <PopoverTrigger asChild>
