@@ -42,6 +42,9 @@ interface ReportFormFieldsProps {
 }
 
 export function ReportFormFields({ control, patients, isLoadingPatients }: ReportFormFieldsProps) {
+  // Debug log to check if patients data is arriving correctly
+  console.log("ReportFormFields - patients data:", patients);
+
   const calculateAge = (birthDate: string | null): number | null => {
     if (!birthDate) return null;
     
@@ -61,8 +64,9 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
   };
 
   const formatPatientDisplay = (patient: Patient): string => {
+    console.log("Formatting patient:", patient.name, "age:", patient.age);
     const age = patient.age || calculateAge(patient.birth_date);
-    return age !== null ? `${patient.name} (${age} anos)` : patient.name;
+    return age !== null && age !== undefined ? `${patient.name} (${age} anos)` : patient.name;
   };
 
   return (
