@@ -732,131 +732,134 @@ export function FinalReviewSection({
           </CardContent>
         </Card>
 
-        {/* Upload de Carimbo */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
-            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
-              <Image className="h-6 w-6 text-orange-600" />
-            </div>
-            <CardTitle className="text-lg">Carimbo Digital</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Adicione seu carimbo ao PDF
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {stampUrl ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <img 
-                    src={stampUrl} 
-                    alt="Carimbo" 
-                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+        {/* Upload de Carimbo e Assinatura Digital - Lado a Lado */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Upload de Carimbo */}
+          <Card className="text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <Image className="h-8 w-8 text-orange-600" />
+              </div>
+              <CardTitle className="text-xl">Carimbo Digital</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Adicione seu carimbo ao PDF
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {stampUrl ? (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <img 
+                      src={stampUrl} 
+                      alt="Carimbo" 
+                      className="w-full h-32 object-contain border rounded-lg bg-gray-50"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute -top-2 -right-2 h-8 w-8 p-0 rounded-full"
+                      onClick={removeStamp}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-green-600 font-medium">Carimbo carregado!</p>
+                </div>
+              ) : (
+                <>
+                  <input
+                    ref={stampInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleStampUpload}
+                    className="hidden"
                   />
                   <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
-                    onClick={removeStamp}
+                    variant="outline"
+                    className="w-full h-12"
+                    onClick={() => stampInputRef.current?.click()}
+                    disabled={isUploadingStamp}
                   >
-                    <X className="h-3 w-3" />
+                    {isUploadingStamp ? (
+                      <>
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-5 w-5 mr-2" />
+                        Enviar Carimbo
+                      </>
+                    )}
                   </Button>
-                </div>
-                <p className="text-xs text-green-600 font-medium">Carimbo carregado!</p>
-              </div>
-            ) : (
-              <>
-                <input
-                  ref={stampInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleStampUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => stampInputRef.current?.click()}
-                  disabled={isUploadingStamp}
-                >
-                  {isUploadingStamp ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Enviar Carimbo
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                </>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Upload de Assinatura Digital */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
-            <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-              <Upload className="h-6 w-6 text-indigo-600" />
-            </div>
-            <CardTitle className="text-lg">Assinatura Digital</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Adicione sua assinatura digital ao PDF
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {signatureUrl ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <img 
-                    src={signatureUrl} 
-                    alt="Assinatura Digital" 
-                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+          {/* Upload de Assinatura Digital */}
+          <Card className="text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                <Upload className="h-8 w-8 text-indigo-600" />
+              </div>
+              <CardTitle className="text-xl">Assinatura Digital</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Adicione sua assinatura digital ao PDF
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {signatureUrl ? (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <img 
+                      src={signatureUrl} 
+                      alt="Assinatura Digital" 
+                      className="w-full h-32 object-contain border rounded-lg bg-gray-50"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute -top-2 -right-2 h-8 w-8 p-0 rounded-full"
+                      onClick={removeSignature}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-green-600 font-medium">Assinatura carregada!</p>
+                </div>
+              ) : (
+                <>
+                  <input
+                    ref={signatureInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSignatureUpload}
+                    className="hidden"
                   />
                   <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
-                    onClick={removeSignature}
+                    variant="outline"
+                    className="w-full h-12"
+                    onClick={() => signatureInputRef.current?.click()}
+                    disabled={isUploadingSignature}
                   >
-                    <X className="h-3 w-3" />
+                    {isUploadingSignature ? (
+                      <>
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-5 w-5 mr-2" />
+                        Enviar Assinatura
+                      </>
+                    )}
                   </Button>
-                </div>
-                <p className="text-xs text-green-600 font-medium">Assinatura carregada!</p>
-              </div>
-            ) : (
-              <>
-                <input
-                  ref={signatureInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleSignatureUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => signatureInputRef.current?.click()}
-                  disabled={isUploadingSignature}
-                >
-                  {isUploadingSignature ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Enviar Assinatura
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Visualizar Relatório */}
         <Card className="text-center">
