@@ -911,8 +911,8 @@ export function FinalReviewSection({
         </Card>
 
         {/* Organizar com IA */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
+        <Card className="text-center h-[200px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
               <Zap className="h-6 w-6 text-purple-600" />
             </div>
@@ -921,7 +921,7 @@ export function FinalReviewSection({
               Estruture o relatório automaticamente
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex items-end">
             <Button 
               onClick={onOrganizeWithAI}
               disabled={isGeneratingWithAI}
@@ -943,8 +943,8 @@ export function FinalReviewSection({
         </Card>
 
         {/* Salvar Relatório */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
+        <Card className="text-center h-[200px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
               <Save className="h-6 w-6 text-emerald-600" />
             </div>
@@ -953,7 +953,7 @@ export function FinalReviewSection({
               Salve o relatório no sistema
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex items-end">
             <Button 
               onClick={onSaveReport}
               disabled={isSaving}
@@ -975,8 +975,8 @@ export function FinalReviewSection({
         </Card>
 
         {/* Exportar PDF */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
+        <Card className="text-center h-[200px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
               <Download className="h-6 w-6 text-green-600" />
             </div>
@@ -985,7 +985,7 @@ export function FinalReviewSection({
               Gere o relatório em formato PDF
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex items-end">
             <Button 
               onClick={handleExportPDF}
               disabled={isExporting}
