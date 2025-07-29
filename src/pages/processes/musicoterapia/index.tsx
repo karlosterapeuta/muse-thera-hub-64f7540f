@@ -100,6 +100,19 @@ export default function MusicoterapiaPage() {
   }, [patientIdFromQuery, patients, updateReportData]);
 
   const handleSaveReport = async () => {
+    console.log('Iniciando salvamento do relatório...');
+    console.log('Professional ID:', professionalId);
+    console.log('Report Data:', reportData);
+    
+    if (!professionalId) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "ID do profissional não encontrado. Faça login novamente.",
+      });
+      return;
+    }
+
     const validation = validateReport();
     if (!validation.isValid) {
       toast({
@@ -112,32 +125,41 @@ export default function MusicoterapiaPage() {
 
     setIsSaving(true);
     try {
+      const reportPayload = {
+        patient_id: reportData.selectedPatientId,
+        professional_id: professionalId,
+        type: 'musicoterapia' as const,
+        content: {
+          template_id: reportData.templateId,
+          field_values: reportData.fieldValues,
+          additional_observations: reportData.additionalObservations,
+          patient_info: {
+            name: reportData.patientName,
+            age: reportData.patientAge,
+            diagnosis: reportData.patientDiagnosis
+          },
+          professional_info: {
+            name: reportData.professionalName,
+            registry: reportData.professionalRegistry,
+            specialty: reportData.professionalSpecialty
+          },
+          session_date: reportData.sessionDate,
+          signature: reportData.signature
+        }
+      };
+
+      console.log('Payload do relatório:', reportPayload);
+
       const { data, error } = await supabase
         .from('reports')
-        .insert({
-          patient_id: reportData.selectedPatientId,
-          professional_id: professionalId,
-          type: 'musicoterapia',
-          content: {
-            template_id: reportData.templateId,
-            field_values: reportData.fieldValues,
-            additional_observations: reportData.additionalObservations,
-            patient_info: {
-              name: reportData.patientName,
-              age: reportData.patientAge,
-              diagnosis: reportData.patientDiagnosis
-            },
-            professional_info: {
-              name: reportData.professionalName,
-              registry: reportData.professionalRegistry,
-              specialty: reportData.professionalSpecialty
-            },
-            session_date: reportData.sessionDate,
-            signature: reportData.signature
-          }
-        });
+        .insert(reportPayload);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro do Supabase:', error);
+        throw error;
+      }
+
+      console.log('Relatório salvo com sucesso:', data);
 
       toast({
         title: "Relatório salvo!",
@@ -150,7 +172,7 @@ export default function MusicoterapiaPage() {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Não foi possível salvar o relatório.",
+        description: `Não foi possível salvar o relatório: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
       });
     } finally {
       setIsSaving(false);
@@ -647,7 +669,7 @@ export default function MusicoterapiaPage() {
       <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Visualizar Relatório</DialogTitle>
+            <DialogTitle>Visualizar Relatório de Musicoterapia</DialogTitle>
           </DialogHeader>
           {selectedReport && (
             <MusicoterapiaPreview 
