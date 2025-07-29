@@ -125,7 +125,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Nível de Resposta Musical',
       description: 'Avalie a resposta do paciente aos estímulos musicais (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Nenhuma resposta, 10 = Resposta muito engajada'
     },
@@ -134,7 +134,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Coordenação Rítmica',
       description: 'Avalie a coordenação motora rítmica (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Dificuldade severa, 10 = Coordenação excelente'
     },
@@ -143,7 +143,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Comunicação Musical',
       description: 'Uso da música para comunicação (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Não utiliza música para comunicar, 10 = Comunica-se fluentemente através da música'
     },
@@ -152,7 +152,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Autorregulação Emocional',
       description: 'Capacidade de regulação emocional através da música (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Não consegue se regular, 10 = Autorregula-se efetivamente com música'
     },
@@ -162,7 +162,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Evolução do Paciente',
       description: 'Progressos através da música',
       placeholder: 'Ex: Demonstra maior interesse e engajamento com instrumentos melódicos. Melhora significativa na atenção compartilhada...',
-      required: true,
+      required: false,
       guidance: 'Foque em como a música impacta o desenvolvimento do paciente'
     },
     {
@@ -170,7 +170,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Interação Social Musical',
       description: 'Nível de interação social durante atividades musicais (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Isolamento completo, 10 = Interação social fluida através da música'
     },
@@ -179,7 +179,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       type: 'scale',
       label: 'Atenção e Foco Musical',
       description: 'Capacidade de manter atenção durante atividades musicais (1-10)',
-      required: true,
+      required: false,
       options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       guidance: '1 = Atenção muito dispersa, 10 = Foco sustentado durante toda a atividade'
     },
