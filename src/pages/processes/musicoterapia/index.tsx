@@ -345,21 +345,40 @@ export default function MusicoterapiaPage() {
     try {
       setIsExporting(true);
       
+      // Reconstruct the data structure to match what MusicoterapiaPreview expects
+      const fieldValues = report.content?.field_values || {};
+      
       const reportDataForPDF = {
         templateId: report.content?.template_id || 'musicoterapia-tea',
-        patientName: report.content?.patient_info?.name || '',
-        patientAge: report.content?.patient_info?.age || '',
-        sessionDate: report.content?.session_date || '',
-        sessionDuration: report.content?.session_duration || '',
-        sessionLocation: report.content?.session_location || '',
-        therapeuticObjectives: report.content?.therapeutic_objectives || '',
-        sessionActivities: report.content?.session_activities || '',
-        patientEvolution: report.content?.patient_evolution || '',
-        recommendations: report.content?.recommendations || '',
-        conclusion: report.content?.conclusion || '',
-        therapistName: report.content?.therapist_name || professionalData?.name || '',
-        registration: report.content?.registration || professionalData?.register || professionalData?.license_number || '',
-        additionalObservations: report.content?.additional_observations || ''
+        patientName: fieldValues.patient_name || report.content?.patient_name || '',
+        patientAge: fieldValues.patient_age || report.content?.patient_age || '',
+        patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_diagnosis || '',
+        professionalName: fieldValues.professional_name || professionalData?.name || '',
+        professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
+        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || '',
+        sessionDate: fieldValues.session_date || report.content?.session_date || '',
+        fieldValues: {
+          // Map all the field values from the saved report
+          therapeutic_objectives: fieldValues.therapeutic_objectives || [],
+          musical_techniques: fieldValues.musical_techniques || [],
+          instruments_used: fieldValues.instruments_used || [],
+          session_activities: fieldValues.session_activities || [],
+          patient_evolution: fieldValues.patient_evolution || [],
+          communication_scale: fieldValues.communication_scale || 1,
+          social_interaction_scale: fieldValues.social_interaction_scale || 1,
+          emotional_expression_scale: fieldValues.emotional_expression_scale || 1,
+          motor_coordination_scale: fieldValues.motor_coordination_scale || 1,
+          attention_focus_scale: fieldValues.attention_focus_scale || 1,
+          sensory_responses: fieldValues.sensory_responses || [],
+          recommendations: fieldValues.recommendations || [],
+          home_activities: fieldValues.home_activities || [],
+          conclusion: fieldValues.conclusion || [],
+          digital_signature: fieldValues.digital_signature || '',
+          digital_stamp: fieldValues.digital_stamp || '',
+          logo_url: fieldValues.logo_url || ''
+        },
+        additionalObservations: fieldValues.additional_observations || report.content?.additional_observations || '',
+        signature: fieldValues.digital_signature || fieldValues.professional_name || professionalData?.name || ''
       };
 
       const success = await generateStaticPDF(
