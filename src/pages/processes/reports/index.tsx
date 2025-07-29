@@ -463,15 +463,6 @@ export default function ReportsPage() {
               </Card>
             </div>
 
-            {/* Action Button */}
-            <Button 
-              onClick={() => navigate("/processes/report")} 
-              className="bg-white text-blue-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <PlusIcon className="h-5 w-5 mr-2" />
-              Criar Novo Relatório
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
           </div>
         </div>
       </div>
@@ -549,10 +540,6 @@ export default function ReportsPage() {
               <p className="text-gray-500 mb-6">
                 Você ainda não possui um registro de profissional. Crie seu primeiro relatório para começar.
               </p>
-              <Button onClick={() => navigate("/processes/report")}>
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Criar Primeiro Relatório
-              </Button>
             </CardContent>
           </Card>
         ) : filteredReports.length === 0 ? (
@@ -567,12 +554,6 @@ export default function ReportsPage() {
                   ? 'Tente ajustar os filtros de busca.'
                   : 'Comece criando seu primeiro relatório.'}
               </p>
-              {!searchTerm && selectedTypeFilter === 'all' && (
-                <Button onClick={() => navigate("/processes/report")}>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Criar Relatório
-                </Button>
-              )}
             </CardContent>
           </Card>
         ) : viewMode === 'grid' ? (
