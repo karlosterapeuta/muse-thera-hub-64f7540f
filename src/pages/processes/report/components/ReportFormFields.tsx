@@ -31,30 +31,15 @@ import { FormValues } from "../hooks/useReportForm";
 type Patient = {
   id: string;
   name: string;
-  birth_date?: string;
-  age?: number;
 };
 
 interface ReportFormFieldsProps {
   control: Control<FormValues>;
   patients: Patient[];
   isLoadingPatients: boolean;
-  onPatientSelect?: (patientId: string) => void;
 }
 
-export function ReportFormFields({ control, patients, isLoadingPatients, onPatientSelect }: ReportFormFieldsProps) {
-  
-  const calculateAge = (birthDate: string): string => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    const ageYears = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      return `${ageYears - 1} anos`;
-    }
-    return `${ageYears} anos`;
-  };
+export function ReportFormFields({ control, patients, isLoadingPatients }: ReportFormFieldsProps) {
   return (
     <>
       <FormField
@@ -64,10 +49,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients, onPatie
           <FormItem>
             <FormLabel>Paciente</FormLabel>
             <Select
-              onValueChange={(value) => {
-                field.onChange(value);
-                onPatientSelect?.(value);
-              }}
+              onValueChange={field.onChange}
               defaultValue={field.value}
             >
               <FormControl>
@@ -80,12 +62,6 @@ export function ReportFormFields({ control, patients, isLoadingPatients, onPatie
                   patients.map((patient) => (
                     <SelectItem key={patient.id} value={patient.id}>
                       {patient.name}
-                      {patient.birth_date ? 
-                        ` - ${calculateAge(patient.birth_date)}` : 
-                        patient.age ? 
-                          ` - ${patient.age} anos` : 
-                          ' - Idade não informada'
-                      }
                     </SelectItem>
                   ))
                 ) : (

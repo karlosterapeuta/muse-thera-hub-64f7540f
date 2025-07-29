@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { MusicoterapiaReportWizard } from '@/components/musicoterapia/MusicoterapiaReportWizard';
 import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPreview';
 import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
+import { useReportData } from '../report/hooks/useReportData';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 
@@ -44,10 +45,7 @@ export default function MusicoterapiaPage() {
     professionalData
   } = useMusicoterapiaReport();
 
-  // Local patient data management
-  const [patients, setPatients] = useState<any[]>([]);
-  const [isLoadingPatients, setIsLoadingPatients] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { patients, isLoadingPatients, userId } = useReportData();
   const [professionalId, setProfessionalId] = useState<string | null>(null);
 
   React.useEffect(() => {
@@ -71,49 +69,6 @@ export default function MusicoterapiaPage() {
     
     fetchProfessionalId();
   }, [userId]);
-
-  // Load patients and user data
-  React.useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoadingPatients(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Usuário não autenticado");
-
-        setUserId(user.id);
-
-        // Buscar pacientes através da tabela professionals primeiro
-        const { data: professionalData, error: profError } = await supabase
-          .from("professionals")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (profError) throw profError;
-
-        const { data, error } = await supabase
-          .from("patients")
-          .select("id, name, birth_date, age")
-          .eq("professional_id", professionalData?.id)
-          .order("name");
-
-        if (error) throw error;
-        
-        setPatients(data || []);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar a lista de pacientes",
-        });
-      } finally {
-        setIsLoadingPatients(false);
-      }
-    }
-
-    fetchData();
-  }, [toast]);
 
   React.useEffect(() => {
     if (patientIdFromQuery && patients.length > 0) {

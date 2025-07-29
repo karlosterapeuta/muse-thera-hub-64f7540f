@@ -21,8 +21,6 @@ export function useReportData() {
     name: "",
     phone: "",
     email: "",
-    license_number: "",
-    register: "",
   });
 
   const formatNameFromEmail = (email: string) => {
@@ -40,7 +38,7 @@ export function useReportData() {
 
       const { data: professional, error } = await supabase
         .from('professionals')
-        .select('name, phone, email, license_number, register')
+        .select('name, phone, email')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -54,8 +52,6 @@ export function useReportData() {
           name: professional.name || '',
           phone: professional.phone || '',
           email: professional.email || '',
-          license_number: professional.license_number || '',
-          register: professional.register || '',
         });
       }
     } catch (error) {
@@ -76,19 +72,10 @@ export function useReportData() {
 
         console.log("Buscando pacientes para usuário:", user.id);
         
-        // Buscar pacientes através da tabela professionals primeiro
-        const { data: professionalData, error: profError } = await supabase
-          .from("professionals")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (profError) throw profError;
-
         const { data, error } = await supabase
           .from("patients")
           .select("id, name, birth_date, age")
-          .eq("professional_id", professionalData?.id)
+          .eq("professional_id", user.id)
           .order("name");
 
         if (error) throw error;

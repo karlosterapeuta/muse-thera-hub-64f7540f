@@ -58,7 +58,7 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
           <Input
             id="patient_name"
             placeholder="Nome completo do paciente"
-            value={reportData.patientName || reportData.fieldValues?.patient_name || ''}
+            value={reportData.patientName || ''}
             onChange={(e) => handleFieldChange('patientName', e.target.value)}
             className="w-full"
           />
@@ -72,7 +72,7 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
           <Input
             id="patient_age"
             placeholder="Idade do paciente"
-            value={reportData.patientAge || reportData.fieldValues?.patient_age || ''}
+            value={reportData.patientAge || ''}
             onChange={(e) => handleFieldChange('patientAge', e.target.value)}
             className="w-full"
           />
@@ -134,7 +134,7 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
           <Input
             id="professional_name"
             placeholder="Seu nome completo"
-            value={reportData.professionalName || reportData.fieldValues?.professional_name || ''}
+            value={reportData.professionalName || ''}
             onChange={(e) => handleFieldChange('professionalName', e.target.value)}
             className="w-full"
           />
@@ -148,7 +148,7 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
           <Input
             id="professional_registry"
             placeholder="CRP, CRFa, CREFITO, etc."
-            value={reportData.professionalRegistry || reportData.fieldValues?.professional_registry || ''}
+            value={reportData.professionalRegistry || ''}
             onChange={(e) => handleFieldChange('professionalRegistry', e.target.value)}
             className="w-full"
           />
