@@ -341,6 +341,64 @@ export default function MusicoterapiaPage() {
     setShowDeleteDialog(true);
   };
 
+  const handleDownloadReportPDF = async (report: any) => {
+    try {
+      setIsExporting(true);
+      
+      const reportDataForPDF = {
+        templateId: report.content?.template_id || 'musicoterapia-tea',
+        patientName: report.content?.patient_info?.name || '',
+        patientAge: report.content?.patient_info?.age || '',
+        sessionDate: report.content?.session_date || '',
+        sessionDuration: report.content?.session_duration || '',
+        sessionLocation: report.content?.session_location || '',
+        therapeuticObjectives: report.content?.therapeutic_objectives || '',
+        sessionActivities: report.content?.session_activities || '',
+        patientEvolution: report.content?.patient_evolution || '',
+        recommendations: report.content?.recommendations || '',
+        conclusion: report.content?.conclusion || '',
+        therapistName: report.content?.therapist_name || professionalData?.name || '',
+        registration: report.content?.registration || professionalData?.register || professionalData?.license_number || '',
+        additionalObservations: report.content?.additional_observations || ''
+      };
+
+      const success = await generateStaticPDF(
+        <MusicoterapiaPreview 
+          reportData={reportDataForPDF as any} 
+          professionalData={professionalData} 
+        />,
+        {
+          filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName.replace(/\s+/g, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
+          format: 'a4',
+          orientation: 'portrait',
+          quality: 1.0
+        }
+      );
+
+      if (success) {
+        toast({
+          title: "PDF gerado com sucesso!",
+          description: "O relatório foi baixado automaticamente.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro ao gerar PDF",
+          description: "Ocorreu um erro durante a geração do PDF.",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Ocorreu um erro inesperado.",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleDeleteSuccess = () => {
     loadReports();
     setShowDeleteDialog(false);
@@ -594,6 +652,19 @@ export default function MusicoterapiaPage() {
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Editar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownloadReportPDF(report)}
+                          disabled={isExporting}
+                        >
+                          {isExporting ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
+                          ) : (
+                            <Download className="h-4 w-4 mr-1" />
+                          )}
+                          Baixar PDF
                         </Button>
                         <Button
                           variant="outline"
