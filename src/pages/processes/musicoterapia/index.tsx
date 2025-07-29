@@ -309,8 +309,12 @@ export default function MusicoterapiaPage() {
 
             <div className="flex space-x-2">
               <Button
-                variant="outline"
+                variant={viewMode === 'create' ? 'default' : 'outline'}
                 onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
+                className={viewMode === 'create' ? 
+                  "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
+                  "border-primary/30 hover:bg-primary/10"
+                }
               >
                 {viewMode === 'create' ? (
                   <>
