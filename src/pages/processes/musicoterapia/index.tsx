@@ -457,7 +457,7 @@ export default function MusicoterapiaPage() {
                 </div>
                 <div>
                   <CardTitle className="text-2xl flex items-center space-x-2">
-                    <span>Relatório TEA</span>
+                    <span>Relatório MuseTera TEA</span>
                     <Badge variant="secondary">TEA Especializado</Badge>
                   </CardTitle>
                   <CardDescription>

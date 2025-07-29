@@ -379,7 +379,7 @@ export function FinalReviewSection({
         ` : ''}
         
         <p style="color: #666; font-size: 12px; margin-top: 20px;">
-          Documento gerado automaticamente pelo Relatório TEA em ${currentDate}
+          Documento gerado automaticamente pelo Relatório MuseTera TEA em ${currentDate}
         </p>
       </div>
     `;
@@ -396,7 +396,7 @@ export function FinalReviewSection({
             <FileText className="h-16 w-16" />
           </div>
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-2">Relatório TEA</h1>
+            <h1 className="text-3xl font-bold mb-2">Relatório MuseTera TEA</h1>
             <p className="text-blue-100 text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
             <div className="mt-4 text-sm text-blue-100">
               Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}

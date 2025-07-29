@@ -103,7 +103,7 @@ const generateRTFContent = (
   
   // Footer
   rtf += '\\par\\par';
-  rtf += '\\fs16 Documento gerado automaticamente pelo Relatório TEA\\par';
+  rtf += '\\fs16 Documento gerado automaticamente pelo Relatório MuseTera TEA\\par';
   rtf += `Data de geração: ${currentDate}\\par`;
   
   // RTF footer
