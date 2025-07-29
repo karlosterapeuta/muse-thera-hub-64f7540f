@@ -334,22 +334,55 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
-      {/* Footer */}
+      {/* Footer with Digital Signature and Stamp */}
       <Card className="border-2 border-primary/20">
         <CardContent className="pt-6">
-          <Separator className="mb-4" />
-          <div className="text-center space-y-2">
+          <Separator className="mb-6" />
+          
+          {/* Digital Signature and Stamp - Centered */}
+          <div className="flex flex-col items-center justify-center space-y-4 mb-6">
+            {reportData.signature && (
+              <div className="text-center space-y-2">
+                <div className="border-b-2 border-primary/20 pb-2 min-w-[300px]">
+                  <p className="text-lg font-semibold text-primary">
+                    {reportData.signature}
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Assinatura Digital do Profissional
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {professionalData?.register || reportData.professionalRegistry}
+                </p>
+              </div>
+            )}
+            
+            {/* Digital Stamp/Seal */}
+            <div className="text-center border-2 border-primary/30 rounded-lg p-4 bg-primary/5 max-w-sm">
+              <div className="flex items-center justify-center mb-2">
+                <Music className="h-6 w-6 text-primary mr-2" />
+                <span className="font-bold text-primary">MUSICOTERAPIA</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Relatório Técnico Especializado
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Sistema MuseTera® - {new Date().getFullYear()}
+              </p>
+            </div>
+          </div>
+          
+          {/* Report Info */}
+          <div className="text-center space-y-1 border-t border-primary/10 pt-4">
             <p className="text-sm text-muted-foreground">
               Relatório elaborado por: {professionalData?.name || reportData.professionalName}
             </p>
             <p className="text-sm text-muted-foreground">
               Data de elaboração: {formatDate(new Date())}
             </p>
-            {reportData.signature && (
-              <p className="text-sm text-muted-foreground">
-                Assinatura: {reportData.signature}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground opacity-75">
+              Documento gerado eletronicamente - Plataforma MuseTera
+            </p>
           </div>
         </CardContent>
       </Card>
