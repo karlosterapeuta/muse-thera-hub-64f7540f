@@ -342,31 +342,31 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           {/* Digital Signature and Stamp - Centered */}
           <div className="flex flex-col items-center justify-center space-y-4 mb-6">
             {reportData.signature && (
-              <div className="text-center space-y-2">
-                <div className="border-b-2 border-primary/20 pb-2 min-w-[300px]">
-                  <p className="text-lg font-semibold text-primary">
+              <div className="text-center space-y-3">
+                <div className="border-b-3 border-primary/30 pb-4 min-w-[400px]">
+                  <p className="text-2xl font-bold text-primary">
                     {reportData.signature}
                   </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground font-medium">
                   Assinatura Digital do Profissional
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {professionalData?.register || reportData.professionalRegistry}
                 </p>
               </div>
             )}
             
             {/* Digital Stamp/Seal */}
-            <div className="text-center border-2 border-primary/30 rounded-lg p-4 bg-primary/5 max-w-sm">
-              <div className="flex items-center justify-center mb-2">
-                <Music className="h-6 w-6 text-primary mr-2" />
-                <span className="font-bold text-primary">MUSICOTERAPIA</span>
+            <div className="text-center border-3 border-primary/40 rounded-xl p-6 bg-primary/5 max-w-md mx-auto">
+              <div className="flex items-center justify-center mb-3">
+                <Music className="h-8 w-8 text-primary mr-3" />
+                <span className="font-bold text-primary text-xl">MUSICOTERAPIA</span>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground font-medium">
                 Relatório Técnico Especializado
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Sistema MuseTera® - {new Date().getFullYear()}
               </p>
             </div>
