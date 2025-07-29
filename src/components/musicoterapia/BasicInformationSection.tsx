@@ -126,29 +126,11 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
               <SelectItem value="manual">
                 📝 Novo paciente (entrada manual)
               </SelectItem>
-              {hasPatients && patients.map(patient => {
-                // Calcular idade para exibição
-                let displayAge = 'Idade não informada';
-                if (patient.birth_date) {
-                  const today = new Date();
-                  const birthDate = new Date(patient.birth_date);
-                  const ageYears = today.getFullYear() - birthDate.getFullYear();
-                  const monthDiff = today.getMonth() - birthDate.getMonth();
-                  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    displayAge = `${ageYears - 1} anos`;
-                  } else {
-                    displayAge = `${ageYears} anos`;
-                  }
-                } else if (patient.age) {
-                  displayAge = `${patient.age} anos`;
-                }
-                
-                return (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.name} - {displayAge}
-                  </SelectItem>
-                );
-              })}
+              {hasPatients && patients.map(patient => (
+                <SelectItem key={patient.id} value={patient.id}>
+                  {patient.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
