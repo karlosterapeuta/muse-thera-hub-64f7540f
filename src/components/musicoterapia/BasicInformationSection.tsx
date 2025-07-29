@@ -153,38 +153,41 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           </Select>
         </div>
 
-        {/* Campos de entrada manual - só aparecem quando "manual" está selecionado */}
-        {(!reportData.selectedPatientId || reportData.selectedPatientId === 'manual') && (
-          <>
-            {/* Nome do Paciente - Campo de Input */}
-            <div className="space-y-2">
-              <Label htmlFor="patient_name" className="text-sm font-medium">
-                Nome do Paciente <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="patient_name"
-                placeholder="Nome completo do paciente"
-                value={reportData.patientName || ''}
-                onChange={(e) => handleFieldChange('patientName', e.target.value)}
-                className="w-full"
-              />
-            </div>
+        {/* Nome do Paciente */}
+        <div className="space-y-2">
+          <Label htmlFor="patient_name" className="text-sm font-medium">
+            Nome do Paciente <span className="text-destructive">*</span>
+            {reportData.selectedPatientId && reportData.selectedPatientId !== 'manual' && (
+              <span className="text-xs text-muted-foreground ml-2">(Preenchido automaticamente)</span>
+            )}
+          </Label>
+          <Input
+            id="patient_name"
+            placeholder="Nome completo do paciente"
+            value={reportData.patientName || ''}
+            onChange={(e) => handleFieldChange('patientName', e.target.value)}
+            className="w-full"
+            readOnly={reportData.selectedPatientId && reportData.selectedPatientId !== 'manual'}
+          />
+        </div>
 
-            {/* Idade */}
-            <div className="space-y-2">
-              <Label htmlFor="patient_age" className="text-sm font-medium">
-                Idade
-              </Label>
-              <Input
-                id="patient_age"
-                placeholder="Idade do paciente"
-                value={reportData.patientAge || ''}
-                onChange={(e) => handleFieldChange('patientAge', e.target.value)}
-                className="w-full"
-              />
-            </div>
-          </>
-        )}
+        {/* Idade */}
+        <div className="space-y-2">
+          <Label htmlFor="patient_age" className="text-sm font-medium">
+            Idade
+            {reportData.selectedPatientId && reportData.selectedPatientId !== 'manual' && (
+              <span className="text-xs text-muted-foreground ml-2">(Calculada automaticamente)</span>
+            )}
+          </Label>
+          <Input
+            id="patient_age"
+            placeholder="Idade do paciente"
+            value={reportData.patientAge || ''}
+            onChange={(e) => handleFieldChange('patientAge', e.target.value)}
+            className="w-full"
+            readOnly={reportData.selectedPatientId && reportData.selectedPatientId !== 'manual'}
+          />
+        </div>
 
         {/* Diagnóstico */}
         <div className="space-y-2">
