@@ -510,6 +510,7 @@ export default function MusicoterapiaPage() {
                 patients={patients}
                 onSaveReport={handleSaveReport}
                 isSaving={isSaving}
+                professionalData={professionalData}
               />
             </TabsContent>
 

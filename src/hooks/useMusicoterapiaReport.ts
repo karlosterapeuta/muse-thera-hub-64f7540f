@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemplate';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
@@ -15,10 +15,21 @@ export function useMusicoterapiaReport() {
     fieldValues: {},
     additionalObservations: '',
     signature: '',
-    professionalName: professionalData?.name || '',
-    professionalRegistry: professionalData?.register || '',
+    professionalName: '',
+    professionalRegistry: '',
     professionalSpecialty: 'Musicoterapia'
   });
+
+  // Auto-populate professional data when it becomes available
+  useEffect(() => {
+    if (professionalData) {
+      setReportData(prev => ({
+        ...prev,
+        professionalName: professionalData.name || '',
+        professionalRegistry: professionalData.register || professionalData.license_number || ''
+      }));
+    }
+  }, [professionalData]);
 
   const updateReportData = useCallback((updates: Partial<ReportData>) => {
     setReportData(prev => ({ ...prev, ...updates }));

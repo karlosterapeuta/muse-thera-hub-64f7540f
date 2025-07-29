@@ -13,9 +13,10 @@ import type { ReportData } from '@/data/musicoterapiaTemplate';
 interface BasicInformationSectionProps {
   reportData: Partial<ReportData>;
   onUpdateData: (updates: Partial<ReportData>) => void;
+  professionalData?: any;
 }
 
-export function BasicInformationSection({ reportData, onUpdateData }: BasicInformationSectionProps) {
+export function BasicInformationSection({ reportData, onUpdateData, professionalData }: BasicInformationSectionProps) {
   const handleFieldChange = (field: string, value: string) => {
     if (field.startsWith('fieldValues.')) {
       const fieldId = field.replace('fieldValues.', '');
@@ -130,13 +131,13 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
         <div className="space-y-2">
           <Label htmlFor="professional_name" className="text-sm font-medium">
             Nome do Profissional <span className="text-destructive">*</span>
+            <span className="text-xs text-muted-foreground ml-2">(Dados do perfil)</span>
           </Label>
           <Input
             id="professional_name"
-            placeholder="Seu nome completo"
-            value={reportData.professionalName || ''}
-            onChange={(e) => handleFieldChange('professionalName', e.target.value)}
-            className="w-full"
+            value={reportData.professionalName || professionalData?.name || ''}
+            readOnly
+            className="w-full bg-muted/50 text-muted-foreground cursor-not-allowed"
           />
         </div>
 
@@ -144,13 +145,13 @@ export function BasicInformationSection({ reportData, onUpdateData }: BasicInfor
         <div className="space-y-2">
           <Label htmlFor="professional_registry" className="text-sm font-medium">
             Registro Profissional
+            <span className="text-xs text-muted-foreground ml-2">(Dados do perfil)</span>
           </Label>
           <Input
             id="professional_registry"
-            placeholder="CRP, CRFa, CREFITO, etc."
-            value={reportData.professionalRegistry || ''}
-            onChange={(e) => handleFieldChange('professionalRegistry', e.target.value)}
-            className="w-full"
+            value={reportData.professionalRegistry || professionalData?.register || professionalData?.license_number || ''}
+            readOnly
+            className="w-full bg-muted/50 text-muted-foreground cursor-not-allowed"
           />
         </div>
       </div>
