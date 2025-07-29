@@ -2,7 +2,7 @@
 import { lazy, ComponentType } from "react";
 
 // Lazy load pages for better performance
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Dashboard = lazy(() => import("./pages/Dashboard/index"));
 const Professional = lazy(() => import("./pages/Professional"));
 const Patients = lazy(() => import("./pages/patients"));
 const Processes = lazy(() => import("./pages/processes.tsx"));
