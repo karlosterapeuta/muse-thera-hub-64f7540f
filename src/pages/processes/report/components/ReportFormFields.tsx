@@ -31,6 +31,8 @@ import { FormValues } from "../hooks/useReportForm";
 type Patient = {
   id: string;
   name: string;
+  birth_date?: string;
+  age?: number;
 };
 
 interface ReportFormFieldsProps {
@@ -40,6 +42,29 @@ interface ReportFormFieldsProps {
 }
 
 export function ReportFormFields({ control, patients, isLoadingPatients }: ReportFormFieldsProps) {
+  const calculateAge = (birthDate: string | null): number | null => {
+    if (!birthDate) return null;
+    
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    
+    if (isNaN(birthDateObj.getTime())) return null;
+    
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
+  const formatPatientDisplay = (patient: Patient): string => {
+    const age = patient.age || calculateAge(patient.birth_date);
+    return age !== null ? `${patient.name} (${age} anos)` : patient.name;
+  };
+
   return (
     <>
       <FormField
@@ -61,7 +86,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
                 {patients.length > 0 ? (
                   patients.map((patient) => (
                     <SelectItem key={patient.id} value={patient.id}>
-                      {patient.name}
+                      {formatPatientDisplay(patient)}
                     </SelectItem>
                   ))
                 ) : (
