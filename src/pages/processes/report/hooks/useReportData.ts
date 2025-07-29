@@ -21,6 +21,8 @@ export function useReportData() {
     name: "",
     phone: "",
     email: "",
+    license_number: "",
+    register: "",
   });
 
   const formatNameFromEmail = (email: string) => {
@@ -38,7 +40,7 @@ export function useReportData() {
 
       const { data: professional, error } = await supabase
         .from('professionals')
-        .select('name, phone, email')
+        .select('name, phone, email, license_number, register')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -52,6 +54,8 @@ export function useReportData() {
           name: professional.name || '',
           phone: professional.phone || '',
           email: professional.email || '',
+          license_number: professional.license_number || '',
+          register: professional.register || '',
         });
       }
     } catch (error) {

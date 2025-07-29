@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemplate';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
@@ -16,13 +16,24 @@ export function useMusicoterapiaReport() {
     additionalObservations: '',
     signature: '',
     professionalName: professionalData?.name || '',
-    professionalRegistry: professionalData?.register || '',
+    professionalRegistry: professionalData?.license_number || professionalData?.register || '',
     professionalSpecialty: 'Musicoterapia'
   });
 
   const updateReportData = useCallback((updates: Partial<ReportData>) => {
     setReportData(prev => ({ ...prev, ...updates }));
   }, []);
+
+  // Atualizar dados do profissional quando professionalData mudar
+  useEffect(() => {
+    if (professionalData) {
+      setReportData(prev => ({
+        ...prev,
+        professionalName: professionalData.name || prev.professionalName,
+        professionalRegistry: professionalData.license_number || professionalData.register || prev.professionalRegistry,
+      }));
+    }
+  }, [professionalData]);
 
   const generateWithAI = useCallback(async () => {
     setIsGeneratingWithAI(true);

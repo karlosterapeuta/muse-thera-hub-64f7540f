@@ -88,6 +88,46 @@ export default function ReportForm() {
   const selectedPatient = patients.find(p => p.id === form.watch("patient_id"));
   const isContentEmpty = !form.watch("content") || Object.keys(form.watch("content") || {}).length === 0;
 
+  // Função para calcular idade
+  const calculateAge = (birthDate: string): string => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const ageYears = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      return `${ageYears - 1} anos`;
+    }
+    return `${ageYears} anos`;
+  };
+
+  // Função para preencher dados automaticamente quando paciente é selecionado
+  const handlePatientSelect = (patientId: string) => {
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) return;
+
+    const currentContent = form.watch("content") || {};
+    
+    // Calcular idade
+    let patientAge = "Idade não informada";
+    if (patient.birth_date) {
+      patientAge = calculateAge(patient.birth_date);
+    } else if (patient.age) {
+      patientAge = `${patient.age} anos`;
+    }
+
+    // Preencher dados do paciente e profissional
+    const updatedContent = {
+      ...currentContent,
+      patient_name: patient.name,
+      patient_age: patientAge,
+      professional_name: professionalData?.name || userName || userEmail,
+      professional_registry: professionalData?.license_number || professionalData?.register || '',
+    };
+
+    form.setValue("content", updatedContent);
+  };
+
   // Preparar dados do formulário de forma segura
   const formData = {
     patient_id: form.watch("patient_id"),
@@ -117,6 +157,7 @@ export default function ReportForm() {
                 control={form.control}
                 patients={patients}
                 isLoadingPatients={isLoadingPatients}
+                onPatientSelect={handlePatientSelect}
               />
 
               <ReportContentTabs
