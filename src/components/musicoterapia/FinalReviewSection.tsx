@@ -360,8 +360,24 @@ export function FinalReviewSection({
 
       <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
         <p style="margin: 15px 0;"><strong>Assinatura:</strong> ${reportData.signature || reportData.professionalName || 'Não informado'}</p>
-        ${signatureUrl ? `<div style="margin: 20px 0;"><img src="${signatureUrl}" style="max-width: 200px; max-height: 80px;" alt="Assinatura Digital" /></div>` : ''}
-        ${stampUrl ? `<div style="margin: 20px 0;"><img src="${stampUrl}" style="max-width: 120px; max-height: 60px;" alt="Carimbo Digital" /></div>` : ''}
+        
+        ${signatureUrl || stampUrl ? `
+          <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin: 30px 0; flex-wrap: wrap;">
+            ${signatureUrl ? `
+              <div style="text-align: center;">
+                <img src="${signatureUrl}" style="max-width: 200px; max-height: 80px; display: block; margin: 0 auto;" alt="Assinatura Digital" />
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Assinatura Digital</p>
+              </div>
+            ` : ''}
+            ${stampUrl ? `
+              <div style="text-align: center;">
+                <img src="${stampUrl}" style="max-width: 120px; max-height: 60px; display: block; margin: 0 auto;" alt="Carimbo Digital" />
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Carimbo Digital</p>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+        
         <p style="color: #666; font-size: 12px; margin-top: 20px;">
           Documento gerado automaticamente pelo Relatório TEA em ${currentDate}
         </p>
