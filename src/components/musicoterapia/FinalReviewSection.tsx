@@ -685,8 +685,8 @@ export function FinalReviewSection({
       {/* Action Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Upload de Logo */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
+        <Card className="text-center h-[280px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
               <Image className="h-6 w-6 text-yellow-600" />
             </div>
@@ -695,7 +695,7 @@ export function FinalReviewSection({
               Adicione sua logo ao PDF
             </p>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
             {logoUrl ? (
               <div className="space-y-2">
                 <div className="relative">
@@ -747,138 +747,135 @@ export function FinalReviewSection({
           </CardContent>
         </Card>
 
-        {/* Upload de Carimbo e Assinatura Digital - Lado a Lado */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload de Carimbo */}
-          <Card className="text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                <Image className="h-8 w-8 text-orange-600" />
-              </div>
-              <CardTitle className="text-xl">Carimbo Digital</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Adicione seu carimbo ao PDF
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {stampUrl ? (
-                <div className="space-y-3">
-                  <div className="relative">
-                    <img 
-                      src={stampUrl} 
-                      alt="Carimbo" 
-                      className="w-full h-32 object-contain border rounded-lg bg-gray-50"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="absolute -top-2 -right-2 h-8 w-8 p-0 rounded-full"
-                      onClick={removeStamp}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-green-600 font-medium">Carimbo carregado!</p>
-                </div>
-              ) : (
-                <>
-                  <input
-                    ref={stampInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleStampUpload}
-                    className="hidden"
+        {/* Upload de Carimbo Digital */}
+        <Card className="text-center h-[280px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
+            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+              <Image className="h-6 w-6 text-orange-600" />
+            </div>
+            <CardTitle className="text-lg">Carimbo Digital</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Adicione seu carimbo ao PDF
+            </p>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
+            {stampUrl ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <img 
+                    src={stampUrl} 
+                    alt="Carimbo" 
+                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
                   />
                   <Button
-                    variant="outline"
-                    className="w-full h-12"
-                    onClick={() => stampInputRef.current?.click()}
-                    disabled={isUploadingStamp}
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={removeStamp}
                   >
-                    {isUploadingStamp ? (
-                      <>
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Enviando...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-5 w-5 mr-2" />
-                        Enviar Carimbo
-                      </>
-                    )}
+                    <X className="h-3 w-3" />
                   </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                </div>
+                <p className="text-xs text-green-600 font-medium">Carimbo carregado!</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={stampInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleStampUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => stampInputRef.current?.click()}
+                  disabled={isUploadingStamp}
+                >
+                  {isUploadingStamp ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Enviar Carimbo
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Upload de Assinatura Digital */}
-          <Card className="text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                <Upload className="h-8 w-8 text-indigo-600" />
-              </div>
-              <CardTitle className="text-xl">Assinatura Digital</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Adicione sua assinatura digital ao PDF
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {signatureUrl ? (
-                <div className="space-y-3">
-                  <div className="relative">
-                    <img 
-                      src={signatureUrl} 
-                      alt="Assinatura Digital" 
-                      className="w-full h-32 object-contain border rounded-lg bg-gray-50"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="absolute -top-2 -right-2 h-8 w-8 p-0 rounded-full"
-                      onClick={removeSignature}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-green-600 font-medium">Assinatura carregada!</p>
-                </div>
-              ) : (
-                <>
-                  <input
-                    ref={signatureInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleSignatureUpload}
-                    className="hidden"
+        {/* Upload de Assinatura Digital */}
+        <Card className="text-center h-[280px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
+            <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
+              <Upload className="h-6 w-6 text-indigo-600" />
+            </div>
+            <CardTitle className="text-lg">Assinatura Digital</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Adicione sua assinatura digital ao PDF
+            </p>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
+            {signatureUrl ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <img 
+                    src={signatureUrl} 
+                    alt="Assinatura Digital" 
+                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
                   />
                   <Button
-                    variant="outline"
-                    className="w-full h-12"
-                    onClick={() => signatureInputRef.current?.click()}
-                    disabled={isUploadingSignature}
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={removeSignature}
                   >
-                    {isUploadingSignature ? (
-                      <>
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Enviando...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-5 w-5 mr-2" />
-                        Enviar Assinatura
-                      </>
-                    )}
+                    <X className="h-3 w-3" />
                   </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                </div>
+                <p className="text-xs text-green-600 font-medium">Assinatura carregada!</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={signatureInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleSignatureUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => signatureInputRef.current?.click()}
+                  disabled={isUploadingSignature}
+                >
+                  {isUploadingSignature ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Enviar Assinatura
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Visualizar Relatório */}
-        <Card className="text-center">
-          <CardHeader className="pb-4">
+        <Card className="text-center h-[280px] flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
               <Eye className="h-6 w-6 text-blue-600" />
             </div>
@@ -887,7 +884,7 @@ export function FinalReviewSection({
               Veja como ficará o relatório final
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex items-end">
             <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -911,7 +908,7 @@ export function FinalReviewSection({
         </Card>
 
         {/* Organizar com IA */}
-        <Card className="text-center h-[200px] flex flex-col">
+        <Card className="text-center h-[280px] flex flex-col">
           <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
               <Zap className="h-6 w-6 text-purple-600" />
@@ -943,7 +940,7 @@ export function FinalReviewSection({
         </Card>
 
         {/* Salvar Relatório */}
-        <Card className="text-center h-[200px] flex flex-col">
+        <Card className="text-center h-[280px] flex flex-col">
           <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
               <Save className="h-6 w-6 text-emerald-600" />
@@ -975,7 +972,7 @@ export function FinalReviewSection({
         </Card>
 
         {/* Exportar PDF */}
-        <Card className="text-center h-[200px] flex flex-col">
+        <Card className="text-center h-[280px] flex flex-col">
           <CardHeader className="pb-4 flex-shrink-0">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
               <Download className="h-6 w-6 text-green-600" />
