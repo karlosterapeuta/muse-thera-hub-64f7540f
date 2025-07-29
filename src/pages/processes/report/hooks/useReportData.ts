@@ -76,10 +76,19 @@ export function useReportData() {
 
         console.log("Buscando pacientes para usuário:", user.id);
         
+        // Buscar pacientes através da tabela professionals primeiro
+        const { data: professionalData, error: profError } = await supabase
+          .from("professionals")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profError) throw profError;
+
         const { data, error } = await supabase
           .from("patients")
           .select("id, name, birth_date, age")
-          .eq("professional_id", user.id)
+          .eq("professional_id", professionalData?.id)
           .order("name");
 
         if (error) throw error;
