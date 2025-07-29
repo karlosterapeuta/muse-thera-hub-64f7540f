@@ -100,31 +100,69 @@ export default function MusicoterapiaPage() {
   }, [patientIdFromQuery, patients, updateReportData]);
 
   const handleSaveReport = async () => {
-    console.log('Iniciando salvamento do relatório...');
+    console.log('=== Iniciando salvamento do relatório ===');
     console.log('Professional ID:', professionalId);
     console.log('Report Data:', reportData);
+    console.log('Professional Data:', professionalData);
     
+    // Validação aprimorada
     if (!professionalId) {
+      console.error('Professional ID não encontrado');
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "ID do profissional não encontrado. Faça login novamente.",
+        title: "Erro de Autenticação",
+        description: "ID do profissional não encontrado. Faça logout e login novamente.",
+      });
+      return;
+    }
+
+    if (!reportData.selectedPatientId) {
+      console.error('Paciente não selecionado');
+      toast({
+        variant: "destructive",
+        title: "Paciente Obrigatório",
+        description: "Selecione um paciente antes de salvar o relatório.",
       });
       return;
     }
 
     const validation = validateReport();
     if (!validation.isValid) {
+      console.error('Validação falhou:', validation.missingFields);
       toast({
         variant: "destructive",
-        title: "Campos obrigatórios",
-        description: `Complete os campos: ${validation.missingFields.join(', ')}`,
+        title: "Campos Obrigatórios Não Preenchidos",
+        description: `Complete: ${validation.missingFields.join(', ')}`,
       });
       return;
     }
 
     setIsSaving(true);
     try {
+      // Verificar se o professional_id existe na tabela professionals
+      const { data: professionalCheck, error: professionalError } = await supabase
+        .from('professionals')
+        .select('id')
+        .eq('id', professionalId)
+        .single();
+
+      if (professionalError || !professionalCheck) {
+        console.error('Professional não encontrado na tabela:', professionalError);
+        throw new Error('Profissional não encontrado. Faça logout e login novamente.');
+      }
+
+      // Verificar se o paciente existe
+      const { data: patientCheck, error: patientError } = await supabase
+        .from('patients')
+        .select('id')
+        .eq('id', reportData.selectedPatientId)
+        .single();
+
+      if (patientError || !patientCheck) {
+        console.error('Paciente não encontrado:', patientError);
+        throw new Error('Paciente não encontrado. Selecione um paciente válido.');
+      }
+
       const reportPayload = {
         patient_id: reportData.selectedPatientId,
         professional_id: professionalId,
@@ -134,45 +172,68 @@ export default function MusicoterapiaPage() {
           field_values: reportData.fieldValues,
           additional_observations: reportData.additionalObservations,
           patient_info: {
-            name: reportData.patientName,
-            age: reportData.patientAge,
-            diagnosis: reportData.patientDiagnosis
+            name: reportData.patientName || reportData.fieldValues?.patient_name,
+            age: reportData.patientAge || reportData.fieldValues?.patient_age,
+            diagnosis: reportData.patientDiagnosis || reportData.fieldValues?.patient_diagnosis
           },
           professional_info: {
-            name: reportData.professionalName,
-            registry: reportData.professionalRegistry,
-            specialty: reportData.professionalSpecialty
+            name: reportData.professionalName || professionalData?.name,
+            registry: reportData.professionalRegistry || professionalData?.register || professionalData?.license_number,
+            specialty: reportData.professionalSpecialty || 'Musicoterapia'
           },
           session_date: reportData.sessionDate,
           signature: reportData.signature
         }
       };
 
-      console.log('Payload do relatório:', reportPayload);
+      console.log('Payload final do relatório:', JSON.stringify(reportPayload, null, 2));
 
       const { data, error } = await supabase
         .from('reports')
-        .insert(reportPayload);
+        .insert(reportPayload)
+        .select()
+        .single();
 
       if (error) {
-        console.error('Erro do Supabase:', error);
-        throw error;
+        console.error('Erro detalhado do Supabase:', error);
+        console.error('Código:', error.code);
+        console.error('Mensagem:', error.message);
+        console.error('Detalhes:', error.details);
+        
+        // Tratamento específico de erros
+        if (error.code === '23503') {
+          if (error.message.includes('patient_id')) {
+            throw new Error('Paciente não encontrado ou inválido');
+          } else if (error.message.includes('professional_id')) {
+            throw new Error('Profissional não encontrado ou inválido');
+          }
+          throw new Error('Erro de referência de dados');
+        } else if (error.code === '23502') {
+          throw new Error('Campos obrigatórios não preenchidos');
+        }
+        
+        throw new Error(`Erro no banco de dados: ${error.message}`);
       }
 
       console.log('Relatório salvo com sucesso:', data);
 
       toast({
-        title: "Relatório salvo!",
+        title: "Sucesso!",
         description: "Relatório de musicoterapia salvo com sucesso.",
       });
 
       loadReports();
     } catch (error) {
-      console.error('Erro ao salvar relatório:', error);
+      console.error('=== Erro no salvamento ===');
+      console.error('Erro:', error);
+      console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: `Não foi possível salvar o relatório: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        title: "Erro ao Salvar Relatório",
+        description: errorMessage,
       });
     } finally {
       setIsSaving(false);

@@ -110,17 +110,33 @@ export function useMusicoterapiaReport() {
   }, [reportData, updateReportData, toast]);
 
   const validateReport = useCallback(() => {
+    console.log('Validando relatório...', reportData);
+    
+    // Validar campos básicos
+    const basicErrors = [];
+    if (!reportData.selectedPatientId) basicErrors.push('Paciente deve ser selecionado');
+    if (!professionalData?.id) basicErrors.push('Dados do profissional não encontrados');
+    
+    // Validar campos obrigatórios do template
     const requiredFields = musicoterapiaTemplate.fields.filter(field => field.required);
     const missingFields = requiredFields.filter(field => {
       const value = reportData.fieldValues?.[field.id];
-      return !value || (Array.isArray(value) && value.length === 0);
+      return !value || (Array.isArray(value) && value.length === 0) || 
+             (typeof value === 'string' && value.trim() === '');
     });
 
+    const allErrors = [
+      ...basicErrors,
+      ...missingFields.map(field => field.label)
+    ];
+
+    console.log('Campos obrigatórios faltando:', allErrors);
+
     return {
-      isValid: missingFields.length === 0,
-      missingFields: missingFields.map(field => field.label)
+      isValid: allErrors.length === 0,
+      missingFields: allErrors
     };
-  }, [reportData]);
+  }, [reportData, professionalData]);
 
   return {
     reportData,
