@@ -588,38 +588,37 @@ export function FinalReviewSection({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Hero Header da Revisão Final */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-2xl">
-        {/* Background Pattern */}
+    <div className="space-y-6">
+      {/* Hero Header - Responsivo */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 rounded-xl md:rounded-2xl shadow-xl">
         <div className="absolute inset-0 bg-white/10">
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
         </div>
         
-        <div className="relative p-8 lg:p-12">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
-              <FileText className="h-8 w-8 text-white" />
+        <div className="relative p-4 md:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-4 md:mb-6">
+            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
+              <FileText className="h-6 w-6 md:h-8 md:w-8 text-white" />
             </div>
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
                 Revisão Final
               </h1>
-              <p className="text-lg text-white/90">
+              <p className="text-sm md:text-base lg:text-lg text-white/90">
                 Personalize, visualize e exporte seu relatório profissional
               </p>
             </div>
           </div>
           
           {/* Progress Indicator */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="flex items-center justify-between">
-              <span className="text-white font-medium">Relatório Concluído</span>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl p-3 md:p-4 border border-white/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+              <span className="text-white font-medium text-sm md:text-base">Relatório Concluído</span>
               <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-                  <Download className="h-3 w-3 text-white" />
+                <div className="w-5 h-5 md:w-6 md:h-6 bg-green-400 rounded-full flex items-center justify-center">
+                  <Download className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
                 </div>
-                <span className="text-white text-lg font-bold">Pronto para exportar!</span>
+                <span className="text-white text-sm md:text-base lg:text-lg font-bold">Pronto para exportar!</span>
               </div>
             </div>
           </div>
