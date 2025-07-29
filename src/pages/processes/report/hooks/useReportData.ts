@@ -6,6 +6,8 @@ import { useToast } from "@/components/ui/use-toast";
 type Patient = {
   id: string;
   name: string;
+  birth_date?: string;
+  age?: number;
 };
 
 export function useReportData() {
@@ -72,7 +74,7 @@ export function useReportData() {
         
         const { data, error } = await supabase
           .from("patients")
-          .select("id, name")
+          .select("id, name, birth_date, age")
           .eq("professional_id", user.id)
           .order("name");
 
