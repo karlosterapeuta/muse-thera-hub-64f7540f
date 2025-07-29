@@ -339,12 +339,12 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         <CardContent className="pt-6">
           <Separator className="mb-6" />
           
-          {/* Digital Signature and Stamp - Centered */}
-          <div className="flex flex-col items-center justify-center space-y-4 mb-6">
+          {/* Digital Signature and Stamp - Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start justify-center mb-6">
             {reportData.signature && (
               <div className="text-center space-y-3">
-                <div className="border-b-3 border-primary/30 pb-4 min-w-[400px]">
-                  <p className="text-2xl font-bold text-primary">
+                <div className="border-b-3 border-primary/30 pb-4 min-w-[300px]">
+                  <p className="text-xl font-bold text-primary">
                     {reportData.signature}
                   </p>
                 </div>
@@ -358,15 +358,15 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
             )}
             
             {/* Digital Stamp/Seal */}
-            <div className="text-center border-3 border-primary/40 rounded-xl p-6 bg-primary/5 max-w-md mx-auto">
-              <div className="flex items-center justify-center mb-3">
-                <Music className="h-8 w-8 text-primary mr-3" />
-                <span className="font-bold text-primary text-xl">MUSICOTERAPIA</span>
+            <div className="text-center border-3 border-primary/40 rounded-xl p-4 bg-primary/5">
+              <div className="flex items-center justify-center mb-2">
+                <Music className="h-6 w-6 text-primary mr-2" />
+                <span className="font-bold text-primary text-lg">MUSICOTERAPIA</span>
               </div>
               <p className="text-sm text-muted-foreground font-medium">
                 Relatório Técnico Especializado
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Sistema MuseTera® - {new Date().getFullYear()}
               </p>
             </div>
