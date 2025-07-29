@@ -28,7 +28,6 @@ export const mainMenuItems = [
 
 export const clinicalMenuItems = [
   { icon: FileText, text: "📋 Processos Clínicos", path: "/processes", gradient: "from-orange-500 to-red-600" },
-  { icon: ClipboardList, text: "📄 Relatórios Salvos", path: "/processes/reports", gradient: "from-blue-500 to-indigo-600" },
   { icon: ListChecks, text: "🎯 Atividades Terapêuticas", path: "/activities", gradient: "from-cyan-500 to-blue-600" },
 ];
 

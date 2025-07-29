@@ -54,7 +54,7 @@ export const navItems: { to: string; page: ComponentType<any> }[] = [
   { to: "/treatment-plan", page: TreatmentPlan },
   { to: "/intervention", page: Intervention },
   { to: "/reevaluation", page: Reevaluation },
-  { to: "/processes/reports", page: ProcessReports },
+  
   { to: "/processes/report", page: ReportForm },
   { to: "/processes/report/:reportId", page: ReportForm },
   { to: "/processes/musicoterapia", page: MusicoterapiaReport },
