@@ -285,7 +285,7 @@ export default function MusicoterapiaPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/processes/reports')}
+                onClick={() => navigate('/dashboard')}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Voltar
