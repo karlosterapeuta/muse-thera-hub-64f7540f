@@ -1,22 +1,32 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Calendar, CalendarIcon } from 'lucide-react';
+import { Calendar, CalendarIcon, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 
+type Patient = {
+  id: string;
+  name: string;
+  birth_date?: string;
+  age?: number;
+};
+
 interface BasicInformationSectionProps {
   reportData: Partial<ReportData>;
   onUpdateData: (updates: Partial<ReportData>) => void;
   professionalData?: any;
+  patients?: Patient[];
+  isLoadingPatients?: boolean;
 }
 
-export function BasicInformationSection({ reportData, onUpdateData, professionalData }: BasicInformationSectionProps) {
+export function BasicInformationSection({ reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false }: BasicInformationSectionProps) {
   const handleFieldChange = (field: string, value: string) => {
     if (field.startsWith('fieldValues.')) {
       const fieldId = field.replace('fieldValues.', '');
@@ -37,7 +47,48 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
     }
   };
 
+  const handlePatientSelect = (value: string) => {
+    if (value === 'manual') {
+      // Reset para entrada manual
+      onUpdateData({
+        selectedPatientId: '',
+        patientName: '',
+        patientAge: '',
+        patientDiagnosis: ''
+      });
+    } else {
+      // Selecionar paciente existente
+      const selectedPatient = patients.find(p => p.id === value);
+      if (selectedPatient) {
+        // Calcular idade a partir da data de nascimento
+        let age = '';
+        if (selectedPatient.birth_date) {
+          const today = new Date();
+          const birthDate = new Date(selectedPatient.birth_date);
+          const ageYears = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age = `${ageYears - 1} anos`;
+          } else {
+            age = `${ageYears} anos`;
+          }
+        } else if (selectedPatient.age) {
+          age = `${selectedPatient.age} anos`;
+        }
+
+        onUpdateData({
+          selectedPatientId: value,
+          patientName: selectedPatient.name,
+          patientAge: age,
+          patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
+        });
+      }
+    }
+  };
+
   const sessionDate = reportData.sessionDate ? new Date(reportData.sessionDate) : undefined;
+  const hasPatients = Array.isArray(patients) && patients.length > 0;
 
   return (
     <div className="space-y-6">
@@ -51,10 +102,64 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
 
       {/* Form Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Nome do Paciente */}
+        {/* Seleção do Paciente */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium flex items-center space-x-2">
+            <User className="h-4 w-4" />
+            <span>Paciente <span className="text-destructive">*</span></span>
+          </Label>
+          <Select 
+            value={reportData.selectedPatientId || 'manual'} 
+            onValueChange={handlePatientSelect}
+            disabled={isLoadingPatients}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={
+                isLoadingPatients 
+                  ? "Carregando pacientes..." 
+                  : hasPatients 
+                    ? "Selecione um paciente" 
+                    : "Nenhum paciente encontrado"
+              } />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">
+                📝 Novo paciente (entrada manual)
+              </SelectItem>
+              {hasPatients && patients.map(patient => {
+                // Calcular idade para exibição
+                let displayAge = 'Idade não informada';
+                if (patient.birth_date) {
+                  const today = new Date();
+                  const birthDate = new Date(patient.birth_date);
+                  const ageYears = today.getFullYear() - birthDate.getFullYear();
+                  const monthDiff = today.getMonth() - birthDate.getMonth();
+                  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    displayAge = `${ageYears - 1} anos`;
+                  } else {
+                    displayAge = `${ageYears} anos`;
+                  }
+                } else if (patient.age) {
+                  displayAge = `${patient.age} anos`;
+                }
+                
+                return (
+                  <SelectItem key={patient.id} value={patient.id}>
+                    {patient.name} - {displayAge}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Nome do Paciente - Campo de Input */}
         <div className="space-y-2">
           <Label htmlFor="patient_name" className="text-sm font-medium">
             Nome do Paciente <span className="text-destructive">*</span>
+            {reportData.selectedPatientId && reportData.selectedPatientId !== 'manual' && (
+              <span className="text-xs text-muted-foreground ml-2">(Preenchido automaticamente)</span>
+            )}
           </Label>
           <Input
             id="patient_name"
@@ -62,6 +167,7 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
             value={reportData.patientName || ''}
             onChange={(e) => handleFieldChange('patientName', e.target.value)}
             className="w-full"
+            readOnly={reportData.selectedPatientId && reportData.selectedPatientId !== 'manual'}
           />
         </div>
 
@@ -69,6 +175,9 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
         <div className="space-y-2">
           <Label htmlFor="patient_age" className="text-sm font-medium">
             Idade
+            {reportData.selectedPatientId && reportData.selectedPatientId !== 'manual' && (
+              <span className="text-xs text-muted-foreground ml-2">(Calculada automaticamente)</span>
+            )}
           </Label>
           <Input
             id="patient_age"
@@ -76,6 +185,7 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
             value={reportData.patientAge || ''}
             onChange={(e) => handleFieldChange('patientAge', e.target.value)}
             className="w-full"
+            readOnly={reportData.selectedPatientId && reportData.selectedPatientId !== 'manual'}
           />
         </div>
 

@@ -183,6 +183,7 @@ export function MusicoterapiaReportWizard({
           reportData={reportData}
           onUpdateData={onUpdateData}
           professionalData={professionalData}
+          patients={patients}
         />
       );
     }
