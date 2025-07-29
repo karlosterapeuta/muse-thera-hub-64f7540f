@@ -18,15 +18,11 @@ export function useProfessionalData() {
   return useQuery({
     queryKey: ["professional-data"],
     queryFn: async (): Promise<ProfessionalData | null> => {
-      console.log('Fetching professional data...');
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log('No user found');
         return null;
       }
-
-      console.log('User found:', user.id);
 
       const { data: professional, error } = await supabase
         .from('professionals')
@@ -39,7 +35,6 @@ export function useProfessionalData() {
         return null;
       }
 
-      console.log('Professional data found:', professional);
       return professional;
     },
   });

@@ -138,7 +138,6 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
             value={reportData.professionalName || professionalData?.name || ''}
             readOnly
             className="w-full bg-muted/50 text-muted-foreground cursor-not-allowed"
-            placeholder={professionalData?.name ? "Carregando..." : "Dados do perfil não encontrados"}
           />
         </div>
 
@@ -153,7 +152,6 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
             value={reportData.professionalRegistry || professionalData?.register || professionalData?.license_number || ''}
             readOnly
             className="w-full bg-muted/50 text-muted-foreground cursor-not-allowed"
-            placeholder={professionalData?.register || professionalData?.license_number ? "Carregando..." : "Dados do perfil não encontrados"}
           />
         </div>
       </div>

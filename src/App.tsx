@@ -11,6 +11,7 @@ import AuthStatusChecker from "./components/auth/AuthStatusChecker";
 import { PWAStatus } from "./components/PWAStatus";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWAOptimizer } from "./components/PWAOptimizer";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import MusicalBells from "./pages/musical-bells";
@@ -25,7 +26,8 @@ const LoadingSpinner = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -57,7 +59,8 @@ const App = () => (
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

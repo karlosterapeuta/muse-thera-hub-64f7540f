@@ -22,13 +22,7 @@ export function useMusicoterapiaReport() {
 
   // Auto-populate professional data when it becomes available
   useEffect(() => {
-    console.log('Professional data changed:', professionalData);
     if (professionalData) {
-      console.log('Updating report data with:', {
-        name: professionalData.name,
-        register: professionalData.register,
-        license_number: professionalData.license_number
-      });
       setReportData(prev => ({
         ...prev,
         professionalName: professionalData.name || '',
