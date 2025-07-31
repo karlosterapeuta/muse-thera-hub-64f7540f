@@ -217,7 +217,7 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-4 md:w-5 h-4 md:h-5 group-hover:rotate-12 transition-transform duration-300" />
-                  Criar uma conta gratuita
+                  Crie sua conta
                   <Music className="w-4 md:w-5 h-4 md:h-5 group-hover:-rotate-12 transition-transform duration-300" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
