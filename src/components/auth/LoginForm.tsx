@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Music, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type LoginFormProps = {
@@ -68,111 +68,163 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
   };
 
   return (
-    <div className="w-full max-w-xl">
-      {/* Header with Logo */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-3xl shadow-2xl shadow-primary/20 mb-8 transform hover:scale-105 transition-all duration-500 hover:shadow-primary/30">
+    <div className="w-full max-w-2xl animate-fade-in">
+      {/* Floating Musical Elements */}
+      <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse"></div>
+      <div className="absolute -top-4 -right-8 w-8 h-8 bg-gradient-to-br from-secondary/30 to-primary/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+      
+      {/* Header with Enhanced Logo */}
+      <div className="text-center mb-12 relative">
+        {/* Background Glow */}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        {/* Logo Container */}
+        <div className="relative inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-primary via-primary/95 to-secondary rounded-full shadow-2xl shadow-primary/25 mb-8 animate-scale-in group hover:scale-110 transition-all duration-700 hover:shadow-primary/40">
+          <div className="absolute inset-2 bg-gradient-to-br from-white/20 to-transparent rounded-full"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
           <img 
             src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png" 
             alt="MuseTera Logo" 
-            className="w-14 h-14 object-contain filter drop-shadow-sm"
+            className="relative w-16 h-16 object-contain filter drop-shadow-lg z-10"
           />
+          {/* Musical Notes */}
+          <Music className="absolute -top-2 -right-2 w-5 h-5 text-primary animate-bounce delay-500" />
+          <Sparkles className="absolute -bottom-1 -left-2 w-4 h-4 text-secondary animate-pulse delay-700" />
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent mb-4 tracking-tight">
-          Bem-vindo ao MuseTera
+        
+        {/* Title */}
+        <h1 className="text-5xl sm:text-6xl font-black bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent mb-6 tracking-tight leading-tight">
+          Bem-vindo ao
+          <br />
+          <span className="text-6xl sm:text-7xl">MuseTera</span>
         </h1>
-        <p className="text-muted-foreground text-xl font-medium">
-          A solução mais completa em musicoterapia
-        </p>
-        <p className="text-muted-foreground/70 text-base mt-2">
-          Faça login para acessar sua conta
-        </p>
+        
+        {/* Subtitle */}
+        <div className="space-y-3">
+          <p className="text-muted-foreground text-xl font-semibold">
+            A solução mais completa em musicoterapia
+          </p>
+          <p className="text-muted-foreground/70 text-base">
+            Transformando vidas através da música e tecnologia
+          </p>
+        </div>
       </div>
 
-      <div className="bg-white/80 dark:bg-background/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl shadow-black/5 dark:shadow-black/20 border border-white/20 dark:border-white/10">
-        <form onSubmit={handleLogin} className="space-y-7">
-          <div className="space-y-3">
-            <label htmlFor="email" className="block text-sm font-semibold text-foreground/90 ml-1">
-              Email
-            </label>
-            <div className="relative">
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-14 px-5 text-base rounded-2xl border-2 border-border/40 bg-background/60 backdrop-blur-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 shadow-sm hover:shadow-md hover:border-primary/50"
-                placeholder="seu@email.com"
-                required
-              />
-              <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-primary/20 to-secondary/20 rounded-r-2xl"></div>
+      {/* Main Form Container */}
+      <div className="relative group">
+        {/* Background Blur Effect */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+        
+        {/* Form */}
+        <div className="relative bg-white/90 dark:bg-background/90 backdrop-blur-2xl rounded-3xl p-10 shadow-2xl shadow-black/10 dark:shadow-black/30 border border-white/30 dark:border-white/10 overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary/5 to-transparent rounded-tr-3xl"></div>
+          
+          <form onSubmit={handleLogin} className="relative space-y-8">
+            {/* Email Field */}
+            <div className="space-y-3">
+              <label htmlFor="email" className="flex items-center gap-2 text-sm font-bold text-foreground/90 ml-1">
+                <Mail className="w-4 h-4 text-primary" />
+                Email
+              </label>
+              <div className="relative group/input">
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-16 pl-14 pr-6 text-lg rounded-2xl border-2 border-border/30 bg-background/70 backdrop-blur-sm focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 shadow-lg hover:shadow-xl hover:border-primary/60 group-focus-within/input:border-primary group-focus-within/input:shadow-primary/10"
+                  placeholder="seu@email.com"
+                  required
+                />
+                <Mail className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/input:text-primary transition-colors duration-200" />
+                <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-primary/30 to-secondary/30 rounded-r-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"></div>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-3">
-            <label htmlFor="password" className="block text-sm font-semibold text-foreground/90 ml-1">
-              Senha
-            </label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-14 px-5 pr-14 text-base rounded-2xl border-2 border-border/40 bg-background/60 backdrop-blur-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 shadow-sm hover:shadow-md hover:border-primary/50"
-                placeholder="••••••••"
-                required
-              />
+            {/* Password Field */}
+            <div className="space-y-3">
+              <label htmlFor="password" className="flex items-center gap-2 text-sm font-bold text-foreground/90 ml-1">
+                <Lock className="w-4 h-4 text-primary" />
+                Senha
+              </label>
+              <div className="relative group/input">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-16 pl-14 pr-16 text-lg rounded-2xl border-2 border-border/30 bg-background/70 backdrop-blur-sm focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 shadow-lg hover:shadow-xl hover:border-primary/60 group-focus-within/input:border-primary group-focus-within/input:shadow-primary/10"
+                  placeholder="••••••••••••"
+                  required
+                />
+                <Lock className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/input:text-primary transition-colors duration-200" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-5 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-all duration-200 p-2 rounded-xl hover:bg-primary/10 group-focus-within/input:text-primary"
+                >
+                  {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                </button>
+                <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-primary/30 to-secondary/30 rounded-r-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"></div>
+              </div>
+            </div>
+
+            {/* Forgot Password */}
+            <div className="flex justify-end pt-2">
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-all duration-200 p-1 rounded-lg hover:bg-primary/5"
+                onClick={onSwitchToPasswordReset}
+                className="text-sm text-primary hover:text-primary/80 font-bold transition-all duration-200 px-4 py-2 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20"
               >
-                {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                Esqueci minha senha
               </button>
-              <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-primary/20 to-secondary/20 rounded-r-2xl"></div>
             </div>
-          </div>
 
-          <div className="flex justify-end pt-2">
-            <button
-              type="button"
-              onClick={onSwitchToPasswordReset}
-              className="text-sm text-primary hover:text-primary/80 font-semibold transition-all duration-200 px-2 py-1 rounded-lg hover:bg-primary/5"
+            {/* Login Button */}
+            <Button
+              type="submit"
+              className="w-full h-16 bg-gradient-to-r from-primary via-primary/95 to-secondary hover:from-primary/90 hover:via-primary/85 hover:to-secondary/90 text-primary-foreground font-black text-xl rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border border-white/30 group overflow-hidden"
+              disabled={isLoading}
             >
-              Esqueci minha senha
-            </button>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full h-14 bg-gradient-to-r from-primary via-primary/95 to-secondary hover:from-primary/90 hover:via-primary/85 hover:to-secondary/90 text-primary-foreground font-bold text-lg rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border border-white/20"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
-                <span>Carregando...</span>
+              {/* Button Background Animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              
+              <div className="relative z-10">
+                {isLoading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 border-3 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+                    <span>Carregando...</span>
+                  </div>
+                ) : (
+                  <span className="flex items-center gap-3">
+                    <Lock className="w-5 h-5" />
+                    Acessar minha conta
+                    <span className="text-2xl group-hover:translate-x-1 transition-transform duration-300">→</span>
+                  </span>
+                )}
               </div>
-            ) : (
-              <span className="flex items-center gap-2">
-                Acessar conta
-                <span className="text-xl">→</span>
-              </span>
-            )}
-          </Button>
+            </Button>
 
-          <div className="text-center pt-6 border-t border-border/30">
-            <p className="text-sm text-muted-foreground mb-3 font-medium">Ainda não possui uma conta?</p>
-            <button
-              type="button"
-              onClick={onSwitchToRegister}
-              className="text-lg font-bold text-primary hover:text-primary/80 transition-all duration-200 px-4 py-2 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/20"
-            >
-              Criar uma conta gratuita
-            </button>
-          </div>
-        </form>
+            {/* Register Link */}
+            <div className="text-center pt-8 border-t border-border/20">
+              <p className="text-base text-muted-foreground mb-4 font-medium">Ainda não possui uma conta?</p>
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="group text-xl font-black text-primary hover:text-primary/80 transition-all duration-300 px-6 py-3 rounded-2xl hover:bg-primary/10 border-2 border-transparent hover:border-primary/30 relative overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                  Criar uma conta gratuita
+                  <Music className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-300" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
