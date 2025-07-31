@@ -163,20 +163,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col lg:flex-row relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-background to-secondary/8 flex flex-col lg:flex-row relative overflow-hidden">
+      {/* Enhanced animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/5 to-secondary/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-primary/15 to-accent/15 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-secondary/15 to-primary/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-gradient-to-r from-accent/8 to-secondary/8 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-2xl animate-pulse delay-700"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-full blur-2xl animate-pulse delay-300"></div>
       </div>
 
       {/* Left side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
-        <div className="bg-card/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-border/20 p-6 sm:p-8 lg:p-10 w-full max-w-lg transform hover:scale-[1.02] transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-3xl"></div>
-          <div className="relative z-10">
-            {renderForm()}
+        <div className="relative w-full max-w-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-3xl blur-xl transform rotate-1"></div>
+          <div className="relative bg-background/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 p-1">
+            <div className="bg-gradient-to-br from-white/90 to-white/70 dark:from-background/90 dark:to-background/70 backdrop-blur-xl rounded-3xl p-8 sm:p-10 lg:p-12">
+              {renderForm()}
+            </div>
           </div>
         </div>
       </div>
