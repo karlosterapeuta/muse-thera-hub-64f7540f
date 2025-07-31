@@ -26,8 +26,8 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#6D28D9",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -89,12 +89,12 @@ export default {
         "blink-glow": {
           "0%, 100%": {
             opacity: "1",
-            boxShadow: "0 0 20px rgba(139, 69, 19, 0.6), 0 0 40px rgba(219, 39, 119, 0.3)",
+            boxShadow: "0 0 20px rgba(33, 150, 243, 0.6), 0 0 40px rgba(30, 136, 229, 0.3)",
             transform: "scale(1)"
           },
           "50%": {
             opacity: "0.7",
-            boxShadow: "0 0 30px rgba(139, 69, 19, 0.9), 0 0 60px rgba(219, 39, 119, 0.6)",
+            boxShadow: "0 0 30px rgba(33, 150, 243, 0.9), 0 0 60px rgba(30, 136, 229, 0.6)",
             transform: "scale(1.05)"
           }
         },
