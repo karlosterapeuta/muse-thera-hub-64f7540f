@@ -83,9 +83,9 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
           <div className="absolute inset-2 bg-gradient-to-br from-white/20 to-transparent rounded-full"></div>
           <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
           <img 
-            src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png" 
+            src="/lovable-uploads/6302f00d-e2bf-4d19-95f3-eb52823c19d8.png" 
             alt="MuseTera Logo" 
-            className="relative w-16 h-16 object-contain filter drop-shadow-lg z-10"
+            className="relative w-full h-full object-cover filter drop-shadow-lg z-10 rounded-full"
           />
           {/* Musical Notes */}
           <Music className="absolute -top-2 -right-2 w-5 h-5 text-primary animate-bounce delay-500" />
