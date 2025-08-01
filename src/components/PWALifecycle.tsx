@@ -147,11 +147,11 @@ export function PWALifecycle() {
           title: 'Pronto para Instalação',
           description: 'Transforme em aplicativo nativo',
           icon: Download,
-          color: 'purple',
+          color: 'blue',
           action: (
             <Button 
               onClick={handleInstallWithProgress}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
             >
               <Download className="w-4 h-4 mr-2" />
               Instalar MuseTera
@@ -227,7 +227,7 @@ export function PWALifecycle() {
   return (
     <Card className={cn(
       "fixed bottom-4 left-4 w-80 shadow-xl border-2 transition-all duration-300 z-40",
-      stageInfo.color === 'purple' && "border-purple-300 bg-purple-50 dark:bg-purple-950/20",
+      stageInfo.color === 'blue' && "border-blue-300 bg-blue-50 dark:bg-blue-950/20",
       stageInfo.color === 'blue' && "border-blue-300 bg-blue-50 dark:bg-blue-950/20",
       stageInfo.color === 'green' && "border-green-300 bg-green-50 dark:bg-green-950/20",
       stageInfo.color === 'orange' && "border-orange-300 bg-orange-50 dark:bg-orange-950/20",
@@ -238,7 +238,7 @@ export function PWALifecycle() {
           <div className="flex items-center gap-3">
             <div className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center",
-              stageInfo.color === 'purple' && "bg-purple-500",
+              stageInfo.color === 'blue' && "bg-blue-500",
               stageInfo.color === 'blue' && "bg-blue-500",
               stageInfo.color === 'green' && "bg-green-500",
               stageInfo.color === 'orange' && "bg-orange-500",
@@ -287,7 +287,7 @@ export function PWALifecycle() {
           </Badge>
           
           {isInstalled && (
-            <Badge className="text-xs bg-purple-500 text-white">
+            <Badge className="text-xs bg-blue-500 text-white">
               <Smartphone className="w-3 h-3 mr-1" />
               Instalado
             </Badge>
@@ -347,7 +347,7 @@ export function PWALifecycle() {
                 <span>Funciona offline</span>
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <Star className="w-3 h-3 text-purple-500" />
+                <Star className="w-3 h-3 text-blue-500" />
                 <span>Ícone na tela inicial</span>
               </div>
             </div>

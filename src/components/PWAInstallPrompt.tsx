@@ -92,10 +92,10 @@ export function PWAInstallPrompt() {
       
       {/* Popup */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <Card className="w-full max-w-md mx-auto shadow-2xl animate-scale-in border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-950">
+        <Card className="w-full max-w-md mx-auto shadow-2xl animate-scale-in border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950">
           <CardContent className="p-0">
             {/* Header with gradient */}
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12" />
               
@@ -107,7 +107,7 @@ export function PWAInstallPrompt() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Instale o MuseTera</h2>
-                      <p className="text-purple-100 text-sm">no seu celular</p>
+                      <p className="text-blue-100 text-sm">no seu celular</p>
                     </div>
                   </div>
                   <Button
@@ -120,7 +120,7 @@ export function PWAInstallPrompt() {
                   </Button>
                 </div>
 
-                <p className="text-purple-100 text-sm leading-relaxed">
+                <p className="text-blue-100 text-sm leading-relaxed">
                   Acesse rapidamente suas ferramentas de musicoterapia direto da tela inicial
                 </p>
               </div>
@@ -176,13 +176,13 @@ export function PWAInstallPrompt() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-lg">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Star className="w-4 h-4 text-white" />
+                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 rounded-lg">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm text-purple-800 dark:text-purple-200">Ícone na tela inicial</p>
-                    <p className="text-xs text-purple-600 dark:text-purple-400">Como um aplicativo nativo</p>
+                    <p className="font-medium text-sm text-blue-800 dark:text-blue-200">Ícone na tela inicial</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">Como um aplicativo nativo</p>
                   </div>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export function PWAInstallPrompt() {
               <div className="space-y-3">
                 <Button 
                   onClick={handleInstall}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Instalar no celular
@@ -202,7 +202,7 @@ export function PWAInstallPrompt() {
                   <Button
                     variant="outline"
                     onClick={() => setShowManualInstructions(true)}
-                    className="w-full border-2 border-purple-200 hover:bg-purple-50 dark:border-purple-700 dark:hover:bg-purple-800"
+                    className="w-full border-2 border-blue-200 hover:bg-blue-50 dark:border-blue-700 dark:hover:bg-blue-800"
                   >
                     <Info className="w-4 h-4 mr-2" />
                     Ver instruções manuais

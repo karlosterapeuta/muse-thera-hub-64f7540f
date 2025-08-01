@@ -43,7 +43,7 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
   evaluationDate = new Date(),
   patientData = {}
 }) => {
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', 'hsl(214 88% 52%)'];
   
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) return '#10B981'; // Verde

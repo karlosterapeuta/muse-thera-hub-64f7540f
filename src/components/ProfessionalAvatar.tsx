@@ -122,7 +122,7 @@ export function ProfessionalAvatar({ size = "md", editable = false }: Profession
           src={professional?.avatar_url || ""} 
           alt={professional?.name || "Profissional"} 
         />
-        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
           {getInitials()}
         </AvatarFallback>
       </Avatar>

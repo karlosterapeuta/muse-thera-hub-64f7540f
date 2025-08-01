@@ -33,7 +33,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
               style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
             />
           </div>
-          <h1 style={{ color: '#6D28D9', fontSize: '24px', fontWeight: 'bold' }}>
+          <h1 style={{ color: 'hsl(214 88% 52%)', fontSize: '24px', fontWeight: 'bold' }}>
             {song.title}
           </h1>
         </div>

@@ -234,8 +234,8 @@ export const MuseteraReportPDF: React.FC<MuseteraReportPDFProps> = ({
               </ul>
             </div>
             
-            <div className="border-l-4 border-purple-500 pl-4">
-              <h4 className="font-medium text-purple-700">Longo Prazo (6+ meses)</h4>
+            <div className="border-l-4 border-blue-500 pl-4">
+              <h4 className="font-medium text-blue-700">Longo Prazo (6+ meses)</h4>
               <ul className="text-sm text-gray-700 mt-2 space-y-1">
                 <li>• Promover independência em atividades musicais</li>
                 <li>• Generalizar habilidades para outros contextos</li>

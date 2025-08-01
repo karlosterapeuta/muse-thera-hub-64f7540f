@@ -54,8 +54,8 @@ const developmentLevels = [
     level: 6,
     name: "Excepcional",
     description: "Habilidade altamente desenvolvida, performance exemplar e criativa",
-    color: "border-purple-500 bg-purple-50 text-purple-700",
-    circleColor: "bg-purple-500"
+    color: "border-blue-500 bg-blue-50 text-blue-700",
+    circleColor: "bg-blue-500"
   }
 ];
 
@@ -82,7 +82,7 @@ export function EvaluationLevelsHero() {
   };
 
   return (
-    <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-blue-200 shadow-lg">
+    <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 border-blue-200 shadow-lg">
       <CardContent className="p-3 sm:p-4 lg:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3">
@@ -103,10 +103,10 @@ export function EvaluationLevelsHero() {
               onClick={() => navigate('/scientific-article')}
               className={cn(
                 "relative overflow-hidden",
-                "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700",
-                "hover:from-purple-700 hover:via-pink-700 hover:to-purple-800",
+                "bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700",
+                "hover:from-blue-700 hover:via-blue-700 hover:to-blue-800",
                 "text-white font-semibold shadow-lg",
-                "border-2 border-purple-400",
+                "border-2 border-blue-400",
                 "animate-blink-glow",
                 "transition-all duration-300 hover:scale-105",
                 "motion-reduce:animate-none motion-reduce:transform-none",

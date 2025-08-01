@@ -118,7 +118,7 @@ export function PWAStatus() {
       {/* Installation Status */}
       {isInstalled && (
         <div className="flex justify-end">
-          <Badge className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg">
+          <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
             <Smartphone className="w-3 h-3 mr-1" />
             PWA Instalado
           </Badge>
@@ -127,7 +127,7 @@ export function PWAStatus() {
 
       {/* Quick Install (only show on mobile) */}
       {!isInstalled && isInstallable && showInstallPrompt && browserInfo.isMobile && (
-        <Card className="w-72 shadow-xl border-0 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50">
+        <Card className="w-72 shadow-xl border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
               <div className="space-y-3 flex-1">
@@ -137,7 +137,7 @@ export function PWAStatus() {
                     installationStep === 'installing' ? "bg-blue-500 animate-pulse" :
                     installationStep === 'success' ? "bg-green-500" :
                     installationStep === 'failed' ? "bg-red-500" :
-                    "bg-gradient-to-br from-purple-500 to-indigo-600"
+                    "bg-gradient-to-br from-blue-500 to-blue-600"
                   )}>
                     {installationStep === 'installing' ? (
                       <RefreshCw className="w-4 h-4 text-white animate-spin" />
@@ -172,7 +172,7 @@ export function PWAStatus() {
                     "w-full shadow-lg transform transition-all duration-200 hover:scale-105",
                     installationStep === 'success' ? "bg-green-600 hover:bg-green-700" :
                     installationStep === 'failed' ? "bg-red-600 hover:bg-red-700" :
-                    "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                    "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                   )}
                 >
                   {installationStep === 'installing' ? (

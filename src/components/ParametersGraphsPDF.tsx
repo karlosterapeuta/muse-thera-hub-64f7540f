@@ -148,7 +148,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 tick={{ fill: '#4B5563', fontSize: 10 }}
               />
               <YAxis domain={[0, 100]} tick={{ fill: '#4B5563' }} />
-              <Bar dataKey="value" fill="#6D28D9">
+              <Bar dataKey="value" fill="hsl(214 88% 52%)">
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={
                     entry.domain === "Musical" ? "#8884d8" :

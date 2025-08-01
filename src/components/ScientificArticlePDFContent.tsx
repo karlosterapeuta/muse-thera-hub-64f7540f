@@ -297,7 +297,7 @@ export function ScientificArticlePDFContent() {
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '15px' }}>
             {[
-              { domain: 'Musical', subdomains: 3, params: 24, color: '#8b5cf6', icon: '🎵' },
+              { domain: 'Musical', subdomains: 3, params: 24, color: 'hsl(214 88% 52%)', icon: '🎵' },
               { domain: 'Psicossocial', subdomains: 3, params: 24, color: '#0ea5e9', icon: '👥' },
               { domain: 'Cognitivo', subdomains: 3, params: 24, color: '#10b981', icon: '🧠' },
               { domain: 'Sensório-Motor', subdomains: 3, params: 24, color: '#f59e0b', icon: '👐' },
@@ -391,7 +391,7 @@ export function ScientificArticlePDFContent() {
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ width: '20%', fontSize: '10px', fontWeight: 'bold' }}>Musical:</div>
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
-                  <div style={{ width: '75%', backgroundColor: '#8b5cf6', borderRadius: '4px', height: '100%' }}></div>
+                  <div style={{ width: '75%', backgroundColor: 'hsl(214 88% 52%)', borderRadius: '4px', height: '100%' }}></div>
                 </div>
                 <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>4.5/6</div>
               </div>
