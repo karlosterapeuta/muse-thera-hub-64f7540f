@@ -419,13 +419,10 @@ export default function Evaluation() {
     
     const totalScore = parameters.reduce((acc, param) => {
       const score = calculateScore(domain, subdomain, param);
-      // Debug log para ver valores
-      console.log(`Debug - Domain: ${domain}, Subdomain: ${subdomain}, Param: ${param}, Score: ${score}`);
       return acc + score;
     }, 0);
     
     const percentage = Math.round((totalScore / maxPossible) * 100);
-    console.log(`Debug - Total Score: ${totalScore}, Max: ${maxPossible}, Percentage: ${percentage}`);
     
     return {
       raw: totalScore,
@@ -652,19 +649,14 @@ export default function Evaluation() {
   };
 
   const getScoreLabel = (score: number) => {
-    // Converte scores de 0-100 para 0-5 se necessário
-    let normalizedScore = score;
-    if (score > 5) {
-      normalizedScore = score / 20; // 0->0, 20->1, 40->2, 60->3, 80->4, 100->5
-    }
-    
-    switch(normalizedScore) {
+    // Mapeia diretamente os valores corretos
+    switch(score) {
       case 0: return "Não Observado: 0 pontos (0%)";
-      case 1: return "Emergente: 20 pontos (20%)";
-      case 2: return "Inconsistente: 40 pontos (40%)";
-      case 3: return "Moderado: 60 pontos (60%)";
-      case 4: return "Consistente: 80 pontos (80%)";
-      case 5: return "Excepcional: 100 pontos (100%)";
+      case 20: return "Emergente: 20 pontos (20%)";
+      case 40: return "Inconsistente: 40 pontos (40%)";
+      case 60: return "Moderado: 60 pontos (60%)";
+      case 80: return "Consistente: 80 pontos (80%)";
+      case 100: return "Excepcional: 100 pontos (100%)";
       default: return "Não Observado: 0 pontos (0%)";
     }
   };
