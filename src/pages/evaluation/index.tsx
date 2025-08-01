@@ -646,7 +646,13 @@ export default function Evaluation() {
   };
 
   const getScoreLabel = (score: number) => {
-    switch(score) {
+    // Converte scores de 0-100 para 0-5 se necessário
+    let normalizedScore = score;
+    if (score > 5) {
+      normalizedScore = score / 20; // 0->0, 20->1, 40->2, 60->3, 80->4, 100->5
+    }
+    
+    switch(normalizedScore) {
       case 0: return "Não Observado: 0 pontos (0%)";
       case 1: return "Emergente: 20 pontos (20%)";
       case 2: return "Inconsistente: 40 pontos (40%)";
