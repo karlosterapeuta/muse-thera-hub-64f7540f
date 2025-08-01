@@ -30,12 +30,12 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
   evaluationDomains
 }) => {
   const getScoreLabel = (score: number) => {
-    if (score === 0) return "Não Observado (0)";
-    if (score === 1) return "Emergente (1)";
-    if (score === 2) return "Inconsistente (2)";
-    if (score === 3) return "Moderado (3)";
-    if (score === 4) return "Consistente (4)";
-    if (score === 5) return "Excepcional (5)";
+    if (score === 0) return "Não Observado: 0 pontos (0%)";
+    if (score === 1) return "Emergente: 20 pontos (20%)";
+    if (score === 2) return "Inconsistente: 40 pontos (40%)";
+    if (score === 3) return "Moderado: 60 pontos (60%)";
+    if (score === 4) return "Consistente: 80 pontos (80%)";
+    if (score === 5) return "Excepcional: 100 pontos (100%)";
     return "Não avaliado";
   };
 
@@ -218,27 +218,27 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
           <div className="grid grid-cols-2 gap-1 text-xs">
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-              <span>Não Observado (0)</span>
+              <span>Não Observado: 0 pontos (0%)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
-              <span>Emergente (1)</span>
+              <span>Emergente: 20 pontos (20%)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-              <span>Inconsistente (2)</span>
+              <span>Inconsistente: 40 pontos (40%)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-              <span>Moderado (3)</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-              <span>Consistente (4)</span>
+              <span>Moderado: 60 pontos (60%)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-              <span>Excepcional (5)</span>
+              <span>Consistente: 80 pontos (80%)</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              <span>Excepcional: 100 pontos (100%)</span>
             </div>
           </div>
         </div>
