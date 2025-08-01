@@ -45,17 +45,10 @@ const developmentLevels = [
   },
   {
     level: 5,
-    name: "Avançado",
-    description: "Habilidade bem desenvolvida, demonstrada com qualidade superior",
-    color: "border-green-500 bg-green-50 text-green-700",
-    circleColor: "bg-green-500"
-  },
-  {
-    level: 6,
     name: "Excepcional",
     description: "Habilidade altamente desenvolvida, performance exemplar e criativa",
-    color: "border-blue-500 bg-blue-50 text-blue-700",
-    circleColor: "bg-blue-500"
+    color: "border-green-500 bg-green-50 text-green-700",
+    circleColor: "bg-green-500"
   }
 ];
 
@@ -94,7 +87,7 @@ export function EvaluationLevelsHero() {
                 Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                Sistema de pontuação expandido (0-6) para avaliação musicoterapêutica profissional
+                Sistema de 6 níveis com pontuação de 0 a 100 pontos para avaliação musicoterapêutica profissional
               </p>
             </div>
           </div>
@@ -182,16 +175,15 @@ export function EvaluationLevelsHero() {
           <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-white/60 rounded-lg border border-gray-200">
             <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
               <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />
-              Como usar a Escala MuseTera (0-6):
+              Como usar a Escala MuseTera (0-5) - Total de 100 Pontos:
             </h4>
             <ul className="text-xs sm:text-sm text-gray-700 space-y-2">
-              <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> Use quando a habilidade não foi demonstrada ou observada</li>
-              <li className="leading-relaxed">• <strong>1 - Emergente:</strong> Primeiros sinais da habilidade, demonstrações muito esporádicas</li>
-              <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> Habilidade presente mas com grande variação na qualidade</li>
-              <li className="leading-relaxed">• <strong>3 - Moderado:</strong> Habilidade funcional que requer apoio ou orientação</li>
-              <li className="leading-relaxed">• <strong>4 - Consistente:</strong> Habilidade bem estabelecida e demonstrada independentemente</li>
-              <li className="leading-relaxed">• <strong>5 - Avançado:</strong> Performance superior com qualidade e refinamento</li>
-              <li className="leading-relaxed">• <strong>6 - Excepcional:</strong> Demonstração exemplar com criatividade e maestria</li>
+              <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada ou observada</li>
+              <li className="leading-relaxed">• <strong>1 - Emergente:</strong> 20 pontos (20%) - Primeiros sinais da habilidade, demonstrações esporádicas</li>
+              <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> 40 pontos (40%) - Habilidade presente mas com grande variação na qualidade</li>
+              <li className="leading-relaxed">• <strong>3 - Moderado:</strong> 60 pontos (60%) - Habilidade funcional que requer apoio ou orientação</li>
+              <li className="leading-relaxed">• <strong>4 - Consistente:</strong> 80 pontos (80%) - Habilidade bem estabelecida e demonstrada independentemente</li>
+              <li className="leading-relaxed">• <strong>5 - Excepcional:</strong> 100 pontos (100%) - Demonstração exemplar com criatividade e maestria</li>
             </ul>
             <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
               <p className="text-xs sm:text-sm text-blue-800 font-medium leading-relaxed">

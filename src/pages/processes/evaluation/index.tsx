@@ -479,15 +479,15 @@ export default function Evaluation() {
     if (!value) return 0;
     
     return value === "nao_observado" ? 0 : 
-           value === "emergente" ? 1 : 
-           value === "inconsistente" ? 2 : 
-           value === "moderado" ? 3 :
-           value === "consistente" ? 4 : 
-           value === "avancado" ? 5 : 6;
+           value === "emergente" ? 20 : 
+           value === "inconsistente" ? 40 : 
+           value === "moderado" ? 60 :
+           value === "consistente" ? 80 : 
+           value === "excepcional" ? 100 : 0;
   };
 
   const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
-    const maxPossible = parameters.length * 6;
+    const maxPossible = parameters.length * 100;
     
     const totalScore = parameters.reduce((acc, param) => {
       return acc + calculateScore(domain, subdomain, param);
@@ -506,7 +506,7 @@ export default function Evaluation() {
     domain.subdomains.forEach((subdomain: any) => {
       const score = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
       totalScore += score.raw;
-      maxPossible += subdomain.parameters.length * 6;
+      maxPossible += subdomain.parameters.length * 100;
     });
     
     return {
@@ -524,7 +524,7 @@ export default function Evaluation() {
         subdomain.parameters.forEach(param => {
           const score = calculateScore(domain.title, subdomain.title, param);
           totalScore += score;
-          maxPossible += 6;
+          maxPossible += 100;
         });
       });
     });
@@ -705,7 +705,6 @@ export default function Evaluation() {
       case 3: return "border-yellow-400";
       case 4: return "border-blue-500";
       case 5: return "border-green-500";
-      case 6: return "border-purple-500";
       default: return "border-gray-400";
     }
   };
@@ -720,7 +719,6 @@ export default function Evaluation() {
       case 3: return "bg-yellow-400";
       case 4: return "bg-blue-500";
       case 5: return "bg-green-500";
-      case 6: return "bg-purple-500";
       default: return "bg-white";
     }
   };
@@ -871,8 +869,8 @@ export default function Evaluation() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
                 <p className="text-blue-700 text-sm">
-                  Sistema de pontuação expandido (0-6): Não Observado (0), Emergente (1), Inconsistente (2), 
-                  Moderado (3), Consistente (4), Avançado (5), Excepcional (6)
+                  Sistema de 6 níveis (0-5): Não Observado (0), Emergente (1), Inconsistente (2), 
+                  Moderado (3), Consistente (4), Excepcional (5) - Total de 100 pontos
                 </p>
               </div>
 
@@ -943,12 +941,8 @@ export default function Evaluation() {
                                     <span className="block text-xs font-normal">(4)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Avançado</span>
-                                    <span className="block text-xs font-normal">(5)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center">
                                     <span className="block text-xs font-normal">Excepcional</span>
-                                    <span className="block text-xs font-normal">(6)</span>
+                                    <span className="block text-xs font-normal">(5)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
@@ -956,7 +950,7 @@ export default function Evaluation() {
                                 {subdomain.parameters.map((parameter, paramIndex) => (
                                   <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
                                     <TableCell className="text-sm sm:text-base font-medium text-gray-800 py-4">{parameter}</TableCell>
-                                    {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "avancado", "excepcional"].map((level, levelIndex) => (
+                                    {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
                                       <TableCell key={level} className="text-center p-2 sm:p-4">
                                         <RadioGroup
                                           value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}

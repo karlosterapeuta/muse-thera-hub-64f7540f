@@ -33,11 +33,12 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
   const COLORS = ['#4ade80', '#ffa1b5'];
 
   const getScoreLabel = (score: number) => {
-    if (score === 0) return "Ausente (0)";
+    if (score === 0) return "Não Observado (0)";
     if (score === 1) return "Emergente (1)";
     if (score === 2) return "Inconsistente (2)";
-    if (score === 3) return "Consistente (3)";
-    if (score === 4) return "Independente (4)";
+    if (score === 3) return "Moderado (3)";
+    if (score === 4) return "Consistente (4)";
+    if (score === 5) return "Excepcional (5)";
     return "Não avaliado";
   };
 
@@ -47,6 +48,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
     if (score === 2) return "#eab308"; // yellow
     if (score === 3) return "#3b82f6"; // blue
     if (score === 4) return "#22c55e"; // green
+    if (score === 5) return "#22c55e"; // green
     return "#6b7280"; // gray
   };
 
@@ -219,11 +221,12 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                   {subdomain.parameters.map((parameter: string, paramIndex: number) => {
                     const key = `${domain.title}-${subdomain.title}-${parameter}`;
                     const selectedValue = selectedParameters?.[key];
-                    const score = selectedValue === "ausente" ? 0 : 
+                    const score = selectedValue === "nao_observado" ? 0 : 
                                 selectedValue === "emergente" ? 1 : 
                                 selectedValue === "inconsistente" ? 2 : 
-                                selectedValue === "consistente" ? 3 : 
-                                selectedValue === "independente" ? 4 : null;
+                                selectedValue === "moderado" ? 3 : 
+                                selectedValue === "consistente" ? 4 : 
+                                selectedValue === "excepcional" ? 5 : null;
                     
                     return (
                       <div key={paramIndex} className="flex justify-between items-center p-1.5 bg-gray-50 rounded text-xs">
@@ -264,7 +267,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
           <div className="grid grid-cols-2 gap-1 text-xs">
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-              <span>Ausente (0)</span>
+              <span>Não Observado (0)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
@@ -276,11 +279,15 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-              <span>Consistente (3)</span>
+              <span>Moderado (3)</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+              <span>Consistente (4)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-              <span>Independente (4)</span>
+              <span>Excepcional (5)</span>
             </div>
           </div>
         </div>
