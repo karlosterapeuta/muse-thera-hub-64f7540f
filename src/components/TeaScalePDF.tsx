@@ -34,21 +34,21 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 
   const getScoreLabel = (score: number) => {
     if (score === 0) return "Não Observado: 0 pontos (0%)";
-    if (score === 1) return "Emergente: 20 pontos (20%)";
-    if (score === 2) return "Inconsistente: 40 pontos (40%)";
-    if (score === 3) return "Moderado: 60 pontos (60%)";
-    if (score === 4) return "Consistente: 80 pontos (80%)";
-    if (score === 5) return "Excepcional: 100 pontos (100%)";
+    if (score === 20) return "Emergente: 20 pontos (20%)";
+    if (score === 40) return "Inconsistente: 40 pontos (40%)";
+    if (score === 60) return "Moderado: 60 pontos (60%)";
+    if (score === 80) return "Consistente: 80 pontos (80%)";
+    if (score === 100) return "Excepcional: 100 pontos (100%)";
     return "Não avaliado";
   };
 
   const getScoreColor = (score: number) => {
     if (score === 0) return "#ef4444"; // red
-    if (score === 1) return "#f97316"; // orange
-    if (score === 2) return "#eab308"; // yellow
-    if (score === 3) return "#3b82f6"; // blue
-    if (score === 4) return "#22c55e"; // green
-    if (score === 5) return "#22c55e"; // green
+    if (score === 20) return "#f97316"; // orange
+    if (score === 40) return "#eab308"; // yellow
+    if (score === 60) return "#3b82f6"; // blue
+    if (score === 80) return "#22c55e"; // green
+    if (score === 100) return "#22c55e"; // green
     return "#6b7280"; // gray
   };
 
@@ -222,11 +222,11 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                     const key = `${domain.title}-${subdomain.title}-${parameter}`;
                     const selectedValue = selectedParameters?.[key];
                     const score = selectedValue === "nao_observado" ? 0 : 
-                                selectedValue === "emergente" ? 1 : 
-                                selectedValue === "inconsistente" ? 2 : 
-                                selectedValue === "moderado" ? 3 : 
-                                selectedValue === "consistente" ? 4 : 
-                                selectedValue === "excepcional" ? 5 : null;
+                                selectedValue === "emergente" ? 20 : 
+                                selectedValue === "inconsistente" ? 40 : 
+                                selectedValue === "moderado" ? 60 : 
+                                selectedValue === "consistente" ? 80 : 
+                                selectedValue === "excepcional" ? 100 : null;
                     
                     return (
                       <div key={paramIndex} className="flex justify-between items-center p-1.5 bg-gray-50 rounded text-xs">

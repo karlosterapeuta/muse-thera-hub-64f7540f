@@ -45,8 +45,8 @@ export function ScientificArticlePDFContent() {
           psicométrica envolvendo 847 participantes em 23 centros brasileiros. A escala foi estruturada 
           em 5 domínios principais: Musical, Psicossocial, Cognitivo, Sensório-Motor e Comunicativo-Interativo, 
           totalizando 16 subdomínios e 128 parâmetros específicos. O sistema de pontuação expandido utiliza 
-          escala de 7 pontos (0-6: ausente, emergente, inconsistente, desenvolvimento, consistente, avançado, 
-          superior) com critérios objetivos definidos. Implementação pioneira de avaliação parcial permitindo 
+           escala de 6 pontos (0-100: não observado, emergente, inconsistente, moderado, consistente, excepcional) 
+           com critérios objetivos definidos. Implementação pioneira de avaliação parcial permitindo
           análise de domínios específicos. <strong>Resultados:</strong> A Escala MuseTera demonstrou excelentes 
           propriedades psicométricas: confiabilidade interna α=0.952, concordância inter-avaliadores κ=0.901, 
           validade de construto confirmada por análise fatorial (KMO=0.95; p&lt;0.001). O instrumento apresentou 
@@ -74,7 +74,7 @@ export function ScientificArticlePDFContent() {
           involving 847 participants across 23 Brazilian centers. The scale was structured into 5 main 
           domains: Musical, Psychosocial, Cognitive, Sensory-Motor, and Communicative-Interactive, totaling 
           16 subdomains and 128 specific parameters. The expanded scoring system uses a 7-point scale 
-          (0-6: absent, emergent, inconsistent, developing, consistent, advanced, superior) with defined 
+          (0-100: not observed, emergent, inconsistent, moderate, consistent, exceptional) with defined 
           objective criteria. Pioneer implementation of partial evaluation allowing specific domain analysis. 
           <strong>Results:</strong> The MuseTera Scale demonstrated excellent psychometric properties: 
           internal reliability α=0.952, inter-rater agreement κ=0.901, construct validity confirmed by 
@@ -166,8 +166,8 @@ export function ScientificArticlePDFContent() {
 
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.4 Sistema de Pontuação Expandido</h3>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          Foi implementado sistema expandido de pontuação de 7 pontos (0-6): 0=Ausente, 1=Emergente, 
-          2=Inconsistente, 3=Em Desenvolvimento, 4=Consistente, 5=Avançado, 6=Superior. Cada nível 
+          Foi implementado sistema de pontuação de 6 níveis (0-100): 0=Não Observado, 20=Emergente, 
+          40=Inconsistente, 60=Moderado, 80=Consistente, 100=Excepcional. Cada nível 
           possui critérios objetivos específicos baseados em evidências científicas e observação 
           clínica estruturada.
         </p>

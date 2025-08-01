@@ -425,11 +425,12 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
                   {subdomain.parameters.map((parameter: string, paramIndex: number) => {
                     const key = `${domain.title}-${subdomain.title}-${parameter}`;
                     const value = selectedParameters[key];
-                    const score = value === "ausente" ? 0 : 
-                                 value === "emergente" ? 1 : 
-                                 value === "inconsistente" ? 2 : 
-                                 value === "consistente" ? 3 : 
-                                 value === "independente" ? 4 : 0;
+                    const score = value === "nao_observado" ? 0 : 
+                                 value === "emergente" ? 20 : 
+                                 value === "inconsistente" ? 40 : 
+                                 value === "moderado" ? 60 : 
+                                 value === "consistente" ? 80 : 
+                                 value === "excepcional" ? 100 : 0;
                     
                     return (
                       <div key={paramIndex} style={{ 

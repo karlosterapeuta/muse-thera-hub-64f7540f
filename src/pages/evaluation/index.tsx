@@ -829,8 +829,8 @@ export default function Evaluation() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
                 <p className="text-blue-700 text-sm">
-                  Sistema de pontuação expandido (0-6): Não Observado (0), Emergente (1), Inconsistente (2), 
-                  Moderado (3), Consistente (4), Avançado (5), Excepcional (6)
+                  Sistema de pontuação (0-100): Não Observado (0), Emergente (20), Inconsistente (40), 
+                  Moderado (60), Consistente (80), Excepcional (100)
                 </p>
               </div>
 
