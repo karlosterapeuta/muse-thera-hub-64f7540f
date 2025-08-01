@@ -663,12 +663,12 @@ export default function Evaluation() {
 
   const getScoreColor = (score: number) => {
     switch(score) {
-      case 0: return "border-red-500";
-      case 1: return "border-orange-400";
-      case 2: return "border-yellow-400";
-      case 3: return "border-blue-500";
-      case 4: return "border-green-500";
-      case 5: return "border-green-500";
+      case 0: return "border-red-500";      // Não Observado
+      case 20: return "border-orange-400";  // Emergente
+      case 40: return "border-yellow-400";  // Inconsistente
+      case 60: return "border-blue-500";    // Moderado
+      case 80: return "border-green-500";   // Consistente
+      case 100: return "border-green-500";  // Excepcional
       default: return "border-red-500";
     }
   };
@@ -677,13 +677,25 @@ export default function Evaluation() {
     if (!isSelected) return "bg-white";
     
     switch(score) {
-      case 0: return "bg-red-500";
-      case 1: return "bg-orange-400";
-      case 2: return "bg-yellow-400";
-      case 3: return "bg-blue-500";
-      case 4: return "bg-green-500";
-      case 5: return "bg-green-500";
+      case 0: return "bg-red-500";      // Não Observado
+      case 20: return "bg-orange-400";  // Emergente
+      case 40: return "bg-yellow-400";  // Inconsistente
+      case 60: return "bg-blue-500";    // Moderado
+      case 80: return "bg-green-500";   // Consistente
+      case 100: return "bg-green-500";  // Excepcional
       default: return "bg-white";
+    }
+  };
+
+  const levelToScore = (level: string): number => {
+    switch(level) {
+      case '0': return 0;   // Não Observado
+      case '1': return 20;  // Emergente
+      case '2': return 40;  // Inconsistente
+      case '3': return 60;  // Moderado
+      case '4': return 80;  // Consistente
+      case '5': return 100; // Excepcional
+      default: return 0;
     }
   };
 
@@ -990,13 +1002,13 @@ export default function Evaluation() {
                                               id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
                                               className="sr-only"
                                             />
-                                            <label
-                                              htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelIndex)} ${
-                                                selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                                  ? getScoreBgColor(levelIndex, true)
-                                                  : "bg-white"
-                                              }`}
+                                             <label
+                                               htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                               className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelToScore(level))} ${
+                                                 selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
+                                                   ? getScoreBgColor(levelToScore(level), true)
+                                                   : "bg-white"
+                                               }`}
                                             />
                                           </div>
                                         </RadioGroup>
