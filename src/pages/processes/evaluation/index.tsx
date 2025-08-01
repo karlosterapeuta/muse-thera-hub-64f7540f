@@ -699,13 +699,13 @@ export default function Evaluation() {
 
   const getScoreColor = (score: number) => {
     switch(score) {
-      case 0: return "border-gray-400";
-      case 1: return "border-red-500";
-      case 2: return "border-orange-400";
-      case 3: return "border-yellow-400";
-      case 4: return "border-blue-500";
+      case 0: return "border-red-500";
+      case 1: return "border-orange-400";
+      case 2: return "border-yellow-400";
+      case 3: return "border-blue-500";
+      case 4: return "border-green-500";
       case 5: return "border-green-500";
-      default: return "border-gray-400";
+      default: return "border-red-500";
     }
   };
 
@@ -713,11 +713,11 @@ export default function Evaluation() {
     if (!isSelected) return "bg-white";
     
     switch(score) {
-      case 0: return "bg-gray-400";
-      case 1: return "bg-red-500";
-      case 2: return "bg-orange-400";
-      case 3: return "bg-yellow-400";
-      case 4: return "bg-blue-500";
+      case 0: return "bg-red-500";
+      case 1: return "bg-orange-400";
+      case 2: return "bg-yellow-400";
+      case 3: return "bg-blue-500";
+      case 4: return "bg-green-500";
       case 5: return "bg-green-500";
       default: return "bg-white";
     }

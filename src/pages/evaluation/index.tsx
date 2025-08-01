@@ -647,25 +647,25 @@ export default function Evaluation() {
 
   const getScoreLabel = (score: number) => {
     switch(score) {
-      case 0: return "Não Observado";
-      case 1: return "Emergente";
-      case 2: return "Inconsistente";
-      case 3: return "Moderado";
-      case 4: return "Consistente";
-      case 5: return "Excepcional";
-      default: return "Não Observado";
+      case 0: return "Não Observado: 0 pontos (0%)";
+      case 1: return "Emergente: 20 pontos (20%)";
+      case 2: return "Inconsistente: 40 pontos (40%)";
+      case 3: return "Moderado: 60 pontos (60%)";
+      case 4: return "Consistente: 80 pontos (80%)";
+      case 5: return "Excepcional: 100 pontos (100%)";
+      default: return "Não Observado: 0 pontos (0%)";
     }
   };
 
   const getScoreColor = (score: number) => {
     switch(score) {
-      case 0: return "border-gray-400";
-      case 1: return "border-red-500";
-      case 2: return "border-orange-400";
-      case 3: return "border-yellow-400";
-      case 4: return "border-blue-500";
+      case 0: return "border-red-500";
+      case 1: return "border-orange-400";
+      case 2: return "border-yellow-400";
+      case 3: return "border-blue-500";
+      case 4: return "border-green-500";
       case 5: return "border-green-500";
-      default: return "border-gray-400";
+      default: return "border-red-500";
     }
   };
 
@@ -673,11 +673,11 @@ export default function Evaluation() {
     if (!isSelected) return "bg-white";
     
     switch(score) {
-      case 0: return "bg-gray-400";
-      case 1: return "bg-red-500";
-      case 2: return "bg-orange-400";
-      case 3: return "bg-yellow-400";
-      case 4: return "bg-blue-500";
+      case 0: return "bg-red-500";
+      case 1: return "bg-orange-400";
+      case 2: return "bg-yellow-400";
+      case 3: return "bg-blue-500";
+      case 4: return "bg-green-500";
       case 5: return "bg-green-500";
       default: return "bg-white";
     }
