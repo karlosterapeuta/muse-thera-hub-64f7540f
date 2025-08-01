@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex min-h-screen flex-col pwa-mobile-optimized ios-vh-fix">
+    <div className="flex min-h-screen flex-col">
       <div className="flex flex-1 relative">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -25,7 +25,7 @@ export default function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95 pwa-header"
+                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
               >
                 <Menu className="h-6 w-6 text-primary" />
               </Button>
@@ -40,7 +40,7 @@ export default function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(!isOpen)}
-              className="fixed top-4 left-4 z-50 hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95 pwa-header"
+              className="fixed top-4 left-4 z-50 hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
             >
               <Menu className="h-6 w-6 text-primary" />
             </Button>
@@ -53,17 +53,17 @@ export default function Layout({ children }: LayoutProps) {
           </>
         )}
         <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background min-h-screen relative overflow-y-auto scroll-container">
-          <div className="fixed top-4 right-4 z-50 pwa-header">
+          <div className="fixed top-4 right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="max-w-7xl mx-auto pt-16 sm:pt-20 animate-pwa-fade-in">
+          <div className="max-w-7xl mx-auto pt-16 sm:pt-20">
             {children || <Outlet />}
           </div>
         </main>
       </div>
       
       {/* Footer */}
-      <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm pwa-footer">
+      <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           © 2025 MuseTera • Plataforma de Musicoterapia
         </div>

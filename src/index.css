@@ -1,61 +1,8 @@
-
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* PWA Specific Optimizations */
-@layer base {
-  /* Mobile viewport handling */
-  :root {
-    --vh: 1vh;
-    --safe-area-inset-top: env(safe-area-inset-top);
-    --safe-area-inset-right: env(safe-area-inset-right);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left: env(safe-area-inset-left);
-  }
-
-  /* Base responsive font sizing */
-  html {
-    font-size: 16px;
-    -webkit-text-size-adjust: 100%;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* PWA body optimizations */
-  body {
-    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    overscroll-behavior: none;
-    touch-action: manipulation;
-  }
-
-  /* PWA installed state */
-  .pwa-installed {
-    padding-top: var(--safe-area-inset-top);
-    padding-bottom: var(--safe-area-inset-bottom);
-    padding-left: var(--safe-area-inset-left);
-    padding-right: var(--safe-area-inset-right);
-  }
-
-  /* Mobile responsive scaling */
-  @media (max-width: 640px) {
-    html {
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    html {
-      font-size: 13px;
-    }
-  }
-}
 
 @layer base {
   :root {
@@ -65,38 +12,25 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 214 88% 52%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 214 50% 85%;
+    --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 214 40% 96%;
+    --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 214 70% 75%;
+    --accent: 210 40% 96%;
     --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 214 88% 52%;
-    --radius: 0.5rem;
-    --chart-1: 214 88% 52%;
-    --chart-2: 214 70% 65%;
-    --chart-3: 214 50% 45%;
-    --chart-4: 214 30% 35%;
-    --chart-5: 214 60% 75%;
-    
-    /* Extended blue palette for harmony */
-    --blue-50: 214 100% 97%;
-    --blue-100: 214 95% 93%;
-    --blue-200: 214 87% 86%;
-    --blue-300: 214 83% 76%;
-    --blue-400: 214 82% 65%;
-    --blue-500: 214 88% 52%;
-    --blue-600: 214 94% 42%;
-    --blue-700: 214 96% 35%;
-    --blue-800: 214 87% 29%;
-    --blue-900: 214 84% 24%;
-    --blue-950: 214 91% 15%;
+    --ring: 221.2 83.2% 53.3%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -106,195 +40,220 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 214 85% 65%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 214 32.6% 17.5%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 214 32.6% 17.5%;
+    --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 214 40% 25%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32.6% 17.5%;
-    --input: 214 32.6% 17.5%;
-    --ring: 214 85% 65%;
-    --chart-1: 214 85% 65%;
-    --chart-2: 214 70% 55%;
-    --chart-3: 214 50% 40%;
-    --chart-4: 214 30% 30%;
-    --chart-5: 214 60% 70%;
-    
-    /* Extended blue palette for dark mode */
-    --blue-50: 214 91% 15%;
-    --blue-100: 214 84% 24%;
-    --blue-200: 214 87% 29%;
-    --blue-300: 214 96% 35%;
-    --blue-400: 214 94% 42%;
-    --blue-500: 214 85% 65%;
-    --blue-600: 214 82% 65%;
-    --blue-700: 214 83% 76%;
-    --blue-800: 214 87% 86%;
-    --blue-900: 214 95% 93%;
-    --blue-950: 214 100% 97%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: "Inter", sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
+/* Enhanced animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.3s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Spline component styling */
-.spline-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.spline-container spline-viewer {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Custom scrollbar for webkit browsers */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
-}
-
-/* Custom styles for form elements */
-.form-section {
-  @apply space-y-4 p-4 border border-border rounded-lg;
-}
-
-.form-row {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
-}
-
-.form-row-3 {
-  @apply grid grid-cols-1 md:grid-cols-3 gap-4;
-}
-
-/* Music player styles */
-.music-note {
-  animation: float 2s ease-in-out infinite;
-}
-
-.music-note:nth-child(2) {
-  animation-delay: 0.5s;
-}
-
-.music-note:nth-child(3) {
-  animation-delay: 1s;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
-  50% {
-    transform: translateY(-10px);
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-/* Responsive design helpers */
-.container-responsive {
-  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Animation for loading states */
-.loading-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
+@keyframes pulse-gentle {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: .5;
+    opacity: 0.8;
   }
 }
 
-/* Custom styles for charts */
-.recharts-cartesian-axis-tick-value {
-  font-size: 12px;
-  fill: hsl(var(--muted-foreground));
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
 }
 
-.recharts-legend-item-text {
-  color: hsl(var(--foreground)) !important;
+.animate-slide-in {
+  animation: slideIn 0.6s ease-out;
 }
 
-/* Mobile-first responsive utilities */
-@media (max-width: 640px) {
-  .mobile-padding {
-    @apply px-2;
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+/* Music note animation */
+.music-note {
+  position: relative;
+  display: inline-block;
+}
+
+.music-note::after {
+  content: "♪";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 0.8em;
+  opacity: 0;
+  animation: noteFloat 2s ease-in-out infinite;
+}
+
+@keyframes noteFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0px);
   }
-  
-  .mobile-text {
-    @apply text-sm;
+  50% {
+    opacity: 1;
+    transform: translateY(-10px);
   }
 }
 
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  
-  .print-break {
-    page-break-before: always;
-  }
+/* Loading pulse animation */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient backgrounds */
+.gradient-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-blue {
+  background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+/* Card enhancements */
+.card-elegant {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Text glow effect */
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Smooth scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Focus enhancements */
+.focus-ring {
+  transition: box-shadow 0.2s ease;
+}
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* Enhanced button styles */
+.btn-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Interactive elements */
+.interactive {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.interactive:hover {
+  transform: scale(1.05);
+}
+
+.interactive:active {
+  transform: scale(0.95);
+}
+
+/* Enhanced spacing utilities */
+.space-y-relaxed > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-y-comfortable > * + * {
+  margin-top: 1rem;
+}
+
+/* Typography enhancements */
+.text-balance {
+  text-wrap: balance;
 }
 
 /* High contrast mode support */
@@ -314,192 +273,22 @@
   }
 }
 
-/* PWA Specific Utilities */
-@layer utilities {
-  /* Mobile viewport height fix */
-  .min-h-screen-mobile {
-    min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100);
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
   }
-
-  .h-screen-mobile {
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100);
-  }
-
-  /* Touch-friendly interactive elements */
+  
   .touch-target {
     min-height: 44px;
     min-width: 44px;
-    @apply inline-flex items-center justify-center;
-  }
-
-  /* iOS safe area support */
-  .safe-top {
-    padding-top: var(--safe-area-inset-top);
-  }
-
-  .safe-bottom {
-    padding-bottom: var(--safe-area-inset-bottom);
-  }
-
-  .safe-left {
-    padding-left: var(--safe-area-inset-left);
-  }
-
-  .safe-right {
-    padding-right: var(--safe-area-inset-right);
-  }
-
-  .safe-area {
-    padding-top: var(--safe-area-inset-top);
-    padding-bottom: var(--safe-area-inset-bottom);
-    padding-left: var(--safe-area-inset-left);
-    padding-right: var(--safe-area-inset-right);
-  }
-
-  /* Smooth scrolling for containers */
-  .smooth-scroll {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-
-  /* Optimized font rendering */
-  .crisp-text {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-
-  /* PWA specific animations */
-  .pwa-fade-in {
-    animation: pwaFadeIn 0.4s ease-out;
-  }
-
-  .pwa-slide-up {
-    animation: pwaSlideUp 0.4s ease-out;
-  }
-
-  @keyframes pwaFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes pwaSlideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Landscape orientation optimizations */
-  @media (orientation: landscape) and (max-height: 500px) {
-    .landscape-compact {
-      @apply py-2;
-    }
-  }
-
-  /* High DPI optimization */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .high-dpi-crisp {
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-    }
   }
 }
 
-/* Enhanced PWA Mobile Optimizations */
-@media (max-width: 768px) {
-  .pwa-mobile-optimized {
-    padding-top: var(--pwa-safe-area-top);
-    padding-bottom: var(--pwa-safe-area-bottom);
-    padding-left: var(--pwa-safe-area-left);
-    padding-right: var(--pwa-safe-area-right);
+/* Print styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
-  
-  /* Touch-friendly interface */
-  button, .btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Prevent zoom on inputs */
-  input, textarea, select {
-    font-size: 16px;
-  }
-  
-  /* Better scroll behavior */
-  .scroll-container {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-}
-
-/* PWA Standalone Mode */
-@media (display-mode: standalone) {
-  body {
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .pwa-header {
-    padding-top: var(--pwa-safe-area-top);
-  }
-  
-  .pwa-footer {
-    padding-bottom: var(--pwa-safe-area-bottom);
-  }
-}
-
-/* iOS PWA specific optimizations */
-@supports (-webkit-touch-callout: none) {
-  .ios-pwa-fix {
-    /* Prevent bounce scroll */
-    position: fixed;
-    overflow: hidden;
-  }
-  
-  /* Fix viewport height issues */
-  .ios-vh-fix {
-    height: calc(var(--vh, 1vh) * 100);
-  }
-}
-
-/* Animation classes for PWA */
-@keyframes pwa-fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pwa-scale-in {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pwa-slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.animate-pwa-fade-in {
-  animation: pwa-fade-in 0.3s var(--pwa-smooth) forwards;
-}
-
-.animate-pwa-scale-in {
-  animation: pwa-scale-in 0.3s var(--pwa-bounce) forwards;
-}
-
-.animate-pwa-slide-up {
-  animation: pwa-slide-up 0.3s var(--pwa-smooth) forwards;
 }

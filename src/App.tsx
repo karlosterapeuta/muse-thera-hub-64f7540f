@@ -8,9 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Layout from "./components/Layout";
 import AuthStatusChecker from "./components/auth/AuthStatusChecker";
-import { PWAStatus } from "./components/PWAStatus";
-import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
-import { PWAOptimizer } from "./components/PWAOptimizer";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -31,9 +28,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PWAOptimizer />
-      <PWAStatus />
-      <PWAInstallPrompt />
       <BrowserRouter>
         <AuthStatusChecker />
         <Suspense fallback={<LoadingSpinner />}>
