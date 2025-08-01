@@ -418,12 +418,18 @@ export default function Evaluation() {
     const maxPossible = parameters.length * 100;
     
     const totalScore = parameters.reduce((acc, param) => {
-      return acc + calculateScore(domain, subdomain, param);
+      const score = calculateScore(domain, subdomain, param);
+      // Debug log para ver valores
+      console.log(`Debug - Domain: ${domain}, Subdomain: ${subdomain}, Param: ${param}, Score: ${score}`);
+      return acc + score;
     }, 0);
+    
+    const percentage = Math.round((totalScore / maxPossible) * 100);
+    console.log(`Debug - Total Score: ${totalScore}, Max: ${maxPossible}, Percentage: ${percentage}`);
     
     return {
       raw: totalScore,
-      percentage: Math.round((totalScore / maxPossible) * 100)
+      percentage: percentage
     };
   };
 
