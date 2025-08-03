@@ -41,7 +41,19 @@ export const useEvolutionReport = () => {
   const organizeWithAI = async () => {
     if (!selectedPatient) {
       toast.error("Por favor, selecione um paciente antes de organizar com IA");
-      return;
+      return false;
+    }
+
+    // Verificar se há dados suficientes para organizar
+    const hasData = Object.values(formData).some(value => 
+      value && typeof value === 'string' && value.trim() !== ''
+    );
+
+    if (!hasData) {
+      toast.error("Adicione algumas informações antes de organizar com IA", {
+        description: "Selecione opções rápidas ou digite dados personalizados para que a IA possa organizar o relatório."
+      });
+      return false;
     }
 
     setIsOrganizingWithAI(true);
@@ -80,6 +92,7 @@ export const useEvolutionReport = () => {
         toast.success("Relatório organizado com IA!", {
           description: "O conteúdo foi estruturado automaticamente. Revise e ajuste conforme necessário.",
         });
+        return true;
       } else if (data.fallbackContent) {
         // Usar conteúdo de fallback em caso de erro
         setFormData(prev => ({
@@ -90,6 +103,7 @@ export const useEvolutionReport = () => {
         toast.success("Conteúdo básico organizado", {
           description: "Foi adicionado conteúdo estruturado. Revise e complemente conforme necessário.",
         });
+        return true;
       } else {
         throw new Error('Resposta inválida da IA');
       }
@@ -99,6 +113,7 @@ export const useEvolutionReport = () => {
       toast.error("Erro na organização com IA", {
         description: error instanceof Error ? error.message : "Não foi possível organizar o relatório automaticamente.",
       });
+      return false;
     } finally {
       setIsOrganizingWithAI(false);
     }

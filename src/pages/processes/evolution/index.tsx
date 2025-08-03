@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp } from "lucide-react";
+import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useEvolutionReport } from "@/hooks/useEvolutionReport";
 import { evolutionSections } from "@/data/evolutionTemplate";
@@ -64,6 +64,15 @@ export default function EvolutionReport() {
     const success = await saveReport();
     if (success) {
       setActiveTab("preview");
+    }
+  };
+
+  const handleOrganizeWithAI = async () => {
+    const success = await organizeWithAI();
+    if (success) {
+      toast.success("Relatório organizado com IA!", {
+        description: "Revise o conteúdo gerado e ajuste se necessário antes de salvar."
+      });
     }
   };
 
@@ -165,42 +174,6 @@ export default function EvolutionReport() {
             </CardContent>
           </Card>
 
-          {/* AI Organization Button */}
-          <Card className="border-blue-200 bg-blue-50/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-800">
-                <div className="p-2 bg-blue-600 rounded-lg text-white">
-                  <RefreshCw className="h-4 w-4" />
-                </div>
-                Organização Inteligente
-              </CardTitle>
-              <p className="text-blue-700 text-sm">
-                Use inteligência artificial para estruturar automaticamente seu relatório de evolução
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={organizeWithAI}
-                disabled={isOrganizingWithAI || !selectedPatient}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                size="lg"
-              >
-                {isOrganizingWithAI ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                )}
-                {isOrganizingWithAI ? 'Organizando com IA...' : 'Organizar com IA'}
-              </Button>
-              <p className="text-xs text-gray-600 mt-2">
-                {!selectedPatient 
-                  ? "Selecione um paciente para usar a organização com IA" 
-                  : "A IA estruturará automaticamente o relatório baseado nos dados preenchidos"
-                }
-              </p>
-            </CardContent>
-          </Card>
-
           {/* Form Fields */}
           <div className="grid gap-6">
             {evolutionSections.map((section, index) => (
@@ -264,6 +237,19 @@ export default function EvolutionReport() {
             <CardContent className="pt-6">
               <div className="flex flex-wrap gap-3">
                 <Button
+                  onClick={handleOrganizeWithAI}
+                  disabled={isOrganizingWithAI || !selectedPatient}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isOrganizingWithAI ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4 mr-2" />
+                  )}
+                  {isOrganizingWithAI ? 'Organizando...' : 'Organizar com IA'}
+                </Button>
+
+                <Button
                   onClick={handleSave}
                   disabled={isSaving || !selectedPatient}
                   className="bg-green-600 hover:bg-green-700"
@@ -294,6 +280,12 @@ export default function EvolutionReport() {
                   Limpar Formulário
                 </Button>
               </div>
+              
+              {!selectedPatient && (
+                <p className="text-sm text-gray-500 mt-3">
+                  Selecione um paciente para habilitar as funcionalidades
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
