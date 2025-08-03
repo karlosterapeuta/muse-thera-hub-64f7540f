@@ -126,7 +126,7 @@ export default function EvolutionReport() {
     }
   };
 
-  const generatePDF = async () => {
+  const handleGeneratePDFFromPreview = async () => {
     if (!selectedPatient) {
       toast.error("Selecione um paciente para gerar o PDF");
       return;
@@ -151,6 +151,21 @@ export default function EvolutionReport() {
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast.error("Erro ao gerar PDF");
+    }
+  };
+
+  // Função para lidar com a seleção de paciente e sincronizar dados
+  const handlePatientSelection = (patientId: string) => {
+    const patient = patients.find(p => p.id === patientId);
+    if (patient) {
+      setSelectedPatient(patient);
+      // Sincronizar dados do paciente no formData
+      updateField('patient_name', patient.name);
+      updateField('patient_id', patient.id);
+      // Definir data atual se não estiver definida
+      if (!formData.date) {
+        updateField('date', new Date().toISOString().split('T')[0]);
+      }
     }
   };
 
@@ -197,10 +212,7 @@ export default function EvolutionReport() {
                   <Label htmlFor="patient">Paciente *</Label>
                   <Select 
                     value={selectedPatient?.id || ""} 
-                    onValueChange={(value) => {
-                      const patient = patients.find(p => p.id === value);
-                      setSelectedPatient(patient);
-                    }}
+                    onValueChange={handlePatientSelection}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={isLoadingPatients ? "Carregando..." : "Selecione um paciente"} />
@@ -358,7 +370,7 @@ export default function EvolutionReport() {
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Visualização do Relatório</h2>
             <Button
-              onClick={generatePDF}
+              onClick={handleGeneratePDFFromPreview}
               disabled={!selectedPatient}
               className="bg-blue-600 hover:bg-blue-700"
             >
