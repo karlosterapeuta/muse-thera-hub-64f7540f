@@ -9,21 +9,10 @@ export function DashboardErrorFixes() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Log dashboard initialization
     console.log("🔧 Dashboard error fixes initialized");
     
-    // Check if treatment_plans RLS is enabled
-    const checkTreatmentPlansRLS = async () => {
-      console.log("🔒 Verificando RLS da tabela treatment_plans...");
-      // This will be handled by the migration
-    };
-
-    checkTreatmentPlansRLS();
-
     // Validate dashboard data consistency
     const validateDataConsistency = () => {
-      console.log("📊 Validando consistência dos dados do dashboard...");
-      
       // Check for null/undefined values in dashboard stats
       const dashboardCards = document.querySelectorAll('[data-dashboard-stat]');
       dashboardCards.forEach((card, index) => {
@@ -39,7 +28,6 @@ export function DashboardErrorFixes() {
 
     return () => {
       clearTimeout(timeoutId);
-      console.log("🔧 Dashboard error fixes cleanup");
     };
   }, [toast]);
 

@@ -11,8 +11,6 @@ export async function getPatientsCount(professionalId: string): Promise<number> 
       return 0;
     }
 
-    console.log("👤 User ID para busca de pacientes:", user.id);
-
     const { count: totalPatients, error: patientsError } = await supabase
       .from("patients")
       .select('*', { count: 'exact', head: true })
@@ -21,10 +19,10 @@ export async function getPatientsCount(professionalId: string): Promise<number> 
     if (patientsError) {
       console.error("❌ Erro ao buscar pacientes:", patientsError);
       return 0;
-    } else {
-      console.log("✅ Total de pacientes encontrados:", totalPatients);
-      return totalPatients || 0;
     }
+
+    console.log("✅ Total de pacientes encontrados:", totalPatients);
+    return totalPatients || 0;
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar pacientes:", error);
     return 0;
@@ -41,8 +39,6 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
       return 0;
     }
 
-    console.log("👤 User ID para busca de anamneses:", user.id);
-
     const { count: totalAnamnesis, error: anamnesisError } = await supabase
       .from("anamnesis")
       .select('*', { count: 'exact', head: true })
@@ -51,10 +47,10 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
     if (anamnesisError) {
       console.error("❌ Erro ao buscar anamneses:", anamnesisError);
       return 0;
-    } else {
-      console.log("✅ Total de anamneses encontradas:", totalAnamnesis);
-      return totalAnamnesis || 0;
     }
+
+    console.log("✅ Total de anamneses encontradas:", totalAnamnesis);
+    return totalAnamnesis || 0;
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar anamneses:", error);
     return 0;

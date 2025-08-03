@@ -14,9 +14,6 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
       return [];
     }
 
-    console.log("👤 User ID para busca de registros financeiros:", user.id);
-
-    // Usa sempre o user.id em vez do professionalId
     const { data: financialRecords, error: financialError } = await supabase
       .from("financial_records")
       .select(`
@@ -33,10 +30,10 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
     if (financialError) {
       console.error("❌ Erro ao buscar registros financeiros:", financialError);
       return [];
-    } else {
-      console.log("✅ Registros financeiros da semana encontrados:", financialRecords?.length || 0);
-      return financialRecords || [];
     }
+
+    console.log("✅ Registros financeiros da semana encontrados:", financialRecords?.length || 0);
+    return financialRecords || [];
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar registros financeiros:", error);
     return [];
@@ -53,9 +50,6 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       return [];
     }
 
-    console.log("👤 User ID para busca de agenda financeira:", user.id);
-
-    // Usa sempre o user.id em vez do professionalId
     const { data: financialScheduleData, error: financialScheduleError } = await supabase
       .from("financial_records")
       .select(`
@@ -75,23 +69,23 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
     if (financialScheduleError) {
       console.error("❌ Erro ao buscar agenda financeira:", financialScheduleError);
       return [];
-    } else {
-      console.log("✅ Agenda financeira encontrada:", financialScheduleData?.length || 0);
-      
-      return financialScheduleData?.map(record => ({
-        id: record.id,
-        amount: record.amount,
-        session_date: record.session_date,
-        description: record.description,
-        patient_name: record.patients?.name || 'Não informado',
-        clinic_name: record.clinics?.name || 'Não informado',
-        formatted_date: format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR }),
-        formatted_amount: new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        }).format(record.amount)
-      })) || [];
     }
+
+    console.log("✅ Agenda financeira encontrada:", financialScheduleData?.length || 0);
+    
+    return financialScheduleData?.map(record => ({
+      id: record.id,
+      amount: record.amount,
+      session_date: record.session_date,
+      description: record.description,
+      patient_name: record.patients?.name || 'Não informado',
+      clinic_name: record.clinics?.name || 'Não informado',
+      formatted_date: format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR }),
+      formatted_amount: new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(record.amount)
+    })) || [];
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar agenda financeira:", error);
     return [];

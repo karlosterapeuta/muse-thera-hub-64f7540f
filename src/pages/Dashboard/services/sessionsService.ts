@@ -35,10 +35,10 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
     if (sessionsError) {
       console.error("❌ Erro ao buscar sessões:", sessionsError);
       return [];
-    } else {
-      console.log("✅ Sessões da semana encontradas:", sessions?.length || 0);
-      return sessions || [];
     }
+
+    console.log("✅ Sessões da semana encontradas:", sessions?.length || 0);
+    return sessions || [];
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar sessões:", error);
     return [];
