@@ -62,7 +62,10 @@ export default function ReportForm() {
 
         if (data) {
           form.setValue('patient_id', data.patient_id);
-          form.setValue('type', data.type);
+          // Só aceita tipos válidos para evitar conflitos
+          if (data.type !== 'evolution_musicoterapia') {
+            form.setValue('type', data.type);
+          }
           
           // Garantir que content seja um objeto válido
           const content = data.content && typeof data.content === 'object' 
