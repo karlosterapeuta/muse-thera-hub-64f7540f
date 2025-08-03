@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,8 @@ export default function SimpleMusicoterapia() {
 
   const form = useForm();
 
-  // Fetch patients
-  const { data: patients, isLoading: isLoadingPatients } = useQuery({
+  // Fetch patients with error handling
+  const { data: patients, isLoading: isLoadingPatients, error: patientsError } = useQuery({
     queryKey: ['patients'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,12 +40,15 @@ export default function SimpleMusicoterapia() {
         .select('id, name, age, birth_date')
         .order('name');
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching patients:', error);
+        throw error;
+      }
+      return data || [];
     }
   });
 
-  const saveEvolutionReport = async () => {
+  const saveEvolutionReport = useCallback(async () => {
     const validation = validateReport();
     if (!validation.isValid) {
       toast({
@@ -55,17 +59,29 @@ export default function SimpleMusicoterapia() {
       return;
     }
 
+    if (!professionalData?.id) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Dados do profissional não encontrados. Faça login novamente."
+      });
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('reports')
         .insert({
           type: 'evolution_musicoterapia',
           patient_id: reportData.patientId,
-          professional_id: professionalData?.id,
+          professional_id: professionalData.id,
           content: reportData as any
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving evolution report:', error);
+        throw error;
+      }
 
       toast({
         title: "Sucesso",
@@ -79,7 +95,37 @@ export default function SimpleMusicoterapia() {
         description: "Erro ao salvar o relatório de evolução. Tente novamente."
       });
     }
-  };
+  }, [reportData, validateReport, professionalData, toast]);
+
+  const handlePatientChange = useCallback((value: string) => {
+    updateReportData({ patientId: value });
+  }, [updateReportData]);
+
+  const selectedPatient = patients?.find(p => p.id === reportData.patientId);
+
+  // Show loading state
+  if (isLoadingPatients) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (patientsError) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-destructive">Erro ao carregar pacientes. Tente novamente.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -110,7 +156,7 @@ export default function SimpleMusicoterapia() {
                     <Select 
                       onValueChange={(value) => {
                         field.onChange(value);
-                        updateReportData({ patientId: value });
+                        handlePatientChange(value);
                       }}
                       value={reportData.patientId}
                     >
@@ -186,16 +232,16 @@ export default function SimpleMusicoterapia() {
                     Preview do relatório de evolução que será gerado
                   </CardDescription>
                 </div>
-                {reportData.patientId && (
+                {reportData.patientId && selectedPatient && (
                   <PDFDownloadLink
                     document={
                       <EvolutionMuseteraReportPDF 
                         reportData={reportData}
-                        patientName={patients?.find(p => p.id === reportData.patientId)?.name || ""}
-                        patientAge={patients?.find(p => p.id === reportData.patientId)?.age}
+                        patientName={selectedPatient.name}
+                        patientAge={selectedPatient.age}
                       />
                     }
-                    fileName={`relatorio-evolucao-musetera-${patients?.find(p => p.id === reportData.patientId)?.name || 'paciente'}.pdf`}
+                    fileName={`relatorio-evolucao-musetera-${selectedPatient.name}.pdf`}
                   >
                     {({ loading }) => (
                       <Button disabled={loading} className="gap-2">
@@ -210,7 +256,7 @@ export default function SimpleMusicoterapia() {
             <CardContent>
               <EvolutionPreview 
                 reportData={reportData}
-                patientName={patients?.find(p => p.id === reportData.patientId)?.name}
+                patientName={selectedPatient?.name}
               />
             </CardContent>
           </Card>

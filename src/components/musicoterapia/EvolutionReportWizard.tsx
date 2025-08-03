@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -30,28 +31,28 @@ export function EvolutionReportWizard({
   const currentSection = sections[currentStep];
   const progress = ((currentStep + 1) / sections.length) * 100;
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (currentStep < sections.length - 1) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, sections.length]);
 
-  const handlePrevStep = () => {
+  const handlePrevStep = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const handleFieldUpdate = (fieldId: string, value: any) => {
+  const handleFieldUpdate = useCallback((fieldId: string, value: any) => {
     onUpdateReportData({
       content: {
         ...reportData.content,
         [fieldId]: value
       }
     });
-  };
+  }, [reportData.content, onUpdateReportData]);
 
-  const validateCurrentStep = () => {
+  const validateCurrentStep = useCallback(() => {
     const requiredFields = currentSection.fields.filter(field => field.required);
     const missingFields = requiredFields.filter(field => {
       const value = reportData.content[field.id];
@@ -67,13 +68,13 @@ export function EvolutionReportWizard({
       return false;
     }
     return true;
-  };
+  }, [currentSection.fields, reportData.content, toast]);
 
-  const canProceed = () => {
+  const canProceed = useCallback(() => {
     return validateCurrentStep();
-  };
+  }, [validateCurrentStep]);
 
-  const handleAIGeneration = () => {
+  const handleAIGeneration = useCallback(() => {
     if (!reportData.patientId) {
       toast({
         variant: "destructive",
@@ -83,7 +84,7 @@ export function EvolutionReportWizard({
       return;
     }
     onGenerateWithAI();
-  };
+  }, [reportData.patientId, onGenerateWithAI, toast]);
 
   return (
     <div className="space-y-6">

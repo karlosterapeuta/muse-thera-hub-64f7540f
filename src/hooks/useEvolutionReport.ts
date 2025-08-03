@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import React from "react";
+
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { evolutionMuseteraTemplate } from "@/data/evolutionMuseteraTemplate";
@@ -28,23 +28,29 @@ export function useEvolutionReport() {
   });
 
   const [isGeneratingWithAI, setIsGeneratingWithAI] = useState(false);
+  const [isProfessionalDataInitialized, setIsProfessionalDataInitialized] = useState(false);
 
-  // Auto-populate professional data when available
-  React.useEffect(() => {
-    if (professionalData?.name && !reportData.professionalName) {
+  // Auto-populate professional data when available - using useCallback to prevent infinite loops
+  const initializeProfessionalData = useCallback(() => {
+    if (professionalData?.name && !isProfessionalDataInitialized) {
       setReportData(prev => ({
         ...prev,
         professionalName: professionalData.name,
         professionalRegister: professionalData.register || ""
       }));
+      setIsProfessionalDataInitialized(true);
     }
-  }, [professionalData, reportData.professionalName]);
+  }, [professionalData?.name, professionalData?.register, isProfessionalDataInitialized]);
 
-  const updateReportData = (updates: Partial<EvolutionReportData>) => {
+  useEffect(() => {
+    initializeProfessionalData();
+  }, [initializeProfessionalData]);
+
+  const updateReportData = useCallback((updates: Partial<EvolutionReportData>) => {
     setReportData(prev => ({ ...prev, ...updates }));
-  };
+  }, []);
 
-  const generateWithAI = async () => {
+  const generateWithAI = useCallback(async () => {
     if (!reportData.patientId) {
       toast({
         variant: "destructive",
@@ -97,9 +103,9 @@ export function useEvolutionReport() {
     } finally {
       setIsGeneratingWithAI(false);
     }
-  };
+  }, [reportData, updateReportData, toast]);
 
-  const validateReport = () => {
+  const validateReport = useCallback(() => {
     const missingFields: string[] = [];
     
     // Validate basic fields
@@ -120,7 +126,9 @@ export function useEvolutionReport() {
       isValid: missingFields.length === 0,
       missingFields
     };
-  };
+  }, [reportData]);
+
+  const memoizedTemplate = useMemo(() => evolutionMuseteraTemplate, []);
 
   return {
     reportData,
@@ -128,7 +136,7 @@ export function useEvolutionReport() {
     generateWithAI,
     isGeneratingWithAI,
     validateReport,
-    evolutionMuseteraTemplate,
+    evolutionMuseteraTemplate: memoizedTemplate,
     professionalData
   };
 }
