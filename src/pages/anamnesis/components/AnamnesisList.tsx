@@ -77,6 +77,8 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       if (!user) return;
 
       // Get anamneses with patient names
+      console.log("🔍 Iniciando busca de anamneses para usuário:", user.id);
+      
       const { data: anamnesisData, error } = await supabase
         .from("anamnesis")
         .select(`
@@ -85,16 +87,18 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           created_at,
           updated_at,
           main_clinical_demand,
-          patients!inner(name)
+          patients(name)
         `)
         .eq("professional_id", user.id)
         .order("updated_at", { ascending: false });
 
+      console.log("📊 Resposta da consulta de anamneses:", { data: anamnesisData, error });
+
       if (error) {
-        console.error("Erro ao carregar anamneses:", error);
+        console.error("❌ Erro ao carregar anamneses:", error);
         toast({
           title: "Erro",
-          description: "Não foi possível carregar as anamneses.",
+          description: `Erro ao carregar anamneses: ${error.message}`,
           variant: "destructive",
         });
         return;
