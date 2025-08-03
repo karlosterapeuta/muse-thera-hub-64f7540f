@@ -1,17 +1,19 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { FileText, UserCheck, Plus } from "lucide-react";
+import { FileText, UserCheck, Plus, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardStatsProps {
   totalPatients: number;
+  totalAnamnesis: number;
   totalReports: number;
   isLoading: boolean;
 }
 
 export function DashboardStats({
   totalPatients,
+  totalAnamnesis,
   totalReports,
   isLoading
 }: DashboardStatsProps) {
@@ -26,6 +28,15 @@ export function DashboardStats({
       isEmpty: totalPatients === 0
     },
     {
+      title: "Anamneses Cadastradas",
+      value: totalAnamnesis || 0,
+      subtitle: "Avaliações iniciais",
+      icon: ClipboardList,
+      gradient: "from-blue-500 via-blue-600 to-indigo-700",
+      actionText: totalAnamnesis === 0 ? "Criar Primeira Anamnese" : `${totalAnamnesis} anamneses realizadas`,
+      isEmpty: totalAnamnesis === 0
+    },
+    {
       title: "Relatórios Gerados",
       value: totalReports || 0,
       subtitle: "Documentos produzidos",
@@ -38,7 +49,7 @@ export function DashboardStats({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((_, index) => (
           <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
             <div className="p-6 space-y-4">
@@ -61,7 +72,7 @@ export function DashboardStats({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {stats.map((stat, index) => (
         <Card 
           key={index} 
