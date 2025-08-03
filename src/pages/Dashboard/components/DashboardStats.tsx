@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Users, DollarSign, TrendingUp, FileText, ClipboardList, UserCheck, Plus } from "lucide-react";
+import { Users, TrendingUp, FileText, ClipboardList, UserCheck, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardStatsProps {
@@ -72,32 +72,12 @@ export function DashboardStats({
       gradient: "from-blue-500 via-blue-600 to-blue-700",
       actionText: totalSessions === 0 ? "Agendar Primeira Sessão" : `${totalSessions} sessões realizadas`,
       isEmpty: totalSessions === 0
-    },
-    {
-      title: "Receita Semanal",
-      value: totalRevenue || 0,
-      subtitle: "Faturamento total",
-      icon: DollarSign,
-      gradient: "from-green-500 via-green-600 to-emerald-700",
-      actionText: totalRevenue === 0 ? "Registrar Primeiro Faturamento" : formatCurrency(totalRevenue),
-      isEmpty: totalRevenue === 0,
-      isCurrency: true
-    },
-    {
-      title: "Média por Sessão",
-      value: averagePerSession || 0,
-      subtitle: "Valor médio",
-      icon: TrendingUp,
-      gradient: "from-purple-500 via-purple-600 to-indigo-700",
-      actionText: averagePerSession === 0 ? "Definir Valores de Sessão" : formatCurrency(averagePerSession),
-      isEmpty: averagePerSession === 0,
-      isCurrency: true
     }
   ];
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((_, index) => (
           <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
             <div className="p-6 space-y-4">
@@ -120,7 +100,7 @@ export function DashboardStats({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
         <Card 
           key={index} 
@@ -141,11 +121,9 @@ export function DashboardStats({
             <div className="space-y-3">
               <div className="text-2xl font-bold text-white">
                 {stat.isEmpty ? (
-                  <span className="text-lg text-white/80">
-                    {stat.isCurrency ? "R$ 0" : "0"}
-                  </span>
+                  <span className="text-lg text-white/80">0</span>
                 ) : (
-                  stat.isCurrency ? formatCurrency(stat.value) : stat.value
+                  stat.value
                 )}
               </div>
               
