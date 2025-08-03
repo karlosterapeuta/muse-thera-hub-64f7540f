@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -223,7 +224,7 @@ export default function EvolutionReport() {
                     {/* Subtitle with decorative line */}
                     <div className="flex items-center gap-4">
                       <div className="h-1 w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
-                      <span className="text-xl font-bold text-gray-700">
+                      <span className="text-2xl font-bold text-gray-700">
                         Relatório de Evolução MuseTera
                       </span>
                       <div className="h-1 w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
