@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import {
   ClipboardList,
@@ -8,6 +7,7 @@ import {
   Edit,
   ArrowRight,
   Music,
+  TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -63,6 +63,14 @@ export default function Processes() {
       path: "/processes/musicoterapia",
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-50 to-pink-50"
+    },
+    {
+      title: "Relatório de Evolução – MuseTera",
+      description: "Relatório detalhado de evolução do paciente em musicoterapia",
+      icon: TrendingUp,
+      path: "/processes/evolution",
+      gradient: "from-green-500 to-blue-500",
+      bgGradient: "from-green-50 to-blue-50"
     },
   ];
 
