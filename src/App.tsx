@@ -30,7 +30,6 @@ import TeaHero from "./pages/tea-hero";
 import Musicogram from "./pages/musicogram";
 import Sprunki from "./pages/sprunki";
 import BoomwhackerHero from "./pages/boomwhacker-hero";
-import GuitarHero from "./pages/guitar-hero";
 import XylophoneHero from "./pages/xylophone-hero";
 import MusicComposer from "./pages/music-composer";
 import Songs from "./pages/songs";
@@ -97,7 +96,6 @@ const App = () => (
             <Route path="musicogram" element={<Musicogram />} />
             <Route path="sprunki" element={<Sprunki />} />
             <Route path="boomwhacker-hero" element={<BoomwhackerHero />} />
-            <Route path="guitar-hero" element={<GuitarHero />} />
             <Route path="xylophone-hero" element={<XylophoneHero />} />
             <Route path="music-composer" element={<MusicComposer />} />
             <Route path="songs" element={<Songs />} />
