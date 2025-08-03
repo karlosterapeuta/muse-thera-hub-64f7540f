@@ -5,35 +5,18 @@ import { Users, FileText, ClipboardList, UserCheck, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardStatsProps {
-  totalSessions: number;
-  totalRevenue: number;
-  averagePerSession: number;
-  completionRate: number;
-  monthlyChange: number;
   totalPatients: number;
   totalAnamnesis: number;
   totalReports: number;
+  totalSessions: number;
   isLoading: boolean;
 }
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(value);
-};
-
 export function DashboardStats({
-  totalSessions,
-  totalRevenue,
-  averagePerSession,
-  completionRate,
-  monthlyChange,
   totalPatients,
   totalAnamnesis,
   totalReports,
+  totalSessions,
   isLoading
 }: DashboardStatsProps) {
   const stats = [
