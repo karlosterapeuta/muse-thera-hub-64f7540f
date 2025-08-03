@@ -1,39 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Music, FileText, Wand2, Download, Save, ArrowLeft, Brain, List, Eye, Edit, Trash2, Search } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { MusicoterapiaReportWizard } from '@/components/musicoterapia/MusicoterapiaReportWizard';
-import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPreview';
-import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
-import { useReportData } from '../report/hooks/useReportData';
-import { generateStaticPDF } from '@/utils/staticPDFGenerator';
-import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Download, FileText, Users, Calendar, TrendingUp } from "lucide-react";
+import { MusicoterapiaReportWizard } from "@/components/musicoterapia/MusicoterapiaReportWizard";
+import { MusicoterapiaPreview } from "@/components/musicoterapia/MusicoterapiaPreview";
+import { EvolutionReportWizard } from "@/components/musicoterapia/EvolutionReportWizard";
+import { EvolutionPreview } from "@/components/musicoterapia/EvolutionPreview";
+import { useMusicoterapiaReport } from "@/hooks/useMusicoterapiaReport";
+import { useEvolutionReport } from "@/hooks/useEvolutionReport";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
+import { EvolutionMuseteraReportPDF } from "@/components/EvolutionMuseteraReportPDF";
+import { useForm } from "react-hook-form";
 
-export default function MusicoterapiaPage() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+export default function Musicoterapia() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('wizard');
-  const [viewMode, setViewMode] = useState<'create' | 'list'>('create');
-  const [isSaving, setIsSaving] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [reports, setReports] = useState<any[]>([]);
-  const [isLoadingReports, setIsLoadingReports] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedReport, setSelectedReport] = useState<any>(null);
-  const [showViewDialog, setShowViewDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [reportToDelete, setReportToDelete] = useState<any>(null);
-
-  const patientIdFromQuery = searchParams.get('patient_id');
+  const [activeReportType, setActiveReportType] = useState<"complete" | "evolution">("complete");
   
   const {
     reportData,
@@ -45,723 +31,299 @@ export default function MusicoterapiaPage() {
     professionalData
   } = useMusicoterapiaReport();
 
-  const { patients, isLoadingPatients, userId } = useReportData();
-  const [professionalId, setProfessionalId] = useState<string | null>(null);
+  const {
+    reportData: evolutionReportData,
+    updateReportData: updateEvolutionReportData,
+    generateWithAI: generateEvolutionWithAI,
+    isGeneratingWithAI: isGeneratingEvolutionWithAI,
+    validateReport: validateEvolutionReport,
+    evolutionMuseteraTemplate,
+    professionalData: evolutionProfessionalData
+  } = useEvolutionReport();
 
-  React.useEffect(() => {
-    async function fetchProfessionalId() {
-      if (userId) {
-        try {
-          const { data, error } = await supabase
-            .from('professionals')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
-          
-          if (data && !error) {
-            setProfessionalId(data.id);
-          }
-        } catch (error) {
-          console.error('Erro ao buscar professional_id:', error);
-        }
-      }
-    }
-    
-    fetchProfessionalId();
-  }, [userId]);
+  const form = useForm();
+  const evolutionForm = useForm();
 
-  React.useEffect(() => {
-    if (patientIdFromQuery && patients.length > 0) {
-      const selectedPatient = patients.find(p => p.id === patientIdFromQuery);
-      if (selectedPatient) {
-        // Calculate age from birth_date if available
-        let age = '';
-        if ((selectedPatient as any).birth_date) {
-          const today = new Date();
-          const birthDate = new Date((selectedPatient as any).birth_date);
-          const ageYears = today.getFullYear() - birthDate.getFullYear();
-          const monthDiff = today.getMonth() - birthDate.getMonth();
-          
-          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age = `${ageYears - 1} anos`;
-          } else {
-            age = `${ageYears} anos`;
-          }
-        }
-
-        updateReportData({
-          selectedPatientId: patientIdFromQuery,
-          patientName: selectedPatient.name,
-          patientAge: age,
-          patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
-        });
-      }
-    }
-  }, [patientIdFromQuery, patients, updateReportData]);
-
-  const handleSaveReport = async () => {
-    console.log('=== Iniciando salvamento do relatório ===');
-    console.log('Professional ID:', professionalId);
-    console.log('Report Data:', reportData);
-    console.log('Professional Data:', professionalData);
-    
-    // Validação aprimorada
-    if (!professionalId) {
-      console.error('Professional ID não encontrado');
-      toast({
-        variant: "destructive",
-        title: "Erro de Autenticação",
-        description: "ID do profissional não encontrado. Faça logout e login novamente.",
-      });
-      return;
-    }
-
-    if (!reportData.selectedPatientId) {
-      console.error('Paciente não selecionado');
-      toast({
-        variant: "destructive",
-        title: "Paciente Obrigatório",
-        description: "Selecione um paciente antes de salvar o relatório.",
-      });
-      return;
-    }
-
-    const validation = validateReport();
-    if (!validation.isValid) {
-      console.error('Validação falhou:', validation.missingFields);
-      toast({
-        variant: "destructive",
-        title: "Campos Obrigatórios Não Preenchidos",
-        description: `Complete: ${validation.missingFields.join(', ')}`,
-      });
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      // Verificar se o professional_id existe na tabela professionals
-      const { data: professionalCheck, error: professionalError } = await supabase
-        .from('professionals')
-        .select('id')
-        .eq('id', professionalId)
-        .single();
-
-      if (professionalError || !professionalCheck) {
-        console.error('Professional não encontrado na tabela:', professionalError);
-        throw new Error('Profissional não encontrado. Faça logout e login novamente.');
-      }
-
-      // Verificar se o paciente existe
-      const { data: patientCheck, error: patientError } = await supabase
+  // Fetch patients
+  const { data: patients, isLoading: isLoadingPatients } = useQuery({
+    queryKey: ['patients'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('patients')
-        .select('id')
-        .eq('id', reportData.selectedPatientId)
-        .single();
-
-      if (patientError || !patientCheck) {
-        console.error('Paciente não encontrado:', patientError);
-        throw new Error('Paciente não encontrado. Selecione um paciente válido.');
-      }
-
-      const reportPayload = {
-        patient_id: reportData.selectedPatientId,
-        professional_id: professionalId,
-        type: 'musicoterapia' as const,
-        content: {
-          template_id: reportData.templateId,
-          field_values: reportData.fieldValues,
-          additional_observations: reportData.additionalObservations,
-          patient_info: {
-            name: reportData.patientName || reportData.fieldValues?.patient_name,
-            age: reportData.patientAge || reportData.fieldValues?.patient_age,
-            diagnosis: reportData.patientDiagnosis || reportData.fieldValues?.patient_diagnosis
-          },
-          professional_info: {
-            name: reportData.professionalName || professionalData?.name,
-            registry: reportData.professionalRegistry || professionalData?.register || professionalData?.license_number,
-            specialty: reportData.professionalSpecialty || 'Musicoterapia'
-          },
-          session_date: reportData.sessionDate,
-          signature: reportData.signature
-        }
-      };
-
-      console.log('Payload final do relatório:', JSON.stringify(reportPayload, null, 2));
-
-      const { data, error } = await supabase
-        .from('reports')
-        .insert(reportPayload)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Erro detalhado do Supabase:', error);
-        console.error('Código:', error.code);
-        console.error('Mensagem:', error.message);
-        console.error('Detalhes:', error.details);
-        
-        // Tratamento específico de erros
-        if (error.code === '23503') {
-          if (error.message.includes('patient_id')) {
-            throw new Error('Paciente não encontrado ou inválido');
-          } else if (error.message.includes('professional_id')) {
-            throw new Error('Profissional não encontrado ou inválido');
-          }
-          throw new Error('Erro de referência de dados');
-        } else if (error.code === '23502') {
-          throw new Error('Campos obrigatórios não preenchidos');
-        }
-        
-        throw new Error(`Erro no banco de dados: ${error.message}`);
-      }
-
-      console.log('Relatório salvo com sucesso:', data);
-
-      toast({
-        title: "Sucesso!",
-        description: "Relatório de musicoterapia salvo com sucesso.",
-      });
-
-      loadReports();
-    } catch (error) {
-      console.error('=== Erro no salvamento ===');
-      console.error('Erro:', error);
-      console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
+        .select('id, name, age, birth_date')
+        .order('name');
       
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      
-      toast({
-        variant: "destructive",
-        title: "Erro ao Salvar Relatório",
-        description: errorMessage,
-      });
-    } finally {
-      setIsSaving(false);
+      if (error) throw error;
+      return data;
     }
-  };
+  });
 
-  const handleExportPDF = async () => {
+  const saveReport = async () => {
     const validation = validateReport();
     if (!validation.isValid) {
       toast({
         variant: "destructive",
-        title: "Campos obrigatórios",
-        description: `Complete os campos: ${validation.missingFields.join(', ')}`,
+        title: "Erro de Validação",
+        description: `Campos obrigatórios: ${validation.missingFields.join(", ")}`
       });
       return;
     }
 
-    setIsExporting(true);
-    try {
-      const success = await generateStaticPDF(
-        <MusicoterapiaPreview 
-          reportData={reportData as any} 
-          professionalData={professionalData} 
-        />,
-        {
-          filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 1.0
-        }
-      );
-
-      if (success) {
-        toast({
-          title: "PDF gerado!",
-          description: "Relatório exportado em PDF com sucesso.",
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível gerar o PDF.",
-      });
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const loadReports = async () => {
-    if (!professionalId) return;
-    
-    setIsLoadingReports(true);
     try {
       const { data, error } = await supabase
         .from('reports')
-        .select(`
-          id,
-          type,
-          created_at,
-          content,
-          patient:patients(name)
-        `)
-        .eq('professional_id', professionalId)
-        .eq('type', 'musicoterapia')
-        .order('created_at', { ascending: false });
+        .insert({
+          type: 'musicoterapia',
+          patient_id: reportData.selectedPatientId,
+          professional_id: professionalData?.id,
+          content: reportData
+        });
 
       if (error) throw error;
-      setReports(data || []);
+
+      toast({
+        title: "Sucesso",
+        description: "Relatório salvo com sucesso!"
+      });
     } catch (error) {
-      console.error('Erro ao carregar relatórios:', error);
+      console.error('Erro ao salvar relatório:', error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Não foi possível carregar os relatórios.",
+        description: "Erro ao salvar o relatório. Tente novamente."
       });
-    } finally {
-      setIsLoadingReports(false);
     }
   };
 
-  const handleEditReport = (report: any) => {
-    // Carregar dados do relatório no wizard
-    updateReportData({
-      selectedPatientId: report.content?.patient_info?.name || '',
-      patientName: report.content?.patient_info?.name || '',
-      patientAge: report.content?.patient_info?.age || '',
-      patientDiagnosis: report.content?.patient_info?.diagnosis || '',
-      fieldValues: report.content?.field_values || {},
-      additionalObservations: report.content?.additional_observations || '',
-      sessionDate: report.content?.session_date || new Date().toISOString().split('T')[0],
-      professionalName: report.content?.professional_info?.name || '',
-      professionalRegistry: report.content?.professional_info?.registry || '',
-      professionalSpecialty: report.content?.professional_info?.specialty || '',
-      signature: report.content?.signature || ''
-    });
-    
-    setViewMode('create');
-    setActiveTab('wizard');
-  };
-
-  const handleDeleteClick = (report: any) => {
-    setReportToDelete(report);
-    setShowDeleteDialog(true);
-  };
-
-  const handleDownloadReportPDF = async (report: any) => {
-    try {
-      setIsExporting(true);
-      
-      // Reconstruct the data structure to match what MusicoterapiaPreview expects
-      const fieldValues = report.content?.field_values || {};
-      
-      const reportDataForPDF = {
-        templateId: report.content?.template_id || 'musicoterapia-tea',
-        patientName: fieldValues.patient_name || report.content?.patient_name || '',
-        patientAge: fieldValues.patient_age || report.content?.patient_age || '',
-        patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_diagnosis || '',
-        professionalName: fieldValues.professional_name || professionalData?.name || '',
-        professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
-        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || '',
-        sessionDate: fieldValues.session_date || report.content?.session_date || '',
-        fieldValues: {
-          // Map all the field values from the saved report
-          therapeutic_objectives: fieldValues.therapeutic_objectives || [],
-          musical_techniques: fieldValues.musical_techniques || [],
-          instruments_used: fieldValues.instruments_used || [],
-          session_activities: fieldValues.session_activities || [],
-          patient_evolution: fieldValues.patient_evolution || [],
-          communication_scale: fieldValues.communication_scale || 1,
-          social_interaction_scale: fieldValues.social_interaction_scale || 1,
-          emotional_expression_scale: fieldValues.emotional_expression_scale || 1,
-          motor_coordination_scale: fieldValues.motor_coordination_scale || 1,
-          attention_focus_scale: fieldValues.attention_focus_scale || 1,
-          sensory_responses: fieldValues.sensory_responses || [],
-          recommendations: fieldValues.recommendations || [],
-          home_activities: fieldValues.home_activities || [],
-          conclusion: fieldValues.conclusion || [],
-          digital_signature: fieldValues.digital_signature || '',
-          digital_stamp: fieldValues.digital_stamp || '',
-          logo_url: fieldValues.logo_url || ''
-        },
-        additionalObservations: fieldValues.additional_observations || report.content?.additional_observations || '',
-        signature: fieldValues.digital_signature || fieldValues.professional_name || professionalData?.name || ''
-      };
-
-      const success = await generateStaticPDF(
-        <MusicoterapiaPreview 
-          reportData={reportDataForPDF as any} 
-          professionalData={professionalData} 
-        />,
-        {
-          filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName.replace(/\s+/g, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 1.0
-        }
-      );
-
-      if (success) {
-        toast({
-          title: "PDF gerado com sucesso!",
-          description: "O relatório foi baixado automaticamente.",
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro ao gerar PDF",
-          description: "Ocorreu um erro durante a geração do PDF.",
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
+  const saveEvolutionReport = async () => {
+    const validation = validateEvolutionReport();
+    if (!validation.isValid) {
       toast({
         variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Ocorreu um erro inesperado.",
+        title: "Erro de Validação",
+        description: `Campos obrigatórios: ${validation.missingFields.join(", ")}`
       });
-    } finally {
-      setIsExporting(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .insert({
+          type: 'evolution_musicoterapia',
+          patient_id: evolutionReportData.patientId,
+          professional_id: evolutionProfessionalData?.id,
+          content: evolutionReportData
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Relatório de Evolução salvo com sucesso!"
+      });
+    } catch (error) {
+      console.error('Erro ao salvar relatório de evolução:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao salvar o relatório de evolução. Tente novamente."
+      });
     }
   };
-
-  const handleDeleteSuccess = () => {
-    loadReports();
-    setShowDeleteDialog(false);
-    setReportToDelete(null);
-  };
-
-  const filteredReports = reports.filter(report =>
-    report.patient?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    new Date(report.created_at).toLocaleDateString().includes(searchTerm)
-  );
-
-  useEffect(() => {
-    if (professionalId) {
-      loadReports();
-    }
-  }, [professionalId]);
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      {/* Header */}
-      <Card className="border-2 border-primary/20">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/dashboard')}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-              
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
-                  <Music className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl flex items-center space-x-2">
-                    <span>Relatório MuseTera TEA</span>
-                    <Badge variant="secondary">TEA Especializado</Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    Relatórios clínicos especializados em Musicoterapia para Transtorno do Espectro Autista
-                  </CardDescription>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-2">
-              <Button
-                variant={viewMode === 'create' ? 'default' : 'outline'}
-                onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                className={viewMode === 'create' ? 
-                  "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
-                  "border-primary/30 hover:bg-primary/10"
-                }
-              >
-                {viewMode === 'create' ? (
-                  <>
-                    <List className="h-4 w-4 mr-2" />
-                    Ver Relatórios Salvos
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Criar Novo Relatório
-                  </>
-                )}
-              </Button>
-
-              {viewMode === 'create' && (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={handleSaveReport}
-                    disabled={isSaving}
-                  >
-                    {isSaving ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
-                        Salvando...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        Salvar
-                      </>
-                    )}
-                  </Button>
-                  
-                  <Button
-                    onClick={handleExportPDF}
-                    disabled={isExporting}
-                  >
-                    {isExporting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2" />
-                        Gerando PDF...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="h-4 w-4 mr-2" />
-                        Exportar PDF
-                      </>
-                    )}
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {viewMode === 'create' ? (
-        <>
-
-          {/* Main Content */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="wizard" className="flex items-center space-x-2">
-                <Wand2 className="h-4 w-4" />
-                <span>Assistente de Criação</span>
-              </TabsTrigger>
-              <TabsTrigger value="preview" className="flex items-center space-x-2">
-                <FileText className="h-4 w-4" />
-                <span>Visualização</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="wizard" className="space-y-6">
-              <MusicoterapiaReportWizard
-                reportData={reportData}
-                onUpdateData={updateReportData}
-                onGenerateWithAI={generateWithAI}
-                isGeneratingWithAI={isGeneratingWithAI}
-                patients={patients}
-                onSaveReport={handleSaveReport}
-                isSaving={isSaving}
-                professionalData={professionalData}
-              />
-            </TabsContent>
-
-            <TabsContent value="preview" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    <span>Visualização do Relatório</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Prévia do relatório de musicoterapia formatado para impressão
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <MusicoterapiaPreview 
-                    reportData={reportData as any} 
-                    professionalData={professionalData} 
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </>
-      ) : (
-        /* Lista de Relatórios Salvos */
-        <div className="space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <List className="h-5 w-5" />
-                <span>Relatórios de Musicoterapia Salvos</span>
-              </CardTitle>
-              <CardDescription>
-                Visualize, edite e gerencie seus relatórios salvos
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por paciente ou data..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Reports List */}
-          {isLoadingReports ? (
-            <Card>
-              <CardContent className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                <span className="ml-2">Carregando relatórios...</span>
-              </CardContent>
-            </Card>
-          ) : filteredReports.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm ? 'Nenhum relatório encontrado' : 'Nenhum relatório salvo'}
-                </h3>
-                <p className="text-muted-foreground">
-                  {searchTerm 
-                    ? 'Tente ajustar os filtros de busca.'
-                    : 'Comece criando seu primeiro relatório de musicoterapia.'}
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {filteredReports.map((report) => (
-                <Card key={report.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Music className="h-5 w-5 text-primary" />
-                          <h3 className="font-semibold">
-                            {report.patient?.name || 'Paciente não identificado'}
-                          </h3>
-                          <Badge variant="secondary">Musicoterapia</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Criado em {new Date(report.created_at).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedReport(report);
-                            setShowViewDialog(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Ver
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditReport(report)}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Editar
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDownloadReportPDF(report)}
-                          disabled={isExporting}
-                        >
-                          {isExporting ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
-                          ) : (
-                            <Download className="h-4 w-4 mr-1" />
-                          )}
-                          Baixar PDF
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteClick(report)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Excluir
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+          <FileText className="h-4 w-4 text-white" />
         </div>
-      )}
+        <div>
+          <h1 className="text-2xl font-bold">Relatórios de Musicoterapia</h1>
+          <p className="text-muted-foreground">Sistema especializado para relatórios de TEA</p>
+        </div>
+      </div>
 
-      {/* Footer with Template Info */}
+      {/* Report Type Selection */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Brain className="h-4 w-4" />
-                <span>Template: {template.name}</span>
+        <CardHeader>
+          <CardTitle>Escolha o Tipo de Relatório</CardTitle>
+          <CardDescription>Selecione o modelo de relatório que deseja criar</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button
+              variant={activeReportType === "complete" ? "default" : "outline"}
+              onClick={() => setActiveReportType("complete")}
+              className="h-20 flex flex-col gap-2"
+            >
+              <FileText className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Relatório Completo</div>
+                <div className="text-xs text-muted-foreground">Relatório detalhado de musicoterapia</div>
               </div>
-              <div>
-                Campos: {template.fields.length}
+            </Button>
+            
+            <Button
+              variant={activeReportType === "evolution" ? "default" : "outline"}
+              onClick={() => setActiveReportType("evolution")}
+              className="h-20 flex flex-col gap-2"
+            >
+              <TrendingUp className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Relatório de Evolução – MuseTera</div>
+                <div className="text-xs text-muted-foreground">Relatório de evolução com respostas semi-prontas</div>
               </div>
-              <div>
-                Obrigatórios: {template.fields.filter(f => f.required).length}
-              </div>
-            </div>
-            <div>
-              Sistema especializado para TEA
-            </div>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Dialogs */}
-      <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Visualizar Relatório de Musicoterapia</DialogTitle>
-          </DialogHeader>
-          {selectedReport && (
-            <MusicoterapiaPreview 
-              reportData={{
-                templateId: selectedReport.content?.template_id || 'musicoterapia-tea',
-                patientName: selectedReport.content?.patient_info?.name || '',
-                patientAge: selectedReport.content?.patient_info?.age || '',
-                patientDiagnosis: selectedReport.content?.patient_info?.diagnosis || '',
-                fieldValues: selectedReport.content?.field_values || {},
-                additionalObservations: selectedReport.content?.additional_observations || '',
-                sessionDate: selectedReport.content?.session_date || '',
-                professionalName: selectedReport.content?.professional_info?.name || '',
-                professionalRegistry: selectedReport.content?.professional_info?.registry || '',
-                professionalSpecialty: selectedReport.content?.professional_info?.specialty || '',
-                signature: selectedReport.content?.signature || ''
-              }}
+      {activeReportType === "complete" ? (
+        <Tabs defaultValue="create" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="create" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Criar Relatório
+            </TabsTrigger>
+            <TabsTrigger value="preview" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Visualizar
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="create">
+            <MusicoterapiaReportWizard
+              reportData={reportData}
+              onUpdateData={updateReportData}
+              onGenerateWithAI={generateWithAI}
+              isGeneratingWithAI={isGeneratingWithAI}
+              patients={patients || []}
+              onSave={saveReport}
               professionalData={professionalData}
             />
-          )}
-        </DialogContent>
-      </Dialog>
+          </TabsContent>
 
-      {reportToDelete && (
-        <DeleteReportDialog
-          isOpen={showDeleteDialog}
-          onClose={() => setShowDeleteDialog(false)}
-          reportId={reportToDelete.id}
-          reportType="Musicoterapia"
-          patientName={reportToDelete.patient?.name || 'Paciente não identificado'}
-          onDeleteSuccess={handleDeleteSuccess}
-        />
+          <TabsContent value="preview">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Visualização do Relatório</CardTitle>
+                    <CardDescription>
+                      Preview do relatório que será gerado
+                    </CardDescription>
+                  </div>
+                  {reportData.patientId && (
+                    <PDFDownloadLink
+                      document={
+                        <MuseteraReportPDF 
+                          reportData={reportData}
+                          patientName={patients?.find(p => p.id === reportData.patientId)?.name || ""}
+                          patientAge={patients?.find(p => p.id === reportData.patientId)?.age}
+                        />
+                      }
+                      fileName={`relatorio-musetera-${patients?.find(p => p.id === reportData.patientId)?.name || 'paciente'}.pdf`}
+                    >
+                      {({ loading }) => (
+                        <Button disabled={loading} className="gap-2">
+                          <Download className="h-4 w-4" />
+                          {loading ? "Gerando PDF..." : "Download PDF"}
+                        </Button>
+                      )}
+                    </PDFDownloadLink>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <MusicoterapiaPreview 
+                  reportData={reportData}
+                  patientName={patients?.find(p => p.id === reportData.patientId)?.name}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <Tabs defaultValue="create" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="create" className="gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Criar Relatório de Evolução
+            </TabsTrigger>
+            <TabsTrigger value="preview" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Visualizar
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="create">
+            <Card>
+              <CardHeader>
+                <CardTitle>Relatório de Evolução – MuseTera</CardTitle>
+                <CardDescription>
+                  Utilize as opções semi-prontas para agilizar o preenchimento do relatório
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EvolutionReportWizard
+                  reportData={evolutionReportData}
+                  onUpdateReportData={updateEvolutionReportData}
+                  onGenerateWithAI={generateEvolutionWithAI}
+                  isGeneratingWithAI={isGeneratingEvolutionWithAI}
+                  control={evolutionForm.control}
+                />
+                
+                <div className="mt-6 flex gap-4">
+                  <Button onClick={saveEvolutionReport} className="gap-2">
+                    <FileText className="h-4 w-4" />
+                    Salvar Relatório
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preview">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Visualização do Relatório de Evolução</CardTitle>
+                    <CardDescription>
+                      Preview do relatório de evolução que será gerado
+                    </CardDescription>
+                  </div>
+                  {evolutionReportData.patientId && (
+                    <PDFDownloadLink
+                      document={
+                        <EvolutionMuseteraReportPDF 
+                          reportData={evolutionReportData}
+                          patientName={patients?.find(p => p.id === evolutionReportData.patientId)?.name || ""}
+                          patientAge={patients?.find(p => p.id === evolutionReportData.patientId)?.age}
+                        />
+                      }
+                      fileName={`relatorio-evolucao-musetera-${patients?.find(p => p.id === evolutionReportData.patientId)?.name || 'paciente'}.pdf`}
+                    >
+                      {({ loading }) => (
+                        <Button disabled={loading} className="gap-2">
+                          <Download className="h-4 w-4" />
+                          {loading ? "Gerando PDF..." : "Download PDF"}
+                        </Button>
+                      )}
+                    </PDFDownloadLink>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <EvolutionPreview 
+                  reportData={evolutionReportData}
+                  patientName={patients?.find(p => p.id === evolutionReportData.patientId)?.name}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
