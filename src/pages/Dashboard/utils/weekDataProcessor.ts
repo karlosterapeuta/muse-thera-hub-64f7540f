@@ -1,9 +1,14 @@
 
-import { format, addDays, isSameDay, parseISO } from "date-fns";
+import { format, addDays, isSameDay, parseISO, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DayData, DashboardSession } from "../types/dashboardTypes";
 
 export function createWeekStructure(startDate: Date): DayData[] {
+  if (!startDate || !isValid(startDate)) {
+    console.error("❌ Data de início inválida para estrutura da semana");
+    return [];
+  }
+
   const weekDays: DayData[] = [];
   for (let i = 0; i < 7; i++) {
     const date = addDays(startDate, i);
@@ -20,6 +25,11 @@ export function createWeekStructure(startDate: Date): DayData[] {
 }
 
 export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): void {
+  if (!weekDays || weekDays.length === 0) {
+    console.log("⚠️ Estrutura da semana não disponível para organizar sessões");
+    return;
+  }
+
   if (!sessions || !Array.isArray(sessions) || sessions.length === 0) {
     console.log("📊 Nenhuma sessão para organizar");
     return;
@@ -29,7 +39,17 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
 
   sessions.forEach(session => {
     try {
+      if (!session.date) {
+        console.warn("⚠️ Sessão sem data:", session);
+        return;
+      }
+
       const sessionDate = parseISO(session.date);
+      if (!isValid(sessionDate)) {
+        console.warn("⚠️ Data de sessão inválida:", session.date);
+        return;
+      }
+
       const dayIndex = weekDays.findIndex(day => 
         isSameDay(day.date, sessionDate)
       );
@@ -42,7 +62,7 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
           formatted_time: format(sessionDate, "HH:mm", { locale: ptBR }),
           formatted_date: format(sessionDate, "dd/MM", { locale: ptBR }),
           notes: session.notes || null,
-          financial_amount: undefined // Will be set later by financial data
+          financial_amount: undefined
         };
 
         weekDays[dayIndex].sessions.push(sessionData);
@@ -61,6 +81,11 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
 }
 
 export function addFinancialDataToDays(weekDays: DayData[], financialRecords: any[]): void {
+  if (!weekDays || weekDays.length === 0) {
+    console.log("⚠️ Estrutura da semana não disponível para dados financeiros");
+    return;
+  }
+
   if (!financialRecords || !Array.isArray(financialRecords) || financialRecords.length === 0) {
     console.log("💰 Nenhum dado financeiro para adicionar");
     return;
@@ -70,7 +95,17 @@ export function addFinancialDataToDays(weekDays: DayData[], financialRecords: an
 
   financialRecords.forEach(record => {
     try {
+      if (!record.session_date) {
+        console.warn("⚠️ Registro financeiro sem data:", record);
+        return;
+      }
+
       const recordDate = parseISO(record.session_date);
+      if (!isValid(recordDate)) {
+        console.warn("⚠️ Data de registro financeiro inválida:", record.session_date);
+        return;
+      }
+
       const dayIndex = weekDays.findIndex(day => 
         isSameDay(day.date, recordDate)
       );

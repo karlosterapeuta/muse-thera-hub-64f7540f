@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FinancialAgendaItem } from "../types/dashboardTypes";
 import { getCurrentUserId } from "./professionalService";
@@ -29,15 +29,17 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
       `)
       .eq('professional_id', userId)
       .gte('session_date', format(startDate, "yyyy-MM-dd"))
-      .lte('session_date', format(endDate, "yyyy-MM-dd"));
+      .lte('session_date', format(endDate, "yyyy-MM-dd"))
+      .order('session_date', { ascending: false });
 
     if (financialError) {
       console.error("❌ Erro ao buscar registros financeiros:", financialError);
       return [];
     }
 
-    console.log("✅ Registros financeiros da semana encontrados:", financialRecords?.length || 0);
-    return financialRecords || [];
+    const records = financialRecords || [];
+    console.log("✅ Registros financeiros da semana encontrados:", records.length);
+    return records;
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar registros financeiros:", error);
     return [];
@@ -54,6 +56,9 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       return [];
     }
 
+    // Buscar registros dos últimos 30 dias para ter mais dados
+    const thirtyDaysAgo = subDays(new Date(), 30);
+
     const { data: financialScheduleData, error: financialScheduleError } = await supabase
       .from("financial_records")
       .select(`
@@ -66,7 +71,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
         clinics:clinic_id (name)
       `)
       .eq('professional_id', userId)
-      .gte('session_date', format(new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
+      .gte('session_date', format(thirtyDaysAgo, "yyyy-MM-dd"))
       .order('session_date', { ascending: false })
       .limit(10);
 
@@ -75,21 +80,22 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       return [];
     }
 
-    console.log("✅ Agenda financeira encontrada:", financialScheduleData?.length || 0);
+    const scheduleData = financialScheduleData || [];
+    console.log("✅ Agenda financeira encontrada:", scheduleData.length);
     
-    return financialScheduleData?.map(record => ({
+    return scheduleData.map(record => ({
       id: record.id,
       amount: record.amount,
       session_date: record.session_date,
-      description: record.description,
-      patient_name: record.patients?.name || 'Não informado',
-      clinic_name: record.clinics?.name || 'Não informado',
+      description: record.description || '',
+      patient_name: record.patients?.name || 'Paciente não informado',
+      clinic_name: record.clinics?.name || 'Clínica não informada',
       formatted_date: format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR }),
       formatted_amount: new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
       }).format(record.amount)
-    })) || [];
+    }));
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar agenda financeira:", error);
     return [];

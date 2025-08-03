@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { startOfWeek, endOfWeek } from "date-fns";
+import { startOfWeek, endOfWeek, subDays } from "date-fns";
 import { DashboardData } from "../types/dashboardTypes";
-import { getProfessionalId, getCurrentUserId } from "../services/professionalService";
+import { getCurrentUserId } from "../services/professionalService";
 import { getPatientsCount, getAnamnesisCount, getReportsCount } from "../services/countsService";
 import { getWeekSessions } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
@@ -38,10 +38,13 @@ export function useDashboardData(): DashboardData {
         
         if (!userId) {
           console.log("⚠️ Nenhum usuário logado encontrado");
+          const today = new Date();
+          const startDate = startOfWeek(today, { weekStartsOn: 0 });
+          
           setData(prev => ({ 
             ...prev, 
             isLoading: false,
-            weekDays: createWeekStructure(startOfWeek(new Date(), { weekStartsOn: 0 }))
+            weekDays: createWeekStructure(startDate)
           }));
           
           toast({
@@ -59,45 +62,43 @@ export function useDashboardData(): DashboardData {
         
         console.log("📅 Buscando dados da semana atual:", startDate.toISOString().split('T')[0], "até", endDate.toISOString().split('T')[0]);
         
-        // Usar o userId diretamente como professionalId para compatibilidade
         const professionalId = userId;
         
-        // Buscar dados com logs detalhados
+        // Buscar dados com melhor tratamento de erro
         console.log("📊 Iniciando busca de dados...");
         
+        // Executar todas as buscas em paralelo com tratamento individual de erro
         const [
-          patientsCount,
-          anamnesisCount,
-          reportsCount,
-          sessionsData,
-          financialData,
-          scheduleData
-        ] = await Promise.all([
-          getPatientsCount(professionalId).catch(err => {
-            console.error("❌ Erro ao buscar pacientes:", err);
-            return 0;
-          }),
-          getAnamnesisCount(professionalId).catch(err => {
-            console.error("❌ Erro ao buscar anamneses:", err);
-            return 0;
-          }),
-          getReportsCount(professionalId).catch(err => {
-            console.error("❌ Erro ao buscar relatórios:", err);
-            return 0;
-          }),
-          getWeekSessions(professionalId, startDate, endDate).catch(err => {
-            console.error("❌ Erro ao buscar sessões:", err);
-            return [];
-          }),
-          getWeekFinancialRecords(professionalId, startDate, endDate).catch(err => {
-            console.error("❌ Erro ao buscar dados financeiros:", err);
-            return [];
-          }),
-          getFinancialSchedule(professionalId).catch(err => {
-            console.error("❌ Erro ao buscar agenda financeira:", err);
-            return [];
-          })
+          patientsResult,
+          anamnesisResult,
+          reportsResult,
+          sessionsResult,
+          financialResult,
+          scheduleResult
+        ] = await Promise.allSettled([
+          getPatientsCount(professionalId),
+          getAnamnesisCount(professionalId),
+          getReportsCount(professionalId),
+          getWeekSessions(professionalId, startDate, endDate),
+          getWeekFinancialRecords(professionalId, startDate, endDate),
+          getFinancialSchedule(professionalId)
         ]);
+
+        // Extrair dados com fallbacks seguros
+        const patientsCount = patientsResult.status === 'fulfilled' ? patientsResult.value : 0;
+        const anamnesisCount = anamnesisResult.status === 'fulfilled' ? anamnesisResult.value : 0;
+        const reportsCount = reportsResult.status === 'fulfilled' ? reportsResult.value : 0;
+        const sessionsData = sessionsResult.status === 'fulfilled' ? sessionsResult.value : [];
+        const financialData = financialResult.status === 'fulfilled' ? financialResult.value : [];
+        const scheduleData = scheduleResult.status === 'fulfilled' ? scheduleResult.value : [];
+
+        // Log de erros se houver
+        if (patientsResult.status === 'rejected') console.error("❌ Erro ao buscar pacientes:", patientsResult.reason);
+        if (anamnesisResult.status === 'rejected') console.error("❌ Erro ao buscar anamneses:", anamnesisResult.reason);
+        if (reportsResult.status === 'rejected') console.error("❌ Erro ao buscar relatórios:", reportsResult.reason);
+        if (sessionsResult.status === 'rejected') console.error("❌ Erro ao buscar sessões:", sessionsResult.reason);
+        if (financialResult.status === 'rejected') console.error("❌ Erro ao buscar dados financeiros:", financialResult.reason);
+        if (scheduleResult.status === 'rejected') console.error("❌ Erro ao buscar agenda financeira:", scheduleResult.reason);
 
         console.log("📊 Dados coletados:", {
           pacientes: patientsCount,
@@ -108,18 +109,19 @@ export function useDashboardData(): DashboardData {
           agenda: scheduleData?.length || 0
         });
 
-        // Prepare week structure and organize data
+        // Preparar estrutura da semana
         const weekDays = createWeekStructure(startDate);
         
-        if (sessionsData && sessionsData.length > 0) {
+        // Organizar dados da semana com validação
+        if (Array.isArray(sessionsData) && sessionsData.length > 0) {
           organizeSessionsByDay(weekDays, sessionsData);
         }
         
-        if (financialData && financialData.length > 0) {
+        if (Array.isArray(financialData) && financialData.length > 0) {
           addFinancialDataToDays(weekDays, financialData);
         }
 
-        // Calculate statistics
+        // Calcular estatísticas
         const stats = calculateStatistics(sessionsData, financialData);
 
         console.log("✅ Dashboard data prepared successfully");
@@ -137,14 +139,14 @@ export function useDashboardData(): DashboardData {
           totalPatients: patientsCount,
           totalAnamnesis: anamnesisCount,
           totalReports: reportsCount,
-          financialSchedule: scheduleData || [],
+          financialSchedule: Array.isArray(scheduleData) ? scheduleData : [],
           isLoading: false,
         });
 
       } catch (error) {
         console.error('❌ Erro crítico ao carregar dados do dashboard:', error);
         
-        // Set safe defaults when error occurs
+        // Definir valores seguros quando há erro
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
         
@@ -166,7 +168,7 @@ export function useDashboardData(): DashboardData {
 
         toast({
           title: "Erro ao carregar dados",
-          description: "Ocorreu um erro ao carregar os dados do dashboard. Tente recarregar a página.",
+          description: "Alguns dados podem não estar disponíveis. Tente recarregar a página ou verifique sua conexão.",
           variant: "destructive",
         });
       }
