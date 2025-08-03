@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { startOfWeek, endOfWeek } from "date-fns";
 import { DashboardData } from "../types/dashboardTypes";
-import { getProfessionalId } from "../services/professionalService";
+import { getProfessionalId, getCurrentUserId } from "../services/professionalService";
 import { getPatientsCount, getAnamnesisCount, getReportsCount } from "../services/countsService";
 import { getWeekSessions } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
@@ -33,11 +33,11 @@ export function useDashboardData(): DashboardData {
       try {
         console.log("🚀 Iniciando carregamento dos dados do dashboard...");
         
-        const professionalId = await getProfessionalId();
-        console.log("🎯 Professional ID obtido:", professionalId);
+        const userId = await getCurrentUserId();
+        console.log("🎯 User ID obtido:", userId);
         
-        if (!professionalId) {
-          console.log("⚠️ Nenhum ID profissional encontrado - usuário pode não estar logado");
+        if (!userId) {
+          console.log("⚠️ Nenhum usuário logado encontrado");
           setData(prev => ({ 
             ...prev, 
             isLoading: false 
@@ -51,12 +51,15 @@ export function useDashboardData(): DashboardData {
           return;
         }
 
-        // Get current week dates
+        // Usar data atual para buscar dados da semana atual
         const today = new Date();
         const startDate = startOfWeek(today, { weekStartsOn: 0 });
         const endDate = endOfWeek(today, { weekStartsOn: 0 });
         
-        console.log("📅 Buscando dados da semana:", startDate.toISOString().split('T')[0], "até", endDate.toISOString().split('T')[0]);
+        console.log("📅 Buscando dados da semana atual:", startDate.toISOString().split('T')[0], "até", endDate.toISOString().split('T')[0]);
+        
+        // Usar o userId diretamente como professionalId para compatibilidade
+        const professionalId = userId;
         
         // Buscar dados com logs detalhados
         console.log("📊 Iniciando busca de pacientes...");

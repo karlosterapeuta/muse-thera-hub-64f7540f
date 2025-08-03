@@ -2,7 +2,6 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Users, DollarSign, TrendingUp, FileText, ClipboardList, UserCheck } from "lucide-react";
-import { formatDashboardValue } from "./DashboardErrorFixes";
 
 interface DashboardStatsProps {
   totalSessions: number;
@@ -15,6 +14,22 @@ interface DashboardStatsProps {
   totalReports: number;
   isLoading: boolean;
 }
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
+const formatValue = (value: number, type: 'count' | 'currency') => {
+  if (value === 0) {
+    return type === 'currency' ? 'R$ 0' : '0';
+  }
+  return type === 'currency' ? formatCurrency(value) : value.toString();
+};
 
 export function DashboardStats({
   totalSessions,
@@ -30,57 +45,63 @@ export function DashboardStats({
   const stats = [
     {
       title: "Pacientes Cadastrados",
-      value: totalPatients.toString(),
+      value: formatValue(totalPatients, 'count'),
       subtitle: "Total de pacientes",
       icon: UserCheck,
       gradient: "from-emerald-500 via-emerald-600 to-green-700",
       change: 0,
-      changeLabel: "pacientes ativos"
+      changeLabel: `${totalPatients} pacientes ativos`,
+      showZeroState: totalPatients === 0
     },
     {
       title: "Anamneses Realizadas",
-      value: totalAnamnesis.toString(),
+      value: formatValue(totalAnamnesis, 'count'),
       subtitle: "Avaliações iniciais",
       icon: ClipboardList,
       gradient: "from-cyan-500 via-cyan-600 to-blue-700",
       change: 0,
-      changeLabel: "anamneses completas"
+      changeLabel: `${totalAnamnesis} anamneses completas`,
+      showZeroState: totalAnamnesis === 0
     },
     {
       title: "Relatórios Gerados",
-      value: totalReports.toString(),
+      value: formatValue(totalReports, 'count'),
       subtitle: "Documentos produzidos",
       icon: FileText,
       gradient: "from-violet-500 via-violet-600 to-purple-700",
       change: 0,
-      changeLabel: "relatórios criados"
+      changeLabel: `${totalReports} relatórios criados`,
+      showZeroState: totalReports === 0
     },
     {
       title: "Sessões desta Semana",
-      value: totalSessions.toString(),
+      value: formatValue(totalSessions, 'count'),
       subtitle: "Atendimentos realizados",
       icon: Users,
       gradient: "from-blue-500 via-blue-600 to-blue-700",
       change: monthlyChange,
-      changeLabel: "vs. semana anterior"
+      changeLabel: "vs. semana anterior",
+      showZeroState: totalSessions === 0
     },
     {
       title: "Receita Semanal",
-      value: formatDashboardValue(totalRevenue, 'currency'),
+      value: formatValue(totalRevenue, 'currency'),
       subtitle: "Faturamento total",
       icon: DollarSign,
       gradient: "from-green-500 via-green-600 to-emerald-700",
       change: 8,
-      changeLabel: "vs. semana anterior"
+      changeLabel: "vs. semana anterior",
+      showZeroState: totalRevenue === 0
     },
     {
       title: "Média por Sessão",
-      value: formatDashboardValue(averagePerSession, 'currency'),
+      value: formatValue(averagePerSession, 'currency'),
       subtitle: "Valor médio",
       icon: TrendingUp,
       gradient: "from-purple-500 via-purple-600 to-indigo-700",
       change: 12,
-      changeLabel: "vs. semana anterior"
+      changeLabel: "vs. semana anterior",
+      showZeroState: averagePerSession === 0
     }
   ];
 
@@ -109,9 +130,9 @@ export function DashboardStats({
                   <div className="w-16 h-8 bg-white/20 rounded-lg animate-pulse"></div>
                 ) : (
                   <span className="min-h-[32px] block">
-                    {stat.value === "0" || stat.value === "R$ 0" || stat.value === "R$ 0,00" ? (
+                    {stat.showZeroState ? (
                       <span className="text-lg text-white/80">
-                        {stat.title.includes("Receita") || stat.title.includes("Média") ? "R$ 0,00" : "Nenhum registro"}
+                        {stat.title.includes("Receita") || stat.title.includes("Média") ? "R$ 0" : "Nenhum registro"}
                       </span>
                     ) : (
                       stat.value

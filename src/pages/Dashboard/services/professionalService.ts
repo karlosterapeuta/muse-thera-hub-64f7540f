@@ -24,7 +24,7 @@ export async function getProfessionalId(): Promise<string | null> {
       .from('professionals')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (professional && !professionalError) {
       console.log("👨‍⚕️ Profissional encontrado:", professional.id);
@@ -34,10 +34,26 @@ export async function getProfessionalId(): Promise<string | null> {
       if (professionalError) {
         console.log("Erro do perfil profissional:", professionalError);
       }
+      // Fallback: retorna sempre o user.id se não encontrar professional
       return user.id;
     }
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar dados do profissional:", error);
+    return null;
+  }
+}
+
+export async function getCurrentUserId(): Promise<string | null> {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      console.log("❌ Nenhum usuário logado encontrado");
+      return null;
+    }
+    console.log("✅ User ID atual:", user.id);
+    return user.id;
+  } catch (error) {
+    console.error("❌ Erro ao obter user ID:", error);
     return null;
   }
 }
