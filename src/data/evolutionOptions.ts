@@ -86,5 +86,13 @@ export const evolutionOptions = {
     "Finalizou a sessão com estado emocional estável e expressando satisfação",
     "Mostrou-se cansado mas gratificado, evidenciando aproveitamento terapêutico",
     "Encerrou com comportamento mais regulado comparado ao início da sessão"
+  ],
+
+  observations: [
+    "A sessão demonstrou eficácia terapêutica significativa, com evolução notável do paciente",
+    "Recomenda-se continuidade das técnicas utilizadas com possível ampliação das propostas",
+    "Observou-se maior engajamento comparado a sessões anteriores, indicando progressão positiva",
+    "Sugere-se manutenção dos recursos que despertaram maior interesse e participação",
+    "A evolução apresentada justifica otimismo quanto ao desenvolvimento futuro nas intervenções"
   ]
 };

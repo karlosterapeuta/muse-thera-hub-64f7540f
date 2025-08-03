@@ -11,6 +11,7 @@ export const evolutionTemplate = {
   emotional_responses: "",
   session_adjustments: "",
   session_exit: "",
+  observations: ""
 };
 
 export const evolutionSections = [
@@ -69,4 +70,9 @@ export const evolutionSections = [
     title: "Como o paciente saiu da sessão",
     placeholder: "Descreva o estado do paciente ao final da sessão..."
   },
+  {
+    key: "observations",
+    title: "Observações gerais",
+    placeholder: "Registre observações adicionais e recomendações..."
+  }
 ];
