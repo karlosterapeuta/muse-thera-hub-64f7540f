@@ -208,11 +208,11 @@ export default function EvolutionReport() {
               <div className="space-y-3">
                 <div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-                    Relatório de Evolução
+                    Evolução Diária MuseTera
                   </h1>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" />
-                    <span className="text-lg font-semibold text-gray-600">MuseTera</span>
+                    <span className="text-lg font-semibold text-gray-600">Relatório de Evolução</span>
                   </div>
                 </div>
                 
