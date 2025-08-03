@@ -30,7 +30,7 @@ export const EvolutionReportPreview: React.FC<EvolutionReportPreviewProps> = ({
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '30px', borderBottom: '3px solid #2563eb', paddingBottom: '20px' }}>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e40af', margin: '0 0 10px 0' }}>
-          RELATÓRIO DE EVOLUÇÃO – MUSETERAPIA
+          RELATÓRIO DE EVOLUÇÃO – MUSICOTERAPIA
         </h1>
         <div style={{ fontSize: '14px', color: '#6b7280' }}>
           Sistema MuseTera - Plataforma Especializada em Musicoterapia
