@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Clock, Calendar, TrendingUp, Users, FileText, Activity } from "lucide-react";
+import { Clock, Calendar, TrendingUp, Users, FileText, Activity, Sparkles } from "lucide-react";
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
 import LogoRound from "@/components/LogoRound";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
@@ -90,16 +90,28 @@ export function DashboardHeader({
       {/* Main header container */}
       <div className="relative backdrop-blur-sm bg-white/90 border-b border-white/60 shadow-lg">
         <div className="container mx-auto p-6">
-          {/* Top section - Welcome and time */}
+          {/* Sistema MuseTera Title Section */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-3 group">
+              <Sparkles className="h-8 w-8 text-blue-500 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
+              <h1 className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent drop-shadow-sm hover:scale-105 transition-transform duration-300 cursor-default">
+                Sistema MuseTera
+              </h1>
+              <Sparkles className="h-8 w-8 text-pink-500 animate-pulse group-hover:-rotate-12 transition-transform duration-300" />
+            </div>
+            <div className="h-1 w-32 mx-auto mt-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-60" />
+          </div>
+
+          {/* Welcome section */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
-            {/* Welcome section */}
+            {/* Professional welcome */}
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-4">
                 <LogoRound size="md" className="shadow-xl border-2 border-white/80" />
                 <div className="flex flex-col">
-                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
-                  </h1>
+                  </h2>
                   <p className="text-lg text-gray-600 font-medium">
                     Pronto para mais um dia de transformação através da música
                   </p>
