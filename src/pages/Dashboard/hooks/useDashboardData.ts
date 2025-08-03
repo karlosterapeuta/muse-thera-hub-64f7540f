@@ -34,9 +34,10 @@ export function useDashboardData(): DashboardData {
         console.log("🚀 Iniciando carregamento dos dados do dashboard...");
         
         const professionalId = await getProfessionalId();
+        console.log("🎯 Professional ID obtido:", professionalId);
+        
         if (!professionalId) {
           console.log("⚠️ Nenhum ID profissional encontrado - usuário pode não estar logado");
-          // Still show the dashboard but with zero values
           setData(prev => ({ 
             ...prev, 
             isLoading: false 
@@ -57,38 +58,30 @@ export function useDashboardData(): DashboardData {
         
         console.log("📅 Buscando dados da semana:", startDate.toISOString().split('T')[0], "até", endDate.toISOString().split('T')[0]);
         
-        // Fetch all data in parallel with error handling for each
-        const [
-          totalPatients,
-          totalAnamnesis,
-          totalReports,
-          sessions,
-          financialRecords,
-          financialSchedule
-        ] = await Promise.allSettled([
-          getPatientsCount(professionalId),
-          getAnamnesisCount(professionalId),
-          getReportsCount(professionalId),
-          getWeekSessions(professionalId, startDate, endDate),
-          getWeekFinancialRecords(professionalId, startDate, endDate),
-          getFinancialSchedule(professionalId)
-        ]);
-
-        // Extract values, defaulting to 0 or empty array on error
-        const patientsCount = totalPatients.status === 'fulfilled' ? totalPatients.value : 0;
-        const anamnesisCount = totalAnamnesis.status === 'fulfilled' ? totalAnamnesis.value : 0;
-        const reportsCount = totalReports.status === 'fulfilled' ? totalReports.value : 0;
-        const sessionsData = sessions.status === 'fulfilled' ? sessions.value : [];
-        const financialData = financialRecords.status === 'fulfilled' ? financialRecords.value : [];
-        const scheduleData = financialSchedule.status === 'fulfilled' ? financialSchedule.value : [];
-
-        // Log any errors but don't stop execution
-        [totalPatients, totalAnamnesis, totalReports, sessions, financialRecords, financialSchedule].forEach((result, index) => {
-          if (result.status === 'rejected') {
-            const labels = ['pacientes', 'anamneses', 'relatórios', 'sessões', 'registros financeiros', 'agenda financeira'];
-            console.warn(`⚠️ Erro ao buscar ${labels[index]}:`, result.reason);
-          }
-        });
+        // Buscar dados com logs detalhados
+        console.log("📊 Iniciando busca de pacientes...");
+        const patientsCount = await getPatientsCount(professionalId);
+        console.log("📊 Pacientes encontrados:", patientsCount);
+        
+        console.log("📊 Iniciando busca de anamneses...");
+        const anamnesisCount = await getAnamnesisCount(professionalId);
+        console.log("📊 Anamneses encontradas:", anamnesisCount);
+        
+        console.log("📊 Iniciando busca de relatórios...");
+        const reportsCount = await getReportsCount(professionalId);
+        console.log("📊 Relatórios encontrados:", reportsCount);
+        
+        console.log("📊 Iniciando busca de sessões...");
+        const sessionsData = await getWeekSessions(professionalId, startDate, endDate);
+        console.log("📊 Sessões encontradas:", sessionsData?.length || 0);
+        
+        console.log("📊 Iniciando busca de dados financeiros...");
+        const financialData = await getWeekFinancialRecords(professionalId, startDate, endDate);
+        console.log("📊 Dados financeiros encontrados:", financialData?.length || 0);
+        
+        console.log("📊 Iniciando busca de agenda financeira...");
+        const scheduleData = await getFinancialSchedule(professionalId);
+        console.log("📊 Agenda financeira encontrada:", scheduleData?.length || 0);
 
         // Prepare week structure and organize data
         const weekDays = createWeekStructure(startDate);
@@ -99,7 +92,7 @@ export function useDashboardData(): DashboardData {
         const stats = calculateStatistics(sessionsData, financialData);
 
         console.log("✅ Dashboard data prepared successfully");
-        console.log(`📊 Totais: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${sessionsData.length} sessões`);
+        console.log(`📊 Resumo final: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${sessionsData.length} sessões`);
 
         setData({
           weekDays,

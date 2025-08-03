@@ -6,7 +6,6 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
   console.log("🔍 Buscando sessões da semana...");
   
   try {
-    // Get the current user first
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       console.log("❌ Usuário não encontrado para buscar sessões");
@@ -14,10 +13,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
     }
 
     console.log("👤 User ID para busca de sessões:", user.id);
-    console.log("👨‍⚕️ Professional ID para busca de sessões:", professionalId);
 
-    // Based on the pattern from other services, sessions are likely associated with user.id through patients
-    // So we'll search using the user.id directly for the professional_id in patients
     const { data: sessions, error: sessionsError } = await supabase
       .from("sessions")
       .select(`

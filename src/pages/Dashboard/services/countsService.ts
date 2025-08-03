@@ -5,7 +5,6 @@ export async function getPatientsCount(professionalId: string): Promise<number> 
   console.log("🔍 Buscando pacientes...");
   
   try {
-    // Get the current user first
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       console.log("❌ Usuário não encontrado para buscar pacientes");
@@ -13,13 +12,10 @@ export async function getPatientsCount(professionalId: string): Promise<number> 
     }
 
     console.log("👤 User ID para busca de pacientes:", user.id);
-    console.log("👨‍⚕️ Professional ID para busca de pacientes:", professionalId);
 
-    // Based on the pattern from anamneses, patients are likely associated with user.id
-    // So we'll search using the user.id directly
-    const { data: patientsData, error: patientsError, count: totalPatients } = await supabase
+    const { count: totalPatients, error: patientsError } = await supabase
       .from("patients")
-      .select('id', { count: 'exact', head: true })
+      .select('*', { count: 'exact', head: true })
       .eq('professional_id', user.id);
 
     if (patientsError) {
@@ -39,7 +35,6 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
   console.log("🔍 Buscando anamneses...");
   
   try {
-    // Get the current user first
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       console.log("❌ Usuário não encontrado para buscar anamneses");
@@ -47,13 +42,10 @@ export async function getAnamnesisCount(professionalId: string): Promise<number>
     }
 
     console.log("👤 User ID para busca de anamneses:", user.id);
-    console.log("👨‍⚕️ Professional ID para busca de anamneses:", professionalId);
 
-    // Based on the debug logs, anamneses are associated with user.id, not professionalId
-    // So we'll search using the user.id directly
-    const { data: anamnesisData, error: anamnesisError, count: totalAnamnesis } = await supabase
+    const { count: totalAnamnesis, error: anamnesisError } = await supabase
       .from("anamnesis")
-      .select('id', { count: 'exact', head: true })
+      .select('*', { count: 'exact', head: true })
       .eq('professional_id', user.id);
 
     if (anamnesisError) {
@@ -73,14 +65,36 @@ export async function getReportsCount(professionalId: string): Promise<number> {
   console.log("🔍 Buscando relatórios...");
   
   try {
-    const { data: reportsData, error: reportsError, count: totalReports } = await supabase
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.log("❌ Usuário não encontrado para buscar relatórios");
+      return 0;
+    }
+
+    console.log("👤 User ID para busca de relatórios:", user.id);
+
+    // Primeiro tenta com o professional_id sendo o user.id
+    const { count: totalReports, error: reportsError } = await supabase
       .from("reports")
-      .select('id', { count: 'exact', head: true })
-      .eq('professional_id', professionalId);
+      .select('*', { count: 'exact', head: true })
+      .eq('professional_id', user.id);
 
     if (reportsError) {
-      console.error("❌ Erro ao buscar relatórios:", reportsError);
-      return 0;
+      console.error("❌ Erro ao buscar relatórios com user_id:", reportsError);
+      
+      // Se não funcionar, tenta com o professionalId passado como parâmetro
+      const { count: totalReportsWithProfId, error: reportsError2 } = await supabase
+        .from("reports")
+        .select('*', { count: 'exact', head: true })
+        .eq('professional_id', professionalId);
+      
+      if (reportsError2) {
+        console.error("❌ Erro ao buscar relatórios com professionalId:", reportsError2);
+        return 0;
+      } else {
+        console.log("✅ Total de relatórios encontrados (com professionalId):", totalReportsWithProfId);
+        return totalReportsWithProfId || 0;
+      }
     } else {
       console.log("✅ Total de relatórios encontrados:", totalReports);
       return totalReports || 0;

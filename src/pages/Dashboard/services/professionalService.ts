@@ -19,7 +19,7 @@ export async function getProfessionalId(): Promise<string | null> {
     
     console.log("👤 Usuário encontrado:", user.id);
 
-    // First try to get professional profile
+    // Primeiro, tenta buscar o perfil profissional
     const { data: professional, error: professionalError } = await supabase
       .from('professionals')
       .select('id')
@@ -30,7 +30,7 @@ export async function getProfessionalId(): Promise<string | null> {
       console.log("👨‍⚕️ Profissional encontrado:", professional.id);
       return professional.id;
     } else {
-      console.log("⚠️ Perfil profissional não encontrado, usando user_id diretamente...");
+      console.log("⚠️ Perfil profissional não encontrado, usando user_id diretamente:", user.id);
       if (professionalError) {
         console.log("Erro do perfil profissional:", professionalError);
       }
