@@ -31,7 +31,7 @@ export default function EvolutionReport() {
     resetForm
   } = useEvolutionReport();
 
-  const { professionalData } = useProfessionalData();
+  const { data: professionalData } = useProfessionalData();
   
   const [patients, setPatients] = useState<any[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
