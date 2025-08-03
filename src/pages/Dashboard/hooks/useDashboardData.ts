@@ -127,6 +127,13 @@ export function useDashboardData(): DashboardData {
             }
           });
 
+        // Log específico para debugging do card de anamnese
+        console.log("🔍 DEBUG - Dados de anamnese:", {
+          anamnesisResult,
+          anamnesisCount,
+          professionalId
+        });
+
         // Preparar estrutura da semana com validação
         let weekDays: any[] = [];
         try {
@@ -180,7 +187,7 @@ export function useDashboardData(): DashboardData {
         console.log("✅ Dashboard data prepared successfully");
         console.log(`📊 Resumo final: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${Array.isArray(sessionsData) ? sessionsData.length : 0} sessões`);
 
-        setData({
+        const finalData = {
           weekDays: weekDays || [],
           totalSessions: stats.totalSessions || 0,
           totalRevenue: stats.totalRevenue || 0,
@@ -194,7 +201,10 @@ export function useDashboardData(): DashboardData {
           totalReports: reportsCount || 0,
           financialSchedule: Array.isArray(scheduleData) ? scheduleData : [],
           isLoading: false,
-        });
+        };
+
+        console.log("🎯 Setting final data:", finalData);
+        setData(finalData);
 
       } catch (error) {
         console.error('❌ Erro crítico ao carregar dados do dashboard:', error);

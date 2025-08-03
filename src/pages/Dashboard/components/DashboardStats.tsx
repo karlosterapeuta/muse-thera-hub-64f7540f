@@ -17,6 +17,13 @@ export function DashboardStats({
   totalReports,
   isLoading
 }: DashboardStatsProps) {
+  console.log("🎯 DashboardStats recebeu os dados:", {
+    totalPatients,
+    totalAnamnesis,
+    totalReports,
+    isLoading
+  });
+
   const stats = [
     {
       title: "Pacientes Cadastrados",
@@ -73,50 +80,54 @@ export function DashboardStats({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {stats.map((stat, index) => (
-        <Card 
-          key={index} 
-          className={`relative overflow-hidden border-0 shadow-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl transition-all duration-500 group cursor-pointer`}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                <stat.icon className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-white/90">{stat.title}</h3>
-                <p className="text-xs text-white/70">{stat.subtitle}</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="text-2xl font-bold text-white">
-                {stat.isEmpty ? (
-                  <span className="text-lg text-white/80">0</span>
-                ) : (
-                  stat.value
-                )}
+      {stats.map((stat, index) => {
+        console.log(`📊 Renderizando card ${index}:`, stat.title, "Valor:", stat.value);
+        
+        return (
+          <Card 
+            key={index} 
+            className={`relative overflow-hidden border-0 shadow-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl transition-all duration-500 group cursor-pointer`}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <stat.icon className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-white/90">{stat.title}</h3>
+                  <p className="text-xs text-white/70">{stat.subtitle}</p>
+                </div>
               </div>
               
-              {stat.isEmpty ? (
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  {stat.actionText}
-                </Button>
-              ) : (
-                <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80">
-                  {stat.actionText}
+              <div className="space-y-3">
+                <div className="text-2xl font-bold text-white">
+                  {stat.isEmpty ? (
+                    <span className="text-lg text-white/80">0</span>
+                  ) : (
+                    <span>{stat.value}</span>
+                  )}
                 </div>
-              )}
+                
+                {stat.isEmpty ? (
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    {stat.actionText}
+                  </Button>
+                ) : (
+                  <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80">
+                    {stat.actionText}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
