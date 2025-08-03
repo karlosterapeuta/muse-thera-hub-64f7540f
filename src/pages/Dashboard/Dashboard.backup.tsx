@@ -1,3 +1,4 @@
+
 // src/pages/Dashboard/Dashboard.backup.tsx
 
 import React from "react";
@@ -8,19 +9,7 @@ import { UpcomingSessions } from "./components/UpcomingSessions";
 import { useDashboardData } from "./hooks/useDashboardData";
 
 export default function Dashboard() {
-  const {
-    data: dashboardData,
-    isLoading,
-    error,
-  } = useDashboardData();
-
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (error) {
-    return <div>Erro ao carregar os dados: {error.message}</div>;
-  }
+  const dashboardData = useDashboardData();
 
   return (
     <div className="container mx-auto p-6 space-y-8 bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30 min-h-screen">
@@ -38,7 +27,7 @@ export default function Dashboard() {
         totalPatients={dashboardData.totalPatients}
         totalAnamnesis={dashboardData.totalAnamnesis}
         totalReports={dashboardData.totalReports}
-        isLoading={isLoading}
+        isLoading={dashboardData.isLoading}
       />
 
       {/* Main Content Grid */}
@@ -47,11 +36,11 @@ export default function Dashboard() {
         <div className="space-y-6">
           <UpcomingSessions
             upcomingSessions={dashboardData.upcomingSessions}
-            isLoading={isLoading}
+            isLoading={dashboardData.isLoading}
           />
           <FinancialAgenda
             financialSchedule={dashboardData.financialSchedule}
-            isLoading={isLoading}
+            isLoading={dashboardData.isLoading}
           />
         </div>
 
@@ -59,7 +48,7 @@ export default function Dashboard() {
         <div>
           <EnhancedSessionChart
             sessionData={dashboardData.sessionData}
-            isLoading={isLoading}
+            isLoading={dashboardData.isLoading}
           />
         </div>
       </div>
