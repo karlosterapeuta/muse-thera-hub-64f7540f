@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Users, TrendingUp, FileText, ClipboardList, UserCheck, Plus } from "lucide-react";
+import { Users, FileText, ClipboardList, UserCheck, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardStatsProps {
