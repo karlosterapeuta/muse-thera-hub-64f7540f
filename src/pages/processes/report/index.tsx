@@ -62,7 +62,7 @@ export default function ReportForm() {
 
         if (data) {
           form.setValue('patient_id', data.patient_id);
-          form.setValue('type', data.type);
+          form.setValue('type', data.type as any);
           
           // Garantir que content seja um objeto válido
           const content = data.content && typeof data.content === 'object' 

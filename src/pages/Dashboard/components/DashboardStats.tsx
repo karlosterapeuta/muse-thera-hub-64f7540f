@@ -112,8 +112,10 @@ export function DashboardStats({
                   <div className="w-16 h-8 bg-white/20 rounded-lg animate-pulse"></div>
                 ) : (
                   <span className="min-h-[32px] block">
-                    {stat.value === "0" && !isLoading ? (
-                      <span className="text-lg text-white/80">Nenhum registro</span>
+                    {stat.value === "0" || stat.value === "R$ 0" || stat.value === "R$ 0,00" ? (
+                      <span className="text-lg text-white/80">
+                        {stat.title.includes("Receita") || stat.title.includes("Média") ? "R$ 0,00" : "Nenhum registro"}
+                      </span>
                     ) : (
                       stat.value
                     )}

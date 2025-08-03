@@ -13,6 +13,7 @@ export type ReportFormData = {
     | 'family_report'
     | 'team_report'
     | 'technical_report'
-    | 'musicoterapia';
+    | 'musicoterapia'
+    | 'evolution_musicoterapia';
   content: Record<string, any>;
 };
