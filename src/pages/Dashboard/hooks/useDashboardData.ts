@@ -31,9 +31,22 @@ export function useDashboardData(): DashboardData {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        console.log("🚀 Iniciando carregamento dos dados do dashboard...");
+        
         const professionalId = await getProfessionalId();
         if (!professionalId) {
-          setData(prev => ({ ...prev, isLoading: false }));
+          console.log("⚠️ Nenhum ID profissional encontrado - usuário pode não estar logado");
+          // Still show the dashboard but with zero values
+          setData(prev => ({ 
+            ...prev, 
+            isLoading: false 
+          }));
+          
+          toast({
+            title: "Atenção",
+            description: "Faça login para visualizar seus dados do dashboard.",
+            variant: "default",
+          });
           return;
         }
 
@@ -44,7 +57,7 @@ export function useDashboardData(): DashboardData {
         
         console.log("📅 Buscando dados da semana:", startDate.toISOString().split('T')[0], "até", endDate.toISOString().split('T')[0]);
         
-        // Fetch all data in parallel
+        // Fetch all data in parallel with error handling for each
         const [
           totalPatients,
           totalAnamnesis,
@@ -52,7 +65,7 @@ export function useDashboardData(): DashboardData {
           sessions,
           financialRecords,
           financialSchedule
-        ] = await Promise.all([
+        ] = await Promise.allSettled([
           getPatientsCount(professionalId),
           getAnamnesisCount(professionalId),
           getReportsCount(professionalId),
@@ -61,15 +74,32 @@ export function useDashboardData(): DashboardData {
           getFinancialSchedule(professionalId)
         ]);
 
+        // Extract values, defaulting to 0 or empty array on error
+        const patientsCount = totalPatients.status === 'fulfilled' ? totalPatients.value : 0;
+        const anamnesisCount = totalAnamnesis.status === 'fulfilled' ? totalAnamnesis.value : 0;
+        const reportsCount = totalReports.status === 'fulfilled' ? totalReports.value : 0;
+        const sessionsData = sessions.status === 'fulfilled' ? sessions.value : [];
+        const financialData = financialRecords.status === 'fulfilled' ? financialRecords.value : [];
+        const scheduleData = financialSchedule.status === 'fulfilled' ? financialSchedule.value : [];
+
+        // Log any errors but don't stop execution
+        [totalPatients, totalAnamnesis, totalReports, sessions, financialRecords, financialSchedule].forEach((result, index) => {
+          if (result.status === 'rejected') {
+            const labels = ['pacientes', 'anamneses', 'relatórios', 'sessões', 'registros financeiros', 'agenda financeira'];
+            console.warn(`⚠️ Erro ao buscar ${labels[index]}:`, result.reason);
+          }
+        });
+
         // Prepare week structure and organize data
         const weekDays = createWeekStructure(startDate);
-        organizeSessionsByDay(weekDays, sessions);
-        addFinancialDataToDays(weekDays, financialRecords);
+        organizeSessionsByDay(weekDays, sessionsData);
+        addFinancialDataToDays(weekDays, financialData);
 
         // Calculate statistics
-        const stats = calculateStatistics(sessions, financialRecords);
+        const stats = calculateStatistics(sessionsData, financialData);
 
         console.log("✅ Dashboard data prepared successfully");
+        console.log(`📊 Totais: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${sessionsData.length} sessões`);
 
         setData({
           weekDays,
@@ -80,18 +110,18 @@ export function useDashboardData(): DashboardData {
           monthlyChange: 5, // Placeholder
           completionRate: stats.completionRate,
           sessionData: stats.sessionData,
-          totalPatients,
-          totalAnamnesis,
-          totalReports,
-          financialSchedule,
+          totalPatients: patientsCount,
+          totalAnamnesis: anamnesisCount,
+          totalReports: reportsCount,
+          financialSchedule: scheduleData,
           isLoading: false,
         });
 
       } catch (error) {
-        console.error('❌ Erro ao carregar dados do dashboard:', error);
+        console.error('❌ Erro crítico ao carregar dados do dashboard:', error);
         toast({
           title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados do dashboard.",
+          description: "Ocorreu um erro ao carregar os dados do dashboard. Tente recarregar a página.",
           variant: "destructive",
         });
         setData(prev => ({ ...prev, isLoading: false }));

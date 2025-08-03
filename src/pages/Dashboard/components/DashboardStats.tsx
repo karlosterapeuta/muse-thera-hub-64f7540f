@@ -111,22 +111,35 @@ export function DashboardStats({
                 {isLoading ? (
                   <div className="w-16 h-8 bg-white/20 rounded-lg animate-pulse"></div>
                 ) : (
-                  stat.value
+                  <span className="min-h-[32px] block">
+                    {stat.value === "0" && !isLoading ? (
+                      <span className="text-lg text-white/80">Nenhum registro</span>
+                    ) : (
+                      stat.value
+                    )}
+                  </span>
                 )}
               </div>
-              {stat.change !== 0 ? (
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                  stat.change >= 0 
-                    ? 'bg-green-500/20 text-green-100' 
-                    : 'bg-red-500/20 text-red-100'
-                }`}>
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  {stat.change >= 0 ? '+' : ''}{stat.change}% {stat.changeLabel}
-                </div>
-              ) : (
-                <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80">
-                  {stat.changeLabel}
-                </div>
+              {!isLoading && (
+                <>
+                  {stat.change !== 0 ? (
+                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      stat.change >= 0 
+                        ? 'bg-green-500/20 text-green-100' 
+                        : 'bg-red-500/20 text-red-100'
+                    }`}>
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      {stat.change >= 0 ? '+' : ''}{stat.change}% {stat.changeLabel}
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80">
+                      {stat.changeLabel}
+                    </div>
+                  )}
+                </>
+              )}
+              {isLoading && (
+                <div className="w-24 h-4 bg-white/20 rounded animate-pulse"></div>
               )}
             </div>
           </div>
