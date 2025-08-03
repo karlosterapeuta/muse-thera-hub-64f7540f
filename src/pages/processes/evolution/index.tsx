@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -189,54 +188,90 @@ export default function EvolutionReport() {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
-      {/* Enhanced Header */}
-      <div className="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-100/50">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-blue-100/30 [mask-image:linear-gradient(0deg,transparent,black)]" />
-        
-        <div className="relative p-8">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
-                  <TrendingUp className="h-8 w-8 text-white" />
+      {/* Enhanced Organized Header */}
+      <div className="relative mb-10 overflow-hidden">
+        {/* Main Header Container */}
+        <div className="relative rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100/60 shadow-xl">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-grid-blue-100/20 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+          
+          <div className="relative p-10">
+            {/* Header Content */}
+            <div className="flex items-center justify-between">
+              {/* Left Side - Main Content */}
+              <div className="flex items-center gap-6">
+                {/* Icon Container */}
+                <div className="relative flex-shrink-0">
+                  <div className="p-5 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl">
+                    <TrendingUp className="h-10 w-10 text-white" />
+                  </div>
+                  {/* Floating Badge */}
+                  <div className="absolute -top-2 -right-2 p-2 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full shadow-lg animate-pulse">
+                    <Sparkles className="h-4 w-4 text-white" />
+                  </div>
                 </div>
-                <div className="absolute -top-1 -right-1 p-1 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full">
-                  <Sparkles className="h-3 w-3 text-white" />
+                
+                {/* Text Content */}
+                <div className="space-y-4">
+                  {/* Title Section */}
+                  <div className="space-y-2">
+                    <h1 className="text-5xl font-black bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent leading-tight tracking-tight">
+                      Evolução Diária MuseTera
+                    </h1>
+                    
+                    {/* Subtitle with decorative line */}
+                    <div className="flex items-center gap-4">
+                      <div className="h-1 w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
+                      <span className="text-xl font-bold text-gray-700">
+                        Relatório de Evolução Terapêutica
+                      </span>
+                      <div className="h-1 w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  <p className="text-gray-600 text-lg max-w-3xl leading-relaxed font-medium">
+                    Sistema profissional para documentação detalhada da evolução do paciente durante sessões de musicoterapia, 
+                    registrando progressos, comportamentos e interações terapêuticas de forma estruturada.
+                  </p>
                 </div>
               </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-                    Evolução Diária MuseTera
-                  </h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" />
-                    <span className="text-lg font-semibold text-gray-600">Relatório de Evolução</span>
-                  </div>
+
+              {/* Right Side - Quick Stats */}
+              <div className="hidden lg:flex flex-col gap-3">
+                <div className="text-right">
+                  <div className="text-3xl font-black text-blue-600">+</div>
+                  <div className="text-sm font-semibold text-gray-600">Profissional</div>
                 </div>
-                
-                <p className="text-gray-600 text-lg max-w-2xl leading-relaxed">
-                  Documente de forma detalhada e profissional a evolução do paciente durante a sessão de musicoterapia, 
-                  capturando progressos, comportamentos e interações terapêuticas.
-                </p>
-                
-                {/* Stats Pills */}
-                <div className="flex items-center gap-3 mt-4">
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                    <Clock className="h-4 w-4" />
-                    Sessão Terapêutica
-                  </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
-                    <Brain className="h-4 w-4" />
-                    Análise Clínica
-                  </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                    <Heart className="h-4 w-4" />
-                    Evolução Terapêutica
-                  </div>
+                <div className="text-right">
+                  <div className="text-3xl font-black text-indigo-600">AI</div>
+                  <div className="text-sm font-semibold text-gray-600">Organização</div>
                 </div>
+                <div className="text-right">
+                  <div className="text-3xl font-black text-purple-600">PDF</div>
+                  <div className="text-sm font-semibold text-gray-600">Export</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Feature Pills */}
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-blue-700 rounded-2xl shadow-lg border border-blue-200/50 font-semibold">
+                <Clock className="h-5 w-5" />
+                <span>Sessão Terapêutica</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-indigo-700 rounded-2xl shadow-lg border border-indigo-200/50 font-semibold">
+                <Brain className="h-5 w-5" />
+                <span>Análise Clínica</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-purple-700 rounded-2xl shadow-lg border border-purple-200/50 font-semibold">
+                <Heart className="h-5 w-5" />
+                <span>Evolução Terapêutica</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-emerald-700 rounded-2xl shadow-lg border border-emerald-200/50 font-semibold">
+                <Sparkles className="h-5 w-5" />
+                <span>IA Integrada</span>
               </div>
             </div>
           </div>
