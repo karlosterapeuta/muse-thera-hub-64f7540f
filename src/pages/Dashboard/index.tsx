@@ -22,9 +22,7 @@ export default function Dashboard() {
 
       {/* Statistics Cards */}
       <DashboardStats
-        totalSessions={data.totalSessions}
         totalPatients={data.totalPatients}
-        totalAnamnesis={data.totalAnamnesis}
         totalReports={data.totalReports}
         isLoading={data.isLoading}
       />
