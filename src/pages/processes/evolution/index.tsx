@@ -38,6 +38,7 @@ export default function EvolutionReport() {
   const [patients, setPatients] = useState<any[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("form");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     loadPatients();
@@ -73,6 +74,55 @@ export default function EvolutionReport() {
       toast.success("Relatório organizado com IA!", {
         description: "Revise o conteúdo gerado e ajuste se necessário antes de salvar."
       });
+    }
+  };
+
+  const handleGeneratePDF = async () => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente para gerar o PDF");
+      return;
+    }
+
+    // Verificar se há dados suficientes para gerar o PDF
+    const hasData = Object.values(formData).some(value => 
+      value && typeof value === 'string' && value.trim() !== ''
+    );
+
+    if (!hasData) {
+      toast.error("Adicione dados ao relatório antes de exportar", {
+        description: "Preencha alguns campos do formulário para gerar o PDF."
+      });
+      return;
+    }
+
+    setIsGeneratingPDF(true);
+    try {
+      console.log("📄 Gerando PDF do relatório de evolução...");
+      
+      const component = React.createElement(EvolutionReportPreview, {
+        data: formData,
+        professionalName: professionalData?.name || "Nome do Profissional",
+        professionalRegister: professionalData?.register || "CRM/XXXX"
+      });
+
+      const filename = `Relatorio_Evolucao_MuseTera_${selectedPatient?.name?.replace(/\s+/g, '_') || 'Paciente'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      const success = await generateStaticPDF(component, {
+        filename,
+        waitTime: 3000,
+        quality: 1.8
+      });
+
+      if (success) {
+        toast.success("PDF exportado com sucesso!");
+      } else {
+        toast.error("Erro ao exportar PDF");
+      }
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error("Erro ao exportar PDF");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -235,7 +285,7 @@ export default function EvolutionReport() {
           {/* Action Buttons */}
           <Card>
             <CardContent className="pt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Button
                   onClick={handleOrganizeWithAI}
                   disabled={isOrganizingWithAI || !selectedPatient}
@@ -260,6 +310,19 @@ export default function EvolutionReport() {
                     <Save className="h-4 w-4 mr-2" />
                   )}
                   Salvar Relatório
+                </Button>
+
+                <Button
+                  onClick={handleGeneratePDF}
+                  disabled={isGeneratingPDF || !selectedPatient}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {isGeneratingPDF ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-2" />
+                  )}
+                  {isGeneratingPDF ? 'Exportando...' : 'Exportar PDF'}
                 </Button>
 
                 <Button
