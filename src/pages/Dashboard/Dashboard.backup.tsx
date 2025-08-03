@@ -1,3 +1,4 @@
+
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CalendarDays, Clock } from "lucide-react";
 import LogoRound from "@/components/LogoRound";
@@ -95,14 +96,10 @@ export default function Dashboard() {
 
         {/* Stats Cards */}
         <DashboardStats
-          totalSessions={dashboardData.totalSessions}
-          totalRevenue={dashboardData.totalRevenue}
-          averagePerSession={dashboardData.averagePerSession}
-          completionRate={dashboardData.completionRate}
-          monthlyChange={dashboardData.monthlyChange}
           totalPatients={dashboardData.totalPatients}
           totalAnamnesis={dashboardData.totalAnamnesis}
           totalReports={dashboardData.totalReports}
+          totalSessions={dashboardData.totalSessions}
           isLoading={dashboardData.isLoading}
         />
 
