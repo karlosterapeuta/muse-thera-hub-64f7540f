@@ -40,7 +40,8 @@ export function useDashboardData(): DashboardData {
           console.log("⚠️ Nenhum usuário logado encontrado");
           setData(prev => ({ 
             ...prev, 
-            isLoading: false 
+            isLoading: false,
+            weekDays: createWeekStructure(startOfWeek(new Date(), { weekStartsOn: 0 }))
           }));
           
           toast({
@@ -62,40 +63,67 @@ export function useDashboardData(): DashboardData {
         const professionalId = userId;
         
         // Buscar dados com logs detalhados
-        console.log("📊 Iniciando busca de pacientes...");
-        const patientsCount = await getPatientsCount(professionalId);
-        console.log("📊 Pacientes encontrados:", patientsCount);
+        console.log("📊 Iniciando busca de dados...");
         
-        console.log("📊 Iniciando busca de anamneses...");
-        const anamnesisCount = await getAnamnesisCount(professionalId);
-        console.log("📊 Anamneses encontradas:", anamnesisCount);
-        
-        console.log("📊 Iniciando busca de relatórios...");
-        const reportsCount = await getReportsCount(professionalId);
-        console.log("📊 Relatórios encontrados:", reportsCount);
-        
-        console.log("📊 Iniciando busca de sessões...");
-        const sessionsData = await getWeekSessions(professionalId, startDate, endDate);
-        console.log("📊 Sessões encontradas:", sessionsData?.length || 0);
-        
-        console.log("📊 Iniciando busca de dados financeiros...");
-        const financialData = await getWeekFinancialRecords(professionalId, startDate, endDate);
-        console.log("📊 Dados financeiros encontrados:", financialData?.length || 0);
-        
-        console.log("📊 Iniciando busca de agenda financeira...");
-        const scheduleData = await getFinancialSchedule(professionalId);
-        console.log("📊 Agenda financeira encontrada:", scheduleData?.length || 0);
+        const [
+          patientsCount,
+          anamnesisCount,
+          reportsCount,
+          sessionsData,
+          financialData,
+          scheduleData
+        ] = await Promise.all([
+          getPatientsCount(professionalId).catch(err => {
+            console.error("❌ Erro ao buscar pacientes:", err);
+            return 0;
+          }),
+          getAnamnesisCount(professionalId).catch(err => {
+            console.error("❌ Erro ao buscar anamneses:", err);
+            return 0;
+          }),
+          getReportsCount(professionalId).catch(err => {
+            console.error("❌ Erro ao buscar relatórios:", err);
+            return 0;
+          }),
+          getWeekSessions(professionalId, startDate, endDate).catch(err => {
+            console.error("❌ Erro ao buscar sessões:", err);
+            return [];
+          }),
+          getWeekFinancialRecords(professionalId, startDate, endDate).catch(err => {
+            console.error("❌ Erro ao buscar dados financeiros:", err);
+            return [];
+          }),
+          getFinancialSchedule(professionalId).catch(err => {
+            console.error("❌ Erro ao buscar agenda financeira:", err);
+            return [];
+          })
+        ]);
+
+        console.log("📊 Dados coletados:", {
+          pacientes: patientsCount,
+          anamneses: anamnesisCount,
+          relatórios: reportsCount,
+          sessões: sessionsData?.length || 0,
+          financeiro: financialData?.length || 0,
+          agenda: scheduleData?.length || 0
+        });
 
         // Prepare week structure and organize data
         const weekDays = createWeekStructure(startDate);
-        organizeSessionsByDay(weekDays, sessionsData);
-        addFinancialDataToDays(weekDays, financialData);
+        
+        if (sessionsData && sessionsData.length > 0) {
+          organizeSessionsByDay(weekDays, sessionsData);
+        }
+        
+        if (financialData && financialData.length > 0) {
+          addFinancialDataToDays(weekDays, financialData);
+        }
 
         // Calculate statistics
         const stats = calculateStatistics(sessionsData, financialData);
 
         console.log("✅ Dashboard data prepared successfully");
-        console.log(`📊 Resumo final: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${sessionsData.length} sessões`);
+        console.log(`📊 Resumo final: ${patientsCount} pacientes, ${anamnesisCount} anamneses, ${reportsCount} relatórios, ${sessionsData?.length || 0} sessões`);
 
         setData({
           weekDays,
@@ -109,18 +137,38 @@ export function useDashboardData(): DashboardData {
           totalPatients: patientsCount,
           totalAnamnesis: anamnesisCount,
           totalReports: reportsCount,
-          financialSchedule: scheduleData,
+          financialSchedule: scheduleData || [],
           isLoading: false,
         });
 
       } catch (error) {
         console.error('❌ Erro crítico ao carregar dados do dashboard:', error);
+        
+        // Set safe defaults when error occurs
+        const today = new Date();
+        const startDate = startOfWeek(today, { weekStartsOn: 0 });
+        
+        setData({
+          weekDays: createWeekStructure(startDate),
+          totalSessions: 0,
+          totalRevenue: 0,
+          averagePerSession: 0,
+          upcomingSessions: [],
+          monthlyChange: 0,
+          completionRate: 0,
+          sessionData: [],
+          totalPatients: 0,
+          totalAnamnesis: 0,
+          totalReports: 0,
+          financialSchedule: [],
+          isLoading: false,
+        });
+
         toast({
           title: "Erro ao carregar dados",
           description: "Ocorreu um erro ao carregar os dados do dashboard. Tente recarregar a página.",
           variant: "destructive",
         });
-        setData(prev => ({ ...prev, isLoading: false }));
       }
     };
 
