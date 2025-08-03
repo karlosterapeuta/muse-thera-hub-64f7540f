@@ -10,6 +10,7 @@ import { FinancialAgenda } from "./components/FinancialAgenda";
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useState, useEffect } from "react";
+import { DashboardErrorFixes } from "./components/DashboardErrorFixes";
 
 export default function Dashboard() {
   const dashboardData = useDashboardData();
@@ -42,7 +43,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <>
+      <DashboardErrorFixes />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-6 space-y-8 animate-fadeIn">
         {/* Custom Header Section */}
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
@@ -240,5 +243,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

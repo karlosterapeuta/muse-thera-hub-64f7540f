@@ -73,32 +73,33 @@ export async function getReportsCount(professionalId: string): Promise<number> {
 
     console.log("👤 User ID para busca de relatórios:", user.id);
 
-    // Primeiro tenta com o professional_id sendo o user.id
+    // Buscar professional ID através da tabela professionals
+    const { data: professional, error: profError } = await supabase
+      .from('professionals')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (profError) {
+      console.error("❌ Erro ao buscar professional:", profError);
+      return 0;
+    }
+
+    const professionalIdToUse = professional?.id || user.id;
+    console.log("🔧 Professional ID para usar:", professionalIdToUse);
+
     const { count: totalReports, error: reportsError } = await supabase
       .from("reports")
       .select('*', { count: 'exact', head: true })
-      .eq('professional_id', user.id);
+      .eq('professional_id', professionalIdToUse);
 
     if (reportsError) {
-      console.error("❌ Erro ao buscar relatórios com user_id:", reportsError);
-      
-      // Se não funcionar, tenta com o professionalId passado como parâmetro
-      const { count: totalReportsWithProfId, error: reportsError2 } = await supabase
-        .from("reports")
-        .select('*', { count: 'exact', head: true })
-        .eq('professional_id', professionalId);
-      
-      if (reportsError2) {
-        console.error("❌ Erro ao buscar relatórios com professionalId:", reportsError2);
-        return 0;
-      } else {
-        console.log("✅ Total de relatórios encontrados (com professionalId):", totalReportsWithProfId);
-        return totalReportsWithProfId || 0;
-      }
-    } else {
-      console.log("✅ Total de relatórios encontrados:", totalReports);
-      return totalReports || 0;
+      console.error("❌ Erro ao buscar relatórios:", reportsError);
+      return 0;
     }
+
+    console.log("✅ Total de relatórios encontrados:", totalReports);
+    return totalReports || 0;
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar relatórios:", error);
     return 0;

@@ -2,6 +2,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Users, DollarSign, TrendingUp, FileText, ClipboardList, UserCheck } from "lucide-react";
+import { formatDashboardValue } from "./DashboardErrorFixes";
 
 interface DashboardStatsProps {
   totalSessions: number;
@@ -65,12 +66,7 @@ export function DashboardStats({
     },
     {
       title: "Receita Semanal",
-      value: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(totalRevenue),
+      value: formatDashboardValue(totalRevenue, 'currency'),
       subtitle: "Faturamento total",
       icon: DollarSign,
       gradient: "from-green-500 via-green-600 to-emerald-700",
@@ -79,10 +75,7 @@ export function DashboardStats({
     },
     {
       title: "Média por Sessão",
-      value: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(averagePerSession),
+      value: formatDashboardValue(averagePerSession, 'currency'),
       subtitle: "Valor médio",
       icon: TrendingUp,
       gradient: "from-purple-500 via-purple-600 to-indigo-700",
@@ -94,7 +87,11 @@ export function DashboardStats({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
-        <Card key={index} className={`relative overflow-hidden border-0 shadow-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl transition-all duration-500 group`}>
+        <Card 
+          key={index} 
+          data-dashboard-stat={stat.title}
+          className={`relative overflow-hidden border-0 shadow-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl transition-all duration-500 group`}
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative p-6">
             <div className="flex items-center space-x-3 mb-4">
