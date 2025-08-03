@@ -66,6 +66,11 @@ export default function EvolutionReport() {
   };
 
   const generatePDF = async () => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente para gerar o PDF");
+      return;
+    }
+
     try {
       const component = React.createElement(EvolutionReportPreview, {
         data: formData,

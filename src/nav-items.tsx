@@ -1,63 +1,192 @@
 
-import { lazy, ComponentType } from "react";
+import {
+  HomeIcon,
+  Users,
+  FileText,
+  Settings,
+  UserCheck,
+  Calendar,
+  Music,
+  Activity,
+  Stethoscope,
+  ClipboardList,
+  TrendingUp,
+  BarChart3,
+  DollarSign,
+  BookOpen,
+  Play,
+  Bell,
+  TestTube,
+  Volume2,
+  PaintBucket,
+  Gamepad2,
+  Music2,
+  Guitar,
+  Piano,
+  Headphones,
+  Zap,
+  Users2,
+  UserCog,
+  KeyRound,
+} from "lucide-react";
 
-// Lazy load pages for better performance
-const Dashboard = lazy(() => import("./pages/Dashboard/index"));
-const Professional = lazy(() => import("./pages/Professional"));
-const Patients = lazy(() => import("./pages/patients"));
-const Processes = lazy(() => import("./pages/processes.tsx"));
-const Activities = lazy(() => import("./pages/activities"));
-const CategoryPage = lazy(() => import("./pages/activities/category"));
-const MusicComposer = lazy(() => import("./pages/music-composer"));
-const TeaHero = lazy(() => import("./pages/tea-hero"));
-const Musicogram = lazy(() => import("./pages/musicogram"));
-const Sprunki = lazy(() => import("./pages/sprunki"));
-const BoomwhackerHero = lazy(() => import("./pages/boomwhacker-hero"));
-const BinaralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
-const Finance = lazy(() => import("./pages/finance"));
-const FinancialRecords = lazy(() => import("./pages/finance/records"));
-const ClinicsManagement = lazy(() => import("./pages/finance/clinics"));
-const Users = lazy(() => import("./pages/users"));
-const InviteCodes = lazy(() => import("./pages/InviteCodes"));
-const Anamnesis = lazy(() => import("./pages/anamnesis"));
-const Evaluation = lazy(() => import("./pages/evaluation"));
-const TreatmentPlan = lazy(() => import("./pages/treatment-plan"));
-const Intervention = lazy(() => import("./pages/intervention"));
-const Reevaluation = lazy(() => import("./pages/reevaluation"));
-const ProcessReports = lazy(() => import("./pages/processes/reports"));
-const ReportForm = lazy(() => import("./pages/processes/report"));
-const MusicoterapiaReport = lazy(() => import("./pages/processes/musicoterapia"));
-const ScientificArticle = lazy(() => import("./pages/scientific-article"));
-const Login = lazy(() => import("./pages/Login"));
-
-export const navItems: { to: string; page: ComponentType<any> }[] = [
-  { to: "/", page: Dashboard },
-  { to: "/dashboard", page: Dashboard },
-  { to: "/professional", page: Professional },
-  { to: "/patients", page: Patients },
-  { to: "/processes", page: Processes },
-  { to: "/activities", page: Activities },
-  { to: "/activities/category/:categoryId", page: CategoryPage },
-  { to: "/music-composer", page: MusicComposer },
-  { to: "/tea-hero", page: TeaHero },
-  { to: "/musicogram", page: Musicogram },
-  { to: "/sprunki", page: Sprunki },
-  { to: "/boomwhacker-hero", page: BoomwhackerHero },
-  { to: "/binaural-frequencies", page: BinaralFrequencies },
-  { to: "/finance", page: Finance },
-  { to: "/finance/records", page: FinancialRecords },
-  { to: "/finance/clinics", page: ClinicsManagement },
-  { to: "/users", page: Users },
-  { to: "/invite-codes", page: InviteCodes },
-  { to: "/anamnesis", page: Anamnesis },
-  { to: "/evaluation", page: Evaluation },
-  { to: "/treatment-plan", page: TreatmentPlan },
-  { to: "/intervention", page: Intervention },
-  { to: "/reevaluation", page: Reevaluation },
-  
-  { to: "/processes/report", page: ReportForm },
-  { to: "/processes/report/:reportId", page: ReportForm },
-  { to: "/processes/musicoterapia", page: MusicoterapiaReport },
-  { to: "/scientific-article", page: ScientificArticle },
-  { to: "/login", page: Login },
+export const navItems = [
+  {
+    title: "Dashboard",
+    to: "/dashboard",
+    icon: <HomeIcon className="h-4 w-4" />,
+    variant: "default" as const,
+  },
+  {
+    title: "Pacientes",
+    to: "/patients",
+    icon: <Users className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Profissional",
+    to: "/professional",
+    icon: <UserCheck className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Anamnese",
+    to: "/anamnesis",
+    icon: <Stethoscope className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Processos",
+    to: "/processes",
+    icon: <ClipboardList className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Plano de Tratamento",
+    to: "/treatment-plan",
+    icon: <Calendar className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Intervenção",
+    to: "/intervention",
+    icon: <Activity className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Avaliação",
+    to: "/evaluation",
+    icon: <BarChart3 className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Reavaliação",
+    to: "/reevaluation",
+    icon: <TrendingUp className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Financeiro",
+    to: "/finance",
+    icon: <DollarSign className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Artigo Científico",
+    to: "/scientific-article",
+    icon: <BookOpen className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Atividades",
+    to: "/activities",
+    icon: <Play className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Sinos Musicais",
+    to: "/musical-bells",
+    icon: <Bell className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Bell Hero",
+    to: "/bell-hero",
+    icon: <Music className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "TEA Hero",
+    to: "/tea-hero",
+    icon: <TestTube className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Musicograma",
+    to: "/musicogram",
+    icon: <Volume2 className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Sprunki",
+    to: "/sprunki",
+    icon: <PaintBucket className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Boomwhacker Hero",
+    to: "/boomwhacker-hero",
+    icon: <Gamepad2 className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Guitar Hero",
+    to: "/guitar-hero",
+    icon: <Guitar className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Xilofone Hero",
+    to: "/xylophone-hero",
+    icon: <Piano className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Compositor Musical",
+    to: "/music-composer",
+    icon: <Music2 className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Canções",
+    to: "/songs",
+    icon: <Headphones className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Frequências Binaurais",
+    to: "/binaural-frequencies",
+    icon: <Zap className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Hawkins",
+    to: "/hawkins",
+    icon: <TrendingUp className="h-4 w-4" />,
+    variant: "ghost" as const,
+  },
+  {
+    title: "Usuários",
+    to: "/users",
+    icon: <Users2 className="h-4 w-4" />,
+    variant: "ghost" as const,
+    adminOnly: true,
+  },
+  {
+    title: "Códigos de Convite",
+    to: "/invite-codes",
+    icon: <KeyRound className="h-4 w-4" />,
+    variant: "ghost" as const,
+    adminOnly: true,
+  },
 ];
