@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   ClipboardList,
   FileText,
@@ -70,7 +71,8 @@ export default function Processes() {
       icon: TrendingUp,
       path: "/processes/evolution",
       gradient: "from-green-500 to-blue-500",
-      bgGradient: "from-green-50 to-blue-50"
+      bgGradient: "from-green-50 to-blue-50",
+      isNew: true
     },
   ];
 
@@ -99,6 +101,13 @@ export default function Processes() {
               className="group block transform transition-all duration-300 hover:scale-105"
             >
               <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-gradient-to-br ${process.bgGradient} h-full group-hover:bg-gradient-to-r`}>
+                {/* NEW Badge */}
+                {process.isNew && (
+                  <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-2 py-1 animate-pulse shadow-lg">
+                    NOVO
+                  </Badge>
+                )}
+                
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent transform rotate-12 scale-150"></div>
