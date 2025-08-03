@@ -21,9 +21,9 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 lg:space-y-8">
         {/* Statistics Cards - mantendo como backup/detalhado */}
-        <div className="mt-8">
+        <div className="mt-4 sm:mt-6 lg:mt-8">
           <DashboardStats
             totalPatients={data.totalPatients}
             totalReports={data.totalReports}
@@ -32,9 +32,9 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Left Column */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <UpcomingSessions 
               upcomingSessions={data.upcomingSessions} 
               isLoading={data.isLoading}
@@ -46,7 +46,7 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column */}
-          <div>
+          <div className="w-full">
             <EnhancedSessionChart 
               sessionData={data.sessionData} 
               isLoading={data.isLoading}

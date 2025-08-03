@@ -89,55 +89,56 @@ export function DashboardHeader({
       
       {/* Main header container */}
       <div className="relative backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm">
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
           {/* Header Top Section - Logo + Title + Time */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8">
             {/* Left - Logo + Title */}
-            <div className="flex items-center gap-4">
-              <LogoRound size="md" className="shadow-lg border border-slate-200/50" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <LogoRound size="md" className="shadow-lg border border-slate-200/50 w-12 h-12 sm:w-14 sm:h-14" />
               <div className="flex flex-col">
-                <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
                   Sistema MuseTera
                 </h1>
                 <div className="flex items-center gap-2 mt-1">
-                  <BarChart3 className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-slate-600 font-medium">Dashboard Profissional</span>
+                  <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+                  <span className="text-xs sm:text-sm text-slate-600 font-medium">Dashboard Profissional</span>
                 </div>
               </div>
             </div>
 
             {/* Right - Time + Avatar */}
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-end text-right">
+            <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-end lg:self-center">
+              <div className="flex flex-col items-start sm:items-end text-left sm:text-right">
                 <div className="flex items-center gap-2 text-slate-600 mb-1">
-                  <Calendar className="h-4 w-4" />
-                  <span className="text-sm font-medium">{getCurrentDate()}</span>
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="text-xs sm:text-sm font-medium hidden sm:block">{getCurrentDate()}</span>
+                  <span className="text-xs font-medium sm:hidden">{getCurrentDate().split(',')[0]}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-900">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <span className="text-xl font-bold">{getCurrentTime()}</span>
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                  <span className="text-lg sm:text-xl font-bold">{getCurrentTime()}</span>
                 </div>
               </div>
               
               <div className="relative">
                 <ProfessionalAvatar size="lg" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
               </div>
             </div>
           </div>
 
           {/* Welcome Section */}
-          <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-xl lg:text-2xl font-semibold text-slate-800 mb-2">
+          <div className="mb-6 sm:mb-8 text-center lg:text-left">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-800 mb-2">
               {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
             </h2>
-            <p className="text-slate-600 max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl">
               Bem-vindo ao seu painel de controle. Acompanhe suas atividades e resultados de musicoterapia.
             </p>
           </div>
 
           {/* Quick stats grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -146,22 +147,26 @@ export function DashboardHeader({
                   className="group relative overflow-hidden rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r ${stat.color} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
-                        <Icon className="h-5 w-5 text-white" />
+                  <div className="p-3 sm:p-4 lg:p-5">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-r ${stat.color} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md">
                         {stat.change}
                       </span>
                     </div>
                     
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">
+                      <p className="text-xs sm:text-sm font-medium text-slate-600 uppercase tracking-wide">
                         {stat.label}
                       </p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {stat.value}
+                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 truncate">
+                        {typeof stat.value === 'string' && stat.value.includes('R$') ? (
+                          <span className="text-sm sm:text-lg lg:text-xl">{stat.value}</span>
+                        ) : (
+                          stat.value
+                        )}
                       </p>
                     </div>
                   </div>
