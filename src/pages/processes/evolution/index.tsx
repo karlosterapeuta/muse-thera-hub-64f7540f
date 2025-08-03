@@ -235,11 +235,11 @@ export default function EvolutionReport() {
           {/* Action Buttons */}
           <Card>
             <CardContent className="pt-6">
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Button
                   onClick={handleOrganizeWithAI}
                   disabled={isOrganizingWithAI || !selectedPatient}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
                 >
                   {isOrganizingWithAI ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -252,7 +252,7 @@ export default function EvolutionReport() {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !selectedPatient}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   {isSaving ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -266,6 +266,7 @@ export default function EvolutionReport() {
                   variant="outline"
                   onClick={() => setActiveTab("preview")}
                   disabled={!selectedPatient}
+                  className="border-blue-200 hover:bg-blue-50"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Visualizar
@@ -282,7 +283,7 @@ export default function EvolutionReport() {
               </div>
               
               {!selectedPatient && (
-                <p className="text-sm text-gray-500 mt-3">
+                <p className="text-sm text-gray-500 mt-4 text-center">
                   Selecione um paciente para habilitar as funcionalidades
                 </p>
               )}
