@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User, DollarSign, Plus, RefreshCw } from "lucide-react";
+import { Calendar, Clock, User, DollarSign, Plus, RefreshCw, Target } from "lucide-react";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,19 +17,24 @@ interface UnifiedWeeklyScheduleProps {
 export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklyScheduleProps) {
   if (isLoading) {
     return (
-      <Card className="min-h-[500px]">
+      <Card className="min-h-[500px] border-0 shadow-xl bg-white/80 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            Agenda Semanal Unificada
+            Agenda Semanal
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <div className="space-y-4 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-              <p className="text-gray-500">Carregando agenda...</p>
-            </div>
+          <div className="grid grid-cols-7 gap-4">
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className="border rounded-lg p-3 min-h-[120px] animate-pulse">
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                  <div className="h-8 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -43,12 +48,12 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
   );
 
   return (
-    <Card className="min-h-[500px]">
+    <Card className="min-h-[500px] border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            Agenda Semanal Unificada
+            Agenda Semanal
           </div>
           <Button variant="ghost" size="sm" onClick={() => window.location.reload()}>
             <RefreshCw className="h-4 w-4" />
@@ -58,37 +63,39 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
       <CardContent>
         {!hasValidData ? (
           <div className="flex flex-col items-center justify-center h-64">
-            <Calendar className="h-16 w-16 text-gray-300 mb-4" />
+            <div className="bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-6 mb-6">
+              <Calendar className="h-12 w-12 text-red-500" />
+            </div>
             <h3 className="text-lg font-semibold text-gray-600 mb-2">Erro ao carregar agenda</h3>
             <p className="text-gray-500 text-center mb-4">
-              Não foi possível carregar os dados da agenda. Verifique sua conexão e tente novamente.
+              Não foi possível carregar os dados da agenda. Verifique sua conexão.
             </p>
             <Button variant="outline" onClick={() => window.location.reload()}>
-              Recarregar Página
+              Tentar Novamente
             </Button>
           </div>
         ) : !hasAnyActivity ? (
           <div className="flex flex-col items-center justify-center h-64">
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-full p-6 mb-6">
-              <Calendar className="h-12 w-12 text-blue-600" />
+            <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-full p-6 mb-6">
+              <Target className="h-12 w-12 text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Sua semana está livre!</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">Semana livre para crescer!</h3>
             <p className="text-gray-500 text-center mb-6 max-w-md leading-relaxed">
-              Você ainda não tem sessões ou registros financeiros para esta semana. 
-              É um bom momento para planejar novas atividades ou revisar dados anteriores.
+              Sua agenda desta semana está livre. É o momento perfeito para planejar novas atividades, 
+              organizar relatórios ou focar no desenvolvimento profissional.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Agendar Sessão
+                Agendar Primeira Sessão
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline">
                 <DollarSign className="h-4 w-4 mr-2" />
-                Adicionar Registro Financeiro
+                Registrar Atividade
               </Button>
             </div>
             <p className="text-xs text-gray-400 mt-4 text-center">
-              Dica: Use as seções "Pacientes" e "Relatórios" para gerenciar seus dados
+              Use este tempo para organizar seu consultório e preparar materiais
             </p>
           </div>
         ) : (
@@ -172,9 +179,9 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
                       <div className="flex items-center justify-center h-16 text-xs text-muted-foreground">
                         {isToday(day.date) ? (
                           <div className="text-center">
-                            <div className="text-gray-400 mb-1">📅</div>
-                            <span className="text-center">
-                              Nenhuma atividade<br />hoje
+                            <div className="text-primary mb-1">🎯</div>
+                            <span className="text-primary font-medium">
+                              Dia livre<br />para focar
                             </span>
                           </div>
                         ) : (
