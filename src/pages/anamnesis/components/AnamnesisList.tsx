@@ -113,6 +113,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
         patient_name: item.patients?.name
       })) || [];
 
+      console.log("✅ Dados formatados das anamneses:", formattedData);
       setAnamneses(formattedData);
     } catch (error) {
       console.error("Erro ao carregar anamneses:", error);
