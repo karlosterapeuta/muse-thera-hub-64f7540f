@@ -15,6 +15,7 @@ export const useEvolutionReport = () => {
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isOrganizingWithAI, setIsOrganizingWithAI] = useState(false);
 
   const updateField = (field: keyof EvolutionReportData, value: string) => {
     setFormData(prev => ({
@@ -35,6 +36,72 @@ export const useEvolutionReport = () => {
       ...prev,
       [field]: ""
     }));
+  };
+
+  const organizeWithAI = async () => {
+    if (!selectedPatient) {
+      toast.error("Por favor, selecione um paciente antes de organizar com IA");
+      return;
+    }
+
+    setIsOrganizingWithAI(true);
+    
+    try {
+      console.log('Iniciando organização com IA...', {
+        patientName: selectedPatient.name,
+        sessionDate: new Date().toLocaleDateString('pt-BR'),
+        formData
+      });
+      
+      const { data, error } = await supabase.functions.invoke('organize-evolution-report', {
+        body: { 
+          reportData: {
+            patientName: selectedPatient.name,
+            sessionDate: new Date().toLocaleDateString('pt-BR'),
+            formData
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Erro na edge function:', error);
+        throw new Error(error.message || 'Erro ao chamar serviço de IA');
+      }
+
+      console.log('Resposta da edge function:', data);
+
+      if (data.success && data.organizedContent) {
+        // Aplicar o conteúdo organizado ao formulário
+        setFormData(prev => ({
+          ...prev,
+          ...data.organizedContent
+        }));
+
+        toast.success("Relatório organizado com IA!", {
+          description: "O conteúdo foi estruturado automaticamente. Revise e ajuste conforme necessário.",
+        });
+      } else if (data.fallbackContent) {
+        // Usar conteúdo de fallback em caso de erro
+        setFormData(prev => ({
+          ...prev,
+          ...data.fallbackContent
+        }));
+
+        toast.success("Conteúdo básico organizado", {
+          description: "Foi adicionado conteúdo estruturado. Revise e complemente conforme necessário.",
+        });
+      } else {
+        throw new Error('Resposta inválida da IA');
+      }
+
+    } catch (error) {
+      console.error('Erro completo:', error);
+      toast.error("Erro na organização com IA", {
+        description: error instanceof Error ? error.message : "Não foi possível organizar o relatório automaticamente.",
+      });
+    } finally {
+      setIsOrganizingWithAI(false);
+    }
   };
 
   const saveReport = async () => {
@@ -102,9 +169,11 @@ export const useEvolutionReport = () => {
     setSelectedPatient,
     isLoading,
     isSaving,
+    isOrganizingWithAI,
     updateField,
     selectOption,
     clearField,
+    organizeWithAI,
     saveReport,
     resetForm
   };

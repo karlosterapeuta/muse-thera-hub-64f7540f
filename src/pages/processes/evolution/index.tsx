@@ -24,9 +24,11 @@ export default function EvolutionReport() {
     setSelectedPatient,
     isLoading,
     isSaving,
+    isOrganizingWithAI,
     updateField,
     selectOption,
     clearField,
+    organizeWithAI,
     saveReport,
     resetForm
   } = useEvolutionReport();
@@ -160,6 +162,42 @@ export default function EvolutionReport() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Organization Button */}
+          <Card className="border-blue-200 bg-blue-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-800">
+                <div className="p-2 bg-blue-600 rounded-lg text-white">
+                  <RefreshCw className="h-4 w-4" />
+                </div>
+                Organização Inteligente
+              </CardTitle>
+              <p className="text-blue-700 text-sm">
+                Use inteligência artificial para estruturar automaticamente seu relatório de evolução
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={organizeWithAI}
+                disabled={isOrganizingWithAI || !selectedPatient}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                size="lg"
+              >
+                {isOrganizingWithAI ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                )}
+                {isOrganizingWithAI ? 'Organizando com IA...' : 'Organizar com IA'}
+              </Button>
+              <p className="text-xs text-gray-600 mt-2">
+                {!selectedPatient 
+                  ? "Selecione um paciente para usar a organização com IA" 
+                  : "A IA estruturará automaticamente o relatório baseado nos dados preenchidos"
+                }
+              </p>
             </CardContent>
           </Card>
 
