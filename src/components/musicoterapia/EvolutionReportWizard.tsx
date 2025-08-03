@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -27,19 +27,19 @@ export function EvolutionReportWizard({
   const [currentStep, setCurrentStep] = useState(0);
   const { toast } = useToast();
 
-  const sections = evolutionMuseteraTemplate.sections;
-  const currentSection = sections[currentStep];
-  const progress = ((currentStep + 1) / sections.length) * 100;
+  const sections = useMemo(() => evolutionMuseteraTemplate.sections, []);
+  const currentSection = useMemo(() => sections[currentStep], [sections, currentStep]);
+  const progress = useMemo(() => ((currentStep + 1) / sections.length) * 100, [currentStep, sections.length]);
 
   const handleNextStep = useCallback(() => {
     if (currentStep < sections.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(prev => prev + 1);
     }
   }, [currentStep, sections.length]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep(prev => prev - 1);
     }
   }, [currentStep]);
 
@@ -70,9 +70,14 @@ export function EvolutionReportWizard({
     return true;
   }, [currentSection.fields, reportData.content, toast]);
 
-  const canProceed = useCallback(() => {
-    return validateCurrentStep();
-  }, [validateCurrentStep]);
+  const canProceed = useMemo(() => {
+    const requiredFields = currentSection.fields.filter(field => field.required);
+    const missingFields = requiredFields.filter(field => {
+      const value = reportData.content[field.id];
+      return !value || (Array.isArray(value) && value.length === 0);
+    });
+    return missingFields.length === 0;
+  }, [currentSection.fields, reportData.content]);
 
   const handleAIGeneration = useCallback(() => {
     if (!reportData.patientId) {
@@ -85,6 +90,12 @@ export function EvolutionReportWizard({
     }
     onGenerateWithAI();
   }, [reportData.patientId, onGenerateWithAI, toast]);
+
+  const handleNextClick = useCallback(() => {
+    if (validateCurrentStep()) {
+      handleNextStep();
+    }
+  }, [validateCurrentStep, handleNextStep]);
 
   return (
     <div className="space-y-6">
@@ -147,8 +158,8 @@ export function EvolutionReportWizard({
         </span>
 
         <Button
-          onClick={handleNextStep}
-          disabled={currentStep === sections.length - 1 || !canProceed()}
+          onClick={handleNextClick}
+          disabled={currentStep === sections.length - 1 || !canProceed}
           className="gap-2"
         >
           Próximo

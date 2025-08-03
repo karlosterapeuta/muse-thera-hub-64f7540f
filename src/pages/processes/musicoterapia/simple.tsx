@@ -29,7 +29,11 @@ export default function SimpleMusicoterapia() {
     professionalData
   } = useEvolutionReport();
 
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      patient_id: reportData.patientId || ""
+    }
+  });
 
   // Fetch patients with error handling
   const { data: patients, isLoading: isLoadingPatients, error: patientsError } = useQuery({
@@ -99,7 +103,8 @@ export default function SimpleMusicoterapia() {
 
   const handlePatientChange = useCallback((value: string) => {
     updateReportData({ patientId: value });
-  }, [updateReportData]);
+    form.setValue('patient_id', value);
+  }, [updateReportData, form]);
 
   const selectedPatient = patients?.find(p => p.id === reportData.patientId);
 
@@ -158,7 +163,7 @@ export default function SimpleMusicoterapia() {
                         field.onChange(value);
                         handlePatientChange(value);
                       }}
-                      value={reportData.patientId}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
