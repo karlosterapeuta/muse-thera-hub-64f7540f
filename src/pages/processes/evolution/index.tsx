@@ -188,51 +188,51 @@ export default function EvolutionReport() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
       {/* Enhanced Organized Header */}
-      <div className="relative mb-10 overflow-hidden">
+      <div className="relative mb-6 lg:mb-10 overflow-hidden">
         {/* Main Header Container */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100/60 shadow-xl">
+        <div className="relative rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100/60 shadow-xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-grid-blue-100/20 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
           
-          <div className="relative p-10">
+          <div className="relative p-4 sm:p-6 lg:p-10">
             {/* Header Content */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               {/* Left Side - Main Content */}
-              <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto">
                 {/* Icon Container */}
                 <div className="relative flex-shrink-0">
-                  <div className="p-5 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl">
-                    <TrendingUp className="h-10 w-10 text-white" />
+                  <div className="p-3 sm:p-4 lg:p-5 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl lg:rounded-3xl shadow-2xl">
+                    <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
                   </div>
                   {/* Floating Badge */}
-                  <div className="absolute -top-2 -right-2 p-2 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full shadow-lg animate-pulse">
-                    <Sparkles className="h-4 w-4 text-white" />
+                  <div className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 p-1.5 lg:p-2 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full shadow-lg animate-pulse">
+                    <Sparkles className="h-3 w-3 lg:h-4 lg:w-4 text-white" />
                   </div>
                 </div>
                 
                 {/* Text Content */}
-                <div className="space-y-4">
+                <div className="space-y-2 lg:space-y-4 w-full">
                   {/* Title Section */}
-                  <div className="space-y-2">
-                    <h1 className="text-5xl font-black bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent leading-tight tracking-tight">
+                  <div className="space-y-1 lg:space-y-2">
+                    <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent leading-tight tracking-tight">
                       Evolução Diária MuseTera
                     </h1>
                     
                     {/* Subtitle with decorative line */}
-                    <div className="flex items-center gap-4">
-                      <div className="h-1 w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
-                      <span className="text-2xl font-bold text-gray-700">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                      <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
+                      <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-700">
                         Relatório de Evolução MuseTera
                       </span>
-                      <div className="h-1 w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
+                      <div className="hidden sm:block h-1 w-8 sm:w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
                     </div>
                   </div>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-lg max-w-3xl leading-relaxed font-medium">
+                  <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
                     Sistema profissional para documentação detalhada da evolução do paciente durante sessões de musicoterapia, 
                     registrando progressos, comportamentos e interações terapêuticas de forma estruturada.
                   </p>
@@ -240,7 +240,7 @@ export default function EvolutionReport() {
               </div>
 
               {/* Right Side - Quick Stats */}
-              <div className="hidden lg:flex flex-col gap-3">
+              <div className="hidden xl:flex flex-col gap-3">
                 <div className="text-right">
                   <div className="text-3xl font-black text-blue-600">+</div>
                   <div className="text-sm font-semibold text-gray-600">Profissional</div>
@@ -257,47 +257,53 @@ export default function EvolutionReport() {
             </div>
             
             {/* Feature Pills */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-blue-700 rounded-2xl shadow-lg border border-blue-200/50 font-semibold">
-                <Clock className="h-5 w-5" />
-                <span>Sessão Terapêutica</span>
+            <div className="mt-4 lg:mt-8 flex flex-wrap items-center gap-2 lg:gap-4">
+              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-blue-700 rounded-xl lg:rounded-2xl shadow-lg border border-blue-200/50 font-semibold text-sm lg:text-base">
+                <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="hidden sm:inline">Sessão Terapêutica</span>
+                <span className="sm:hidden">Sessão</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-indigo-700 rounded-2xl shadow-lg border border-indigo-200/50 font-semibold">
-                <Brain className="h-5 w-5" />
-                <span>Análise Clínica</span>
+              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-indigo-700 rounded-xl lg:rounded-2xl shadow-lg border border-indigo-200/50 font-semibold text-sm lg:text-base">
+                <Brain className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="hidden sm:inline">Análise Clínica</span>
+                <span className="sm:hidden">Análise</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-purple-700 rounded-2xl shadow-lg border border-purple-200/50 font-semibold">
-                <Heart className="h-5 w-5" />
-                <span>Evolução Terapêutica</span>
+              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-purple-700 rounded-xl lg:rounded-2xl shadow-lg border border-purple-200/50 font-semibold text-sm lg:text-base">
+                <Heart className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="hidden sm:inline">Evolução Terapêutica</span>
+                <span className="sm:hidden">Evolução</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm text-emerald-700 rounded-2xl shadow-lg border border-emerald-200/50 font-semibold">
-                <Sparkles className="h-5 w-5" />
-                <span>IA Integrada</span>
+              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-emerald-700 rounded-xl lg:rounded-2xl shadow-lg border border-emerald-200/50 font-semibold text-sm lg:text-base">
+                <Sparkles className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="hidden sm:inline">IA Integrada</span>
+                <span className="sm:hidden">IA</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 h-12">
-          <TabsTrigger value="form" className="flex items-center gap-2 text-base">
-            <FileText className="h-4 w-4" />
-            Formulário
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 h-10 sm:h-12">
+          <TabsTrigger value="form" className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Formulário</span>
+            <span className="sm:hidden">Form</span>
           </TabsTrigger>
-          <TabsTrigger value="preview" className="flex items-center gap-2 text-base">
-            <Eye className="h-4 w-4" />
-            Visualização
+          <TabsTrigger value="preview" className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
+            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Visualização</span>
+            <span className="sm:hidden">Preview</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="form" className="space-y-6">
+        <TabsContent value="form" className="space-y-4 lg:space-y-6">
           {/* Enhanced Patient Selection */}
           <Card className="border-0 shadow-lg bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/30">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
-                  <User className="h-5 w-5 text-white" />
+            <CardHeader className="pb-3 lg:pb-4">
+              <CardTitle className="flex items-center gap-2 lg:gap-3 text-lg lg:text-xl">
+                <div className="p-1.5 lg:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
+                  <User className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
                 </div>
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   Informações da Sessão
@@ -305,7 +311,7 @@ export default function EvolutionReport() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="patient" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-blue-600" />
@@ -315,12 +321,12 @@ export default function EvolutionReport() {
                     value={selectedPatient?.id || ""} 
                     onValueChange={handlePatientSelection}
                   >
-                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 transition-colors">
+                    <SelectTrigger className="h-10 sm:h-12 border-2 border-gray-200 focus:border-blue-500 transition-colors bg-white">
                       <SelectValue placeholder={isLoadingPatients ? "Carregando..." : "Selecione um paciente"} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white border shadow-lg z-50">
                       {patients.map((patient) => (
-                        <SelectItem key={patient.id} value={patient.id}>
+                        <SelectItem key={patient.id} value={patient.id} className="hover:bg-gray-50">
                           {patient.name}
                         </SelectItem>
                       ))}
@@ -332,7 +338,7 @@ export default function EvolutionReport() {
                     <Clock className="h-4 w-4 text-green-600" />
                     Data da Sessão
                   </Label>
-                  <div className="h-12 p-3 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-lg border-2 border-gray-200 flex items-center font-medium text-gray-700">
+                  <div className="h-10 sm:h-12 p-3 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-lg border-2 border-gray-200 flex items-center font-medium text-gray-700 text-sm sm:text-base">
                     {new Date().toLocaleDateString('pt-BR')}
                   </div>
                 </div>
@@ -390,16 +396,16 @@ export default function EvolutionReport() {
                           <Target className="h-4 w-4 text-blue-600" />
                           Opções Rápidas:
                         </Label>
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="grid grid-cols-1 gap-2 lg:gap-3">
                           {evolutionOptions[section.key as keyof typeof evolutionOptions]?.map((option, optionIndex) => (
                             <Button
                               key={optionIndex}
                               variant="outline"
                               size="sm"
-                              className="justify-start text-left h-auto p-4 whitespace-normal hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 transition-all duration-200 group"
+                              className="justify-start text-left h-auto p-3 lg:p-4 whitespace-normal hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 transition-all duration-200 group text-sm lg:text-base"
                               onClick={() => selectOption(section.key as any, option)}
                             >
-                              <div className="flex items-start gap-3 w-full">
+                              <div className="flex items-start gap-2 lg:gap-3 w-full">
                                 <div className="p-1 bg-blue-100 group-hover:bg-blue-200 rounded transition-colors flex-shrink-0 mt-0.5">
                                   <CheckCircle className="h-3 w-3 text-blue-600" />
                                 </div>
@@ -434,7 +440,7 @@ export default function EvolutionReport() {
                           placeholder={section.placeholder}
                           value={formData[section.key as keyof typeof formData] as string || ""}
                           onChange={(e) => updateField(section.key as any, e.target.value)}
-                          className="min-h-[120px] resize-y border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-200 rounded-lg"
+                          className="min-h-[100px] sm:min-h-[120px] resize-y border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-200 rounded-lg text-sm sm:text-base"
                         />
                       </div>
                     </CardContent>
@@ -446,72 +452,86 @@ export default function EvolutionReport() {
 
           {/* Enhanced Action Buttons */}
           <Card className="border-0 shadow-lg bg-gradient-to-r from-gray-50 via-blue-50/30 to-indigo-50/30">
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <CardContent className="pt-4 lg:pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 lg:gap-4">
                 <Button
                   onClick={handleOrganizeWithAI}
                   disabled={isOrganizingWithAI || !selectedPatient}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-12"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
                 >
                   {isOrganizingWithAI ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                   ) : (
-                    <Sparkles className="h-4 w-4 mr-2" />
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   )}
-                  {isOrganizingWithAI ? 'Organizando...' : 'Organizar com IA'}
+                  <span className="hidden sm:inline">
+                    {isOrganizingWithAI ? 'Organizando...' : 'Organizar com IA'}
+                  </span>
+                  <span className="sm:hidden">
+                    {isOrganizingWithAI ? 'Organizando...' : 'IA'}
+                  </span>
                 </Button>
 
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !selectedPatient}
-                  className="bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-12"
+                  className="bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
                 >
                   {isSaving ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   )}
-                  Salvar Relatório
+                  <span className="hidden sm:inline">Salvar Relatório</span>
+                  <span className="sm:hidden">Salvar</span>
                 </Button>
 
                 <Button
                   onClick={handleGeneratePDF}
                   disabled={isGeneratingPDF || !selectedPatient}
-                  className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-12"
+                  className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
                 >
                   {isGeneratingPDF ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                   ) : (
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   )}
-                  {isGeneratingPDF ? 'Exportando...' : 'Exportar PDF'}
+                  <span className="hidden sm:inline">
+                    {isGeneratingPDF ? 'Exportando...' : 'Exportar PDF'}
+                  </span>
+                  <span className="sm:hidden">
+                    {isGeneratingPDF ? 'Exportando...' : 'PDF'}
+                  </span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => setActiveTab("preview")}
                   disabled={!selectedPatient}
-                  className="border-blue-200 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 h-12"
+                  className="border-blue-200 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
                 >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Visualizar
+                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Visualizar</span>
+                  <span className="sm:hidden">Ver</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={resetForm}
-                  className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-400 transition-all duration-200 h-12"
+                  className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Limpar Formulário
+                  <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Limpar Formulário</span>
+                  <span className="sm:hidden">Limpar</span>
                 </Button>
               </div>
               
               {!selectedPatient && (
-                <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-sm text-amber-800 text-center flex items-center justify-center gap-2">
+                <div className="mt-4 lg:mt-6 p-3 lg:p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-xs sm:text-sm text-amber-800 text-center flex items-center justify-center gap-2">
                     <User className="h-4 w-4" />
-                    Selecione um paciente para habilitar as funcionalidades
+                    <span className="hidden sm:inline">Selecione um paciente para habilitar as funcionalidades</span>
+                    <span className="sm:hidden">Selecione um paciente</span>
                   </p>
                 </div>
               )}
@@ -519,22 +539,23 @@ export default function EvolutionReport() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="preview" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Visualização do Relatório</h2>
+        <TabsContent value="preview" className="space-y-4 lg:space-y-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+            <h2 className="text-xl lg:text-2xl font-bold">Visualização do Relatório</h2>
             <Button
               onClick={handleGeneratePDFFromPreview}
               disabled={!selectedPatient}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 h-10 sm:h-12 text-sm sm:text-base"
             >
-              <Download className="h-4 w-4 mr-2" />
-              Baixar PDF
+              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Baixar PDF</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
           </div>
 
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="max-h-[800px] overflow-y-auto border rounded-lg">
+              <div className="max-h-[600px] sm:max-h-[700px] lg:max-h-[800px] overflow-y-auto border rounded-lg">
                 <EvolutionReportPreview 
                   data={formData}
                   professionalName={professionalData?.name}
