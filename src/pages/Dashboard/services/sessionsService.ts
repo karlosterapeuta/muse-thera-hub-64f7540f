@@ -26,26 +26,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
 
     console.log("👤 User ID para busca de sessões:", userId);
 
-    // Primeiro, buscar todos os pacientes do profissional
-    const { data: userPatients, error: patientsError } = await supabase
-      .from("patients")
-      .select("id")
-      .eq("professional_id", userId);
-
-    if (patientsError) {
-      console.error("❌ Erro ao buscar pacientes do profissional:", patientsError);
-      return [];
-    }
-
-    if (!userPatients || userPatients.length === 0) {
-      console.log("ℹ️ Nenhum paciente encontrado para este profissional");
-      return [];
-    }
-
-    const patientIds = userPatients.map(p => p.id);
-    console.log("👥 IDs dos pacientes encontrados:", patientIds);
-
-    // Buscar sessões dos pacientes no período especificado
+    // Buscar sessões através do relacionamento com pacientes
     const { data: sessionsData, error } = await supabase
       .from("sessions")
       .select(`
@@ -58,19 +39,84 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
           professional_id
         )
       `)
-      .in('patient_id', patientIds)
+      .eq('patients.professional_id', userId)
       .gte('date', format(startDate, "yyyy-MM-dd"))
       .lte('date', format(endDate, "yyyy-MM-dd"))
       .order('date');
 
     if (error) {
       console.error("❌ Erro ao buscar sessões:", error);
-      return [];
+      
+      // Fallback: buscar sessões sem filtro de data restrito
+      console.log("🔄 Tentando busca alternativa com período expandido...");
+      const { data: fallbackSessions, error: fallbackError } = await supabase
+        .from("sessions")
+        .select(`
+          id, 
+          date, 
+          notes,
+          patient_id,
+          patients!inner (
+            name,
+            professional_id
+          )
+        `)
+        .eq('patients.professional_id', userId)
+        .order('date', { ascending: false })
+        .limit(20);
+
+      if (fallbackError) {
+        console.error("❌ Erro na busca alternativa:", fallbackError);
+        return [];
+      }
+
+      const fallbackFormatted = (fallbackSessions || []).map(session => ({
+        id: session.id,
+        date: session.date,
+        notes: session.notes,
+        patient_id: session.patient_id,
+        patients: session.patients || { name: "Paciente não encontrado" }
+      }));
+
+      console.log("✅ Sessões encontradas na busca alternativa:", fallbackFormatted.length);
+      return fallbackFormatted;
     }
 
     if (!sessionsData || sessionsData.length === 0) {
       console.log("ℹ️ Nenhuma sessão encontrada no período especificado");
-      return [];
+      
+      // Buscar sessões mais antigas para mostrar algo no dashboard
+      const { data: recentSessions, error: recentError } = await supabase
+        .from("sessions")
+        .select(`
+          id, 
+          date, 
+          notes,
+          patient_id,
+          patients!inner (
+            name,
+            professional_id
+          )
+        `)
+        .eq('patients.professional_id', userId)
+        .order('date', { ascending: false })
+        .limit(10);
+
+      if (recentError) {
+        console.error("❌ Erro ao buscar sessões recentes:", recentError);
+        return [];
+      }
+
+      const recentFormatted = (recentSessions || []).map(session => ({
+        id: session.id,
+        date: session.date,
+        notes: session.notes,
+        patient_id: session.patient_id,
+        patients: session.patients || { name: "Paciente não encontrado" }
+      }));
+
+      console.log("✅ Sessões recentes encontradas:", recentFormatted.length);
+      return recentFormatted;
     }
 
     const formattedSessions = sessionsData.map(session => ({

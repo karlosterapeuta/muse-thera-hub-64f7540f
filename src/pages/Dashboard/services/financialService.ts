@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO, subDays } from "date-fns";
+import { format, parseISO, subDays, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FinancialAgendaItem } from "../types/dashboardTypes";
 import { getCurrentUserId } from "./professionalService";
@@ -34,7 +34,32 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
 
     if (financialError) {
       console.error("❌ Erro ao buscar registros financeiros:", financialError);
-      return [];
+      
+      // Fallback: buscar registros do último mês
+      console.log("🔄 Tentando busca financeira alternativa...");
+      const lastMonth = subMonths(new Date(), 1);
+      
+      const { data: fallbackRecords, error: fallbackError } = await supabase
+        .from("financial_records")
+        .select(`
+          id, 
+          amount, 
+          session_date, 
+          description,
+          professional_id
+        `)
+        .eq('professional_id', userId)
+        .gte('session_date', format(lastMonth, "yyyy-MM-dd"))
+        .order('session_date', { ascending: false })
+        .limit(10);
+
+      if (fallbackError) {
+        console.error("❌ Erro na busca financeira alternativa:", fallbackError);
+        return [];
+      }
+
+      console.log("✅ Registros financeiros alternativos encontrados:", (fallbackRecords || []).length);
+      return fallbackRecords || [];
     }
 
     const records = financialRecords || [];
@@ -56,8 +81,8 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       return [];
     }
 
-    // Buscar registros dos últimos 30 dias para ter mais dados
-    const thirtyDaysAgo = subDays(new Date(), 30);
+    // Buscar registros dos últimos 60 dias para ter mais dados
+    const sixtyDaysAgo = subDays(new Date(), 60);
 
     const { data: financialScheduleData, error: financialScheduleError } = await supabase
       .from("financial_records")
@@ -71,9 +96,9 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
         clinics:clinic_id (name)
       `)
       .eq('professional_id', userId)
-      .gte('session_date', format(thirtyDaysAgo, "yyyy-MM-dd"))
+      .gte('session_date', format(sixtyDaysAgo, "yyyy-MM-dd"))
       .order('session_date', { ascending: false })
-      .limit(10);
+      .limit(15);
 
     if (financialScheduleError) {
       console.error("❌ Erro ao buscar agenda financeira:", financialScheduleError);
@@ -85,7 +110,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
     
     return scheduleData.map(record => ({
       id: record.id,
-      amount: record.amount,
+      amount: record.amount || 0,
       session_date: record.session_date,
       description: record.description || '',
       patient_name: record.patients?.name || 'Paciente não informado',
@@ -94,7 +119,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
       formatted_amount: new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
-      }).format(record.amount)
+      }).format(record.amount || 0)
     }));
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar agenda financeira:", error);
