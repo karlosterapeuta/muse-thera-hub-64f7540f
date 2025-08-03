@@ -1,7 +1,6 @@
 
 import React from "react";
 import { DashboardStats } from "./components/DashboardStats";
-import { UnifiedWeeklySchedule } from "./components/UnifiedWeeklySchedule";
 import { FinancialAgenda } from "./components/FinancialAgenda";
 import { EnhancedSessionChart } from "./components/EnhancedSessionChart";
 import { UpcomingSessions } from "./components/UpcomingSessions";
@@ -35,16 +34,8 @@ export default function Dashboard() {
       />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Weekly Schedule - Takes 2 columns */}
-        <div className="lg:col-span-2">
-          <UnifiedWeeklySchedule 
-            weekDays={data.weekDays} 
-            isLoading={data.isLoading}
-          />
-        </div>
-
-        {/* Side Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column */}
         <div className="space-y-6">
           <UpcomingSessions 
             upcomingSessions={data.upcomingSessions} 
@@ -55,13 +46,15 @@ export default function Dashboard() {
             isLoading={data.isLoading}
           />
         </div>
-      </div>
 
-      {/* Session Evolution Chart */}
-      <EnhancedSessionChart 
-        sessionData={data.sessionData} 
-        isLoading={data.isLoading}
-      />
+        {/* Right Column */}
+        <div>
+          <EnhancedSessionChart 
+            sessionData={data.sessionData} 
+            isLoading={data.isLoading}
+          />
+        </div>
+      </div>
     </div>
   );
 }
