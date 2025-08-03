@@ -16,7 +16,7 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
 
     console.log("👤 User ID para busca de registros financeiros:", user.id);
 
-    // Tenta primeiro com o professionalId passado como parâmetro
+    // Usa sempre o user.id em vez do professionalId
     const { data: financialRecords, error: financialError } = await supabase
       .from("financial_records")
       .select(`
@@ -26,7 +26,7 @@ export async function getWeekFinancialRecords(professionalId: string, startDate:
         description,
         professional_id
       `)
-      .eq('professional_id', professionalId)
+      .eq('professional_id', user.id)
       .gte('session_date', format(startDate, "yyyy-MM-dd"))
       .lte('session_date', format(endDate, "yyyy-MM-dd"));
 
@@ -55,7 +55,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
 
     console.log("👤 User ID para busca de agenda financeira:", user.id);
 
-    // Tenta primeiro com o professionalId passado como parâmetro
+    // Usa sempre o user.id em vez do professionalId
     const { data: financialScheduleData, error: financialScheduleError } = await supabase
       .from("financial_records")
       .select(`
@@ -67,7 +67,7 @@ export async function getFinancialSchedule(professionalId: string): Promise<Fina
         patients:patient_id (name),
         clinics:clinic_id (name)
       `)
-      .eq('professional_id', professionalId)
+      .eq('professional_id', user.id)
       .gte('session_date', format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"))
       .order('session_date', { ascending: false })
       .limit(10);
