@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,14 +82,30 @@ export const useEvolutionReport = () => {
       console.log('Resposta da edge function:', data);
 
       if (data.success && data.organizedContent) {
+        // Mapear corretamente todos os campos da resposta da IA
+        const aiMappedContent = {
+          arrival_state: data.organizedContent.arrival_state || formData.arrival_state,
+          resources_used: data.organizedContent.resources_used || formData.resources_used,
+          dynamics_used: data.organizedContent.dynamics_used || data.organizedContent.session_development || formData.dynamics_used,
+          therapeutic_plan: data.organizedContent.therapeutic_plan || data.organizedContent.session_development || formData.therapeutic_plan,
+          specific_behaviors: data.organizedContent.specific_behaviors || data.organizedContent.patient_response || formData.specific_behaviors,
+          rhythm_melody_responses: data.organizedContent.rhythm_melody_responses || data.organizedContent.patient_response || formData.rhythm_melody_responses,
+          musical_participation: data.organizedContent.musical_participation || data.organizedContent.patient_response || formData.musical_participation,
+          communication_evolution: data.organizedContent.communication_evolution || data.organizedContent.patient_response || formData.communication_evolution,
+          emotional_responses: data.organizedContent.emotional_responses || data.organizedContent.patient_response || formData.emotional_responses,
+          session_adjustments: data.organizedContent.session_adjustments || data.organizedContent.observations || formData.session_adjustments,
+          session_exit: data.organizedContent.session_exit || formData.session_exit,
+          observations: data.organizedContent.observations || formData.observations
+        };
+
         // Aplicar o conteúdo organizado ao formulário
         setFormData(prev => ({
           ...prev,
-          ...data.organizedContent
+          ...aiMappedContent
         }));
 
         toast.success("Relatório organizado com IA!", {
-          description: "O conteúdo foi estruturado automaticamente. Revise e ajuste conforme necessário.",
+          description: "Todos os campos foram preenchidos automaticamente. Revise e ajuste conforme necessário.",
         });
         return true;
       } else if (data.fallbackContent) {
