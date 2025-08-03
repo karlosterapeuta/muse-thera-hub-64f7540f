@@ -27,7 +27,6 @@ const Reevaluation = lazy(() => import("./pages/reevaluation"));
 const ProcessReports = lazy(() => import("./pages/processes/reports"));
 const ReportForm = lazy(() => import("./pages/processes/report"));
 const MusicoterapiaReport = lazy(() => import("./pages/processes/musicoterapia"));
-const SimpleMusicoterapia = lazy(() => import("./pages/processes/musicoterapia/simple"));
 const ScientificArticle = lazy(() => import("./pages/scientific-article"));
 const Login = lazy(() => import("./pages/Login"));
 
@@ -59,7 +58,6 @@ export const navItems: { to: string; page: ComponentType<any> }[] = [
   { to: "/processes/report", page: ReportForm },
   { to: "/processes/report/:reportId", page: ReportForm },
   { to: "/processes/musicoterapia", page: MusicoterapiaReport },
-  { to: "/processes/musicoterapia/simple", page: SimpleMusicoterapia },
   { to: "/scientific-article", page: ScientificArticle },
   { to: "/login", page: Login },
 ];
