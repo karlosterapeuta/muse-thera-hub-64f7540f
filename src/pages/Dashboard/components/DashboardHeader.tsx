@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Clock, Calendar, TrendingUp, Users, FileText, Activity, Sparkles } from "lucide-react";
+import { Clock, Calendar, TrendingUp, Users, FileText, Activity, BarChart3 } from "lucide-react";
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
 import LogoRound from "@/components/LogoRound";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
@@ -82,95 +82,92 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background with gradient and pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-indigo-50/60 to-purple-50/80" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-transparent to-purple-100/20" />
+    <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
+      {/* Subtle pattern overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]" />
       
       {/* Main header container */}
-      <div className="relative backdrop-blur-sm bg-white/90 border-b border-white/60 shadow-lg">
-        <div className="container mx-auto p-6">
-          {/* Sistema MuseTera Title Section */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 group">
-              <Sparkles className="h-8 w-8 text-blue-500 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 hover:scale-105 transition-transform duration-300 cursor-default">
-                Sistema MuseTera
-              </h1>
-              <Sparkles className="h-8 w-8 text-pink-500 animate-pulse group-hover:-rotate-12 transition-transform duration-300" />
-            </div>
-            <div className="h-1 w-32 mx-auto mt-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-60" />
-          </div>
-
-          {/* Welcome section */}
+      <div className="relative backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm">
+        <div className="container mx-auto px-6 py-8">
+          {/* Header Top Section - Logo + Title + Time */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
-            {/* Professional welcome */}
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-4">
-                <LogoRound size="md" className="shadow-xl border-2 border-white/80" />
-                <div className="flex flex-col">
-                  <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
-                  </h2>
-                  <p className="text-lg text-gray-600 font-medium">
-                    Pronto para mais um dia de transformação através da música
-                  </p>
+            {/* Left - Logo + Title */}
+            <div className="flex items-center gap-4">
+              <LogoRound size="md" className="shadow-lg border border-slate-200/50" />
+              <div className="flex flex-col">
+                <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
+                  Sistema MuseTera
+                </h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <BarChart3 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm text-slate-600 font-medium">Dashboard Profissional</span>
                 </div>
               </div>
             </div>
 
-            {/* Time and professional info */}
+            {/* Right - Time + Avatar */}
             <div className="flex items-center gap-6">
               <div className="flex flex-col items-end text-right">
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-slate-600 mb-1">
                   <Calendar className="h-4 w-4" />
                   <span className="text-sm font-medium">{getCurrentDate()}</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-800">
-                  <Clock className="h-5 w-5 text-blue-500" />
+                <div className="flex items-center gap-2 text-slate-900">
+                  <Clock className="h-5 w-5 text-blue-600" />
                   <span className="text-xl font-bold">{getCurrentTime()}</span>
                 </div>
               </div>
               
               <div className="relative">
                 <ProfessionalAvatar size="lg" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-lg animate-pulse" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
               </div>
             </div>
           </div>
 
+          {/* Welcome Section */}
+          <div className="mb-8 text-center lg:text-left">
+            <h2 className="text-xl lg:text-2xl font-semibold text-slate-800 mb-2">
+              {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
+            </h2>
+            <p className="text-slate-600 max-w-2xl">
+              Bem-vindo ao seu painel de controle. Acompanhe suas atividades e resultados de musicoterapia.
+            </p>
+          </div>
+
           {/* Quick stats grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div
                   key={stat.label}
-                  className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="group relative overflow-hidden rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+                  style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  {/* Background gradient */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                  
-                  <div className="relative p-4 lg:p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className={`p-2 lg:p-3 rounded-xl bg-gradient-to-r ${stat.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r ${stat.color} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
+                        <Icon className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-xs lg:text-sm font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                         {stat.change}
                       </span>
                     </div>
                     
                     <div className="space-y-1">
-                      <p className="text-xs lg:text-sm font-medium text-gray-600 uppercase tracking-wide">
+                      <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">
                         {stat.label}
                       </p>
-                      <p className="text-xl lg:text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-slate-900">
                         {stat.value}
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Subtle hover effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-xl`} />
                 </div>
               );
             })}
@@ -178,8 +175,8 @@ export function DashboardHeader({
         </div>
       </div>
 
-      {/* Decorative bottom border */}
-      <div className="h-1 bg-gradient-to-r from-blue-500 via-indigo-500 via-purple-500 to-pink-500" />
+      {/* Subtle bottom accent */}
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
     </div>
   );
 }
