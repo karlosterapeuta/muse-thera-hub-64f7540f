@@ -94,7 +94,7 @@ export function DashboardHeader({
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 group">
               <Sparkles className="h-8 w-8 text-blue-500 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-800 bg-gradient-to-r from-blue-600 via-indigo-600 via-purple-600 to-pink-500 bg-clip-text hover:scale-105 transition-transform duration-300 cursor-default" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 hover:scale-105 transition-transform duration-300 cursor-default">
                 Sistema MuseTera
               </h1>
               <Sparkles className="h-8 w-8 text-pink-500 animate-pulse group-hover:-rotate-12 transition-transform duration-300" />
