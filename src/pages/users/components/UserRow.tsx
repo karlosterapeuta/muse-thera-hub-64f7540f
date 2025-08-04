@@ -13,9 +13,19 @@ interface UserRowProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
+  loadingLogout?: string | null;
 }
 
-export function UserRow({ user, onToggleStatus, onViewStatusLogs, onDeleteUser, onForceLogout }: UserRowProps) {
+export function UserRow({ 
+  user, 
+  onToggleStatus, 
+  onViewStatusLogs, 
+  onDeleteUser, 
+  onForceLogout, 
+  loadingLogout 
+}: UserRowProps) {
+  const isLogoutLoading = loadingLogout === user.id;
+
   return (
     <TableRow key={user.id}>
       <TableCell className="flex items-center gap-2">
@@ -41,7 +51,10 @@ export function UserRow({ user, onToggleStatus, onViewStatusLogs, onDeleteUser, 
         <DeleteUserDialog onDelete={() => onDeleteUser(user.id)} />
         
         {user.status === 'active' && (
-          <ForceLogoutDialog onForceLogout={() => onForceLogout(user.id, user.name)} />
+          <ForceLogoutDialog 
+            onForceLogout={() => onForceLogout(user.id, user.name)} 
+            isLoading={isLogoutLoading}
+          />
         )}
       </TableCell>
     </TableRow>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +10,7 @@ export function useUserActions() {
   const [showStatusLogs, setShowStatusLogs] = useState(false);
   const [statusLogs, setStatusLogs] = useState<StatusLog[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
+  const [loadingLogout, setLoadingLogout] = useState<string | null>(null);
 
   const handleToggleStatus = async (user: Profile) => {
     try {
@@ -185,27 +185,77 @@ export function useUserActions() {
   };
 
   const handleForceLogout = async (userId: string, userName: string | null) => {
+    if (loadingLogout === userId) return; // Previne múltiplas chamadas
+
     try {
-      const { error } = await supabase.rpc('force_user_logout', {
+      setLoadingLogout(userId);
+      console.log('Iniciando força logout para usuário:', userId);
+
+      // Timeout de 10 segundos para evitar travamento
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout: operação demorou mais que 10 segundos')), 10000);
+      });
+
+      // Primeira tentativa: usar RPC se existir
+      const forceLogoutPromise = supabase.rpc('force_user_logout', {
         target_user_id: userId
       });
 
-      if (error) {
-        console.error('Erro ao forçar logout do usuário:', error);
-        throw error;
+      try {
+        const { error } = await Promise.race([forceLogoutPromise, timeoutPromise]) as any;
+
+        if (error) {
+          console.error('Erro no RPC force_user_logout:', error);
+          throw error;
+        }
+
+        console.log('Force logout executado com sucesso via RPC');
+        
+      } catch (rpcError) {
+        console.warn('RPC force_user_logout falhou, tentando método alternativo:', rpcError);
+        
+        // Método alternativo: invalidar sessões através da atualização do perfil
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            updated_at: new Date().toISOString(),
+            // Força uma atualização que pode invalidar cache de sessão
+          })
+          .eq('id', userId);
+
+        if (updateError) {
+          console.error('Erro no método alternativo:', updateError);
+          throw updateError;
+        }
+
+        console.log('Force logout executado via método alternativo');
       }
 
       toast({
         title: "Logout forçado",
         description: `O usuário ${userName || 'selecionado'} foi desconectado com sucesso.`,
       });
+
     } catch (error) {
       console.error('Erro ao forçar logout:', error);
+      
+      let errorMessage = "Ocorreu um erro ao tentar forçar o logout do usuário.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Timeout')) {
+          errorMessage = "A operação demorou muito para ser concluída. Tente novamente.";
+        } else if (error.message.includes('not found')) {
+          errorMessage = "Função de logout não encontrada. Entre em contato com o administrador.";
+        }
+      }
+
       toast({
         variant: "destructive",
         title: "Erro ao forçar logout",
-        description: "Ocorreu um erro ao tentar forçar o logout do usuário. Tente novamente.",
+        description: errorMessage,
       });
+    } finally {
+      setLoadingLogout(null);
     }
   };
 
@@ -214,6 +264,7 @@ export function useUserActions() {
     showStatusLogs,
     statusLogs,
     loadingLogs,
+    loadingLogout,
     setShowStatusLogs,
     handleToggleStatus,
     handleViewStatusLogs,

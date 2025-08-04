@@ -1,6 +1,12 @@
 
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { UserRow } from "./UserRow";
 import { Profile } from "../types";
 
@@ -10,9 +16,17 @@ interface UsersTableProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
+  loadingLogout?: string | null;
 }
 
-export function UsersTable({ users, onToggleStatus, onViewStatusLogs, onDeleteUser, onForceLogout }: UsersTableProps) {
+export function UsersTable({ 
+  users, 
+  onToggleStatus, 
+  onViewStatusLogs, 
+  onDeleteUser, 
+  onForceLogout,
+  loadingLogout 
+}: UsersTableProps) {
   return (
     <Card>
       <Table>
@@ -21,19 +35,20 @@ export function UsersTable({ users, onToggleStatus, onViewStatusLogs, onDeleteUs
             <TableHead>Usuário</TableHead>
             <TableHead>Função</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Data de Cadastro</TableHead>
+            <TableHead>Data de Criação</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user) => (
-            <UserRow 
+          {users.map((user) => (
+            <UserRow
               key={user.id}
               user={user}
               onToggleStatus={onToggleStatus}
               onViewStatusLogs={onViewStatusLogs}
               onDeleteUser={onDeleteUser}
               onForceLogout={onForceLogout}
+              loadingLogout={loadingLogout}
             />
           ))}
         </TableBody>

@@ -25,6 +25,7 @@ export default function Users() {
     showStatusLogs,
     statusLogs,
     loadingLogs,
+    loadingLogout,
     setShowStatusLogs,
     handleToggleStatus,
     handleViewStatusLogs,
@@ -112,6 +113,7 @@ export default function Users() {
         onViewStatusLogs={handleViewStatusLogs}
         onDeleteUser={handleDeleteUser}
         onForceLogout={handleForceLogout}
+        loadingLogout={loadingLogout}
       />
 
       <StatusLogsDialog 
