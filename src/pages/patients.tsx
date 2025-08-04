@@ -228,21 +228,23 @@ export default function PatientsPage() {
     }
   };
 
-  const handleDeletePatient = async (patient: Patient) => {
+  const handleDeletePatient = async (patientId: string) => {
     try {
       setIsLoading(true);
       
       const { error } = await supabase
         .from("patients")
         .delete()
-        .eq('id', patient.id);
+        .eq('id', patientId);
 
       if (error) {
         console.error("Erro ao excluir paciente:", error);
         throw error;
       }
 
-      loadPatients();
+      // Atualizar a lista local removendo o paciente excluído
+      setPatients(prevPatients => prevPatients.filter(p => p.id !== patientId));
+      
       toast({
         title: "Sucesso",
         description: "Paciente excluído com sucesso",
@@ -256,7 +258,6 @@ export default function PatientsPage() {
       });
     } finally {
       setIsLoading(false);
-      setPatientToDelete(null);
     }
   };
 
@@ -411,7 +412,7 @@ export default function PatientsPage() {
                           <PatientCard
                             patient={patient}
                             onEdit={() => handleEditClick(patient)}
-                            onDelete={() => handleDeletePatient(patient)}
+                            onDelete={() => handleDeletePatient(patient.id)}
                             onViewAnamnesis={() => handleViewAnamnesis(patient)}
                             onEditAnamnesis={() => handleEditAnamnesis(patient)}
                           />
@@ -434,7 +435,7 @@ export default function PatientsPage() {
                     <PatientList
                       patients={filteredPatients}
                       onEdit={handleEditClick}
-                      onDelete={handleDeletePatient}
+                      onDelete={(patient) => handleDeletePatient(patient.id)}
                       onViewAnamnesis={handleViewAnamnesis}
                       onEditAnamnesis={handleEditAnamnesis}
                     />

@@ -91,13 +91,18 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
             <AlertDialogHeader>
               <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
               <AlertDialogDescription>
-                Esta ação irá excluir o paciente permanentemente e
+                Esta ação irá excluir o paciente "{patient.name}" permanentemente e
                 não poderá ser desfeita.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={onDelete}>Excluir</AlertDialogAction>
+              <AlertDialogAction 
+                onClick={onDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Excluir
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

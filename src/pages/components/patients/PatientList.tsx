@@ -138,7 +138,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                     <AlertDialogHeader>
                       <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta ação irá excluir o paciente permanentemente e
+                        Esta ação irá excluir o paciente "{patient.name}" permanentemente e
                         não poderá ser desfeita.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -146,6 +146,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => onDelete(patient)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
                         Excluir
                       </AlertDialogAction>
