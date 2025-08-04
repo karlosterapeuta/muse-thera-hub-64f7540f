@@ -1,5 +1,6 @@
 
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -18,8 +19,23 @@ interface DeleteUserDialogProps {
 }
 
 export function DeleteUserDialog({ onDelete }: DeleteUserDialogProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await onDelete();
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Trash2 className="h-4 w-4 text-destructive" />
@@ -33,12 +49,13 @@ export function DeleteUserDialog({ onDelete }: DeleteUserDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            onClick={onDelete}
+            onClick={handleDelete}
+            disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Excluir
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
