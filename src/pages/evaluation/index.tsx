@@ -449,27 +449,41 @@ export default function Evaluation() {
   const calculateOverallScore = () => {
     let totalScore = 0;
     let maxPossible = 0;
-    let evaluatedDomainsCount = 0;
+    let evaluatedParametersCount = 0;
+    let totalParametersCount = 0;
     
     evaluationDomains.forEach(domain => {
-      if (isDomainEvaluated(domain)) {
-        domain.subdomains.forEach(subdomain => {
-          subdomain.parameters.forEach(param => {
-            const score = calculateScore(domain.title, subdomain.title, param);
-            totalScore += score;
-            maxPossible += 100;
-          });
+      domain.subdomains.forEach(subdomain => {
+        subdomain.parameters.forEach(param => {
+          const score = calculateScore(domain.title, subdomain.title, param);
+          totalScore += score;
+          maxPossible += 100;
+          totalParametersCount++;
+          
+          if (isParameterEvaluated(domain.title, subdomain.title, param)) {
+            evaluatedParametersCount++;
+          }
         });
-        evaluatedDomainsCount++;
-      }
+      });
     });
+    
+    const completionPercentage = totalParametersCount > 0 
+      ? Math.round((evaluatedParametersCount / totalParametersCount) * 100) 
+      : 0;
+    
+    const scorePercentage = maxPossible > 0 
+      ? Math.round((totalScore / maxPossible) * 100) 
+      : 0;
     
     return {
       raw: totalScore,
       max: maxPossible,
-      percentage: Math.round((totalScore / maxPossible) * 100),
-      evaluatedDomains: evaluatedDomainsCount,
-      totalDomains: evaluationDomains.length
+      percentage: scorePercentage,
+      completionPercentage: completionPercentage,
+      evaluatedDomains: getEvaluatedDomainsCount(),
+      totalDomains: evaluationDomains.length,
+      evaluatedParameters: evaluatedParametersCount,
+      totalParameters: totalParametersCount
     };
   };
 
@@ -868,10 +882,10 @@ export default function Evaluation() {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-blue-600">
-                      {Math.round((getEvaluatedDomainsCount() / evaluationDomains.length) * 100)}%
+                      {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-blue-700">Completude</p>
-                    <p className="text-xs text-blue-600">da avaliação</p>
+                    <p className="text-sm text-blue-700">Pontuação Média</p>
+                    <p className="text-xs text-blue-600">escala MuseTera</p>
                   </div>
                 </div>
                 <div className="mt-3 text-center">
