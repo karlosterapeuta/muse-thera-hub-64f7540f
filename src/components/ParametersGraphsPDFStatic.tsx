@@ -15,6 +15,11 @@ interface ParametersGraphsPDFStaticProps {
     raw: number;
     max: number;
     percentage: number;
+    completionPercentage: number;
+    evaluatedDomains: number;
+    totalDomains: number;
+    evaluatedParameters: number;
+    totalParameters: number;
   };
   evaluationDate?: Date;
 }

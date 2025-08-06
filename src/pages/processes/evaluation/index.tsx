@@ -511,13 +511,36 @@ export default function Evaluation() {
     
     return {
       raw: totalScore,
-      percentage: Math.round((totalScore / maxPossible) * 100)
+      percentage: Math.round((totalScore / maxPossible) * 100),
+      max: maxPossible
     };
+  };
+
+  const isParameterEvaluated = (domain: string, subdomain: string, parameter: string) => {
+    const key = `${domain}-${subdomain}-${parameter}`;
+    const value = selections[key];
+    return value && value !== "nao_observado";
+  };
+
+  const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]) => {
+    return parameters.some(param => isParameterEvaluated(domain, subdomain, param));
+  };
+
+  const isDomainEvaluated = (domain: any) => {
+    return domain.subdomains.some((subdomain: any) => 
+      isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)
+    );
+  };
+
+  const getEvaluatedDomainsCount = () => {
+    return evaluationDomains.filter(domain => isDomainEvaluated(domain)).length;
   };
 
   const calculateOverallScore = () => {
     let totalScore = 0;
     let maxPossible = 0;
+    let evaluatedParametersCount = 0;
+    let totalParametersCount = 0;
     
     evaluationDomains.forEach(domain => {
       domain.subdomains.forEach(subdomain => {
@@ -525,14 +548,32 @@ export default function Evaluation() {
           const score = calculateScore(domain.title, subdomain.title, param);
           totalScore += score;
           maxPossible += 100;
+          totalParametersCount++;
+          
+          if (isParameterEvaluated(domain.title, subdomain.title, param)) {
+            evaluatedParametersCount++;
+          }
         });
       });
     });
     
+    const completionPercentage = totalParametersCount > 0 
+      ? Math.round((evaluatedParametersCount / totalParametersCount) * 100) 
+      : 0;
+    
+    const scorePercentage = maxPossible > 0 
+      ? Math.round((totalScore / maxPossible) * 100) 
+      : 0;
+    
     return {
       raw: totalScore,
       max: maxPossible,
-      percentage: Math.round((totalScore / maxPossible) * 100)
+      percentage: scorePercentage,
+      completionPercentage: completionPercentage,
+      evaluatedDomains: getEvaluatedDomainsCount(),
+      totalDomains: evaluationDomains.length,
+      evaluatedParameters: evaluatedParametersCount,
+      totalParameters: totalParametersCount
     };
   };
 
