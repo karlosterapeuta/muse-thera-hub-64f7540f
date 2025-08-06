@@ -37,11 +37,11 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
     onFilterChange({ ...filters, tags: newTags });
   };
 
-  const hasActiveFilters = Object.keys(filters).some(key => 
-    filters[key as keyof ActivityFilter] !== undefined && 
-    filters[key as keyof ActivityFilter] !== '' &&
-    !(Array.isArray(filters[key as keyof ActivityFilter]) && (filters[key as keyof ActivityFilter] as string[]).length === 0)
-  );
+  const hasActiveFilters = Object.keys(filters).some(key => {
+    const value = filters[key as keyof ActivityFilter];
+    return value !== undefined && value !== '' && value !== 'all' &&
+      !(Array.isArray(value) && value.length === 0);
+  });
 
   return (
     <Card className="mb-6">
@@ -80,14 +80,14 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
           {/* Categoria */}
           <div>
             <label className="text-sm font-medium mb-2 block">Categoria</label>
-            <Select value={filters.category || ''} onValueChange={(value) => 
-              onFilterChange({ ...filters, category: value })
+            <Select value={filters.category || 'all'} onValueChange={(value) => 
+              onFilterChange({ ...filters, category: value === 'all' ? undefined : value })
             }>
               <SelectTrigger>
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas as categorias</SelectItem>
+                <SelectItem value="all">Todas as categorias</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.label}
@@ -100,14 +100,14 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
           {/* Dificuldade */}
           <div>
             <label className="text-sm font-medium mb-2 block">Dificuldade</label>
-            <Select value={filters.difficulty || ''} onValueChange={(value) => 
-              onFilterChange({ ...filters, difficulty: value })
+            <Select value={filters.difficulty || 'all'} onValueChange={(value) => 
+              onFilterChange({ ...filters, difficulty: value === 'all' ? undefined : value })
             }>
               <SelectTrigger>
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="all">Todas</SelectItem>
                 <SelectItem value="easy">Fácil</SelectItem>
                 <SelectItem value="medium">Médio</SelectItem>
                 <SelectItem value="hard">Difícil</SelectItem>
@@ -119,14 +119,14 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
           {isExpanded && (
             <div>
               <label className="text-sm font-medium mb-2 block">Faixa Etária</label>
-              <Select value={filters.ageGroup || ''} onValueChange={(value) => 
-                onFilterChange({ ...filters, ageGroup: value })
+              <Select value={filters.ageGroup || 'all'} onValueChange={(value) => 
+                onFilterChange({ ...filters, ageGroup: value === 'all' ? undefined : value })
               }>
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as idades</SelectItem>
+                  <SelectItem value="all">Todas as idades</SelectItem>
                   <SelectItem value="3-6">3-6 anos</SelectItem>
                   <SelectItem value="6-12">6-12 anos</SelectItem>
                   <SelectItem value="12-18">12-18 anos</SelectItem>
@@ -140,14 +140,14 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
           {isExpanded && (
             <div>
               <label className="text-sm font-medium mb-2 block">Duração</label>
-              <Select value={filters.duration || ''} onValueChange={(value) => 
-                onFilterChange({ ...filters, duration: value })
+              <Select value={filters.duration || 'all'} onValueChange={(value) => 
+                onFilterChange({ ...filters, duration: value === 'all' ? undefined : value })
               }>
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Qualquer duração</SelectItem>
+                  <SelectItem value="all">Qualquer duração</SelectItem>
                   <SelectItem value="short">Curta (até 20 min)</SelectItem>
                   <SelectItem value="medium">Média (20-40 min)</SelectItem>
                   <SelectItem value="long">Longa (40+ min)</SelectItem>
@@ -184,11 +184,11 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
         {hasActiveFilters && (
           <div className="pt-2 border-t">
             <p className="text-sm text-muted-foreground">
-              Filtros ativos: {Object.keys(filters).filter(key => 
-                filters[key as keyof ActivityFilter] !== undefined && 
-                filters[key as keyof ActivityFilter] !== '' &&
-                !(Array.isArray(filters[key as keyof ActivityFilter]) && (filters[key as keyof ActivityFilter] as string[]).length === 0)
-              ).length}
+              Filtros ativos: {Object.keys(filters).filter(key => {
+                const value = filters[key as keyof ActivityFilter];
+                return value !== undefined && value !== '' && value !== 'all' &&
+                  !(Array.isArray(value) && value.length === 0);
+              }).length}
             </p>
           </div>
         )}
