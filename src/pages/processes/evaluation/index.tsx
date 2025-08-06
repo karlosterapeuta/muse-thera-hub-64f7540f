@@ -1089,18 +1089,18 @@ export default function Evaluation() {
                               outerRadius="90%"
                               paddingAngle={5}
                               dataKey="value"
-                              label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              label={({name, value}) => `${name}: ${Math.round(value)}%`}
                             >
                               {pieData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <RechartsTooltip />
+                            <RechartsTooltip formatter={(value, name) => [`${Math.round(Number(value))}%`, name]} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
                       <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
-                        <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                        <p className="text-lg font-bold text-gray-800">{overallScore.raw} pontos (de {overallScore.max} possíveis)</p>
                         <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
                       </div>
                     </div>
@@ -1133,7 +1133,7 @@ export default function Evaluation() {
                               <div className="bg-white p-4 border-0 rounded-xl shadow-xl">
                                 <p className="text-sm font-semibold text-gray-800">{data.name}</p>
                                 <p className="text-sm text-blue-600">Domínio: {data.domain}</p>
-                                <p className="text-sm font-bold text-green-600">Pontuação: {data.value}%</p>
+                                <p className="text-sm font-bold text-green-600">{Math.round(data.value)} pontos ({Math.round(data.value)}%)</p>
                               </div>
                             );
                           }
