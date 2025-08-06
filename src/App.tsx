@@ -53,6 +53,7 @@ import FinanceReports from "./pages/finance/reports";
 import FinanceClinics from "./pages/finance/clinics";
 
 // Activities pages
+import ActivityFavorites from "./pages/activities/favorites";
 import ActivityCategory from "./pages/activities/category";
 
 const queryClient = new QueryClient();
@@ -89,6 +90,7 @@ const App = () => (
             <Route path="finance/clinics" element={<FinanceClinics />} />
             <Route path="scientific-article" element={<ScientificArticle />} />
             <Route path="activities" element={<Activities />} />
+            <Route path="activities/favorites" element={<ActivityFavorites />} />
             <Route path="activities/category/:categoryId" element={<ActivityCategory />} />
             <Route path="musical-bells" element={<MusicalBells />} />
             <Route path="bell-hero" element={<BellHero />} />

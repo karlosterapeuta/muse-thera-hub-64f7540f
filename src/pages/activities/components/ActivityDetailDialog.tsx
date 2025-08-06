@@ -6,24 +6,52 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Clock, Users, Target, AlertTriangle, CheckCircle, 
-  FileText, Play, BookOpen, Settings, Download
+  FileText, Play, BookOpen, Settings, Download, Volume2
 } from 'lucide-react';
 import { Activity } from '../types';
+import { UserActivityManager } from './UserActivityManager';
+import { MultimediaPlayer } from './MultimediaPlayer';
+import { multimediaResourcesData } from '../data/multimedia-resources';
+import { UserActivityData } from '../types/user-data';
 
 interface ActivityDetailDialogProps {
   activity: Activity | null;
   isOpen: boolean;
   onClose: () => void;
+  userActivityData?: UserActivityData;
+  onUpdateUserData?: (data: UserActivityData) => void;
 }
 
 export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
   activity,
   isOpen,
-  onClose
+  onClose,
+  userActivityData,
+  onUpdateUserData
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   if (!activity) return null;
+
+  // Get multimedia resources related to this activity
+  const activityResources = multimediaResourcesData.filter(resource =>
+    activity.tags?.some(tag => resource.tags.includes(tag)) ||
+    resource.category === activity.category ||
+    activity.therapeuticAreas?.some(area => 
+      resource.tags.includes(area.toLowerCase()) || 
+      resource.description?.toLowerCase().includes(area.toLowerCase())
+    )
+  );
+
+  // Default user activity data if not provided
+  const defaultUserData: UserActivityData = {
+    userId: 'default',
+    favorites: [],
+    completed: [],
+    ratings: [],
+    recentlyViewed: [],
+    personalNotes: []
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -95,15 +123,30 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
         <Separator />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="instructions">Instruções</TabsTrigger>
             <TabsTrigger value="session">Sessão</TabsTrigger>
             <TabsTrigger value="adaptations">Adaptações</TabsTrigger>
             <TabsTrigger value="resources">Recursos</TabsTrigger>
+            <TabsTrigger value="multimedia">
+              <Volume2 className="h-4 w-4 mr-1" />
+              Multimídia
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-4 space-y-4">
+            {/* User Activity Manager */}
+            {userActivityData && onUpdateUserData && (
+              <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                <UserActivityManager
+                  activity={activity}
+                  userActivityData={userActivityData}
+                  onUpdateUserData={onUpdateUserData}
+                />
+              </div>
+            )}
+
             {/* Objetivos */}
             {activity.objectives && activity.objectives.length > 0 && (
               <div>
@@ -350,6 +393,56 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
               </div>
             ) : (
               <p className="text-muted-foreground">Recursos complementares não disponíveis para esta atividade.</p>
+            )}
+          </TabsContent>
+          <TabsContent value="multimedia" className="mt-4 space-y-4">
+            {activityResources.length > 0 ? (
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Volume2 className="h-5 w-5" />
+                  Recursos Multimídia
+                </h3>
+                <MultimediaPlayer
+                  resources={activityResources}
+                  autoPlay={false}
+                  showControls={true}
+                />
+                
+                {/* Additional Resources List */}
+                <div className="mt-6">
+                  <h4 className="font-medium mb-3">Todos os Recursos ({activityResources.length})</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {activityResources.map((resource) => (
+                      <div key={resource.id} className="p-3 border rounded-lg">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">{resource.title}</h5>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {resource.description}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant="outline" className="text-xs">
+                                {resource.type}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {resource.category}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Volume2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-medium mb-2">Nenhum recurso multimídia disponível</h3>
+                <p className="text-muted-foreground">
+                  Recursos multimídia para esta atividade estão sendo preparados.
+                </p>
+              </div>
             )}
           </TabsContent>
         </Tabs>

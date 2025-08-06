@@ -32,6 +32,16 @@ export default function ActivitiesPage() {
   const [filters, setFilters] = useState<ActivityFilter>({});
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   
+  // User activity data state
+  const [userActivityData, setUserActivityData] = useState({
+    userId: 'user-123',
+    favorites: [],
+    completed: [],
+    ratings: [],
+    recentlyViewed: [],
+    personalNotes: []
+  });
+  
   // Dados das categorias melhoradas
   const categories = [
     { id: "cognitive", name: "cognitive", label: "Cognitivas", icon: <Brain className="h-5 w-5" />, description: "Atividades focadas no desenvolvimento de habilidades cognitivas", color: "#3B82F6" },
@@ -89,6 +99,22 @@ export default function ActivitiesPage() {
   const handleViewActivityDetails = (activity: Activity) => {
     setSelectedActivity(activity);
     setDetailDialogOpen(true);
+    
+    // Add to recently viewed
+    const newRecentlyViewed = [
+      activity.id.toString(),
+      ...userActivityData.recentlyViewed.filter(id => id !== activity.id.toString())
+    ].slice(0, 10);
+    
+    setUserActivityData({
+      ...userActivityData,
+      recentlyViewed: newRecentlyViewed
+    });
+  };
+
+  const handleUpdateUserData = (data: any) => {
+    setUserActivityData(data);
+    localStorage.setItem('userActivityData', JSON.stringify(data));
   };
 
   return (
@@ -258,6 +284,8 @@ export default function ActivitiesPage() {
         activity={selectedActivity}
         isOpen={detailDialogOpen}
         onClose={() => setDetailDialogOpen(false)}
+        userActivityData={userActivityData}
+        onUpdateUserData={handleUpdateUserData}
       />
     </div>
   );
