@@ -296,7 +296,15 @@ export default function ReportsPage() {
   };
 
   const handleEdit = (report: Report) => {
-    navigate(`/processes/report/${report.id}`);
+    // Redirect based on report type
+    if (report.type === 'daily_evolution') {
+      navigate('/processes/evolution', { state: { editReport: report } });
+    } else if (report.type === 'musicoterapia') {
+      navigate('/processes/musicoterapia', { state: { editReport: report } });
+    } else {
+      // For other report types, use the generic report page
+      navigate(`/processes/report/${report.id}`);
+    }
   };
 
   const handleDeleteClick = (report: Report) => {

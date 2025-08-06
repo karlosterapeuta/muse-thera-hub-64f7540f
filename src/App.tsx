@@ -79,6 +79,7 @@ const App = () => (
             <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
             <Route path="processes/evaluation/article" element={<EvaluationArticle />} />
             <Route path="processes/report" element={<ProcessReport />} />
+            <Route path="processes/report/:id" element={<ProcessReport />} />
             <Route path="processes/reports" element={<ProcessReports />} />
             <Route path="treatment-plan" element={<TreatmentPlan />} />
             <Route path="intervention" element={<Intervention />} />
