@@ -13,6 +13,10 @@ import { UserActivityManager } from './UserActivityManager';
 import { MultimediaPlayer } from './MultimediaPlayer';
 import { multimediaResourcesData } from '../data/multimedia-resources';
 import { UserActivityData } from '../types/user-data';
+import { DetailedInstructionsGuide } from './DetailedInstructionsGuide';
+import { PreparationChecklist } from './PreparationChecklist';
+import { FacilitationGuidePanel } from './FacilitationGuidePanel';
+import { ExecutionTipsPanel } from './ExecutionTipsPanel';
 
 interface ActivityDetailDialogProps {
   activity: Activity | null;
@@ -123,10 +127,12 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
         <Separator />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 text-xs">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="instructions">Instruções</TabsTrigger>
-            <TabsTrigger value="session">Sessão</TabsTrigger>
+            <TabsTrigger value="preparation">Preparação</TabsTrigger>
+            <TabsTrigger value="detailed-instructions">Instruções Detalhadas</TabsTrigger>
+            <TabsTrigger value="facilitation">Facilitação</TabsTrigger>
+            <TabsTrigger value="execution-tips">Dicas</TabsTrigger>
             <TabsTrigger value="adaptations">Adaptações</TabsTrigger>
             <TabsTrigger value="resources">Recursos</TabsTrigger>
             <TabsTrigger value="multimedia">
@@ -238,8 +244,21 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
             )}
           </TabsContent>
 
-          <TabsContent value="instructions" className="mt-4 space-y-4">
-            {activity.instructions && activity.instructions.length > 0 ? (
+          <TabsContent value="preparation" className="mt-4 space-y-4">
+            {activity.preparationSteps && activity.preparationSteps.length > 0 ? (
+              <PreparationChecklist preparationSteps={activity.preparationSteps} />
+            ) : (
+              <div className="text-center py-8">
+                <Settings className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">Lista de preparação não disponível para esta atividade.</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="detailed-instructions" className="mt-4 space-y-4">
+            {activity.detailedInstructions && activity.detailedInstructions.length > 0 ? (
+              <DetailedInstructionsGuide instructions={activity.detailedInstructions} />
+            ) : activity.instructions && activity.instructions.length > 0 ? (
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <FileText className="h-5 w-5" />
@@ -255,23 +274,48 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                     </li>
                   ))}
                 </ol>
+                
+                {/* Critérios de avaliação */}
+                {activity.evaluationCriteria && activity.evaluationCriteria.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-2">Critérios de Avaliação</h3>
+                    <ul className="space-y-1">
+                      {activity.evaluationCriteria.map((criteria, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{criteria}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
-              <p className="text-muted-foreground">Instruções detalhadas não disponíveis para esta atividade.</p>
+              <div className="text-center py-8">
+                <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">Instruções detalhadas não disponíveis para esta atividade.</p>
+              </div>
             )}
+          </TabsContent>
 
-            {/* Critérios de avaliação */}
-            {activity.evaluationCriteria && activity.evaluationCriteria.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-2">Critérios de Avaliação</h3>
-                <ul className="space-y-1">
-                  {activity.evaluationCriteria.map((criteria, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">{criteria}</span>
-                    </li>
-                  ))}
-                </ul>
+          <TabsContent value="facilitation" className="mt-4 space-y-4">
+            {activity.facilitationGuide ? (
+              <FacilitationGuidePanel facilitationGuide={activity.facilitationGuide} />
+            ) : (
+              <div className="text-center py-8">
+                <Users className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">Guia de facilitação não disponível para esta atividade.</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="execution-tips" className="mt-4 space-y-4">
+            {activity.executionTips && activity.executionTips.length > 0 ? (
+              <ExecutionTipsPanel executionTips={activity.executionTips} />
+            ) : (
+              <div className="text-center py-8">
+                <Target className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">Dicas de execução não disponíveis para esta atividade.</p>
               </div>
             )}
           </TabsContent>
