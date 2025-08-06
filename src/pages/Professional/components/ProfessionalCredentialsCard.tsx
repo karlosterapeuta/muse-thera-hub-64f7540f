@@ -23,6 +23,12 @@ export function ProfessionalCredentialsCard({
   isEditing, 
   associations 
 }: ProfessionalCredentialsCardProps) {
+  // Enhanced associations list including the new one
+  const enhancedAssociations = [
+    ...associations,
+    "Associação de Musicoterapia do Piauí (AMPT-PI)"
+  ].filter((association, index, arr) => arr.indexOf(association) === index); // Remove duplicates
+
   return (
     <Card className="hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-4">
@@ -62,7 +68,7 @@ export function ProfessionalCredentialsCard({
               <SelectValue placeholder="Selecione uma associação" />
             </SelectTrigger>
             <SelectContent className="max-h-60">
-              {associations.map((association) => (
+              {enhancedAssociations.map((association) => (
                 <SelectItem key={association} value={association}>
                   {association}
                 </SelectItem>
