@@ -21,6 +21,7 @@ import { ActivityFilters } from "./components/ActivityFilters";
 import { ActivityCard } from "./components/ActivityCard";
 import { ActivityDetailDialog } from "./components/ActivityDetailDialog";
 import { enhancedActivitiesData } from "./data/enhanced-activities-data";
+import { getCombinedActivities } from "./utils/activityMigrator";
 import { Activity, ActivityFilter } from "./types";
 
 export default function ActivitiesPage() {
@@ -60,9 +61,10 @@ export default function ActivitiesPage() {
     { id: "identity", name: "identity", label: "Identidade", icon: <Fingerprint className="h-5 w-5" />, description: "Atividades focadas no fortalecimento da identidade pessoal", color: "#DC2626" }
   ];
   
-  // Obter todas as atividades de forma unificada
+  // Obter todas as atividades de forma unificada (enhanced + migrated)
   const allActivities = useMemo(() => {
-    return Object.values(enhancedActivitiesData).flat();
+    const combinedData = getCombinedActivities(enhancedActivitiesData);
+    return Object.values(combinedData).flat();
   }, []);
 
   // Obter todas as tags disponíveis
@@ -177,7 +179,8 @@ export default function ActivitiesPage() {
       {Object.keys(filters).length === 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {categories.slice(0, 7).map((category) => {
-            const activitiesCount = enhancedActivitiesData[category.id]?.length || 0;
+            const combinedData = getCombinedActivities(enhancedActivitiesData);
+            const activitiesCount = combinedData[category.id]?.length || 0;
             return (
               <Card 
                 key={category.id}
@@ -243,7 +246,8 @@ export default function ActivitiesPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             {categories.map((category) => {
-              const activitiesCount = enhancedActivitiesData[category.id]?.length || 0;
+              const combinedData = getCombinedActivities(enhancedActivitiesData);
+              const activitiesCount = combinedData[category.id]?.length || 0;
               return (
                 <Card 
                   key={category.id}

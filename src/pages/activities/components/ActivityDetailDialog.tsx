@@ -17,6 +17,8 @@ import { DetailedInstructionsGuide } from './DetailedInstructionsGuide';
 import { PreparationChecklist } from './PreparationChecklist';
 import { FacilitationGuidePanel } from './FacilitationGuidePanel';
 import { ExecutionTipsPanel } from './ExecutionTipsPanel';
+import { ActivityEvaluationSystem } from './ActivityEvaluationSystem';
+import { AssistedExecutionMode } from './AssistedExecutionMode';
 
 interface ActivityDetailDialogProps {
   activity: Activity | null;
@@ -34,6 +36,8 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
   onUpdateUserData
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showEvaluation, setShowEvaluation] = useState(false);
+  const [showAssistedMode, setShowAssistedMode] = useState(false);
 
   if (!activity) return null;
 
@@ -127,18 +131,17 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
         <Separator />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 text-xs">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 text-xs">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="preparation">Preparação</TabsTrigger>
-            <TabsTrigger value="detailed-instructions">Instruções Detalhadas</TabsTrigger>
+            <TabsTrigger value="detailed-instructions">Instruções</TabsTrigger>
             <TabsTrigger value="facilitation">Facilitação</TabsTrigger>
             <TabsTrigger value="execution-tips">Dicas</TabsTrigger>
             <TabsTrigger value="adaptations">Adaptações</TabsTrigger>
             <TabsTrigger value="resources">Recursos</TabsTrigger>
-            <TabsTrigger value="multimedia">
-              <Volume2 className="h-4 w-4 mr-1" />
-              Multimídia
-            </TabsTrigger>
+            <TabsTrigger value="multimedia">Multimídia</TabsTrigger>
+            <TabsTrigger value="assisted">Execução Assistida</TabsTrigger>
+            <TabsTrigger value="evaluation">Avaliação</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-4 space-y-4">

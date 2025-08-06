@@ -11,20 +11,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { activitiesData } from "../data/activities-data";
+import { enhancedActivitiesData } from "../data/enhanced-activities-data";
+import { getCombinedActivities } from "../utils/activityMigrator";
+import { Activity } from "../types";
 
-type ActivityType = {
-  id: number;
-  title: string;
-  description: string;
-};
+// Using Activity type from types.ts
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
-  const [activities, setActivities] = useState<ActivityType[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [categoryInfo, setCategoryInfo] = useState<{name: string, label: string, icon: JSX.Element} | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const categories = [
@@ -51,16 +49,17 @@ export default function CategoryPage() {
       setCategoryInfo(category);
     }
 
-    // Set the activities for this category
-    if (categoryId && activitiesData[categoryId as keyof typeof activitiesData]) {
-      setActivities(activitiesData[categoryId as keyof typeof activitiesData]);
+    // Set the activities for this category (combined enhanced + migrated)
+    if (categoryId) {
+      const combinedData = getCombinedActivities(enhancedActivitiesData);
+      setActivities(combinedData[categoryId] || []);
     } else {
       // If category not found, go back to activities page
       navigate('/activities');
     }
   }, [categoryId, navigate]);
 
-  const handleActivityClick = (activity: ActivityType) => {
+  const handleActivityClick = (activity: Activity) => {
     setSelectedActivity(activity);
     setDialogOpen(true);
   };
