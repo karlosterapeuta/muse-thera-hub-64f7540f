@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -120,6 +120,7 @@ const reportTypeColors: Record<string, string> = {
 export default function ReportsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [reports, setReports] = useState<Report[]>([]);
   const [filteredReports, setFilteredReports] = useState<Report[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -195,6 +196,14 @@ export default function ReportsPage() {
       return null;
     }
   };
+
+  // Set initial filter from URL parameter
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    if (typeParam && reportTypeLabels[typeParam]) {
+      setSelectedTypeFilter(typeParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function loadReports() {
@@ -415,7 +424,14 @@ export default function ReportsPage() {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <FileText className="h-8 w-8" />
-              <h1 className="text-3xl font-bold">Meus Relatórios</h1>
+              <h1 className="text-3xl font-bold">
+                Meus Relatórios
+                {selectedTypeFilter !== 'all' && (
+                  <span className="text-xl font-normal ml-2 opacity-90">
+                    • {reportTypeLabels[selectedTypeFilter]}
+                  </span>
+                )}
+              </h1>
             </div>
             
             {/* Stats Cards */}

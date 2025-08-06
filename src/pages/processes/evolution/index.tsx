@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp, Sparkles, Clock, User, Calendar, Activity, Brain, Heart, Users, Target, MessageCircle, CheckCircle } from "lucide-react";
+import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp, Sparkles, Clock, User, Calendar, Activity, Brain, Heart, Users, Target, MessageCircle, CheckCircle, List } from "lucide-react";
 import { toast } from "sonner";
 import { useEvolutionReport } from "@/hooks/useEvolutionReport";
 import { evolutionSections } from "@/data/evolutionTemplate";
@@ -16,8 +16,10 @@ import { EvolutionReportPreview } from "@/components/EvolutionReportPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { useNavigate } from "react-router-dom";
 
 export default function EvolutionReport() {
+  const navigate = useNavigate();
   const {
     formData,
     selectedPatient,
@@ -453,7 +455,7 @@ export default function EvolutionReport() {
           {/* Enhanced Action Buttons */}
           <Card className="border-0 shadow-lg bg-gradient-to-r from-gray-50 via-blue-50/30 to-indigo-50/30">
             <CardContent className="pt-4 lg:pt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 lg:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3 lg:gap-4">
                 <Button
                   onClick={handleOrganizeWithAI}
                   disabled={isOrganizingWithAI || !selectedPatient}
@@ -502,6 +504,16 @@ export default function EvolutionReport() {
                   <span className="sm:hidden">
                     {isGeneratingPDF ? 'Exportando...' : 'PDF'}
                   </span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/processes/reports?type=daily_evolution")}
+                  className="border-orange-200 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base text-orange-700"
+                >
+                  <List className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Ver Relatórios</span>
+                  <span className="sm:hidden">Lista</span>
                 </Button>
 
                 <Button
