@@ -86,13 +86,12 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
     </div>
   );
 
-  const ScoreBadge = ({ score, maxScore }: { score: number; maxScore: number }) => {
-    const percentage = Math.round((score / maxScore) * 100);
+  const ScoreBadge = ({ score }: { score: number }) => {
     return (
       <div style={{ 
         display: 'inline-flex', 
         alignItems: 'center', 
-        backgroundColor: getScoreColor(percentage), 
+        backgroundColor: getScoreColor(score), 
         color: 'white', 
         padding: '6px 12px', 
         borderRadius: '20px', 
@@ -100,7 +99,7 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         fontWeight: '600',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
-        {score}/{maxScore} ({percentage}%)
+        {score} pontos ({score}%)
       </div>
     );
   };
@@ -460,7 +459,7 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
                           }}>
                             {value || 'Não avaliado'}
                           </span>
-                          <ScoreBadge score={score} maxScore={4} />
+                          <ScoreBadge score={score} />
                         </div>
                       </div>
                     );
