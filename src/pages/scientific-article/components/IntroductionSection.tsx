@@ -30,7 +30,7 @@ export function IntroductionSection() {
       <p className="text-justify text-gray-700 leading-relaxed">
         O presente estudo apresenta o desenvolvimento, estruturação e validação da Escala MuseTera, 
         um instrumento específico para avaliação musicoterapêutica que utiliza sistema expandido de 
-        7 pontos (0-6), contribuindo para o avanço científico da área no contexto nacional e 
+        6 níveis (0-5), contribuindo para o avanço científico da área no contexto nacional e 
         internacional.
       </p>
     </section>

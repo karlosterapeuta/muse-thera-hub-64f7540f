@@ -29,26 +29,24 @@ export function MethodologySection() {
       
       <h3 className="text-lg font-semibold text-gray-800 mb-3">2.4 Estrutura da Escala</h3>
       <p className="text-justify text-gray-700 leading-relaxed mb-4">
-        A escala foi estruturada em 7 domínios baseados na literatura sobre desenvolvimento humano 
+        A escala foi estruturada em 5 domínios baseados na literatura sobre desenvolvimento humano 
         e musicoterapia:
       </p>
       <div className="bg-gray-50 p-4 rounded-lg mb-4">
         <ul className="list-disc list-inside text-gray-700 space-y-2 pl-4">
-          <li><strong>Cognitivo:</strong> Atenção, memória, processamento de informações, funções executivas</li>
-          <li><strong>Motor:</strong> Coordenação motora fina e grossa, equilíbrio, controle postural</li>
-          <li><strong>Comunicativo:</strong> Linguagem verbal e não-verbal, expressão, compreensão</li>
-          <li><strong>Social:</strong> Interação interpessoal, cooperação, comportamento pró-social</li>
-          <li><strong>Emocional:</strong> Regulação emocional, expressão afetiva, autocontrole</li>
-          <li><strong>Sensorial:</strong> Processamento auditivo, tátil, visual e proprioceptivo</li>
-          <li><strong>Criativo:</strong> Expressão artística, improvisação, pensamento divergente</li>
+          <li><strong>Musical:</strong> Percepção, expressão e compreensão musical</li>
+          <li><strong>Psicossocial:</strong> Interação social, regulação emocional, autoestima e autoconceito</li>
+          <li><strong>Cognitivo:</strong> Funções executivas, processamento da informação, aprendizagem musical</li>
+          <li><strong>Sensório-Motor:</strong> Coordenação motora, processamento sensorial, desenvolvimento motor</li>
+          <li><strong>Comunicativo-Interativo:</strong> Comunicação verbal e não verbal, pragmática e interação terapêutica</li>
         </ul>
       </div>
 
       <h3 className="text-lg font-semibold text-gray-800 mb-3">2.5 Sistema de Pontuação</h3>
       <p className="text-justify text-gray-700 leading-relaxed mb-4">
-        O sistema expandido utiliza escala ordinal de 7 pontos (0-6): 0 (Não Observado), 1 (Emergente), 
-        2 (Inconsistente), 3 (Moderado), 4 (Consistente), 5 (Avançado) e 6 (Excepcional). Esta 
-        gradação permite maior precisão na avaliação e sensibilidade às mudanças terapêuticas.
+        O sistema expandido utiliza 6 níveis (0-5): 0 (Não Observado), 1 (Emergente), 2 (Inconsistente), 
+        3 (Moderado), 4 (Consistente) e 5 (Excepcional). Esta gradação permite maior precisão na avaliação 
+        e sensibilidade às mudanças terapêuticas.
       </p>
 
       <h3 className="text-lg font-semibold text-gray-800 mb-3">2.6 Validação e Análise Estatística</h3>

@@ -11,6 +11,8 @@ import { FiguresSection } from './FiguresSection';
 import { DiscussionSection } from './DiscussionSection';
 import { AdditionalSections } from './AdditionalSections';
 import { ReferencesSection } from './ReferencesSection';
+import { PhotosSection } from './PhotosSection';
+import { PDFDownloadSection } from './PDFDownloadSection';
 
 export function ScientificContent() {
   return (
@@ -27,12 +29,15 @@ export function ScientificContent() {
           <ResultsSection />
           
           <FiguresSection />
+          <PhotosSection />
           
           <Separator />
           
           <DiscussionSection />
           <AdditionalSections />
           <ReferencesSection />
+          
+          <PDFDownloadSection />
         </div>
       </CardContent>
     </Card>

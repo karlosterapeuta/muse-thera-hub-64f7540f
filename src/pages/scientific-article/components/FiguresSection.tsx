@@ -13,18 +13,17 @@ export function FiguresSection() {
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg border border-blue-200">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg text-gray-800 mb-2">Escala MuseTera - Interface de Avaliação</h3>
-              <p className="text-sm text-gray-600">Sistema expandido de pontuação (0-6) para avaliação musicoterapêutica</p>
+              <p className="text-sm text-gray-600">Sistema expandido de pontuação (0-5) para avaliação musicoterapêutica</p>
             </div>
             
-            <div className="grid grid-cols-7 gap-2 mb-4">
+            <div className="grid grid-cols-6 gap-2 mb-4">
               {[
                 { level: 0, name: "Não Observado", color: "bg-gray-500" },
                 { level: 1, name: "Emergente", color: "bg-red-500" },
                 { level: 2, name: "Inconsistente", color: "bg-orange-400" },
                 { level: 3, name: "Moderado", color: "bg-yellow-400" },
                 { level: 4, name: "Consistente", color: "bg-blue-500" },
-                { level: 5, name: "Avançado", color: "bg-green-500" },
-                { level: 6, name: "Excepcional", color: "bg-purple-500" }
+                { level: 5, name: "Excepcional", color: "bg-green-500" }
               ].map((level) => (
                 <div key={level.level} className="text-center">
                   <div className={`w-8 h-8 ${level.color} rounded-full mx-auto mb-1 flex items-center justify-center text-white font-bold text-sm`}>
@@ -36,7 +35,7 @@ export function FiguresSection() {
             </div>
           </div>
           <p className="text-center text-sm text-gray-600 mt-4 font-medium">
-            <strong>Figura 1.</strong> Interface da Escala MuseTera mostrando o sistema expandido de pontuação de 7 níveis (0-6)
+            <strong>Figura 1.</strong> Interface da Escala MuseTera mostrando o sistema expandido de pontuação de 6 níveis (0-5)
           </p>
         </CardContent>
       </Card>
@@ -47,18 +46,16 @@ export function FiguresSection() {
           <div className="bg-gradient-to-br from-green-50 to-blue-50 p-8 rounded-lg border border-green-200">
             <div className="text-center mb-6">
               <h3 className="font-bold text-lg text-gray-800 mb-2">Estrutura Multidimensional da Escala MuseTera</h3>
-              <p className="text-sm text-gray-600">7 Domínios de Desenvolvimento Avaliados</p>
+              <p className="text-sm text-gray-600">5 Domínios de Desenvolvimento Avaliados</p>
             </div>
             
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
-                { domain: "Cognitivo", icon: "🧠", color: "bg-blue-100 border-blue-300" },
-                { domain: "Motor", icon: "🏃", color: "bg-green-100 border-green-300" },
-                { domain: "Comunicativo", icon: "💬", color: "bg-yellow-100 border-yellow-300" },
-                { domain: "Social", icon: "👥", color: "bg-purple-100 border-purple-300" },
-                { domain: "Emocional", icon: "😊", color: "bg-pink-100 border-pink-300" },
-                { domain: "Sensorial", icon: "👂", color: "bg-orange-100 border-orange-300" },
-                { domain: "Criativo", icon: "🎨", color: "bg-red-100 border-red-300" }
+                { domain: "Musical", icon: "🎵", color: "bg-blue-100 border-blue-300" },
+                { domain: "Psicossocial", icon: "👥", color: "bg-green-100 border-green-300" },
+                { domain: "Cognitivo", icon: "🧠", color: "bg-yellow-100 border-yellow-300" },
+                { domain: "Sensório-Motor", icon: "👐", color: "bg-purple-100 border-purple-300" },
+                { domain: "Comunicativo-Interativo", icon: "🗣️", color: "bg-pink-100 border-pink-300" }
               ].map((domain) => (
                 <div key={domain.domain} className={`${domain.color} p-4 rounded-lg border-2 text-center`}>
                   <div className="text-2xl mb-2">{domain.icon}</div>
@@ -68,7 +65,7 @@ export function FiguresSection() {
             </div>
           </div>
           <p className="text-center text-sm text-gray-600 mt-4 font-medium">
-            <strong>Figura 2.</strong> Estrutura multidimensional da Escala MuseTera contemplando 7 domínios do desenvolvimento
+            <strong>Figura 2.</strong> Estrutura multidimensional da Escala MuseTera contemplando 5 domínios do desenvolvimento
           </p>
         </CardContent>
       </Card>
@@ -113,7 +110,7 @@ export function FiguresSection() {
                   <p className="text-gray-600">Variância</p>
                 </div>
                 <div className="text-center">
-                  <div className="font-bold text-lg text-indigo-600">7</div>
+                  <div className="font-bold text-lg text-indigo-600">5</div>
                   <p className="text-gray-600">Fatores</p>
                 </div>
               </div>
@@ -136,13 +133,11 @@ export function FiguresSection() {
             
             <div className="space-y-3">
               {[
-                { domain: "Cognitivo", score: 3, description: "Atenção sustentada em atividades musicais estruturadas" },
-                { domain: "Motor", score: 4, description: "Coordenação rítmica consistente com instrumentos percussivos" },
-                { domain: "Comunicativo", score: 2, description: "Expressão vocal emergente durante improvisações" },
-                { domain: "Social", score: 3, description: "Interação com terapeuta em atividades dirigidas" },
-                { domain: "Emocional", score: 4, description: "Autorregulação através de músicas conhecidas" },
-                { domain: "Sensorial", score: 5, description: "Processamento auditivo refinado e discriminação tonal" },
-                { domain: "Criativo", score: 2, description: "Exploração instrumental com padrões repetitivos" }
+                { domain: "Musical", score: 4, description: "Expressão musical consistente e compreensão de estruturas simples" },
+                { domain: "Psicossocial", score: 3, description: "Interação com terapeuta e regulação emocional moderada" },
+                { domain: "Cognitivo", score: 3, description: "Atenção sustentada e memória de trabalho musical" },
+                { domain: "Sensório-Motor", score: 4, description: "Coordenação rítmica e integração movimento-música" },
+                { domain: "Comunicativo-Interativo", score: 2, description: "Expressão não-verbal e turnos conversacionais emergentes" }
               ].map((item) => (
                 <div key={item.domain} className="bg-white p-3 rounded-lg border flex items-center justify-between">
                   <div className="flex-1">

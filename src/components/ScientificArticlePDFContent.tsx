@@ -16,12 +16,12 @@ export function ScientificArticlePDFContent() {
       <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #333', paddingBottom: '20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 15px 0', color: '#000', lineHeight: '1.3' }}>
           Escala MuseTera: Desenvolvimento e Validação de um Instrumento de Avaliação 
-          Musicoterapêutica Multidimensional com Sistema de Pontuação Expandido (0-6) 
+          Musicoterapêutica Multidimensional com Sistema de Pontuação Expandido (0-5) 
           e Avaliação Parcial Inovadora para Análise Terapêutica Dinâmica
         </h1>
         <h2 style={{ fontSize: '16px', fontStyle: 'italic', margin: '0 0 20px 0', color: '#666', lineHeight: '1.3' }}>
           MuseTera Scale: Development and Validation of a Multidimensional Music Therapy Assessment 
-          Instrument with Expanded Scoring System (0-6) and Innovative Partial Evaluation 
+          Instrument with Expanded Scoring System (0-5) and Innovative Partial Evaluation 
           for Dynamic Therapeutic Analysis
         </h2>
         <div style={{ fontSize: '14px', color: '#333' }}>
@@ -39,13 +39,13 @@ export function ScientificArticlePDFContent() {
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000', textTransform: 'uppercase' }}>RESUMO</h2>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           <strong>Objetivo:</strong> Desenvolver e validar a Escala MuseTera, um instrumento de avaliação 
-          musicoterapêutica multidimensional com sistema expandido de pontuação (0-6) e funcionalidade 
+          musicoterapêutica multidimensional com sistema expandido de pontuação (0-5) e funcionalidade 
           de avaliação parcial inovadora para análise dinâmica do desenvolvimento terapêutico em 
           diferentes populações clínicas. <strong>Método:</strong> Estudo de desenvolvimento e validação 
           psicométrica envolvendo 847 participantes em 23 centros brasileiros. A escala foi estruturada 
           em 5 domínios principais: Musical, Psicossocial, Cognitivo, Sensório-Motor e Comunicativo-Interativo, 
           totalizando 16 subdomínios e 128 parâmetros específicos. O sistema de pontuação expandido utiliza 
-           escala de 6 pontos (0-100: não observado, emergente, inconsistente, moderado, consistente, excepcional) 
+           escala de 6 níveis (0-100: não observado, emergente, inconsistente, moderado, consistente, excepcional) 
            com critérios objetivos definidos. Implementação pioneira de avaliação parcial permitindo
           análise de domínios específicos. <strong>Resultados:</strong> A Escala MuseTera demonstrou excelentes 
           propriedades psicométricas: confiabilidade interna α=0.952, concordância inter-avaliadores κ=0.901, 
@@ -68,14 +68,14 @@ export function ScientificArticlePDFContent() {
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000', textTransform: 'uppercase' }}>ABSTRACT</h2>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           <strong>Objective:</strong> To develop and validate the MuseTera Scale, a multidimensional 
-          music therapy assessment instrument with expanded scoring system (0-6) and innovative partial 
+          music therapy assessment instrument with expanded scoring system (0-5) and innovative partial 
           evaluation functionality for dynamic analysis of therapeutic development across different 
           clinical populations. <strong>Method:</strong> Psychometric development and validation study 
           involving 847 participants across 23 Brazilian centers. The scale was structured into 5 main 
           domains: Musical, Psychosocial, Cognitive, Sensory-Motor, and Communicative-Interactive, totaling 
-          16 subdomains and 128 specific parameters. The expanded scoring system uses a 7-point scale 
+          16 subdomains and 128 specific parameters. The expanded scoring system uses a 6-level scale 
           (0-100: not observed, emergent, inconsistent, moderate, consistent, exceptional) with defined 
-          objective criteria. Pioneer implementation of partial evaluation allowing specific domain analysis. 
+          objective criteria. Pioneer implementation of partial evaluation allowing specific domain analysis.
           <strong>Results:</strong> The MuseTera Scale demonstrated excellent psychometric properties: 
           internal reliability α=0.952, inter-rater agreement κ=0.901, construct validity confirmed by 
           factorial analysis (KMO=0.95; p&lt;0.001). The instrument showed superior sensitivity (96.4%) 
@@ -117,7 +117,7 @@ export function ScientificArticlePDFContent() {
           respostas musicoterapêuticas, particularmente em avaliações longitudinais.
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          Sistemas de avaliação expandidos (escala 0-6) têm demonstrado maior sensibilidade para detectar 
+          Sistemas de avaliação expandidos (escala 0-5) têm demonstrado maior sensibilidade para detectar 
           mudanças terapêuticas sutis comparados aos sistemas tradicionais de 3-5 pontos (STREINER; NORMAN, 2015). 
           Adicionalmente, a implementação de avaliação parcial permite flexibilidade clínica fundamental 
           para settings terapêuticos diversos e populações específicas.
@@ -125,7 +125,7 @@ export function ScientificArticlePDFContent() {
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6' }}>
           O presente estudo teve como objetivo desenvolver e validar a Escala MuseTera, um instrumento 
           multidimensional específico para avaliação musicoterapêutica, incorporando sistema expandido 
-          de pontuação (0-6), funcionalidade de avaliação parcial inovadora e abordagem culturalmente 
+          de pontuação (0-5), funcionalidade de avaliação parcial inovadora e abordagem culturalmente 
           adaptada para a realidade brasileira.
         </p>
       </section>
@@ -248,7 +248,7 @@ export function ScientificArticlePDFContent() {
         {/* Figura 1 - Sistema de Pontuação */}
         <div style={{ marginBottom: '25px', border: '2px solid #3b82f6', padding: '15px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
           <h3 style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#1e40af' }}>
-            Figura 1. Sistema de Pontuação Expandido da Escala MuseTera (0-6)
+            Figura 1. Sistema de Pontuação Expandido da Escala MuseTera (0-5)
           </h3>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', flexWrap: 'wrap' }}>
@@ -258,8 +258,7 @@ export function ScientificArticlePDFContent() {
               { level: '2', name: 'Inconsistente', desc: 'Ocasional/variável', color: '#ca8a04' },
               { level: '3', name: 'Desenvolvimento', desc: 'Em progresso', color: '#65a30d' },
               { level: '4', name: 'Consistente', desc: 'Regular/estável', color: '#059669' },
-              { level: '5', name: 'Avançado', desc: 'Bem desenvolvido', color: '#0284c7' },
-              { level: '6', name: 'Superior', desc: 'Excepcional', color: '#7c3aed' }
+              { level: '5', name: 'Excepcional', desc: 'Bem desenvolvido', color: '#0284c7' }
             ].map((item) => (
               <div key={item.level} style={{ textAlign: 'center', width: '13%', marginBottom: '10px' }}>
                 <div style={{ 
@@ -393,7 +392,7 @@ export function ScientificArticlePDFContent() {
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
                   <div style={{ width: '75%', backgroundColor: 'hsl(214 88% 52%)', borderRadius: '4px', height: '100%' }}></div>
                 </div>
-                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>4.5/6</div>
+                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>4.5/5</div>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -401,7 +400,7 @@ export function ScientificArticlePDFContent() {
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
                   <div style={{ width: '35%', backgroundColor: '#0ea5e9', borderRadius: '4px', height: '100%' }}></div>
                 </div>
-                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>2.1/6</div>
+                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>2.1/5</div>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -409,7 +408,7 @@ export function ScientificArticlePDFContent() {
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
                   <div style={{ width: '60%', backgroundColor: '#10b981', borderRadius: '4px', height: '100%' }}></div>
                 </div>
-                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>3.6/6</div>
+                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>3.6/5</div>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -417,7 +416,7 @@ export function ScientificArticlePDFContent() {
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
                   <div style={{ width: '45%', backgroundColor: '#f59e0b', borderRadius: '4px', height: '100%' }}></div>
                 </div>
-                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>2.7/6</div>
+                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>2.7/5</div>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -425,7 +424,7 @@ export function ScientificArticlePDFContent() {
                 <div style={{ width: '60%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '12px', position: 'relative' }}>
                   <div style={{ width: '25%', backgroundColor: '#6366f1', borderRadius: '4px', height: '100%' }}></div>
                 </div>
-                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>1.5/6</div>
+                <div style={{ width: '20%', fontSize: '10px', textAlign: 'center' }}>1.5/5</div>
               </div>
             </div>
           </div>
