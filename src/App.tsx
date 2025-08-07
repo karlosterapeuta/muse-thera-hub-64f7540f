@@ -1,5 +1,4 @@
 
-import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
@@ -9,7 +8,6 @@ import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { SafeProvider } from "./components/SafeProvider";
 
 // Import all pages dynamically
 import Dashboard from "./pages/Dashboard";
@@ -64,8 +62,7 @@ const App = () => {
   try {
     return (
       <QueryClientProvider client={queryClient}>
-        <SafeProvider>
-          <ErrorBoundary>
+        <ErrorBoundary>
             <BrowserRouter>
             <Routes>
             <Route path="/login" element={<Login />} />
@@ -113,9 +110,8 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
-            </BrowserRouter>
-          </ErrorBoundary>
-        </SafeProvider>
+          </BrowserRouter>
+        </ErrorBoundary>
       </QueryClientProvider>
     );
   } catch (error) {
