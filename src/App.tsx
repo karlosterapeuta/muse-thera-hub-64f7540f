@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { UpdateNotification } from "./components/UpdateNotification";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Import all pages dynamically
 import Dashboard from "./pages/Dashboard";
@@ -60,8 +61,9 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
+    <ErrorBoundary>
+      <TooltipProvider>
+        <Toaster />
       <BrowserRouter>
         <UpdateNotification />
         <Routes>
@@ -111,7 +113,8 @@ const App = () => (
           </Route>
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
+      </TooltipProvider>
+    </ErrorBoundary>
   </QueryClientProvider>
 );
 

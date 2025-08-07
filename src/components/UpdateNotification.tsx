@@ -67,24 +67,36 @@ export const UpdateNotification = () => {
   const handleUpdate = async () => {
     setIsUpdating(true);
     
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      
-      if (registration.waiting) {
-        // Tell the waiting service worker to skip waiting
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    try {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
         
-        // Listen for the service worker to take control
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          window.location.reload();
-        });
+        if (registration.waiting) {
+          // Tell the waiting service worker to skip waiting
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          
+          // Wait a bit before reloading to allow service worker to take control
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        } else {
+          // No waiting worker, just reload after a short delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        }
       } else {
-        // No waiting worker, just reload
-        window.location.reload();
+        // Fallback: hard reload with delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       }
-    } else {
-      // Fallback: hard reload
-      window.location.reload();
+    } catch (error) {
+      console.error('Error updating app:', error);
+      // Fallback to simple reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   };
 
