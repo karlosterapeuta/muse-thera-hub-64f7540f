@@ -9,8 +9,8 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import { UpdateNotification } from "./components/UpdateNotification";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { SafeUpdateWrapper } from "./components/SafeUpdateWrapper";
 
 // Import all pages dynamically
 import Dashboard from "./pages/Dashboard";
@@ -64,9 +64,9 @@ const App = () => (
     <ErrorBoundary>
       <TooltipProvider>
         <Toaster />
-      <BrowserRouter>
-        <UpdateNotification />
-        <Routes>
+        <SafeUpdateWrapper />
+        <BrowserRouter>
+          <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Layout />}>
