@@ -21,18 +21,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        // Cache busting for all assets
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]'
-      }
-    },
-    // Generate source maps for better debugging
-    sourcemap: false,
-    // Optimize chunks
-    chunkSizeWarningLimit: 1000,
-  },
 }));

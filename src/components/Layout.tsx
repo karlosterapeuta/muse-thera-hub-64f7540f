@@ -1,20 +1,20 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ThemeToggle from "./ThemeToggle";
 
 interface LayoutProps {
   children?: React.ReactNode;
 }
 
-const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export default function Layout({ children }: LayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Simple mobile detection without custom hooks
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -25,9 +25,9 @@ const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children 
               <Button
                 variant="ghost"
                 size="icon"
-                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden"
+                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
               >
-                <Menu className="h-6 w-6" />
+                <Menu className="h-6 w-6 text-primary" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-72">
@@ -40,9 +40,9 @@ const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children 
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(!isOpen)}
-              className="fixed top-4 left-4 z-50"
+              className="fixed top-4 left-4 z-50 hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6 text-primary" />
             </Button>
             
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -52,22 +52,22 @@ const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children 
             </Sheet>
           </>
         )}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background min-h-screen relative overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background min-h-screen relative overflow-y-auto scroll-container">
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
           <div className="max-w-7xl mx-auto pt-16 sm:pt-20">
             {children || <Outlet />}
           </div>
         </main>
       </div>
       
-      <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t bg-background/80">
+      {/* Footer */}
+      <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           © 2025 MuseTera • Plataforma de Musicoterapia
         </div>
       </footer>
     </div>
   );
-};
-
-export default function Layout({ children }: LayoutProps) {
-  return <SafeLayoutContent children={children} />;
 }
