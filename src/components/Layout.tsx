@@ -9,17 +9,29 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import { Toaster } from "@/components/ui/sonner";
+import { useSafeContext } from "./SafeProvider";
 
 interface LayoutProps {
   children?: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const { isReady } = useSafeContext();
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  if (!isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-foreground">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <SafeTooltipProvider>
+      <Toaster />
       <div className="flex min-h-screen flex-col">
       <div className="flex flex-1 relative">
         {isMobile ? (

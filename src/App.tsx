@@ -65,7 +65,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <SafeProvider>
         <ErrorBoundary>
-          <Toaster />
           <BrowserRouter>
           <Routes>
           <Route path="/login" element={<Login />} />
