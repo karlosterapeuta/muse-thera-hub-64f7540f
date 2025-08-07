@@ -1,6 +1,5 @@
 
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
@@ -10,7 +9,7 @@ import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { SafeUpdateWrapper } from "./components/SafeUpdateWrapper";
+import { SafeProvider } from "./components/SafeProvider";
 
 // Import all pages dynamically
 import Dashboard from "./pages/Dashboard";
@@ -59,13 +58,15 @@ import ActivityCategory from "./pages/activities/category";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ErrorBoundary>
-      <TooltipProvider>
-        <Toaster />
-        <SafeUpdateWrapper />
-        <BrowserRouter>
+const App = () => {
+  console.log('App component starting to render');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SafeProvider>
+        <ErrorBoundary>
+          <Toaster />
+          <BrowserRouter>
           <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -112,10 +113,11 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </BrowserRouter>
-      </TooltipProvider>
-    </ErrorBoundary>
-  </QueryClientProvider>
-);
+          </BrowserRouter>
+        </ErrorBoundary>
+      </SafeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

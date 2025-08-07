@@ -1,4 +1,6 @@
 
+import React from "react";
+import { SafeTooltipProvider } from "./SafeTooltipProvider";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -17,7 +19,8 @@ export default function Layout({ children }: LayoutProps) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <SafeTooltipProvider>
+      <div className="flex min-h-screen flex-col">
       <div className="flex flex-1 relative">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -68,6 +71,7 @@ export default function Layout({ children }: LayoutProps) {
           © 2025 MuseTera • Plataforma de Musicoterapia
         </div>
       </footer>
-    </div>
+      </div>
+    </SafeTooltipProvider>
   );
 }
