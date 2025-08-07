@@ -61,62 +61,84 @@ const queryClient = new QueryClient();
 const App = () => {
   console.log('App component starting to render');
   
-  return (
-    <QueryClientProvider client={queryClient}>
-      <SafeProvider>
-        <ErrorBoundary>
-          <BrowserRouter>
-          <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="professional" element={<Professional />} />
-            <Route path="patients" element={<Patients />} />
-            <Route path="anamnesis/*" element={<Anamnesis />} />
-            <Route path="processes" element={<Processes />} />
-            <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
-            <Route path="processes/evolution" element={<EvolutionReport />} />
-            <Route path="processes/evaluation" element={<EvaluationProcess />} />
-            <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
-            <Route path="processes/evaluation/article" element={<EvaluationArticle />} />
-            <Route path="processes/report" element={<ProcessReport />} />
-            <Route path="processes/report/:id" element={<ProcessReport />} />
-            <Route path="processes/reports" element={<ProcessReports />} />
-            <Route path="treatment-plan" element={<TreatmentPlan />} />
-            <Route path="intervention" element={<Intervention />} />
-            <Route path="evaluation" element={<Evaluation />} />
-            <Route path="reevaluation" element={<Reevaluation />} />
-            <Route path="finance" element={<Finance />} />
-            <Route path="finance/records" element={<FinanceRecords />} />
-            <Route path="finance/reports" element={<FinanceReports />} />
-            <Route path="finance/clinics" element={<FinanceClinics />} />
-            <Route path="scientific-article" element={<ScientificArticle />} />
-            <Route path="activities" element={<Activities />} />
-            <Route path="activities/favorites" element={<ActivityFavorites />} />
-            <Route path="activities/category/:categoryId" element={<ActivityCategory />} />
-            <Route path="musical-bells" element={<MusicalBells />} />
-            <Route path="bell-hero" element={<BellHero />} />
-            <Route path="tea-hero" element={<TeaHero />} />
-            <Route path="musicogram" element={<Musicogram />} />
-            <Route path="sprunki" element={<Sprunki />} />
-            <Route path="boomwhacker-hero" element={<BoomwhackerHero />} />
-            <Route path="xylophone-hero" element={<XylophoneHero />} />
-            <Route path="music-composer" element={<MusicComposer />} />
-            <Route path="songs" element={<Songs />} />
-            <Route path="binaural-frequencies" element={<BinauralFrequencies />} />
-            <Route path="hawkins" element={<Hawkins />} />
-            <Route path="users" element={<Users />} />
-            <Route path="invite-codes" element={<InviteCodes />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-          </BrowserRouter>
-        </ErrorBoundary>
-      </SafeProvider>
-    </QueryClientProvider>
-  );
+  try {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <SafeProvider>
+          <ErrorBoundary>
+            <BrowserRouter>
+            <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="professional" element={<Professional />} />
+              <Route path="patients" element={<Patients />} />
+              <Route path="anamnesis/*" element={<Anamnesis />} />
+              <Route path="processes" element={<Processes />} />
+              <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
+              <Route path="processes/evolution" element={<EvolutionReport />} />
+              <Route path="processes/evaluation" element={<EvaluationProcess />} />
+              <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
+              <Route path="processes/evaluation/article" element={<EvaluationArticle />} />
+              <Route path="processes/report" element={<ProcessReport />} />
+              <Route path="processes/report/:id" element={<ProcessReport />} />
+              <Route path="processes/reports" element={<ProcessReports />} />
+              <Route path="treatment-plan" element={<TreatmentPlan />} />
+              <Route path="intervention" element={<Intervention />} />
+              <Route path="evaluation" element={<Evaluation />} />
+              <Route path="reevaluation" element={<Reevaluation />} />
+              <Route path="finance" element={<Finance />} />
+              <Route path="finance/records" element={<FinanceRecords />} />
+              <Route path="finance/reports" element={<FinanceReports />} />
+              <Route path="finance/clinics" element={<FinanceClinics />} />
+              <Route path="scientific-article" element={<ScientificArticle />} />
+              <Route path="activities" element={<Activities />} />
+              <Route path="activities/favorites" element={<ActivityFavorites />} />
+              <Route path="activities/category/:categoryId" element={<ActivityCategory />} />
+              <Route path="musical-bells" element={<MusicalBells />} />
+              <Route path="bell-hero" element={<BellHero />} />
+              <Route path="tea-hero" element={<TeaHero />} />
+              <Route path="musicogram" element={<Musicogram />} />
+              <Route path="sprunki" element={<Sprunki />} />
+              <Route path="boomwhacker-hero" element={<BoomwhackerHero />} />
+              <Route path="xylophone-hero" element={<XylophoneHero />} />
+              <Route path="music-composer" element={<MusicComposer />} />
+              <Route path="songs" element={<Songs />} />
+              <Route path="binaural-frequencies" element={<BinauralFrequencies />} />
+              <Route path="hawkins" element={<Hawkins />} />
+              <Route path="users" element={<Users />} />
+              <Route path="invite-codes" element={<InviteCodes />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+            </BrowserRouter>
+          </ErrorBoundary>
+        </SafeProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error('App rendering failed:', error);
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Sistema Indisponível
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            Ocorreu um erro ao carregar a aplicação.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Recarregar Página
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default App;

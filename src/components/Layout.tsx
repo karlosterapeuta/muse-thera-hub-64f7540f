@@ -1,8 +1,7 @@
 
-import React from "react";
-import { SafeTooltipProvider } from "./SafeTooltipProvider";
-import { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Outlet } from "react-router-dom";
+import { SafeTooltipProvider } from "./SafeTooltipProvider";
 import Sidebar from "./Sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -10,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
-import { useSafeContext } from "./SafeProvider";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -18,7 +16,15 @@ interface LayoutProps {
 
 const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
+  
+  // Safe mobile detection with fallback
+  let isMobile = false;
+  try {
+    isMobile = useIsMobile();
+  } catch (error) {
+    console.warn('Failed to detect mobile, using fallback:', error);
+    isMobile = window.innerWidth < 768;
+  }
 
   return (
     <SafeTooltipProvider>
@@ -79,16 +85,16 @@ const SafeLayoutContent: React.FC<{ children?: React.ReactNode }> = ({ children 
   );
 };
 
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="text-foreground">Carregando...</div>
+  </div>
+);
+
 export default function Layout({ children }: LayoutProps) {
-  const { isReady } = useSafeContext();
-
-  if (!isReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-foreground">Loading...</div>
-      </div>
-    );
-  }
-
-  return <SafeLayoutContent children={children} />;
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SafeLayoutContent children={children} />
+    </Suspense>
+  );
 }

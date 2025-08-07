@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 interface SafeContextType {
   isReady: boolean;
@@ -6,23 +6,19 @@ interface SafeContextType {
 
 const SafeContext = createContext<SafeContextType>({ isReady: false });
 
+// Simple provider that doesn't use hooks during initialization
 export const SafeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    // Ensure React is fully initialized before proceeding
-    const timer = setTimeout(() => {
-      setIsReady(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Always consider ready since we're handling initialization in main.tsx
+  const contextValue = { isReady: true };
+  
   return (
-    <SafeContext.Provider value={{ isReady }}>
+    <SafeContext.Provider value={contextValue}>
       {children}
     </SafeContext.Provider>
   );
 };
 
-export const useSafeContext = () => useContext(SafeContext);
+export const useSafeContext = () => {
+  const context = useContext(SafeContext);
+  return context || { isReady: true };
+};
