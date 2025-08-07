@@ -10,7 +10,7 @@ import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Import all pages dynamically
-import Dashboard from "./pages/Dashboard";
+import BasicDashboard from "./pages/BasicDashboard";
 import Professional from "./pages/Professional";
 import Patients from "./pages/patients";
 import Anamnesis from "./pages/anamnesis";
@@ -69,7 +69,7 @@ const App = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<BasicLayout />}>
               <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="dashboard" element={<BasicDashboard />} />
               <Route path="professional" element={<Professional />} />
               <Route path="patients" element={<Patients />} />
               <Route path="anamnesis/*" element={<Anamnesis />} />
