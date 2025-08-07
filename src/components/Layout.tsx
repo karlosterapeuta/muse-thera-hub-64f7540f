@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import UpdateNotification from "./UpdateNotification";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <UpdateNotification />
       <div className="flex flex-1 relative">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
