@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import { UpdateNotification } from "./components/UpdateNotification";
 
 // Import all pages dynamically
 import Dashboard from "./pages/Dashboard";
@@ -62,6 +63,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
+        <UpdateNotification />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
