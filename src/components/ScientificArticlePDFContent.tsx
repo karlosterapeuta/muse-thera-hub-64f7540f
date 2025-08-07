@@ -435,6 +435,37 @@ export function ScientificArticlePDFContent() {
         </div>
       </section>
 
+      {/* Galeria da Escala e Subdomínios */}
+      <section style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>Galeria da Escala e Subdomínios</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+          {[
+            { src: '/lovable-uploads/escala-musetera-interface.png', title: 'Visão Geral da Escala MuseTera', alt: 'Interface principal da Escala MuseTera com domínios e sistema de pontuação 0-5 visível' },
+            { src: '/lovable-uploads/escala-musetera-pontuacao-0-5.png', title: 'Sistema de Pontuação 0–5', alt: 'Diagrama dos níveis 0 a 5 da Escala MuseTera com descrições dos critérios de cada nível' },
+            { src: '/lovable-uploads/escala-musetera-dom-musical.png', title: 'Domínio Musical', alt: 'Tela do domínio Musical da Escala MuseTera com subdomínios e parâmetros' },
+            { src: '/lovable-uploads/escala-musetera-dom-psicossocial.png', title: 'Domínio Psicossocial', alt: 'Tela do domínio Psicossocial da Escala MuseTera com subdomínios e parâmetros' },
+            { src: '/lovable-uploads/escala-musetera-dom-cognitivo.png', title: 'Domínio Cognitivo', alt: 'Tela do domínio Cognitivo da Escala MuseTera com subdomínios e parâmetros' },
+            { src: '/lovable-uploads/escala-musetera-dom-sensorio-motor.png', title: 'Domínio Sensório‑Motor', alt: 'Tela do domínio Sensório‑Motor da Escala MuseTera com subdomínios e parâmetros' },
+            { src: '/lovable-uploads/escala-musetera-dom-comunicativo.png', title: 'Domínio Comunicativo‑Interativo', alt: 'Tela do domínio Comunicativo‑Interativo da Escala MuseTera com subdomínios e parâmetros' },
+          ].map((item, idx) => (
+            <figure key={idx} style={{ border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px', backgroundColor: '#fff' }}>
+              <img
+                src={item.src}
+                alt={item.alt}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <figcaption style={{ fontSize: '10px', textAlign: 'center', marginTop: '6px', color: '#374151' }}>
+                {item.title}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p style={{ fontSize: '9px', textAlign: 'center', marginTop: '10px', fontStyle: 'italic', color: '#6b7280' }}>
+          Imagens ilustrativas da interface e subdomínios da Escala MuseTera.
+        </p>
+      </section>
+
       {/* Discussão */}
       <section style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>5. DISCUSSÃO</h2>

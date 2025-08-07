@@ -11,7 +11,7 @@ import { FiguresSection } from './FiguresSection';
 import { DiscussionSection } from './DiscussionSection';
 import { AdditionalSections } from './AdditionalSections';
 import { ReferencesSection } from './ReferencesSection';
-import { PhotosSection } from './PhotosSection';
+import { ScaleGallerySection } from './ScaleGallerySection';
 import { PDFDownloadSection } from './PDFDownloadSection';
 
 export function ScientificContent() {
@@ -29,7 +29,7 @@ export function ScientificContent() {
           <ResultsSection />
           
           <FiguresSection />
-          <PhotosSection />
+          <ScaleGallerySection />
           
           <Separator />
           
