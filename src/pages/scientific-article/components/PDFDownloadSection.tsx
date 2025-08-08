@@ -4,9 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, BookOpen, Loader2 } from 'lucide-react';
 import { generateScientificArticlePDF } from '@/utils/scientificArticlePDFGenerator';
+import { generateScientificArticleWord } from '@/utils/scientificArticleWordGenerator';
+import { useAdmin } from '@/hooks/use-admin';
 
 export function PDFDownloadSection() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingDOC, setIsGeneratingDOC] = useState(false);
+  const { data: isAdmin } = useAdmin();
 
   const handleGeneratePDF = async () => {
     setIsGeneratingPDF(true);
@@ -14,6 +18,15 @@ export function PDFDownloadSection() {
       await generateScientificArticlePDF();
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleGenerateDOC = async () => {
+    setIsGeneratingDOC(true);
+    try {
+      await generateScientificArticleWord();
+    } finally {
+      setIsGeneratingDOC(false);
     }
   };
 
@@ -63,6 +76,42 @@ export function PDFDownloadSection() {
           </p>
         </div>
 
+        {/* DOC Download - Apenas para Administradores */}
+        {isAdmin && (
+          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <FileText className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 text-lg">Versão DOC (Administradores)</h3>
+                <p className="text-sm text-gray-600">Formato editável para revisão e personalização</p>
+              </div>
+            </div>
+            <Button 
+              onClick={handleGenerateDOC}
+              disabled={isGeneratingDOC}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+              size="lg"
+            >
+              {isGeneratingDOC ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Gerando DOC...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-5 w-5" />
+                  Baixar DOC
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              Formato editável para revisão e adaptação institucional
+            </p>
+          </div>
+        )}
+
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="p-1 bg-amber-100 rounded">
@@ -76,6 +125,7 @@ export function PDFDownloadSection() {
                 <li>• Inclui resumo em português e inglês (abstract)</li>
                 <li>• Referências bibliográficas no formato ABNT</li>
                 <li>• Pronto para submissão em periódicos especializados</li>
+                {isAdmin && <li>• Versão DOC disponível para edição personalizada (acesso administrativo)</li>}
               </ul>
             </div>
           </div>
