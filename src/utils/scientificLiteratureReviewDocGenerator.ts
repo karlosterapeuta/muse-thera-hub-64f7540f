@@ -92,31 +92,83 @@ async function getImageDimensionsFromBlob(blob: Blob): Promise<{ width: number; 
   });
 }
 
+async function convertBlobToJpegArrayBuffer(pngBlob: Blob): Promise<ArrayBuffer | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(pngBlob);
+    img.onload = () => {
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        resolve(null);
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob((jpegBlob) => {
+        URL.revokeObjectURL(url);
+        if (jpegBlob) {
+          jpegBlob.arrayBuffer().then((ab) => resolve(ab));
+        } else {
+          resolve(null);
+        }
+      }, 'image/jpeg', 0.92);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
 async function buildRtfImageFigure(url: string, caption: string): Promise<string> {
   try {
-    const ab = await fetchImageArrayBuffer(url);
-    const blob = new Blob([ab]);
+    const absolute = url.startsWith('http') ? url : `${window.location.origin}${url.startsWith('/') ? url : '/' + url}`;
+    const res = await fetch(absolute, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`Falha ao baixar imagem: ${absolute}`);
+    let blob = await res.blob();
+
     const { width, height } = await getImageDimensionsFromBlob(blob);
 
-    // RTF uses twips (1/1440 inch). Assume 96 DPI: 1 px ≈ 15 twips
-    const twipsPerPx = 15;
-    const maxGoalWidth = 9000; // ~6.25" to fit in typical margins
+    let buffer: ArrayBuffer;
+    let blipKind = '\\pngblip';
 
+    if (blob.type.includes('png')) {
+      const jpegAb = await convertBlobToJpegArrayBuffer(blob);
+      if (jpegAb) {
+        buffer = jpegAb;
+        blipKind = '\\jpegblip';
+      } else {
+        buffer = await blob.arrayBuffer();
+      }
+    } else if (blob.type.includes('jpeg') || blob.type.includes('jpg')) {
+      buffer = await blob.arrayBuffer();
+      blipKind = '\\jpegblip';
+    } else {
+      buffer = await blob.arrayBuffer();
+      blipKind = '\\pngblip';
+    }
+
+    const twipsPerPx = 15;
+    const maxGoalWidth = 9000;
     let goalW = Math.round(width * twipsPerPx);
     let goalH = Math.round(height * twipsPerPx);
-
     if (goalW > maxGoalWidth) {
       const scale = maxGoalWidth / goalW;
       goalW = Math.round(goalW * scale);
       goalH = Math.round(goalH * scale);
     }
 
-    const hex = arrayBufferToHex(ab);
-    const pict = `\\pard\\qc\\sa160 \\fs22 {\\pict\\pngblip\\picw${width}\\pich${height}\\picwgoal${goalW}\\pichgoal${goalH}\n${hex}\n}\\par\n`;
+    const hex = arrayBufferToHex(buffer);
+    const pict = `\\pard\\qc\\sa160 \\fs22 {\\pict${blipKind}\\picw${width}\\pich${height}\\picwgoal${goalW}\\pichgoal${goalH}\n${hex}\n}\\par\n`;
     const cap = p(`Figura: ${caption}`, { align: 'c', italics: true, size: 20, spaceAfter: 240 });
     return pict + cap;
   } catch (e) {
-    // Fallback: textual reference to the image
     return p(`Figura (não carregada): ${caption} — ${url}`, { align: 'c', italics: true, size: 20, spaceAfter: 200 });
   }
 }
