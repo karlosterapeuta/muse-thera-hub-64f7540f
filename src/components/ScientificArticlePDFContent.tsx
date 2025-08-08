@@ -243,7 +243,7 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* FIGURAS E ILUSTRAÇÕES */}
-      <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+      <section style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '20px', color: '#000' }}>4. FIGURAS E ILUSTRAÇÕES</h2>
         
         {/* Figura 1 - Sistema de Pontuação */}
@@ -468,7 +468,7 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* Discussão */}
-      <section style={{ marginBottom: '30px' }}>
+      <section className="page-break-before" style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>5. DISCUSSÃO</h2>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           Os resultados corroboram a vantagem de sistemas de pontuação expandidos na detecção de mudanças
@@ -522,7 +522,7 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* Referências */}
-      <section style={{ marginBottom: '30px' }}>
+      <section className="page-break-before" style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>REFERÊNCIAS</h2>
         <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
           <p style={{ marginBottom: '8px', textAlign: 'justify' }}>
