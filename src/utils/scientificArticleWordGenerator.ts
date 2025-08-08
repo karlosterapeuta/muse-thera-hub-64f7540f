@@ -2982,8 +2982,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
     });
 
     // Generate and download the document
-    const buffer = await Packer.toBuffer(doc);
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const blob = await Packer.toBlob(doc);
     
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
