@@ -141,13 +141,13 @@ export const useEvaluationPDF = () => {
       console.log("📝 Gerando Escala MuseTera para impressão...");
 
       const component = React.createElement(PrintableMuseTeraScalePDF, {
-        patientName: params.patientName,
-        professionalName: params.professionalName,
-        evaluationDate: params.evaluationDate,
+        patientName: undefined,
+        professionalName: undefined,
+        evaluationDate: undefined,
       });
 
       return await generateStaticPDF(component, {
-        filename: `Escala_MuseTera_Impressao_${new Date().toISOString().split('T')[0]}.pdf`,
+        filename: `Escala_MuseTera_Em_Branco_${new Date().toISOString().split('T')[0]}.pdf`,
         waitTime: 2200,
         quality: 2.0,
         format: 'a4',

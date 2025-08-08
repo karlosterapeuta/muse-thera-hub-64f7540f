@@ -7,8 +7,8 @@ interface PrintableMuseTeraScalePDFProps {
 }
 
 const cellBox = {
-  width: '5mm',
-  height: '5mm',
+  width: '6mm',
+  height: '6mm',
   border: '1px solid #000',
   margin: '0 auto',
 } as const;
@@ -45,7 +45,7 @@ function DomainSection({ title, pageBreakBefore = false }: { title: string; page
   return (
     <section
       className={pageBreakBefore ? 'page-break-before' : ''}
-      style={{ marginTop: '8mm', ...(pageBreakBefore ? { pageBreakBefore: 'always' as any } : {}) }}>
+      style={{ marginTop: '10mm', ...(pageBreakBefore ? { pageBreakBefore: 'always' as any } : {}) }}>
       <h2 style={{ fontSize: '16px', margin: 0, padding: 0 }}>{title}</h2>
       <p style={{ margin: '2mm 0 4mm 0' }}>Marque um nível (0–5) e registre observações no campo à esquerda.</p>
       <table style={tableStyle}>
@@ -60,7 +60,7 @@ function DomainSection({ title, pageBreakBefore = false }: { title: string; page
         <tbody>
           {Array.from({ length: 14 }).map((_, r) => (
             <tr key={r}>
-              <td style={{ ...thtdCommon, height: '9mm' }}>
+              <td style={{ ...thtdCommon, height: '10mm' }}>
                 ____________________________________________
               </td>
               {Array.from({ length: 6 }).map((_, c) => (
@@ -156,7 +156,7 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
           <tbody>
             {domains.map((d) => (
               <tr key={d}>
-                <td style={{ ...thtdCommon, height: '9mm' }}>{d}</td>
+                <td style={{ ...thtdCommon, height: '10mm' }}>{d}</td>
                 <td style={{ ...thtdCommon, textAlign: 'center' }}>
                   <div style={{ display: 'inline-block', width: '28mm', borderBottom: '1px solid #000' }} />
                 </td>
