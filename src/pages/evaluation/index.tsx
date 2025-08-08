@@ -45,6 +45,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { useEvaluationPDF } from "@/hooks/useEvaluationPDF";
 
 interface Patient {
   id: string;
@@ -61,7 +62,9 @@ export default function Evaluation() {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [observations, setObservations] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("evaluation");
+const [activeTab, setActiveTab] = useState("evaluation");
+
+  const { generateBlankScalePDF } = useEvaluationPDF();
 
   useEffect(() => {
     async function fetchPatients() {
@@ -536,6 +539,16 @@ export default function Evaluation() {
       .join(' ');
   };
 
+  const handleGeneratePrintableScalePDF = async () => {
+    await generateBlankScalePDF({
+      patientName: selectedPatientData?.name,
+      professionalName:
+        (professionalData as any)?.name ??
+        ((professionalData as any)?.email ? formatNameFromEmail((professionalData as any).email) : undefined),
+      evaluationDate,
+    });
+  };
+
   const handleGenerateParametersPDF = async () => {
     try {
       const pdfContent = (
@@ -810,6 +823,23 @@ export default function Evaluation() {
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera PDF com gráficos e dados quantitativos</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleGeneratePrintableScalePDF}
+                      className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <FileDown className="h-4 w-4" />
+                      Escala MuseTera
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Baixa a escala para impressão e avaliação manual</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>

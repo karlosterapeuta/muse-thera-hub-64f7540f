@@ -4,6 +4,7 @@ import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { TeaScalePDFStatic } from '@/components/TeaScalePDFStatic';
 import { ParametersGraphsPDFStatic } from '@/components/ParametersGraphsPDFStatic';
 import { EnhancedMuseteraReportPDF } from '@/components/EnhancedMuseteraReportPDF';
+import { PrintableMuseTeraScalePDF } from '@/components/PrintableMuseTeraScalePDF';
 import React from 'react';
 import { ProfessionalData } from '@/hooks/useProfessionalData';
 
@@ -132,10 +133,37 @@ export const useEvaluationPDF = () => {
     }
   };
 
+  const generateBlankScalePDF = async (
+    params: { patientName?: string; professionalName?: string; evaluationDate?: Date } = {}
+  ): Promise<boolean> => {
+    setIsGenerating(true);
+    try {
+      console.log("📝 Gerando Escala MuseTera para impressão...");
+
+      const component = React.createElement(PrintableMuseTeraScalePDF, {
+        patientName: params.patientName,
+        professionalName: params.professionalName,
+        evaluationDate: params.evaluationDate,
+      });
+
+      return await generateStaticPDF(component, {
+        filename: `Escala_MuseTera_Impressao_${new Date().toISOString().split('T')[0]}.pdf`,
+        waitTime: 1800,
+        quality: 1.8,
+      });
+    } catch (error) {
+      console.error("Erro ao gerar Escala MuseTera (impressão):", error);
+      return false;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return {
     isGenerating,
     generateTeaScalePDF,
     generateParametersPDF,
-    generateReportPDF
+    generateReportPDF,
+    generateBlankScalePDF,
   };
 };
