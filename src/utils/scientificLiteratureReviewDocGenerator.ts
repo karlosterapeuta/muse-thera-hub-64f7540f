@@ -44,6 +44,70 @@ function section(title: string, paragraphs: string[]): string {
   return [h1(title), ...paragraphs.map((t) => p(t))].join('');
 }
 
+// Helpers to embed PNG images in RTF (\pict\pngblip)
+function arrayBufferToHex(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let hex = '';
+  for (let i = 0; i < bytes.length; i++) {
+    const h = bytes[i].toString(16).padStart(2, '0');
+    hex += h;
+  }
+  return hex;
+}
+
+async function fetchImageArrayBuffer(url: string): Promise<ArrayBuffer> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Falha ao baixar imagem: ${url}`);
+  return await res.arrayBuffer();
+}
+
+async function getImageDimensionsFromBlob(blob: Blob): Promise<{ width: number; height: number; }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      URL.revokeObjectURL(url);
+      resolve({ width: w, height: h });
+    };
+    img.onerror = (e) => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Não foi possível obter dimensões da imagem'));
+    };
+    img.src = url;
+  });
+}
+
+async function buildRtfImageFigure(url: string, caption: string): Promise<string> {
+  try {
+    const ab = await fetchImageArrayBuffer(url);
+    const blob = new Blob([ab]);
+    const { width, height } = await getImageDimensionsFromBlob(blob);
+
+    // RTF uses twips (1/1440 inch). Assume 96 DPI: 1 px ≈ 15 twips
+    const twipsPerPx = 15;
+    const maxGoalWidth = 9000; // ~6.25" to fit in typical margins
+
+    let goalW = Math.round(width * twipsPerPx);
+    let goalH = Math.round(height * twipsPerPx);
+
+    if (goalW > maxGoalWidth) {
+      const scale = maxGoalWidth / goalW;
+      goalW = Math.round(goalW * scale);
+      goalH = Math.round(goalH * scale);
+    }
+
+    const hex = arrayBufferToHex(ab);
+    const pict = `\\pard\\qc\\sa160 \\fs22 {\\pict\\pngblip\\picw${width}\\pich${height}\\picwgoal${goalW}\\pichgoal${goalH}\n${hex}\n}\\par\n`;
+    const cap = p(`Figura: ${caption}`, { align: 'c', italics: true, size: 20, spaceAfter: 240 });
+    return pict + cap;
+  } catch (e) {
+    // Fallback: textual reference to the image
+    return p(`Figura (não carregada): ${caption} — ${url}`, { align: 'c', italics: true, size: 20, spaceAfter: 200 });
+  }
+}
+
 export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
   try {
     const today = new Date();
@@ -75,7 +139,7 @@ export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
     parts.push(p('Conclusions: MuseTera is positioned as an integrative, multidimensional instrument (0–5) with explicit clinical responsiveness criteria. A COSMIN/DeVellis-aligned validation plan is outlined without human data at this stage.'));
     parts.push(p('Keywords: music therapy; assessment; psychometrics; COSMIN; PRISMA; MuseTera.', { italics: true }));
 
-    // Methods
+    // Metodologia
     parts.push(section('Metodologia da Revisão', [
       'Desenho: Revisão integrativa (Whittemore & Knafl, 2005), reportada conforme princípios PRISMA 2020 (Page et al., 2021) quando aplicável.',
       'Bases: PubMed/MEDLINE, Scopus, Web of Science e PsycINFO; termos: “music therapy” AND (assessment OR measurement OR instrument OR scale) AND (validity OR reliability OR responsiveness OR psychometric).',
@@ -85,32 +149,76 @@ export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
       'Síntese: narrativa; avaliação das evidências orientada por COSMIN (Prinsen et al., 2018; Mokkink et al., 2010) e clássicos da psicometria (DeVellis, 2017; Nunnally & Bernstein, 1994).',
     ]));
 
-    // Results
+    // Resultados
     parts.push(section('Resultados da Revisão', [
       'Panorama: instrumentos específicos e contextuais — MATADOC (consciência em desordens de consciência), MiDAS (demência), e GAS (metas individualizadas) usados em reabilitação e em contextos de musicoterapia.',
       'Propriedades: validade de conteúdo frequentemente por especialistas (CVR, Lawshe, 1975); estrutura interna com análises diversas e pouca padronização; confiabilidade (α/ω, teste–reteste) variável; responsividade e critérios clínicos ainda incipientes.',
-      'Implicações à MuseTera: abordagem multidimensional integrada (musical, psicossocial, cognitivo, sensório‑motor) com pontuação 0–5 e descritores observáveis, orientada por COSMIN/DeVellis para validação futura.',
+      'Implicações à MuseTera: abordagem multidimensional integrada (musical, psicossocial, cognitivo, sensório‑motor, comunicativo‑interativo) com pontuação 0–5 e descritores observáveis, orientada por COSMIN/DeVellis para validação futura.',
     ]));
 
-    // Discussion
+    // Discussão
     parts.push(section('Discussão', [
       'A heterogeneidade de construtos e métodos limita comparações entre instrumentos, mas diretrizes como COSMIN oferecem caminho para padronização.',
       'A MuseTera explicita critérios de pontuação, domínios coerentes com a prática e plano de validação robusto e transparente.',
       'Limitações: síntese narrativa suscetível a vieses de seleção e publicação; ausência de metanálise devido à heterogeneidade de desfechos e métricas.',
     ]));
 
-    // Conclusion
+    // Plano de Validação
+    parts.push(h1('Plano de Validação Psicométrica Proposto'));
+    const bullets = [
+      'Validade de conteúdo: painel de especialistas; cálculo de CVR (Lawshe, 1975) e I-CVI/S-CVI com critérios de aceitação.',
+      'Estrutura interna: AFE/CFA e/ou modelos de Rasch; avaliação de unidimensionalidade/local dependence quando aplicável.',
+      'Consistência interna: ω de McDonald (preferencial) e α de Cronbach com faixas alvo (≥0,70 para uso exploratório);',
+      'Confiabilidade teste–reteste: ICC (2,1) ou (3,1) com intervalo de confiança; cálculo de SEM e MDC.',
+      'Validade convergente/discriminante: correlações com instrumentos relacionados e divergentes.',
+      'Invariância de medida: entre grupos (sexo, idade, diagnóstico) por múltiplas‑amostras quando aplicável.',
+      'Responsividade: hipóteses a priori e medidas de efeito (SRM, ES) com critérios clínicos;',
+      'Adaptação transcultural: diretrizes de Beaton com equivalência semântica e operacional.',
+    ];
+    bullets.forEach((b) => parts.push(p(b, { bullet: true, size: 22, spaceAfter: 80 })));
+
+    // Ilustrações (imagens)
+    parts.push(h1('Ilustrações da Escala MuseTera'));
+    const galleryItems = [
+      { src: '/lovable-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', title: 'Visão Geral da Escala MuseTera' },
+      { src: '/lovable-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', title: 'Sistema de Pontuação 0–5' },
+      { src: '/lovable-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', title: 'Domínio Musical' },
+      { src: '/lovable-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', title: 'Domínio Psicossocial' },
+      { src: '/lovable-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', title: 'Domínio Cognitivo' },
+      { src: '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', title: 'Domínio Sensório‑Motor' },
+      { src: '/lovable-uploads/2980fc3c-0aac-41bd-bc7a-2c5aca34aca1.png', title: 'Domínio Comunicativo‑Interativo' },
+    ];
+    for (const item of galleryItems) {
+      parts.push(await buildRtfImageFigure(item.src, item.title));
+    }
+
+    // Apêndice: critérios de pontuação
+    parts.push(h1('Apêndice: Critérios de Pontuação 0–5 (exemplo)'));
+    const levels = [
+      '0 – Ausência do comportamento alvo; sem evidências observáveis.',
+      '1 – Indícios mínimos, inconsistentes; requer suporte intenso.',
+      '2 – Presença ocasional; requer suporte moderado; melhora incipiente.',
+      '3 – Presença frequente com apoio; desempenho funcional emergente.',
+      '4 – Presença consistente com pouco apoio; desempenho funcional.',
+      '5 – Presença robusta e sustentada; generalização em contextos diversos.',
+    ];
+    levels.forEach((lv) => parts.push(p(lv, { bullet: true, size: 22, spaceAfter: 60 })));
+
+    // Conclusão
     parts.push(section('Conclusão', [
       'A literatura sustenta a relevância de instrumentos específicos em musicoterapia e a necessidade de padronização psicométrica. A Escala MuseTera apresenta racional teórico‑clínico promissor. Este artigo estabelece base conceitual e metodológica para validação futura, sem dados humanos nesta etapa.',
     ]));
 
-    // References (real)
+    // Agradecimentos
+    parts.push(section('Agradecimentos', [
+      'Agradecemos a profissionais e pesquisadores que contribuíram com discussões metodológicas e conceituais sobre a avaliação em musicoterapia e psicometria aplicada.',
+    ]));
+
+    // Referências (reais)
     parts.push(h1('Referências'));
     const refs = [
       'Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., ... Moher, D. (2021). The PRISMA 2020 statement: an updated guideline for reporting systematic reviews. BMJ, 372, n71. https://doi.org/10.1136/bmj.n71',
       'Whittemore, R., & Knafl, K. (2005). The integrative review: updated methodology. Journal of Advanced Nursing, 52(5), 546–553. https://doi.org/10.1111/j.1365-2648.2005.03621.x',
-      'Grant, M. J., & Booth, A. (2009). A typology of reviews: an analysis of 14 review types and associated methodologies. Health Information & Libraries Journal, 26(2), 91–108. https://doi.org/10.1111/j.1471-1842.2009.00848.x',
-      'Arksey, H., & O’Malley, L. (2005). Scoping studies: towards a methodological framework. International Journal of Social Research Methodology, 8(1), 19–32. https://doi.org/10.1080/1364557032000119616',
       'Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of PROMs. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3',
       'Mokkink, L. B., Terwee, C. B., Patrick, D. L., Alonso, J., Stratford, P. W., Knol, D. L., ... de Vet, H. C. W. (2010). The COSMIN checklist for assessing the methodological quality of studies on measurement properties. Quality of Life Research, 19(4), 539–549. https://doi.org/10.1007/s11136-010-9606-8',
       'DeVellis, R. F. (2017). Scale Development: Theory and Applications (4th ed.). SAGE Publications.',
@@ -119,14 +227,15 @@ export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
       'Magee, W. L., et al. (2015). Music Therapy Assessment Tool for Awareness in Disorders of Consciousness (MATADOC): Reliability and validity. Journal of Music Therapy, 52(1), 1–26. https://doi.org/10.1093/jmt/thv017',
       'McDermott, O., Orrell, M., & Ridder, H. M. (2014). The development of Music in Dementia Assessment Scales (MiDAS). Nordic Journal of Music Therapy, 23(2), 134–156. https://doi.org/10.1080/08098131.2013.790918',
       'Kiresuk, T. J., & Sherman, R. E. (1968). Goal Attainment Scaling: A general method for evaluating comprehensive community mental health programs. Community Mental Health Journal, 4(6), 443–453. https://doi.org/10.1007/BF01530764',
+      'Streiner, D. L., Norman, G. R., & Cairney, J. (2015). Health Measurement Scales: A practical guide to their development and use (5th ed.). Oxford University Press.',
+      'Terwee, C. B., Bot, S. D., de Boer, M. R., et al. (2007). Quality criteria were proposed for measurement properties of health status questionnaires. Journal of Clinical Epidemiology, 60(1), 34–42. https://doi.org/10.1016/j.jclinepi.2006.03.012',
+      'Portney, L. G. (2020). Foundations of Clinical Research: Applications to Evidence-Based Practice (4th ed.). F.A. Davis Company.',
     ];
     refs.forEach((r) => parts.push(p(r, { size: 20, spaceAfter: 80 })));
 
     const rtf = [
       '{\\rtf1\\ansi\\deff0\\uc1\n',
       '{\\fonttbl{\\f0 Arial;}{\\f1 Times New Roman;}}\n',
-      '\n',
-      // Page setup (A4 margins ~2.54cm)
       '\n',
       parts.join(''),
       '}\n',

@@ -124,7 +124,8 @@ export function PDFDownloadSection() {
                 <li>• Metodologia alinhada a PRISMA 2020 e COSMIN (quando aplicável)</li>
                 <li>• Inclui resumo em português e inglês (abstract)</li>
                 <li>• Referências bibliográficas com fontes reais</li>
-                <li>• Pronto para submissão em periódicos especializados</li>
+                <li>• Conteúdo expandido e robusto com seções adicionais</li>
+                <li>• Imagens oficiais da Escala MuseTera incorporadas (figuras com legendas)</li>
                 {isAdmin && <li>• Versão DOC disponível para edição personalizada (acesso administrativo)</li>}
               </ul>
             </div>
