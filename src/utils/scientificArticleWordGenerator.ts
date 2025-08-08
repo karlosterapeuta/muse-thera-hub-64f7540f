@@ -18,14 +18,23 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
       }
     };
 
-    // Prepare figure images (max 6) from public/lovable-uploads
+    // Prepare MuseTera Scale figures (max 6)
     const figurePaths = [
-      '/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png',
-      '/lovable-uploads/32b77141-7004-43e3-a188-8fe65029be60.png',
-      '/lovable-uploads/2980fc3c-0aac-41bd-bc7a-2c5aca34aca1.png',
-      '/lovable-uploads/97952175-ee1b-403e-afb8-96f9556133c6.png',
-      '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png',
-      '/lovable-uploads/65fe902f-d08a-48e5-8c93-7c4a7cc6e6a6.png',
+      '/lovable-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', // Visão Geral
+      '/lovable-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', // Sistema de Pontuação
+      '/lovable-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', // Domínio Musical
+      '/lovable-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', // Domínio Psicossocial
+      '/lovable-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', // Domínio Cognitivo
+      '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', // Domínio Sensório‑Motor
+    ];
+
+    const figureCaptions = [
+      'Figura 1. Escala MuseTera — Visão Geral',
+      'Figura 2. Sistema de Pontuação 0–5 da Escala MuseTera',
+      'Figura 3. Domínio Musical — Subdomínios e Parâmetros',
+      'Figura 4. Domínio Psicossocial — Subdomínios e Parâmetros',
+      'Figura 5. Domínio Cognitivo — Subdomínios e Parâmetros',
+      'Figura 6. Domínio Sensório‑Motor — Subdomínios e Parâmetros',
     ];
 
     const figureBuffers = (await Promise.all(figurePaths.map(loadImage))).filter(Boolean) as ArrayBuffer[];
@@ -2617,7 +2626,7 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: `Figura ${idx + 1}. Exemplos visuais da Escala MuseTera (interface, pontuação e domínios)`,
+                      text: figureCaptions[idx] || `Figura ${idx + 1}. Escala MuseTera`,
                       bold: true,
                       size: 20,
                     }),
