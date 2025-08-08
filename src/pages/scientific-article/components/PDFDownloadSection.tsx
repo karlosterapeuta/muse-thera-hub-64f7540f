@@ -84,9 +84,9 @@ export function PDFDownloadSection() {
                 <FileText className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-              <h3 className="font-semibold text-gray-800 text-lg">Versão DOC (Administradores)</h3>
-              <p className="text-sm text-gray-600">Formato editável (.doc clássico, compatível Word 97–2003) para revisão e personalização</p>
-              </div>
+              <h3 className="font-semibold text-gray-800 text-lg">Revisão de Literatura (DOC)</h3>
+              <p className="text-sm text-gray-600">Artigo completo de Revisão de Literatura em formato editável (.doc clássico, compatível Word 97–2003) para revisão e personalização</p>
+            </div>
             </div>
             <Button 
               onClick={handleGenerateDOC}
@@ -102,7 +102,7 @@ export function PDFDownloadSection() {
               ) : (
                 <>
                   <Download className="mr-2 h-5 w-5" />
-                  Baixar DOC
+                  Baixar Revisão (DOC)
                 </>
               )}
             </Button>
