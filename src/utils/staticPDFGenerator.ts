@@ -73,13 +73,7 @@ export const generateStaticPDF = async (
         logging: false,
         letterRendering: true,
         removeContainer: true,
-        imageTimeout: 20000,
-        height: container.scrollHeight,
-        width: container.scrollWidth,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI
-        windowHeight: 1123 // A4 height in pixels at 96 DPI
+        imageTimeout: 20000
       },
       jsPDF: { 
         unit: 'mm', 

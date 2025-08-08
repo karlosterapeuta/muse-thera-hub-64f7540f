@@ -522,6 +522,7 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* Referências */}
+      <div className="page-break-before"></div>
       <section className="page-break-before" style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>REFERÊNCIAS</h2>
         <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
