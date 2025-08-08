@@ -148,8 +148,10 @@ export const useEvaluationPDF = () => {
 
       return await generateStaticPDF(component, {
         filename: `Escala_MuseTera_Impressao_${new Date().toISOString().split('T')[0]}.pdf`,
-        waitTime: 1800,
-        quality: 1.8,
+        waitTime: 2200,
+        quality: 2.0,
+        format: 'a4',
+        orientation: 'portrait',
       });
     } catch (error) {
       console.error("Erro ao gerar Escala MuseTera (impressão):", error);

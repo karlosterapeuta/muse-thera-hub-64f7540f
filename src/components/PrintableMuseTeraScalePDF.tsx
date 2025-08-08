@@ -7,8 +7,8 @@ interface PrintableMuseTeraScalePDFProps {
 }
 
 const cellBox = {
-  width: '12px',
-  height: '12px',
+  width: '5mm',
+  height: '5mm',
   border: '1px solid #000',
   margin: '0 auto',
 } as const;
@@ -21,7 +21,7 @@ const tableStyle = {
 
 const thtdCommon: React.CSSProperties = {
   border: '1px solid #000',
-  padding: '6px 8px',
+  padding: '3mm 4mm',
 };
 
 const headerCell: React.CSSProperties = {
@@ -43,25 +43,27 @@ function Lines({ count = 4 }: { count?: number }) {
 
 function DomainSection({ title, pageBreakBefore = false }: { title: string; pageBreakBefore?: boolean }) {
   return (
-    <section className={pageBreakBefore ? 'page-break-before' : ''} style={{ marginTop: '8mm' }}>
+    <section
+      className={pageBreakBefore ? 'page-break-before' : ''}
+      style={{ marginTop: '8mm', ...(pageBreakBefore ? { pageBreakBefore: 'always' as any } : {}) }}>
       <h2 style={{ fontSize: '16px', margin: 0, padding: 0 }}>{title}</h2>
-      <p style={{ margin: '2mm 0 4mm 0' }}>Marque um nível (0–6) e registre observações no campo à esquerda.</p>
+      <p style={{ margin: '2mm 0 4mm 0' }}>Marque um nível (0–5) e registre observações no campo à esquerda.</p>
       <table style={tableStyle}>
         <thead>
           <tr>
             <th style={{ ...headerCell, textAlign: 'left' }}>Parâmetro / Observação</th>
-            {Array.from({ length: 7 }).map((_, i) => (
+            {Array.from({ length: 6 }).map((_, i) => (
               <th key={i} style={headerCell}>{i}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 12 }).map((_, r) => (
+          {Array.from({ length: 14 }).map((_, r) => (
             <tr key={r}>
               <td style={{ ...thtdCommon, height: '9mm' }}>
                 ____________________________________________
               </td>
-              {Array.from({ length: 7 }).map((_, c) => (
+              {Array.from({ length: 6 }).map((_, c) => (
                 <td key={c} style={{ ...thtdCommon, textAlign: 'center' }}>
                   <div style={cellBox} />
                 </td>
@@ -123,16 +125,15 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
       </section>
 
       <section style={{ marginBottom: '6mm' }}>
-        <strong>Legenda de Pontuação (0–6):</strong>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3mm', marginTop: '3mm' }}>
+        <strong>Legenda de Pontuação (0–5):</strong>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '3mm', marginTop: '3mm' }}>
           {[
             '0 — Ausente',
             '1 — Muito baixo',
             '2 — Baixo',
             '3 — Moderado',
             '4 — Bom',
-            '5 — Muito bom',
-            '6 — Excepcional',
+            '5 — Excepcional',
           ].map((item, idx) => (
             <div key={idx} style={{ border: '1px solid #000', padding: '3mm', textAlign: 'center' }}>{item}</div>
           ))}
@@ -143,7 +144,7 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
         <DomainSection key={d} title={d} pageBreakBefore={idx > 0} />
       ))}
 
-      <section className="page-break-before" style={{ marginTop: '8mm' }}>
+      <section className="page-break-before" style={{ marginTop: '8mm', pageBreakBefore: 'always' as any }}>
         <h2 style={{ fontSize: '16px', margin: 0, padding: 0 }}>Resumo de Pontuações por Domínio</h2>
         <table style={{ ...tableStyle, marginTop: '4mm' }}>
           <thead>
@@ -167,6 +168,29 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
         <div style={{ marginTop: '6mm' }}>
           <strong>Conclusões e Recomendações</strong>
           <Lines count={8} />
+        </div>
+      </section>
+
+      <section style={{ marginTop: '10mm' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10mm' }}>
+          <div>
+            <div style={{ borderBottom: '1px solid #000', height: '8mm' }} />
+            <div style={{ marginTop: '2mm', fontSize: '12px' }}><strong>Assinatura do Profissional</strong></div>
+          </div>
+          <div>
+            <div style={{ borderBottom: '1px solid #000', height: '8mm' }} />
+            <div style={{ marginTop: '2mm', fontSize: '12px' }}><strong>Assinatura do Responsável/Paciente</strong></div>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10mm', marginTop: '8mm' }}>
+          <div>
+            <div style={{ borderBottom: '1px solid #000', height: '8mm' }} />
+            <div style={{ marginTop: '2mm', fontSize: '12px' }}><strong>Carimbo/Registro</strong></div>
+          </div>
+          <div>
+            <div style={{ borderBottom: '1px solid #000', height: '8mm' }} />
+            <div style={{ marginTop: '2mm', fontSize: '12px' }}><strong>Local e Data</strong></div>
+          </div>
         </div>
       </section>
 
