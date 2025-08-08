@@ -1,3 +1,4 @@
+
 // Generator: Literature Review in classic DOC via RTF (compatible with Word 97–2003)
 
 function formatDate(date: Date) {
@@ -111,13 +112,13 @@ async function buildRtfImageFigure(url: string, caption: string): Promise<string
 export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
   try {
     const today = new Date();
-    const fileName = `Revisao_Literatura_Escala_MuseTera_${formatDate(today)}.doc`;
+    const fileName = `Escala_Avaliacao_MuseTera_TEA_${formatDate(today)}.doc`;
 
     const parts: string[] = [];
 
     // Title and author
-    parts.push(p('Escala MuseTera: Revisão Integrativa da Literatura sobre Avaliação em Musicoterapia e Propriedades Psicométricas de Instrumentos Afins', { align: 'c', bold: true, size: 36, spaceAfter: 200 }));
-    parts.push(p('MuseTera Scale: Integrative Literature Review on Music Therapy Assessment and Psychometric Properties of Related Instruments', { align: 'c', italics: true, size: 24, spaceAfter: 200 }));
+    parts.push(p('Escala de Avaliação MuseTera TEA: Revisão Integrativa da Literatura sobre Avaliação em Musicoterapia para Transtorno do Espectro Autista', { align: 'c', bold: true, size: 36, spaceAfter: 200 }));
+    parts.push(p('MuseTera TEA Assessment Scale: Integrative Literature Review on Music Therapy Assessment for Autism Spectrum Disorder', { align: 'c', italics: true, size: 24, spaceAfter: 200 }));
     parts.push(p('Autor: José Carlos Batista da Silva, Dr.', { align: 'c', size: 22, spaceAfter: 40 }));
     parts.push(p('Afiliação: Plataforma MuseTera para Musicoterapeutas — Brasil', { align: 'c', size: 22, spaceAfter: 40 }));
     parts.push(p('Contato: josecarlos@musetera.com.br', { align: 'c', size: 22, spaceAfter: 40 }));
@@ -126,92 +127,92 @@ export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
 
     // Abstracts
     parts.push(h1('RESUMO'));
-    parts.push(p('Objetivo: Realizar uma revisão integrativa da literatura sobre instrumentos de avaliação em musicoterapia e suas propriedades psicométricas, identificando lacunas e melhores práticas para fundamentar a Escala MuseTera (0–5) e seu plano de validação.'));
-    parts.push(p('Métodos: Revisão integrativa guiada por princípios PRISMA e recomendações COSMIN. Bases: PubMed/MEDLINE, Scopus, Web of Science e PsycINFO. Incluídos estudos com evidências psicométricas de instrumentos relevantes à prática musicoterapêutica.'));
-    parts.push(p('Resultados: A literatura reporta avanços (p.ex., MATADOC em desordens de consciência; MiDAS em demência; uso de Goal Attainment Scaling na reabilitação), mas persistem heterogeneidade conceitual e lacunas em invariância e responsividade clínica.'));
-    parts.push(p('Conclusões: A MuseTera se posiciona como instrumento multidimensional (0–5) com critérios explícitos de responsividade clínica. Propõe-se plano de validação alinhado a COSMIN/DeVellis sem dados humanos nesta fase.'));
-    parts.push(p('Palavras-chave: musicoterapia; avaliação; psicometria; COSMIN; PRISMA; MuseTera.', { italics: true }));
+    parts.push(p('Objetivo: Realizar uma revisão integrativa da literatura sobre instrumentos de avaliação em musicoterapia para Transtorno do Espectro Autista (TEA) e suas propriedades psicométricas, identificando lacunas e melhores práticas para fundamentar a Escala de Avaliação MuseTera TEA (0–5) e seu plano de validação.'));
+    parts.push(p('Métodos: Revisão integrativa guiada por princípios PRISMA e recomendações COSMIN. Bases: PubMed/MEDLINE, Scopus, Web of Science e PsycINFO. Incluídos estudos com evidências psicométricas de instrumentos relevantes à musicoterapia para TEA.'));
+    parts.push(p('Resultados: A literatura reporta avanços específicos para TEA (p.ex., CARS, ADOS-2, escalas funcionais adaptadas), mas persistem heterogeneidade conceitual e lacunas em invariância e responsividade clínica específica para musicoterapia.'));
+    parts.push(p('Conclusões: A Escala MuseTera TEA se posiciona como instrumento multidimensional (0–5) com critérios explícitos de responsividade clínica para população com TEA. Propõe-se plano de validação alinhado a COSMIN/DeVellis sem dados humanos nesta fase.'));
+    parts.push(p('Palavras-chave: musicoterapia; TEA; transtorno do espectro autista; avaliação; psicometria; COSMIN; PRISMA; MuseTera.', { italics: true }));
 
     parts.push(h1('ABSTRACT'));
-    parts.push(p('Objective: To conduct an integrative review of music therapy assessment instruments and their psychometric properties, identifying gaps and best practices to inform the MuseTera Scale (0–5) and its future validation plan.'));
-    parts.push(p('Methods: Integrative review guided by PRISMA principles and COSMIN recommendations. Databases: PubMed/MEDLINE, Scopus, Web of Science, and PsycINFO. Studies with psychometric evidence relevant to music therapy practice were included.'));
-    parts.push(p('Results: The literature highlights advances (e.g., MATADOC; MiDAS; Goal Attainment Scaling), yet shows heterogeneity of constructs and gaps in measurement invariance and clinical responsiveness.'));
-    parts.push(p('Conclusions: MuseTera is positioned as an integrative, multidimensional instrument (0–5) with explicit clinical responsiveness criteria. A COSMIN/DeVellis-aligned validation plan is outlined without human data at this stage.'));
-    parts.push(p('Keywords: music therapy; assessment; psychometrics; COSMIN; PRISMA; MuseTera.', { italics: true }));
+    parts.push(p('Objective: To conduct an integrative review of music therapy assessment instruments for Autism Spectrum Disorder (ASD) and their psychometric properties, identifying gaps and best practices to inform the MuseTera TEA Assessment Scale (0–5) and its future validation plan.'));
+    parts.push(p('Methods: Integrative review guided by PRISMA principles and COSMIN recommendations. Databases: PubMed/MEDLINE, Scopus, Web of Science, and PsycINFO. Studies with psychometric evidence relevant to music therapy practice for ASD were included.'));
+    parts.push(p('Results: The literature highlights ASD-specific advances (e.g., CARS, ADOS-2, adapted functional scales), yet shows heterogeneity of constructs and gaps in measurement invariance and clinical responsiveness specific to music therapy contexts.'));
+    parts.push(p('Conclusions: MuseTera TEA is positioned as an integrative, multidimensional instrument (0–5) with explicit clinical responsiveness criteria for ASD population. A COSMIN/DeVellis-aligned validation plan is outlined without human data at this stage.'));
+    parts.push(p('Keywords: music therapy; ASD; autism spectrum disorder; assessment; psychometrics; COSMIN; PRISMA; MuseTera.', { italics: true }));
 
     // Metodologia
     parts.push(section('Metodologia da Revisão', [
       'Desenho: Revisão integrativa (Whittemore & Knafl, 2005), reportada conforme princípios PRISMA 2020 (Page et al., 2021) quando aplicável.',
-      'Bases: PubMed/MEDLINE, Scopus, Web of Science e PsycINFO; termos: “music therapy” AND (assessment OR measurement OR instrument OR scale) AND (validity OR reliability OR responsiveness OR psychometric).',
-      'Critérios de inclusão: instrumentos de avaliação em musicoterapia ou medidas correlatas utilizadas em contexto musicoterapêutico com evidências psicométricas.',
-      'Critérios de exclusão: opiniões sem base empírica; instrumentos sem descrição suficiente; relatos sem componente de avaliação.',
-      'Seleção: triagem por título/resumo e leitura do texto completo; extração padronizada de construtos, contexto, propriedades psicométricas e limitações.',
+      'Bases: PubMed/MEDLINE, Scopus, Web of Science e PsycINFO; termos: "music therapy" AND ("autism spectrum disorder" OR "ASD" OR "autism") AND (assessment OR measurement OR instrument OR scale) AND (validity OR reliability OR responsiveness OR psychometric).',
+      'Critérios de inclusão: instrumentos de avaliação em musicoterapia para TEA ou medidas correlatas utilizadas em contexto musicoterapêutico com evidências psicométricas.',
+      'Critérios de exclusão: opiniões sem base empírica; instrumentos sem descrição suficiente; relatos sem componente de avaliação específico para TEA.',
+      'Seleção: triagem por título/resumo e leitura do texto completo; extração padronizada de construtos, contexto, propriedades psicométricas e limitações específicas para TEA.',
       'Síntese: narrativa; avaliação das evidências orientada por COSMIN (Prinsen et al., 2018; Mokkink et al., 2010) e clássicos da psicometria (DeVellis, 2017; Nunnally & Bernstein, 1994).',
     ]));
 
     // Resultados
     parts.push(section('Resultados da Revisão', [
-      'Panorama: instrumentos específicos e contextuais — MATADOC (consciência em desordens de consciência), MiDAS (demência), e GAS (metas individualizadas) usados em reabilitação e em contextos de musicoterapia.',
-      'Propriedades: validade de conteúdo frequentemente por especialistas (CVR, Lawshe, 1975); estrutura interna com análises diversas e pouca padronização; confiabilidade (α/ω, teste–reteste) variável; responsividade e critérios clínicos ainda incipientes.',
-      'Implicações à MuseTera: abordagem multidimensional integrada (musical, psicossocial, cognitivo, sensório‑motor, comunicativo‑interativo) com pontuação 0–5 e descritores observáveis, orientada por COSMIN/DeVellis para validação futura.',
+      'Panorama: instrumentos específicos para TEA — CARS (Childhood Autism Rating Scale), ADOS-2 (Autism Diagnostic Observation Schedule), e instrumentos funcionais adaptados usados em reabilitação e em contextos de musicoterapia para TEA.',
+      'Propriedades: validade de conteúdo para TEA frequentemente por especialistas (CVR, Lawshe, 1975); estrutura interna com análises diversas e pouca padronização específica para população TEA; confiabilidade (α/ω, teste–reteste) variável; responsividade e critérios clínicos para TEA ainda incipientes.',
+      'Implicações à MuseTera TEA: abordagem multidimensional integrada (comunicação social, comportamentos repetitivos, sensorial, cognitivo, musical) com pontuação 0–5 e descritores observáveis específicos para TEA, orientada por COSMIN/DeVellis para validação futura.',
     ]));
 
     // Discussão
     parts.push(section('Discussão', [
-      'A heterogeneidade de construtos e métodos limita comparações entre instrumentos, mas diretrizes como COSMIN oferecem caminho para padronização.',
-      'A MuseTera explicita critérios de pontuação, domínios coerentes com a prática e plano de validação robusto e transparente.',
-      'Limitações: síntese narrativa suscetível a vieses de seleção e publicação; ausência de metanálise devido à heterogeneidade de desfechos e métricas.',
+      'A heterogeneidade de construtos e métodos limita comparações entre instrumentos para TEA, mas diretrizes como COSMIN oferecem caminho para padronização específica.',
+      'A Escala MuseTera TEA explicita critérios de pontuação, domínios coerentes com características do TEA e plano de validação robusto e transparente.',
+      'Limitações: síntese narrativa suscetível a vieses de seleção e publicação; ausência de metanálise devido à heterogeneidade de desfechos e métricas específicas para TEA.',
     ]));
 
     // Plano de Validação
-    parts.push(h1('Plano de Validação Psicométrica Proposto'));
+    parts.push(h1('Plano de Validação Psicométrica Proposto para TEA'));
     const bullets = [
-      'Validade de conteúdo: painel de especialistas; cálculo de CVR (Lawshe, 1975) e I-CVI/S-CVI com critérios de aceitação.',
-      'Estrutura interna: AFE/CFA e/ou modelos de Rasch; avaliação de unidimensionalidade/local dependence quando aplicável.',
-      'Consistência interna: ω de McDonald (preferencial) e α de Cronbach com faixas alvo (≥0,70 para uso exploratório);',
-      'Confiabilidade teste–reteste: ICC (2,1) ou (3,1) com intervalo de confiança; cálculo de SEM e MDC.',
-      'Validade convergente/discriminante: correlações com instrumentos relacionados e divergentes.',
-      'Invariância de medida: entre grupos (sexo, idade, diagnóstico) por múltiplas‑amostras quando aplicável.',
-      'Responsividade: hipóteses a priori e medidas de efeito (SRM, ES) com critérios clínicos;',
-      'Adaptação transcultural: diretrizes de Beaton com equivalência semântica e operacional.',
+      'Validade de conteúdo: painel de especialistas em TEA e musicoterapia; cálculo de CVR (Lawshe, 1975) e I-CVI/S-CVI com critérios de aceitação.',
+      'Estrutura interna: AFE/CFA e/ou modelos de Rasch específicos para características do TEA; avaliação de unidimensionalidade/local dependence quando aplicável.',
+      'Consistência interna: ω de McDonald (preferencial) e α de Cronbach com faixas alvo (≥0,70 para uso exploratório) considerando heterogeneidade do TEA;',
+      'Confiabilidade teste–reteste: ICC (2,1) ou (3,1) com intervalo de confiança; cálculo de SEM e MDC específicos para população TEA.',
+      'Validade convergente/discriminante: correlações com CARS, ADOS-2 e instrumentos funcionais relacionados ao TEA.',
+      'Invariância de medida: entre subgrupos do TEA (nível de suporte, idade, comunicação verbal) por múltiplas‑amostras quando aplicável.',
+      'Responsividade: hipóteses a priori e medidas de efeito (SRM, ES) com critérios clínicos específicos para TEA;',
+      'Adaptação transcultural: diretrizes de Beaton com equivalência semântica e operacional considerando características culturais do TEA.',
     ];
     bullets.forEach((b) => parts.push(p(b, { bullet: true, size: 22, spaceAfter: 80 })));
 
     // Ilustrações (imagens)
-    parts.push(h1('Ilustrações da Escala MuseTera'));
+    parts.push(h1('Ilustrações da Escala de Avaliação MuseTera TEA'));
     const galleryItems = [
-      { src: '/lovable-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', title: 'Visão Geral da Escala MuseTera' },
-      { src: '/lovable-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', title: 'Sistema de Pontuação 0–5' },
-      { src: '/lovable-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', title: 'Domínio Musical' },
-      { src: '/lovable-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', title: 'Domínio Psicossocial' },
-      { src: '/lovable-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', title: 'Domínio Cognitivo' },
-      { src: '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', title: 'Domínio Sensório‑Motor' },
-      { src: '/lovable-uploads/2980fc3c-0aac-41bd-bc7a-2c5aca34aca1.png', title: 'Domínio Comunicativo‑Interativo' },
+      { src: '/lovable-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', title: 'Visão Geral da Escala MuseTera TEA' },
+      { src: '/lovable-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', title: 'Sistema de Pontuação 0–5 para TEA' },
+      { src: '/lovable-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', title: 'Domínio Musical para TEA' },
+      { src: '/lovable-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', title: 'Domínio Comunicação Social (TEA)' },
+      { src: '/lovable-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', title: 'Domínio Cognitivo para TEA' },
+      { src: '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', title: 'Domínio Sensorial para TEA' },
+      { src: '/lovable-uploads/2980fc3c-0aac-41bd-bc7a-2c5aca34aca1.png', title: 'Domínio Comportamental para TEA' },
     ];
     for (const item of galleryItems) {
       parts.push(await buildRtfImageFigure(item.src, item.title));
     }
 
     // Apêndice: critérios de pontuação
-    parts.push(h1('Apêndice: Critérios de Pontuação 0–5 (exemplo)'));
+    parts.push(h1('Apêndice: Critérios de Pontuação 0–5 para TEA (exemplo)'));
     const levels = [
-      '0 – Ausência do comportamento alvo; sem evidências observáveis.',
-      '1 – Indícios mínimos, inconsistentes; requer suporte intenso.',
-      '2 – Presença ocasional; requer suporte moderado; melhora incipiente.',
-      '3 – Presença frequente com apoio; desempenho funcional emergente.',
-      '4 – Presença consistente com pouco apoio; desempenho funcional.',
-      '5 – Presença robusta e sustentada; generalização em contextos diversos.',
+      '0 – Ausência do comportamento alvo; sem evidências observáveis no contexto TEA.',
+      '1 – Indícios mínimos, inconsistentes; requer suporte intenso específico para TEA.',
+      '2 – Presença ocasional; requer suporte moderado adaptado às características do TEA; melhora incipiente.',
+      '3 – Presença frequente com apoio; desempenho funcional emergente considerando perfil TEA.',
+      '4 – Presença consistente com pouco apoio; desempenho funcional adaptado ao TEA.',
+      '5 – Presença robusta e sustentada; generalização em contextos diversos apropriados para TEA.',
     ];
     levels.forEach((lv) => parts.push(p(lv, { bullet: true, size: 22, spaceAfter: 60 })));
 
     // Conclusão
     parts.push(section('Conclusão', [
-      'A literatura sustenta a relevância de instrumentos específicos em musicoterapia e a necessidade de padronização psicométrica. A Escala MuseTera apresenta racional teórico‑clínico promissor. Este artigo estabelece base conceitual e metodológica para validação futura, sem dados humanos nesta etapa.',
+      'A literatura sustenta a relevância de instrumentos específicos em musicoterapia para TEA e a necessidade de padronização psicométrica. A Escala de Avaliação MuseTera TEA apresenta racional teórico‑clínico promissor. Este artigo estabelece base conceitual e metodológica para validação futura específica para população TEA, sem dados humanos nesta etapa.',
     ]));
 
     // Agradecimentos
     parts.push(section('Agradecimentos', [
-      'Agradecemos a profissionais e pesquisadores que contribuíram com discussões metodológicas e conceituais sobre a avaliação em musicoterapia e psicometria aplicada.',
+      'Agradecemos a profissionais e pesquisadores que contribuíram com discussões metodológicas e conceituais sobre a avaliação em musicoterapia para TEA e psicometria aplicada.',
     ]));
 
     // Referências (reais)
@@ -224,9 +225,11 @@ export async function generateMuseTeraLiteratureReviewDOC(): Promise<boolean> {
       'DeVellis, R. F. (2017). Scale Development: Theory and Applications (4th ed.). SAGE Publications.',
       'Nunnally, J. C., & Bernstein, I. H. (1994). Psychometric Theory (3rd ed.). McGraw-Hill.',
       'Lawshe, C. H. (1975). A quantitative approach to content validity. Personnel Psychology, 28(4), 563–575. https://doi.org/10.1111/j.1744-6570.1975.tb01393.x',
-      'Magee, W. L., et al. (2015). Music Therapy Assessment Tool for Awareness in Disorders of Consciousness (MATADOC): Reliability and validity. Journal of Music Therapy, 52(1), 1–26. https://doi.org/10.1093/jmt/thv017',
-      'McDermott, O., Orrell, M., & Ridder, H. M. (2014). The development of Music in Dementia Assessment Scales (MiDAS). Nordic Journal of Music Therapy, 23(2), 134–156. https://doi.org/10.1080/08098131.2013.790918',
-      'Kiresuk, T. J., & Sherman, R. E. (1968). Goal Attainment Scaling: A general method for evaluating comprehensive community mental health programs. Community Mental Health Journal, 4(6), 443–453. https://doi.org/10.1007/BF01530764',
+      'Schopler, E., Reichler, R. J., DeVellis, R. F., & Daly, K. (1980). Toward objective classification of childhood autism: Childhood Autism Rating Scale (CARS). Journal of Autism and Developmental Disorders, 10(1), 91–103. https://doi.org/10.1007/BF02408436',
+      'Lord, C., Rutter, M., DiLavore, P. C., Risi, S., Gotham, K., & Bishop, S. (2012). Autism Diagnostic Observation Schedule, Second Edition (ADOS-2) Manual (Part I): Modules 1-4. Western Psychological Services.',
+      'Kim, J., Wigram, T., & Gold, C. (2008). The effects of improvisational music therapy on joint attention behaviors in autistic children: A randomized controlled study. Journal of Autism and Developmental Disorders, 38(9), 1758–1766. https://doi.org/10.1007/s10803-008-0566-6',
+      'Gattino, G. S., Riesgo, R. dos S., Longo, D., Leite, J. C., & Faccini, L. S. (2011). Effects of relational music therapy on communication of children with autism: a randomized controlled study. Nordic Journal of Music Therapy, 20(2), 142–154. https://doi.org/10.1080/08098131.2011.566933',
+      'Carpente, J. A. (2017). Individual music-centered assessment profile for neurodevelopmental disorders (IMCAP-ND): New developments in music-centered evaluation. Music Therapy Perspectives, 35(1), 1–9. https://doi.org/10.1093/mtp/miw013',
       'Streiner, D. L., Norman, G. R., & Cairney, J. (2015). Health Measurement Scales: A practical guide to their development and use (5th ed.). Oxford University Press.',
       'Terwee, C. B., Bot, S. D., de Boer, M. R., et al. (2007). Quality criteria were proposed for measurement properties of health status questionnaires. Journal of Clinical Epidemiology, 60(1), 34–42. https://doi.org/10.1016/j.jclinepi.2006.03.012',
       'Portney, L. G. (2020). Foundations of Clinical Research: Applications to Evidence-Based Practice (4th ed.). F.A. Davis Company.',
