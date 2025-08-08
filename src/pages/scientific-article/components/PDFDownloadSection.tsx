@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, BookOpen, Loader2 } from 'lucide-react';
 import { generateScientificArticlePDF } from '@/utils/scientificArticlePDFGenerator';
-import { generateScientificArticleWord } from '@/utils/scientificArticleWordGenerator';
+import { generateMuseTeraLiteratureReviewDOCX } from '@/utils/scientificLiteratureReviewWordGenerator';
 import { useAdmin } from '@/hooks/use-admin';
 
 export function PDFDownloadSection() {
@@ -24,7 +24,7 @@ export function PDFDownloadSection() {
   const handleGenerateDOC = async () => {
     setIsGeneratingDOC(true);
     try {
-      await generateScientificArticleWord();
+      await generateMuseTeraLiteratureReviewDOCX();
     } finally {
       setIsGeneratingDOC(false);
     }
@@ -120,10 +120,10 @@ export function PDFDownloadSection() {
             <div className="text-sm">
               <h4 className="font-medium text-amber-800 mb-1">Informações sobre o Artigo</h4>
               <ul className="text-amber-700 space-y-1">
-                <li>• Artigo científico completo com metodologia, resultados e discussão</li>
-                <li>• Formatação seguindo padrões acadêmicos internacionais</li>
+                <li>• Artigo de Revisão de Literatura (integrativa) com metodologia explícita</li>
+                <li>• Metodologia alinhada a PRISMA 2020 e COSMIN (quando aplicável)</li>
                 <li>• Inclui resumo em português e inglês (abstract)</li>
-                <li>• Referências bibliográficas no formato ABNT</li>
+                <li>• Referências bibliográficas com fontes reais</li>
                 <li>• Pronto para submissão em periódicos especializados</li>
                 {isAdmin && <li>• Versão DOC disponível para edição personalizada (acesso administrativo)</li>}
               </ul>
