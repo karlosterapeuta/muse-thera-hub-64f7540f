@@ -136,17 +136,18 @@ export function ScientificArticlePDFContent() {
         
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.1 Tipo de Estudo e Aspectos Éticos</h3>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          Estudo metodológico de desenvolvimento e validação psicométrica, aprovado pelo Comitê de Ética 
-          em Pesquisa (CAAE: 47832121.5.0000.5257). Todos os participantes assinaram Termo de Consentimento 
-          Livre e Esclarecido, com assentimento para menores de idade.
+          Estudo metodológico de desenvolvimento e validação psicométrica, aprovado pelo Comitê de Ética
+          em Pesquisa (CAAE: 47832121.5.0000.5257). Todos os participantes assinaram Termo de Consentimento
+          Livre e Esclarecido, com assentimento para menores de idade, em conformidade com a Lei nº 14.842/2024
+          (BRASIL, 2024) e com os padrões de prática da WFMT (WORLD FEDERATION OF MUSIC THERAPY, 2025).
         </p>
 
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.2 Desenvolvimento do Instrumento</h3>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          O desenvolvimento da Escala MuseTera seguiu diretrizes internacionais para construção de 
-          instrumentos psicométricos (DEVELLIS, 2017). A fase inicial envolveu revisão sistemática 
-          da literatura, análise de instrumentos existentes e consulta a painel de especialistas 
-          composto por 18 musicoterapeutas com experiência mínima de 12 anos.
+          O desenvolvimento da Escala MuseTera seguiu diretrizes clássicas para construção de instrumentos
+          (PASQUALI, 2010; DEVELLIS, 2017). A fase inicial envolveu revisão sistemática da literatura,
+          análise de instrumentos existentes e consulta a painel de especialistas, com validade de conteúdo
+          conduzida conforme ALEXANDRE; COLUCI (2011).
         </p>
 
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.3 Estrutura da Escala</h3>
@@ -182,10 +183,10 @@ export function ScientificArticlePDFContent() {
 
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>2.6 Validação e Análise Estatística</h3>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6' }}>
-          A validação envolveu análise de conteúdo (Índice de Validade de Conteúdo - IVC), 
-          confiabilidade (Alpha de Cronbach), concordância inter-avaliadores (Kappa de Cohen) 
-          e validade de construto (Análise Fatorial Exploratória e Confirmatória). Utilizou-se 
-          SPSS 28.0 e R 4.3.0 com significância p&lt;0,05.
+          A validação envolveu análise de conteúdo por IVC (ALEXANDRE; COLUCI, 2011) e CVR (LAWSHE, 1975),
+          confiabilidade (Alpha de Cronbach), concordância inter-avaliadores (Kappa de Cohen) e validade de
+          construto (Análise Fatorial Exploratória e Confirmatória), conforme recomendações psicométricas
+          (DEVELLIS, 2017). Utilizou-se SPSS 28.0 e R 4.3.0 com significância p&lt;0,05.
         </p>
       </section>
 
@@ -470,36 +471,29 @@ export function ScientificArticlePDFContent() {
       <section style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>5. DISCUSSÃO</h2>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          Os resultados corroboram a superioridade de escalas expandidas na avaliação de processos 
-          terapêuticos complexos, alinhando-se com achados de Ramos et al. (2020) sobre precisão 
-          diagnóstica em reabilitação. A estrutura multidimensional de 5 domínios reflete adequadamente 
-          a complexidade dos processos musicoterapêuticos, superando limitações de instrumentos 
-          unidimensionais (ANDRADE; SILVA, 2019).
+          Os resultados corroboram a vantagem de sistemas de pontuação expandidos na detecção de mudanças
+          clínicas sutis e no aumento da precisão de medida, conforme a literatura psicométrica sobre
+          desenvolvimento de escalas (DEVELLIS, 2017).
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          A validação da estrutura pentafatorial confirma a adequação teórica dos domínios propostos, 
-          particularmente o Domínio Comunicativo-Interativo expandido, que reconhece a centralidade 
-          da comunicação na musicoterapia (FREGTMAN, 1989; SANTOS, 2012). Este aspecto diferencia 
-          a Escala MuseTera de instrumentos tradicionais, oferecendo perspectiva holística do 
-          desenvolvimento terapêutico.
+          A estrutura multidimensional proposta reflete a complexidade dos processos musicoterapêuticos e
+          está alinhada a referenciais teóricos da área, enfatizando a centralidade da expressão musical,
+          comunicativa e relacional (BRUSCIA, 2016; RUUD, 1990; CHAGAS; PEDRO, 2008).
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          A implementação pioneira do sistema de avaliação parcial representa inovação significativa, 
-          permitindo flexibilidade clínica sem comprometer a validade científica. Esta funcionalidade 
-          atende demandas práticas de settings terapêuticos diversos, desde atendimentos focados em 
-          domínios específicos até monitoramento longitudinal direcionado.
+          Os procedimentos de validade de conteúdo adotados (IVC e CVR) são consistentes com recomendações
+          metodológicas para construção de instrumentos (ALEXANDRE; COLUCI, 2011; LAWSHE, 1975), o que
+          fortalece a robustez dos achados.
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          A validação multicêntrica fortalece a generalização dos resultados para diferentes 
-          contextos brasileiros. A participação de especialistas de diversas regiões garantiu 
-          representatividade nacional, aspecto fundamental para instrumentos de ampla aplicação 
-          clínica (TORRES; PEREIRA, 2021).
+          A abrangência amostral e o desenho multicêntrico favorecem a generalização dos resultados para
+          diferentes contextos brasileiros e dialogam com padrões internacionais de prática profissional
+          (WORLD FEDERATION OF MUSIC THERAPY, 2025).
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6' }}>
-          <strong>Limitações:</strong> O estudo apresenta limitações inerentes ao desenho 
-          metodológico, incluindo amostra de conveniência e necessidade de validação em 
-          populações específicas. Estudos longitudinais são necessários para confirmar a 
-          responsividade em diferentes contextos terapêuticos e validação internacional.
+          <strong>Limitações:</strong> Amostra de conveniência e necessidade de validação em populações
+          específicas. Estudos longitudinais são necessários para confirmar a responsividade em diferentes
+          contextos terapêuticos e para validação internacional.
         </p>
       </section>
 
@@ -511,13 +505,13 @@ export function ScientificArticlePDFContent() {
           oferecendo instrumento cientificamente validado com superior sensibilidade, especificidade 
           e flexibilidade avaliativa. Sua estrutura multidimensional de 5 domínios, sistema expandido 
           de pontuação (0-6) e funcionalidade de avaliação parcial atendem demandas clínicas por 
-          avaliações mais precisas, personalizadas e eficientes.
+          avaliações mais precisas, personalizadas e eficientes (PASQUALI, 2010; DEVELLIS, 2017).
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
-          A implementação da escala pode contribuir significativamente para o avanço da prática 
-          baseada em evidências em musicoterapia, facilitando a comunicação interprofissional, 
-          o planejamento terapêutico individualizado, o monitoramento longitudinal e a pesquisa 
-          científica na área.
+          A implementação da escala pode contribuir significativamente para o avanço da prática
+          baseada em evidências em musicoterapia, facilitando a comunicação interprofissional,
+          o planejamento terapêutico individualizado, o monitoramento longitudinal e a pesquisa
+          científica na área (WORLD FEDERATION OF MUSIC THERAPY, 2025; BRASIL, 2024).
         </p>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6' }}>
           Recomenda-se a condução de estudos longitudinais para confirmação da responsividade, 

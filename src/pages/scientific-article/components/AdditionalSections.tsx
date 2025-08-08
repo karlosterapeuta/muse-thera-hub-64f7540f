@@ -11,12 +11,13 @@ export function AdditionalSections() {
           A Escala MuseTera constitui avanço significativo na avaliação musicoterapêutica brasileira, 
           oferecendo instrumento cientificamente validado com superior sensibilidade e especificidade. 
           Sua estrutura multidimensional e sistema expandido de pontuação atendem demandas clínicas 
-          por avaliações mais precisas e detalhadas.
+          por avaliações mais precisas e detalhadas (PASQUALI, 2010; DEVELLIS, 2017).
         </p>
         <p className="text-justify text-gray-700 leading-relaxed mb-4">
           A implementação da escala pode contribuir significativamente para o avanço da prática 
           baseada em evidências em musicoterapia, facilitando a comunicação interprofissional, 
-          o planejamento terapêutico individualizado e a pesquisa científica na área.
+          o planejamento terapêutico individualizado e a pesquisa científica na área (WORLD FEDERATION 
+          OF MUSIC THERAPY, 2025; BRASIL, 2024).
         </p>
         <p className="text-justify text-gray-700 leading-relaxed">
           Recomenda-se a condução de estudos longitudinais para confirmação da responsividade 
