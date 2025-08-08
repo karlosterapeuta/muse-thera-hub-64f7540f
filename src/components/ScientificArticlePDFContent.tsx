@@ -498,7 +498,7 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* Conclusão */}
-      <section style={{ marginBottom: '30px' }}>
+      <section className="page-break-avoid" style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>6. CONCLUSÃO</h2>
         <p style={{ textAlign: 'justify', fontSize: '12px', lineHeight: '1.6', marginBottom: '15px' }}>
           A Escala MuseTera constitui avanço significativo na avaliação musicoterapêutica brasileira, 
@@ -522,7 +522,6 @@ export function ScientificArticlePDFContent() {
       </section>
 
       {/* Referências */}
-      <div className="page-break-before"></div>
       <section className="page-break-before" style={{ marginBottom: '30px' }}>
         <h2 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '15px', color: '#000' }}>REFERÊNCIAS</h2>
         <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
