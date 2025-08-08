@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, BookOpen, Loader2 } from 'lucide-react';
 import { generateScientificArticlePDF } from '@/utils/scientificArticlePDFGenerator';
-import { generateMuseTeraLiteratureReviewDOCX } from '@/utils/scientificLiteratureReviewWordGenerator';
+import { generateMuseTeraLiteratureReviewDOC } from '@/utils/scientificLiteratureReviewDocGenerator';
 import { useAdmin } from '@/hooks/use-admin';
 
 export function PDFDownloadSection() {
@@ -24,7 +24,7 @@ export function PDFDownloadSection() {
   const handleGenerateDOC = async () => {
     setIsGeneratingDOC(true);
     try {
-      await generateMuseTeraLiteratureReviewDOCX();
+      await generateMuseTeraLiteratureReviewDOC();
     } finally {
       setIsGeneratingDOC(false);
     }
@@ -84,8 +84,8 @@ export function PDFDownloadSection() {
                 <FileText className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800 text-lg">Versão DOC (Administradores)</h3>
-                <p className="text-sm text-gray-600">Formato editável para revisão e personalização</p>
+              <h3 className="font-semibold text-gray-800 text-lg">Versão DOC (Administradores)</h3>
+              <p className="text-sm text-gray-600">Formato editável (.doc clássico, compatível Word 97–2003) para revisão e personalização</p>
               </div>
             </div>
             <Button 
