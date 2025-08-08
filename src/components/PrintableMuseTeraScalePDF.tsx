@@ -1,4 +1,5 @@
 import React from 'react';
+import { museteraStructure } from "@/data/museteraStructure";
 
 interface PrintableMuseTeraScalePDFProps {
   patientName?: string;
@@ -41,37 +42,43 @@ function Lines({ count = 4 }: { count?: number }) {
   );
 }
 
-function DomainSection({ title, pageBreakBefore = false }: { title: string; pageBreakBefore?: boolean }) {
+function DomainSection({ title, subdomains, pageBreakBefore = false }: { title: string; subdomains: { title: string; rows: number }[]; pageBreakBefore?: boolean }) {
   return (
     <section
       className={pageBreakBefore ? 'page-break-before' : ''}
       style={{ marginTop: '10mm', ...(pageBreakBefore ? { pageBreakBefore: 'always' as any } : {}) }}>
       <h2 style={{ fontSize: '16px', margin: 0, padding: 0 }}>{title}</h2>
       <p style={{ margin: '2mm 0 4mm 0' }}>Marque um nível (0–5) e registre observações no campo à esquerda.</p>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={{ ...headerCell, textAlign: 'left' }}>Parâmetro / Observação</th>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <th key={i} style={headerCell}>{i}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 14 }).map((_, r) => (
-            <tr key={r}>
-              <td style={{ ...thtdCommon, height: '10mm' }}>
-                ____________________________________________
-              </td>
-              {Array.from({ length: 6 }).map((_, c) => (
-                <td key={c} style={{ ...thtdCommon, textAlign: 'center' }}>
-                  <div style={cellBox} />
-                </td>
+
+      {subdomains.map((s, sIdx) => (
+        <article key={s.title} style={{ marginTop: sIdx === 0 ? '4mm' : '8mm' }}>
+          <h3 style={{ fontSize: '14px', margin: 0, padding: 0 }}>{s.title}</h3>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={{ ...headerCell, textAlign: 'left' }}>Parâmetro / Observação</th>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <th key={i} style={headerCell}>{i}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: s.rows }).map((_, r) => (
+                <tr key={r}>
+                  <td style={{ ...thtdCommon, height: '10mm' }}>
+                    ____________________________________________
+                  </td>
+                  {Array.from({ length: 6 }).map((_, c) => (
+                    <td key={c} style={{ ...thtdCommon, textAlign: 'center' }}>
+                      <div style={cellBox} />
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </article>
+      ))}
 
       <div style={{ marginTop: '5mm' }}>
         <strong>Observações do domínio</strong>
@@ -94,13 +101,7 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
     return `${dd}/${mm}/${yyyy}`;
   };
 
-  const domains = [
-    'Domínio Musical',
-    'Domínio Psicossocial',
-    'Domínio Cognitivo',
-    'Domínio Sensório-Motor',
-    'Domínio Comunicativo-Interativo',
-  ];
+  const domains = museteraStructure;
 
   return (
     <div style={{ width: '100%' }}>
@@ -141,7 +142,7 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
       </section>
 
       {domains.map((d, idx) => (
-        <DomainSection key={d} title={d} pageBreakBefore={idx > 0} />
+        <DomainSection key={d.title} title={d.title} subdomains={d.subdomains} pageBreakBefore={idx > 0} />
       ))}
 
       <section className="page-break-before" style={{ marginTop: '8mm', pageBreakBefore: 'always' as any }}>
@@ -155,8 +156,8 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
           </thead>
           <tbody>
             {domains.map((d) => (
-              <tr key={d}>
-                <td style={{ ...thtdCommon, height: '10mm' }}>{d}</td>
+              <tr key={d.title}>
+                <td style={{ ...thtdCommon, height: '10mm' }}>{d.title}</td>
                 <td style={{ ...thtdCommon, textAlign: 'center' }}>
                   <div style={{ display: 'inline-block', width: '28mm', borderBottom: '1px solid #000' }} />
                 </td>
