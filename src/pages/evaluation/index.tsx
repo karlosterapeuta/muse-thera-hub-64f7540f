@@ -835,7 +835,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                       className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <FileDown className="h-4 w-4" />
-                      Escala MuseTera
+                      Avaliacao Manual
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
@@ -852,7 +852,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                       className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <FileText className="h-4 w-4" />
-                      Relatório MuseTera
+                      Baixar Avaliacao
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">

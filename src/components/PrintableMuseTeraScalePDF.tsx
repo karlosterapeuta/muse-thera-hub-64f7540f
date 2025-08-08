@@ -106,6 +106,11 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
   return (
     <div style={{ width: '100%' }}>
       <header style={{ textAlign: 'center', marginBottom: '6mm' }}>
+        <img
+          src="/lovable-uploads/e2913969-bc69-4ab0-b094-391957877d51.png"
+          alt="Logo MuseTera"
+          style={{ width: '24mm', height: '24mm', objectFit: 'contain', display: 'block', margin: '0 auto 3mm' }}
+        />
         <h1 style={{ fontSize: '20px', margin: 0 }}>Escala MuseTera – Formulário de Avaliação Manual</h1>
         <p style={{ margin: '3mm 0 0 0' }}>Preencha manualmente durante a avaliação do paciente.</p>
       </header>
