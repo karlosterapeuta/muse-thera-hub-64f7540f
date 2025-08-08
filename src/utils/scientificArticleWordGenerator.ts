@@ -1,10 +1,35 @@
 import { toast } from 'sonner';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, TableLayoutType, PageBreak } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, TableLayoutType, PageBreak, ImageRun, Media } from 'docx';
 
 export const generateScientificArticleWord = async (): Promise<boolean> => {
   try {
     console.log("📄 Gerando documento Word (.docx) expandido do Artigo Científico...");
     
+    // Helper to load images for the DOC (browser-compatible)
+    const loadImage = async (path: string): Promise<ArrayBuffer | null> => {
+      try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        return await blob.arrayBuffer();
+      } catch (e) {
+        console.error('Falha ao carregar imagem:', path, e);
+        return null;
+      }
+    };
+
+    // Prepare figure images (max 6) from public/lovable-uploads
+    const figurePaths = [
+      '/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png',
+      '/lovable-uploads/32b77141-7004-43e3-a188-8fe65029be60.png',
+      '/lovable-uploads/2980fc3c-0aac-41bd-bc7a-2c5aca34aca1.png',
+      '/lovable-uploads/97952175-ee1b-403e-afb8-96f9556133c6.png',
+      '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png',
+      '/lovable-uploads/65fe902f-d08a-48e5-8c93-7c4a7cc6e6a6.png',
+    ];
+
+    const figureBuffers = (await Promise.all(figurePaths.map(loadImage))).filter(Boolean) as ArrayBuffer[];
+
     // Create the comprehensive Word document
     const doc = new Document({
       sections: [{
@@ -2569,6 +2594,62 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
           }),
 
           // QUEBRA DE PÁGINA
+          new Paragraph({
+            children: [new PageBreak()],
+          }),
+
+          // 8. FIGURAS DA ESCALA
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: "8. FIGURAS DA ESCALA",
+                bold: true,
+                size: 28,
+              }),
+            ],
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 400, after: 200 },
+          }),
+
+          ...(figureBuffers.length
+            ? figureBuffers.slice(0, 6).flatMap((buf, idx) => ([
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: `Figura ${idx + 1}. Exemplos visuais da Escala MuseTera (interface, pontuação e domínios)`,
+                      bold: true,
+                      size: 20,
+                    }),
+                  ],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 100 },
+                }),
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: new Uint8Array(buf as ArrayBuffer),
+                      transformation: { width: 600, height: 350 },
+                    } as any),
+                  ],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 300 },
+                }),
+              ]))
+            : [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: "Nenhuma figura disponível no momento.",
+                      italics: true,
+                    }),
+                  ],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 300 },
+                }),
+              ]
+          ),
+
           new Paragraph({
             children: [new PageBreak()],
           }),
