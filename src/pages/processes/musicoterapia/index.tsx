@@ -515,6 +515,44 @@ export default function MusicoterapiaPage() {
 
       {viewMode === 'create' ? (
         <>
+          {/* Export PDF Card */}
+          <Card className="border-2 border-primary/20 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500">
+                    <Download className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                      Exportar PDF
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Gere o relatório em formato PDF para impressão ou compartilhamento
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  {isExporting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Gerando PDF...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar PDF
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
@@ -683,45 +721,6 @@ export default function MusicoterapiaPage() {
         </div>
       )}
 
-      {/* Export PDF Card */}
-      {viewMode === 'create' && (
-        <Card className="border-2 border-primary/20 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500">
-                  <Download className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    Exportar PDF
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Gere o relatório em formato PDF para impressão ou compartilhamento
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={handleExportPDF}
-                disabled={isExporting}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                {isExporting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Gerando PDF...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4 mr-2" />
-                    Exportar PDF
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Footer with Template Info */}
       <Card>
