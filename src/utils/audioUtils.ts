@@ -12,7 +12,7 @@ const authenticNoteFrequencies: Record<string, number> = {
 
 import { playAuthenticTEANote, teaAudioEngine } from './teaAudioEngine';
 import { realAudioService } from '@/services/realAudioService';
-import { TEA_MASTER_FREQUENCIES, getLaneConfig, validateSynchronization } from '@/constants/teaFrequencies';
+import { TEA_MASTER_FREQUENCIES, getLaneConfig, validateSynchronization, getFrequencyByNote } from '@/constants/teaFrequencies';
 
 // FUNÇÃO PRINCIPAL SINCRONIZADA - TEA-OPTIMIZED
 export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylophone" | "keyboard") => {
@@ -538,8 +538,3 @@ export const clearAudioCache = () => {
   realAudioService.clearCache();
 };
 
-// Função para obter a frequência de uma nota específica
-const getFrequencyByNote = (instrument: "bell" | "xylophone" | "keyboard", note: string): number => {
-  const noteKey = note.replace(/[0-9\.Hz]/g, '').toUpperCase();
-  return authenticNoteFrequencies[noteKey] || authenticNoteFrequencies[noteKey + '5'] || authenticNoteFrequencies[noteKey] || 261.63;
-};
