@@ -15,11 +15,11 @@ import { realAudioService } from '@/services/realAudioService';
 import { TEA_MASTER_FREQUENCIES, getLaneConfig, validateSynchronization, getFrequencyByNote } from '@/constants/teaFrequencies';
 
 // FUNÇÃO PRINCIPAL SINCRONIZADA - TEA-OPTIMIZED
-export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylophone" | "keyboard") => {
+export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylophone" | "keyboard"): Promise<boolean> => {
   try {
     if (!instrument) {
       console.warn("⚠️ No instrument specified for TEA audio");
-      return;
+      return false;
     }
 
     // VALIDAR SINCRONIZAÇÃO ANTES DE TOCAR
@@ -53,15 +53,17 @@ export const playNoteSound = async (noteKey: string, instrument?: "bell" | "xylo
     const success = await playAuthenticTEANote(instrument, frequency, 1.3, 1.8);
     if (success) {
       console.log(`✅ TEA authentic audio SUCCESS: ${instrument} - ${frequency}Hz`);
-      return;
+      return true;
     }
 
     // FALLBACK: Síntese SINCRONIZADA
     console.log(`🔄 TEA fallback synthesis for ${frequency}Hz on ${instrument}`);
     await playBasicTEASynthesis(frequency, instrument);
+    return true;
 
   } catch (error) {
     console.error("TEA audio completely failed:", error);
+    return false;
   }
 };
 

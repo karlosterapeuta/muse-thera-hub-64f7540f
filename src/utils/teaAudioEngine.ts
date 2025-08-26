@@ -30,8 +30,11 @@ class TEAAudioEngine {
   async playTEAOptimizedNote(config: TEAAudioConfig): Promise<boolean> {
     try {
       if (!this.initialized) {
+        console.log('🔄 TEA Audio Engine not initialized, initializing...');
         await this.initialize();
       }
+
+      console.log(`🎵 Playing TEA-optimized note: ${config.instrument} at ${config.frequency}Hz`);
 
       // Usar serviço real com otimizações TEA
       const success = await playInstrumentNote(
@@ -46,12 +49,19 @@ class TEAAudioEngine {
         return true;
       }
 
+      console.log(`⚠️ Real audio service failed, using TEA fallback synthesis`);
       // Fallback com síntese otimizada para TEA
       return await this.playTEAFallbackSynthesis(config);
 
     } catch (error) {
-      console.error('TEA audio error:', error);
-      return false;
+      console.error('❌ TEA audio error:', error);
+      console.log('🔄 Attempting fallback synthesis...');
+      try {
+        return await this.playTEAFallbackSynthesis(config);
+      } catch (fallbackError) {
+        console.error('❌ TEA fallback synthesis also failed:', fallbackError);
+        return false;
+      }
     }
   }
 

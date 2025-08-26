@@ -4,16 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { toast } from "sonner";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
 import { getAuthenticMusicalSequence } from "@/data/authenticMusicalSequences";
 import { TEA_MASTER_FREQUENCIES, validateSynchronization } from "@/constants/teaFrequencies";
+import { teaAudioEngine } from "@/utils/teaAudioEngine";
 
 const TeaHero = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
   const [selectedSong, setSelectedSong] = useState<{ id: string; title: string; hasSequence?: boolean; } | null>(null);
   const [gameSpeed, setGameSpeed] = useState(1.0);
   const [gameStarted, setGameStarted] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false);
+  const [isTestingAudio, setIsTestingAudio] = useState(false);
 
   // 18 MÚSICAS INFANTIS AUTÊNTICAS com sequências musicais reconhecíveis
   const songs = {
@@ -43,7 +47,48 @@ const TeaHero = () => {
     ]
   };
 
-  const handleNotePlay = (frequency: number, color: string) => {
+  // Initialize audio with user interaction
+  const initializeAudio = async () => {
+    try {
+      console.log('🎵 Initializing TEA Audio Engine...');
+      await teaAudioEngine.initialize();
+      setAudioInitialized(true);
+      toast.success("🎵 Áudio inicializado com sucesso!");
+      console.log('✅ TEA Audio Engine initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize audio:', error);
+      toast.error("❌ Falha ao inicializar o áudio");
+    }
+  };
+
+  // Test audio function
+  const testAudio = async () => {
+    if (!audioInitialized) {
+      await initializeAudio();
+      return;
+    }
+
+    setIsTestingAudio(true);
+    try {
+      console.log('🔊 Testing audio with 261.63Hz (C4)...');
+      const success = await playNoteSound("261.63Hz", selectedInstrument);
+      
+      if (success) {
+        toast.success("🔊 Teste de áudio OK!");
+        console.log('✅ Audio test successful');
+      } else {
+        console.warn('⚠️ Audio test returned false, but no error thrown');
+        toast.warning("⚠️ Áudio pode ter problemas");
+      }
+    } catch (error) {
+      console.error('❌ Audio test failed:', error);
+      toast.error("❌ Teste de áudio falhou");
+    } finally {
+      setIsTestingAudio(false);
+    }
+  };
+
+  const handleNotePlay = async (frequency: number, color: string) => {
     console.log(`🎵 TEA-Hero SYNCHRONIZED: ${selectedInstrument} at ${frequency}Hz (${color})`);
     
     // VALIDAR SINCRONIZAÇÃO EM TEMPO REAL
@@ -54,14 +99,31 @@ const TeaHero = () => {
       console.log(`✅ VALIDATED: ${frequency}Hz = ${laneConfig.note} (${laneConfig.name}) - ${laneConfig.color}`);
     }
     
-    playNoteSound(`${frequency}Hz`, selectedInstrument);
+    try {
+      const success = await playNoteSound(`${frequency}Hz`, selectedInstrument);
+      if (!success) {
+        console.warn(`⚠️ Failed to play note: ${frequency}Hz`);
+      }
+    } catch (error) {
+      console.error(`❌ Error playing note ${frequency}Hz:`, error);
+    }
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = async () => {
+    // Initialize audio if not already done
+    if (!audioInitialized) {
+      await initializeAudio();
+      if (!audioInitialized) {
+        toast.error("❌ Não é possível iniciar sem áudio funcionando");
+        return;
+      }
+    }
+
     // VALIDAR SINCRONIZAÇÃO ANTES DE INICIAR
     const isValid = validateSynchronization(selectedInstrument);
     if (!isValid) {
       console.error(`❌ Cannot start game: synchronization validation failed for ${selectedInstrument}`);
+      toast.error("❌ Falha na validação de sincronização");
       return;
     }
     
@@ -73,6 +135,7 @@ const TeaHero = () => {
       }
     }
     
+    toast.success("🎮 Jogo iniciado!");
     setGameStarted(true);
   };
 
@@ -198,10 +261,36 @@ const TeaHero = () => {
               </div>
             </div>
 
+            {/* Teste de Áudio */}
+            <div className="space-y-2">
+              <Button 
+                onClick={testAudio} 
+                variant="outline" 
+                className="w-full" 
+                disabled={isTestingAudio}
+              >
+                {isTestingAudio ? "🔊 Testando..." : audioInitialized ? "🔊 Testar Áudio" : "🎵 Inicializar Áudio"}
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                {audioInitialized ? "✅ Áudio pronto" : "⚠️ Clique para inicializar o áudio"}
+              </p>
+            </div>
+
             {/* Botão Iniciar */}
-            <Button onClick={handleStartGame} className="w-full" size="lg">
+            <Button 
+              onClick={handleStartGame} 
+              className="w-full" 
+              size="lg"
+              disabled={!audioInitialized}
+            >
               🎮 Iniciar TEA-Hero
             </Button>
+            
+            {!audioInitialized && (
+              <p className="text-xs text-center text-orange-600">
+                ⚠️ Inicialize o áudio primeiro
+              </p>
+            )}
           </CardContent>
         </Card>
 
