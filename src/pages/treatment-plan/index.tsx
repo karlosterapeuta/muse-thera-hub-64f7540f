@@ -77,10 +77,27 @@ export default function TreatmentPlanForm() {
 
       console.log("Buscando pacientes para usuário:", user.id);
       
+      // First, try to find a professional record for this user
+      const { data: professionalData, error: profError } = await supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      let professional_id = user.id;
+      
+      if (professionalData && !profError) {
+        professional_id = professionalData.id;
+        console.log("Profissional encontrado com ID:", professional_id);
+      } else {
+        console.log("Nenhum profissional encontrado, usando user_id:", user.id);
+      }
+
+      // Try both user_id and professional_id from professionals table
       const { data, error } = await supabase
         .from("patients")
         .select("id, name")
-        .eq("professional_id", user.id)
+        .eq("professional_id", professional_id)
         .order("name");
 
       if (error) throw error;
