@@ -371,26 +371,13 @@ export default function TreatmentPlanForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const { data: professionalData, error: professionalError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      let professional_id = user.id;
-      
-      if (professionalData && !professionalError) {
-        professional_id = professionalData.id;
-      } else {
-        console.log("Profissional não encontrado, usando user_id como professional_id");
-      }
-
+      // Always use auth.uid() for professional_id as required by RLS policy
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: professional_id,
+          professional_id: user.id, // Use user.id (auth.uid()) for RLS compliance
           status: "active",
           created_at: new Date().toISOString(),
         });
