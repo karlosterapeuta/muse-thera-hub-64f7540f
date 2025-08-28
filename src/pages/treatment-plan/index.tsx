@@ -471,8 +471,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = content.auditory_sensitivity || content.sound_frequency_preference || 
-        content.sound_texture_preference || content.rhythm_sensitivity || content.sensory_processing;
+      const hasMusicalSensoryData = content.auditory_sensitivity || content.frequency_responsiveness || 
+        content.volume_tolerance || content.texture_preference || content.rhythmic_processing;
       
       if (hasMusicalSensoryData) {
         htmlContent += `
@@ -485,10 +485,10 @@ export default function TreatmentPlanForm() {
                 <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   ${content.auditory_sensitivity ? generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva') : ''}
-                  ${content.sound_frequency_preference ? generateScaleVisualization(content.sound_frequency_preference, 'Preferência por Frequências Sonoras') : ''}
-                  ${content.sound_texture_preference ? generateScaleVisualization(content.sound_texture_preference, 'Preferência por Texturas Sonoras') : ''}
-                  ${content.rhythm_sensitivity ? generateScaleVisualization(content.rhythm_sensitivity, 'Sensibilidade Rítmica') : ''}
-                  ${content.sensory_processing ? generateScaleVisualization(content.sensory_processing, 'Processamento Sensorial Geral') : ''}
+                  ${content.frequency_responsiveness ? generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências') : ''}
+                  ${content.volume_tolerance ? generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume') : ''}
+                  ${content.texture_preference ? generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras') : ''}
+                  ${content.rhythmic_processing ? generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico') : ''}
                 </div>
               </div>
             </div>
@@ -497,8 +497,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = content.musical_social_interaction || content.musical_attention || 
-        content.musical_imitation || content.musical_turn_taking || content.musical_emotional_expression;
+      const hasSocialCommunicationData = content.musical_communication || content.non_verbal_expression || 
+        content.social_interaction_music || content.joint_attention_music || content.imitation_skills;
       
       if (hasSocialCommunicationData) {
         htmlContent += `
@@ -510,11 +510,11 @@ export default function TreatmentPlanForm() {
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 14px; color: #0E7490; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.musical_social_interaction ? generateScaleVisualization(content.musical_social_interaction, 'Interação Social através da Música') : ''}
-                  ${content.musical_attention ? generateScaleVisualization(content.musical_attention, 'Atenção Musical Compartilhada') : ''}
-                  ${content.musical_imitation ? generateScaleVisualization(content.musical_imitation, 'Imitação Musical') : ''}
-                  ${content.musical_turn_taking ? generateScaleVisualization(content.musical_turn_taking, 'Alternância Musical') : ''}
-                  ${content.musical_emotional_expression ? generateScaleVisualization(content.musical_emotional_expression, 'Expressão Emocional Musical') : ''}
+                  ${content.musical_communication ? generateScaleVisualization(content.musical_communication, 'Comunicação Musical') : ''}
+                  ${content.non_verbal_expression ? generateScaleVisualization(content.non_verbal_expression, 'Expressão Não-Verbal') : ''}
+                  ${content.social_interaction_music ? generateScaleVisualization(content.social_interaction_music, 'Interação Social Musical') : ''}
+                  ${content.joint_attention_music ? generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical') : ''}
+                  ${content.imitation_skills ? generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação') : ''}
                 </div>
               </div>
             </div>
@@ -523,8 +523,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Padrões Comportamentais Musicais (TEA) - com escalas visuais
-      const hasBehavioralData = content.musical_stereotypies || content.musical_flexibility || 
-        content.musical_routine_adaptation || content.musical_frustration_tolerance || content.musical_self_regulation;
+      const hasBehavioralData = content.musical_stereotypies || content.ritual_behaviors || 
+        content.sensory_seeking || content.self_regulation_music || content.behavioral_flexibility;
       
       if (hasBehavioralData) {
         htmlContent += `
@@ -537,10 +537,10 @@ export default function TreatmentPlanForm() {
                 <div style="font-weight: 600; font-size: 14px; color: #92400E; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   ${content.musical_stereotypies ? generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais') : ''}
-                  ${content.musical_flexibility ? generateScaleVisualization(content.musical_flexibility, 'Flexibilidade Musical') : ''}
-                  ${content.musical_routine_adaptation ? generateScaleVisualization(content.musical_routine_adaptation, 'Adaptação a Mudanças na Rotina Musical') : ''}
-                  ${content.musical_frustration_tolerance ? generateScaleVisualization(content.musical_frustration_tolerance, 'Tolerância à Frustração Musical') : ''}
-                  ${content.musical_self_regulation ? generateScaleVisualization(content.musical_self_regulation, 'Autorregulação Musical') : ''}
+                  ${content.ritual_behaviors ? generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Ritualizados') : ''}
+                  ${content.sensory_seeking ? generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial') : ''}
+                  ${content.self_regulation_music ? generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical') : ''}
+                  ${content.behavioral_flexibility ? generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental') : ''}
                 </div>
               </div>
             </div>
@@ -549,8 +549,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Metodologias e Recursos Especializados (TEA) - campos de texto
-      const hasSpecializedMethodsData = content.dir_floortime_methods || content.teacch_methods || 
-        content.aba_methods || content.nordoff_robbins_methods || content.nmt_methods || content.sensory_integration_methods;
+      const hasSpecializedMethodsData = content.tea_approach_methodology || content.adaptive_resources || 
+        content.communication_strategies || content.sensory_program || content.family_guidance || content.evaluation_methods;
       
       if (hasSpecializedMethodsData) {
         htmlContent += `
@@ -559,40 +559,40 @@ export default function TreatmentPlanForm() {
               <span style="margin-right: 8px;">🎓</span> Metodologias e Recursos Especializados (TEA)
             </h2>
             <div style="background: linear-gradient(135deg, #FDF2F8 0%, #FCF7FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #BE185D;">
-              ${content.dir_floortime_methods ? `
+              ${content.tea_approach_methodology ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Métodos DIR/Floortime Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.dir_floortime_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Metodologia da Abordagem TEA</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.tea_approach_methodology}</div>
                 </div>
               ` : ''}
-              ${content.teacch_methods ? `
+              ${content.adaptive_resources ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📚 Métodos TEACCH Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.teacch_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🔧 Recursos Adaptativos</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.adaptive_resources}</div>
                 </div>
               ` : ''}
-              ${content.aba_methods ? `
+              ${content.communication_strategies ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🔬 Métodos ABA Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.aba_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">💬 Estratégias de Comunicação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.communication_strategies}</div>
                 </div>
               ` : ''}
-              ${content.nordoff_robbins_methods ? `
+              ${content.sensory_program ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎼 Métodos Nordoff-Robbins para TEA</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.nordoff_robbins_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Programa Sensorial</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.sensory_program}</div>
                 </div>
               ` : ''}
-              ${content.nmt_methods ? `
+              ${content.family_guidance ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🧠 Métodos NMT para TEA</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.nmt_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">👨‍👩‍👧‍👦 Orientação Familiar</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.family_guidance}</div>
                 </div>
               ` : ''}
-              ${content.sensory_integration_methods ? `
+              ${content.evaluation_methods ? `
                 <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Métodos de Integração Sensorial Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.sensory_integration_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📊 Métodos de Avaliação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.evaluation_methods}</div>
                 </div>
               ` : ''}
             </div>
