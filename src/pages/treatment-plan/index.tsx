@@ -471,8 +471,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = content.auditory_sensitivity || content.frequency_responsiveness || 
-        content.volume_tolerance || content.texture_preference || content.rhythmic_processing;
+      const hasMusicalSensoryData = content.auditory_sensitivity >= 1 || content.frequency_responsiveness >= 1 || 
+        content.volume_tolerance >= 1 || content.texture_preference >= 1 || content.rhythmic_processing >= 1;
       
       if (hasMusicalSensoryData) {
         htmlContent += `
@@ -497,8 +497,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = content.musical_communication || content.non_verbal_expression || 
-        content.social_interaction_music || content.joint_attention_music || content.imitation_skills;
+      const hasSocialCommunicationData = content.musical_communication >= 1 || content.non_verbal_expression >= 1 || 
+        content.social_interaction_music >= 1 || content.joint_attention_music >= 1 || content.imitation_skills >= 1;
       
       if (hasSocialCommunicationData) {
         htmlContent += `
@@ -523,8 +523,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Padrões Comportamentais Musicais (TEA) - com escalas visuais
-      const hasBehavioralData = content.musical_stereotypies || content.ritual_behaviors || 
-        content.sensory_seeking || content.self_regulation_music || content.behavioral_flexibility;
+      const hasBehavioralData = content.musical_stereotypies >= 1 || content.ritual_behaviors >= 1 || 
+        content.sensory_seeking >= 1 || content.self_regulation_music >= 1 || content.behavioral_flexibility >= 1;
       
       if (hasBehavioralData) {
         htmlContent += `
