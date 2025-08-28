@@ -307,7 +307,7 @@ export default function TreatmentPlanForm() {
   };
 
   const generateScaleVisualization = (value: number, label: string) => {
-    if (!value) return '';
+    if (value === undefined || value === null || value < 0 || value > 10) return '';
     
     const percentage = (value / 10) * 100;
     const getScaleColor = (val: number) => {
@@ -484,11 +484,11 @@ export default function TreatmentPlanForm() {
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.auditory_sensitivity ? generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva') : ''}
-                  ${content.frequency_responsiveness ? generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências') : ''}
-                  ${content.volume_tolerance ? generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume') : ''}
-                  ${content.texture_preference ? generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras') : ''}
-                  ${content.rhythmic_processing ? generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico') : ''}
+                  ${generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva')}
+                  ${generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências')}
+                  ${generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume')}
+                  ${generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras')}
+                  ${generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico')}
                 </div>
               </div>
             </div>
@@ -510,11 +510,11 @@ export default function TreatmentPlanForm() {
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 14px; color: #0E7490; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.musical_communication ? generateScaleVisualization(content.musical_communication, 'Comunicação Musical') : ''}
-                  ${content.non_verbal_expression ? generateScaleVisualization(content.non_verbal_expression, 'Expressão Não-Verbal') : ''}
-                  ${content.social_interaction_music ? generateScaleVisualization(content.social_interaction_music, 'Interação Social Musical') : ''}
-                  ${content.joint_attention_music ? generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical') : ''}
-                  ${content.imitation_skills ? generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação') : ''}
+                  ${generateScaleVisualization(content.musical_communication, 'Comunicação Musical')}
+                  ${generateScaleVisualization(content.non_verbal_expression, 'Expressão Não-Verbal')}
+                  ${generateScaleVisualization(content.social_interaction_music, 'Interação Social Musical')}
+                  ${generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical')}
+                  ${generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação')}
                 </div>
               </div>
             </div>
@@ -536,11 +536,11 @@ export default function TreatmentPlanForm() {
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 14px; color: #92400E; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.musical_stereotypies ? generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais') : ''}
-                  ${content.ritual_behaviors ? generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Ritualizados') : ''}
-                  ${content.sensory_seeking ? generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial') : ''}
-                  ${content.self_regulation_music ? generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical') : ''}
-                  ${content.behavioral_flexibility ? generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental') : ''}
+                  ${generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais')}
+                  ${generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Ritualizados')}
+                  ${generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial')}
+                  ${generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical')}
+                  ${generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental')}
                 </div>
               </div>
             </div>
