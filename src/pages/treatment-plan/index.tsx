@@ -441,6 +441,30 @@ export default function TreatmentPlanForm() {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    if (!selectedPatient) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, selecione um paciente antes de gerar o PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if any required fields are filled
+    const hasContent = Object.values(formData).some(value => value.trim() !== "");
+    if (!hasContent) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, preencha pelo menos um campo do plano terapêutico antes de gerar o PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    await generatePDF();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -485,10 +509,11 @@ export default function TreatmentPlanForm() {
 
       console.log("Plano terapêutico salvo com sucesso!");
 
-      // Generate PDF after successful save
-      await generatePDF();
+      toast({
+        title: "Sucesso!",
+        description: "Plano terapêutico salvo com sucesso!",
+      });
 
-      // Only navigate if PDF was generated successfully
       setTimeout(() => {
         navigate("/processes");
       }, 2000);
@@ -731,7 +756,6 @@ export default function TreatmentPlanForm() {
             </div>
           </ModernFormCard>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 pb-4">
             <Button
               type="button"
@@ -743,11 +767,12 @@ export default function TreatmentPlanForm() {
               Cancelar
             </Button>
             <Button 
-              type="submit"
+              type="button"
+              onClick={handleDownloadPDF}
               className="flex items-center gap-2 px-8 py-3 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               <Download className="w-5 h-5" />
-              Salvar e Baixar PDF
+              Baixar PDF
             </Button>
           </div>
         </form>
