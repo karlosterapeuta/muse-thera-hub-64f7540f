@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sanitizeInput, validateInput, validateEmail } from "@/utils/security";
 
 type RegisterFormProps = {
   onSwitchToLogin: () => void;
@@ -39,9 +40,28 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
+      // Input validation and sanitization
+      const sanitizedEmail = sanitizeInput(email.toLowerCase().trim());
+      const sanitizedInviteCode = sanitizeInput(inviteCode.toUpperCase().trim());
+
+      // Validate email format
+      if (!validateEmail(sanitizedEmail)) {
+        throw new Error("Formato de email inválido");
+      }
+
+      // Validate password strength
+      if (password.length < 6) {
+        throw new Error("A senha deve ter pelo menos 6 caracteres");
+      }
+
+      // Validate invite code format
+      if (!validateInput(sanitizedInviteCode, 8) || !/^[A-Z0-9]{8}$/.test(sanitizedInviteCode)) {
+        throw new Error("Código de convite deve ter 8 caracteres alfanuméricos");
+      }
+
       // Validate invite code first
       try {
-        await validateInviteCode(inviteCode);
+        await validateInviteCode(sanitizedInviteCode);
       } catch (error: any) {
         toast({
           title: "Código de convite inválido",
@@ -54,11 +74,11 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
       // Register user with Supabase without email confirmation
       const result = await supabase.auth.signUp({
-        email,
+        email: sanitizedEmail,
         password,
         options: {
           data: {
-            name: email.split('@')[0],
+            name: sanitizedEmail.split('@')[0],
           },
           // Skip email confirmation by not setting emailRedirectTo
         },
@@ -68,9 +88,9 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
       // Immediately update the invite code status after successful registration
       const { error: updateError } = await supabase.rpc(
-        'validate_and_use_invite_code',
+        'validate_invite_code_with_limits',
         { 
-          invite_code: inviteCode,
+          invite_code: sanitizedInviteCode,
           user_id: result.data.user?.id
         }
       );

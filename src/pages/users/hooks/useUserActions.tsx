@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { Profile, StatusLog } from "../types";
+import { rateLimiter, validateInput } from "@/utils/security";
 
 export function useUserActions() {
   const queryClient = useQueryClient();
@@ -184,7 +185,23 @@ export function useUserActions() {
     }
   };
 
-  const handleForceLogout = async (userId: string, userName: string | null) => {
+  const handleForceLogout = async (userId: string, userName: string | null): Promise<void> => {
+    if (!userId || typeof userId !== 'string') {
+      console.error('Invalid userId provided for logout:', userId);
+      return;
+    }
+
+    // Rate limiting for security
+    const rateLimitKey = `force_logout_${userId}`;
+    if (!rateLimiter.isAllowed(rateLimitKey, 3, 60000)) { // Max 3 attempts per minute
+      throw new Error('Muitas tentativas de logout forçado. Tente novamente em alguns minutos.');
+    }
+
+    // Input validation
+    if (!validateInput(userId, 36)) { // UUID length validation
+      throw new Error('ID de usuário inválido');
+    }
+
     if (loadingLogout === userId) return; // Previne múltiplas chamadas
 
     try {

@@ -968,6 +968,10 @@ export type Database = {
         Args: { expiration_days?: number }
         Returns: string
       }
+      get_user_sessions_count: {
+        Args: { target_user_id: string }
+        Returns: number
+      }
       has_role: {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
@@ -977,6 +981,10 @@ export type Database = {
         Returns: boolean
       }
       validate_and_use_invite_code: {
+        Args: { invite_code: string; user_id: string }
+        Returns: boolean
+      }
+      validate_invite_code_with_limits: {
         Args: { invite_code: string; user_id: string }
         Returns: boolean
       }

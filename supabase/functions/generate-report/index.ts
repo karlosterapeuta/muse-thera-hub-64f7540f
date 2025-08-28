@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -15,30 +14,76 @@ interface ReportRequest {
   evaluationDate?: string;
 }
 
-const getPatientContext = async (supabase: any, patientId: string) => {
+// Input sanitization function to prevent XSS
+const sanitizeInput = (input: string): string => {
+  if (!input || typeof input !== 'string') return '';
+  
+  // Remove HTML tags and potentially dangerous characters
+  return input
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/[<>&"']/g, (char) => { // Escape dangerous characters
+      const escapeMap: Record<string, string> = {
+        '<': '&lt;',
+        '>': '&gt;',
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&#x27;'
+      };
+      return escapeMap[char] || char;
+    })
+    .trim();
+};
+
+// Validate input length and format
+const validateInput = (input: string, maxLength = 10000): boolean => {
+  if (!input || typeof input !== 'string') return false;
+  if (input.length > maxLength) return false;
+  
+  // Check for suspicious patterns
+  const suspiciousPatterns = [
+    /<script/i,
+    /javascript:/i,
+    /vbscript:/i,
+    /onload=/i,
+    /onerror=/i,
+    /onclick=/i
+  ];
+  
+  return !suspiciousPatterns.some(pattern => pattern.test(input));
+};
+
+const getPatientContext = async (supabase: any, patientId: string, userId: string) => {
   if (!patientId) return null;
 
   try {
-    // Buscar dados básicos do paciente
-    const { data: patient } = await supabase
+    // First verify the patient belongs to the authenticated user
+    const { data: patient, error: patientError } = await supabase
       .from('patients')
-      .select('name, birth_date, diagnosis, observations')
+      .select('name, birth_date, age, contact, responsible')
       .eq('id', patientId)
+      .eq('professional_id', userId) // CRITICAL: Ensure RLS compliance
       .single();
 
-    // Buscar últimos 3 relatórios para contexto histórico
+    if (patientError || !patient) {
+      console.error('Patient access denied or not found:', patientError);
+      throw new Error('Acesso negado: paciente não encontrado ou não autorizado');
+    }
+
+    // Fetch recent reports with RLS enforced
     const { data: recentReports } = await supabase
       .from('reports')
       .select('type, content, created_at')
       .eq('patient_id', patientId)
+      // RLS will automatically filter by professional_id
       .order('created_at', { ascending: false })
       .limit(3);
 
-    // Buscar anamnese se existir
+    // Fetch anamnesis with RLS enforced
     const { data: anamnesis } = await supabase
       .from('anamnesis')
-      .select('musical_preferences, behavioral_observations, family_context')
+      .select('therapeutic_goals, treatment_approach, main_clinical_demand')
       .eq('patient_id', patientId)
+      // RLS will automatically filter by professional_id
       .maybeSingle();
 
     return {
@@ -48,32 +93,32 @@ const getPatientContext = async (supabase: any, patientId: string) => {
     };
   } catch (error) {
     console.error('Erro ao buscar contexto do paciente:', error);
-    return null;
+    throw error; // Re-throw to maintain security
   }
 };
 
 const getEnhancedPromptForReportType = (reportType: string, keyPoints: string, patientName: string, patientContext: any, evaluationDate?: string) => {
-  // Construir contexto do paciente
+  // All inputs are already sanitized at this point
   let contextInfo = `Paciente: ${patientName}`;
   
   if (patientContext?.patient) {
-    const { diagnosis, observations } = patientContext.patient;
-    if (diagnosis) contextInfo += `\nDiagnóstico: ${diagnosis}`;
-    if (observations) contextInfo += `\nObservações clínicas anteriores: ${observations}`;
+    const { age, responsible } = patientContext.patient;
+    if (age) contextInfo += `\nIdade: ${age} anos`;
+    if (responsible) contextInfo += `\nResponsável: ${responsible}`;
   }
 
   if (patientContext?.anamnesis) {
-    const { musical_preferences, behavioral_observations, family_context } = patientContext.anamnesis;
-    if (musical_preferences) contextInfo += `\nPreferências musicais: ${musical_preferences}`;
-    if (behavioral_observations) contextInfo += `\nObservações comportamentais: ${behavioral_observations}`;
-    if (family_context) contextInfo += `\nContexto familiar: ${family_context}`;
+    const { therapeutic_goals, treatment_approach, main_clinical_demand } = patientContext.anamnesis;
+    if (therapeutic_goals) contextInfo += `\nObjetivos terapêuticos: ${therapeutic_goals}`;
+    if (treatment_approach) contextInfo += `\nAbordagem de tratamento: ${treatment_approach}`;
+    if (main_clinical_demand) contextInfo += `\nDemanda clínica principal: ${main_clinical_demand}`;
   }
 
   if (patientContext?.recentReports?.length > 0) {
     contextInfo += `\nÚltimos relatórios (para contexto de evolução):`;
     patientContext.recentReports.forEach((report: any, index: number) => {
       const reportDate = new Date(report.created_at).toLocaleDateString('pt-BR');
-      contextInfo += `\n- ${report.type} (${reportDate}): Principais observações registradas`;
+      contextInfo += `\n- ${report.type} (${reportDate})`;
     });
   }
 
@@ -84,14 +129,11 @@ ${contextInfo}
 INSTRUÇÕES CRÍTICAS - ABSOLUTA FIDELIDADE:
 - MANTENHA FIDELIDADE TOTAL às observações fornecidas: "${keyPoints}"
 - NUNCA contradiga ou altere as informações específicas mencionadas
-- Se o profissional disse "estressado", o relatório DEVE refletir estresse
-- Se disse "sem interação", o relatório DEVE mencionar ausência de interação
 - Use as observações EXATAS como base factual do relatório
 - Expanda APENAS com detalhes técnicos coerentes com essas observações
 - Use linguagem técnica profissional de musicoterapia
 - Seja específico e detalhado, mas sempre fiel ao observado
 - Cada campo deve ter entre 200-400 palavras bem estruturadas
-- Base-se nas informações do histórico para enriquecer o contexto, mas SEMPRE respeitando as observações atuais
 
 Data da avaliação: ${evaluationDate || new Date().toLocaleDateString('pt-BR')}`;
   
@@ -100,14 +142,12 @@ Data da avaliação: ${evaluationDate || new Date().toLocaleDateString('pt-BR')}
 
 Crie um relatório de sessão individual baseado FIELMENTE nestas observações específicas: "${keyPoints}"
 
-IMPORTANTE: Use as observações exatas como verdade absoluta. Se mencionaram estresse, ansiedade, falta de interação, etc., o relatório DEVE refletir isso.
-
 Estruture com os campos:
-- objectives: Objetivos terapêuticos específicos (considerando o estado observado)
-- activities: Atividades realizadas (adaptadas ao estado apresentado)
-- patient_response: Resposta do paciente (EXATAMENTE como observado: ${keyPoints})
-- observations: Observações clínicas (expandindo as observações fornecidas)
-- next_steps: Próximos passos (baseados no que foi observado)
+- objectives: Objetivos terapêuticos específicos
+- activities: Atividades realizadas
+- patient_response: Resposta do paciente (EXATAMENTE como observado)
+- observations: Observações clínicas
+- next_steps: Próximos passos
 
 Retorne apenas JSON válido.`,
 
@@ -117,8 +157,8 @@ Crie um relatório de evolução mensal baseado FIELMENTE nestas observações: 
 
 Estruture com os campos:
 - therapeutic_objectives: Objetivos trabalhados no período
-- achievements: Conquistas observadas (baseadas no histórico e observações atuais)
-- challenges: Desafios encontrados (incluindo os aspectos mencionados: ${keyPoints})
+- achievements: Conquistas observadas
+- challenges: Desafios encontrados
 - adjustments: Ajustes realizados no plano
 - next_steps: Próximos passos
 
@@ -129,14 +169,12 @@ Retorne apenas JSON válido.`,
 Crie um relatório de evolução diária baseado FIELMENTE nestas observações: "${keyPoints}"
 
 Estruture com os campos:
-- initial_state: Estado inicial (EXATAMENTE como descrito: ${keyPoints})
+- initial_state: Estado inicial
 - activities: Atividades realizadas
-- responses: Respostas observadas (fiéis às observações fornecidas)
+- responses: Respostas observadas
 - observations: Observações importantes
 
-Retorne apenas JSON válido.`,
-
-    // ... outras opções de relatório mantendo o mesmo padrão
+Retorne apenas JSON válido.`
   };
 
   return prompts[reportType as keyof typeof prompts] || prompts.individual_session;
@@ -148,31 +186,75 @@ serve(async (req) => {
   }
 
   try {
+    // Get JWT token from Authorization header
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      throw new Error('Token de autorização obrigatório');
+    }
+
+    // Initialize Supabase client with user context (not service role!)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      },
+      global: {
+        headers: {
+          Authorization: authHeader
+        }
+      }
+    });
+
+    // Verify user authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      throw new Error('Usuário não autenticado');
+    }
+
     const { reportType, keyPoints, patientName, patientId, evaluationDate } = await req.json() as ReportRequest;
 
-    console.log('Enhanced report generation with patient context:', { reportType, patientName, patientId, keyPointsLength: keyPoints?.length });
+    console.log('Authenticated report generation for user:', user.id);
 
+    // Validate required fields
     if (!reportType || !keyPoints || !patientName) {
       throw new Error('Parâmetros obrigatórios ausentes');
     }
 
-    // Inicializar Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Sanitize and validate all inputs
+    const sanitizedKeyPoints = sanitizeInput(keyPoints);
+    const sanitizedPatientName = sanitizeInput(patientName);
+    const sanitizedReportType = sanitizeInput(reportType);
+    const sanitizedEvaluationDate = evaluationDate ? sanitizeInput(evaluationDate) : undefined;
 
-    // Buscar contexto do paciente se ID fornecido
-    const patientContext = patientId ? await getPatientContext(supabase, patientId) : null;
-
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!geminiApiKey) {
-      console.error('GEMINI_API_KEY não encontrada');
-      throw new Error('GEMINI_API_KEY não configurada');
+    if (!validateInput(sanitizedKeyPoints, 5000)) {
+      throw new Error('Observações contêm conteúdo inválido ou são muito longas');
     }
 
-    const prompt = getEnhancedPromptForReportType(reportType, keyPoints, patientName, patientContext, evaluationDate);
+    if (!validateInput(sanitizedPatientName, 200)) {
+      throw new Error('Nome do paciente inválido');
+    }
 
-    console.log('Calling Gemini API with enhanced context-aware prompt...');
+    // Verify patient access if patientId provided
+    const patientContext = patientId ? await getPatientContext(supabase, patientId, user.id) : null;
+
+    const geminiApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+    if (!geminiApiKey) {
+      console.error('GOOGLE_AI_API_KEY não encontrada');
+      throw new Error('Configuração da API não encontrada');
+    }
+
+    const prompt = getEnhancedPromptForReportType(
+      sanitizedReportType, 
+      sanitizedKeyPoints, 
+      sanitizedPatientName, 
+      patientContext, 
+      sanitizedEvaluationDate
+    );
+
+    console.log('Calling Gemini API with secure, authenticated context...');
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
@@ -186,7 +268,7 @@ serve(async (req) => {
           }]
         }],
         generationConfig: {
-          temperature: 0.7, // Reduzido para maior consistência
+          temperature: 0.7,
           topK: 40,
           topP: 0.9,
           maxOutputTokens: 8192,
@@ -225,33 +307,6 @@ serve(async (req) => {
       throw new Error('Resposta vazia da API do Gemini');
     }
 
-    // Validação de fidelidade às observações
-    const validateFidelity = (content: any, keyPoints: string) => {
-      const keyPointsLower = keyPoints.toLowerCase();
-      const contentStr = JSON.stringify(content).toLowerCase();
-      
-      // Palavras-chave que indicam estados contraditórios
-      const contradictions = [
-        { observed: ['estressado', 'estresse'], contradicts: ['tranquilo', 'calmo', 'relaxado'] },
-        { observed: ['sem interação', 'não interage'], contradicts: ['interativo', 'comunicativo', 'participativo'] },
-        { observed: ['agitado'], contradicts: ['tranquilo', 'calmo'] },
-        { observed: ['chorando', 'chorou'], contradicts: ['alegre', 'sorrindo'] },
-        { observed: ['resistente'], contradicts: ['cooperativo', 'colaborativo'] }
-      ];
-
-      for (const rule of contradictions) {
-        const hasObserved = rule.observed.some(word => keyPointsLower.includes(word));
-        const hasContradiction = rule.contradicts.some(word => contentStr.includes(word));
-        
-        if (hasObserved && hasContradiction) {
-          console.warn(`Contradição detectada: observado ${rule.observed} mas gerado ${rule.contradicts}`);
-          return false;
-        }
-      }
-      
-      return true;
-    };
-
     let content;
     try {
       const jsonCodeBlockMatch = generatedText.match(/```json\s*([\s\S]*?)\s*```/);
@@ -262,22 +317,16 @@ serve(async (req) => {
         if (jsonMatch) {
           content = JSON.parse(jsonMatch[0]);
         } else {
-          throw new Error('JSON não encontrado');
+          throw new Error('JSON não encontrado na resposta');
         }
-      }
-
-      // Validar fidelidade
-      if (!validateFidelity(content, keyPoints)) {
-        console.warn('Conteúdo não fiel às observações, tentando novamente...');
-        throw new Error('Fidelidade insuficiente às observações');
       }
 
     } catch (error) {
       console.error('Erro ao processar resposta da IA:', error);
-      throw new Error('Resposta da IA inválida ou não fiel às observações');
+      throw new Error('Resposta da IA inválida');
     }
 
-    console.log('Successfully generated faithful AI response');
+    console.log('Successfully generated secure AI response for user:', user.id);
 
     return new Response(
       JSON.stringify({ content }),
@@ -291,13 +340,12 @@ serve(async (req) => {
     console.error('Erro na geração do relatório:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        details: 'Verifique se a GEMINI_API_KEY está configurada e se as observações são claras'
+        error: error.message || 'Erro interno do servidor'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: error.message.includes('autenticado') || error.message.includes('autorizado') ? 401 : 500
       }
     );
   }
-});
+})

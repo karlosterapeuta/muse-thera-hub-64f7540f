@@ -1,1 +1,11 @@
 project_id = "jztbkimlcrfndooyhohg"
+
+# Ensure JWT verification is enabled for generate-report function
+[functions.generate-report]
+verify_jwt = true
+
+# Add rate limiting and other security settings for edge functions
+[functions]
+timeout = 60
+cpu_limit = 0.5
+memory_limit = 512
