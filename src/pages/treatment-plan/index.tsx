@@ -739,51 +739,56 @@ export default function TreatmentPlanForm() {
         margin: [15, 15, 15, 15],
         filename: `Plano_Terapeutico_TEA_${selectedPatientData.name.replace(/\s+/g, '_')}_${currentDate.toISOString().split('T')[0]}.pdf`,
         pagebreak: { 
-          mode: 'css',
-          before: '.page-break-before',
-          after: '.page-break-after'
+          mode: 'avoid-all'
         },
         jsPDF: {
           unit: 'mm',
           format: 'a4',
-          orientation: 'portrait',
-          compress: false,
+          orientation: 'portrait'
         },
         html2canvas: {
-          scale: 1.5,
+          scale: 1.2,
           useCORS: true,
           letterRendering: true,
           backgroundColor: '#ffffff',
-          logging: true,
-          allowTaint: true,
-          removeContainer: false,
-          foreignObjectRendering: true,
-          imageTimeout: 30000,
-          scrollX: 0,
-          scrollY: 0,
+          logging: false,
+          allowTaint: true
         },
       };
 
       console.log("Configurações do PDF:", opt);
       console.log("Gerando PDF...");
 
-      // Add to DOM temporarily for rendering
-      document.body.appendChild(element);
-      
-      // Wait longer for fonts, styles and content to load completely
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      await html2pdf().from(element).set(opt).save();
-      
-      // Remove from DOM
-      document.body.removeChild(element);
-      
-      console.log("PDF gerado com sucesso!");
-      
-      toast({
-        title: "Sucesso!",
-        description: "PDF do plano terapêutico TEA gerado com sucesso! Todas as seções específicas foram incluídas.",
-      });
+      try {
+        // Add to DOM temporarily for rendering
+        element.style.position = 'absolute';
+        element.style.left = '-9999px';
+        element.style.top = '-9999px';
+        document.body.appendChild(element);
+        
+        // Wait for content to load
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Generate PDF with error handling
+        const pdf = html2pdf().from(element).set(opt);
+        await pdf.save();
+        
+        console.log("PDF gerado com sucesso!");
+        
+        toast({
+          title: "Sucesso!",
+          description: "PDF do plano terapêutico TEA gerado com sucesso! Todas as seções específicas foram incluídas.",
+        });
+        
+      } catch (pdfError) {
+        console.error('Erro específico do html2pdf:', pdfError);
+        throw new Error(`Falha na geração do PDF: ${pdfError.message || 'Erro desconhecido'}`);
+      } finally {
+        // Always remove from DOM
+        if (document.body.contains(element)) {
+          document.body.removeChild(element);
+        }
+      }
 
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
