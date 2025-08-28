@@ -336,6 +336,10 @@ export default function TreatmentPlanForm() {
   };
 
   const generatePDF = async () => {
+    console.log("=== PDF GENERATION DEBUG START ===");
+    console.log("selectedPatient:", selectedPatient);
+    console.log("formData:", formData);
+    
     if (!selectedPatient) {
       toast({
         title: "Erro",
@@ -603,13 +607,40 @@ export default function TreatmentPlanForm() {
         </div>
       `;
 
-      return htmlContent;
+      // Resumo e Critérios de Sucesso
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #10B981; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #10B981; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🎯</span> Resumo e Critérios de Sucesso
+          </h2>
+          <div style="background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #10B981;">
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #047857; margin-bottom: 8px; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">📋</span> Resumo do Plano Terapêutico  
+              </div>
+              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                Este plano terapêutico foi desenvolvido para atender às necessidades individuais do paciente TEA através da musicoterapia.
+              </div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #047857; margin-bottom: 8px; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">📊</span> Indicadores de Progresso
+              </div>
+              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="margin-bottom: 6px;">• Melhora observável nas escalas de avaliação (aumento mínimo de 1 ponto)</div>
+                <div style="margin-bottom: 6px;">• Engajamento sustentado nas atividades musicais por períodos progressivamente maiores</div>
+                <div style="margin-bottom: 6px;">• Transferência das habilidades adquiridas para outros contextos</div>
+                <div>• Feedback positivo da família/equipe multidisciplinar sobre progressos observados</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
 
-      // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = content.musical_communication || content.non_verbal_expression || 
-        content.social_interaction_music || content.joint_attention_music || content.imitation_skills;
-      
-      if (hasSocialCommunicationData) {
+      return htmlContent;
+    };
+
+    try {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #0891B2; display: flex; align-items: center;">
