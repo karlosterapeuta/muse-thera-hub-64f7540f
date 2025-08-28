@@ -348,6 +348,8 @@ export default function TreatmentPlanForm() {
     const element = document.createElement('div');
     
     const generateContentHTML = (content: Record<string, any>) => {
+      console.log("=== generateContentHTML chamada com:", content);
+      
       const translatedContent = {
         ...content,
         approach_type: content.approach_type ? translateApproachType(content.approach_type) : '',
@@ -362,38 +364,53 @@ export default function TreatmentPlanForm() {
         additional_notes: content.additional_notes || ''
       };
 
+      console.log("=== translatedContent:", translatedContent);
+
       let htmlContent = '';
 
-      // Configuração do Tratamento
-      if (content.approach_type || content.intervention_frequency || content.session_duration) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #2563EB; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #2563EB; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">⚙️</span> Configuração do Tratamento
-            </h2>
-            <div style="background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #2563EB;">
-              ${content.approach_type ? `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📋 Abordagem Terapêutica</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.approach_type}</div>
-                </div>
-              ` : ''}
-              ${content.intervention_frequency ? `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📅 Frequência das Intervenções</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_frequency}</div>
-                </div>
-              ` : ''}
-              ${content.session_duration ? `
-                <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">⏱️ Duração das Sessões</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.session_duration}</div>
-                </div>
-              ` : ''}
-            </div>
+      // SEMPRE incluir as seções básicas, mesmo que vazias, para garantir que há conteúdo
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #2563EB; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #2563EB; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">⚙️</span> Configuração do Tratamento
+          </h2>
+          <div style="background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #2563EB;">
+            ${content.approach_type ? `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📋 Abordagem Terapêutica</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.approach_type}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📋 Abordagem Terapêutica</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificada</div>
+              </div>
+            `}
+            ${content.intervention_frequency ? `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📅 Frequência das Intervenções</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_frequency}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📅 Frequência das Intervenções</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificada</div>
+              </div>
+            `}
+            ${content.session_duration ? `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">⏱️ Duração das Sessões</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.session_duration}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">⏱️ Duração das Sessões</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificada</div>
+              </div>
+            `}
           </div>
-        `;
-      }
+        </div>
+      `;
 
       // Metodologia e Recursos
       if (content.treatment_model || content.musical_methods) {
@@ -665,6 +682,8 @@ export default function TreatmentPlanForm() {
       const currentDate = new Date();
       const documentId = `PLN-${currentDate.getFullYear()}${(currentDate.getMonth() + 1).toString().padStart(2, '0')}${currentDate.getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
       
+      console.log("=== Dados do formData completo:", JSON.stringify(formData, null, 2));
+      
       element.innerHTML = `
         <div style="padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 100%; margin: 0; background: white; color: #1f2937;">
           
@@ -842,6 +861,9 @@ export default function TreatmentPlanForm() {
           </div>
         </div>
       `;
+      
+      console.log("=== HTML gerado, length:", element.innerHTML.length);
+      console.log("=== Primeira parte do HTML:", element.innerHTML.substring(0, 500));
 
       const opt = {
         margin: [15, 15, 15, 15],
