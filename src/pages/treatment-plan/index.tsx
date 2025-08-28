@@ -69,48 +69,75 @@ export default function TreatmentPlanForm() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      
+      // Get user with proper session validation
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("Erro de autenticação:", authError);
+        throw new Error("Usuário não autenticado");
+      }
 
+      console.log("Usuário autenticado:", user.id, user.email);
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      console.log("Buscando pacientes para usuário:", user.id);
-      
-      // First, try to find a professional record for this user
-      const { data: professionalData, error: profError } = await supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      let professional_id = user.id;
-      
-      if (professionalData && !profError) {
-        professional_id = professionalData.id;
-        console.log("Profissional encontrado com ID:", professional_id);
-      } else {
-        console.log("Nenhum profissional encontrado, usando user_id:", user.id);
-      }
-
-      // Try both user_id and professional_id from professionals table
-      const { data, error } = await supabase
+      // First strategy: Try to get patients using auth.uid() directly (most common case)
+      console.log("Estratégia 1: Buscando pacientes com user_id:", user.id);
+      let { data: patients, error: patientsError } = await supabase
         .from("patients")
-        .select("id, name")
-        .eq("professional_id", professional_id)
+        .select("id, name, professional_id")
+        .eq("professional_id", user.id)
         .order("name");
 
-      if (error) throw error;
+      if (patientsError) {
+        console.error("Erro ao buscar pacientes (estratégia 1):", patientsError);
+        throw patientsError;
+      }
+
+      console.log("Pacientes encontrados (estratégia 1):", patients?.length || 0);
+
+      // If no patients found, try to find via professionals table
+      if (!patients || patients.length === 0) {
+        console.log("Estratégia 2: Buscando via tabela professionals...");
+        
+        const { data: professionalData, error: profError } = await supabase
+          .from("professionals")
+          .select("id")
+          .eq("user_id", user.id)
+          .single();
+
+        if (professionalData && !profError) {
+          console.log("Profissional encontrado:", professionalData.id);
+          
+          const { data: profPatients, error: profPatientsError } = await supabase
+            .from("patients")
+            .select("id, name, professional_id")
+            .eq("professional_id", professionalData.id)
+            .order("name");
+
+          if (profPatientsError) {
+            console.error("Erro ao buscar pacientes (estratégia 2):", profPatientsError);
+          } else {
+            patients = profPatients;
+            console.log("Pacientes encontrados (estratégia 2):", patients?.length || 0);
+          }
+        }
+      }
+
+      // Log final results
+      console.log("Total de pacientes carregados:", patients?.length || 0);
+      if (patients && patients.length > 0) {
+        console.log("Primeiros pacientes:", patients.slice(0, 3));
+      }
       
-      console.log("Dados dos pacientes retornados:", data);
-      console.log(`${data?.length || 0} pacientes encontrados`);
+      setPatients(patients || []);
       
-      setPatients(data || []);
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar a lista de pacientes.",
+        description: `Não foi possível carregar a lista de pacientes: ${error.message}`,
         variant: "destructive",
       });
     } finally {
