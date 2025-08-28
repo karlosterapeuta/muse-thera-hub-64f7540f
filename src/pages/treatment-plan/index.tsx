@@ -493,6 +493,7 @@ export default function TreatmentPlanForm() {
               </div>
             </div>
           </div>
+          <div class="page-break-after"></div>
         `;
       }
 
@@ -519,6 +520,7 @@ export default function TreatmentPlanForm() {
               </div>
             </div>
           </div>
+          <div class="page-break-after"></div>
         `;
       }
 
@@ -734,32 +736,31 @@ export default function TreatmentPlanForm() {
       `;
 
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [15, 15, 15, 15],
         filename: `Plano_Terapeutico_TEA_${selectedPatientData.name.replace(/\s+/g, '_')}_${currentDate.toISOString().split('T')[0]}.pdf`,
         pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'],
+          mode: 'css',
           before: '.page-break-before',
-          after: '.page-break-after',
-          avoid: '.page-break-avoid'
+          after: '.page-break-after'
         },
         jsPDF: {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
-          compress: true,
+          compress: false,
         },
         html2canvas: {
-          scale: 2.5,
+          scale: 1.5,
           useCORS: true,
           letterRendering: true,
           backgroundColor: '#ffffff',
-          logging: false,
-          allowTaint: false,
-          removeContainer: true,
-          foreignObjectRendering: false,
-          imageTimeout: 15000,
-          width: 794,
-          height: 1123,
+          logging: true,
+          allowTaint: true,
+          removeContainer: false,
+          foreignObjectRendering: true,
+          imageTimeout: 30000,
+          scrollX: 0,
+          scrollY: 0,
         },
       };
 
@@ -769,8 +770,8 @@ export default function TreatmentPlanForm() {
       // Add to DOM temporarily for rendering
       document.body.appendChild(element);
       
-      // Wait for fonts and styles to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for fonts, styles and content to load completely
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       await html2pdf().from(element).set(opt).save();
       
