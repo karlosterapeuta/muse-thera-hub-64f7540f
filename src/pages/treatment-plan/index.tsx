@@ -471,8 +471,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = content.auditory_sensitivity || content.sound_frequency_preference || 
-        content.sound_texture_preference || content.rhythm_sensitivity || content.sensory_processing;
+      const hasMusicalSensoryData = content.auditory_sensitivity || content.frequency_responsiveness || 
+        content.volume_tolerance || content.texture_preference || content.rhythmic_processing;
       
       if (hasMusicalSensoryData) {
         htmlContent += `
@@ -485,10 +485,10 @@ export default function TreatmentPlanForm() {
                 <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   ${content.auditory_sensitivity ? generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva') : ''}
-                  ${content.sound_frequency_preference ? generateScaleVisualization(content.sound_frequency_preference, 'Preferência por Frequências Sonoras') : ''}
-                  ${content.sound_texture_preference ? generateScaleVisualization(content.sound_texture_preference, 'Preferência por Texturas Sonoras') : ''}
-                  ${content.rhythm_sensitivity ? generateScaleVisualization(content.rhythm_sensitivity, 'Sensibilidade Rítmica') : ''}
-                  ${content.sensory_processing ? generateScaleVisualization(content.sensory_processing, 'Processamento Sensorial Geral') : ''}
+                  ${content.frequency_responsiveness ? generateScaleVisualization(content.frequency_responsiveness, 'Responsividade às Frequências') : ''}
+                  ${content.volume_tolerance ? generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume') : ''}
+                  ${content.texture_preference ? generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras') : ''}
+                  ${content.rhythmic_processing ? generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico') : ''}
                 </div>
               </div>
             </div>
@@ -498,8 +498,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = content.musical_social_interaction || content.musical_attention || 
-        content.musical_imitation || content.musical_turn_taking || content.musical_emotional_expression;
+      const hasSocialCommunicationData = content.musical_communication || content.non_verbal_expression || 
+        content.social_interaction_music || content.joint_attention_music || content.imitation_skills;
       
       if (hasSocialCommunicationData) {
         htmlContent += `
@@ -511,11 +511,11 @@ export default function TreatmentPlanForm() {
               <div style="margin-bottom: 16px;">
                 <div style="font-weight: 600; font-size: 14px; color: #0E7490; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.musical_social_interaction ? generateScaleVisualization(content.musical_social_interaction, 'Interação Social através da Música') : ''}
-                  ${content.musical_attention ? generateScaleVisualization(content.musical_attention, 'Atenção Musical Compartilhada') : ''}
-                  ${content.musical_imitation ? generateScaleVisualization(content.musical_imitation, 'Imitação Musical') : ''}
-                  ${content.musical_turn_taking ? generateScaleVisualization(content.musical_turn_taking, 'Alternância Musical') : ''}
-                  ${content.musical_emotional_expression ? generateScaleVisualization(content.musical_emotional_expression, 'Expressão Emocional Musical') : ''}
+                  ${content.musical_communication ? generateScaleVisualization(content.musical_communication, 'Comunicação Musical') : ''}
+                  ${content.non_verbal_expression ? generateScaleVisualization(content.non_verbal_expression, 'Expressão Não Verbal') : ''}
+                  ${content.social_interaction_music ? generateScaleVisualization(content.social_interaction_music, 'Interação Social através da Música') : ''}
+                  ${content.joint_attention_music ? generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical') : ''}
+                  ${content.imitation_skills ? generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação Musical') : ''}
                 </div>
               </div>
             </div>
@@ -525,8 +525,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Padrões Comportamentais Musicais (TEA) - com escalas visuais
-      const hasBehavioralData = content.musical_stereotypies || content.musical_flexibility || 
-        content.musical_routine_adaptation || content.musical_frustration_tolerance || content.musical_self_regulation;
+      const hasBehavioralData = content.musical_stereotypies || content.ritual_behaviors || 
+        content.sensory_seeking || content.self_regulation_music || content.behavioral_flexibility;
       
       if (hasBehavioralData) {
         htmlContent += `
@@ -539,10 +539,10 @@ export default function TreatmentPlanForm() {
                 <div style="font-weight: 600; font-size: 14px; color: #92400E; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
                 <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   ${content.musical_stereotypies ? generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais') : ''}
-                  ${content.musical_flexibility ? generateScaleVisualization(content.musical_flexibility, 'Flexibilidade Musical') : ''}
-                  ${content.musical_routine_adaptation ? generateScaleVisualization(content.musical_routine_adaptation, 'Adaptação a Mudanças na Rotina Musical') : ''}
-                  ${content.musical_frustration_tolerance ? generateScaleVisualization(content.musical_frustration_tolerance, 'Tolerância à Frustração Musical') : ''}
-                  ${content.musical_self_regulation ? generateScaleVisualization(content.musical_self_regulation, 'Autorregulação Musical') : ''}
+                  ${content.ritual_behaviors ? generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Rituais Musicais') : ''}
+                  ${content.sensory_seeking ? generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial Musical') : ''}
+                  ${content.self_regulation_music ? generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical') : ''}
+                  ${content.behavioral_flexibility ? generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental Musical') : ''}
                 </div>
               </div>
             </div>
@@ -551,8 +551,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Metodologias e Recursos Especializados (TEA) - campos de texto
-      const hasSpecializedMethodsData = content.dir_floortime_methods || content.teacch_methods || 
-        content.aba_methods || content.nordoff_robbins_methods || content.nmt_methods || content.sensory_integration_methods;
+      const hasSpecializedMethodsData = content.tea_approach_methodology || content.adaptive_resources || 
+        content.communication_strategies || content.sensory_program || content.family_guidance || content.evaluation_methods;
       
       if (hasSpecializedMethodsData) {
         htmlContent += `
@@ -561,40 +561,40 @@ export default function TreatmentPlanForm() {
               <span style="margin-right: 8px;">🎓</span> Metodologias e Recursos Especializados (TEA)
             </h2>
             <div style="background: linear-gradient(135deg, #FDF2F8 0%, #FCF7FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #BE185D;">
-              ${content.dir_floortime_methods ? `
+              ${content.tea_approach_methodology ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Métodos DIR/Floortime Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.dir_floortime_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Metodologia de Abordagem TEA</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.tea_approach_methodology}</div>
                 </div>
               ` : ''}
-              ${content.teacch_methods ? `
+              ${content.adaptive_resources ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📚 Métodos TEACCH Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.teacch_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🛠️ Recursos Adaptativos</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.adaptive_resources}</div>
                 </div>
               ` : ''}
-              ${content.aba_methods ? `
+              ${content.communication_strategies ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🔬 Métodos ABA Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.aba_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">💬 Estratégias de Comunicação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.communication_strategies}</div>
                 </div>
               ` : ''}
-              ${content.nordoff_robbins_methods ? `
+              ${content.sensory_program ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎼 Métodos Nordoff-Robbins para TEA</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.nordoff_robbins_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Programa Sensorial</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.sensory_program}</div>
                 </div>
               ` : ''}
-              ${content.nmt_methods ? `
+              ${content.family_guidance ? `
                 <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🧠 Métodos NMT para TEA</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.nmt_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">👨‍👩‍👧‍👦 Orientação Familiar</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.family_guidance}</div>
                 </div>
               ` : ''}
-              ${content.sensory_integration_methods ? `
+              ${content.evaluation_methods ? `
                 <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Métodos de Integração Sensorial Musical</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.sensory_integration_methods}</div>
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📋 Métodos de Avaliação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.evaluation_methods}</div>
                 </div>
               ` : ''}
             </div>
@@ -607,10 +607,43 @@ export default function TreatmentPlanForm() {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #374151; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #374151; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">📝</span> Observações Adicionais
+              <span style="margin-right: 8px;">📝</span> Observações Complementares e Recomendações
             </h2>
-            <div style="background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #374151;">
-              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.additional_notes}</div>
+            <div style="background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #374151;">
+              
+              <!-- Observações Adicionais -->
+              <div style="margin-bottom: 24px;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                  <span style="margin-right: 6px;">💭</span> Observações Específicas
+                </div>
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.additional_notes}</div>
+              </div>
+
+              <!-- Recomendações de Implementação -->
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                  <span style="margin-right: 6px;">💡</span> Recomendações de Implementação
+                </div>
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div style="margin-bottom: 8px;"><strong>• Fase Inicial (1-2 meses):</strong> Estabelecimento de vínculo terapêutico e avaliação contínua das respostas musicais</div>
+                  <div style="margin-bottom: 8px;"><strong>• Fase de Desenvolvimento (3-6 meses):</strong> Implementação das estratégias específicas com foco nos objetivos prioritários</div>
+                  <div style="margin-bottom: 8px;"><strong>• Reavaliação (6 meses):</strong> Análise do progresso e ajustes necessários no plano terapêutico</div>
+                  <div><strong>• Monitoramento Contínuo:</strong> Registro semanal das atividades e observações comportamentais</div>
+                </div>
+              </div>
+
+              <!-- Critérios de Sucesso -->
+              <div>
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                  <span style="margin-right: 6px;">🎯</span> Critérios de Sucesso
+                </div>
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div style="margin-bottom: 6px;">• Melhora observável nas escalas de avaliação (aumento mínimo de 1 ponto)</div>
+                  <div style="margin-bottom: 6px;">• Engajamento sustentado nas atividades musicais por períodos progressivamente maiores</div>
+                  <div style="margin-bottom: 6px;">• Transferência das habilidades adquiridas para outros contextos</div>
+                  <div>• Feedback positivo da família/equipe multidisciplinar sobre progressos observados</div>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -674,11 +707,67 @@ export default function TreatmentPlanForm() {
 
           <!-- CONTEÚDO PRINCIPAL -->
           <div style="padding: 40px; background: white;">
+            
+            <!-- ÍNDICE/SUMÁRIO -->
+            <div style="margin-bottom: 40px; page-break-inside: avoid;">
+              <h2 style="color: #1e40af; font-size: 20px; font-weight: 700; margin-bottom: 20px; padding: 12px 0; border-bottom: 3px solid #1e40af; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">📋</span> Índice do Plano Terapêutico
+              </h2>
+              <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #1e40af;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div>
+                    <div style="font-weight: 600; font-size: 14px; color: #1e40af; margin-bottom: 8px;">🔹 Configuração e Metodologia</div>
+                    <div style="font-size: 12px; color: #374151; line-height: 1.6; margin-left: 12px;">
+                      • Configuração do Tratamento<br>
+                      • Metodologia e Recursos<br>
+                      • Objetivos e Avaliação<br>
+                      • Estratégias e Recursos
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 14px; color: #1e40af; margin-bottom: 8px;">🔹 Especificações TEA</div>
+                    <div style="font-size: 12px; color: #374151; line-height: 1.6; margin-left: 12px;">
+                      • Perfil Sensorial Musical<br>
+                      • Comunicação Social Musical<br>
+                      • Padrões Comportamentais<br>
+                      • Metodologias Especializadas
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 11px; color: #64748b; text-align: center;">
+                  📊 <strong>Avaliações Quantitativas:</strong> Escalas de 1-10 com visualização gráfica | 
+                  📝 <strong>Observações Qualitativas:</strong> Descrições detalhadas personalizadas
+                </div>
+              </div>
+            </div>
+            
             ${generateContentHTML(formData)}
           </div>
 
           <!-- RODAPÉ PROFISSIONAL -->
           <div style="margin-top: 40px; padding: 30px 40px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-top: 4px solid #2563eb;">
+            
+            <!-- Resumo Executivo -->
+            <div style="margin-bottom: 30px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e2e8f0;">
+              <div style="font-weight: 700; font-size: 16px; color: #2563eb; margin-bottom: 12px; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">📋</span> Resumo Executivo do Plano
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div>
+                  <div style="font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px;">PACIENTE</div>
+                  <div style="font-size: 13px; color: #374151; font-weight: 600;">${selectedPatientData?.name || 'Não informado'}</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px;">ABORDAGEM</div>
+                  <div style="font-size: 13px; color: #374151;">${formData.approach_type ? translateApproachType(formData.approach_type) : 'Não especificada'}</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px;">FREQUÊNCIA</div>
+                  <div style="font-size: 13px; color: #374151;">${formData.intervention_frequency ? translateInterventionFrequency(formData.intervention_frequency) : 'Não especificada'}</div>
+                </div>
+              </div>
+            </div>
+            
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 20px;">
               <!-- Informações do Sistema -->
               <div>
@@ -687,19 +776,27 @@ export default function TreatmentPlanForm() {
                   <div>• Gerado em: ${currentDate.toLocaleDateString('pt-BR')} às ${currentDate.toLocaleTimeString('pt-BR')}</div>
                   <div>• Sistema: MuseTera v2.0 - Gestão de Musicoterapia</div>
                   <div>• Código: ${documentId}</div>
-                  <div>• Validade: Este plano deve ser revisado periodicamente</div>
+                  <div>• Tipo: Plano Terapêutico Musicoterapêutico (TEA)</div>
+                  <div>• Validade: Este plano deve ser revisado a cada 3-6 meses</div>
+                  <div>• Status: Documento gerado digitalmente</div>
                 </div>
               </div>
               
-              <!-- Assinatura Digital -->
+              <!-- Assinatura Digital e Dados Profissionais -->
               <div style="text-align: right;">
                 <div style="font-weight: 700; font-size: 14px; color: #2563eb; margin-bottom: 8px;">✍️ RESPONSÁVEL TÉCNICO</div>
                 <div style="font-size: 12px; color: #374151; line-height: 1.6;">
-                  <div style="font-weight: 600;">${userName || 'Musicoterapeuta Responsável'}</div>
-                  <div>${userEmail || 'email@exemplo.com'}</div>
+                  <div style="font-weight: 600; font-size: 14px;">${userName || 'Musicoterapeuta Responsável'}</div>
+                  <div style="color: #64748b;">${userEmail || 'email@exemplo.com'}</div>
+                  <div style="margin-top: 8px; font-size: 11px; color: #64748b;">
+                    <div>• Especialidade: Musicoterapia</div>
+                    <div>• Área de Atuação: Transtorno do Espectro Autista</div>
+                    <div>• Método: Musicoterapia Clínica</div>
+                  </div>
                   <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #cbd5e1;">
                     <div style="font-size: 10px; color: #64748b;">Assinatura Digital</div>
-                    <div style="font-size: 8px; color: #94a3b8; margin-top: 4px;">Este documento foi gerado digitalmente e é válido sem assinatura física</div>
+                    <div style="font-size: 8px; color: #94a3b8; margin-top: 4px;">Este documento foi gerado digitalmente pelo sistema MuseTera</div>
+                    <div style="font-size: 8px; color: #94a3b8;">e é válido sem assinatura física conforme legislação vigente</div>
                   </div>
                 </div>
               </div>
@@ -711,24 +808,35 @@ export default function TreatmentPlanForm() {
               <div style="display: flex; justify-content: space-between; gap: 20px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <div style="width: 12px; height: 12px; background-color: #dc2626; border-radius: 2px;"></div>
-                  <span style="font-size: 10px; color: #64748b;">1-3: Baixo</span>
+                  <span style="font-size: 10px; color: #64748b;">1-3: Baixo (Necessita intervenção intensiva)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <div style="width: 12px; height: 12px; background-color: #d97706; border-radius: 2px;"></div>
-                  <span style="font-size: 10px; color: #64748b;">4-6: Moderado</span>
+                  <span style="font-size: 10px; color: #64748b;">4-6: Moderado (Intervenção regular)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <div style="width: 12px; height: 12px; background-color: #059669; border-radius: 2px;"></div>
-                  <span style="font-size: 10px; color: #64748b;">7-10: Alto</span>
+                  <span style="font-size: 10px; color: #64748b;">7-10: Alto (Manutenção/aprimoramento)</span>
                 </div>
               </div>
             </div>
             
-            <!-- Aviso Legal -->
+            <!-- Aviso Legal e Observações Importantes -->
+            <div style="margin-top: 20px; padding: 16px; background: #fef7cd; border-radius: 8px; border-left: 4px solid #f59e0b;">
+              <div style="font-weight: 600; font-size: 11px; color: #92400e; margin-bottom: 6px;">⚠️ OBSERVAÇÕES IMPORTANTES</div>
+              <div style="font-size: 9px; color: #92400e; line-height: 1.5;">
+                • Este plano deve ser implementado por musicoterapeuta qualificado e registrado<br>
+                • Reavaliações periódicas são essenciais para ajustes no plano terapêutico<br>
+                • Qualquer alteração deve ser documentada e aprovada pelo profissional responsável<br>
+                • O plano considera as características individuais do TEA e deve ser personalizado
+              </div>
+            </div>
+            
+            <!-- Aviso Legal Final -->
             <div style="text-align: center; margin-top: 16px;">
               <div style="font-size: 9px; color: #94a3b8; line-height: 1.4;">
-                Este plano terapêutico foi elaborado com base nas melhores práticas em musicoterapia e deve ser implementado por profissional qualificado.<br>
-                Qualquer alteração deve ser documentada e aprovada pelo musicoterapeuta responsável.
+                Este plano terapêutico foi elaborado com base nas melhores práticas em musicoterapia para TEA.<br>
+                Documento gerado pelo sistema MuseTera - Plataforma de Gestão em Musicoterapia.
               </div>
             </div>
           </div>
