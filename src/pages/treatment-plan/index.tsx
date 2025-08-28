@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +34,6 @@ export default function TreatmentPlanForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string>("");
@@ -71,6 +69,7 @@ export default function TreatmentPlanForm() {
     try {
       setIsLoading(true);
       
+      // Get user with proper session validation
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !user) {
@@ -78,26 +77,63 @@ export default function TreatmentPlanForm() {
         throw new Error("Usuário não autenticado");
       }
 
-      console.log("Carregando dados para usuário:", user.id);
+      console.log("Usuário autenticado:", user.id, user.email);
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
 
-      // Load patients - now works with the updated RLS policy
-      const { data: patients, error: patientsError } = await supabase
+      // First strategy: Try to get patients using auth.uid() directly (most common case)
+      console.log("Estratégia 1: Buscando pacientes com user_id:", user.id);
+      let { data: patients, error: patientsError } = await supabase
         .from("patients")
         .select("id, name, professional_id")
+        .eq("professional_id", user.id)
         .order("name");
 
       if (patientsError) {
-        console.error("Erro ao buscar pacientes:", patientsError);
+        console.error("Erro ao buscar pacientes (estratégia 1):", patientsError);
         throw patientsError;
       }
 
-      console.log("Pacientes carregados:", patients?.length || 0);
+      console.log("Pacientes encontrados (estratégia 1):", patients?.length || 0);
+
+      // If no patients found, try to find via professionals table
+      if (!patients || patients.length === 0) {
+        console.log("Estratégia 2: Buscando via tabela professionals...");
+        
+        const { data: professionalData, error: profError } = await supabase
+          .from("professionals")
+          .select("id")
+          .eq("user_id", user.id)
+          .single();
+
+        if (professionalData && !profError) {
+          console.log("Profissional encontrado:", professionalData.id);
+          
+          const { data: profPatients, error: profPatientsError } = await supabase
+            .from("patients")
+            .select("id, name, professional_id")
+            .eq("professional_id", professionalData.id)
+            .order("name");
+
+          if (profPatientsError) {
+            console.error("Erro ao buscar pacientes (estratégia 2):", profPatientsError);
+          } else {
+            patients = profPatients;
+            console.log("Pacientes encontrados (estratégia 2):", patients?.length || 0);
+          }
+        }
+      }
+
+      // Log final results
+      console.log("Total de pacientes carregados:", patients?.length || 0);
+      if (patients && patients.length > 0) {
+        console.log("Primeiros pacientes:", patients.slice(0, 3));
+      }
+      
       setPatients(patients || []);
       
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error("Erro ao carregar pacientes:", error);
       toast({
         title: "Erro",
         description: `Não foi possível carregar a lista de pacientes: ${error.message}`,
@@ -209,119 +245,122 @@ export default function TreatmentPlanForm() {
   const generatePDF = async () => {
     if (!selectedPatient) {
       toast({
-        title: "Atenção",
+        title: "Erro",
         description: "Por favor, selecione um paciente antes de gerar o PDF.",
         variant: "destructive",
       });
-      return false;
+      return;
     }
 
-    try {
-      console.log("Iniciando geração do PDF...");
-      setIsGeneratingPDF(true);
-
-      const selectedPatientData = patients.find(p => p.id === selectedPatient);
-      if (!selectedPatientData) {
-        throw new Error("Paciente não encontrado");
-      }
-
-      // Wait a bit to ensure UI updates
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      const element = document.createElement('div');
-      
-      const generateContentHTML = (content: Record<string, any>) => {
-        const translatedContent = {
-          ...content,
-          approach_type: content.approach_type ? translateApproachType(content.approach_type) : '',
-          intervention_frequency: content.intervention_frequency ? translateInterventionFrequency(content.intervention_frequency) : '',
-          session_duration: content.session_duration ? translateSessionDuration(content.session_duration) : '',
-          treatment_model: content.treatment_model ? translateTreatmentModel(content.treatment_model) : '',
-          musical_methods: content.musical_methods ? translateMusicalMethods(content.musical_methods) : '',
-          therapeutic_focus: content.therapeutic_focus ? translateTherapeuticFocus(content.therapeutic_focus) : '',
-          expected_outcomes: content.expected_outcomes ? translateExpectedOutcomes(content.expected_outcomes) : '',
-          intervention_strategies: content.intervention_strategies ? translateInterventionStrategies(content.intervention_strategies) : '',
-          musical_resources: content.musical_resources ? translateMusicalResources(content.musical_resources) : '',
-          additional_notes: content.additional_notes || ''
-        };
-
-        const sections = [
-          {
-            title: "Configuração do Tratamento",
-            fields: [
-              { key: "approach_type", label: "Abordagem Terapêutica" },
-              { key: "intervention_frequency", label: "Frequência das Intervenções" },
-              { key: "session_duration", label: "Duração das Sessões" }
-            ]
-          },
-          {
-            title: "Metodologia e Recursos",
-            fields: [
-              { key: "treatment_model", label: "Modelo de Tratamento" },
-              { key: "musical_methods", label: "Métodos Musicais" }
-            ]
-          },
-          {
-            title: "Objetivos e Avaliação",
-            fields: [
-              { key: "therapeutic_focus", label: "Foco Terapêutico" },
-              { key: "expected_outcomes", label: "Resultados Esperados" }
-            ]
-          },
-          {
-            title: "Estratégias e Recursos",
-            fields: [
-              { key: "intervention_strategies", label: "Estratégias de Intervenção" },
-              { key: "musical_resources", label: "Recursos Musicais" }
-            ]
-          },
-          {
-            title: "Observações Adicionais",
-            fields: [
-              { key: "additional_notes", label: "Notas Complementares" }
-            ]
-          }
-        ];
-
-        return sections
-          .map(section => {
-            const sectionContent = section.fields
-              .filter(field => translatedContent[field.key])
-              .map(field => `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
-                    ${field.label}
-                  </div>
-                  <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
-                    ${String(translatedContent[field.key] || '').split('\n').join('<br>')}
-                  </div>
-                </div>
-              `)
-              .join('');
-
-            if (sectionContent) {
-              return `
-                <div style="margin-bottom: 24px;">
-                  <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
-                    ${section.title}
-                  </h2>
-                  ${sectionContent}
-                </div>
-              `;
-            }
-            return '';
-          })
-          .join('');
+    const element = document.createElement('div');
+    
+    const generateContentHTML = (content: Record<string, any>) => {
+      const translatedContent = {
+        ...content,
+        approach_type: content.approach_type ? translateApproachType(content.approach_type) : '',
+        intervention_frequency: content.intervention_frequency ? translateInterventionFrequency(content.intervention_frequency) : '',
+        session_duration: content.session_duration ? translateSessionDuration(content.session_duration) : '',
+        treatment_model: content.treatment_model ? translateTreatmentModel(content.treatment_model) : '',
+        musical_methods: content.musical_methods ? translateMusicalMethods(content.musical_methods) : '',
+        therapeutic_focus: content.therapeutic_focus ? translateTherapeuticFocus(content.therapeutic_focus) : '',
+        expected_outcomes: content.expected_outcomes ? translateExpectedOutcomes(content.expected_outcomes) : '',
+        intervention_strategies: content.intervention_strategies ? translateInterventionStrategies(content.intervention_strategies) : '',
+        musical_resources: content.musical_resources ? translateMusicalResources(content.musical_resources) : '',
+        additional_notes: content.additional_notes || ''
       };
 
+      const sections = [
+        {
+          title: "Configuração do Tratamento",
+          fields: [
+            { key: "approach_type", label: "Abordagem Terapêutica" },
+            { key: "intervention_frequency", label: "Frequência das Intervenções" },
+            { key: "session_duration", label: "Duração das Sessões" }
+          ]
+        },
+        {
+          title: "Metodologia e Recursos",
+          fields: [
+            { key: "treatment_model", label: "Modelo de Tratamento" },
+            { key: "musical_methods", label: "Métodos Musicais" }
+          ]
+        },
+        {
+          title: "Objetivos e Avaliação",
+          fields: [
+            { key: "therapeutic_focus", label: "Foco Terapêutico" },
+            { key: "expected_outcomes", label: "Resultados Esperados" }
+          ]
+        },
+        {
+          title: "Estratégias e Recursos",
+          fields: [
+            { key: "intervention_strategies", label: "Estratégias de Intervenção" },
+            { key: "musical_resources", label: "Recursos Musicais" }
+          ]
+        },
+        {
+          title: "Observações Adicionais",
+          fields: [
+            { key: "additional_notes", label: "Notas Complementares" }
+          ]
+        }
+      ];
+
+      return sections
+        .map(section => {
+          const sectionContent = section.fields
+            .filter(field => translatedContent[field.key])
+            .map(field => `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #374151;">
+                  ${field.label}
+                </div>
+                <div style="background-color: #F9FAFB; padding: 8px; border-radius: 4px; border: 1px solid #E5E7EB; font-size: 12px; line-height: 1.5; color: #1F2937; white-space: pre-wrap;">
+                  ${String(translatedContent[field.key] || '').split('\n').join('<br>')}
+                </div>
+              </div>
+            `)
+            .join('');
+
+          if (sectionContent) {
+            return `
+              <div style="margin-bottom: 24px;">
+                <h2 style="color: #1F2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 2px solid #E5E7EB;">
+                  ${section.title}
+                </h2>
+                ${sectionContent}
+              </div>
+            `;
+          }
+          return '';
+        })
+        .join('');
+    };
+
+    try {
+      console.log("Iniciando geração de PDF...");
+      
+      const selectedPatientData = patients.find(p => p.id === selectedPatient);
+      if (!selectedPatientData) {
+        throw new Error("Dados do paciente não encontrados");
+      }
+      
+      console.log("Paciente selecionado:", selectedPatientData.name);
+      
       element.innerHTML = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #E5E7EB;">
+            <div style="margin-bottom: 24px;">
+              <div style="width: 200px; height: 60px; background-color: #2563EB; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 8px; font-size: 18px; font-weight: bold;">
+                MuseTera
+              </div>
+            </div>
             <h1 style="color: #2563EB; font-size: 24px; font-weight: bold; margin-bottom: 12px;">
               Plano Terapêutico Musicoterapêutico
             </h1>
             <h2 style="color: #1F2937; font-size: 18px; margin-bottom: 8px;">
-              Paciente: ${selectedPatientData.name}
+              Paciente: ${selectedPatientData?.name || 'Não informado'}
             </h2>
             <p style="color: #6B7280; font-size: 14px;">
               Data: ${new Date().toLocaleDateString('pt-BR')}
@@ -350,7 +389,7 @@ export default function TreatmentPlanForm() {
       `;
 
       const opt = {
-        margin: [20, 20, 20, 20],     
+        margin: [20, 20, 20, 20],
         filename: `Plano_Terapeutico_${selectedPatientData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
         pagebreak: { mode: 'avoid-all' },
         jsPDF: {
@@ -363,33 +402,42 @@ export default function TreatmentPlanForm() {
           useCORS: true,
           letterRendering: true,
           backgroundColor: '#ffffff',
-          removeContainer: true,
+          logging: false,
+          allowTaint: true,
         },
       };
 
-      console.log("Configuração do PDF:", opt);
+      console.log("Configurações do PDF:", opt);
+      console.log("Gerando PDF...");
+
+      // Add to DOM temporarily for rendering
+      document.body.appendChild(element);
       
       await html2pdf().from(element).set(opt).save();
+      
+      // Remove from DOM
+      document.body.removeChild(element);
       
       console.log("PDF gerado com sucesso!");
       
       toast({
         title: "Sucesso!",
-        description: "PDF do plano terapêutico baixado com sucesso.",
+        description: "PDF do plano terapêutico gerado com sucesso!",
       });
-
-      return true;
 
     } catch (error) {
-      console.error('Erro detalhado ao gerar PDF:', error);
+      console.error('Erro ao gerar PDF:', error);
+      
+      // Clean up DOM if element was added
+      if (document.body.contains(element)) {
+        document.body.removeChild(element);
+      }
+      
       toast({
         title: "Erro na geração do PDF",
-        description: `Erro: ${error.message}. Tente novamente ou verifique os dados do formulário.`,
+        description: `Erro: ${error.message || 'Falha inesperada'}. Verifique se todos os campos estão preenchidos.`,
         variant: "destructive",
       });
-      return false;
-    } finally {
-      setIsGeneratingPDF(false);
     }
   };
 
@@ -405,39 +453,45 @@ export default function TreatmentPlanForm() {
       return;
     }
 
+    // Check if any required fields are filled
+    const hasContent = Object.values(formData).some(value => value.trim() !== "");
+    if (!hasContent) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, preencha pelo menos um campo do plano terapêutico.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      console.log("Salvando plano terapêutico...");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Save treatment plan data
+      console.log("Salvando plano terapêutico...");
+
+      // Always use auth.uid() for professional_id as required by RLS policy
       const { error } = await supabase
         .from("treatment_plans")
         .insert({
           ...formData,
           patient_id: selectedPatient,
-          professional_id: user.id,
+          professional_id: user.id, // Use user.id (auth.uid()) for RLS compliance
           status: "active",
           created_at: new Date().toISOString(),
         });
 
-      if (error) {
-        console.error("Erro ao salvar no banco:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("Plano salvo, gerando PDF...");
-      
-      // Generate PDF
-      const pdfSuccess = await generatePDF();
-      
-      if (pdfSuccess) {
-        toast({
-          title: "Sucesso!",
-          description: "Plano terapêutico salvo e PDF baixado com sucesso.",
-        });
+      console.log("Plano terapêutico salvo com sucesso!");
+
+      // Generate PDF after successful save
+      await generatePDF();
+
+      // Only navigate if PDF was generated successfully
+      setTimeout(() => {
         navigate("/processes");
-      }
+      }, 2000);
 
     } catch (error) {
       console.error("Erro ao salvar plano terapêutico:", error);
@@ -617,13 +671,21 @@ export default function TreatmentPlanForm() {
             gradient="from-teal-500 to-teal-600"
             className="transform hover:scale-[1.02] transition-all duration-300"
           >
-            <PatientSelect
-              patients={patients}
-              selectedPatient={selectedPatient}
-              onSelect={setSelectedPatient}
-              isLoading={isLoading}
-              emptyMessage="Nenhum paciente encontrado para sua conta"
-            />
+            {patients.length === 0 ? (
+              <div className="text-center py-8 space-y-2">
+                <Users className="w-12 h-12 mx-auto text-gray-400" />
+                <p className="text-gray-500 font-medium">Nenhum paciente encontrado</p>
+                <p className="text-sm text-gray-400">Cadastre pacientes na seção "Pacientes" para criar planos terapêuticos</p>
+              </div>
+            ) : (
+              <PatientSelect
+                patients={patients}
+                selectedPatient={selectedPatient}
+                onSelect={setSelectedPatient}
+                isLoading={isLoading}
+                emptyMessage="Nenhum paciente encontrado para sua conta"
+              />
+            )}
           </ModernFormCard>
 
           {/* Dynamic Sections */}
@@ -682,20 +744,10 @@ export default function TreatmentPlanForm() {
             </Button>
             <Button 
               type="submit"
-              disabled={isGeneratingPDF || !selectedPatient}
-              className="flex items-center gap-2 px-8 py-3 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="flex items-center gap-2 px-8 py-3 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              {isGeneratingPDF ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                  Gerando PDF...
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5" />
-                  Salvar e Baixar PDF
-                </>
-              )}
+              <Download className="w-5 h-5" />
+              Salvar e Baixar PDF
             </Button>
           </div>
         </form>
