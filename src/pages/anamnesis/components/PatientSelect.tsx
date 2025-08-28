@@ -54,15 +54,15 @@ export function PatientSelect({
         <SelectTrigger className="w-full">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="z-[9999] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg">
           {!isLoading && hasPatients ? (
             patients.map((patient) => (
-              <SelectItem key={patient.id} value={patient.id}>
+              <SelectItem key={patient.id} value={patient.id} className="text-gray-900 dark:text-gray-100">
                 {patient.name}
               </SelectItem>
             ))
           ) : !isLoading && (
-            <SelectItem value="no-patients" disabled>
+            <SelectItem value="no-patients" disabled className="text-gray-500 dark:text-gray-400">
               {emptyMessage}
             </SelectItem>
           )}

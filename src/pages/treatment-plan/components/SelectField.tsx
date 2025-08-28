@@ -23,12 +23,12 @@ export function SelectField({ label, value, onChange, options }: SelectFieldProp
         <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200">
           <SelectValue placeholder="Selecione uma opção" />
         </SelectTrigger>
-        <SelectContent className="max-h-60">
+        <SelectContent className="max-h-60 z-[9999] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg">
           {options.map((option) => (
             <SelectItem 
               key={option.value} 
               value={option.value}
-              className="py-3 cursor-pointer hover:bg-primary/5"
+              className="py-3 cursor-pointer hover:bg-primary/5 text-gray-900 dark:text-gray-100"
             >
               {option.label}
             </SelectItem>
