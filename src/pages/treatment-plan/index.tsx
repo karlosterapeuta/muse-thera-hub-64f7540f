@@ -307,9 +307,10 @@ export default function TreatmentPlanForm() {
   };
 
   const generateScaleVisualization = (value: number, label: string) => {
-    if (value === undefined || value === null || value < 0 || value > 10) return '';
+    // Use default value of 5 if value is undefined, null, or invalid
+    const validValue = (value !== undefined && value !== null && value >= 0 && value <= 10) ? value : 5;
     
-    const percentage = (value / 10) * 100;
+    const percentage = (validValue / 10) * 100;
     const getScaleColor = (val: number) => {
       if (val <= 3) return '#DC2626'; // red-600
       if (val <= 6) return '#D97706'; // amber-600
@@ -326,10 +327,10 @@ export default function TreatmentPlanForm() {
       <div style="margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span style="font-weight: 600; font-size: 12px; color: #374151;">${label}</span>
-          <span style="font-weight: 700; color: ${getScaleColor(value)}; font-size: 14px;">${value}/10 - ${getScaleLabel(value)}</span>
+          <span style="font-weight: 700; color: ${getScaleColor(validValue)}; font-size: 14px;">${validValue}/10 - ${getScaleLabel(validValue)}</span>
         </div>
         <div style="width: 100%; height: 12px; background-color: #F3F4F6; border-radius: 6px; overflow: hidden;">
-          <div style="width: ${percentage}%; height: 100%; background-color: ${getScaleColor(value)}; transition: width 0.3s ease;"></div>
+          <div style="width: ${percentage}%; height: 100%; background-color: ${getScaleColor(validValue)}; transition: width 0.3s ease;"></div>
         </div>
       </div>
     `;
@@ -471,8 +472,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = content.auditory_sensitivity >= 1 || content.frequency_responsiveness >= 1 || 
-        content.volume_tolerance >= 1 || content.texture_preference >= 1 || content.rhythmic_processing >= 1;
+      const hasMusicalSensoryData = (content.auditory_sensitivity ?? 5) >= 1 || (content.frequency_responsiveness ?? 5) >= 1 || 
+        (content.volume_tolerance ?? 5) >= 1 || (content.texture_preference ?? 5) >= 1 || (content.rhythmic_processing ?? 5) >= 1;
       
       if (hasMusicalSensoryData) {
         htmlContent += `
@@ -497,8 +498,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = content.musical_communication >= 1 || content.non_verbal_expression >= 1 || 
-        content.social_interaction_music >= 1 || content.joint_attention_music >= 1 || content.imitation_skills >= 1;
+      const hasSocialCommunicationData = (content.musical_communication ?? 5) >= 1 || (content.non_verbal_expression ?? 5) >= 1 || 
+        (content.social_interaction_music ?? 5) >= 1 || (content.joint_attention_music ?? 5) >= 1 || (content.imitation_skills ?? 5) >= 1;
       
       if (hasSocialCommunicationData) {
         htmlContent += `
@@ -523,8 +524,8 @@ export default function TreatmentPlanForm() {
       }
 
       // Padrões Comportamentais Musicais (TEA) - com escalas visuais
-      const hasBehavioralData = content.musical_stereotypies >= 1 || content.ritual_behaviors >= 1 || 
-        content.sensory_seeking >= 1 || content.self_regulation_music >= 1 || content.behavioral_flexibility >= 1;
+      const hasBehavioralData = (content.musical_stereotypies ?? 5) >= 1 || (content.ritual_behaviors ?? 5) >= 1 || 
+        (content.sensory_seeking ?? 5) >= 1 || (content.self_regulation_music ?? 5) >= 1 || (content.behavioral_flexibility ?? 5) >= 1;
       
       if (hasBehavioralData) {
         htmlContent += `
