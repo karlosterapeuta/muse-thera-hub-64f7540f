@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SelectField } from "./components/SelectField";
+import { ScaleField } from "./components/ScaleField";
+import { TextAreaField } from "./components/TextAreaField";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { ModernFormCard } from "../anamnesis/components/ModernFormCard";
 import html2pdf from "html2pdf.js";
@@ -51,6 +53,35 @@ export default function TreatmentPlanForm() {
     intervention_strategies: "",
     musical_resources: "",
     additional_notes: "",
+    
+    // TEA - Perfil Sensorial Musical
+    auditory_sensitivity: 5,
+    frequency_responsiveness: 5,
+    volume_tolerance: 5,
+    texture_preference: 5,
+    rhythmic_processing: 5,
+    
+    // TEA - Comunicação Social Musical
+    musical_communication: 5,
+    non_verbal_expression: 5,
+    social_interaction_music: 5,
+    joint_attention_music: 5,
+    imitation_skills: 5,
+    
+    // TEA - Comportamentos Musicais
+    musical_stereotypies: 5,
+    ritual_behaviors: 5,
+    sensory_seeking: 5,
+    self_regulation_music: 5,
+    behavioral_flexibility: 5,
+    
+    // TEA - Campos de Texto Específicos
+    tea_approach_methodology: "",
+    adaptive_resources: "",
+    communication_strategies: "",
+    sensory_program: "",
+    family_guidance: "",
+    evaluation_methods: "",
   });
 
   const formatNameFromEmail = (email: string) => {
@@ -148,10 +179,16 @@ export default function TreatmentPlanForm() {
     const translations: Record<string, string> = {
       'behavioral': 'Musicoterapia Comportamental',
       'nordoff_robbins': 'Modelo Nordoff-Robbins',
+      'nordoff_robbins_tea': 'Modelo Nordoff-Robbins para TEA',
       'neurologic': 'Musicoterapia Neurológica (NMT)',
+      'nmt_tea': 'Musicoterapia Neurológica para TEA',
       'analytical': 'Musicoterapia Analítica',
       'creative': 'Processos Criativos em Musicoterapia',
       'gim': 'Imagery Guiada e Música (GIM)',
+      'dir_floortime': 'DIR/Floortime Musical',
+      'teacch_music': 'TEACCH Musical',
+      'aba_music': 'ABA Musical',
+      'sensory_integration': 'Integração Sensorial Musical',
     };
     return translations[value] || value;
   };
@@ -238,6 +275,33 @@ export default function TreatmentPlanForm() {
       'voice': 'Recursos Vocais',
       'technology': 'Tecnologia Musical',
       'mixed_resources': 'Recursos Mistos',
+      'adaptive_instruments': 'Instrumentos Adaptativos',
+      'sensory_instruments': 'Instrumentos Sensoriais',
+      'communication_devices': 'Dispositivos de Comunicação Musical',
+      'assistive_technology': 'Tecnologia Assistiva Musical',
+    };
+    return translations[value] || value;
+  };
+
+  // Novas funções de tradução para campos TEA
+  const translateTeaApproachMethodology = (value: string): string => {
+    const translations: Record<string, string> = {
+      'dir_floortime': 'DIR/Floortime Musical - Desenvolvimento individual baseado nas forças e desafios únicos da criança',
+      'teacch_structured': 'TEACCH Musical - Ensino estruturado com suporte visual e musical',
+      'aba_music': 'ABA Musical - Análise comportamental aplicada com reforços musicais',
+      'sensory_integration': 'Integração Sensorial Musical - Foco no processamento sensorial através da música',
+      'pecs_musical': 'PECS Musical - Sistema de comunicação por intercâmbio de figuras musicais',
+    };
+    return translations[value] || value;
+  };
+
+  const translateAdaptiveResources = (value: string): string => {
+    const translations: Record<string, string> = {
+      'switch_instruments': 'Instrumentos com Adaptadores de Acionamento',
+      'vibrotactile': 'Instrumentos Vibrotáteis',
+      'visual_cues': 'Instrumentos com Pistas Visuais',
+      'simplified_interfaces': 'Interfaces Musicais Simplificadas',
+      'sensory_friendly': 'Instrumentos Sensorialmente Apropriados',
     };
     return translations[value] || value;
   };
@@ -452,7 +516,9 @@ export default function TreatmentPlanForm() {
     }
 
     // Check if any required fields are filled
-    const hasContent = Object.values(formData).some(value => value.trim() !== "");
+    const hasContent = Object.values(formData).some(value => 
+      typeof value === 'string' ? value.trim() !== "" : value !== 0
+    );
     if (!hasContent) {
       toast({
         title: "Atenção",
@@ -478,7 +544,9 @@ export default function TreatmentPlanForm() {
     }
 
     // Check if any required fields are filled
-    const hasContent = Object.values(formData).some(value => value.trim() !== "");
+    const hasContent = Object.values(formData).some(value => 
+      typeof value === 'string' ? value.trim() !== "" : value !== 0
+    );
     if (!hasContent) {
       toast({
         title: "Atenção",
@@ -528,7 +596,7 @@ export default function TreatmentPlanForm() {
     }
   };
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
+  const handleInputChange = (field: keyof typeof formData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -542,12 +610,14 @@ export default function TreatmentPlanForm() {
           key: "approach_type",
           label: "Abordagem Terapêutica",
           options: [
+            { value: "dir_floortime", label: "DIR/Floortime Musical" },
+            { value: "teacch_music", label: "TEACCH Musical" },
+            { value: "aba_music", label: "ABA Musical" },
+            { value: "nordoff_robbins_tea", label: "Modelo Nordoff-Robbins para TEA" },
+            { value: "nmt_tea", label: "Musicoterapia Neurológica para TEA" },
+            { value: "sensory_integration", label: "Integração Sensorial Musical" },
             { value: "behavioral", label: "Musicoterapia Comportamental" },
-            { value: "nordoff_robbins", label: "Modelo Nordoff-Robbins" },
-            { value: "neurologic", label: "Musicoterapia Neurológica (NMT)" },
-            { value: "analytical", label: "Musicoterapia Analítica" },
             { value: "creative", label: "Processos Criativos em Musicoterapia" },
-            { value: "gim", label: "Imagery Guiada e Música (GIM)" },
           ],
         },
         {
@@ -650,14 +720,47 @@ export default function TreatmentPlanForm() {
           key: "musical_resources",
           label: "Recursos Musicais",
           options: [
+            { value: "adaptive_instruments", label: "Instrumentos Adaptativos" },
+            { value: "sensory_instruments", label: "Instrumentos Sensoriais" },
+            { value: "communication_devices", label: "Dispositivos de Comunicação Musical" },
+            { value: "assistive_technology", label: "Tecnologia Assistiva Musical" },
             { value: "percussion", label: "Instrumentos de Percussão" },
             { value: "melodic", label: "Instrumentos Melódicos" },
             { value: "voice", label: "Recursos Vocais" },
-            { value: "technology", label: "Tecnologia Musical" },
             { value: "mixed_resources", label: "Recursos Mistos" },
           ],
         },
       ],
+    },
+    
+    // Novas seções específicas para TEA
+    {
+      title: "Perfil Sensorial Musical (TEA)",
+      icon: Brain,
+      gradient: "from-emerald-500 to-emerald-600",
+      type: "tea_sensory",
+      description: "Avaliação do processamento sensorial auditivo e resposta a estímulos musicais",
+    },
+    {
+      title: "Comunicação Social Musical (TEA)",
+      icon: Users,
+      gradient: "from-rose-500 to-rose-600", 
+      type: "tea_communication",
+      description: "Habilidades de comunicação e interação social através da música",
+    },
+    {
+      title: "Padrões Comportamentais Musicais (TEA)",
+      icon: Heart,
+      gradient: "from-amber-500 to-amber-600",
+      type: "tea_behavioral", 
+      description: "Comportamentos, estereotipias e autorregulação através da música",
+    },
+    {
+      title: "Metodologias e Recursos Especializados (TEA)",
+      icon: Clock,
+      gradient: "from-cyan-500 to-cyan-600",
+      type: "tea_methodology",
+      description: "Abordagens específicas para TEA e recursos adaptativos",
     },
   ];
 
@@ -714,27 +817,248 @@ export default function TreatmentPlanForm() {
           </ModernFormCard>
 
           {/* Dynamic Sections */}
-          {sections.map((section) => (
-            <ModernFormCard
-              key={section.title}
-              title={section.title}
-              icon={section.icon}
-              gradient={section.gradient}
-              className="transform hover:scale-[1.02] transition-all duration-300"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {section.fields.map((field) => (
-                  <SelectField
-                    key={field.key}
-                    label={field.label}
-                    value={formData[field.key as keyof typeof formData]}
-                    onChange={(value) => handleInputChange(field.key as keyof typeof formData, value)}
-                    options={field.options}
-                  />
-                ))}
-              </div>
-            </ModernFormCard>
-          ))}
+          {sections.map((section) => {
+            if (section.type === "tea_sensory") {
+              return (
+                <ModernFormCard
+                  key={section.title}
+                  title={section.title}
+                  icon={section.icon}
+                  gradient={section.gradient}
+                  className="transform hover:scale-[1.02] transition-all duration-300"
+                >
+                  <div className="space-y-6">
+                    <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                      {section.description}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <ScaleField
+                        label="Sensibilidade Auditiva"
+                        value={formData.auditory_sensitivity}
+                        onChange={(value) => handleInputChange("auditory_sensitivity", value)}
+                        description="Resposta a diferentes intensidades sonoras"
+                      />
+                      <ScaleField
+                        label="Responsividade a Frequências"
+                        value={formData.frequency_responsiveness}
+                        onChange={(value) => handleInputChange("frequency_responsiveness", value)}
+                        description="Reação a sons agudos e graves"
+                      />
+                      <ScaleField
+                        label="Tolerância ao Volume"
+                        value={formData.volume_tolerance}
+                        onChange={(value) => handleInputChange("volume_tolerance", value)}
+                        description="Capacidade de lidar com diferentes volumes"
+                      />
+                      <ScaleField
+                        label="Preferência de Texturas Sonoras"
+                        value={formData.texture_preference}
+                        onChange={(value) => handleInputChange("texture_preference", value)}
+                        description="Interesse por diferentes timbres musicais"
+                      />
+                      <div className="md:col-span-2">
+                        <ScaleField
+                          label="Processamento Rítmico"
+                          value={formData.rhythmic_processing}
+                          onChange={(value) => handleInputChange("rhythmic_processing", value)}
+                          description="Habilidade para perceber e sincronizar com ritmos"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </ModernFormCard>
+              );
+            }
+            
+            if (section.type === "tea_communication") {
+              return (
+                <ModernFormCard
+                  key={section.title}
+                  title={section.title}
+                  icon={section.icon}
+                  gradient={section.gradient}
+                  className="transform hover:scale-[1.02] transition-all duration-300"
+                >
+                  <div className="space-y-6">
+                    <p className="text-sm text-gray-600 bg-rose-50 p-3 rounded-lg border border-rose-200">
+                      {section.description}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <ScaleField
+                        label="Comunicação Musical"
+                        value={formData.musical_communication}
+                        onChange={(value) => handleInputChange("musical_communication", value)}
+                        description="Uso da música para se comunicar"
+                      />
+                      <ScaleField
+                        label="Expressão Não-Verbal"
+                        value={formData.non_verbal_expression}
+                        onChange={(value) => handleInputChange("non_verbal_expression", value)}
+                        description="Comunicação através de gestos e movimentos"
+                      />
+                      <ScaleField
+                        label="Interação Social Musical"
+                        value={formData.social_interaction_music}
+                        onChange={(value) => handleInputChange("social_interaction_music", value)}
+                        description="Engajamento social durante atividades musicais"
+                      />
+                      <ScaleField
+                        label="Atenção Conjunta Musical"
+                        value={formData.joint_attention_music}
+                        onChange={(value) => handleInputChange("joint_attention_music", value)}
+                        description="Compartilhamento de experiências musicais"
+                      />
+                      <div className="md:col-span-2">
+                        <ScaleField
+                          label="Habilidades de Imitação"
+                          value={formData.imitation_skills}
+                          onChange={(value) => handleInputChange("imitation_skills", value)}
+                          description="Capacidade de imitar sons e movimentos musicais"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </ModernFormCard>
+              );
+            }
+            
+            if (section.type === "tea_behavioral") {
+              return (
+                <ModernFormCard
+                  key={section.title}
+                  title={section.title}
+                  icon={section.icon}
+                  gradient={section.gradient}
+                  className="transform hover:scale-[1.02] transition-all duration-300"
+                >
+                  <div className="space-y-6">
+                    <p className="text-sm text-gray-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                      {section.description}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <ScaleField
+                        label="Estereotipias Musicais"
+                        value={formData.musical_stereotypies}
+                        onChange={(value) => handleInputChange("musical_stereotypies", value)}
+                        description="Frequência de movimentos repetitivos com música"
+                      />
+                      <ScaleField
+                        label="Comportamentos Rituais"
+                        value={formData.ritual_behaviors}
+                        onChange={(value) => handleInputChange("ritual_behaviors", value)}
+                        description="Necessidade de rotinas musicais específicas"
+                      />
+                      <ScaleField
+                        label="Busca Sensorial"
+                        value={formData.sensory_seeking}
+                        onChange={(value) => handleInputChange("sensory_seeking", value)}
+                        description="Procura por estimulação sensorial através da música"
+                      />
+                      <ScaleField
+                        label="Autorregulação Musical"
+                        value={formData.self_regulation_music}
+                        onChange={(value) => handleInputChange("self_regulation_music", value)}
+                        description="Uso da música para se acalmar ou regular"
+                      />
+                      <div className="md:col-span-2">
+                        <ScaleField
+                          label="Flexibilidade Comportamental"
+                          value={formData.behavioral_flexibility}
+                          onChange={(value) => handleInputChange("behavioral_flexibility", value)}
+                          description="Adaptabilidade a mudanças nas atividades musicais"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </ModernFormCard>
+              );
+            }
+            
+            if (section.type === "tea_methodology") {
+              return (
+                <ModernFormCard
+                  key={section.title}
+                  title={section.title}
+                  icon={section.icon}
+                  gradient={section.gradient}
+                  className="transform hover:scale-[1.02] transition-all duration-300"
+                >
+                  <div className="space-y-6">
+                    <p className="text-sm text-gray-600 bg-cyan-50 p-3 rounded-lg border border-cyan-200">
+                      {section.description}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <TextAreaField
+                        label="Metodologia de Abordagem TEA"
+                        value={formData.tea_approach_methodology}
+                        onChange={(value) => handleInputChange("tea_approach_methodology", value)}
+                        placeholder="Descreva a metodologia específica para TEA (DIR/Floortime, TEACCH, ABA, etc.)"
+                        description="Detalhe como a abordagem será adaptada para o espectro autista"
+                      />
+                      <TextAreaField
+                        label="Recursos Adaptativos"
+                        value={formData.adaptive_resources}
+                        onChange={(value) => handleInputChange("adaptive_resources", value)}
+                        placeholder="Instrumentos adaptativos, tecnologia assistiva, suportes visuais..."
+                        description="Liste recursos especializados para necessidades individuais"
+                      />
+                      <TextAreaField
+                        label="Estratégias de Comunicação"
+                        value={formData.communication_strategies}
+                        onChange={(value) => handleInputChange("communication_strategies", value)}
+                        placeholder="PECS musicais, símbolos, gestos, comunicação aumentativa..."
+                        description="Métodos para facilitar a comunicação através da música"
+                      />
+                      <TextAreaField
+                        label="Programação Sensorial"
+                        value={formData.sensory_program}
+                        onChange={(value) => handleInputChange("sensory_program", value)}
+                        placeholder="Cronograma de exposição gradual, atividades de integração sensorial..."
+                        description="Plano para modulação e integração sensorial"
+                      />
+                      <TextAreaField
+                        label="Orientações Familiares"
+                        value={formData.family_guidance}
+                        onChange={(value) => handleInputChange("family_guidance", value)}
+                        placeholder="Atividades domiciliares, estratégias para os pais, recursos para casa..."
+                        description="Direcionamentos para continuidade terapêutica em casa"
+                      />
+                      <TextAreaField
+                        label="Métodos de Avaliação"
+                        value={formData.evaluation_methods}
+                        onChange={(value) => handleInputChange("evaluation_methods", value)}
+                        placeholder="Escalas padronizadas, observação estruturada, registro de dados..."
+                        description="Instrumentos para monitoramento e avaliação do progresso"
+                      />
+                    </div>
+                  </div>
+                </ModernFormCard>
+              );
+            }
+            
+            // Seções tradicionais
+            return (
+              <ModernFormCard
+                key={section.title}
+                title={section.title}
+                icon={section.icon}
+                gradient={section.gradient}
+                className="transform hover:scale-[1.02] transition-all duration-300"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {section.fields?.map((field) => (
+                    <SelectField
+                      key={field.key}
+                      label={field.label}
+                      value={String(formData[field.key as keyof typeof formData])}
+                      onChange={(value) => handleInputChange(field.key as keyof typeof formData, value)}
+                      options={field.options}
+                    />
+                  ))}
+                </div>
+              </ModernFormCard>
+            );
+          })}
 
           {/* Additional Notes */}
           <ModernFormCard
