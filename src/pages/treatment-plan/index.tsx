@@ -868,14 +868,31 @@ export default function TreatmentPlanForm() {
       console.log("Gerando PDF...");
 
       try {
-        // Add to DOM temporarily for rendering
-        element.style.position = 'absolute';
-        element.style.left = '-9999px';
-        element.style.top = '-9999px';
+        // Add element to DOM with proper visibility for html2pdf
+        element.style.position = 'fixed';
+        element.style.top = '0';
+        element.style.left = '0';
+        element.style.width = '210mm';
+        element.style.backgroundColor = '#ffffff';
+        element.style.zIndex = '-1000';
+        element.style.opacity = '0';
+        element.style.pointerEvents = 'none';
         document.body.appendChild(element);
         
-        // Wait for content to load
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log("Element added to DOM, checking content...");
+        console.log("FormData being used:", formData);
+        
+        // Wait for content to render
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Verify content exists before generating PDF
+        const hasVisibleContent = element.innerHTML && element.innerHTML.length > 1000;
+        console.log("Content length:", element.innerHTML.length);
+        console.log("Has visible content:", hasVisibleContent);
+        
+        if (!hasVisibleContent) {
+          throw new Error('Conteúdo não foi renderizado corretamente');
+        }
         
         // Generate PDF with error handling
         const pdf = html2pdf().from(element).set(opt);
