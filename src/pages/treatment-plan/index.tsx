@@ -412,107 +412,198 @@ export default function TreatmentPlanForm() {
         </div>
       `;
 
-      // Metodologia e Recursos
-      if (content.treatment_model || content.musical_methods) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #059669; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #059669; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🎵</span> Metodologia e Recursos
-            </h2>
-            <div style="background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #059669;">
-              ${content.treatment_model ? `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎯 Modelo de Tratamento</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.treatment_model}</div>
-                </div>
-              ` : ''}
-              ${content.musical_methods ? `
-                <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎶 Métodos Musicais</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_methods}</div>
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }
-
-      // Objetivos e Avaliação
-      if (content.therapeutic_focus || content.expected_outcomes) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🎯</span> Objetivos e Avaliação
-            </h2>
-            <div style="background: linear-gradient(135deg, #FAF5FF 0%, #FDF4FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C3AED;">
-              ${content.therapeutic_focus ? `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">🔍 Foco Terapêutico</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.therapeutic_focus}</div>
-                </div>
-              ` : ''}
-              ${content.expected_outcomes ? `
-                <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">📈 Resultados Esperados</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.expected_outcomes}</div>
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }
-
-      // Estratégias e Recursos
-      if (content.intervention_strategies || content.musical_resources) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #DC2626; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🛠️</span> Estratégias e Recursos
-            </h2>
-            <div style="background: linear-gradient(135deg, #FEF2F2 0%, #FFF5F5 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #DC2626;">
-              ${content.intervention_strategies ? `
-                <div style="margin-bottom: 16px;">
-                  <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">💡 Estratégias de Intervenção</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_strategies}</div>
-                </div>
-              ` : ''}
-              ${content.musical_resources ? `
-                <div style="margin-bottom: 0;">
-                  <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">🎹 Recursos Musicais</div>
-                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_resources}</div>
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }
-
-      // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = content.auditory_sensitivity || content.frequency_responsiveness || 
-        content.volume_tolerance || content.texture_preference || content.rhythmic_processing;
-      
-      if (hasMusicalSensoryData) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #EA580C; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #EA580C; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🧠</span> Perfil Sensorial Musical (TEA)
-            </h2>
-            <div style="background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #EA580C;">
+      // Metodologia e Recursos - SEMPRE exibir
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #059669; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #059669; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🎵</span> Metodologia e Recursos
+          </h2>
+          <div style="background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #059669;">
+            ${content.treatment_model ? `
               <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
-                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${content.auditory_sensitivity ? generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva') : ''}
-                  ${content.frequency_responsiveness ? generateScaleVisualization(content.frequency_responsiveness, 'Responsividade às Frequências') : ''}
-                  ${content.volume_tolerance ? generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume') : ''}
-                  ${content.texture_preference ? generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras') : ''}
-                  ${content.rhythmic_processing ? generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico') : ''}
+                <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎯 Modelo de Tratamento</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.treatment_model}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎯 Modelo de Tratamento</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+            ${content.musical_methods ? `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎶 Métodos Musicais</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_methods}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎶 Métodos Musicais</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+
+      // Objetivos e Avaliação - SEMPRE exibir
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🎯</span> Objetivos e Avaliação
+          </h2>
+          <div style="background: linear-gradient(135deg, #FAF5FF 0%, #FDF4FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C3AED;">
+            ${content.therapeutic_focus ? `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">🔍 Foco Terapêutico</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.therapeutic_focus}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">🔍 Foco Terapêutico</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+            ${content.expected_outcomes ? `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">📈 Resultados Esperados</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.expected_outcomes}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">📈 Resultados Esperados</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+
+      // Estratégias e Recursos - SEMPRE exibir
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #DC2626; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🛠️</span> Estratégias e Recursos
+          </h2>
+          <div style="background: linear-gradient(135deg, #FEF2F2 0%, #FFF5F5 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #DC2626;">
+            ${content.intervention_strategies ? `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">💡 Estratégias de Intervenção</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_strategies}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">💡 Estratégias de Intervenção</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+            ${content.musical_resources ? `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">🎹 Recursos Musicais</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_resources}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">🎹 Recursos Musicais</div>
+                <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Não especificado</div>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+
+      // Perfil Sensorial Musical (TEA) - SEMPRE exibir com escalas visuais
+      const hasMusicalSensoryData = content.auditory_sensitivity !== undefined || content.frequency_responsiveness !== undefined || 
+        content.volume_tolerance !== undefined || content.texture_preference !== undefined || content.rhythmic_processing !== undefined;
+      
+      // SEMPRE exibir a seção TEA
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #EA580C; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #EA580C; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🧠</span> Perfil Sensorial Musical (TEA)
+          </h2>
+          <div style="background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #EA580C;">
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${content.auditory_sensitivity ? generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva') : generateScaleVisualization(5, 'Sensibilidade Auditiva')}
+                ${content.frequency_responsiveness ? generateScaleVisualization(content.frequency_responsiveness, 'Responsividade às Frequências') : generateScaleVisualization(5, 'Responsividade às Frequências')}
+                ${content.volume_tolerance ? generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume') : generateScaleVisualization(5, 'Tolerância ao Volume')}
+                ${content.texture_preference ? generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras') : generateScaleVisualization(5, 'Preferência por Texturas Sonoras')}
+                ${content.rhythmic_processing ? generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico') : generateScaleVisualization(5, 'Processamento Rítmico')}
+              </div>
+            </div>
+
+            <!-- Comunicação Social Musical (TEA) -->
+            <div style="margin-bottom: 20px;">
+              <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">🗣️ Comunicação Social Musical</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${content.musical_communication ? generateScaleVisualization(content.musical_communication, 'Comunicação Musical') : generateScaleVisualization(5, 'Comunicação Musical')}
+                ${content.non_verbal_expression ? generateScaleVisualization(content.non_verbal_expression, 'Expressão Não-Verbal') : generateScaleVisualization(5, 'Expressão Não-Verbal')}
+                ${content.social_interaction_music ? generateScaleVisualization(content.social_interaction_music, 'Interação Social Musical') : generateScaleVisualization(5, 'Interação Social Musical')}
+                ${content.joint_attention_music ? generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical') : generateScaleVisualization(5, 'Atenção Compartilhada Musical')}
+                ${content.imitation_skills ? generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação') : generateScaleVisualization(5, 'Habilidades de Imitação')}
+              </div>
+            </div>
+
+            <!-- Comportamentos Musicais Específicos (TEA) -->
+            <div style="margin-bottom: 20px;">
+              <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">🎵 Padrões Comportamentais Musicais</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${content.musical_stereotypies ? generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais') : generateScaleVisualization(5, 'Estereotipias Musicais')}
+                ${content.ritual_behaviors ? generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Rituais') : generateScaleVisualization(5, 'Comportamentos Rituais')}
+                ${content.sensory_seeking ? generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial') : generateScaleVisualization(5, 'Busca Sensorial')}
+                ${content.self_regulation_music ? generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical') : generateScaleVisualization(5, 'Autorregulação Musical')}
+                ${content.behavioral_flexibility ? generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental') : generateScaleVisualization(5, 'Flexibilidade Comportamental')}
+              </div>
+            </div>
+
+            <!-- Observações Qualitativas -->
+            ${content.additional_notes ? `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                  <span style="margin-right: 6px;">📝</span> Observações Qualitativas Adicionais
                 </div>
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.additional_notes}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                  <span style="margin-right: 6px;">📝</span> Observações Qualitativas Adicionais
+                </div>
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Nenhuma observação adicional especificada</div>
+              </div>
+            `}
+
+            <!-- Recomendações de Implementação -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">💡</span> Recomendações de Implementação
+              </div>
+              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="margin-bottom: 8px;"><strong>• Fase Inicial (1-2 meses):</strong> Estabelecimento de vínculo terapêutico e avaliação contínua das respostas musicais</div>
+                <div style="margin-bottom: 8px;"><strong>• Fase de Desenvolvimento (3-6 meses):</strong> Implementação das estratégias específicas com foco nos objetivos prioritários</div>
+                <div style="margin-bottom: 8px;"><strong>• Reavaliação (6 meses):</strong> Análise do progresso e ajustes necessários no plano terapêutico</div>
+                <div><strong>• Monitoramento Contínuo:</strong> Registro semanal das atividades e observações comportamentais</div>
+              </div>
+            </div>
+
+            <!-- Critérios de Sucesso -->
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">🎯</span> Critérios de Sucesso
+              </div>
+              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="margin-bottom: 6px;">• Melhora observável nas escalas de avaliação (aumento mínimo de 1 ponto)</div>
+                <div style="margin-bottom: 6px;">• Engajamento sustentado nas atividades musicais por períodos progressivamente maiores</div>
+                <div style="margin-bottom: 6px;">• Transferência das habilidades adquiridas para outros contextos</div>
+                <div>• Feedback positivo da família/equipe multidisciplinar sobre progressos observados</div>
               </div>
             </div>
           </div>
-          <div class="page-break-after"></div>
-        `;
-      }
+        </div>
+      `;
+
+      return htmlContent;
 
       // Comunicação Social Musical (TEA) - com escalas visuais
       const hasSocialCommunicationData = content.musical_communication || content.non_verbal_expression || 
@@ -664,7 +755,6 @@ export default function TreatmentPlanForm() {
             </div>
           </div>
         `;
-      }
 
       return htmlContent;
     };
