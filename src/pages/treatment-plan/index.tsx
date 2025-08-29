@@ -790,7 +790,7 @@ export default function TreatmentPlanForm() {
       `;
 
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [8, 8, 8, 8],
         filename: `Plano_Terapeutico_TEA_${selectedPatientData.name.replace(/\s+/g, '_')}_${currentDate.toISOString().split('T')[0]}.pdf`,
         pagebreak: { 
           mode: ['avoid-all', 'css', 'legacy'],
@@ -802,36 +802,53 @@ export default function TreatmentPlanForm() {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
-          compress: true,
+          compress: false, // Changed to false for better quality
+          precision: 2,
         },
         html2canvas: {
-          scale: 2.5,
+          scale: 2.0, // Reduced scale for better performance
           useCORS: true,
           letterRendering: true,
           backgroundColor: '#ffffff',
-          logging: false,
+          logging: true, // Enable logging for debugging
           allowTaint: false,
-          removeContainer: true,
+          removeContainer: false, // Keep container for debugging
           foreignObjectRendering: false,
-          imageTimeout: 15000,
+          imageTimeout: 20000, // Increased timeout
           width: 794,
           height: 1123,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: 794,
+          windowHeight: 1123,
         },
       };
 
       console.log("Configurações do PDF:", opt);
-      console.log("Gerando PDF...");
+      console.log("HTML completo gerado:", element.innerHTML.length, "caracteres");
+      console.log("Dados do formulário para PDF:", {
+        patientName: selectedPatientData.name,
+        formDataKeys: Object.keys(formData),
+        teaScales: {
+          auditory_sensitivity: formData.auditory_sensitivity,
+          musical_communication: formData.musical_communication,
+          musical_stereotypies: formData.musical_stereotypies
+        }
+      });
 
       // Add to DOM temporarily for rendering
       document.body.appendChild(element);
       
-      // Wait for fonts and styles to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for complete rendering
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
+      console.log("Iniciando conversão para PDF...");
       await html2pdf().from(element).set(opt).save();
       
-      // Remove from DOM
-      document.body.removeChild(element);
+      // Clean up DOM
+      if (document.body.contains(element)) {
+        document.body.removeChild(element);
+      }
       
       console.log("PDF gerado com sucesso!");
       
@@ -856,6 +873,40 @@ export default function TreatmentPlanForm() {
     }
   };
 
+  const hasValidContent = () => {
+    // Check if any text fields are filled OR if any TEA scales are different from default (5)
+    const textFields = [
+      'approach_type', 'intervention_frequency', 'session_duration', 'treatment_model',
+      'musical_methods', 'therapeutic_focus', 'expected_outcomes', 'evaluation_criteria',
+      'intervention_strategies', 'musical_resources', 'additional_notes',
+      'tea_approach_methodology', 'adaptive_resources', 'communication_strategies',
+      'sensory_program', 'family_guidance', 'evaluation_methods'
+    ];
+    
+    const scaleFields = [
+      'auditory_sensitivity', 'frequency_responsiveness', 'volume_tolerance',
+      'texture_preference', 'rhythmic_processing', 'musical_communication',
+      'non_verbal_expression', 'social_interaction_music', 'joint_attention_music',
+      'imitation_skills', 'musical_stereotypies', 'ritual_behaviors',
+      'sensory_seeking', 'self_regulation_music', 'behavioral_flexibility'
+    ];
+    
+    // Check if any text field has content
+    const hasTextContent = textFields.some(field => {
+      const value = formData[field as keyof typeof formData];
+      return typeof value === 'string' && value.trim() !== '';
+    });
+    
+    // Check if any scale is different from default (5) - this indicates user interaction
+    const hasModifiedScales = scaleFields.some(field => {
+      const value = formData[field as keyof typeof formData];
+      return typeof value === 'number' && value !== 5;
+    });
+    
+    // Always allow PDF generation if patient is selected (even with default values)
+    return true; // Changed to always allow PDF generation with selected patient
+  };
+
   const handleDownloadPDF = async () => {
     if (!selectedPatient) {
       toast({
@@ -866,18 +917,14 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    // Check if any required fields are filled
-    const hasContent = Object.values(formData).some(value => 
-      typeof value === 'string' ? value.trim() !== "" : value !== 0
-    );
-    if (!hasContent) {
-      toast({
-        title: "Atenção",
-        description: "Por favor, preencha pelo menos um campo do plano terapêutico antes de gerar o PDF.",
-        variant: "destructive",
-      });
-      return;
-    }
+    console.log("Iniciando geração do PDF...", {
+      selectedPatient,
+      formDataSample: {
+        approach_type: formData.approach_type,
+        auditory_sensitivity: formData.auditory_sensitivity,
+        textFieldsCount: Object.keys(formData).filter(k => typeof formData[k as keyof typeof formData] === 'string').length
+      }
+    });
 
     await generatePDF();
   };
@@ -894,17 +941,9 @@ export default function TreatmentPlanForm() {
       return;
     }
 
-    // Check if any required fields are filled
-    const hasContent = Object.values(formData).some(value => 
-      typeof value === 'string' ? value.trim() !== "" : value !== 0
-    );
-    if (!hasContent) {
-      toast({
-        title: "Atenção",
-        description: "Por favor, preencha pelo menos um campo do plano terapêutico.",
-        variant: "destructive",
-      });
-      return;
+    // Always allow saving if patient is selected (validation is optional for form submission)
+    if (!hasValidContent()) {
+      console.log("Nenhum conteúdo modificado detectado, mas salvando com valores padrão...");
     }
 
     try {
