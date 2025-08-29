@@ -124,7 +124,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "borboletinha-bell": {
     id: "borboletinha-bell", name: "Borboletinha", bpm: 100, timeSignature: "4/4",
-    totalDuration: 16000, difficulty: "Fácil", loops: 1,
+    totalDuration: 24000, difficulty: "Fácil", loops: 1,
     notes: [
       // "Borboletinha tá na cozinha"
       createNote("C", 4, 500, 0, "bell"),     // Bor-
@@ -150,10 +150,33 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("D", 4, 500, 11600, "bell"), // a
       createNote("C", 4, 1000, 12200, "bell"), // ma-dri-nha
       
+      // "Poti, poti, perna de pau"
+      createNote("G", 4, 400, 13800, "bell"), // Po-
+      createNote("G", 4, 400, 14200, "bell"), // -ti
+      createNote("A", 4, 400, 14600, "bell"), // Po-
+      createNote("A", 4, 400, 15000, "bell"), // -ti
+      createNote("F", 4, 400, 15400, "bell"), // per-
+      createNote("G", 4, 400, 15800, "bell"), // -na
+      createNote("A", 4, 400, 16200, "bell"), // de
+      createNote("F", 4, 1000, 16600, "bell"), // pau
+      
+      // "Olho de vidro e nariz de pica-pau"
+      createNote("C", 4, 400, 18200, "bell"), // O-
+      createNote("D", 4, 400, 18600, "bell"), // -lho
+      createNote("E", 4, 400, 19000, "bell"), // de
+      createNote("F", 4, 600, 19400, "bell"), // vi-dro
+      createNote("G", 4, 400, 20200, "bell"), // e
+      createNote("A", 4, 400, 20600, "bell"), // na-
+      createNote("G", 4, 400, 21000, "bell"), // -riz
+      createNote("F", 4, 400, 21400, "bell"), // de
+      createNote("E", 4, 400, 21800, "bell"), // pi-
+      createNote("D", 4, 400, 22200, "bell"), // -ca
+      createNote("C", 4, 800, 22600, "bell"), // pau
+      
       // Final melódico
-      createNote("G", 4, 800, 13800, "bell"),
-      createNote("E", 4, 800, 14600, "bell"),
-      createNote("C", 4, 1600, 15400, "bell")
+      createNote("G", 4, 800, 23600, "bell"),
+      createNote("E", 4, 800, 24000, "bell"),
+      createNote("C", 4, 1200, 24800, "bell")
     ]
   },
 
