@@ -110,7 +110,7 @@ export default function SprunKi() {
           {/* Iframe */}
           <iframe
             ref={iframeRef}
-            src="https://poki.com/br/g/sprunki"
+            src="https://www.gameflare.com/online-game/sprunki-ultimate-deluxe/"
             className="w-full h-full border-0"
             loading="lazy"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
