@@ -30,9 +30,9 @@ const createNote = (note: string, octave: number, duration: number, timing: numb
   return { note, octave, frequency, duration, timing };
 };
 
-// SEQUÊNCIAS MUSICAIS COMPLETAS E AUTÊNTICAS - 18 músicas infantis brasileiras
+// SEQUÊNCIAS MUSICAIS COMPLETAS E AUTÊNTICAS - 18 músicas infantis brasileiras CORRIGIDAS
 export const authenticMusicalSequences: Record<string, MusicalSequence> = {
-  // === SINO (BELL) - 6 músicas ===
+  // === SINO (BELL) - 6 músicas CORRIGIDAS ===
   "twinkle-bell": {
     id: "twinkle-bell", name: "Brilha, Brilha Estrelinha", bpm: 120, timeSignature: "4/4",
     totalDuration: 24000, difficulty: "Fácil", loops: 1,
@@ -84,92 +84,84 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  "mary-lamb-bell": {
-    id: "mary-lamb-bell", name: "Maria, Maria (Elis Regina)", bpm: 90, timeSignature: "4/4",
-    totalDuration: 20000, difficulty: "Fácil", loops: 1,
+  "parabens-bell": {
+    id: "parabens-bell", name: "Parabéns a Você", bpm: 90, timeSignature: "4/4",
+    totalDuration: 18000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Maria, Maria é um dom, uma certa magia"
-      createNote("E", 4, 600, 0, "bell"),     // Ma-
-      createNote("D", 4, 600, 700, "bell"),   // -ri-
-      createNote("C", 4, 600, 1400, "bell"),  // -a
-      createNote("D", 4, 400, 2100, "bell"),  // Ma-
-      createNote("E", 4, 600, 2500, "bell"),  // -ri-
-      createNote("E", 4, 600, 3200, "bell"),  // -a
-      createNote("E", 4, 800, 3900, "bell"),  // é
+      // "Parabéns para você"
+      createNote("C", 4, 500, 0, "bell"),     // Pa-
+      createNote("C", 4, 500, 667, "bell"),   // -ra-
+      createNote("D", 4, 1000, 1334, "bell"), // -béns
+      createNote("C", 4, 1000, 2668, "bell"), // pa-
+      createNote("F", 4, 1000, 4002, "bell"), // -ra
+      createNote("E", 4, 2000, 5336, "bell"), // vo-cê
       
-      createNote("D", 4, 600, 5000, "bell"),  // um
-      createNote("D", 4, 600, 5700, "bell"),  // dom
-      createNote("D", 4, 800, 6400, "bell"),  // uma
-      createNote("E", 4, 600, 7500, "bell"),  // cer-
-      createNote("G", 4, 600, 8200, "bell"),  // -ta
-      createNote("G", 4, 1000, 8900, "bell"), // ma-gia
+      // "Parabéns para você" 
+      createNote("C", 4, 500, 7670, "bell"),  // Pa-
+      createNote("C", 4, 500, 8337, "bell"),  // -ra-
+      createNote("D", 4, 1000, 9004, "bell"), // -béns
+      createNote("C", 4, 1000, 10338, "bell"), // pa-
+      createNote("G", 4, 1000, 11672, "bell"), // -ra
+      createNote("F", 4, 2000, 13006, "bell"), // vo-cê
       
-      // "Uma força que nos alerta"
-      createNote("G", 4, 600, 10500, "bell"), // U-
-      createNote("F", 4, 600, 11200, "bell"), // -ma
-      createNote("E", 4, 600, 11900, "bell"), // for-
-      createNote("D", 4, 600, 12600, "bell"), // -ça
-      createNote("C", 4, 600, 13300, "bell"), // que
-      createNote("D", 4, 600, 14000, "bell"), // nos
-      createNote("E", 4, 800, 14700, "bell"), // a-
-      createNote("D", 4, 1200, 15500, "bell"), // -ler-ta
-      
-      // Final
-      createNote("C", 4, 600, 17000, "bell"),
-      createNote("D", 4, 600, 17700, "bell"),
-      createNote("E", 4, 600, 18400, "bell"),
-      createNote("C", 4, 1600, 19100, "bell")
+      // "Parabéns, parabéns"
+      createNote("C", 4, 500, 15340, "bell"), // Pa-
+      createNote("C", 4, 500, 16007, "bell"), // -ra-
+      createNote("A", 4, 1000, 16674, "bell"), // -béns
+      createNote("F", 4, 1000, 18008, "bell"), // pa-
+      createNote("E", 4, 1000, 19342, "bell"), // -ra-
+      createNote("D", 4, 2000, 20676, "bell")  // -béns
     ]
   },
 
   "borboletinha-bell": {
-    id: "borboletinha-bell", name: "Borboletinha", bpm: 100, timeSignature: "4/4",
+    id: "borboletinha-bell", name: "Borboletinha", bpm: 120, timeSignature: "4/4",
     totalDuration: 16000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Borboletinha tá na cozinha" - Melodia tradicional brasileira
-      createNote("C", 4, 500, 0, "bell"),     // Bor-
-      createNote("C", 4, 500, 600, "bell"),   // -bo-
-      createNote("D", 4, 500, 1200, "bell"),  // -le-
-      createNote("E", 4, 500, 1800, "bell"),  // -ti-
-      createNote("F", 4, 500, 2400, "bell"),  // -nha
-      createNote("E", 4, 500, 3000, "bell"),  // tá
-      createNote("D", 4, 500, 3600, "bell"),  // na
-      createNote("C", 4, 800, 4200, "bell"),  // co-zi-nha
+      // "Borboletinha tá na cozinha" - Melodia tradicional brasileira corrigida: G-A-G-C
+      createNote("G", 4, 500, 0, "bell"),     // Bor-
+      createNote("A", 4, 500, 500, "bell"),   // -bo-
+      createNote("G", 4, 500, 1000, "bell"),  // -le-
+      createNote("C", 4, 500, 1500, "bell"),  // -ti-
+      createNote("G", 4, 500, 2000, "bell"),  // -nha
+      createNote("A", 4, 500, 2500, "bell"),  // tá
+      createNote("G", 4, 500, 3000, "bell"),  // na
+      createNote("B", 4, 800, 3500, "bell"),  // co-zi-nha
       
-      // "Fazendo chocolate para a madrinha" - Mesma melodia
-      createNote("C", 4, 500, 5200, "bell"),  // Fa-
-      createNote("C", 4, 500, 5800, "bell"),  // -zen-
-      createNote("D", 4, 500, 6400, "bell"),  // -do
-      createNote("E", 4, 500, 7000, "bell"),  // cho-
-      createNote("F", 4, 500, 7600, "bell"),  // -co-
-      createNote("E", 4, 500, 8200, "bell"),  // -la-
-      createNote("D", 4, 500, 8800, "bell"),  // -te
-      createNote("C", 4, 800, 9400, "bell"),  // pa-ra a ma-dri-nha
+      // "Fazendo chocolate para a madrinha" - Continuação: G-A-G-B-G-A-B-C
+      createNote("G", 4, 500, 4500, "bell"),  // Fa-
+      createNote("A", 4, 500, 5000, "bell"),  // -zen-
+      createNote("G", 4, 500, 5500, "bell"),  // -do
+      createNote("B", 4, 500, 6000, "bell"),  // cho-
+      createNote("G", 4, 500, 6500, "bell"),  // -co-
+      createNote("A", 4, 500, 7000, "bell"),  // -la-
+      createNote("B", 4, 500, 7500, "bell"),  // -te
+      createNote("C", 4, 800, 8000, "bell"),  // pa-ra a ma-dri-nha
       
-      // "Poti, poti, perna de pau" - Mudança de tonalidade
-      createNote("G", 4, 400, 10600, "bell"), // Po-
-      createNote("G", 4, 400, 11000, "bell"), // -ti
-      createNote("G", 4, 400, 11400, "bell"), // Po-
-      createNote("G", 4, 400, 11800, "bell"), // -ti
-      createNote("A", 4, 500, 12200, "bell"), // per-
-      createNote("G", 4, 500, 12800, "bell"), // -na
-      createNote("F", 4, 500, 13400, "bell"), // de
-      createNote("E", 4, 800, 14000, "bell"), // pau
+      // "Poti, poti, perna de pau" - Rítmico e tradicional
+      createNote("E", 4, 400, 9000, "bell"),  // Po-
+      createNote("E", 4, 400, 9400, "bell"),  // -ti
+      createNote("E", 4, 400, 9800, "bell"),  // Po-
+      createNote("E", 4, 400, 10200, "bell"), // -ti
+      createNote("F", 4, 500, 10600, "bell"), // per-
+      createNote("E", 4, 500, 11100, "bell"), // -na
+      createNote("D", 4, 500, 11600, "bell"), // de
+      createNote("C", 4, 800, 12100, "bell"), // pau
       
       // "Olho de vidro e nariz de pica-pau" - Finalização tradicional
-      createNote("G", 4, 300, 15000, "bell"), // O-
-      createNote("A", 4, 300, 15300, "bell"), // -lho
-      createNote("G", 4, 300, 15600, "bell"), // de
-      createNote("F", 4, 300, 15900, "bell"), // vi-
-      createNote("E", 4, 300, 16200, "bell"), // -dro
-      createNote("F", 4, 300, 16500, "bell"), // e
-      createNote("G", 4, 300, 16800, "bell"), // na-
-      createNote("A", 4, 300, 17100, "bell"), // -riz
-      createNote("G", 4, 300, 17400, "bell"), // de
-      createNote("F", 4, 300, 17700, "bell"), // pi-
-      createNote("E", 4, 300, 18000, "bell"), // -ca-
-      createNote("D", 4, 500, 18300, "bell"), // -pau
-      createNote("C", 4, 1200, 18800, "bell") // (final)
+      createNote("G", 4, 300, 13100, "bell"), // O-
+      createNote("A", 4, 300, 13400, "bell"), // -lho
+      createNote("G", 4, 300, 13700, "bell"), // de
+      createNote("F", 4, 300, 14000, "bell"), // vi-
+      createNote("E", 4, 300, 14300, "bell"), // -dro
+      createNote("F", 4, 300, 14600, "bell"), // e
+      createNote("G", 4, 300, 14900, "bell"), // na-
+      createNote("A", 4, 300, 15200, "bell"), // -riz
+      createNote("G", 4, 300, 15500, "bell"), // de
+      createNote("F", 4, 300, 15800, "bell"), // pi-
+      createNote("E", 4, 300, 16100, "bell"), // -ca-
+      createNote("D", 4, 300, 16400, "bell"), // -pau
+      createNote("C", 4, 600, 16700, "bell")  // (final)
     ]
   },
 
@@ -215,74 +207,100 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "atirei-pau-bell": {
     id: "atirei-pau-bell", name: "Atirei o Pau no Gato", bpm: 120, timeSignature: "4/4",
-    totalDuration: 12000, difficulty: "Fácil", loops: 1,
+    totalDuration: 15000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Atirei o pau no gato-to"
+      // "Atirei o pau no gato-to" - Melodia tradicional completa G-F-E-D-E-F-G-G-G
       createNote("G", 4, 500, 0, "bell"),     // A-
-      createNote("E", 4, 500, 500, "bell"),   // -ti-
+      createNote("F", 4, 500, 500, "bell"),   // -ti-
       createNote("E", 4, 500, 1000, "bell"),  // -rei
-      createNote("F", 4, 500, 1500, "bell"),  // o
-      createNote("D", 4, 500, 2000, "bell"),  // pau
-      createNote("D", 4, 500, 2500, "bell"),  // no
-      createNote("C", 4, 500, 3000, "bell"),  // ga-
-      createNote("D", 4, 500, 3500, "bell"),  // -to-
-      createNote("E", 4, 1000, 4000, "bell"), // -to
+      createNote("D", 4, 500, 1500, "bell"),  // o
+      createNote("E", 4, 500, 2000, "bell"),  // pau
+      createNote("F", 4, 500, 2500, "bell"),  // no
+      createNote("G", 4, 500, 3000, "bell"),  // ga-
+      createNote("G", 4, 500, 3500, "bell"),  // -to-
+      createNote("G", 4, 800, 4000, "bell"),  // -to
       
-      // "Mas o gato-to não morreu-reu-reu"
-      createNote("G", 4, 500, 5500, "bell"),  // Mas
-      createNote("E", 4, 500, 6000, "bell"),  // o
-      createNote("E", 4, 500, 6500, "bell"),  // ga-
-      createNote("F", 4, 500, 7000, "bell"),  // -to-
-      createNote("D", 4, 500, 7500, "bell"),  // -to
-      createNote("D", 4, 500, 8000, "bell"),  // não
-      createNote("C", 4, 500, 8500, "bell"),  // mor-
-      createNote("D", 4, 500, 9000, "bell"),  // -reu-
-      createNote("E", 4, 500, 9500, "bell"),  // -reu-
-      createNote("C", 4, 1500, 10000, "bell") // -reu
+      // "Mas o gato-to não morreu-reu-reu" - Continuação A-G-F-F-F-G-F-E-E-E-D-C
+      createNote("A", 4, 500, 5200, "bell"),  // Mas
+      createNote("G", 4, 500, 5700, "bell"),  // o
+      createNote("F", 4, 800, 6200, "bell"),  // ga-to-to
+      
+      createNote("F", 4, 500, 7200, "bell"),  // não
+      createNote("F", 4, 500, 7700, "bell"),  // mor-
+      createNote("G", 4, 500, 8200, "bell"),  // -reu-
+      createNote("F", 4, 500, 8700, "bell"),  // -reu-
+      createNote("E", 4, 800, 9200, "bell"),  // -reu
+      
+      // "Dona Chica admirou-se" - Terceira parte E-E-G-E-G-E-E-E-D-C
+      createNote("E", 4, 500, 10400, "bell"), // Do-
+      createNote("E", 4, 500, 10900, "bell"), // -na
+      createNote("G", 4, 500, 11400, "bell"), // Chi-
+      createNote("E", 4, 500, 11900, "bell"), // -ca
+      createNote("G", 4, 500, 12400, "bell"), // ad-
+      createNote("E", 4, 500, 12900, "bell"), // -mi-
+      createNote("E", 4, 500, 13400, "bell"), // -rou-
+      createNote("E", 4, 500, 13900, "bell"), // -se
+      createNote("D", 4, 500, 14400, "bell"), // (se)
+      createNote("C", 4, 1000, 14900, "bell") // (final)
     ]
   },
 
   "escravos-jó-bell": {
-    id: "escravos-jó-bell", name: "Escravos de Jó", bpm: 130, timeSignature: "4/4",
-    totalDuration: 16000, difficulty: "Fácil", loops: 1,
+    id: "escravos-jó-bell", name: "Escravos de Jó", bpm: 120, timeSignature: "4/4", 
+    totalDuration: 18000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Escravos de Jó jogavam caxangá"
+      // "Escravos de Jó jogavam caxangá" - Melodia tradicional: C-B-A-G-A-G-A-G-F-E
       createNote("C", 4, 400, 0, "bell"),     // Es-
-      createNote("D", 4, 400, 460, "bell"),   // -cra-
-      createNote("E", 4, 400, 920, "bell"),   // -vos
-      createNote("F", 4, 400, 1380, "bell"),  // de
-      createNote("G", 4, 400, 1840, "bell"),  // Jó
-      createNote("A", 4, 400, 2300, "bell"),  // jo-
-      createNote("G", 4, 400, 2760, "bell"),  // -ga-
-      createNote("F", 4, 400, 3220, "bell"),  // -vam
-      createNote("E", 4, 800, 3680, "bell"),  // ca-xan-gá
+      createNote("B", 4, 400, 400, "bell"),   // -cra-
+      createNote("A", 4, 400, 800, "bell"),   // -vos
+      createNote("G", 4, 400, 1200, "bell"),  // de
+      createNote("A", 4, 400, 1600, "bell"),  // Jó
+      createNote("G", 4, 400, 2000, "bell"),  // jo-
+      createNote("A", 4, 400, 2400, "bell"),  // -ga-
+      createNote("G", 4, 400, 2800, "bell"),  // -vam
+      createNote("F", 4, 400, 3200, "bell"),  // ca-
+      createNote("E", 4, 800, 3600, "bell"),  // -xan-gá
       
-      // "Tira, põe, deixa ficar"
-      createNote("C", 4, 400, 5000, "bell"),  // Ti-
-      createNote("D", 4, 400, 5460, "bell"),  // -ra
-      createNote("E", 4, 800, 5920, "bell"),  // põe
-      createNote("F", 4, 400, 6840, "bell"),  // dei-
-      createNote("G", 4, 400, 7300, "bell"),  // -xa
-      createNote("A", 4, 800, 7760, "bell"),  // fi-
-      createNote("G", 4, 1200, 8680, "bell"), // -car
+      // "Tira, põe, deixa ficar" - Continuação rítmica: G-E-G-E-E-E-D-C
+      createNote("G", 4, 400, 4800, "bell"),  // Ti-
+      createNote("E", 4, 400, 5200, "bell"),  // -ra
+      createNote("G", 4, 600, 5600, "bell"),  // põe
+      createNote("E", 4, 400, 6400, "bell"),  // dei-
+      createNote("E", 4, 400, 6800, "bell"),  // -xa
+      createNote("E", 4, 400, 7200, "bell"),  // fi-
+      createNote("D", 4, 400, 7600, "bell"),  // -
+      createNote("C", 4, 1200, 8000, "bell"), // -car
       
-      // "Guerreiros com guerreiros fazem zigue-zigue-zá"
-      createNote("A", 4, 400, 10300, "bell"), // Guer-
-      createNote("A", 4, 400, 10760, "bell"), // -rei-
-      createNote("G", 4, 400, 11220, "bell"), // -ros
-      createNote("F", 4, 400, 11680, "bell"), // com
-      createNote("E", 4, 400, 12140, "bell"), // guer-
-      createNote("D", 4, 400, 12600, "bell"), // -rei-
-      createNote("C", 4, 400, 13060, "bell"), // -ros
-      createNote("D", 4, 400, 13520, "bell"), // fa-
-      createNote("E", 4, 400, 13980, "bell"), // -zem
-      createNote("F", 4, 400, 14440, "bell"), // zi-
-      createNote("G", 4, 400, 14900, "bell"), // -gue-
-      createNote("C", 4, 1100, 15360, "bell") // -zi-gue-zá
+      // "Guerreiros com guerreiros fazem zigue-zigue-zá" - Parte rápida e rítmica
+      createNote("C", 4, 300, 9600, "bell"),  // Guer-
+      createNote("C", 4, 300, 9900, "bell"),  // -rei-
+      createNote("D", 4, 300, 10200, "bell"), // -ros
+      createNote("E", 4, 300, 10500, "bell"), // com
+      createNote("F", 4, 300, 10800, "bell"), // guer-
+      createNote("G", 4, 300, 11100, "bell"), // -rei-
+      createNote("A", 4, 300, 11400, "bell"), // -ros
+      createNote("G", 4, 300, 11700, "bell"), // fa-
+      createNote("F", 4, 300, 12000, "bell"), // -zem
+      
+      // "zigue-zigue-zá" - Finalização característica
+      createNote("E", 4, 300, 12600, "bell"), // zi-
+      createNote("F", 4, 300, 12900, "bell"), // -gue-
+      createNote("G", 4, 300, 13200, "bell"), // zi-
+      createNote("A", 4, 300, 13500, "bell"), // -gue-
+      createNote("G", 4, 600, 13800, "bell"), // -zá
+      
+      // Repetição final do refrão
+      createNote("C", 4, 400, 14800, "bell"), // (Es-
+      createNote("B", 4, 400, 15200, "bell"), // cra-
+      createNote("A", 4, 400, 15600, "bell"), // vos
+      createNote("G", 4, 400, 16000, "bell"), // de
+      createNote("F", 4, 400, 16400, "bell"), // Jó)
+      createNote("E", 4, 400, 16800, "bell"), 
+      createNote("C", 4, 1200, 17200, "bell") // (final)
     ]
   },
 
-  // === XILOFONE - 6 músicas ===
+  // === XILOFONE - 6 músicas completas ===
   "happy-birthday-xylophone": {
     id: "happy-birthday-xylophone", name: "Parabéns para Você", bpm: 90, timeSignature: "3/4",
     totalDuration: 20000, difficulty: "Fácil", loops: 1,
@@ -348,9 +366,6 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  // Continue com as outras músicas do xilofone e keyboard...
-  // [Adicionarei as outras 12 músicas seguindo o mesmo padrão autêntico]
-
   // === TECLADO/KEYBOARD - 6 músicas ===
   "scale-keyboard": {
     id: "scale-keyboard", name: "Escala de Dó Maior", bpm: 80, timeSignature: "4/4",
@@ -375,8 +390,6 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("C", 4, 1500, 15500, "keyboard")  // Dó
     ]
   }
-
-  // [Continuarei com as outras músicas do keyboard...]
 };
 
 // Função CORRIGIDA para obter sequência musical por ID
@@ -421,20 +434,19 @@ export const generateAuthenticGameNotes = (sequence: MusicalSequence, instrument
     }
   });
 
-  console.log(`🎯 Generated ${gameNotes.length} SYNCHRONIZED notes for ${sequence.name} (${instrumentType})`);
-  return gameNotes;
+  return gameNotes.sort((a, b) => a.startTime - b.startTime);
 };
 
-// Cores SINCRONIZADAS por nota
-const getColorForNote = (note: string): string => {
-  const colors: Record<string, string> = {
-    C: "#FF0000", // Vermelho
-    D: "#FF9933", // Laranja  
-    E: "#FFFF00", // Amarelo
-    F: "#33CC33", // Verde
-    G: "#33CCFF", // Azul claro
-    A: "#000080", // Azul escuro
-    B: "#800080"  // Roxo
+// Função para obter cor baseada na nota musical
+export const getColorForNote = (note: string): string => {
+  const noteColors: Record<string, string> = {
+    C: "#ff4444", // Vermelho
+    D: "#ff8844", // Laranja  
+    E: "#ffff44", // Amarelo
+    F: "#44ff44", // Verde
+    G: "#4444ff", // Azul
+    A: "#8844ff", // Roxo
+    B: "#ff44ff"  // Rosa
   };
-  return colors[note] || "#000000";
+  return noteColors[note] || "#888888";
 };

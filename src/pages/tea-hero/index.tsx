@@ -23,7 +23,7 @@ const TeaHero = () => {
   const songs = {
     bell: [
       { id: "twinkle-bell", title: "Brilha, Brilha Estrelinha", hasSequence: true },
-      { id: "mary-lamb-bell", title: "Maria, Maria (Elis Regina)", hasSequence: true },
+      { id: "parabens-bell", title: "Parabéns a Você", hasSequence: true },
       { id: "borboletinha-bell", title: "Borboletinha", hasSequence: true },
       { id: "galinha-pintadinha-bell", title: "Galinha Pintadinha", hasSequence: true },
       { id: "atirei-pau-bell", title: "Atirei o Pau no Gato", hasSequence: true },
