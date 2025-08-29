@@ -365,8 +365,10 @@ export default function TreatmentPlanForm() {
 
       let htmlContent = '';
 
-      // Configuração do Tratamento
-      if (content.approach_type || content.intervention_frequency || content.session_duration) {
+      // Configuração do Tratamento (sempre exibir)
+      const hasConfigurationData = true; // Sempre exibir seção
+      
+      if (hasConfigurationData) {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #2563EB; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #2563EB; display: flex; align-items: center;">
@@ -378,26 +380,43 @@ export default function TreatmentPlanForm() {
                   <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📋 Abordagem Terapêutica</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.approach_type}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📋 Abordagem Terapêutica</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir conforme avaliação e objetivos terapêuticos</div>
+                </div>
+              `}
               ${content.intervention_frequency ? `
                 <div style="margin-bottom: 16px;">
                   <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📅 Frequência das Intervenções</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_frequency}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">📅 Frequência das Intervenções</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A estabelecer conforme disponibilidade e necessidades do paciente</div>
+                </div>
+              `}
               ${content.session_duration ? `
                 <div style="margin-bottom: 0;">
                   <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">⏱️ Duração das Sessões</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.session_duration}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 0;">
+                  <div style="font-weight: 600; font-size: 14px; color: #1E40AF; margin-bottom: 6px;">⏱️ Duração das Sessões</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir de acordo com o perfil e tolerância do paciente</div>
+                </div>
+              `}
             </div>
           </div>
         `;
       }
 
-      // Metodologia e Recursos
-      if (content.treatment_model || content.musical_methods) {
+      // Metodologia e Recursos (sempre exibir)
+      const hasMethodologyData = true; // Sempre exibir seção
+      
+      if (hasMethodologyData) {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #059669; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #059669; display: flex; align-items: center;">
@@ -409,20 +428,32 @@ export default function TreatmentPlanForm() {
                   <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎯 Modelo de Tratamento</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.treatment_model}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎯 Modelo de Tratamento</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir com base no perfil e necessidades específicas do paciente</div>
+                </div>
+              `}
               ${content.musical_methods ? `
                 <div style="margin-bottom: 0;">
                   <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎶 Métodos Musicais</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_methods}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 0;">
+                  <div style="font-weight: 600; font-size: 14px; color: #065F46; margin-bottom: 6px;">🎶 Métodos Musicais</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A selecionar conforme resposta e preferências musicais do paciente</div>
+                </div>
+              `}
             </div>
           </div>
         `;
       }
 
-      // Objetivos e Avaliação
-      if (content.therapeutic_focus || content.expected_outcomes) {
+      // Objetivos e Avaliação (sempre exibir)
+      const hasObjectivesData = true; // Sempre exibir seção
+      
+      if (hasObjectivesData) {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
@@ -434,20 +465,32 @@ export default function TreatmentPlanForm() {
                   <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">🔍 Foco Terapêutico</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.therapeutic_focus}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">🔍 Foco Terapêutico</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir com base na avaliação inicial e objetivos específicos</div>
+                </div>
+              `}
               ${content.expected_outcomes ? `
                 <div style="margin-bottom: 0;">
                   <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">📈 Resultados Esperados</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.expected_outcomes}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 0;">
+                  <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 6px;">📈 Resultados Esperados</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A estabelecer com base nos objetivos terapêuticos definidos</div>
+                </div>
+              `}
             </div>
           </div>
         `;
       }
 
-      // Estratégias e Recursos
-      if (content.intervention_strategies || content.musical_resources) {
+      // Estratégias e Recursos (sempre exibir)
+      const hasStrategiesData = true; // Sempre exibir seção
+      
+      if (hasStrategiesData) {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #DC2626; display: flex; align-items: center;">
@@ -459,13 +502,23 @@ export default function TreatmentPlanForm() {
                   <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">💡 Estratégias de Intervenção</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.intervention_strategies}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">💡 Estratégias de Intervenção</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A desenvolver conforme resposta do paciente e evolução terapêutica</div>
+                </div>
+              `}
               ${content.musical_resources ? `
                 <div style="margin-bottom: 0;">
                   <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">🎹 Recursos Musicais</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${translatedContent.musical_resources}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 0;">
+                  <div style="font-weight: 600; font-size: 14px; color: #991B1B; margin-bottom: 6px;">🎹 Recursos Musicais</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A selecionar com base nas preferências e necessidades específicas do paciente</div>
+                </div>
+              `}
             </div>
           </div>
         `;
