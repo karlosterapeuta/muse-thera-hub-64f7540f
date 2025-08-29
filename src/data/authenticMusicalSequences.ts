@@ -396,43 +396,42 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "sapo-xylophone": {
     id: "sapo-xylophone", name: "O Sapo Não Lava o Pé", bpm: 110, timeSignature: "4/4",
-    totalDuration: 18000, difficulty: "Fácil", loops: 1,
+    totalDuration: 20000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "O sapo não lava o pé" - Melodia correta baseada na partitura visual
-      createNote("G", 5, 400, 0, "xylophone"),     // O
-      createNote("C", 5, 400, 400, "xylophone"),   // sa-
-      createNote("C", 5, 400, 800, "xylophone"),   // -po
-      createNote("G", 5, 400, 1200, "xylophone"),  // não
-      createNote("A", 5, 400, 1600, "xylophone"),  // la-
-      createNote("G", 5, 400, 2000, "xylophone"),  // -va
-      createNote("E", 5, 400, 2400, "xylophone"),  // o
-      createNote("G", 5, 600, 2800, "xylophone"),  // pé
+      // "O sa po não la va o pé" - Primeira linha da partitura
+      createNote("G", 5, 450, 0, "xylophone"),     // O
+      createNote("C", 5, 450, 450, "xylophone"),   // sa-
+      createNote("C", 5, 450, 900, "xylophone"),   // -po
+      createNote("G", 5, 450, 1350, "xylophone"),  // não
+      createNote("A", 5, 450, 1800, "xylophone"),  // la-
+      createNote("G", 5, 450, 2250, "xylophone"),  // -va
+      createNote("E", 5, 450, 2700, "xylophone"),  // o
+      createNote("G", 5, 700, 3150, "xylophone"),  // pé
       
-      // "Não lava porque não e le mo-" - Continuação da partitura
-      createNote("C", 5, 400, 3800, "xylophone"),  // Não
-      createNote("C", 5, 400, 4200, "xylophone"),  // la-
-      createNote("G", 5, 400, 4600, "xylophone"),  // -va
-      createNote("A", 5, 400, 5000, "xylophone"),  // por-
-      createNote("G", 5, 400, 5400, "xylophone"),  // -que
-      createNote("F", 5, 400, 5800, "xylophone"),  // não
-      createNote("G", 5, 400, 6200, "xylophone"),  // e
-      createNote("B", 5, 400, 6600, "xylophone"),  // le
-      createNote("B", 5, 600, 7000, "xylophone"),  // mo-
+      // "não la va por que não e le mo" - Segunda linha da partitura
+      createNote("C", 5, 400, 4300, "xylophone"),  // não
+      createNote("C", 5, 400, 4700, "xylophone"),  // la-
+      createNote("G", 5, 400, 5100, "xylophone"),  // -va
+      createNote("A", 5, 400, 5500, "xylophone"),  // por-
+      createNote("G", 5, 400, 5900, "xylophone"),  // -que
+      createNote("F", 5, 400, 6300, "xylophone"),  // não
+      createNote("G", 5, 400, 6700, "xylophone"),  // e
+      createNote("B", 5, 400, 7100, "xylophone"),  // le
+      createNote("B", 5, 700, 7500, "xylophone"),  // mo
       
-      // "-ra lá na lagoa não lava o pé" - Final da partitura
-      createNote("G", 5, 400, 8000, "xylophone"),  // -ra
-      createNote("A", 5, 400, 8400, "xylophone"),  // lá
-      createNote("G", 5, 400, 8800, "xylophone"),  // na
-      createNote("B", 5, 400, 9200, "xylophone"),  // la-
-      createNote("B", 5, 400, 9600, "xylophone"),  // -go-
-      createNote("G", 5, 400, 10000, "xylophone"), // -a
-      createNote("A", 5, 400, 10400, "xylophone"), // não
-      createNote("G", 5, 400, 10800, "xylophone"), // la-
-      createNote("B", 5, 400, 11200, "xylophone"), // -va
-      createNote("G", 5, 400, 11600, "xylophone"), // o
-      createNote("A", 5, 400, 12000, "xylophone"), // pé
-      createNote("B", 5, 400, 12400, "xylophone"), // (final)
-      createNote("C", 5, 800, 12800, "xylophone")  // (final sustentado)
+      // "ra lá na la go a não la va o pé" - Terceira linha da partitura
+      createNote("G", 5, 400, 8700, "xylophone"),  // ra
+      createNote("A", 5, 400, 9100, "xylophone"),  // lá
+      createNote("G", 5, 400, 9500, "xylophone"),  // na
+      createNote("B", 5, 400, 9900, "xylophone"),  // la-
+      createNote("B", 5, 400, 10300, "xylophone"), // -go-
+      createNote("G", 5, 400, 10700, "xylophone"), // -a
+      createNote("A", 5, 400, 11100, "xylophone"), // não
+      createNote("G", 5, 400, 11500, "xylophone"), // la-
+      createNote("B", 5, 400, 11900, "xylophone"), // -va
+      createNote("A", 5, 400, 12300, "xylophone"), // o
+      createNote("B", 5, 400, 12700, "xylophone"), // pé
+      createNote("C", 5, 1000, 13100, "xylophone") // (final)
     ]
   },
 
