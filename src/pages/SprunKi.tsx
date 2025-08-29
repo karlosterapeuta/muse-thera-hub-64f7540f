@@ -1,14 +1,32 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Maximize, X, Music, Star, Heart } from "lucide-react";
+import { RefreshCw, Maximize, X, Music, Star, Heart, Smartphone } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SprunKi() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const isMobile = window.innerWidth < 768;
+  const isMobile = useIsMobile();
+
+  // Monitor device orientation for mobile
+  useEffect(() => {
+    const updateOrientation = () => {
+      setOrientation(window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
+    };
+    
+    updateOrientation();
+    window.addEventListener('resize', updateOrientation);
+    window.addEventListener('orientationchange', updateOrientation);
+    
+    return () => {
+      window.removeEventListener('resize', updateOrientation);
+      window.removeEventListener('orientationchange', updateOrientation);
+    };
+  }, []);
 
   const handleLoad = () => {
     setIsLoading(false);
@@ -23,25 +41,45 @@ export default function SprunKi() {
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    
+    // On mobile, also request native fullscreen if available
+    if (isMobile && !isFullscreen) {
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if ((element as any).webkitRequestFullscreen) {
+        (element as any).webkitRequestFullscreen();
+      } else if ((element as any).msRequestFullscreen) {
+        (element as any).msRequestFullscreen();
+      }
+    } else if (isMobile && isFullscreen) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6">
+      <header className={`container mx-auto px-4 ${isMobile ? 'py-4' : 'py-6'}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* MuseTera Logo */}
             <img
               src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
               alt="MuseTera Logo"
-              className="h-12 w-12 rounded-xl shadow-md ring-2 ring-primary/20"
+              className={`${isMobile ? 'h-10 w-10' : 'h-12 w-12'} rounded-xl shadow-md ring-2 ring-primary/20`}
             />
             <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent`}>
                 🎵 Sprunki Musical - MuseTera
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className={`text-muted-foreground mt-1 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                 Ferramenta de Musicoterapia Interativa • Plataforma MuseTera
               </p>
             </div>
@@ -76,18 +114,21 @@ export default function SprunKi() {
         <div 
           className={`relative rounded-xl border bg-card shadow-2xl overflow-hidden transition-all duration-300 ${
             isFullscreen 
-              ? "fixed inset-4 z-50 rounded-none" 
-              : isMobile 
-                ? "aspect-[4/3]" 
-                : "aspect-[16/10] max-h-[calc(100vh-12rem)]"
+              ? "fixed inset-0 z-50 rounded-none" 
+              : isMobile && orientation === 'portrait'
+                ? "aspect-[3/4] min-h-[60vh]" 
+                : isMobile && orientation === 'landscape'
+                  ? "aspect-[16/9] h-[calc(100vh-8rem)]"
+                  : "aspect-[16/10] max-h-[calc(100vh-12rem)]"
           }`}
         >
           {/* Powered by MuseTera Badge */}
           {!isFullscreen && (
-            <div className="absolute top-4 left-4 z-20">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-medium rounded-full shadow-lg">
+            <div className={`absolute ${isMobile ? 'top-2 left-2' : 'top-4 left-4'} z-20`}>
+              <div className={`flex items-center gap-2 px-3 py-1.5 bg-primary/90 backdrop-blur-sm text-primary-foreground ${isMobile ? 'text-xs' : 'text-xs'} font-medium rounded-full shadow-lg`}>
                 <Music className="h-3 w-3" />
-                <span>Powered by MuseTera</span>
+                <span className={isMobile ? 'hidden sm:inline' : ''}>Powered by MuseTera</span>
+                {isMobile && <span className="sm:hidden">MuseTera</span>}
               </div>
             </div>
           )}
@@ -131,10 +172,10 @@ export default function SprunKi() {
             <Button
               onClick={toggleFullscreen}
               variant="secondary"
-              size="sm"
-              className="absolute top-4 right-4 z-20 rounded-full w-8 h-8 p-0"
+              size={isMobile ? "sm" : "default"}
+              className={`absolute ${isMobile ? 'top-2 right-2' : 'top-4 right-4'} z-20 rounded-full ${isMobile ? 'w-10 h-10' : 'w-8 h-8'} p-0 touch-manipulation`}
             >
-              <X className="h-4 w-4" />
+              <X className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
             </Button>
           )}
 
@@ -142,12 +183,16 @@ export default function SprunKi() {
           <iframe
             ref={iframeRef}
             src="https://iframegame.com/embed/sprunki-modded/index.html"
-            className="w-full h-full border-0"
+            className="w-full h-full border-0 touch-manipulation"
             loading="lazy"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
-            allow="fullscreen; autoplay; clipboard-write; encrypted-media; gamepad; gyroscope; accelerometer"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-pointer-lock"
+            allow="fullscreen; autoplay; clipboard-write; encrypted-media; gamepad; gyroscope; accelerometer; touch; pointer; microphone"
             title="Sprunki Musical - Jogo Educativo"
             onLoad={handleLoad}
+            style={{ 
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'manipulation'
+            }}
           />
         </div>
 
@@ -188,10 +233,24 @@ export default function SprunKi() {
           </CardContent>
         </Card>
 
-        {/* Mobile Tip */}
+        {/* Mobile Tips */}
         {isMobile && !isFullscreen && (
-          <div className="mt-4 p-3 bg-muted rounded-lg text-sm text-muted-foreground text-center">
-            💡 Para melhor experiência, gire o dispositivo ou use o modo tela cheia
+          <div className="mt-4 space-y-2">
+            <div className="p-3 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg text-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Smartphone className="h-4 w-4 text-primary" />
+                <span className="font-medium text-primary">Dicas para Mobile</span>
+              </div>
+              <div className="text-muted-foreground space-y-1 text-xs">
+                {orientation === 'portrait' ? (
+                  <div>📱 Gire o dispositivo para paisagem para melhor experiência</div>
+                ) : (
+                  <div>🎮 Ótimo! Modo paisagem é ideal para jogar</div>
+                )}
+                <div>🖱️ Use gestos de toque para interagir com os personagens</div>
+                <div>🔊 Ative o som para experiência completa</div>
+              </div>
+            </div>
           </div>
         )}
       </main>
