@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Brain, Heart, MessageSquare, Zap, Calendar, FileText, Award } from 'lucide-react';
+import { formatDateLocal } from '@/lib/utils';
 
 interface TreatmentPlanPDFProps {
   formData: {
@@ -89,10 +90,6 @@ export const TreatmentPlanPDFContent: React.FC<TreatmentPlanPDFProps> = ({ formD
     return 'Severo';
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -147,7 +144,7 @@ export const TreatmentPlanPDFContent: React.FC<TreatmentPlanPDFProps> = ({ formD
         <div className="grid grid-cols-3 gap-6">
           <div>
             <p className="text-sm text-gray-600 uppercase tracking-wide">Data de Início</p>
-            <p className="text-lg font-semibold">{formatDate(formData.treatment_date) || 'Não informado'}</p>
+            <p className="text-lg font-semibold">{formatDateLocal(formData.treatment_date) || 'Não informado'}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600 uppercase tracking-wide">Frequência</p>

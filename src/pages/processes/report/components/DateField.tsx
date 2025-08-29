@@ -18,7 +18,7 @@ type DateFieldProps = {
 };
 
 export function DateField({ label, value, onChange }: DateFieldProps) {
-  const date = value ? new Date(value) : undefined;
+  const date = value ? new Date(value + 'T12:00:00') : undefined;
 
   return (
     <div className="space-y-2">
