@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, User, Brain, Heart, MessageSquare, Zap, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { SelectField } from "./components/SelectField";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -49,6 +51,7 @@ function TreatmentPlanForm() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { data: professionalData } = useProfessionalData();
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -79,9 +82,9 @@ function TreatmentPlanForm() {
     fetchPatients();
   }, [toast]);
 
-  const handlePatientSelect = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPatient(event.target.value);
-    const patient = patients.find((p) => p.id === event.target.value);
+  const handlePatientSelect = useCallback((value: string) => {
+    setSelectedPatient(value);
+    const patient = patients.find((p) => p.id === value);
     if (patient) {
       setFormData(prev => ({
         ...prev,
@@ -122,6 +125,16 @@ function TreatmentPlanForm() {
       [field]: value
     }));
   }, []);
+
+  // Auto-fill therapist name when professional data loads
+  useEffect(() => {
+    if (professionalData && !formData.therapist_name) {
+      setFormData(prev => ({
+        ...prev,
+        therapist_name: professionalData.name || "",
+      }));
+    }
+  }, [professionalData, formData.therapist_name]);
 
   const handleDownloadPDF = useCallback(async () => {
     try {
@@ -384,22 +397,32 @@ function TreatmentPlanForm() {
             className="transform hover:scale-[1.02] transition-all duration-300"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField label="Nome do Paciente">
-                <Input
-                  type="text"
-                  value={formData.patient_name}
-                  onChange={(e) => handleInputChange("patient_name", e.target.value)}
-                  placeholder="Digite o nome completo do paciente"
-                  className="border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                />
-              </FormField>
+              <div className="space-y-3">
+                <Label className="text-base font-medium text-gray-700">Nome do Paciente</Label>
+                {isLoading ? (
+                  <div className="text-sm text-gray-500">Carregando pacientes...</div>
+                ) : patients.length === 0 ? (
+                  <div className="text-sm text-gray-500">Nenhum paciente cadastrado. Cadastre pacientes primeiro.</div>
+                ) : (
+                  <SelectField
+                    label=""
+                    value={selectedPatient}
+                    onChange={handlePatientSelect}
+                    options={patients.map(patient => ({
+                      value: patient.id,
+                      label: patient.name
+                    }))}
+                  />
+                )}
+              </div>
               <FormField label="Nome do Terapeuta">
                 <Input
                   type="text"
                   value={formData.therapist_name}
                   onChange={(e) => handleInputChange("therapist_name", e.target.value)}
-                  placeholder="Digite o nome do terapeuta"
-                  className="border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                  placeholder="Nome será preenchido automaticamente"
+                  className="border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-gray-50"
+                  disabled
                 />
               </FormField>
             </div>
