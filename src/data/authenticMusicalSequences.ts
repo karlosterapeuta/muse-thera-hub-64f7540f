@@ -123,60 +123,53 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
   },
 
   "borboletinha-bell": {
-    id: "borboletinha-bell", name: "Borboletinha", bpm: 100, timeSignature: "4/4",
-    totalDuration: 24000, difficulty: "Fácil", loops: 1,
+    id: "borboletinha-bell", name: "Borboletinha", bpm: 120, timeSignature: "4/4",
+    totalDuration: 20000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Borboletinha tá na cozinha"
-      createNote("C", 4, 500, 0, "bell"),     // Bor-
-      createNote("D", 4, 500, 600, "bell"),   // -bo-
-      createNote("E", 4, 500, 1200, "bell"),  // -le-
-      createNote("F", 4, 500, 1800, "bell"),  // -ti-
-      createNote("G", 4, 500, 2400, "bell"),  // -nha
-      createNote("A", 4, 500, 3000, "bell"),  // tá
-      createNote("G", 4, 500, 3600, "bell"),  // na
-      createNote("F", 4, 500, 4200, "bell"),  // co-
-      createNote("E", 4, 1000, 4800, "bell"), // -zi-nha
+      // "Borboletinha tá na cozinha" - melodia tradicional
+      createNote("G", 4, 400, 0, "bell"),     // Bor-
+      createNote("G", 4, 400, 500, "bell"),   // -bo-
+      createNote("A", 4, 400, 1000, "bell"),  // -le-
+      createNote("A", 4, 400, 1500, "bell"),  // -ti-
+      createNote("G", 4, 800, 2000, "bell"),  // -nha
+      createNote("C", 5, 400, 3000, "bell"),  // tá
+      createNote("B", 4, 400, 3500, "bell"),  // na
+      createNote("A", 4, 400, 4000, "bell"),  // co-
+      createNote("G", 4, 800, 4500, "bell"),  // -zi-nha
       
       // "Fazendo chocolate para a madrinha"
-      createNote("C", 4, 500, 6200, "bell"),  // Fa-
-      createNote("D", 4, 500, 6800, "bell"),  // -zen-
-      createNote("E", 4, 500, 7400, "bell"),  // -do
-      createNote("F", 4, 500, 8000, "bell"),  // cho-
-      createNote("G", 4, 500, 8600, "bell"),  // -co-
-      createNote("A", 4, 500, 9200, "bell"),  // -la-
-      createNote("G", 4, 500, 9800, "bell"),  // -te
-      createNote("F", 4, 500, 10400, "bell"), // pa-
-      createNote("E", 4, 500, 11000, "bell"), // -ra
-      createNote("D", 4, 500, 11600, "bell"), // a
-      createNote("C", 4, 1000, 12200, "bell"), // ma-dri-nha
+      createNote("G", 4, 400, 5500, "bell"),  // Fa-
+      createNote("G", 4, 400, 6000, "bell"),  // -zen-
+      createNote("A", 4, 400, 6500, "bell"),  // -do
+      createNote("A", 4, 400, 7000, "bell"),  // cho-
+      createNote("G", 4, 800, 7500, "bell"),  // -co-la-te
+      createNote("C", 5, 400, 8500, "bell"),  // pa-
+      createNote("B", 4, 400, 9000, "bell"),  // -ra
+      createNote("A", 4, 400, 9500, "bell"),  // a
+      createNote("G", 4, 800, 10000, "bell"), // ma-dri-nha
       
       // "Poti, poti, perna de pau"
-      createNote("G", 4, 400, 13800, "bell"), // Po-
-      createNote("G", 4, 400, 14200, "bell"), // -ti
-      createNote("A", 4, 400, 14600, "bell"), // Po-
-      createNote("A", 4, 400, 15000, "bell"), // -ti
-      createNote("F", 4, 400, 15400, "bell"), // per-
-      createNote("G", 4, 400, 15800, "bell"), // -na
-      createNote("A", 4, 400, 16200, "bell"), // de
-      createNote("F", 4, 1000, 16600, "bell"), // pau
+      createNote("E", 4, 300, 11000, "bell"), // Po-
+      createNote("E", 4, 300, 11400, "bell"), // -ti
+      createNote("E", 4, 300, 11800, "bell"), // Po-
+      createNote("E", 4, 300, 12200, "bell"), // -ti
+      createNote("G", 4, 400, 12600, "bell"), // per-
+      createNote("G", 4, 400, 13100, "bell"), // -na
+      createNote("F", 4, 400, 13600, "bell"), // de
+      createNote("E", 4, 600, 14100, "bell"), // pau
       
       // "Olho de vidro e nariz de pica-pau"
-      createNote("C", 4, 400, 18200, "bell"), // O-
-      createNote("D", 4, 400, 18600, "bell"), // -lho
-      createNote("E", 4, 400, 19000, "bell"), // de
-      createNote("F", 4, 600, 19400, "bell"), // vi-dro
-      createNote("G", 4, 400, 20200, "bell"), // e
-      createNote("A", 4, 400, 20600, "bell"), // na-
-      createNote("G", 4, 400, 21000, "bell"), // -riz
-      createNote("F", 4, 400, 21400, "bell"), // de
-      createNote("E", 4, 400, 21800, "bell"), // pi-
-      createNote("D", 4, 400, 22200, "bell"), // -ca
-      createNote("C", 4, 800, 22600, "bell"), // pau
-      
-      // Final melódico
-      createNote("G", 4, 800, 23600, "bell"),
-      createNote("E", 4, 800, 24000, "bell"),
-      createNote("C", 4, 1200, 24800, "bell")
+      createNote("D", 4, 400, 15000, "bell"), // O-
+      createNote("E", 4, 400, 15500, "bell"), // -lho
+      createNote("F", 4, 400, 16000, "bell"), // de
+      createNote("G", 4, 400, 16500, "bell"), // vi-
+      createNote("F", 4, 400, 17000, "bell"), // -dro
+      createNote("E", 4, 400, 17500, "bell"), // e
+      createNote("D", 4, 400, 18000, "bell"), // na-
+      createNote("E", 4, 400, 18500, "bell"), // -riz
+      createNote("F", 4, 400, 19000, "bell"), // de
+      createNote("G", 4, 400, 19500, "bell"), // pi-ca-
+      createNote("C", 4, 1000, 20000, "bell") // -pau (final)
     ]
   },
 
