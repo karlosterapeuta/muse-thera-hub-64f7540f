@@ -34,6 +34,7 @@ import XylophoneHero from "./pages/xylophone-hero";
 import MusicComposer from "./pages/music-composer";
 import Songs from "./pages/songs";
 import BinauralFrequencies from "./pages/binaural-frequencies";
+import ChromeMusicLab from "./pages/ChromeMusicLab";
 import Hawkins from "./pages/hawkins";
 import Users from "./pages/users";
 import InviteCodes from "./pages/InviteCodes";
@@ -103,6 +104,7 @@ const App = () => (
             <Route path="music-composer" element={<MusicComposer />} />
             <Route path="songs" element={<Songs />} />
             <Route path="binaural-frequencies" element={<BinauralFrequencies />} />
+            <Route path="chrome-music-lab" element={<ChromeMusicLab />} />
             <Route path="hawkins" element={<Hawkins />} />
             <Route path="users" element={<Users />} />
             <Route path="invite-codes" element={<InviteCodes />} />
