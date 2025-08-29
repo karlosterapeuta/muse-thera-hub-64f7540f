@@ -13,11 +13,13 @@ import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { SelectField } from "./components/SelectField";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { TreatmentPlanPDFContent } from "@/components/TreatmentPlanPDFContent";
+import { DateField } from "@/pages/processes/report/components/DateField";
 
 interface FormData {
   patient_name: string;
   therapist_name: string;
   patient_age: string;
+  plan_date: string;
   therapy_location: string;
   main_complaint: string;
   therapy_goal: string;
@@ -118,6 +120,7 @@ function TreatmentPlanForm() {
     patient_name: "",
     therapist_name: "",
     patient_age: "",
+    plan_date: new Date().toISOString(),
     therapy_location: "",
     main_complaint: "",
     therapy_goal: "",
@@ -168,7 +171,7 @@ function TreatmentPlanForm() {
         therapist_name: formData.therapist_name,
         age: formData.patient_age,
         diagnosis: "TEA - Transtorno do Espectro Autista",
-        treatment_date: new Date().toISOString().split('T')[0],
+        treatment_date: new Date(formData.plan_date).toISOString().split('T')[0],
         session_frequency: formData.session_frequency,
         treatment_duration: formData.planned_sessions ? `${formData.planned_sessions} sessões` : "",
         therapy_goals: formData.therapy_goal,
@@ -374,15 +377,22 @@ Queixa Principal: ${formData.main_complaint}`,
                 />
               </FormField>
             </div>
-            <FormField label="Local da Terapia" className="mt-6">
-              <Input
-                type="text"
-                value={formData.therapy_location}
-                onChange={(e) => handleInputChange("therapy_location", e.target.value)}
-                placeholder="Ex: Clínica, domicílio, escola..."
-                className="border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <DateField
+                label="Data do Plano"
+                value={formData.plan_date}
+                onChange={(value) => handleInputChange("plan_date", value)}
               />
-            </FormField>
+              <FormField label="Local da Terapia">
+                <Input
+                  type="text"
+                  value={formData.therapy_location}
+                  onChange={(e) => handleInputChange("therapy_location", e.target.value)}
+                  placeholder="Ex: Clínica, domicílio, escola..."
+                  className="border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                />
+              </FormField>
+            </div>
           </ModernFormCard>
 
           {/* Treatment Information */}
