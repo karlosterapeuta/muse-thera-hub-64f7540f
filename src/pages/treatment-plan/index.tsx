@@ -525,86 +525,75 @@ export default function TreatmentPlanForm() {
       }
 
 
-      // Perfil Sensorial Musical (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
-      const hasSensoryData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
-      
-      if (hasSensoryData) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🎧</span> Perfil Sensorial Musical (TEA)
-            </h2>
-            <div style="background: linear-gradient(135deg, #FAF5FF 0%, #FDF4FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C3AED;">
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
-                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva')}
-                  ${generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências')}
-                  ${generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume')}
-                  ${generateScaleVisualization(content.texture_preference, 'Preferência de Texturas Sonoras')}
-                  ${generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico')}
-                </div>
+      // SEÇÃO 1: Perfil Sensorial Musical (TEA) - SEMPRE EXIBIR
+      console.log("Gerando seção: Perfil Sensorial Musical (TEA)");
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🎧</span> Perfil Sensorial Musical (TEA)
+          </h2>
+          <div style="background: linear-gradient(135deg, #FAF5FF 0%, #FDF4FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C3AED;">
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${generateScaleVisualization(content.auditory_sensitivity || 5, 'Sensibilidade Auditiva')}
+                ${generateScaleVisualization(content.frequency_responsiveness || 5, 'Responsividade a Frequências')}
+                ${generateScaleVisualization(content.volume_tolerance || 5, 'Tolerância ao Volume')}
+                ${generateScaleVisualization(content.texture_preference || 5, 'Preferência de Texturas Sonoras')}
+                ${generateScaleVisualization(content.rhythmic_processing || 5, 'Processamento Rítmico')}
               </div>
             </div>
           </div>
-        `;
-      }
+        </div>
+      `;
 
-      // Comunicação Social Musical (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
-      const hasSocialCommunicationData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
-      
-      if (hasSocialCommunicationData) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #0891B2; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🤝</span> Comunicação Social Musical (TEA)
-            </h2>
-            <div style="background: linear-gradient(135deg, #F0FDFA 0%, #F0F9FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #0891B2;">
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 14px; color: #0E7490; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
-                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${generateScaleVisualization(content.musical_communication, 'Comunicação Musical')}
-                  ${generateScaleVisualization(content.non_verbal_expression, 'Expressão Não-Verbal')}
-                  ${generateScaleVisualization(content.social_interaction_music, 'Interação Social Musical')}
-                  ${generateScaleVisualization(content.joint_attention_music, 'Atenção Compartilhada Musical')}
-                  ${generateScaleVisualization(content.imitation_skills, 'Habilidades de Imitação')}
-                </div>
+      // SEÇÃO 2: Comunicação Social Musical (TEA) - SEMPRE EXIBIR
+      console.log("Gerando seção: Comunicação Social Musical (TEA)");
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #0891B2; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🤝</span> Comunicação Social Musical (TEA)
+          </h2>
+          <div style="background: linear-gradient(135deg, #F0FDFA 0%, #F0F9FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #0891B2;">
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #0E7490; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${generateScaleVisualization(content.musical_communication || 5, 'Comunicação Musical')}
+                ${generateScaleVisualization(content.non_verbal_expression || 5, 'Expressão Não-Verbal')}
+                ${generateScaleVisualization(content.social_interaction_music || 5, 'Interação Social Musical')}
+                ${generateScaleVisualization(content.joint_attention_music || 5, 'Atenção Compartilhada Musical')}
+                ${generateScaleVisualization(content.imitation_skills || 5, 'Habilidades de Imitação')}
               </div>
             </div>
           </div>
-        `;
-      }
+        </div>
+      `;
 
-      // Padrões Comportamentais Musicais (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
-      const hasBehavioralData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
-      
-      if (hasBehavioralData) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #7C2D12; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C2D12; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🔄</span> Padrões Comportamentais Musicais (TEA)
-            </h2>
-            <div style="background: linear-gradient(135deg, #FEF7F0 0%, #FFFBF0 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C2D12;">
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 14px; color: #92400E; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
-                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${generateScaleVisualization(content.musical_stereotypies, 'Estereotipias Musicais')}
-                  ${generateScaleVisualization(content.ritual_behaviors, 'Comportamentos Ritualizados')}
-                  ${generateScaleVisualization(content.sensory_seeking, 'Busca Sensorial')}
-                  ${generateScaleVisualization(content.self_regulation_music, 'Autorregulação Musical')}
-                  ${generateScaleVisualization(content.behavioral_flexibility, 'Flexibilidade Comportamental')}
-                </div>
+      // SEÇÃO 3: Padrões Comportamentais Musicais (TEA) - SEMPRE EXIBIR
+      console.log("Gerando seção: Padrões Comportamentais Musicais (TEA)");
+      htmlContent += `
+        <div style="margin-bottom: 32px; page-break-inside: avoid;">
+          <h2 style="color: #7C2D12; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C2D12; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🔄</span> Padrões Comportamentais Musicais (TEA)
+          </h2>
+          <div style="background: linear-gradient(135deg, #FEF7F0 0%, #FFFBF0 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C2D12;">
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 600; font-size: 14px; color: #92400E; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
+              <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${generateScaleVisualization(content.musical_stereotypies || 5, 'Estereotipias Musicais')}
+                ${generateScaleVisualization(content.ritual_behaviors || 5, 'Comportamentos Ritualizados')}
+                ${generateScaleVisualization(content.sensory_seeking || 5, 'Busca Sensorial')}
+                ${generateScaleVisualization(content.self_regulation_music || 5, 'Autorregulação Musical')}
+                ${generateScaleVisualization(content.behavioral_flexibility || 5, 'Flexibilidade Comportamental')}
               </div>
             </div>
           </div>
-        `;
-      }
+        </div>
+      `;
 
-      // Metodologias e Recursos Especializados (TEA) - campos de texto (sempre exibir seção)
-      const hasSpecializedMethodsData = true; // Sempre exibir seção TEA, mesmo que campos de texto estejam vazios
-      
-      if (hasSpecializedMethodsData) {
-        htmlContent += `
+      // SEÇÃO 4: Metodologias e Recursos Especializados (TEA) - SEMPRE EXIBIR  
+      console.log("Gerando seção: Metodologias e Recursos Especializados (TEA)");
+      htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #BE185D; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #BE185D; display: flex; align-items: center;">
               <span style="margin-right: 8px;">🎓</span> Metodologias e Recursos Especializados (TEA)
@@ -698,10 +687,10 @@ export default function TreatmentPlanForm() {
               `}
             </div>
           </div>
-        `;
-      }
+         `;
+       }
 
-      return htmlContent;
+       return htmlContent;
     };
 
     try {
@@ -856,31 +845,55 @@ export default function TreatmentPlanForm() {
 
       console.log("Configurações do PDF:", opt);
       console.log("HTML completo gerado:", element.innerHTML.length, "caracteres");
-      console.log("Dados do formulário para PDF:", {
-        patientName: selectedPatientData.name,
-        formDataKeys: Object.keys(formData),
-        teaScalesSensory: {
-          auditory_sensitivity: formData.auditory_sensitivity,
-          frequency_responsiveness: formData.frequency_responsiveness,
-          volume_tolerance: formData.volume_tolerance,
-          texture_preference: formData.texture_preference,
-          rhythmic_processing: formData.rhythmic_processing
-        },
-        teaScalesCommunication: {
-          musical_communication: formData.musical_communication,
-          non_verbal_expression: formData.non_verbal_expression,
-          social_interaction_music: formData.social_interaction_music,
-          joint_attention_music: formData.joint_attention_music,
-          imitation_skills: formData.imitation_skills
-        },
-        teaScalesBehavioral: {
-          musical_stereotypies: formData.musical_stereotypies,
-          ritual_behaviors: formData.ritual_behaviors,
-          sensory_seeking: formData.sensory_seeking,
-          self_regulation_music: formData.self_regulation_music,
-          behavioral_flexibility: formData.behavioral_flexibility
-        }
+      
+      // Log detalhado para debug das seções TEA
+      console.log("=== DEBUG DAS SEÇÕES TEA ===");
+      console.log("1. Perfil Sensorial:", {
+        auditory_sensitivity: formData.auditory_sensitivity,
+        frequency_responsiveness: formData.frequency_responsiveness,
+        volume_tolerance: formData.volume_tolerance,
+        texture_preference: formData.texture_preference,
+        rhythmic_processing: formData.rhythmic_processing
       });
+      console.log("2. Comunicação Social:", {
+        musical_communication: formData.musical_communication,
+        non_verbal_expression: formData.non_verbal_expression,
+        social_interaction_music: formData.social_interaction_music,
+        joint_attention_music: formData.joint_attention_music,
+        imitation_skills: formData.imitation_skills
+      });
+      console.log("3. Padrões Comportamentais:", {
+        musical_stereotypies: formData.musical_stereotypies,
+        ritual_behaviors: formData.ritual_behaviors,
+        sensory_seeking: formData.sensory_seeking,
+        self_regulation_music: formData.self_regulation_music,
+        behavioral_flexibility: formData.behavioral_flexibility
+      });
+      console.log("4. Campos de Texto TEA:", {
+        tea_approach_methodology: formData.tea_approach_methodology || "(vazio)",
+        adaptive_resources: formData.adaptive_resources || "(vazio)",
+        communication_strategies: formData.communication_strategies || "(vazio)",
+        sensory_program: formData.sensory_program || "(vazio)",
+        family_guidance: formData.family_guidance || "(vazio)",
+        evaluation_methods: formData.evaluation_methods || "(vazio)"
+      });
+      console.log("=== FIM DEBUG ===");
+
+      // Verificar se o HTML contém as seções TEA
+      const htmlContent = element.innerHTML;
+      const containsSensorySection = htmlContent.includes("Perfil Sensorial Musical (TEA)");
+      const containsCommunicationSection = htmlContent.includes("Comunicação Social Musical (TEA)");
+      const containsBehavioralSection = htmlContent.includes("Padrões Comportamentais Musicais (TEA)");
+      const containsMethodologySection = htmlContent.includes("Metodologias e Recursos Especializados (TEA)");
+      const containsAdditionalSection = htmlContent.includes("Observações Adicionais");
+      
+      console.log("=== VERIFICAÇÃO DE SEÇÕES NO HTML ===");
+      console.log("- Perfil Sensorial Musical (TEA):", containsSensorySection ? "✅ PRESENTE" : "❌ AUSENTE");
+      console.log("- Comunicação Social Musical (TEA):", containsCommunicationSection ? "✅ PRESENTE" : "❌ AUSENTE");
+      console.log("- Padrões Comportamentais Musicais (TEA):", containsBehavioralSection ? "✅ PRESENTE" : "❌ AUSENTE");
+      console.log("- Metodologias e Recursos Especializados (TEA):", containsMethodologySection ? "✅ PRESENTE" : "❌ AUSENTE");
+      console.log("- Observações Adicionais:", containsAdditionalSection ? "✅ PRESENTE" : "❌ AUSENTE");
+      console.log("=== FIM VERIFICAÇÃO ===");
 
       // Add to DOM temporarily for rendering
       document.body.appendChild(element);
@@ -1534,9 +1547,11 @@ export default function TreatmentPlanForm() {
               <Download className="w-5 h-5" />
               Baixar PDF
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+           </div>
+         </form>
+       </div>
+     </div>
+   );
+ }
+
+export default TreatmentPlanForm;
