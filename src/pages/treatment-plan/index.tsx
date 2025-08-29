@@ -11,8 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { SelectField } from "./components/SelectField";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { TreatmentPlanPDFContent } from "@/components/TreatmentPlanPDFContent";
 
 interface FormData {
   patient_name: string;
@@ -138,147 +138,73 @@ function TreatmentPlanForm() {
 
   const handleDownloadPDF = useCallback(async () => {
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      let currentY = margin;
-
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
-      pdf.text('PLANO TERAPÊUTICO', pageWidth / 2, currentY, { align: 'center' });
-      currentY += 15;
-
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(12);
-
-      // Patient Information
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('INFORMAÇÕES DO PACIENTE', margin, currentY);
-      currentY += 8;
+      console.log("📄 Gerando PDF do Plano de Tratamento...");
       
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Nome do Paciente: ${formData.patient_name}`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Terapeuta: ${formData.therapist_name}`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Local da Terapia: ${formData.therapy_location}`, margin, currentY);
-      currentY += 10;
+      // Convert current form data to PDF component format
+      const pdfData = {
+        patient_name: formData.patient_name,
+        therapist_name: formData.therapist_name,
+        age: "", // Could be added to form later
+        diagnosis: "TEA - Transtorno do Espectro Autista",
+        treatment_date: new Date().toISOString().split('T')[0],
+        session_frequency: formData.session_frequency,
+        treatment_duration: formData.planned_sessions ? `${formData.planned_sessions} sessões` : "",
+        therapy_goals: formData.therapy_goal,
+        intervention_techniques: `Metodologias Especializadas:
+• Método MUSICOGRAM® - Criação de representações visuais da música
+• Técnicas de Improvisação Musical Terapêutica
+• Estimulação Sensorial através de Instrumentos Musicais
+• Desenvolvimento de Habilidades Sociais via Atividades Musicais
+• Regulação Emocional através de Técnicas Musicoterapêuticas
 
-      // Treatment Information
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('INFORMAÇÕES DO TRATAMENTO', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Queixa Principal: ${formData.main_complaint}`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Objetivo da Terapia: ${formData.therapy_goal}`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Sessões Planejadas: ${formData.planned_sessions}`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Frequência: ${formData.session_frequency}`, margin, currentY);
-      currentY += 15;
+Local da Terapia: ${formData.therapy_location}
+Queixa Principal: ${formData.main_complaint}`,
+        additional_notes: formData.additional_notes,
+        // Map current form fields to TEA assessment fields
+        sensory_hypo: String(formData.sensory_auditory),
+        sensory_hyper: String(formData.sensory_visual),
+        sensory_seeking: String(formData.sensory_tactile),
+        social_interaction: String(formData.communication_social),
+        social_communication: String(formData.communication_verbal),
+        social_motivation: String(formData.communication_nonverbal),
+        repetitive_motor: String(formData.behavioral_repetitive),
+        repetitive_verbal: String(formData.communication_receptive),
+        repetitive_interests: String(formData.behavioral_restricted),
+        change_routine: String(formData.behavioral_transitions),
+        change_environment: String(formData.behavioral_flexibility),
+        change_unexpected: String(formData.behavioral_self_regulation),
+      };
 
-      console.log('Adding TEA sections...');
+      const component = React.createElement(TreatmentPlanPDFContent, { formData: pdfData });
 
-      // TEA Section 1: Musical Sensory Profile
-      console.log('Adding Musical Sensory Profile section');
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('1. PERFIL SENSORIAL MUSICAL', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Processamento Auditivo: ${formData.sensory_auditory}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Processamento Visual: ${formData.sensory_visual}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Processamento Tátil: ${formData.sensory_tactile}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Processamento Proprioceptivo: ${formData.sensory_proprioceptive}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Processamento Vestibular: ${formData.sensory_vestibular}/10`, margin, currentY);
-      currentY += 15;
-
-      // TEA Section 2: Musical Social Communication
-      console.log('Adding Musical Social Communication section');
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('2. COMUNICAÇÃO SOCIAL MUSICAL', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Comunicação Verbal: ${formData.communication_verbal}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Comunicação Não Verbal: ${formData.communication_nonverbal}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Linguagem Receptiva: ${formData.communication_receptive}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Linguagem Expressiva: ${formData.communication_expressive}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Interação Social: ${formData.communication_social}/10`, margin, currentY);
-      currentY += 15;
-
-      // TEA Section 3: Musical Behavioral Patterns
-      console.log('Adding Musical Behavioral Patterns section');
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('3. PADRÕES COMPORTAMENTAIS MUSICAIS', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Comportamentos Repetitivos: ${formData.behavioral_repetitive}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Interesses Restritos: ${formData.behavioral_restricted}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Adaptação a Mudanças: ${formData.behavioral_transitions}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Flexibilidade Cognitiva: ${formData.behavioral_flexibility}/10`, margin, currentY);
-      currentY += 6;
-      pdf.text(`Autorregulação: ${formData.behavioral_self_regulation}/10`, margin, currentY);
-      currentY += 15;
-
-      // TEA Section 4: Specialized Methodologies
-      console.log('Adding Specialized Methodologies section');
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('4. METODOLOGIAS ESPECIALIZADAS', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('• Método MUSICOGRAM® - Criação de representações visuais da música', margin + 5, currentY);
-      currentY += 6;
-      pdf.text('• Técnicas de Improvisação Musical Terapêutica', margin + 5, currentY);
-      currentY += 6;
-      pdf.text('• Estimulação Sensorial através de Instrumentos Musicais', margin + 5, currentY);
-      currentY += 6;
-      pdf.text('• Desenvolvimento de Habilidades Sociais via Atividades Musicais', margin + 5, currentY);
-      currentY += 6;
-      pdf.text('• Regulação Emocional através de Técnicas Musicoterapêuticas', margin + 5, currentY);
-      currentY += 15;
-
-      // TEA Section 5: Additional Observations
-      console.log('Adding Additional Observations section');
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('5. OBSERVAÇÕES COMPLEMENTARES', margin, currentY);
-      currentY += 8;
-      
-      pdf.setFont('helvetica', 'normal');
-      const additionalNotes = formData.additional_notes || 'Nenhuma observação adicional registrada.';
-      const splitText = pdf.splitTextToSize(additionalNotes, pageWidth - 2 * margin);
-      pdf.text(splitText, margin, currentY);
-
-      console.log('All TEA sections added successfully');
-
-      pdf.save(`plano-terapeutico-${formData.patient_name.replace(/\s+/g, '-').toLowerCase()}.pdf`);
-      
-      toast({
-        title: "PDF gerado com sucesso!",
-        description: "O plano terapêutico foi baixado.",
+      const success = await generateStaticPDF(component, {
+        filename: `Plano_Terapeutico_${formData.patient_name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+        waitTime: 5000,
+        quality: 2.0,
+        format: 'a4',
+        orientation: 'portrait'
       });
+
+      if (success) {
+        toast({
+          title: "PDF gerado com sucesso!",
+          description: "O plano terapêutico foi baixado com visual profissional.",
+        });
+        console.log("✅ PDF do plano de tratamento gerado com sucesso!");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro ao gerar PDF",
+          description: "Não foi possível gerar o arquivo PDF.",
+        });
+        console.log("❌ Erro ao gerar PDF do plano de tratamento");
+      }
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error("❌ Erro ao gerar PDF do plano de tratamento:", error);
       toast({
         variant: "destructive",
         title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o arquivo PDF.",
+        description: "Erro inesperado ao gerar o PDF. Tente novamente.",
       });
     }
   }, [formData, toast]);
