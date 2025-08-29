@@ -28,7 +28,7 @@ import MusicalBells from "./pages/musical-bells";
 import BellHero from "./pages/bell-hero";
 import TeaHero from "./pages/tea-hero";
 import Musicogram from "./pages/musicogram";
-import Sprunki from "./pages/sprunki";
+import SprunKi from "./pages/SprunKi";
 import BoomwhackerHero from "./pages/boomwhacker-hero";
 import XylophoneHero from "./pages/xylophone-hero";
 import MusicComposer from "./pages/music-composer";
@@ -98,7 +98,7 @@ const App = () => (
             <Route path="bell-hero" element={<BellHero />} />
             <Route path="tea-hero" element={<TeaHero />} />
             <Route path="musicogram" element={<Musicogram />} />
-            <Route path="sprunki" element={<Sprunki />} />
+            <Route path="sprunki" element={<SprunKi />} />
             <Route path="boomwhacker-hero" element={<BoomwhackerHero />} />
             <Route path="xylophone-hero" element={<XylophoneHero />} />
             <Route path="music-composer" element={<MusicComposer />} />

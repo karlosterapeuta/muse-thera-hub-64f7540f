@@ -36,7 +36,7 @@ export const musicalGamesMenuItems = [
   { icon: Music, text: "🧩 TEA-Hero - em construção", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
   { icon: Bell, text: "🔔 Sinos Musicais", path: "/musical-bells", gradient: "from-green-500 to-emerald-600" },
   { icon: Waves, text: "🥁 Boomwhacker Hero - em construção", path: "/boomwhacker-hero", gradient: "from-orange-500 to-red-600" },
-  { icon: Music2, text: "🎵 Sprunki Musical - em construção", path: "/sprunki", gradient: "from-rose-500 to-pink-600" },
+  { icon: Music2, text: "🎵 Sprunki Musical", path: "/sprunki", gradient: "from-rose-500 to-pink-600", isNew: true },
 ];
 
 export const toolsMenuItems = [
