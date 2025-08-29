@@ -398,40 +398,41 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     id: "sapo-xylophone", name: "O Sapo Não Lava o Pé", bpm: 110, timeSignature: "4/4",
     totalDuration: 20000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "O sa po não la va o pé" - Primeira linha da partitura
-      createNote("G", 5, 450, 0, "xylophone"),     // O
-      createNote("C", 5, 450, 450, "xylophone"),   // sa-
-      createNote("C", 5, 450, 900, "xylophone"),   // -po
-      createNote("G", 5, 450, 1350, "xylophone"),  // não
-      createNote("A", 5, 450, 1800, "xylophone"),  // la-
-      createNote("G", 5, 450, 2250, "xylophone"),  // -va
-      createNote("E", 5, 450, 2700, "xylophone"),  // o
-      createNote("G", 5, 700, 3150, "xylophone"),  // pé
+      // "O sa po não la va o pé" - Primeira linha da partitura visual
+      createNote("G", 5, 450, 0, "xylophone"),     // O (azul claro)
+      createNote("B", 5, 450, 450, "xylophone"),   // sa (C♭ = B, vermelho)
+      createNote("B", 5, 450, 900, "xylophone"),   // po (C♭ = B, vermelho)
+      createNote("G", 5, 450, 1350, "xylophone"),  // não (azul claro)
+      createNote("A", 5, 450, 1800, "xylophone"),  // la (azul escuro)
+      createNote("G", 5, 450, 2250, "xylophone"),  // va (azul claro)
+      createNote("E", 5, 450, 2700, "xylophone"),  // o (amarelo)
+      createNote("G", 5, 700, 3150, "xylophone"),  // pé (azul claro)
       
-      // "não la va por que não e le mo" - Segunda linha da partitura
-      createNote("C", 5, 400, 4300, "xylophone"),  // não
-      createNote("C", 5, 400, 4700, "xylophone"),  // la-
-      createNote("G", 5, 400, 5100, "xylophone"),  // -va
-      createNote("A", 5, 400, 5500, "xylophone"),  // por-
-      createNote("G", 5, 400, 5900, "xylophone"),  // -que
-      createNote("F", 5, 400, 6300, "xylophone"),  // não
-      createNote("G", 5, 400, 6700, "xylophone"),  // e
-      createNote("B", 5, 400, 7100, "xylophone"),  // le
-      createNote("B", 5, 700, 7500, "xylophone"),  // mo
+      // "não la va por que não e le mo" - Segunda linha da partitura visual
+      createNote("B", 5, 400, 4300, "xylophone"),  // não (C♭ = B, vermelho)
+      createNote("B", 5, 400, 4700, "xylophone"),  // la (C♭ = B, vermelho)
+      createNote("G", 5, 400, 5100, "xylophone"),  // va (azul claro)
+      createNote("A", 5, 400, 5500, "xylophone"),  // por (azul escuro)
+      createNote("G", 5, 400, 5900, "xylophone"),  // que (azul claro)
+      createNote("F", 5, 400, 6300, "xylophone"),  // não (verde)
+      createNote("G", 5, 400, 6700, "xylophone"),  // e (azul claro)
+      createNote("B", 5, 400, 7100, "xylophone"),  // le (roxo)
+      createNote("B", 5, 700, 7500, "xylophone"),  // mo (roxo)
       
-      // "ra lá na la go a não la va o pé" - Terceira linha da partitura
-      createNote("G", 5, 400, 8700, "xylophone"),  // ra
-      createNote("A", 5, 400, 9100, "xylophone"),  // lá
-      createNote("G", 5, 400, 9500, "xylophone"),  // na
-      createNote("B", 5, 400, 9900, "xylophone"),  // la-
-      createNote("B", 5, 400, 10300, "xylophone"), // -go-
-      createNote("G", 5, 400, 10700, "xylophone"), // -a
-      createNote("A", 5, 400, 11100, "xylophone"), // não
-      createNote("G", 5, 400, 11500, "xylophone"), // la-
-      createNote("B", 5, 400, 11900, "xylophone"), // -va
-      createNote("A", 5, 400, 12300, "xylophone"), // o
-      createNote("B", 5, 400, 12700, "xylophone"), // pé
-      createNote("C", 5, 1000, 13100, "xylophone") // (final)
+      // "ra lá na la go a não la va o pé" - Terceira linha da partitura visual
+      createNote("G", 5, 400, 8700, "xylophone"),  // ra (azul claro)
+      createNote("A", 5, 400, 9100, "xylophone"),  // lá (azul escuro)
+      createNote("G", 5, 400, 9500, "xylophone"),  // na (azul claro)
+      createNote("B", 5, 400, 9900, "xylophone"),  // la (roxo)
+      createNote("B", 5, 400, 10300, "xylophone"), // go (roxo)
+      createNote("G", 5, 400, 10700, "xylophone"), // a (azul claro)
+      createNote("A", 5, 400, 11100, "xylophone"), // não (azul escuro)
+      createNote("G", 5, 400, 11500, "xylophone"), // la (azul claro)
+      createNote("B", 5, 400, 11900, "xylophone"), // va (roxo)
+      createNote("G", 5, 400, 12300, "xylophone"), // o (azul claro)
+      createNote("A", 5, 400, 12700, "xylophone"), // pé (azul escuro)
+      createNote("B", 5, 400, 13100, "xylophone"), // (final roxo)
+      createNote("B", 5, 1000, 13500, "xylophone") // (final C♭ = B, vermelho)
     ]
   },
 
