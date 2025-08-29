@@ -32,7 +32,7 @@ type Patient = {
   name: string;
 };
 
-export default function TreatmentPlanForm() {
+function TreatmentPlanForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
@@ -1554,5 +1554,4 @@ export default function TreatmentPlanForm() {
   );
 }
 
-// Export the component
 export default TreatmentPlanForm;
