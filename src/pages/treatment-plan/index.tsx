@@ -17,6 +17,7 @@ import { TreatmentPlanPDFContent } from "@/components/TreatmentPlanPDFContent";
 interface FormData {
   patient_name: string;
   therapist_name: string;
+  patient_age: string;
   therapy_location: string;
   main_complaint: string;
   therapy_goal: string;
@@ -43,6 +44,8 @@ interface FormData {
 type Patient = {
   id: string;
   name: string;
+  age?: number;
+  birth_date?: string;
 };
 
 function TreatmentPlanForm() {
@@ -58,7 +61,7 @@ function TreatmentPlanForm() {
       try {
         const { data, error } = await supabase
           .from("patients")
-          .select("id, name");
+          .select("id, name, age, birth_date");
 
         if (error) {
           throw error;
@@ -86,9 +89,27 @@ function TreatmentPlanForm() {
     setSelectedPatient(value);
     const patient = patients.find((p) => p.id === value);
     if (patient) {
+      // Calculate age from birth_date or use direct age field
+      let patientAge = "";
+      if (patient.age) {
+        patientAge = `${patient.age} anos`;
+      } else if (patient.birth_date) {
+        const birthDate = new Date(patient.birth_date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          patientAge = `${age - 1} anos`;
+        } else {
+          patientAge = `${age} anos`;
+        }
+      }
+
       setFormData(prev => ({
         ...prev,
         patient_name: patient.name,
+        patient_age: patientAge,
       }));
     }
   }, [patients]);
@@ -96,6 +117,7 @@ function TreatmentPlanForm() {
   const [formData, setFormData] = useState<FormData>({
     patient_name: "",
     therapist_name: "",
+    patient_age: "",
     therapy_location: "",
     main_complaint: "",
     therapy_goal: "",
@@ -144,7 +166,7 @@ function TreatmentPlanForm() {
       const pdfData = {
         patient_name: formData.patient_name,
         therapist_name: formData.therapist_name,
-        age: "", // Could be added to form later
+        age: formData.patient_age,
         diagnosis: "TEA - Transtorno do Espectro Autista",
         treatment_date: new Date().toISOString().split('T')[0],
         session_frequency: formData.session_frequency,
