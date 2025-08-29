@@ -471,31 +471,6 @@ export default function TreatmentPlanForm() {
         `;
       }
 
-      // Perfil Sensorial Musical (TEA) - com escalas visuais
-      const hasMusicalSensoryData = (content.auditory_sensitivity ?? 5) >= 1 || (content.frequency_responsiveness ?? 5) >= 1 || 
-        (content.volume_tolerance ?? 5) >= 1 || (content.texture_preference ?? 5) >= 1 || (content.rhythmic_processing ?? 5) >= 1;
-      
-      if (hasMusicalSensoryData) {
-        htmlContent += `
-          <div style="margin-bottom: 32px; page-break-inside: avoid;">
-            <h2 style="color: #EA580C; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #EA580C; display: flex; align-items: center;">
-              <span style="margin-right: 8px;">🧠</span> Perfil Sensorial Musical (TEA)
-            </h2>
-            <div style="background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #EA580C;">
-              <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 14px; color: #9A3412; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
-                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ${generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva')}
-                  ${generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências')}
-                  ${generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume')}
-                  ${generateScaleVisualization(content.texture_preference, 'Preferência por Texturas Sonoras')}
-                  ${generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico')}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
 
       // Comunicação Social Musical (TEA) - com escalas visuais
       const hasSocialCommunicationData = (content.musical_communication ?? 5) >= 1 || (content.non_verbal_expression ?? 5) >= 1 || 
