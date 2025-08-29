@@ -472,9 +472,8 @@ export default function TreatmentPlanForm() {
       }
 
 
-      // Comunicação Social Musical (TEA) - com escalas visuais
-      const hasSocialCommunicationData = (content.musical_communication ?? 5) >= 1 || (content.non_verbal_expression ?? 5) >= 1 || 
-        (content.social_interaction_music ?? 5) >= 1 || (content.joint_attention_music ?? 5) >= 1 || (content.imitation_skills ?? 5) >= 1;
+      // Comunicação Social Musical (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
+      const hasSocialCommunicationData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
       
       if (hasSocialCommunicationData) {
         htmlContent += `
@@ -498,9 +497,8 @@ export default function TreatmentPlanForm() {
         `;
       }
 
-      // Padrões Comportamentais Musicais (TEA) - com escalas visuais
-      const hasBehavioralData = (content.musical_stereotypies ?? 5) >= 1 || (content.ritual_behaviors ?? 5) >= 1 || 
-        (content.sensory_seeking ?? 5) >= 1 || (content.self_regulation_music ?? 5) >= 1 || (content.behavioral_flexibility ?? 5) >= 1;
+      // Padrões Comportamentais Musicais (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
+      const hasBehavioralData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
       
       if (hasBehavioralData) {
         htmlContent += `
@@ -524,9 +522,8 @@ export default function TreatmentPlanForm() {
         `;
       }
 
-      // Metodologias e Recursos Especializados (TEA) - campos de texto
-      const hasSpecializedMethodsData = content.tea_approach_methodology || content.adaptive_resources || 
-        content.communication_strategies || content.sensory_program || content.family_guidance || content.evaluation_methods;
+      // Metodologias e Recursos Especializados (TEA) - campos de texto (sempre exibir seção)
+      const hasSpecializedMethodsData = true; // Sempre exibir seção TEA, mesmo que campos de texto estejam vazios
       
       if (hasSpecializedMethodsData) {
         htmlContent += `
@@ -540,37 +537,67 @@ export default function TreatmentPlanForm() {
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Metodologia da Abordagem TEA</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.tea_approach_methodology}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🎯 Metodologia da Abordagem TEA</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir conforme avaliação inicial do paciente</div>
+                </div>
+              `}
               ${content.adaptive_resources ? `
                 <div style="margin-bottom: 16px;">
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🔧 Recursos Adaptativos</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.adaptive_resources}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🔧 Recursos Adaptativos</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A definir conforme necessidades específicas do paciente</div>
+                </div>
+              `}
               ${content.communication_strategies ? `
                 <div style="margin-bottom: 16px;">
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">💬 Estratégias de Comunicação</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.communication_strategies}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">💬 Estratégias de Comunicação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A desenvolver durante o processo terapêutico</div>
+                </div>
+              `}
               ${content.sensory_program ? `
                 <div style="margin-bottom: 16px;">
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Programa Sensorial</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.sensory_program}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">🌊 Programa Sensorial</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">A estabelecer com base no perfil sensorial do paciente</div>
+                </div>
+              `}
               ${content.family_guidance ? `
                 <div style="margin-bottom: 16px;">
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">👨‍👩‍👧‍👦 Orientação Familiar</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.family_guidance}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">👨‍👩‍👧‍👦 Orientação Familiar</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">Orientações a serem desenvolvidas com a família</div>
+                </div>
+              `}
               ${content.evaluation_methods ? `
                 <div style="margin-bottom: 0;">
                   <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📊 Métodos de Avaliação</div>
                   <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.evaluation_methods}</div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="margin-bottom: 0;">
+                  <div style="font-weight: 600; font-size: 14px; color: #9D174D; margin-bottom: 6px;">📊 Métodos de Avaliação</div>
+                  <div style="background-color: white; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">Métodos a serem definidos conforme evolução do caso</div>
+                </div>
+              `}
             </div>
           </div>
         `;
