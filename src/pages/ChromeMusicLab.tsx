@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Music, Maximize2, RotateCcw, Star, Heart, X } from "lucide-react";
+import { Music, Maximize2, RotateCcw, Star, Heart, X, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,28 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function ChromeMusicLab() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      if (window.innerHeight > window.innerWidth) {
+        setOrientation('portrait');
+      } else {
+        setOrientation('landscape');
+      }
+    };
+
+    handleOrientationChange();
+    window.addEventListener('resize', handleOrientationChange);
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('resize', handleOrientationChange);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, []);
 
   const handleLoad = () => {
     setIsLoading(false);
@@ -16,14 +37,35 @@ export default function ChromeMusicLab() {
 
   const handleRefresh = () => {
     setIsLoading(true);
-    const iframe = document.querySelector('#chrome-music-lab-iframe') as HTMLIFrameElement;
-    if (iframe) {
-      iframe.src = iframe.src;
+    if (iframeRef.current) {
+      iframeRef.current.src = iframeRef.current.src;
     }
   };
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+  const toggleFullscreen = async () => {
+    if (!isFullscreen) {
+      setIsFullscreen(true);
+      
+      // Native fullscreen on mobile
+      if (isMobile && iframeRef.current && iframeRef.current.requestFullscreen) {
+        try {
+          await iframeRef.current.requestFullscreen();
+        } catch (error) {
+          console.log('Fullscreen not supported');
+        }
+      }
+    } else {
+      setIsFullscreen(false);
+      
+      // Exit native fullscreen on mobile
+      if (isMobile && document.exitFullscreen) {
+        try {
+          await document.exitFullscreen();
+        } catch (error) {
+          console.log('Exit fullscreen not supported');
+        }
+      }
+    }
   };
 
   return (
@@ -53,10 +95,10 @@ export default function ChromeMusicLab() {
               variant="outline"
               size={isMobile ? "sm" : "default"}
               onClick={handleRefresh}
-              className="gap-2"
+              className="gap-2 ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
             >
               <RotateCcw className="w-4 h-4" />
-              {!isMobile && "Recarregar"}
+              {!isMobile && "Atualizar"}
             </Button>
             <Button
               variant="outline"
@@ -77,9 +119,11 @@ export default function ChromeMusicLab() {
           className={`
             relative rounded-xl overflow-hidden shadow-2xl border border-border/50
             ${isFullscreen 
-              ? 'fixed inset-4 z-50 bg-background' 
+              ? 'fixed inset-0 z-50 bg-background' 
               : isMobile 
-                ? 'aspect-[4/3]' 
+                ? orientation === 'portrait' 
+                  ? 'aspect-[9/16] max-h-[70vh]' 
+                  : 'aspect-[16/10] max-h-[80vh]'
                 : 'h-[calc(100vh-200px)] min-h-[500px]'
             }
           `}
@@ -134,13 +178,18 @@ export default function ChromeMusicLab() {
           
           {/* Chrome Music Lab Iframe */}
           <iframe
+            ref={iframeRef}
             id="chrome-music-lab-iframe"
             src="https://musiclab.chromeexperiments.com/"
             className="w-full h-full border-0"
-            allow="microphone; camera; midi; encrypted-media; autoplay; fullscreen"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-downloads"
+            style={{ 
+              touchAction: 'manipulation',
+              WebkitOverflowScrolling: 'touch'
+            }}
+            allow="microphone; camera; midi; encrypted-media; autoplay; fullscreen; pointer-lock"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-downloads allow-pointer-lock"
             onLoad={handleLoad}
-            title="Chrome Music Lab - Experimentos Musicais Interativos"
+            title="Chrome Music Lab - Experimentos Musicais Interativos via MuseTera"
             loading="lazy"
           />
           
@@ -194,17 +243,24 @@ export default function ChromeMusicLab() {
           </CardContent>
         </Card>
         
-        {/* Info Cards for Mobile */}
-        {isMobile && (
-          <div className="mt-6 grid gap-4">
+        {/* Mobile Tips */}
+        {isMobile && !isFullscreen && (
+          <div className="mt-4 space-y-2">
             <div className="p-4 rounded-lg bg-card border border-border/50">
-              <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <Music className="w-4 h-4 text-primary" />
-                Dica para Mobile
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-primary" />
+                💡 Dicas para Mobile - Chrome Music Lab
               </h3>
-              <p className="text-xs text-muted-foreground">
-                Para melhor experiência, rotacione o dispositivo para modo paisagem ou use o botão de tela cheia.
-              </p>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                {orientation === 'portrait' && (
+                  <div>📱 Para melhor experiência, gire o dispositivo para modo paisagem</div>
+                )}
+                <div>🖱️ Use gestos de toque para interagir com os experimentos musicais</div>
+                <div>🔊 Ative o som para experiência completa dos experimentos</div>
+                <div>🎯 Toque diretamente nos instrumentos e controles na tela</div>
+                <div>🔄 Use o botão "Atualizar" acima se houver problemas de carregamento</div>
+                <div>📺 Alguns experimentos podem funcionar melhor em tela cheia</div>
+              </div>
             </div>
           </div>
         )}
