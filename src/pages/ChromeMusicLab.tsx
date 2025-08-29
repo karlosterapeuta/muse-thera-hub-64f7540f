@@ -82,7 +82,7 @@ export default function ChromeMusicLab() {
             />
             <div>
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                🎵 Chrome Music Lab - MuseTera
+                🎵 Jogos Musicais - MuseTera
               </h1>
               <p className="text-sm text-muted-foreground">
                 Experimentos Musicais Interativos • Plataforma MuseTera
