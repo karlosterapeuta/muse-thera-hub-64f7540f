@@ -686,7 +686,7 @@ export default function TreatmentPlanForm() {
                 <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">Observações adicionais serão incluídas conforme o andamento do tratamento</div>
               `}
             </div>
-          </div>
+           </div>
          `;
        }
 
@@ -1547,11 +1547,12 @@ export default function TreatmentPlanForm() {
               <Download className="w-5 h-5" />
               Baixar PDF
             </Button>
-           </div>
-         </form>
-       </div>
-     </div>
-   );
- }
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
+// Export the component
 export default TreatmentPlanForm;
