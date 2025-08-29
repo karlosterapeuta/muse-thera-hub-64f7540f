@@ -86,7 +86,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "parabens-bell": {
     id: "parabens-bell", name: "Parabéns a Você", bpm: 90, timeSignature: "4/4",
-    totalDuration: 18000, difficulty: "Fácil", loops: 1,
+    totalDuration: 25000, difficulty: "Fácil", loops: 1,
     notes: [
       // "Parabéns para você"
       createNote("C", 4, 500, 0, "bell"),     // Pa-
@@ -104,13 +104,20 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 1000, 11672, "bell"), // -ra
       createNote("F", 4, 2000, 13006, "bell"), // vo-cê
       
-      // "Parabéns, parabéns"
+      // "Parabéns querido/a [nome]"
       createNote("C", 4, 500, 15340, "bell"), // Pa-
       createNote("C", 4, 500, 16007, "bell"), // -ra-
       createNote("A", 4, 1000, 16674, "bell"), // -béns
-      createNote("F", 4, 1000, 18008, "bell"), // pa-
-      createNote("E", 4, 1000, 19342, "bell"), // -ra-
-      createNote("D", 4, 2000, 20676, "bell")  // -béns
+      createNote("F", 4, 1000, 18008, "bell"), // que-
+      createNote("E", 4, 1000, 19342, "bell"), // -ri-
+      createNote("D", 4, 1000, 20676, "bell"), // -do/a
+      
+      // "Muitas felicidades"
+      createNote("B", 4, 500, 22010, "bell"), // Mui-
+      createNote("B", 4, 500, 22677, "bell"), // -tas
+      createNote("A", 4, 1000, 23344, "bell"), // fe-
+      createNote("G", 4, 1000, 24678, "bell"), // -li-
+      createNote("C", 4, 2000, 26012, "bell")  // -ci-da-des
     ]
   },
 
@@ -167,7 +174,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "galinha-pintadinha-bell": {
     id: "galinha-pintadinha-bell", name: "Galinha Pintadinha", bpm: 140, timeSignature: "4/4",
-    totalDuration: 14000, difficulty: "Fácil", loops: 1,
+    totalDuration: 18000, difficulty: "Fácil", loops: 1,
     notes: [
       // "Galinha pintadinha e o galo carijó"
       createNote("E", 4, 300, 0, "bell"),     // Ga-
@@ -201,13 +208,23 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("D", 4, 300, 11990, "bell"), // -lo
       createNote("C", 4, 300, 12420, "bell"), // pa-
       createNote("D", 4, 300, 12850, "bell"), // -le-
-      createNote("E", 4, 1200, 13280, "bell") // -tó
+      createNote("E", 4, 600, 13280, "bell"), // -tó
+      
+      // Refrão: "Pó pó pó pó pó pó pó pó"
+      createNote("C", 4, 200, 14200, "bell"), // Pó
+      createNote("D", 4, 200, 14400, "bell"), // pó
+      createNote("E", 4, 200, 14600, "bell"), // pó
+      createNote("F", 4, 200, 14800, "bell"), // pó
+      createNote("G", 4, 200, 15000, "bell"), // pó
+      createNote("A", 4, 200, 15200, "bell"), // pó
+      createNote("G", 4, 200, 15400, "bell"), // pó
+      createNote("E", 4, 800, 15600, "bell")  // pó (final)
     ]
   },
 
   "atirei-pau-bell": {
     id: "atirei-pau-bell", name: "Atirei o Pau no Gato", bpm: 120, timeSignature: "4/4",
-    totalDuration: 15000, difficulty: "Fácil", loops: 1,
+    totalDuration: 20000, difficulty: "Fácil", loops: 1,
     notes: [
       // "Atirei o pau no gato-to" - Melodia tradicional completa G-F-E-D-E-F-G-G-G
       createNote("G", 4, 500, 0, "bell"),     // A-
@@ -241,7 +258,18 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("E", 4, 500, 13400, "bell"), // -rou-
       createNote("E", 4, 500, 13900, "bell"), // -se
       createNote("D", 4, 500, 14400, "bell"), // (se)
-      createNote("C", 4, 1000, 14900, "bell") // (final)
+      createNote("C", 4, 600, 14900, "bell"), // (final)
+      
+      // "Do berro que o gato deu" - Estrofe final completa
+      createNote("G", 4, 500, 16000, "bell"), // Do
+      createNote("F", 4, 500, 16500, "bell"), // ber-
+      createNote("E", 4, 500, 17000, "bell"), // -ro
+      createNote("D", 4, 500, 17500, "bell"), // que
+      createNote("E", 4, 500, 18000, "bell"), // o
+      createNote("F", 4, 500, 18500, "bell"), // ga-
+      createNote("G", 4, 500, 19000, "bell"), // -to
+      createNote("A", 4, 500, 19500, "bell"), // deu
+      createNote("G", 4, 1000, 20000, "bell") // (final)
     ]
   },
 
@@ -366,6 +394,162 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
+  "sapo-xylophone": {
+    id: "sapo-xylophone", name: "O Sapo Não Lava o Pé", bpm: 120, timeSignature: "4/4",
+    totalDuration: 15000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "O sapo não lava o pé"
+      createNote("C", 5, 500, 0, "xylophone"),    // O
+      createNote("D", 5, 500, 500, "xylophone"),  // sa-
+      createNote("E", 5, 500, 1000, "xylophone"), // -po
+      createNote("F", 5, 500, 1500, "xylophone"), // não
+      createNote("G", 5, 500, 2000, "xylophone"), // la-
+      createNote("A", 5, 500, 2500, "xylophone"), // -va
+      createNote("G", 5, 500, 3000, "xylophone"), // o
+      createNote("F", 5, 1000, 3500, "xylophone"), // pé
+      
+      // "Não lava porque não quer"
+      createNote("E", 5, 500, 5000, "xylophone"), // Não
+      createNote("F", 5, 500, 5500, "xylophone"), // la-
+      createNote("G", 5, 500, 6000, "xylophone"), // -va
+      createNote("A", 5, 500, 6500, "xylophone"), // por-
+      createNote("G", 5, 500, 7000, "xylophone"), // -que
+      createNote("F", 5, 500, 7500, "xylophone"), // não
+      createNote("E", 5, 500, 8000, "xylophone"), // quer
+      createNote("D", 5, 1000, 8500, "xylophone"), // (quer)
+      
+      // "Ele mora lá na lagoa"
+      createNote("C", 5, 400, 10000, "xylophone"), // E-
+      createNote("D", 5, 400, 10400, "xylophone"), // -le
+      createNote("E", 5, 400, 10800, "xylophone"), // mo-
+      createNote("F", 5, 400, 11200, "xylophone"), // -ra
+      createNote("G", 5, 400, 11600, "xylophone"), // lá
+      createNote("A", 5, 400, 12000, "xylophone"), // na
+      createNote("G", 5, 400, 12400, "xylophone"), // la-
+      createNote("F", 5, 400, 12800, "xylophone"), // -go-
+      createNote("E", 5, 400, 13200, "xylophone"), // -a
+      createNote("C", 5, 1800, 13600, "xylophone") // (final)
+    ]
+  },
+
+  "letitgo-xylophone": {
+    id: "letitgo-xylophone", name: "Let It Go (Frozen)", bpm: 130, timeSignature: "4/4",
+    totalDuration: 20000, difficulty: "Médio", loops: 1,
+    notes: [
+      // "Let it go, let it go" - Versão simplificada infantil
+      createNote("G", 5, 600, 0, "xylophone"),    // Let
+      createNote("A", 5, 600, 692, "xylophone"),  // it
+      createNote("G", 5, 1200, 1384, "xylophone"), // go
+      createNote("F", 5, 600, 3076, "xylophone"), // let
+      createNote("G", 5, 600, 3768, "xylophone"), // it
+      createNote("F", 5, 1200, 4460, "xylophone"), // go
+      
+      // "Can't hold back anymore"
+      createNote("E", 5, 500, 6152, "xylophone"), // Can't
+      createNote("F", 5, 500, 6652, "xylophone"), // hold
+      createNote("G", 5, 500, 7152, "xylophone"), // back
+      createNote("A", 5, 500, 7652, "xylophone"), // any-
+      createNote("B", 5, 1000, 8152, "xylophone"), // -more
+      
+      // "Let it go, let it go" - Repetição mais intensa
+      createNote("A", 5, 600, 9652, "xylophone"), // Let
+      createNote("B", 5, 600, 10344, "xylophone"), // it
+      createNote("A", 5, 1200, 11036, "xylophone"), // go
+      createNote("G", 5, 600, 12728, "xylophone"), // let
+      createNote("A", 5, 600, 13420, "xylophone"), // it
+      createNote("G", 5, 1200, 14112, "xylophone"), // go
+      
+      // "Turn away and slam the door" - Final
+      createNote("F", 5, 400, 15804, "xylophone"), // Turn
+      createNote("G", 5, 400, 16204, "xylophone"), // a-
+      createNote("A", 5, 400, 16604, "xylophone"), // -way
+      createNote("B", 5, 400, 17004, "xylophone"), // and
+      createNote("A", 5, 400, 17404, "xylophone"), // slam
+      createNote("G", 5, 400, 17804, "xylophone"), // the
+      createNote("F", 5, 1200, 18204, "xylophone"), // door
+      createNote("C", 5, 1800, 19804, "xylophone") // (final)
+    ]
+  },
+
+  "peppa-xylophone": {
+    id: "peppa-xylophone", name: "Peppa Pig Theme", bpm: 120, timeSignature: "4/4",
+    totalDuration: 12000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // Tema principal alegre e reconhecível
+      createNote("G", 5, 400, 0, "xylophone"),    // Pep-
+      createNote("G", 5, 400, 400, "xylophone"),  // -pa
+      createNote("A", 5, 400, 800, "xylophone"),  // Pig
+      createNote("G", 5, 400, 1200, "xylophone"), // (oink)
+      createNote("E", 5, 800, 1600, "xylophone"), // 
+      
+      createNote("G", 5, 400, 2800, "xylophone"), // Pep-
+      createNote("G", 5, 400, 3200, "xylophone"), // -pa
+      createNote("A", 5, 400, 3600, "xylophone"), // Pig
+      createNote("B", 5, 400, 4000, "xylophone"), // (oink)
+      createNote("C", 6, 800, 4400, "xylophone"), // 
+      
+      // Melodia saltitante
+      createNote("E", 5, 300, 5600, "xylophone"), // Jump-
+      createNote("F", 5, 300, 5900, "xylophone"), // -ing
+      createNote("G", 5, 300, 6200, "xylophone"), // up
+      createNote("A", 5, 300, 6500, "xylophone"), // and
+      createNote("B", 5, 300, 6800, "xylophone"), // down
+      createNote("A", 5, 300, 7100, "xylophone"), // in
+      createNote("G", 5, 300, 7400, "xylophone"), // mud-
+      createNote("F", 5, 300, 7700, "xylophone"), // -dy
+      createNote("E", 5, 600, 8000, "xylophone"), // pud-
+      createNote("D", 5, 600, 8600, "xylophone"), // -dles
+      
+      // Final alegre
+      createNote("G", 5, 400, 9600, "xylophone"), 
+      createNote("A", 5, 400, 10000, "xylophone"),
+      createNote("B", 5, 400, 10400, "xylophone"),
+      createNote("C", 6, 1600, 10800, "xylophone") // Final
+    ]
+  },
+
+  "patrulha-xylophone": {
+    id: "patrulha-xylophone", name: "Patrulha Canina", bpm: 140, timeSignature: "4/4",
+    totalDuration: 15000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "Patrulha Canina ao resgate!"
+      createNote("C", 5, 300, 0, "xylophone"),    // Pa-
+      createNote("D", 5, 300, 428, "xylophone"),  // -tru-
+      createNote("E", 5, 300, 856, "xylophone"),  // -lha
+      createNote("G", 5, 600, 1284, "xylophone"), // Ca-
+      createNote("F", 5, 300, 2140, "xylophone"), // -ni-
+      createNote("E", 5, 300, 2568, "xylophone"), // -na
+      createNote("D", 5, 600, 2996, "xylophone"), // 
+      
+      createNote("E", 5, 300, 4280, "xylophone"), // ao
+      createNote("F", 5, 300, 4708, "xylophone"), // res-
+      createNote("G", 5, 300, 5136, "xylophone"), // -ga-
+      createNote("A", 5, 600, 5564, "xylophone"), // -te!
+      
+      // "Sempre alerta, sempre pronta"
+      createNote("G", 5, 400, 6848, "xylophone"), // Sem-
+      createNote("A", 5, 400, 7248, "xylophone"), // -pre
+      createNote("G", 5, 400, 7648, "xylophone"), // a-
+      createNote("F", 5, 400, 8048, "xylophone"), // -ler-
+      createNote("E", 5, 800, 8448, "xylophone"), // -ta
+      
+      createNote("G", 5, 400, 9648, "xylophone"), // sem-
+      createNote("A", 5, 400, 10048, "xylophone"), // -pre
+      createNote("B", 5, 400, 10448, "xylophone"), // pron-
+      createNote("A", 5, 400, 10848, "xylophone"), // -ta
+      createNote("G", 5, 800, 11248, "xylophone"), // 
+      
+      // "Patrulha Canina!"
+      createNote("C", 6, 400, 12448, "xylophone"), // Pa-
+      createNote("B", 5, 400, 12848, "xylophone"), // -tru-
+      createNote("A", 5, 400, 13248, "xylophone"), // -lha
+      createNote("G", 5, 400, 13648, "xylophone"), // Ca-
+      createNote("F", 5, 400, 14048, "xylophone"), // -ni-
+      createNote("E", 5, 400, 14448, "xylophone"), // -na!
+      createNote("C", 5, 1000, 14848, "xylophone") // (final)
+    ]
+  },
+
   // === TECLADO/KEYBOARD - 6 músicas ===
   "scale-keyboard": {
     id: "scale-keyboard", name: "Escala de Dó Maior", bpm: 80, timeSignature: "4/4",
@@ -388,6 +572,222 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("E", 4, 1000, 13500, "keyboard"), // Mi
       createNote("D", 4, 1000, 14500, "keyboard"), // Ré
       createNote("C", 4, 1500, 15500, "keyboard")  // Dó
+    ]
+  },
+
+  "tres-notas-keyboard": {
+    id: "tres-notas-keyboard", name: "Três Notas Mágicas", bpm: 90, timeSignature: "4/4",
+    totalDuration: 10000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "Hot Cross Buns" tradicional - B-A-G pattern
+      createNote("B", 4, 1000, 0, "keyboard"),    // Hot
+      createNote("A", 4, 1000, 1333, "keyboard"), // Cross
+      createNote("G", 4, 2000, 2666, "keyboard"), // Buns
+      
+      createNote("B", 4, 1000, 5332, "keyboard"), // Hot
+      createNote("A", 4, 1000, 6665, "keyboard"), // Cross
+      createNote("G", 4, 2000, 7998, "keyboard"), // Buns
+      
+      // Variação melódica
+      createNote("G", 4, 500, 10664, "keyboard"), 
+      createNote("G", 4, 500, 11164, "keyboard"),
+      createNote("G", 4, 500, 11664, "keyboard"),
+      createNote("G", 4, 500, 12164, "keyboard"),
+      createNote("A", 4, 500, 12664, "keyboard"),
+      createNote("A", 4, 500, 13164, "keyboard"),
+      createNote("A", 4, 500, 13664, "keyboard"),
+      createNote("A", 4, 500, 14164, "keyboard"),
+      
+      // Final
+      createNote("B", 4, 1000, 14997, "keyboard"),
+      createNote("A", 4, 1000, 16330, "keyboard"),
+      createNote("G", 4, 2000, 17663, "keyboard")
+    ]
+  },
+
+  "aquarela-keyboard": {
+    id: "aquarela-keyboard", name: "Aquarela (Toquinho)", bpm: 100, timeSignature: "4/4",
+    totalDuration: 25000, difficulty: "Médio", loops: 1,
+    notes: [
+      // "Numa folha qualquer eu desenho um sol amarelo"
+      createNote("C", 4, 400, 0, "keyboard"),     // Nu-
+      createNote("D", 4, 400, 600, "keyboard"),   // -ma
+      createNote("E", 4, 400, 1200, "keyboard"),  // fo-
+      createNote("F", 4, 400, 1800, "keyboard"),  // -lha
+      createNote("G", 4, 400, 2400, "keyboard"),  // qual-
+      createNote("A", 4, 400, 3000, "keyboard"),  // -quer
+      createNote("G", 4, 400, 3600, "keyboard"),  // eu
+      createNote("F", 4, 400, 4200, "keyboard"),  // de-
+      createNote("E", 4, 400, 4800, "keyboard"),  // -se-
+      createNote("D", 4, 400, 5400, "keyboard"),  // -nho
+      
+      createNote("E", 4, 400, 6600, "keyboard"),  // um
+      createNote("F", 4, 400, 7200, "keyboard"),  // sol
+      createNote("G", 4, 400, 7800, "keyboard"),  // a-
+      createNote("A", 4, 400, 8400, "keyboard"),  // -ma-
+      createNote("G", 4, 800, 9000, "keyboard"),  // -re-lo
+      
+      // "E com cinco ou seis retas é fácil fazer um castelo"
+      createNote("C", 4, 300, 10800, "keyboard"), // E
+      createNote("D", 4, 300, 11100, "keyboard"), // com
+      createNote("E", 4, 300, 11400, "keyboard"), // cin-
+      createNote("F", 4, 300, 11700, "keyboard"), // -co
+      createNote("G", 4, 300, 12000, "keyboard"), // ou
+      createNote("A", 4, 300, 12300, "keyboard"), // seis
+      createNote("B", 4, 300, 12600, "keyboard"), // re-
+      createNote("A", 4, 300, 12900, "keyboard"), // -tas
+      
+      createNote("G", 4, 400, 13800, "keyboard"), // é
+      createNote("F", 4, 400, 14200, "keyboard"), // fá-
+      createNote("E", 4, 400, 14600, "keyboard"), // -cil
+      createNote("F", 4, 400, 15000, "keyboard"), // fa-
+      createNote("G", 4, 400, 15400, "keyboard"), // -zer
+      createNote("A", 4, 400, 15800, "keyboard"), // um
+      createNote("G", 4, 400, 16200, "keyboard"), // cas-
+      createNote("F", 4, 400, 16600, "keyboard"), // -te-
+      createNote("E", 4, 800, 17000, "keyboard"), // -lo
+      
+      // "Corro o lápis em torno da mão"
+      createNote("D", 4, 400, 18600, "keyboard"), // Cor-
+      createNote("E", 4, 400, 19000, "keyboard"), // -ro
+      createNote("F", 4, 400, 19400, "keyboard"), // o
+      createNote("G", 4, 400, 19800, "keyboard"), // lá-
+      createNote("A", 4, 400, 20200, "keyboard"), // -pis
+      createNote("G", 4, 400, 20600, "keyboard"), // em
+      createNote("F", 4, 400, 21000, "keyboard"), // tor-
+      createNote("E", 4, 400, 21400, "keyboard"), // -no
+      createNote("D", 4, 400, 21800, "keyboard"), // da
+      createNote("C", 4, 1200, 22200, "keyboard") // mão
+    ]
+  },
+
+  "caranguejo-keyboard": {
+    id: "caranguejo-keyboard", name: "Caranguejo", bpm: 120, timeSignature: "4/4",
+    totalDuration: 18000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "Caranguejo não é peixe"
+      createNote("G", 4, 500, 0, "keyboard"),     // Ca-
+      createNote("G", 4, 500, 500, "keyboard"),   // -ran-
+      createNote("A", 4, 500, 1000, "keyboard"),  // -gue-
+      createNote("B", 4, 500, 1500, "keyboard"),  // -jo
+      createNote("A", 4, 500, 2000, "keyboard"),  // não
+      createNote("G", 4, 500, 2500, "keyboard"),  // é
+      createNote("F", 4, 500, 3000, "keyboard"),  // pei-
+      createNote("E", 4, 1000, 3500, "keyboard"), // -xe
+      
+      // "Caranguejo peixe é"
+      createNote("G", 4, 500, 5000, "keyboard"),  // Ca-
+      createNote("G", 4, 500, 5500, "keyboard"),  // -ran-
+      createNote("A", 4, 500, 6000, "keyboard"),  // -gue-
+      createNote("B", 4, 500, 6500, "keyboard"),  // -jo
+      createNote("A", 4, 500, 7000, "keyboard"),  // pei-
+      createNote("G", 4, 500, 7500, "keyboard"),  // -xe
+      createNote("F", 4, 1000, 8000, "keyboard"), // é
+      
+      // "Caranguejo só é peixe na enchente da maré"
+      createNote("C", 5, 400, 9500, "keyboard"),  // Ca-
+      createNote("B", 4, 400, 9900, "keyboard"),  // -ran-
+      createNote("A", 4, 400, 10300, "keyboard"), // -gue-
+      createNote("G", 4, 400, 10700, "keyboard"), // -jo
+      createNote("A", 4, 400, 11100, "keyboard"), // só
+      createNote("B", 4, 400, 11500, "keyboard"), // é
+      createNote("C", 5, 400, 11900, "keyboard"), // pei-
+      createNote("B", 4, 400, 12300, "keyboard"), // -xe
+      
+      createNote("A", 4, 400, 13100, "keyboard"), // na
+      createNote("G", 4, 400, 13500, "keyboard"), // en-
+      createNote("F", 4, 400, 13900, "keyboard"), // -chen-
+      createNote("E", 4, 400, 14300, "keyboard"), // -te
+      createNote("F", 4, 400, 14700, "keyboard"), // da
+      createNote("G", 4, 400, 15100, "keyboard"), // ma-
+      createNote("A", 4, 400, 15500, "keyboard"), // -ré
+      createNote("G", 4, 2500, 15900, "keyboard") // (final)
+    ]
+  },
+
+  "ciranda-keyboard": {
+    id: "ciranda-keyboard", name: "Ciranda, Cirandinha", bpm: 110, timeSignature: "4/4",
+    totalDuration: 20000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "Ciranda, cirandinha, vamos todos cirandar"
+      createNote("C", 4, 400, 0, "keyboard"),     // Ci-
+      createNote("D", 4, 400, 545, "keyboard"),   // -ran-
+      createNote("E", 4, 400, 1090, "keyboard"),  // -da
+      createNote("F", 4, 400, 1635, "keyboard"),  // ci-
+      createNote("E", 4, 400, 2180, "keyboard"),  // -ran-
+      createNote("D", 4, 400, 2725, "keyboard"),  // -di-
+      createNote("C", 4, 800, 3270, "keyboard"),  // -nha
+      
+      createNote("E", 4, 400, 4620, "keyboard"),  // va-
+      createNote("F", 4, 400, 5165, "keyboard"),  // -mos
+      createNote("G", 4, 400, 5710, "keyboard"),  // to-
+      createNote("A", 4, 400, 6255, "keyboard"),  // -dos
+      createNote("G", 4, 400, 6800, "keyboard"),  // ci-
+      createNote("F", 4, 400, 7345, "keyboard"),  // -ran-
+      createNote("E", 4, 800, 7890, "keyboard"),  // -dar
+      
+      // "Vamos dar a meia volta, volta e meia vamos dar"
+      createNote("G", 4, 400, 9240, "keyboard"),  // Va-
+      createNote("A", 4, 400, 9785, "keyboard"),  // -mos
+      createNote("G", 4, 400, 10330, "keyboard"), // dar
+      createNote("F", 4, 400, 10875, "keyboard"), // a
+      createNote("E", 4, 400, 11420, "keyboard"), // mei-
+      createNote("D", 4, 400, 11965, "keyboard"), // -a
+      createNote("C", 4, 800, 12510, "keyboard"), // vol-ta
+      
+      createNote("E", 4, 400, 13860, "keyboard"), // vol-
+      createNote("F", 4, 400, 14405, "keyboard"), // -ta
+      createNote("G", 4, 400, 14950, "keyboard"), // e
+      createNote("A", 4, 400, 15495, "keyboard"), // mei-
+      createNote("G", 4, 400, 16040, "keyboard"), // -a
+      createNote("F", 4, 400, 16585, "keyboard"), // va-
+      createNote("E", 4, 400, 17130, "keyboard"), // -mos
+      createNote("D", 4, 400, 17675, "keyboard"), // dar
+      createNote("C", 4, 2325, 18220, "keyboard") // (final)
+    ]
+  },
+
+  "boi-cara-preta-keyboard": {
+    id: "boi-cara-preta-keyboard", name: "Boi da Cara Preta", bpm: 100, timeSignature: "4/4",
+    totalDuration: 15000, difficulty: "Fácil", loops: 1,
+    notes: [
+      // "Boi, boi, boi, boi da cara preta"
+      createNote("E", 4, 400, 0, "keyboard"),     // Boi
+      createNote("E", 4, 400, 600, "keyboard"),   // boi
+      createNote("E", 4, 400, 1200, "keyboard"),  // boi
+      createNote("G", 4, 400, 1800, "keyboard"),  // boi
+      createNote("A", 4, 400, 2400, "keyboard"),  // da
+      createNote("G", 4, 400, 3000, "keyboard"),  // ca-
+      createNote("F", 4, 400, 3600, "keyboard"),  // -ra
+      createNote("E", 4, 800, 4200, "keyboard"),  // pre-ta
+      
+      // "Pega essa menina que tem medo de careta"
+      createNote("G", 4, 300, 5400, "keyboard"),  // Pe-
+      createNote("A", 4, 300, 5700, "keyboard"),  // -ga
+      createNote("G", 4, 300, 6000, "keyboard"),  // es-
+      createNote("F", 4, 300, 6300, "keyboard"),  // -sa
+      createNote("E", 4, 300, 6600, "keyboard"),  // me-
+      createNote("F", 4, 300, 6900, "keyboard"),  // -ni-
+      createNote("G", 4, 600, 7200, "keyboard"),  // -na
+      
+      createNote("A", 4, 300, 8100, "keyboard"),  // que
+      createNote("B", 4, 300, 8400, "keyboard"),  // tem
+      createNote("A", 4, 300, 8700, "keyboard"),  // me-
+      createNote("G", 4, 300, 9000, "keyboard"),  // -do
+      createNote("F", 4, 300, 9300, "keyboard"),  // de
+      createNote("G", 4, 300, 9600, "keyboard"),  // ca-
+      createNote("A", 4, 300, 9900, "keyboard"),  // -re-
+      createNote("G", 4, 600, 10200, "keyboard"), // -ta
+      
+      // "Não, não, não, não pega não"
+      createNote("C", 5, 400, 11400, "keyboard"), // Não
+      createNote("B", 4, 400, 11800, "keyboard"), // não
+      createNote("A", 4, 400, 12200, "keyboard"), // não
+      createNote("G", 4, 400, 12600, "keyboard"), // não
+      createNote("F", 4, 400, 13000, "keyboard"), // pe-
+      createNote("E", 4, 400, 13400, "keyboard"), // -ga
+      createNote("D", 4, 400, 13800, "keyboard"), // não
+      createNote("C", 4, 1200, 14200, "keyboard") // (final)
     ]
   }
 };
