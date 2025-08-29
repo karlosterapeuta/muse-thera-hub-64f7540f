@@ -9,6 +9,7 @@ export interface MenuItem {
   path: string;
   gradient: string;
   external?: boolean;
+  isNew?: boolean;
 }
 
 export interface MenuSectionProps {

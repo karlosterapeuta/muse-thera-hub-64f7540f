@@ -32,7 +32,7 @@ export const clinicalMenuItems = [
 ];
 
 export const musicalGamesMenuItems = [
-  { icon: Piano, text: "🎮 Jogos MuseTera", path: "/chrome-music-lab", gradient: "from-blue-500 to-purple-600" },
+  { icon: Piano, text: "🎮 Jogos MuseTera", path: "/chrome-music-lab", gradient: "from-blue-500 to-purple-600", isNew: true },
   { icon: Music, text: "🧩 TEA-Hero - em construção", path: "/tea-hero", gradient: "from-violet-500 to-purple-600" },
   { icon: Bell, text: "🔔 Sinos Musicais", path: "/musical-bells", gradient: "from-green-500 to-emerald-600" },
   { icon: Waves, text: "🥁 Boomwhacker Hero - em construção", path: "/boomwhacker-hero", gradient: "from-orange-500 to-red-600" },
