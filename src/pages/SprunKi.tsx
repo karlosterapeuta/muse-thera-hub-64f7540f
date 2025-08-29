@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Maximize, X, Music, Star, Heart, Smartphone } from "lucide-react";
+import { RefreshCw, Maximize, X, Music, Star, Heart, Smartphone, AlertTriangle, Info } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -90,7 +90,7 @@ export default function SprunKi() {
               onClick={handleRefresh}
               variant="outline"
               size={isMobile ? "sm" : "default"}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
             >
               <RefreshCw className="h-4 w-4" />
               {!isMobile && "Atualizar"}
@@ -163,6 +163,9 @@ export default function SprunKi() {
                 <p className="text-xs text-muted-foreground/80 mt-2">
                   🎵 Ferramenta especializada em musicoterapia
                 </p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  💡 Aguarde! Anúncios podem aparecer - procure pelo botão "Skip Ad"
+                </p>
               </div>
             </div>
           )}
@@ -233,6 +236,48 @@ export default function SprunKi() {
           </CardContent>
         </Card>
 
+        {/* Ad Instructions Card */}
+        <Card className="mt-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800/50">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-base mb-2 flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                  <Info className="h-4 w-4" />
+                  📺 Instruções para Anúncios
+                </h3>
+                <p className="text-yellow-700 dark:text-yellow-300 text-sm leading-relaxed mb-3">
+                  Este jogo pode exibir anúncios antes de iniciar. Para pular os anúncios, siga estas instruções:
+                </p>
+                <div className="space-y-2 text-xs text-yellow-700 dark:text-yellow-300">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                    <span><strong>⏱️ Aguarde 5-10 segundos</strong> para o botão "Skip Ad" aparecer</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                    <span><strong>🖱️ Clique no "X" ou "Skip"</strong> quando o botão estiver disponível</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                    <span><strong>🔄 Use o botão "Atualizar"</strong> acima se necessário recarregar</span>
+                  </div>
+                  {isMobile && (
+                    <div className="flex items-center gap-2 pt-1 border-t border-yellow-200 dark:border-yellow-800">
+                      <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                      <span><strong>📱 Mobile:</strong> Toque diretamente nos botões que aparecem na tela</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Mobile Tips */}
         {isMobile && !isFullscreen && (
           <div className="mt-4 space-y-2">
@@ -249,6 +294,7 @@ export default function SprunKi() {
                 )}
                 <div>🖱️ Use gestos de toque para interagir com os personagens</div>
                 <div>🔊 Ative o som para experiência completa</div>
+                <div>📺 Se aparecer anúncio, aguarde e procure "Skip Ad" para pular</div>
               </div>
             </div>
           </div>
