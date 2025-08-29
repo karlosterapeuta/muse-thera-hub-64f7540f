@@ -525,6 +525,31 @@ export default function TreatmentPlanForm() {
       }
 
 
+      // Perfil Sensorial Musical (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
+      const hasSensoryData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
+      
+      if (hasSensoryData) {
+        htmlContent += `
+          <div style="margin-bottom: 32px; page-break-inside: avoid;">
+            <h2 style="color: #7C3AED; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #7C3AED; display: flex; align-items: center;">
+              <span style="margin-right: 8px;">🎧</span> Perfil Sensorial Musical (TEA)
+            </h2>
+            <div style="background: linear-gradient(135deg, #FAF5FF 0%, #FDF4FF 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #7C3AED;">
+              <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 14px; color: #5B21B6; margin-bottom: 12px;">📊 Avaliação Quantitativa (Escalas 1-10)</div>
+                <div style="background-color: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  ${generateScaleVisualization(content.auditory_sensitivity, 'Sensibilidade Auditiva')}
+                  ${generateScaleVisualization(content.frequency_responsiveness, 'Responsividade a Frequências')}
+                  ${generateScaleVisualization(content.volume_tolerance, 'Tolerância ao Volume')}
+                  ${generateScaleVisualization(content.texture_preference, 'Preferência de Texturas Sonoras')}
+                  ${generateScaleVisualization(content.rhythmic_processing, 'Processamento Rítmico')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       // Comunicação Social Musical (TEA) - com escalas visuais (sempre exibir pois tem valores padrão)
       const hasSocialCommunicationData = true; // Sempre exibir seção com escalas, pois tem valores padrão 5
       
@@ -656,15 +681,21 @@ export default function TreatmentPlanForm() {
         `;
       }
 
-      // Observações Adicionais
-      if (content.additional_notes) {
+      // Observações Adicionais (sempre exibir seção)
+      const hasAdditionalNotes = true; // Sempre exibir seção
+      
+      if (hasAdditionalNotes) {
         htmlContent += `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #374151; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding: 8px 0; border-bottom: 3px solid #374151; display: flex; align-items: center;">
               <span style="margin-right: 8px;">📝</span> Observações Adicionais
             </h2>
             <div style="background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #374151;">
-              <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.additional_notes}</div>
+              ${content.additional_notes ? `
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap;">${content.additional_notes}</div>
+              ` : `
+                <div style="background-color: white; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.7; color: #6B7280; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-style: italic;">Observações adicionais serão incluídas conforme o andamento do tratamento</div>
+              `}
             </div>
           </div>
         `;
@@ -690,27 +721,26 @@ export default function TreatmentPlanForm() {
         <div style="padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 100%; margin: 0; background: white; color: #1f2937;">
           
           <!-- CABEÇALHO PROFISSIONAL -->
-          <div style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); color: white; padding: 40px; margin: 0; text-align: center; position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200"><path d="M0,100 C150,200 350,0 500,100 C650,200 850,0 1000,100 L1000,200 L0,200 Z" fill="rgba(255,255,255,0.1)"/></svg>'); background-size: cover; opacity: 0.3;"></div>
+          <div style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); color: white; padding: 40px; margin: 0; text-align: center; position: relative;">
             <div style="position: relative; z-index: 1;">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
                 <div style="text-align: left;">
-                  <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 16px 24px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+                  <div style="background: rgba(255,255,255,0.2); padding: 16px 24px; border-radius: 12px; display: inline-block;">
                     <div style="font-size: 28px; font-weight: 900; margin-bottom: 4px; letter-spacing: 2px;">MuseTera</div>
                     <div style="font-size: 14px; opacity: 0.9; font-weight: 500;">Sistema de Musicoterapia</div>
                   </div>
                 </div>
-                <div style="text-align: right; background: rgba(255,255,255,0.15); padding: 16px 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                <div style="text-align: right; background: rgba(255,255,255,0.15); padding: 16px 20px; border-radius: 10px;">
                   <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">Documento:</div>
                   <div style="font-size: 14px; font-weight: 600; font-family: monospace;">${documentId}</div>
                   <div style="font-size: 11px; opacity: 0.8; margin-top: 8px;">Data: ${currentDate.toLocaleDateString('pt-BR')}</div>
                 </div>
               </div>
               
-              <h1 style="font-size: 32px; font-weight: 800; margin: 0 0 20px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: 1px;">
+              <h1 style="font-size: 32px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: 1px;">
                 Plano Terapêutico Musicoterapêutico
               </h1>
-              <div style="background: rgba(255,255,255,0.2); border-radius: 15px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+              <div style="background: rgba(255,255,255,0.2); border-radius: 15px; padding: 20px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
                   <div>
                     <div style="font-size: 13px; opacity: 0.8; margin-bottom: 4px; font-weight: 500;">PACIENTE</div>
@@ -829,10 +859,26 @@ export default function TreatmentPlanForm() {
       console.log("Dados do formulário para PDF:", {
         patientName: selectedPatientData.name,
         formDataKeys: Object.keys(formData),
-        teaScales: {
+        teaScalesSensory: {
           auditory_sensitivity: formData.auditory_sensitivity,
+          frequency_responsiveness: formData.frequency_responsiveness,
+          volume_tolerance: formData.volume_tolerance,
+          texture_preference: formData.texture_preference,
+          rhythmic_processing: formData.rhythmic_processing
+        },
+        teaScalesCommunication: {
           musical_communication: formData.musical_communication,
-          musical_stereotypies: formData.musical_stereotypies
+          non_verbal_expression: formData.non_verbal_expression,
+          social_interaction_music: formData.social_interaction_music,
+          joint_attention_music: formData.joint_attention_music,
+          imitation_skills: formData.imitation_skills
+        },
+        teaScalesBehavioral: {
+          musical_stereotypies: formData.musical_stereotypies,
+          ritual_behaviors: formData.ritual_behaviors,
+          sensory_seeking: formData.sensory_seeking,
+          self_regulation_music: formData.self_regulation_music,
+          behavioral_flexibility: formData.behavioral_flexibility
         }
       });
 
@@ -854,7 +900,7 @@ export default function TreatmentPlanForm() {
       
       toast({
         title: "Sucesso!",
-        description: "PDF do plano terapêutico TEA gerado com sucesso! Todas as seções específicas foram incluídas.",
+        description: "PDF completo gerado com todas as seções TEA incluídas: Perfil Sensorial, Comunicação Social, Padrões Comportamentais, Metodologias Especializadas e Observações Adicionais.",
       });
 
     } catch (error) {
