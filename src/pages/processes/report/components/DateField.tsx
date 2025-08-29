@@ -42,7 +42,7 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(date) => onChange(date ? date.toISOString() : "")}
+            onSelect={(date) => onChange(date ? date.toISOString().split('T')[0] : "")}
             initialFocus
             locale={ptBR}
             captionLayout="dropdown-buttons"
