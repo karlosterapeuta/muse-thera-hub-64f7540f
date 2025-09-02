@@ -21,6 +21,9 @@ import { ActivityFilters } from "./components/ActivityFilters";
 import { ActivityCard } from "./components/ActivityCard";
 import { ActivityDetailDialog } from "./components/ActivityDetailDialog";
 import { ActivityStats } from "./components/ActivityStats";
+import { SearchWithSuggestions } from "./components/SearchWithSuggestions";
+import { RecommendationEngine } from "./components/RecommendationEngine";
+import { QuickActions } from "./components/QuickActions";
 import { enhancedActivitiesData } from "./data/enhanced-activities-data";
 import { getCombinedActivities } from "./utils/activityMigrator";
 import { Activity, ActivityFilter } from "./types";
@@ -33,6 +36,11 @@ export default function ActivitiesPage() {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [filters, setFilters] = useState<ActivityFilter>({});
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    const saved = localStorage.getItem('recentActivitySearches');
+    return saved ? JSON.parse(saved) : [];
+  });
   
   // User activity data state
   const [userActivityData, setUserActivityData] = useState({
@@ -143,6 +151,26 @@ export default function ActivitiesPage() {
     localStorage.setItem('userActivityData', JSON.stringify(data));
   };
 
+  const handleSearchChange = (searchTerm: string) => {
+    setFilters({ ...filters, searchTerm });
+    
+    // Add to recent searches if it's a meaningful search
+    if (searchTerm.trim().length > 2 && !recentSearches.includes(searchTerm.trim())) {
+      const newRecentSearches = [searchTerm.trim(), ...recentSearches].slice(0, 10);
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentActivitySearches', JSON.stringify(newRecentSearches));
+    }
+  };
+
+  const handleRecentSearchClick = (search: string) => {
+    setFilters({ ...filters, searchTerm: search });
+  };
+
+  // Check if user has enough activity for recommendations
+  const hasUserActivity = userActivityData.favorites.length > 0 || 
+                         userActivityData.completed.length > 0 || 
+                         userActivityData.recentlyViewed.length > 2;
+
   return (
     <div className="container mx-auto py-6">
         <div className="text-center max-w-3xl mx-auto mb-8">
@@ -163,7 +191,54 @@ export default function ActivitiesPage() {
           allActivities={allActivities}
         />
 
-      {/* Filtros avançados */}
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <QuickActions
+            allActivities={allActivities}
+            userActivityData={userActivityData}
+            onViewActivity={handleViewActivityDetails}
+            onFilterChange={setFilters}
+          />
+        </div>
+
+        {/* Enhanced Search */}
+        <div className="mb-6">
+          <SearchWithSuggestions
+            searchTerm={filters.searchTerm || ''}
+            onSearchChange={handleSearchChange}
+            allActivities={allActivities}
+            recentSearches={recentSearches}
+            onRecentSearchClick={handleRecentSearchClick}
+          />
+        </div>
+
+        {/* Recommendations Section */}
+        {hasUserActivity && !Object.keys(filters).some(key => filters[key as keyof ActivityFilter]) && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <Button 
+                variant={showRecommendations ? "default" : "outline"}
+                onClick={() => setShowRecommendations(!showRecommendations)}
+                className="animate-fade-in"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                {showRecommendations ? 'Ocultar Recomendações' : 'Ver Recomendações Personalizadas'}
+              </Button>
+            </div>
+            
+            {showRecommendations && (
+              <div className="animate-fade-in">
+                <RecommendationEngine
+                  allActivities={allActivities}
+                  userActivityData={userActivityData}
+                  onViewActivity={handleViewActivityDetails}
+                  currentFilters={filters}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
       <ActivityFilters
         filters={filters}
         onFilterChange={setFilters}
