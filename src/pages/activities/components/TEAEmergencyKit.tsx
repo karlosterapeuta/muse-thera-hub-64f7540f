@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { AlertTriangle, Heart, Music, Eye, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Slider } from '@/components/ui/slider';
+import { AlertTriangle, Heart, Music, Eye, Play, Pause, Volume2, VolumeX, Wind, Waves, Brain, Speaker, TreePine, Zap, Star } from 'lucide-react';
 import { teaAudio } from '../../musicogram/utils/teaAudioService';
 
 interface CalmingTechnique {
@@ -22,8 +24,11 @@ interface EmergencySound {
   name: string;
   frequency: number;
   duration: number;
-  type: 'calm' | 'focus' | 'ground';
+  category: 'breathing' | 'nature' | 'therapeutic' | 'binaural' | 'instruments' | 'emergency';
+  type: 'calm' | 'focus' | 'ground' | 'reset';
   description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  intensity: 'low' | 'medium' | 'high';
 }
 
 const calmingTechniques: CalmingTechnique[] = [
@@ -90,29 +95,271 @@ const calmingTechniques: CalmingTechnique[] = [
 ];
 
 const emergencySounds: EmergencySound[] = [
+  // Categoria: Respiração e Relaxamento
+  {
+    id: 'guided-breathing',
+    name: 'Respiração Guiada',
+    frequency: 136,
+    duration: 60,
+    category: 'breathing',
+    type: 'calm',
+    description: 'Som contínuo que acompanha o ritmo respiratório',
+    icon: Wind,
+    intensity: 'low'
+  },
+  {
+    id: 'whisper-wind',
+    name: 'Sussurro do Vento',
+    frequency: 80,
+    duration: 15,
+    category: 'breathing',
+    type: 'calm',
+    description: 'Som grave e constante para relaxamento profundo',
+    icon: Wind,
+    intensity: 'low'
+  },
+  {
+    id: 'calm-heartbeat',
+    name: 'Batimento Cardíaco Calmo',
+    frequency: 60,
+    duration: 30,
+    category: 'breathing',
+    type: 'ground',
+    description: 'Ritmo regular para autorregulação',
+    icon: Heart,
+    intensity: 'medium'
+  },
+
+  // Categoria: Natureza Terapêutica
+  {
+    id: 'gentle-rain',
+    name: 'Chuva Suave',
+    frequency: 150,
+    duration: 20,
+    category: 'nature',
+    type: 'calm',
+    description: 'Som de chuva leve para mascarar ruídos externos',
+    icon: Waves,
+    intensity: 'low'
+  },
+  {
+    id: 'crystal-stream',
+    name: 'Córrego Cristalino',
+    frequency: 200,
+    duration: 25,
+    category: 'nature',
+    type: 'calm',
+    description: 'Água corrente para tranquilidade',
+    icon: Waves,
+    intensity: 'low'
+  },
+  {
+    id: 'wind-leaves',
+    name: 'Vento nas Folhas',
+    frequency: 120,
+    duration: 18,
+    category: 'nature',
+    type: 'calm',
+    description: 'Som suave de folhagem',
+    icon: TreePine,
+    intensity: 'low'
+  },
+  {
+    id: 'distant-seagulls',
+    name: 'Gaivotas Distantes',
+    frequency: 300,
+    duration: 12,
+    category: 'nature',
+    type: 'focus',
+    description: 'Sons de natureza não invasivos',
+    icon: TreePine,
+    intensity: 'medium'
+  },
+
+  // Categoria: Frequências Terapêuticas
+  {
+    id: 'love-frequency',
+    name: '528Hz - Frequência do Amor',
+    frequency: 528,
+    duration: 15,
+    category: 'therapeutic',
+    type: 'calm',
+    description: 'Frequência de cura e harmonia',
+    icon: Brain,
+    intensity: 'medium'
+  },
+  {
+    id: 'natural-frequency',
+    name: '432Hz - Frequência Natural',
+    frequency: 432,
+    duration: 20,
+    category: 'therapeutic',
+    type: 'calm',
+    description: 'Afinação natural relaxante',
+    icon: Brain,
+    intensity: 'medium'
+  },
+  {
+    id: 'pain-relief',
+    name: '174Hz - Alívio da Dor',
+    frequency: 174,
+    duration: 10,
+    category: 'therapeutic',
+    type: 'ground',
+    description: 'Frequência para conforto físico',
+    icon: Brain,
+    intensity: 'high'
+  },
+  {
+    id: 'regeneration',
+    name: '285Hz - Regeneração',
+    frequency: 285,
+    duration: 12,
+    category: 'therapeutic',
+    type: 'calm',
+    description: 'Para restauração energética',
+    icon: Brain,
+    intensity: 'medium'
+  },
+
+  // Categoria: Sons Binaurais Suaves
+  {
+    id: 'alpha-waves',
+    name: 'Ondas Alpha',
+    frequency: 10,
+    duration: 30,
+    category: 'binaural',
+    type: 'focus',
+    description: 'Para estado de relaxamento alerta',
+    icon: Zap,
+    intensity: 'medium'
+  },
+  {
+    id: 'theta-waves',
+    name: 'Ondas Theta',
+    frequency: 6,
+    duration: 45,
+    category: 'binaural',
+    type: 'calm',
+    description: 'Para relaxamento profundo',
+    icon: Zap,
+    intensity: 'low'
+  },
+  {
+    id: 'binaural-harmony',
+    name: 'Harmonia Binaural',
+    frequency: 40,
+    duration: 20,
+    category: 'binaural',
+    type: 'focus',
+    description: 'Para sincronização cerebral',
+    icon: Zap,
+    intensity: 'medium'
+  },
+
+  // Categoria: Instrumentos Calmantes
+  {
+    id: 'tibetan-bell',
+    name: 'Sino Tibetano',
+    frequency: 256,
+    duration: 8,
+    category: 'instruments',
+    type: 'calm',
+    description: 'Som de sino suave e prolongado',
+    icon: Speaker,
+    intensity: 'low'
+  },
+  {
+    id: 'native-flute',
+    name: 'Flauta Nativa',
+    frequency: 330,
+    duration: 15,
+    category: 'instruments',
+    type: 'calm',
+    description: 'Melodia simples e repetitiva',
+    icon: Speaker,
+    intensity: 'low'
+  },
+  {
+    id: 'soft-kalimba',
+    name: 'Kalimba Suave',
+    frequency: 440,
+    duration: 12,
+    category: 'instruments',
+    type: 'calm',
+    description: 'Piano de polegar relaxante',
+    icon: Speaker,
+    intensity: 'low'
+  },
+
+  // Categoria: Sons de Emergência Específicos
+  {
+    id: 'sos-breathing',
+    name: 'SOS Respiratório',
+    frequency: 100,
+    duration: 5,
+    category: 'emergency',
+    type: 'reset',
+    description: 'Som rápido para crises de ansiedade',
+    icon: AlertTriangle,
+    intensity: 'high'
+  },
+  {
+    id: 'sensory-reset',
+    name: 'Reset Sensorial',
+    frequency: 50,
+    duration: 3,
+    category: 'emergency',
+    type: 'reset',
+    description: 'Som muito grave para overstimulation',
+    icon: AlertTriangle,
+    intensity: 'high'
+  },
+  {
+    id: 'safe-anchor',
+    name: 'Âncora Segura',
+    frequency: 176,
+    duration: 10,
+    category: 'emergency',
+    type: 'ground',
+    description: 'Som familiar para grounding rápido',
+    icon: Star,
+    intensity: 'medium'
+  },
+
+  // Sons originais atualizados
   {
     id: 'calm-wave',
     name: 'Ondas Calmas',
     frequency: 220,
     duration: 10,
+    category: 'nature',
     type: 'calm',
-    description: 'Som suave para acalmar'
+    description: 'Som suave para acalmar',
+    icon: Waves,
+    intensity: 'low'
   },
   {
     id: 'focus-tone',
     name: 'Tom de Foco',
     frequency: 440,
     duration: 5,
+    category: 'therapeutic',
     type: 'focus',
-    description: 'Som para direcionar atenção'
+    description: 'Som para direcionar atenção',
+    icon: Brain,
+    intensity: 'medium'
   },
   {
     id: 'grounding-pulse',
     name: 'Pulso de Ancoragem',
     frequency: 110,
     duration: 8,
+    category: 'emergency',
     type: 'ground',
-    description: 'Som grave para grounding'
+    description: 'Som grave para grounding',
+    icon: AlertTriangle,
+    intensity: 'high'
   }
 ];
 
@@ -140,6 +387,9 @@ export function TEAEmergencyKit() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [playingSound, setPlayingSound] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState([75]);
+  const [activeCategory, setActiveCategory] = useState<string>('emergency');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -210,53 +460,161 @@ export function TEAEmergencyKit() {
 
       <CardContent className="space-y-6">
         {/* Controles de Áudio */}
-        <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4" />
-            <span className="text-sm font-medium">Sons de Emergência</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsMuted(!isMuted)}
-            className={isMuted ? 'text-muted-foreground' : ''}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </Button>
-        </div>
-
-        {/* Sons de Emergência */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Music className="w-4 h-4" />
-            Sons de Acalmamento
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {emergencySounds.map((sound) => (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4" />
+              <span className="text-sm font-medium">Controles de Áudio</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 min-w-[100px]">
+                <VolumeX className="w-3 h-3" />
+                <Slider
+                  value={volume}
+                  onValueChange={setVolume}
+                  max={100}
+                  step={5}
+                  className="w-16"
+                  disabled={isMuted}
+                />
+                <Volume2 className="w-3 h-3" />
+              </div>
               <Button
-                key={sound.id}
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                disabled={isMuted}
-                className={`h-auto p-3 ${playingSound === sound.id ? 'bg-primary/10 border-primary' : ''}`}
-                onClick={() => playEmergencySound(sound)}
+                onClick={() => setIsMuted(!isMuted)}
+                className={isMuted ? 'text-muted-foreground' : ''}
               >
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    {playingSound === sound.id ? (
-                      <Pause className="w-3 h-3" />
-                    ) : (
-                      <Play className="w-3 h-3" />
-                    )}
-                    <span className="text-xs font-medium">{sound.name}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{sound.description}</p>
-                  <Badge variant={sound.type === 'calm' ? 'default' : sound.type === 'focus' ? 'secondary' : 'outline'} className="mt-1">
-                    {sound.type}
-                  </Badge>
-                </div>
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </Button>
-            ))}
+            </div>
+          </div>
+
+          {/* Sons de Acalmamento Categorizados */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Music className="w-4 h-4" />
+              Sons de Acalmamento
+            </h3>
+
+            <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+              <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full">
+                <TabsTrigger value="emergency" className="text-xs">
+                  <AlertTriangle className="w-3 h-3 mr-1" />
+                  Emergência
+                </TabsTrigger>
+                <TabsTrigger value="breathing" className="text-xs">
+                  <Wind className="w-3 h-3 mr-1" />
+                  Respiração
+                </TabsTrigger>
+                <TabsTrigger value="nature" className="text-xs">
+                  <TreePine className="w-3 h-3 mr-1" />
+                  Natureza
+                </TabsTrigger>
+                <TabsTrigger value="therapeutic" className="text-xs">
+                  <Brain className="w-3 h-3 mr-1" />
+                  Terapêutico
+                </TabsTrigger>
+                <TabsTrigger value="binaural" className="text-xs">
+                  <Zap className="w-3 h-3 mr-1" />
+                  Binaural
+                </TabsTrigger>
+                <TabsTrigger value="instruments" className="text-xs">
+                  <Speaker className="w-3 h-3 mr-1" />
+                  Instrumentos
+                </TabsTrigger>
+              </TabsList>
+
+              {(['emergency', 'breathing', 'nature', 'therapeutic', 'binaural', 'instruments'] as const).map((category) => (
+                <TabsContent key={category} value={category} className="mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {emergencySounds
+                      .filter(sound => sound.category === category)
+                      .map((sound) => {
+                        const IconComponent = sound.icon;
+                        return (
+                          <Button
+                            key={sound.id}
+                            variant="outline"
+                            size="sm"
+                            disabled={isMuted}
+                            className={`h-auto p-3 flex-col space-y-2 ${
+                              playingSound === sound.id 
+                                ? 'bg-primary/10 border-primary shadow-md' 
+                                : 'hover:bg-accent/50'
+                            }`}
+                            onClick={() => playEmergencySound(sound)}
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              <IconComponent className="w-4 h-4 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1">
+                                  {playingSound === sound.id ? (
+                                    <Pause className="w-3 h-3 text-primary" />
+                                  ) : (
+                                    <Play className="w-3 h-3" />
+                                  )}
+                                  <span className="text-xs font-medium truncate">
+                                    {sound.name}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <p className="text-xs text-muted-foreground text-left w-full">
+                              {sound.description}
+                            </p>
+                            
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex gap-1">
+                                <Badge 
+                                  variant={
+                                    sound.type === 'calm' ? 'default' : 
+                                    sound.type === 'focus' ? 'secondary' : 
+                                    sound.type === 'reset' ? 'destructive' :
+                                    'outline'
+                                  } 
+                                  className="text-xs"
+                                >
+                                  {sound.type}
+                                </Badge>
+                                <Badge 
+                                  variant="outline" 
+                                  className={`text-xs ${
+                                    sound.intensity === 'high' ? 'border-red-500 text-red-500' :
+                                    sound.intensity === 'medium' ? 'border-yellow-500 text-yellow-500' :
+                                    'border-green-500 text-green-500'
+                                  }`}
+                                >
+                                  {sound.intensity}
+                                </Badge>
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {sound.duration}s
+                              </span>
+                            </div>
+                            
+                            {playingSound === sound.id && (
+                              <div className="w-full">
+                                <Progress 
+                                  value={(100 * (sound.duration - (Date.now() % (sound.duration * 1000)) / 1000)) / sound.duration} 
+                                  className="h-1"
+                                />
+                              </div>
+                            )}
+                          </Button>
+                        );
+                      })}
+                  </div>
+                  
+                  {emergencySounds.filter(sound => sound.category === category).length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p className="text-sm">Nenhum som disponível nesta categoria.</p>
+                    </div>
+                  )}
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </div>
 
