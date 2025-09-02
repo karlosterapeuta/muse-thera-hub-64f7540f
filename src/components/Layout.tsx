@@ -25,9 +25,16 @@ export default function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
+                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-14 h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
               >
-                <Menu className="h-6 w-6 text-primary" />
+                {/* Efeito de brilho animado */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+                
+                {/* Anéis decorativos */}
+                <div className="absolute inset-0 rounded-full border-2 border-white/40 group-hover:border-white/60 transition-colors duration-300" />
+                <div className="absolute -inset-1 rounded-full border border-primary/20 group-hover:border-primary/40 animate-pulse" />
+                
+                <Menu className="h-7 w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-72">
@@ -40,9 +47,16 @@ export default function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(!isOpen)}
-              className="fixed top-4 left-4 z-50 hover:bg-primary/10 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-white/20 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl hover:scale-110 active:scale-95"
+              className="fixed top-4 left-4 z-50 group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-14 h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
             >
-              <Menu className="h-6 w-6 text-primary" />
+              {/* Efeito de brilho animado */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+              
+              {/* Anéis decorativos */}
+              <div className="absolute inset-0 rounded-full border-2 border-white/40 group-hover:border-white/60 transition-colors duration-300" />
+              <div className="absolute -inset-1 rounded-full border border-primary/20 group-hover:border-primary/40 animate-pulse" />
+              
+              <Menu className="h-7 w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
             </Button>
             
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
