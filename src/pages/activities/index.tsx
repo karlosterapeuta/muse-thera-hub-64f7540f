@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ActivityFilters } from "./components/ActivityFilters";
 import { ActivityCard } from "./components/ActivityCard";
 import { ActivityDetailDialog } from "./components/ActivityDetailDialog";
+import { ActivityStats } from "./components/ActivityStats";
 import { enhancedActivitiesData } from "./data/enhanced-activities-data";
 import { getCombinedActivities } from "./utils/activityMigrator";
 import { Activity, ActivityFilter } from "./types";
@@ -79,22 +80,45 @@ export default function ActivitiesPage() {
   // Filtrar atividades
   const filteredActivities = useMemo(() => {
     return allActivities.filter(activity => {
-      if (filters.category && activity.category !== filters.category) return false;
-      if (filters.difficulty && activity.difficulty !== filters.difficulty) return false;
-      if (filters.searchTerm) {
+      const isCategoryMatch = !filters.category || activity.category === filters.category;
+      const isDifficultyMatch = !filters.difficulty || activity.difficulty === filters.difficulty;
+      const isAgeGroupMatch = !filters.ageGroup || activity.ageGroup === filters.ageGroup;
+      
+      const isDurationMatch = !filters.duration || (() => {
+        const durationMinutes = parseInt(activity.duration);
+        switch (filters.duration) {
+          case 'short': return durationMinutes <= 20;
+          case 'medium': return durationMinutes > 20 && durationMinutes <= 40;
+          case 'long': return durationMinutes > 40;
+          default: return true;
+        }
+      })();
+
+      const isPreparationTimeMatch = !filters.preparationTime || (() => {
+        const prepSteps = activity.preparationSteps?.length || 0;
+        switch (filters.preparationTime) {
+          case 'minimal': return prepSteps <= 3;
+          case 'moderate': return prepSteps > 3 && prepSteps <= 8;
+          case 'extensive': return prepSteps > 8;
+          default: return true;
+        }
+      })();
+
+      const isTagsMatch = !filters.tags || filters.tags.length === 0 || 
+        filters.tags.some(filterTag => activity.tags?.includes(filterTag));
+      
+      const isSearchMatch = !filters.searchTerm || (() => {
         const searchTerm = filters.searchTerm.toLowerCase();
         const matchesTitle = activity.title.toLowerCase().includes(searchTerm);
         const matchesDescription = activity.description.toLowerCase().includes(searchTerm);
         const matchesTags = activity.tags?.some(tag => tag.toLowerCase().includes(searchTerm)) || false;
         const matchesObjectives = activity.objectives?.some(obj => obj.toLowerCase().includes(searchTerm)) || false;
         
-        if (!matchesTitle && !matchesDescription && !matchesTags && !matchesObjectives) return false;
-      }
-      if (filters.tags && filters.tags.length > 0) {
-        const hasMatchingTag = filters.tags.some(filterTag => activity.tags?.includes(filterTag));
-        if (!hasMatchingTag) return false;
-      }
-      return true;
+        return matchesTitle || matchesDescription || matchesTags || matchesObjectives;
+      })();
+
+      return isCategoryMatch && isDifficultyMatch && isAgeGroupMatch && 
+             isDurationMatch && isPreparationTimeMatch && isTagsMatch && isSearchMatch;
     });
   }, [allActivities, filters]);
 
@@ -121,14 +145,23 @@ export default function ActivitiesPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">Atividades Terapêuticas</h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Explore nossa biblioteca abrangente de atividades musicoterapêuticas organizadas por categoria. 
-          Cada atividade foi cuidadosamente desenvolvida para atender objetivos terapêuticos específicos 
-          e pode ser adaptada às necessidades individuais dos pacientes.
-        </p>
-      </div>
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Explorar Atividades Terapêuticas
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Descubra uma ampla variedade de atividades cuidadosamente desenvolvidas para apoiar 
+            o crescimento e desenvolvimento através de abordagens terapêuticas especializadas.
+          </p>
+        </div>
+
+        {/* Activity Statistics */}
+        <ActivityStats 
+          totalActivities={allActivities.length}
+          filteredActivities={filteredActivities.length}
+          userActivityData={userActivityData}
+          allActivities={allActivities}
+        />
 
       {/* Filtros avançados */}
       <ActivityFilters

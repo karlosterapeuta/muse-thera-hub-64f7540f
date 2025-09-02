@@ -101,6 +101,7 @@ export interface ActivityFilter {
   difficulty?: string;
   ageGroup?: string;
   duration?: string;
+  preparationTime?: string;
   tags?: string[];
   therapeuticArea?: string;
   searchTerm?: string;

@@ -38,14 +38,14 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   const mainImage = activity.resourceLinks?.find(link => link.type === 'image');
 
   return (
-    <Card className="h-full hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-      {/* Image Preview */}
+    <Card className="group h-full hover-lift cursor-pointer transition-all duration-300 hover:shadow-lg" onClick={() => onViewDetails(activity)}>
+      {/* Image Section */}
       {mainImage && (
-        <div className="relative h-40 overflow-hidden">
+        <div className="relative aspect-video overflow-hidden rounded-t-lg">
           <img
             src={mainImage.url}
             alt={mainImage.title}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             onError={(e) => {
               console.log('Erro ao carregar imagem:', mainImage.url);
@@ -55,53 +55,53 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
               console.log('Imagem carregada com sucesso:', mainImage.url);
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-          <Badge className={`absolute top-2 right-2 ${getDifficultyColor(activity.difficulty)}`}>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          <Badge className={`absolute top-3 right-3 ${getDifficultyColor(activity.difficulty)} shadow-md`}>
             {getDifficultyLabel(activity.difficulty)}
           </Badge>
         </div>
       )}
-      
-      <CardHeader className={mainImage ? "pb-3" : "pb-3"}>
-        {!mainImage && (
-          <div className="flex items-start justify-between mb-2">
-            <Badge className={getDifficultyColor(activity.difficulty)}>
-              {getDifficultyLabel(activity.difficulty)}
-            </Badge>
-          </div>
-        )}
-        <CardTitle className="text-lg line-clamp-2">{activity.title}</CardTitle>
-        <CardDescription className="line-clamp-3">
+
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors font-semibold">
+          {activity.title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
           {activity.description}
-        </CardDescription>
+        </p>
       </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Informações principais */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
+
+      <CardContent className="pt-0">
+        {/* Activity Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>{activity.duration}</span>
+            <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-sm truncate">{activity.duration}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span>{activity.ageGroup}</span>
+            <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-sm truncate">{activity.ageGroup}</span>
           </div>
         </div>
 
-        {/* Objetivos principais */}
+        {/* Objectives Preview */}
         {activity.objectives && activity.objectives.length > 0 && (
-          <div>
+          <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Target className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Objetivos:</span>
+              <Target className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm font-medium">Objetivos principais:</span>
             </div>
             <ul className="text-sm text-muted-foreground space-y-1">
               {activity.objectives.slice(0, 2).map((objective, index) => (
-                <li key={index} className="line-clamp-1">• {objective}</li>
+                <li key={index} className="flex items-start gap-2">
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full mt-2 flex-shrink-0"></div>
+                  <span className="line-clamp-1">{objective}</span>
+                </li>
               ))}
               {activity.objectives.length > 2 && (
-                <li className="text-xs italic">+{activity.objectives.length - 2} mais...</li>
+                <li className="text-xs text-muted-foreground italic">
+                  +{activity.objectives.length - 2} objetivos adicionais
+                </li>
               )}
             </ul>
           </div>
@@ -109,39 +109,33 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
         {/* Tags */}
         {activity.tags && activity.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {activity.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {activity.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{activity.tags.length - 3}
-              </Badge>
-            )}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-1">
+              {activity.tags.slice(0, 2).map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {activity.tags.length > 2 && (
+                <Badge variant="outline" className="text-xs text-muted-foreground">
+                  +{activity.tags.length - 2} mais
+                </Badge>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Áreas terapêuticas */}
-        {activity.therapeuticAreas && activity.therapeuticAreas.length > 0 && (
-          <div>
-            <span className="text-xs font-medium text-muted-foreground">Áreas: </span>
-            <span className="text-xs text-muted-foreground">
-              {activity.therapeuticAreas.slice(0, 2).join(', ')}
-              {activity.therapeuticAreas.length > 2 && '...'}
-            </span>
-          </div>
-        )}
-
-        {/* Botão de detalhes */}
+        {/* Action Button */}
         <Button 
           variant="outline" 
-          className="w-full mt-4"
-          onClick={() => onViewDetails(activity)}
+          className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 font-medium"
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(activity);
+          }}
         >
-          <Eye className="h-4 w-4 mr-2" />
           Ver Detalhes
+          <Target className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Button>
       </CardContent>
     </Card>

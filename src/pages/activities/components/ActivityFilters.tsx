@@ -155,6 +155,26 @@ export const ActivityFilters: React.FC<ActivityFiltersProps> = ({
               </Select>
             </div>
           )}
+
+          {/* Tempo de Preparação */}
+          {isExpanded && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Preparação</label>
+              <Select value={filters.preparationTime || 'all'} onValueChange={(value) => 
+                onFilterChange({ ...filters, preparationTime: value === 'all' ? undefined : value })
+              }>
+                <SelectTrigger>
+                  <SelectValue placeholder="Qualquer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Qualquer preparação</SelectItem>
+                  <SelectItem value="minimal">Mínima (até 5 min)</SelectItem>
+                  <SelectItem value="moderate">Moderada (5-15 min)</SelectItem>
+                  <SelectItem value="extensive">Extensa (15+ min)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         {/* Tags */}
