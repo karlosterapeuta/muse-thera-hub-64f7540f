@@ -303,13 +303,13 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   };
   
   return (
-    <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none' : ''}`}>
-      <CardHeader className={isMobile ? 'px-4 py-3' : ''}>
+    <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none h-screen flex flex-col' : 'max-h-[85vh] flex flex-col'}`}>
+      <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0`}>
         <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className={`space-y-4 ${isMobile ? 'px-4' : ''}`}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+          <CardContent className={`space-y-4 ${isMobile ? 'px-4 flex-1 overflow-y-auto' : 'flex-1 overflow-y-auto'} pb-6`}>
             <FormField
               control={form.control}
               name="clinic_id"
@@ -552,7 +552,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
             />
           </CardContent>
           
-          <CardFooter className={`${isMobile ? 'flex flex-col gap-2 px-4 pb-6' : isTablet ? 'flex justify-end gap-2' : 'flex justify-end space-x-2'}`}>
+          <CardFooter className={`${isMobile ? 'flex flex-col gap-2 px-4 pb-6 flex-shrink-0' : isTablet ? 'flex justify-end gap-2 flex-shrink-0' : 'flex justify-end space-x-2 flex-shrink-0'}`}>
             <Button
               type="button"
               variant="outline"
