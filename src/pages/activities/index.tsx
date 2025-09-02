@@ -31,6 +31,8 @@ import { Activity, ActivityFilter } from "./types";
 import { TEAActivityCard } from "./components/TEAActivityCard";
 import { TEAFilters } from "./components/TEAFilters";
 import { TEADetailDialog } from "./components/TEADetailDialog";
+import { TEAGuidanceTips } from "./components/TEAGuidanceTips";
+import { TEAQuickPersonalization } from "./components/TEAQuickPersonalization";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
@@ -89,11 +91,14 @@ export default function ActivitiesPage() {
     { id: "identity", name: "identity", label: "Identidade", icon: <Fingerprint className="h-5 w-5" />, description: "Atividades focadas no fortalecimento da identidade pessoal", color: "#DC2626" }
   ];
   
-  // Obter todas as atividades de forma unificada (enhanced + migrated)
+  // Obter todas as atividades de forma unificada (enhanced + migrated ou TEA)
   const allActivities = useMemo(() => {
+    if (isTeaMode) {
+      return teaActivitiesData;
+    }
     const combinedData = getCombinedActivities(enhancedActivitiesData);
     return Object.values(combinedData).flat();
-  }, []);
+  }, [isTeaMode]);
 
   // Obter todas as tags disponíveis
   const availableTags = useMemo(() => {
@@ -106,7 +111,50 @@ export default function ActivitiesPage() {
 
   // Filtrar atividades
   const filteredActivities = useMemo(() => {
-    return allActivities.filter(activity => {
+        return allActivities.filter(activity => {
+      if (isTeaMode) {
+        const teaActivity = activity as TEAActivity;
+        
+        // TEA-specific filtering
+        if (teaFilters.supportLevels.length > 0 && !teaFilters.supportLevels.includes(teaActivity.supportLevel)) {
+          return false;
+        }
+        
+        if (teaFilters.communicationStyle.length > 0 && !teaFilters.communicationStyle.includes(teaActivity.communicationStyle)) {
+          return false;
+        }
+        
+        if (teaFilters.auditoryIntensity.length > 0 && !teaFilters.auditoryIntensity.includes(teaActivity.sensoryProfile.auditoryIntensity)) {
+          return false;
+        }
+        
+        if (teaFilters.visualStimuli.length > 0 && !teaFilters.visualStimuli.includes(teaActivity.sensoryProfile.visualStimuli)) {
+          return false;
+        }
+        
+        if (teaFilters.movementRequired.length > 0 && !teaFilters.movementRequired.includes(teaActivity.sensoryProfile.movementRequired)) {
+          return false;
+        }
+        
+        if (teaActivity.attentionSpan < teaFilters.attentionSpan[0] || teaActivity.attentionSpan > teaFilters.attentionSpan[1]) {
+          return false;
+        }
+        
+        if (teaFilters.predictabilityLevel.length > 0 && !teaFilters.predictabilityLevel.includes(teaActivity.predictabilityLevel)) {
+          return false;
+        }
+        
+        if (teaFilters.hasTactileElements !== null && teaActivity.sensoryProfile.tactileElements !== teaFilters.hasTactileElements) {
+          return false;
+        }
+        
+        if (teaFilters.sensoryFriendly) {
+          if (teaActivity.sensoryProfile.auditoryIntensity !== 'low' || teaActivity.sensoryProfile.visualStimuli === 'rich') {
+            return false;
+          }
+        }
+      }
+      
       const isCategoryMatch = !filters.category || activity.category === filters.category;
       const isDifficultyMatch = !filters.difficulty || activity.difficulty === filters.difficulty;
       const isAgeGroupMatch = !filters.ageGroup || activity.ageGroup === filters.ageGroup;
@@ -147,9 +195,9 @@ export default function ActivitiesPage() {
       return isCategoryMatch && isDifficultyMatch && isAgeGroupMatch && 
              isDurationMatch && isPreparationTimeMatch && isTagsMatch && isSearchMatch;
     });
-  }, [allActivities, filters]);
+  }, [allActivities, filters, teaFilters, isTeaMode]);
 
-  const handleViewActivityDetails = (activity: Activity) => {
+  const handleViewActivityDetails = (activity: Activity | TEAActivity) => {
     setSelectedActivity(activity);
     setDetailDialogOpen(true);
     
@@ -192,14 +240,48 @@ export default function ActivitiesPage() {
 
   return (
     <div className="container mx-auto py-6">
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Explorar Atividades Terapêuticas
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Descubra uma ampla variedade de atividades cuidadosamente desenvolvidas para apoiar 
-            o crescimento e desenvolvimento através de abordagens terapêuticas especializadas.
-          </p>
+        <div className="text-center max-w-4xl mx-auto mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-left">
+              <h1 className="text-4xl font-bold tracking-tight mb-2">
+                {isTeaMode ? 'Atividades TEA Especializadas' : 'Explorar Atividades Terapêuticas'}
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                {isTeaMode 
+                  ? 'Atividades desenvolvidas especificamente para pessoas no espectro autista' 
+                  : 'Descubra uma ampla variedade de atividades cuidadosamente desenvolvidas para apoiar o crescimento e desenvolvimento através de abordagens terapêuticas especializadas.'
+                }
+              </p>
+            </div>
+            <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border">
+              <Brain className="h-5 w-5 text-primary" />
+              <Label htmlFor="tea-mode" className="font-medium">Modo TEA</Label>
+              <Switch
+                id="tea-mode"
+                checked={isTeaMode}
+                onCheckedChange={(checked) => {
+                  setIsTeaMode(checked);
+                  // Reset filters when switching modes
+                  if (checked) {
+                    setFilters({});
+                  } else {
+                    setTeaFilters({
+                      supportLevels: [],
+                      communicationStyle: [],
+                      auditoryIntensity: [],
+                      visualStimuli: [],
+                      movementRequired: [],
+                      attentionSpan: [5, 60],
+                      predictabilityLevel: [],
+                      hasTactileElements: null,
+                      teaCategories: [],
+                      sensoryFriendly: false
+                    });
+                  }
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Activity Statistics */}
@@ -220,7 +302,18 @@ export default function ActivitiesPage() {
           />
         </div>
 
-        {/* Enhanced Search */}
+         {/* TEA Quick Personalization & Guidance */}
+         {isTeaMode && (
+           <div className="mb-6 space-y-4">
+             <TEAQuickPersonalization 
+               teaProfile={null}
+               onOpenPersonalization={() => console.log('Open TEA personalization')}
+             />
+             <TEAGuidanceTips />
+           </div>
+         )}
+
+         {/* Enhanced Search */}
         <div className="mb-6">
           <SearchWithSuggestions
             searchTerm={filters.searchTerm || ''}
@@ -258,14 +351,23 @@ export default function ActivitiesPage() {
           </div>
         )}
 
-      <ActivityFilters
-        filters={filters}
-        onFilterChange={setFilters}
-        categories={categories}
-        availableTags={availableTags}
-        isExpanded={filtersExpanded}
-        onToggleExpanded={() => setFiltersExpanded(!filtersExpanded)}
-      />
+      {isTeaMode ? (
+        <TEAFilters
+          filters={teaFilters}
+          onFilterChange={setTeaFilters}
+          isExpanded={filtersExpanded}
+          onToggleExpanded={() => setFiltersExpanded(!filtersExpanded)}
+        />
+      ) : (
+        <ActivityFilters
+          filters={filters}
+          onFilterChange={setFilters}
+          categories={categories}
+          availableTags={availableTags}
+          isExpanded={filtersExpanded}
+          onToggleExpanded={() => setFiltersExpanded(!filtersExpanded)}
+        />
+      )}
 
       {/* Resultados da busca */}
       {Object.keys(filters).length > 0 && (
@@ -279,10 +381,16 @@ export default function ActivitiesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredActivities.map((activity) => {
                 const category = categories.find(cat => cat.id === activity.category);
-                return (
+                return isTeaMode ? (
+                  <TEAActivityCard
+                    key={activity.id}
+                    activity={activity as TEAActivity}
+                    onViewDetails={handleViewActivityDetails}
+                  />
+                ) : (
                   <ActivityCard
                     key={activity.id}
-                    activity={activity}
+                    activity={activity as Activity}
                     onViewDetails={handleViewActivityDetails}
                     categoryColor={category?.color}
                   />
@@ -411,13 +519,21 @@ export default function ActivitiesPage() {
       </Dialog>
 
       {/* Dialog for activity details */}
-      <ActivityDetailDialog
-        activity={selectedActivity}
-        isOpen={detailDialogOpen}
-        onClose={() => setDetailDialogOpen(false)}
-        userActivityData={userActivityData}
-        onUpdateUserData={handleUpdateUserData}
-      />
+      {isTeaMode ? (
+        <TEADetailDialog
+          activity={selectedActivity as TEAActivity}
+          open={detailDialogOpen}
+          onOpenChange={setDetailDialogOpen}
+        />
+      ) : (
+        <ActivityDetailDialog
+          activity={selectedActivity as Activity}
+          isOpen={detailDialogOpen}
+          onClose={() => setDetailDialogOpen(false)}
+          userActivityData={userActivityData}
+          onUpdateUserData={handleUpdateUserData}
+        />
+      )}
     </div>
   );
 }
