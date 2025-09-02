@@ -132,7 +132,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     return durationMatch ? durationMatch[1] : "45";
   };
 
-  const getNextDateForWeekday = (weekday: string): Date => {
+  const getCurrentWeekDateForWeekday = (weekday: string): Date => {
     const today = new Date();
     const todayDay = today.getDay();
     
@@ -148,14 +148,10 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     
     const targetDay = weekdayMap[weekday];
     
-    // Calculate how many days to add to get to the target weekday
+    // Calculate how many days to add/subtract to get to the target weekday in current week
     let daysToAdd = targetDay - todayDay;
     
-    // If the target day has already passed this week, go to next week
-    if (daysToAdd < 0) {
-      daysToAdd += 7;
-    }
-    
+    // Always use the current week's date, even if it's in the past
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysToAdd);
     targetDate.setHours(0, 0, 0, 0);
@@ -219,7 +215,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   }, [record, form]);
   
   function onSubmit(values: FinancialRecordFormValues) {
-    const sessionDate = getNextDateForWeekday(values.weekday);
+    const sessionDate = getCurrentWeekDateForWeekday(values.weekday);
     
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
