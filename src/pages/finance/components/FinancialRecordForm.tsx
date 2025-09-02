@@ -237,6 +237,15 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
       });
     }
   }, [record, form]);
+
+  // Auto-update weekday when session_date changes
+  const watchedDate = form.watch("session_date");
+  useEffect(() => {
+    if (watchedDate) {
+      const weekday = getWeekdayFromDate(watchedDate.toISOString());
+      form.setValue("weekday", weekday);
+    }
+  }, [watchedDate, form]);
   
   function onSubmit(values: FinancialRecordFormValues) {
     // Use the selected date directly instead of calculating from weekday
