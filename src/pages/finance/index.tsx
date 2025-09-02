@@ -97,8 +97,8 @@ export default function FinanceDashboard() {
               className="h-9 sm:h-10 bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              {isMobile && <span className="ml-1 text-xs">Agenda MuseTera</span>}
-              {!isMobile && "Agenda MuseTera"}
+              {isMobile && <span className="ml-1 text-xs">Agenda Musical</span>}
+              {!isMobile && "Agenda Musical"}
             </Button>
             
             <Button
