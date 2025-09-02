@@ -7,18 +7,24 @@ import {
   Eye, 
   TrendingUp, 
   Clock,
-  Users,
   Target,
   BookOpen
 } from 'lucide-react';
-import { Activity } from '../types';
-import { UserActivityData } from '../types/user-data';
 
 interface ActivityStatsProps {
   totalActivities: number;
   filteredActivities: number;
-  userActivityData: UserActivityData;
-  allActivities: Activity[];
+  userActivityData: {
+    favorites: string[];
+    completed: Array<{ activityId: string }>;
+    recentlyViewed: string[];
+  };
+  allActivities: Array<{
+    id: number;
+    title: string;
+    category: string;
+    duration: string;
+  }>;
 }
 
 export const ActivityStats: React.FC<ActivityStatsProps> = ({
