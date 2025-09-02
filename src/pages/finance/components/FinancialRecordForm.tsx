@@ -449,7 +449,12 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                         fromYear={1900}
                         toYear={new Date().getFullYear()}
                         formatters={{
-                          formatMonthCaption: (date) => format(date, "MMMM yyyy", { locale: ptBR }),
+                          formatMonthCaption: (date) => format(date, "MMMM", { locale: ptBR }),
+                          formatYearCaption: (date) => format(date, "yyyy", { locale: ptBR }),
+                        }}
+                        labels={{
+                          labelMonthDropdown: () => "Mês",
+                          labelYearDropdown: () => "Ano",
                         }}
                         className={cn("p-3 pointer-events-auto")}
                       />
