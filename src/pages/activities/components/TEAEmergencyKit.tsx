@@ -387,9 +387,15 @@ export function TEAEmergencyKit() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [playingSound, setPlayingSound] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState([85]); // Aumentado de 75 para 85
+  const [volume, setVolume] = useState([90]); // Aumentado de 85 para 90
   const [activeCategory, setActiveCategory] = useState<string>('emergency');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Estados para móvel
+  const [audioActivated, setAudioActivated] = useState(false);
+  const [audioStatus, setAudioStatus] = useState<'not-activated' | 'activating' | 'ready' | 'error'>('not-activated');
+  const [isMobile, setIsMobile] = useState(false);
+  const [showVolumeWarning, setShowVolumeWarning] = useState(false);
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -401,16 +407,51 @@ export function TEAEmergencyKit() {
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
+  // Detectar se é móvel
+  React.useEffect(() => {
+    const mobile = teaAudio.getIsMobile();
+    setIsMobile(mobile);
+    
+    // Se for móvel, mostrar aviso de volume baixo se necessário
+    if (mobile && !audioActivated) {
+      setShowVolumeWarning(true);
+    }
+  }, [audioActivated]);
+
   // Sincronizar volume com o serviço de áudio
   React.useEffect(() => {
     const volumeValue = volume[0] / 100; // Converter de 0-100 para 0-1
     teaAudio.setVolume(volumeValue);
   }, [volume]);
 
-  // Inicializar serviço de áudio
-  React.useEffect(() => {
-    teaAudio.initialize();
-  }, []);
+  // Ativar áudio para móvel
+  const activateAudio = async () => {
+    setAudioStatus('activating');
+    try {
+      const ready = await teaAudio.ensureAudioReady();
+      if (ready) {
+        setAudioActivated(true);
+        setAudioStatus('ready');
+        setShowVolumeWarning(false);
+        
+        // Som de teste para confirmar funcionamento
+        await teaAudio.playAnimalSound('test', 440, 0.3);
+        
+        console.log('🎵 Áudio TEA ativado com sucesso para móvel!');
+      } else {
+        throw new Error('Falha na ativação');
+      }
+    } catch (error) {
+      console.log('Erro ao ativar áudio:', error);
+      setAudioStatus('error');
+    }
+  };
+
+  // Emergência máxima
+  const activateEmergencyMax = () => {
+    teaAudio.setEmergencyMaxVolume();
+    setVolume([95]);
+  };
 
   const startTechnique = (techniqueId: string) => {
     setActiveTechnique(techniqueId);
@@ -436,6 +477,12 @@ export function TEAEmergencyKit() {
   const playEmergencySound = async (sound: EmergencySound) => {
     if (isMuted) return;
     
+    // Verificar se áudio está ativado em móvel
+    if (isMobile && !audioActivated) {
+      await activateAudio();
+      if (!audioActivated) return;
+    }
+    
     setPlayingSound(sound.id);
     
     try {
@@ -448,39 +495,42 @@ export function TEAEmergencyKit() {
         await teaAudio.setCalmMode(true);
       }
       
-      // Ajustar volume baseado na intensidade
+      // Ajustar volume baseado na intensidade (volumes mais altos)
       const currentVolume = volume[0] / 100;
       let intensityBoost = 1;
       
       switch (sound.intensity) {
         case 'high':
-          intensityBoost = 1.4; // 40% de aumento para emergências
+          intensityBoost = 1.5; // Aumentado de 1.4 para 1.5
           break;
         case 'medium':
-          intensityBoost = 1.2; // 20% de aumento
+          intensityBoost = 1.3; // Aumentado de 1.2 para 1.3
           break;
         case 'low':
-          intensityBoost = 1; // Volume normal
+          intensityBoost = 1.1; // Aumentado de 1 para 1.1
           break;
       }
       
-      // Volume específico por categoria
+      // Volume específico por categoria (mais altos)
       let categoryModifier = 1;
       switch (sound.category) {
         case 'emergency':
-          categoryModifier = 1.2; // Emergências sempre mais altas
+          categoryModifier = 1.3; // Aumentado de 1.2 para 1.3
           break;
         case 'therapeutic':
-          categoryModifier = 1.1;
+          categoryModifier = 1.2; // Aumentado de 1.1 para 1.2
           break;
         case 'binaural':
-          categoryModifier = 0.8; // Binaurais mais baixos por segurança
+          categoryModifier = 0.9; // Aumentado de 0.8 para 0.9
           break;
         default:
-          categoryModifier = 1;
+          categoryModifier = 1.1; // Novo padrão mais alto
       }
       
-      const finalVolume = Math.min(currentVolume * intensityBoost * categoryModifier, 0.9);
+      // Boost adicional para móvel
+      const mobileBoost = isMobile ? 1.2 : 1;
+      
+      const finalVolume = Math.min(currentVolume * intensityBoost * categoryModifier * mobileBoost, 0.95);
       await teaAudio.setVolume(finalVolume);
       
       await teaAudio.playAnimalSound(sound.id, sound.frequency, sound.duration);
@@ -493,6 +543,10 @@ export function TEAEmergencyKit() {
       
     } catch (error) {
       console.log('Erro ao reproduzir som de emergência:', error);
+      // Tentar novamente em caso de erro
+      setTimeout(() => {
+        teaAudio.playAnimalSound(sound.id, sound.frequency, sound.duration * 0.5);
+      }, 500);
     }
     
     setTimeout(() => {
@@ -501,8 +555,12 @@ export function TEAEmergencyKit() {
   };
 
   const setMaxVolume = () => {
-    setVolume([90]);
+    setVolume([95]); // Aumentado de 90 para 95
     setIsMuted(false);
+    // Ativar áudio se for móvel e não estiver ativado
+    if (isMobile && !audioActivated) {
+      activateAudio();
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -526,6 +584,87 @@ export function TEAEmergencyKit() {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Interface Móvel Otimizada */}
+        {isMobile && (
+          <div className="space-y-3 p-4 bg-muted/30 rounded-lg border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  audioStatus === 'ready' ? 'bg-green-500 animate-pulse' :
+                  audioStatus === 'activating' ? 'bg-yellow-500 animate-pulse' :
+                  audioStatus === 'error' ? 'bg-red-500' :
+                  'bg-gray-400'
+                }`} />
+                <span className="text-sm font-medium">
+                  {audioStatus === 'ready' ? '🔊 Áudio Ativado' :
+                   audioStatus === 'activating' ? '⏳ Ativando...' :
+                   audioStatus === 'error' ? '❌ Erro no Áudio' :
+                   '📱 Modo Celular'}
+                </span>
+              </div>
+              
+              {audioStatus === 'ready' && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={activateEmergencyMax}
+                  className="text-xs px-3 py-1 h-7 bg-red-600 hover:bg-red-700 animate-pulse"
+                >
+                  🚨 MAX
+                </Button>
+              )}
+            </div>
+
+            {!audioActivated && (
+              <div className="space-y-3">
+                <Button
+                  onClick={activateAudio}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg"
+                >
+                  🔊 ATIVAR ÁUDIO PARA CELULAR
+                </Button>
+                
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>• Toque no botão acima para ativar o som</p>
+                  <p>• Aumente o volume do seu celular</p>
+                  <p>• Para melhor resultado, use fones de ouvido</p>
+                </div>
+              </div>
+            )}
+
+            {audioStatus === 'error' && (
+              <div className="space-y-3">
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <p className="text-sm text-destructive">
+                    ⚠️ Não foi possível ativar o áudio. Tente:
+                  </p>
+                  <ul className="text-xs text-muted-foreground mt-2 space-y-1">
+                    <li>• Verificar se o volume está alto</li>
+                    <li>• Usar fones de ouvido</li>
+                    <li>• Recarregar a página</li>
+                  </ul>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={activateAudio}
+                  className="w-full"
+                >
+                  🔄 Tentar Novamente
+                </Button>
+              </div>
+            )}
+
+            {showVolumeWarning && (
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <p className="text-sm text-yellow-700">
+                  📢 Para emergências: verifique se o volume do celular está no máximo
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Controles de Áudio */}
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
@@ -542,7 +681,7 @@ export function TEAEmergencyKit() {
                 <Slider
                   value={volume}
                   onValueChange={setVolume}
-                  max={90}
+                  max={95} // Aumentado de 90 para 95
                   step={5}
                   className="w-20"
                   disabled={isMuted}

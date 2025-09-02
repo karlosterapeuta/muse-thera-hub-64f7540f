@@ -5,9 +5,12 @@ class TEAAudioService {
   private masterGain: GainNode | null = null;
   private isInitialized = false;
   private isCalmMode = false;
-  private volume = 0.7; // Aumentado de 0.4 para 0.7
+  private volume = 0.85; // Aumentado para 0.85 para melhor audibilidade em mobile
   private emergencyMode = false;
   private initializationPromise: Promise<boolean> | null = null;
+  private isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  private isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  private audioReady = false;
 
   async initialize(): Promise<boolean> {
     if (this.initializationPromise) {
@@ -61,16 +64,47 @@ class TEAAudioService {
     this.updateVolume();
   }
 
+  setEmergencyMaxVolume(): void {
+    this.emergencyMode = true;
+    if (this.masterGain) {
+      // Volume máximo para emergências (95%)
+      this.masterGain.gain.setValueAtTime(0.95, this.audioContext?.currentTime || 0);
+    }
+  }
+
+  async ensureAudioReady(): Promise<boolean> {
+    if (this.audioReady) return true;
+    
+    try {
+      const initialized = await this.initialize();
+      if (!initialized) return false;
+      
+      if (this.audioContext?.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+      
+      this.audioReady = true;
+      return true;
+    } catch (error) {
+      console.log('Erro ao garantir áudio:', error);
+      return false;
+    }
+  }
+
   private updateVolume(): void {
     if (this.masterGain) {
       let finalVolume = this.volume;
       
       // Modo emergência tem prioridade máxima
       if (this.emergencyMode) {
-        finalVolume = Math.min(this.volume * 1.2, 0.9);
+        finalVolume = Math.min(this.volume * 1.3, 0.95); // Aumentado para mobile
+        // Boost adicional para mobile
+        if (this.isMobile) {
+          finalVolume = Math.min(finalVolume * 1.1, 0.95);
+        }
       } else if (this.isCalmMode) {
-        // Modo calmo agora reduz menos (80% em vez de 60%)
-        finalVolume = this.volume * 0.8;
+        // Modo calmo agora reduz menos (85% em vez de 80%)
+        finalVolume = this.volume * 0.85;
       }
       
       this.masterGain.gain.setValueAtTime(finalVolume, this.audioContext?.currentTime || 0);
@@ -106,7 +140,7 @@ class TEAAudioService {
       osc.frequency.value = frequency;
       osc.type = 'sine';
       
-      gain.gain.value = 0.1;
+      gain.gain.value = this.isMobile ? 0.6 : 0.4; // Volume fallback aumentado para mobile
       gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.3);
       
       osc.connect(gain);
@@ -167,7 +201,7 @@ class TEAAudioService {
   }
 
   setVolume(volume: number): void {
-    this.volume = Math.max(0, Math.min(0.9, volume)); // Limite máximo aumentado para 0.9
+    this.volume = Math.max(0, Math.min(0.95, volume)); // Limite máximo aumentado para 0.95
     this.updateVolume();
   }
 
@@ -185,6 +219,14 @@ class TEAAudioService {
 
   getInitialized(): boolean {
     return this.isInitialized;
+  }
+
+  getIsMobile(): boolean {
+    return this.isMobile;
+  }
+
+  getAudioReady(): boolean {
+    return this.audioReady;
   }
 
   cleanup(): void {
