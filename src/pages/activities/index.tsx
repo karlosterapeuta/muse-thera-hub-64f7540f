@@ -244,9 +244,9 @@ export default function ActivitiesPage() {
         <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
             <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-2">
-                {isTeaMode ? 'Atividades TEA Especializadas' : 'Explorar Atividades Terapêuticas'}
-              </h1>
+               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-2">
+                 {isTeaMode ? 'Atividades TEA Especializadas MuseTera' : 'Explorar Atividades Terapêuticas'}
+               </h1>
               <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl">
                 {isTeaMode 
                   ? 'Atividades desenvolvidas especificamente para pessoas no espectro autista' 
