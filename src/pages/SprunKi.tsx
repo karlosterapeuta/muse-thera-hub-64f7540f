@@ -64,7 +64,7 @@ export default function SprunKi() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className={`container mx-auto px-4 ${isMobile ? 'py-4' : 'py-6'}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

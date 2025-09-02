@@ -69,7 +69,7 @@ export default function ChromeMusicLab() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+    <div className="min-h-screen bg-background">
       {/* Header Section */}
       <div className="container mx-auto px-4 py-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

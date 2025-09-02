@@ -405,7 +405,7 @@ export default function AnamnesisFormWrapper({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Carregando formulário...</p>
@@ -415,7 +415,7 @@ export default function AnamnesisFormWrapper({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 space-y-6 max-w-6xl">
         <Card className="border-0 shadow-2xl overflow-hidden">
           <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
