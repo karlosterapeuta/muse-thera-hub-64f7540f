@@ -387,7 +387,7 @@ export function TEAEmergencyKit() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [playingSound, setPlayingSound] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState([75]);
+  const [volume, setVolume] = useState([85]); // Aumentado de 75 para 85
   const [activeCategory, setActiveCategory] = useState<string>('emergency');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
@@ -400,6 +400,17 @@ export function TEAEmergencyKit() {
     }
     return () => clearInterval(interval);
   }, [isTimerRunning]);
+
+  // Sincronizar volume com o serviço de áudio
+  React.useEffect(() => {
+    const volumeValue = volume[0] / 100; // Converter de 0-100 para 0-1
+    teaAudio.setVolume(volumeValue);
+  }, [volume]);
+
+  // Inicializar serviço de áudio
+  React.useEffect(() => {
+    teaAudio.initialize();
+  }, []);
 
   const startTechnique = (techniqueId: string) => {
     setActiveTechnique(techniqueId);
@@ -426,9 +437,60 @@ export function TEAEmergencyKit() {
     if (isMuted) return;
     
     setPlayingSound(sound.id);
+    
     try {
-      await teaAudio.setCalmMode(true);
+      // Configurar modo baseado na categoria e intensidade
+      if (sound.category === 'emergency') {
+        await teaAudio.setEmergencyMode(true);
+        await teaAudio.setCalmMode(false);
+      } else {
+        await teaAudio.setEmergencyMode(false);
+        await teaAudio.setCalmMode(true);
+      }
+      
+      // Ajustar volume baseado na intensidade
+      const currentVolume = volume[0] / 100;
+      let intensityBoost = 1;
+      
+      switch (sound.intensity) {
+        case 'high':
+          intensityBoost = 1.4; // 40% de aumento para emergências
+          break;
+        case 'medium':
+          intensityBoost = 1.2; // 20% de aumento
+          break;
+        case 'low':
+          intensityBoost = 1; // Volume normal
+          break;
+      }
+      
+      // Volume específico por categoria
+      let categoryModifier = 1;
+      switch (sound.category) {
+        case 'emergency':
+          categoryModifier = 1.2; // Emergências sempre mais altas
+          break;
+        case 'therapeutic':
+          categoryModifier = 1.1;
+          break;
+        case 'binaural':
+          categoryModifier = 0.8; // Binaurais mais baixos por segurança
+          break;
+        default:
+          categoryModifier = 1;
+      }
+      
+      const finalVolume = Math.min(currentVolume * intensityBoost * categoryModifier, 0.9);
+      await teaAudio.setVolume(finalVolume);
+      
       await teaAudio.playAnimalSound(sound.id, sound.frequency, sound.duration);
+      
+      // Restaurar volume original após o som
+      setTimeout(() => {
+        teaAudio.setVolume(currentVolume);
+        teaAudio.setEmergencyMode(false);
+      }, sound.duration * 1000 + 100);
+      
     } catch (error) {
       console.log('Erro ao reproduzir som de emergência:', error);
     }
@@ -436,6 +498,11 @@ export function TEAEmergencyKit() {
     setTimeout(() => {
       setPlayingSound(null);
     }, sound.duration * 1000);
+  };
+
+  const setMaxVolume = () => {
+    setVolume([90]);
+    setIsMuted(false);
   };
 
   const formatTime = (seconds: number) => {
@@ -465,20 +532,32 @@ export function TEAEmergencyKit() {
             <div className="flex items-center gap-2">
               <Volume2 className="w-4 h-4" />
               <span className="text-sm font-medium">Controles de Áudio</span>
+              <Badge variant="secondary" className="text-xs">
+                {volume[0]}%
+              </Badge>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 min-w-[100px]">
+              <div className="flex items-center gap-2 min-w-[120px]">
                 <VolumeX className="w-3 h-3" />
                 <Slider
                   value={volume}
                   onValueChange={setVolume}
-                  max={100}
+                  max={90}
                   step={5}
-                  className="w-16"
+                  className="w-20"
                   disabled={isMuted}
                 />
                 <Volume2 className="w-3 h-3" />
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={setMaxVolume}
+                className="px-2 py-1 h-8 text-xs font-medium"
+                title="Volume Máximo para Emergência"
+              >
+                MAX
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"

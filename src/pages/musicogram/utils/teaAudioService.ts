@@ -5,7 +5,8 @@ class TEAAudioService {
   private masterGain: GainNode | null = null;
   private isInitialized = false;
   private isCalmMode = false;
-  private volume = 0.4;
+  private volume = 0.7; // Aumentado de 0.4 para 0.7
+  private emergencyMode = false;
   private initializationPromise: Promise<boolean> | null = null;
 
   async initialize(): Promise<boolean> {
@@ -55,9 +56,23 @@ class TEAAudioService {
     this.updateVolume();
   }
 
+  setEmergencyMode(enabled: boolean): void {
+    this.emergencyMode = enabled;
+    this.updateVolume();
+  }
+
   private updateVolume(): void {
     if (this.masterGain) {
-      const finalVolume = this.isCalmMode ? this.volume * 0.6 : this.volume;
+      let finalVolume = this.volume;
+      
+      // Modo emergência tem prioridade máxima
+      if (this.emergencyMode) {
+        finalVolume = Math.min(this.volume * 1.2, 0.9);
+      } else if (this.isCalmMode) {
+        // Modo calmo agora reduz menos (80% em vez de 60%)
+        finalVolume = this.volume * 0.8;
+      }
+      
       this.masterGain.gain.setValueAtTime(finalVolume, this.audioContext?.currentTime || 0);
     }
   }
@@ -152,7 +167,7 @@ class TEAAudioService {
   }
 
   setVolume(volume: number): void {
-    this.volume = Math.max(0, Math.min(0.6, volume));
+    this.volume = Math.max(0, Math.min(0.9, volume)); // Limite máximo aumentado para 0.9
     this.updateVolume();
   }
 
@@ -162,6 +177,10 @@ class TEAAudioService {
 
   getCalmMode(): boolean {
     return this.isCalmMode;
+  }
+
+  getEmergencyMode(): boolean {
+    return this.emergencyMode;
   }
 
   getInitialized(): boolean {
