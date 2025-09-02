@@ -158,6 +158,11 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     // Calculate how many days to add/subtract to get to the target weekday in current week
     let daysToAdd = targetDay - todayDay;
     
+    // If the selected day has already passed this week, use next week's occurrence
+    if (daysToAdd < 0) {
+      daysToAdd += 7;
+    }
+    
     // Create the target date by adding the calculated days
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysToAdd);
