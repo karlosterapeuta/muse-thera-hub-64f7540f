@@ -226,6 +226,13 @@ export default function FinancialRecords() {
             description: "O registro financeiro foi excluído com sucesso.",
             variant: "default",
           });
+        },
+        onError: (error) => {
+          toast({
+            title: "Erro ao excluir",
+            description: error.message || "Não foi possível excluir o registro.",
+            variant: "destructive",
+          });
         }
       });
     }
@@ -810,14 +817,14 @@ export default function FinancialRecords() {
       
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <DialogTitle>Confirmar exclusão</DialogTitle>
           <div className="space-y-4">
+            <DialogTitle>Confirmar exclusão</DialogTitle>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <TrashIcon className="h-5 w-5 text-destructive" />
               </div>
             </div>
-            <p>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</p>
+            <p className="text-sm text-muted-foreground">Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-2">
               <Button
                 variant="outline"
@@ -847,14 +854,14 @@ export default function FinancialRecords() {
       
       <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <DialogTitle>Confirmar exclusão total</DialogTitle>
           <div className="space-y-4">
+            <DialogTitle>Confirmar exclusão total</DialogTitle>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <Trash2Icon className="h-5 w-5 text-destructive" />
               </div>
             </div>
-            <p>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</p>
+            <p className="text-sm text-muted-foreground">Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-2">
               <Button
                 variant="outline"

@@ -149,10 +149,6 @@ export const useDeleteFinancialRecord = () => {
       return id;
     },
     onSuccess: () => {
-      toast({
-        title: "Registro excluído",
-        description: "Registro financeiro excluído com sucesso.",
-      });
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
       queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
     },
