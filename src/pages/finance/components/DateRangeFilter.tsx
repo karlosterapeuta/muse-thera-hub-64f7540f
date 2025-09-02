@@ -48,7 +48,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(7)}
-              className="bg-white/80 border-blue-200 text-blue-700 hover:bg-blue-100"
+              className="bg-gradient-to-r from-blue-100 to-blue-200 border-blue-200 text-blue-700 hover:from-blue-200 hover:to-blue-300 transition-all duration-300"
             >
               🎵 Última Semana
             </Button>
@@ -56,7 +56,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(30)}
-              className="bg-white/80 border-purple-200 text-purple-700 hover:bg-purple-100"
+              className="bg-gradient-to-r from-purple-100 to-purple-200 border-purple-200 text-purple-700 hover:from-purple-200 hover:to-purple-300 transition-all duration-300"
             >
               🎼 Último Movimento (30 dias)
             </Button>
@@ -64,7 +64,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(90)}
-              className="bg-white/80 border-green-200 text-green-700 hover:bg-green-100"
+              className="bg-gradient-to-r from-green-100 to-green-200 border-green-200 text-green-700 hover:from-green-200 hover:to-green-300 transition-all duration-300"
             >
               🎹 Última Sinfonia (90 dias)
             </Button>
@@ -72,7 +72,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={setMonthFilter}
-              className="bg-white/80 border-orange-200 text-orange-700 hover:bg-orange-100"
+              className="bg-gradient-to-r from-orange-100 to-orange-200 border-orange-200 text-orange-700 hover:from-orange-200 hover:to-orange-300 transition-all duration-300"
             >
               🎶 Mês Atual
             </Button>
