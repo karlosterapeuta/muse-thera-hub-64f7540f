@@ -240,47 +240,49 @@ export default function ActivitiesPage() {
                          userActivityData.recentlyViewed.length > 2;
 
   return (
-    <div className="container mx-auto py-6">
-        <div className="text-center max-w-4xl mx-auto mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-left">
-              <h1 className="text-4xl font-bold tracking-tight mb-2">
+    <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-7xl">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-2">
                 {isTeaMode ? 'Atividades TEA Especializadas' : 'Explorar Atividades Terapêuticas'}
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl">
                 {isTeaMode 
                   ? 'Atividades desenvolvidas especificamente para pessoas no espectro autista' 
                   : 'Descubra uma ampla variedade de atividades cuidadosamente desenvolvidas para apoiar o crescimento e desenvolvimento através de abordagens terapêuticas especializadas.'
                 }
               </p>
             </div>
-            <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border">
-              <Brain className="h-5 w-5 text-primary" />
-              <Label htmlFor="tea-mode" className="font-medium">Modo TEA</Label>
-              <Switch
-                id="tea-mode"
-                checked={isTeaMode}
-                onCheckedChange={(checked) => {
-                  setIsTeaMode(checked);
-                  // Reset filters when switching modes
-                  if (checked) {
-                    setFilters({});
-                  } else {
-                    setTeaFilters({
-                      supportLevels: [],
-                      communicationStyle: [],
-                      auditoryIntensity: [],
-                      visualStimuli: [],
-                      movementRequired: [],
-                      attentionSpan: [5, 60],
-                      predictabilityLevel: [],
-                      hasTactileElements: null,
-                      teaCategories: [],
-                      sensoryFriendly: false
-                    });
-                  }
-                }}
-              />
+            <div className="flex items-center justify-center lg:justify-end">
+              <div className="flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 p-3 sm:p-4 rounded-lg border shadow-sm">
+                <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <Label htmlFor="tea-mode" className="font-medium text-sm sm:text-base whitespace-nowrap">Modo TEA</Label>
+                <Switch
+                  id="tea-mode"
+                  checked={isTeaMode}
+                  onCheckedChange={(checked) => {
+                    setIsTeaMode(checked);
+                    // Reset filters when switching modes
+                    if (checked) {
+                      setFilters({});
+                    } else {
+                      setTeaFilters({
+                        supportLevels: [],
+                        communicationStyle: [],
+                        auditoryIntensity: [],
+                        visualStimuli: [],
+                        movementRequired: [],
+                        attentionSpan: [5, 60],
+                        predictabilityLevel: [],
+                        hasTactileElements: null,
+                        teaCategories: [],
+                        sensoryFriendly: false
+                      });
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -303,20 +305,20 @@ export default function ActivitiesPage() {
           />
         </div>
 
-         {/* TEA Quick Personalization & Guidance */}
-         {isTeaMode && (
-           <div className="mb-6 space-y-4">
-             <TEAQuickPersonalization 
-               teaProfile={null}
-               onOpenPersonalization={() => console.log('Open TEA personalization')}
-             />
-             <TEAGuidanceTips />
-             <TEAEmergencyKit />
-           </div>
-         )}
+          {/* TEA Quick Personalization & Guidance */}
+          {isTeaMode && (
+            <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+              <TEAQuickPersonalization 
+                teaProfile={null}
+                onOpenPersonalization={() => console.log('Open TEA personalization')}
+              />
+              <TEAGuidanceTips />
+              <TEAEmergencyKit />
+            </div>
+          )}
 
-         {/* Enhanced Search */}
-        <div className="mb-6">
+          {/* Enhanced Search */}
+        <div className="mb-4 sm:mb-6">
           <SearchWithSuggestions
             searchTerm={filters.searchTerm || ''}
             onSearchChange={handleSearchChange}
@@ -328,12 +330,13 @@ export default function ActivitiesPage() {
 
         {/* Recommendations Section */}
         {hasUserActivity && !Object.keys(filters).some(key => filters[key as keyof ActivityFilter]) && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
               <Button 
                 variant={showRecommendations ? "default" : "outline"}
                 onClick={() => setShowRecommendations(!showRecommendations)}
-                className="animate-fade-in"
+                className="animate-fade-in w-full sm:w-auto"
+                size={isMobile ? "sm" : "default"}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 {showRecommendations ? 'Ocultar Recomendações' : 'Ver Recomendações Personalizadas'}
@@ -373,14 +376,14 @@ export default function ActivitiesPage() {
 
       {/* Resultados da busca */}
       {Object.keys(filters).length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">Resultados da Busca</h2>
-            <p className="text-muted-foreground">{filteredActivities.length} atividades encontradas</p>
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-4">
+            <h2 className="text-xl sm:text-2xl font-semibold">Resultados da Busca</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">{filteredActivities.length} atividades encontradas</p>
           </div>
           
           {filteredActivities.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredActivities.map((activity) => {
                 const category = categories.find(cat => cat.id === activity.category);
                 return isTeaMode ? (
@@ -400,10 +403,10 @@ export default function ActivitiesPage() {
               })}
             </div>
           ) : (
-            <Card className="p-6">
+            <Card className="p-4 sm:p-6">
               <div className="text-center">
-                <p className="text-muted-foreground mb-4">Nenhuma atividade encontrada com os filtros aplicados.</p>
-                <Button variant="outline" onClick={() => setFilters({})}>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4">Nenhuma atividade encontrada com os filtros aplicados.</p>
+                <Button variant="outline" onClick={() => setFilters({})} size={isMobile ? "sm" : "default"}>
                   Limpar Filtros
                 </Button>
               </div>
@@ -414,7 +417,7 @@ export default function ActivitiesPage() {
 
       {/* Categorias principais - sempre visíveis */}
       {Object.keys(filters).length === 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {categories.slice(0, 7).map((category) => {
             const combinedData = getCombinedActivities(enhancedActivitiesData);
             const activitiesCount = combinedData[category.id]?.length || 0;
@@ -424,9 +427,9 @@ export default function ActivitiesPage() {
                 className="cursor-pointer hover:shadow-lg transition-shadow group" 
                 onClick={() => navigate(`/activities/category/${category.id}`)}
               >
-                <CardHeader className="text-center">
+                <CardHeader className="text-center p-4 sm:p-6">
                   <div 
-                    className="mx-auto p-4 rounded-full group-hover:scale-110 transition-transform"
+                    className="mx-auto p-3 sm:p-4 rounded-full group-hover:scale-110 transition-transform"
                     style={{ 
                       backgroundColor: `${category.color}20`, 
                       color: category.color 
@@ -434,13 +437,13 @@ export default function ActivitiesPage() {
                   >
                     {category.icon}
                   </div>
-                  <CardTitle className="text-xl">{category.label}</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">{category.label}</CardTitle>
+                  <CardDescription className="text-sm">
                     {category.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground text-center">
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground text-center">
                     {activitiesCount} atividades disponíveis
                   </p>
                 </CardContent>
@@ -453,17 +456,17 @@ export default function ActivitiesPage() {
             className="cursor-pointer hover:shadow-lg transition-shadow group border-dashed border-2" 
             onClick={() => setCategoriesDialogOpen(true)}
           >
-            <CardHeader className="text-center">
-              <div className="mx-auto p-4 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600 dark:from-purple-900/20 dark:to-pink-900/20 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                <Eye className="h-8 w-8" />
+            <CardHeader className="text-center p-4 sm:p-6">
+              <div className="mx-auto p-3 sm:p-4 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600 dark:from-purple-900/20 dark:to-pink-900/20 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                <Eye className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-              <CardTitle className="text-xl">Ver Todas</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg sm:text-xl">Ver Todas</CardTitle>
+              <CardDescription className="text-sm">
                 Explore todas as categorias disponíveis e descubra mais atividades especializadas.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground text-center">
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <p className="text-xs sm:text-sm text-muted-foreground text-center">
                 {categories.length} categorias disponíveis
               </p>
             </CardContent>
