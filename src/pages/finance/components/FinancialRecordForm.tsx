@@ -353,26 +353,26 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                         <SelectValue placeholder="Selecione um paciente" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem key="no-patient" value="no-patient">
-                        Nenhum paciente
-                      </SelectItem>
-                      {patientsLoading ? (
-                        <SelectItem key="loading" value="loading" disabled>
-                          Carregando pacientes...
-                        </SelectItem>
-                      ) : patients.length > 0 ? (
-                        patients.map((patient) => (
-                          <SelectItem key={patient.id} value={patient.id}>
-                            {patient.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem key="no-patients" value="no-patients" disabled>
-                          Nenhum paciente encontrado
-                        </SelectItem>
-                      )}
-                    </SelectContent>
+                     <SelectContent className="max-h-[200px] overflow-y-auto z-50 bg-background">
+                       <SelectItem key="no-patient" value="no-patient">
+                         Nenhum paciente
+                       </SelectItem>
+                       {patientsLoading ? (
+                         <SelectItem key="loading" value="loading" disabled>
+                           Carregando pacientes...
+                         </SelectItem>
+                       ) : patients.length > 0 ? (
+                         patients.map((patient) => (
+                           <SelectItem key={patient.id} value={patient.id}>
+                             {patient.name}
+                           </SelectItem>
+                         ))
+                       ) : (
+                         <SelectItem key="no-patients" value="no-patients" disabled>
+                           Nenhum paciente encontrado
+                         </SelectItem>
+                       )}
+                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
