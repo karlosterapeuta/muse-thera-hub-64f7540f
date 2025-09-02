@@ -215,25 +215,26 @@ export default function FinancialRecords() {
     setConfirmDialogOpen(true);
   };
   
-  const confirmDelete = () => {
-    if (recordToDelete) {
-      deleteRecord.mutate(recordToDelete, {
-        onSuccess: () => {
-          setConfirmDialogOpen(false);
-          setRecordToDelete(null);
-          toast({
-            title: "Registro excluído",
-            description: "O registro financeiro foi excluído com sucesso.",
-            variant: "default",
-          });
-        },
-        onError: (error) => {
-          toast({
-            title: "Erro ao excluir",
-            description: error.message || "Não foi possível excluir o registro.",
-            variant: "destructive",
-          });
-        }
+  const confirmDelete = async () => {
+    if (!recordToDelete) return;
+    
+    try {
+      // Close dialog immediately to prevent UI freeze
+      setConfirmDialogOpen(false);
+      setRecordToDelete(null);
+      
+      // Execute deletion
+      await deleteRecord.mutateAsync(recordToDelete);
+      
+      toast({
+        title: "Registro excluído",
+        description: "O registro financeiro foi excluído com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao excluir",
+        description: error.message || "Não foi possível excluir o registro.",
+        variant: "destructive",
       });
     }
   };
@@ -242,17 +243,25 @@ export default function FinancialRecords() {
     setClearAllDialogOpen(true);
   };
   
-  const confirmClearAll = () => {
-    clearAllRecords.mutate(undefined, {
-      onSuccess: () => {
-        setClearAllDialogOpen(false);
-        toast({
-          title: "Registros excluídos",
-          description: "Todos os registros financeiros foram excluídos com sucesso.",
-          variant: "default",
-        });
-      }
-    });
+  const confirmClearAll = async () => {
+    try {
+      // Close dialog immediately to prevent UI freeze
+      setClearAllDialogOpen(false);
+      
+      // Execute deletion
+      await clearAllRecords.mutateAsync();
+      
+      toast({
+        title: "Registros excluídos",
+        description: "Todos os registros financeiros foram excluídos com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao excluir",
+        description: error.message || "Não foi possível excluir os registros.",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleDateFilter = (start_date: string, end_date: string) => {
