@@ -3,7 +3,6 @@ import React from "react";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
-import { UpcomingSessions } from "./components/UpcomingSessions";
 import { useDashboardData } from "./hooks/useDashboardData";
 
 export default function Dashboard() {
@@ -31,11 +30,7 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
-          <UpcomingSessions 
-            upcomingSessions={data.upcomingSessions} 
-            isLoading={data.isLoading}
-          />
+        <div className="max-w-4xl mx-auto">
           <FinancialAgenda 
             financialSchedule={data.financialSchedule} 
             isLoading={data.isLoading}
