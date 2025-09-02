@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -778,6 +778,7 @@ export default function FinancialRecords() {
         <Dialog open={formOpen} onOpenChange={setFormOpen}>
           <DialogContent className={isTablet ? "sm:max-w-md" : "sm:max-w-lg"}>
             <DialogTitle className="sr-only">{selectedRecord ? "Editar Registro" : "Novo Registro"}</DialogTitle>
+            <DialogDescription className="sr-only">Formulário de registro financeiro</DialogDescription>
             <FinancialRecordForm 
               record={selectedRecord}
               onSuccess={handleFormSuccess}
@@ -806,6 +807,7 @@ export default function FinancialRecords() {
         <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
           <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
             <DialogTitle className="px-6 py-4">Nova Clínica</DialogTitle>
+            <DialogDescription className="sr-only">Preencha os dados da clínica</DialogDescription>
             <ScrollArea className="flex-1 overflow-y-auto">
               <ClinicForm 
                 onSuccess={handleClinicFormSuccess}
@@ -819,12 +821,12 @@ export default function FinancialRecords() {
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
             <DialogTitle>Confirmar exclusão</DialogTitle>
+            <DialogDescription>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</DialogDescription>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <TrashIcon className="h-5 w-5 text-destructive" />
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-2">
               <Button
                 variant="outline"
@@ -856,12 +858,12 @@ export default function FinancialRecords() {
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
             <DialogTitle>Confirmar exclusão total</DialogTitle>
+            <DialogDescription>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</DialogDescription>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <Trash2Icon className="h-5 w-5 text-destructive" />
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-2">
               <Button
                 variant="outline"
