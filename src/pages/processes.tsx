@@ -77,7 +77,7 @@ export default function Processes() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 lg:py-12">
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">

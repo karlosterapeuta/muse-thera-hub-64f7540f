@@ -317,7 +317,7 @@ export default function PatientsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-4 md:py-8 space-y-8 animate-fadeIn">
         {/* Hero Section */}
         <div className="text-center space-y-6 mb-12">

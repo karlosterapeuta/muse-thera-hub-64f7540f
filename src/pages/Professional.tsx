@@ -247,7 +247,7 @@ export default function Professional() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
           <p className="text-gray-600">Carregando perfil profissional...</p>
@@ -257,7 +257,7 @@ export default function Professional() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-background">
       <div className={`mx-auto p-4 space-y-8 animate-fade-in ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
         <ProfessionalHeader
           avatarUrl={avatarUrl}
