@@ -3,7 +3,6 @@ import React from "react";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
-import { EnhancedSessionChart } from "./components/EnhancedSessionChart";
 import { UpcomingSessions } from "./components/UpcomingSessions";
 import { useDashboardData } from "./hooks/useDashboardData";
 
@@ -31,27 +30,16 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-          {/* Left Column */}
-          <div className="space-y-4 sm:space-y-6">
-            <UpcomingSessions 
-              upcomingSessions={data.upcomingSessions} 
-              isLoading={data.isLoading}
-            />
-            <FinancialAgenda 
-              financialSchedule={data.financialSchedule} 
-              isLoading={data.isLoading}
-            />
-          </div>
-
-          {/* Right Column */}
-          <div className="w-full">
-            <EnhancedSessionChart 
-              sessionData={data.sessionData} 
-              isLoading={data.isLoading}
-            />
-          </div>
+        {/* Main Content */}
+        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+          <UpcomingSessions 
+            upcomingSessions={data.upcomingSessions} 
+            isLoading={data.isLoading}
+          />
+          <FinancialAgenda 
+            financialSchedule={data.financialSchedule} 
+            isLoading={data.isLoading}
+          />
         </div>
       </div>
     </div>
