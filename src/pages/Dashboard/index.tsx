@@ -11,7 +11,7 @@ export default function Dashboard() {
   const data = useDashboardData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30">
+    <div className="min-h-screen bg-background">
       {/* Modern Header */}
       <DashboardHeader
         totalPatients={data.totalPatients}
