@@ -33,6 +33,7 @@ import { TEAFilters } from "./components/TEAFilters";
 import { TEADetailDialog } from "./components/TEADetailDialog";
 import { TEAGuidanceTips } from "./components/TEAGuidanceTips";
 import { TEAQuickPersonalization } from "./components/TEAQuickPersonalization";
+import { TEAEmergencyKit } from "./components/TEAEmergencyKit";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
@@ -310,6 +311,7 @@ export default function ActivitiesPage() {
                onOpenPersonalization={() => console.log('Open TEA personalization')}
              />
              <TEAGuidanceTips />
+             <TEAEmergencyKit />
            </div>
          )}
 
