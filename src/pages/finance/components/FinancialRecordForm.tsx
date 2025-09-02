@@ -14,7 +14,7 @@ import { useClinics } from "../hooks/useClinics";
 import { useAddFinancialRecord, useUpdateFinancialRecord } from "../hooks/useFinancialData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { CalendarIcon } from "lucide-react";
@@ -106,12 +106,17 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     },
   });
 
-  const getWeekdayFromDate = (dateString?: string) => {
-    if (!dateString) return "segunda";
-    
-    const date = new Date(dateString);
+  const parseSessionDate = (input: string): Date => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+      return parse(input, "yyyy-MM-dd", new Date());
+    }
+    return new Date(input);
+  };
+
+  const getWeekdayFromDate = (input?: Date | string) => {
+    if (!input) return "segunda";
+    const date = input instanceof Date ? input : parseSessionDate(input);
     const day = date.getDay();
-    
     switch (day) {
       case 1: return "segunda";
       case 2: return "terca";
@@ -198,7 +203,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
       clinic_id: record?.clinic_id || "",
       patient_id: record?.patient_id || undefined,
       amount: record?.amount || 0,
-      session_date: record?.session_date ? new Date(record.session_date) : new Date(),
+      session_date: record?.session_date ? parseSessionDate(record.session_date) : new Date(),
       weekday: defaultWeekday,
       time: defaultTime,
       duration: defaultDuration,
@@ -218,7 +223,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
         clinic_id: record.clinic_id || "",
         patient_id: record.patient_id || undefined,
         amount: record.amount || 0,
-        session_date: record.session_date ? new Date(record.session_date) : new Date(),
+        session_date: record.session_date ? parseSessionDate(record.session_date) : new Date(),
         weekday: getWeekdayFromDate(record.session_date),
         time: getTimeFromDescription(record.description),
         duration: getDurationFromDescription(record.description),
@@ -242,7 +247,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const watchedDate = form.watch("session_date");
   useEffect(() => {
     if (watchedDate) {
-      const weekday = getWeekdayFromDate(watchedDate.toISOString());
+      const weekday = getWeekdayFromDate(watchedDate);
       form.setValue("weekday", weekday);
     }
   }, [watchedDate, form]);
@@ -260,7 +265,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          session_date: format(sessionDate, "yyyy-MM-dd"),
           description: enhancedDescription
         },
         {
@@ -275,7 +280,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          session_date: format(sessionDate, "yyyy-MM-dd"),
           description: enhancedDescription
         },
         {
