@@ -218,17 +218,18 @@ export default function FinancialRecords() {
   const confirmDelete = async () => {
     if (!recordToDelete) return;
     
-    setConfirmDialogOpen(false);
-    setRecordToDelete(null);
-    
     deleteRecord.mutate(recordToDelete, {
       onSuccess: () => {
+        // Close dialog and clean state only after successful deletion
+        setConfirmDialogOpen(false);
+        setRecordToDelete(null);
         toast({
           title: "Registro excluído",
           description: "O registro financeiro foi excluído com sucesso.",
         });
       },
       onError: (error: any) => {
+        // Keep dialog open on error so user can try again
         toast({
           title: "Erro ao excluir",
           description: error.message || "Não foi possível excluir o registro.",
@@ -839,6 +840,7 @@ export default function FinancialRecords() {
               <Button
                 variant="outline"
                 onClick={() => setConfirmDialogOpen(false)}
+                disabled={deleteRecord.isPending}
               >
                 Cancelar
               </Button>
