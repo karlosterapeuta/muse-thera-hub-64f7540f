@@ -15,6 +15,7 @@ import { useAddFinancialRecord, useUpdateFinancialRecord } from "../hooks/useFin
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parse } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { CalendarIcon } from "lucide-react";
@@ -443,6 +444,13 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                           date < new Date("1900-01-01")
                         }
                         initialFocus
+                        locale={ptBR}
+                        captionLayout="dropdown-buttons"
+                        fromYear={1900}
+                        toYear={new Date().getFullYear()}
+                        formatters={{
+                          formatMonthCaption: (date) => format(date, "MMMM yyyy", { locale: ptBR }),
+                        }}
                         className={cn("p-3 pointer-events-auto")}
                       />
                     </PopoverContent>
