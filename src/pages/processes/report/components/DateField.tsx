@@ -48,6 +48,9 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             captionLayout="dropdown-buttons"
             fromYear={1900}
             toYear={new Date().getFullYear()}
+            formatters={{
+              formatMonthCaption: (date) => format(date, "MMMM yyyy", { locale: ptBR }),
+            }}
             classNames={{
               caption_label: "hidden", // Hide the default month/year text
               dropdown_month: "w-full",
