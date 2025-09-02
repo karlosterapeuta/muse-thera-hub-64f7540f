@@ -17,7 +17,12 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
         const startDate = filter?.start_date || format(subDays(now, 30), "yyyy-MM-dd");
         const endDate = filter?.end_date || format(now, "yyyy-MM-dd");
         
-        // Fetch records within date range
+        // Get current user to filter by professional_id
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!user) throw new Error("Usuário não autenticado");
+        
+        // Fetch records within date range and by current user
         const { data: records, error: recordsError } = await supabase
           .from("financial_records")
           .select(`
@@ -27,6 +32,7 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
             clinic_id,
             clinics:clinic_id (name)
           `)
+          .eq("professional_id", user.id)
           .gte("session_date", startDate)
           .lte("session_date", endDate)
           .order("session_date");
