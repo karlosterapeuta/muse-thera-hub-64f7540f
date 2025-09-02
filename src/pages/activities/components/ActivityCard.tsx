@@ -34,15 +34,36 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   onViewDetails,
   categoryColor = '#3B82F6'
 }) => {
+  // Get the first image from resourceLinks
+  const mainImage = activity.resourceLinks?.find(link => link.type === 'image');
+
   return (
-    <Card className="h-full hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-lg line-clamp-2">{activity.title}</CardTitle>
-          <Badge className={getDifficultyColor(activity.difficulty)}>
+    <Card className="h-full hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+      {/* Image Preview */}
+      {mainImage && (
+        <div className="relative h-40 overflow-hidden">
+          <img
+            src={mainImage.url}
+            alt={mainImage.title}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          <Badge className={`absolute top-2 right-2 ${getDifficultyColor(activity.difficulty)}`}>
             {getDifficultyLabel(activity.difficulty)}
           </Badge>
         </div>
+      )}
+      
+      <CardHeader className={mainImage ? "pb-3" : "pb-3"}>
+        {!mainImage && (
+          <div className="flex items-start justify-between mb-2">
+            <Badge className={getDifficultyColor(activity.difficulty)}>
+              {getDifficultyLabel(activity.difficulty)}
+            </Badge>
+          </div>
+        )}
+        <CardTitle className="text-lg line-clamp-2">{activity.title}</CardTitle>
         <CardDescription className="line-clamp-3">
           {activity.description}
         </CardDescription>

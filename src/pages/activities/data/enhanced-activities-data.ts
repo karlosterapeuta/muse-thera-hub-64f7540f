@@ -44,6 +44,30 @@ export const enhancedActivitiesData: Record<string, Activity[]> = {
       ],
       resourceLinks: [
         {
+          type: "image",
+          title: "Setup da Atividade",
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+          description: "Disposição ideal dos instrumentos no espaço terapêutico"
+        },
+        {
+          type: "image",
+          title: "Posicionamento dos Participantes",
+          url: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
+          description: "Como organizar o grupo para otimizar a escuta e participação"
+        },
+        {
+          type: "image",
+          title: "Cartões de Símbolos Musicais",
+          url: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
+          description: "Exemplos de cartões visuais para apoiar a memorização"
+        },
+        {
+          type: "image",
+          title: "Sequência Visual - Exemplo",
+          url: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop",
+          description: "Demonstração visual de como executar uma sequência de 4 notas"
+        },
+        {
           type: "audio",
           title: "Sequências Exemplo - Nível Iniciante",
           url: "/assets/audio/sequencias-iniciante.mp3",
@@ -114,6 +138,32 @@ export const enhancedActivitiesData: Record<string, Activity[]> = {
         "Melhora na organização mental",
         "Expansão do vocabulário especializado",
         "Fortalecimento da atenção aos detalhes"
+      ],
+      resourceLinks: [
+        {
+          type: "image",
+          title: "Estação de Classificação",
+          url: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=800&h=600&fit=crop",
+          description: "Setup da mesa de trabalho com cartões de categorização"
+        },
+        {
+          type: "image",
+          title: "Cartões de Categorização",
+          url: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=600&fit=crop",
+          description: "Exemplos de cartões organizados por critérios"
+        },
+        {
+          type: "image",
+          title: "Biblioteca de Sons Visual",
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+          description: "Representação visual dos diferentes tipos de sons utilizados"
+        },
+        {
+          type: "image",
+          title: "Processo de Classificação",
+          url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
+          description: "Participante executando a atividade de classificação"
+        }
       ],
       sessionPlan: {
         warmUp: "Escuta livre de sons variados",

@@ -19,6 +19,7 @@ import { FacilitationGuidePanel } from './FacilitationGuidePanel';
 import { ExecutionTipsPanel } from './ExecutionTipsPanel';
 import { ActivityEvaluationSystem } from './ActivityEvaluationSystem';
 import { AssistedExecutionMode } from './AssistedExecutionMode';
+import { ImageGallery } from './ImageGallery';
 
 interface ActivityDetailDialogProps {
   activity: Activity | null;
@@ -131,12 +132,13 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
         <Separator />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 text-xs">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 text-xs">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="preparation">Preparação</TabsTrigger>
             <TabsTrigger value="detailed-instructions">Instruções</TabsTrigger>
             <TabsTrigger value="facilitation">Facilitação</TabsTrigger>
             <TabsTrigger value="execution-tips">Dicas</TabsTrigger>
+            <TabsTrigger value="images">Imagens</TabsTrigger>
             <TabsTrigger value="adaptations">Adaptações</TabsTrigger>
             <TabsTrigger value="resources">Recursos</TabsTrigger>
             <TabsTrigger value="multimedia">Multimídia</TabsTrigger>
@@ -389,6 +391,14 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
             )}
           </TabsContent>
 
+          <TabsContent value="images" className="mt-4 space-y-4">
+            <ImageGallery 
+              images={activity.resourceLinks || []}
+              title="Imagens Ilustrativas da Atividade"
+              showThumbnails={true}
+            />
+          </TabsContent>
+
           <TabsContent value="adaptations" className="mt-4 space-y-4">
             {activity.adaptations && activity.adaptations.length > 0 ? (
               <div>
@@ -491,6 +501,20 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                 </p>
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="assisted" className="mt-4 space-y-4">
+            <div className="text-center py-8">
+              <Play className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-muted-foreground">Modo de execução assistida não disponível para esta atividade.</p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="evaluation" className="mt-4 space-y-4">
+            <div className="text-center py-8">
+              <CheckCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-muted-foreground">Sistema de avaliação não disponível para esta atividade.</p>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
