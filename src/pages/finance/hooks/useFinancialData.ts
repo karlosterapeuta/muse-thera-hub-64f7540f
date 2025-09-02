@@ -132,7 +132,6 @@ export const useUpdateFinancialRecord = () => {
 };
 
 export const useDeleteFinancialRecord = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   
   return useMutation({
@@ -151,14 +150,7 @@ export const useDeleteFinancialRecord = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
       queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Erro ao excluir registro",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
+    }
   });
 };
 
