@@ -148,8 +148,13 @@ export const useDeleteFinancialRecord = () => {
       return id;
     },
     onSuccess: () => {
+      // Optimize query invalidation - only invalidate essential queries
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
-      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+      
+      // Invalidate dashboard separately with a slight delay to prevent race conditions
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+      }, 100);
     }
   });
 };
