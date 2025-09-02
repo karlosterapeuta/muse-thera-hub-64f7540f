@@ -25,15 +25,34 @@ import { SearchWithSuggestions } from "./components/SearchWithSuggestions";
 import { RecommendationEngine } from "./components/RecommendationEngine";
 import { QuickActions } from "./components/QuickActions";
 import { enhancedActivitiesData } from "./data/enhanced-activities-data";
+import { teaActivitiesData, TEAActivity } from "./data/tea-specific-activities";
 import { getCombinedActivities } from "./utils/activityMigrator";
 import { Activity, ActivityFilter } from "./types";
+import { TEAActivityCard } from "./components/TEAActivityCard";
+import { TEAFilters } from "./components/TEAFilters";
+import { TEADetailDialog } from "./components/TEADetailDialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function ActivitiesPage() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [categoriesDialogOpen, setCategoriesDialogOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | TEAActivity | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [isTeaMode, setIsTeaMode] = useState(false);
+  const [teaFilters, setTeaFilters] = useState({
+    supportLevels: [] as number[],
+    communicationStyle: [] as string[],
+    auditoryIntensity: [] as string[],
+    visualStimuli: [] as string[],
+    movementRequired: [] as string[],
+    attentionSpan: [5, 60] as [number, number],
+    predictabilityLevel: [] as string[],
+    hasTactileElements: null as boolean | null,
+    teaCategories: [] as string[],
+    sensoryFriendly: false
+  });
   const [filters, setFilters] = useState<ActivityFilter>({});
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
