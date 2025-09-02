@@ -255,33 +255,65 @@ export default function ActivitiesPage() {
               </p>
             </div>
             <div className="flex items-center justify-center lg:justify-end">
-              <div className="flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 p-3 sm:p-4 rounded-lg border shadow-sm">
-                <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <Label htmlFor="tea-mode" className="font-medium text-sm sm:text-base whitespace-nowrap">Modo TEA</Label>
-                <Switch
-                  id="tea-mode"
-                  checked={isTeaMode}
-                  onCheckedChange={(checked) => {
-                    setIsTeaMode(checked);
-                    // Reset filters when switching modes
-                    if (checked) {
-                      setFilters({});
-                    } else {
-                      setTeaFilters({
-                        supportLevels: [],
-                        communicationStyle: [],
-                        auditoryIntensity: [],
-                        visualStimuli: [],
-                        movementRequired: [],
-                        attentionSpan: [5, 60],
-                        predictabilityLevel: [],
-                        hasTactileElements: null,
-                        teaCategories: [],
-                        sensoryFriendly: false
-                      });
-                    }
-                  }}
-                />
+              <div className="relative">
+                {/* Efeito de brilho de fundo */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-xl blur opacity-30 animate-pulse"></div>
+                
+                <div className="relative flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-4 sm:p-5 rounded-xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                  <div className="relative">
+                    <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0 animate-pulse" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                    <div>
+                      <Label htmlFor="tea-mode" className="font-bold text-sm sm:text-base text-blue-800 cursor-pointer">
+                        Modo TEA
+                      </Label>
+                      <p className="text-xs text-blue-600/80 hidden sm:block">
+                        Atividades especializadas
+                      </p>
+                    </div>
+                    
+                    <div className="relative">
+                      <Switch
+                        id="tea-mode"
+                        checked={isTeaMode}
+                        onCheckedChange={(checked) => {
+                          setIsTeaMode(checked);
+                          // Reset filters when switching modes
+                          if (checked) {
+                            setFilters({});
+                          } else {
+                            setTeaFilters({
+                              supportLevels: [],
+                              communicationStyle: [],
+                              auditoryIntensity: [],
+                              visualStimuli: [],
+                              movementRequired: [],
+                              attentionSpan: [5, 60],
+                              predictabilityLevel: [],
+                              hasTactileElements: null,
+                              teaCategories: [],
+                              sensoryFriendly: false
+                            });
+                          }
+                        }}
+                        className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-purple-500 shadow-md"
+                      />
+                      {isTeaMode && (
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Badge "NOVO" adicional */}
+                  <div className="absolute -top-2 -right-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md animate-bounce">
+                      ✨ NOVO
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
