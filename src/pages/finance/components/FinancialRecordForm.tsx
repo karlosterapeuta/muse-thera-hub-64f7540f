@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
@@ -59,6 +63,7 @@ const formSchema = z.object({
   clinic_id: z.string().min(1, { message: "Clínica é obrigatória" }),
   patient_id: z.string().optional(),
   amount: z.number().min(0.01, { message: "Valor deve ser maior que zero" }),
+  session_date: z.date({ required_error: "Data é obrigatória" }),
   weekday: z.string().min(1, { message: "Dia da semana é obrigatório" }),
   time: z.string().min(1, { message: "Horário é obrigatório" }),
   duration: z.string().min(1, { message: "Duração é obrigatória" }),
@@ -193,6 +198,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
       clinic_id: record?.clinic_id || "",
       patient_id: record?.patient_id || undefined,
       amount: record?.amount || 0,
+      session_date: record?.session_date ? new Date(record.session_date) : new Date(),
       weekday: defaultWeekday,
       time: defaultTime,
       duration: defaultDuration,
@@ -212,6 +218,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
         clinic_id: record.clinic_id || "",
         patient_id: record.patient_id || undefined,
         amount: record.amount || 0,
+        session_date: record.session_date ? new Date(record.session_date) : new Date(),
         weekday: getWeekdayFromDate(record.session_date),
         time: getTimeFromDescription(record.description),
         duration: getDurationFromDescription(record.description),
@@ -222,6 +229,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
         clinic_id: "",
         patient_id: undefined,
         amount: 0,
+        session_date: new Date(),
         weekday: "segunda",
         time: "08:00",
         duration: "45",
@@ -231,7 +239,8 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   }, [record, form]);
   
   function onSubmit(values: FinancialRecordFormValues) {
-    const sessionDate = getCurrentWeekDateForWeekday(values.weekday);
+    // Use the selected date directly instead of calculating from weekday
+    const sessionDate = values.session_date;
     
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
@@ -242,7 +251,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm"),
+          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm:ss"),
           description: enhancedDescription
         },
         {
@@ -257,7 +266,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm"),
+          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm:ss"),
           description: enhancedDescription
         },
         {
@@ -266,6 +275,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               clinic_id: "",
               patient_id: undefined,
               amount: 0,
+              session_date: new Date(),
               weekday: "segunda",
               time: "08:00",
               duration: "45",
@@ -380,6 +390,49 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                       value={field.value || ''}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="session_date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Data do Agendamento</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "dd/MM/yyyy")
+                          ) : (
+                            <span>Selecione a data</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
