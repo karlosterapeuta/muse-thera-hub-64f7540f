@@ -217,42 +217,15 @@ export default function FinancialRecords() {
   
   const confirmDelete = async () => {
     if (!recordToDelete) return;
-    
-    // Close dialog immediately to prevent UI freeze
-    setConfirmDialogOpen(false);
-    const deletingId = recordToDelete;
-    setRecordToDelete(null);
-    
-    // Show immediate feedback
-    toast({
-      title: "Excluindo registro...",
-      description: "Aguarde enquanto o registro é excluído.",
-    });
-    
-    // Create timeout promise
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Operação expirou. Tente novamente.')), 10000);
-    });
-    
+
     try {
-      // Race between deletion and timeout
-      await Promise.race([
-        new Promise((resolve, reject) => {
-          deleteRecord.mutate(deletingId, {
-            onSuccess: () => {
-              toast({
-                title: "Registro excluído",
-                description: "O registro financeiro foi excluído com sucesso.",
-              });
-              resolve(true);
-            },
-            onError: (error: any) => {
-              reject(error);
-            }
-          });
-        }),
-        timeoutPromise
-      ]);
+      await deleteRecord.mutateAsync(recordToDelete);
+      toast({
+        title: "Registro excluído",
+        description: "O registro financeiro foi excluído com sucesso.",
+      });
+      setConfirmDialogOpen(false);
+      setRecordToDelete(null);
     } catch (error: any) {
       toast({
         title: "Erro ao excluir",
