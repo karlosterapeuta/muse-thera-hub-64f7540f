@@ -40,8 +40,6 @@ export const musicalGamesMenuItems = [
 ];
 
 export const toolsMenuItems = [
-  { icon: Piano, text: "🎹 Compositor Musical - em construção", path: "/music-composer", gradient: "from-purple-500 to-indigo-600" },
-  { icon: Grid3X3, text: "🎼 Musicograma - em construção", path: "/musicogram", gradient: "from-emerald-500 to-teal-600" },
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
 ];
 
