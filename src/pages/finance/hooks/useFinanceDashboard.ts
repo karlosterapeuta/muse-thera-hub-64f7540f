@@ -13,17 +13,13 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
     queryKey: ["finance-dashboard", filter],
     queryFn: async () => {
       try {
-        const now = new Date();
-        const startDate = filter?.start_date || format(subDays(now, 30), "yyyy-MM-dd");
-        const endDate = filter?.end_date || format(now, "yyyy-MM-dd");
-        
         // Get current user to filter by professional_id
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
         if (!user) throw new Error("Usuário não autenticado");
         
-        // Fetch records within date range and by current user
-        const { data: records, error: recordsError } = await supabase
+        // Build query for records by current user
+        let query = supabase
           .from("financial_records")
           .select(`
             id,
@@ -32,10 +28,18 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
             clinic_id,
             clinics:clinic_id (name)
           `)
-          .eq("professional_id", user.id)
-          .gte("session_date", startDate)
-          .lte("session_date", endDate)
-          .order("session_date");
+          .eq("professional_id", user.id);
+        
+        // Apply date filters only if provided
+        if (filter?.start_date) {
+          query = query.gte("session_date", filter.start_date);
+        }
+        if (filter?.end_date) {
+          query = query.lte("session_date", filter.end_date);
+        }
+        
+        // Fetch records
+        const { data: records, error: recordsError } = await query.order("session_date");
         
         if (recordsError) throw recordsError;
         if (!records.length) {
