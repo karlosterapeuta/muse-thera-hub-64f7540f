@@ -133,11 +133,13 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   };
 
   const getCurrentWeekDateForWeekday = (weekday: string): Date => {
+    // Use current date in local timezone
     const today = new Date();
     const todayDay = today.getDay();
     
     // Convert weekday string to day number (0 = Sunday, 1 = Monday, etc.)
     const weekdayMap: { [key: string]: number } = {
+      "domingo": 0,
       "segunda": 1,
       "terca": 2,
       "quarta": 3,
@@ -148,13 +150,22 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     
     const targetDay = weekdayMap[weekday];
     
+    if (targetDay === undefined) {
+      console.error(`Weekday not found: ${weekday}`);
+      return today;
+    }
+    
     // Calculate how many days to add/subtract to get to the target weekday in current week
     let daysToAdd = targetDay - todayDay;
     
-    // Always use the current week's date, even if it's in the past
+    // Create the target date by adding the calculated days
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysToAdd);
+    
+    // Set time to start of day in local timezone
     targetDate.setHours(0, 0, 0, 0);
+    
+    console.log(`Today: ${today.toDateString()} (${todayDay}), Target: ${weekday} (${targetDay}), Days to add: ${daysToAdd}, Result: ${targetDate.toDateString()}`);
     
     return targetDate;
   };
