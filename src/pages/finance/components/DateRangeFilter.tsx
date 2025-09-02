@@ -40,7 +40,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
   };
   
   return (
-    <Card>
+    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
       <CardContent className="pt-4">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -48,29 +48,33 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(7)}
+              className="bg-white/80 border-blue-200 text-blue-700 hover:bg-blue-100"
             >
-              Últimos 7 dias
+              🎵 Última Semana
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(30)}
+              className="bg-white/80 border-purple-200 text-purple-700 hover:bg-purple-100"
             >
-              Últimos 30 dias
+              🎼 Último Movimento (30 dias)
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(90)}
+              className="bg-white/80 border-green-200 text-green-700 hover:bg-green-100"
             >
-              Últimos 90 dias
+              🎹 Última Sinfonia (90 dias)
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={setMonthFilter}
+              className="bg-white/80 border-orange-200 text-orange-700 hover:bg-orange-100"
             >
-              Mês atual
+              🎶 Mês Atual
             </Button>
           </div>
           
@@ -93,7 +97,9 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
-            <Button onClick={applyFilter}>Filtrar</Button>
+            <Button onClick={applyFilter} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
+              🎯 Filtrar Harmonia
+            </Button>
           </div>
         </div>
       </CardContent>
