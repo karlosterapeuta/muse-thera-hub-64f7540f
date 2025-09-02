@@ -47,6 +47,13 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             alt={mainImage.title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             loading="lazy"
+            onError={(e) => {
+              console.log('Erro ao carregar imagem:', mainImage.url);
+              e.currentTarget.style.display = 'none';
+            }}
+            onLoad={() => {
+              console.log('Imagem carregada com sucesso:', mainImage.url);
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <Badge className={`absolute top-2 right-2 ${getDifficultyColor(activity.difficulty)}`}>
