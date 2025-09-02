@@ -132,6 +132,37 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     return durationMatch ? durationMatch[1] : "45";
   };
 
+  const getNextDateForWeekday = (weekday: string): Date => {
+    const today = new Date();
+    const todayDay = today.getDay();
+    
+    // Convert weekday string to day number (0 = Sunday, 1 = Monday, etc.)
+    const weekdayMap: { [key: string]: number } = {
+      "segunda": 1,
+      "terca": 2,
+      "quarta": 3,
+      "quinta": 4,
+      "sexta": 5,
+      "sabado": 6
+    };
+    
+    const targetDay = weekdayMap[weekday];
+    
+    // Calculate how many days to add to get to the target weekday
+    let daysToAdd = targetDay - todayDay;
+    
+    // If the target day has already passed this week, go to next week
+    if (daysToAdd < 0) {
+      daysToAdd += 7;
+    }
+    
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + daysToAdd);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    return targetDate;
+  };
+
   const defaultWeekday = record?.session_date 
     ? getWeekdayFromDate(record.session_date) 
     : "segunda";
@@ -188,8 +219,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   }, [record, form]);
   
   function onSubmit(values: FinancialRecordFormValues) {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    const sessionDate = getNextDateForWeekday(values.weekday);
     
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
@@ -200,7 +230,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(now, "yyyy-MM-dd'T'HH:mm"),
+          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm"),
           description: enhancedDescription
         },
         {
@@ -215,7 +245,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           clinic_id: values.clinic_id,
           patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
           amount: values.amount,
-          session_date: format(now, "yyyy-MM-dd'T'HH:mm"),
+          session_date: format(sessionDate, "yyyy-MM-dd'T'HH:mm"),
           description: enhancedDescription
         },
         {
