@@ -86,7 +86,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "parabens-bell": {
     id: "parabens-bell", name: "Parabéns a Você", bpm: 90, timeSignature: "4/4",
-    totalDuration: 25000, difficulty: "Fácil", loops: 1,
+    totalDuration: 50000, difficulty: "Fácil", loops: 2,
     notes: [
       // "Parabéns para você" - sol sol la sol do si
       createNote("G", 4, 500, 0, "bell"),     // Pa-
@@ -333,7 +333,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
   // === XILOFONE - 6 músicas completas ===
   "happy-birthday-xylophone": {
     id: "happy-birthday-xylophone", name: "Parabéns para Você", bpm: 90, timeSignature: "3/4",
-    totalDuration: 22000, difficulty: "Fácil", loops: 1,
+    totalDuration: 44000, difficulty: "Fácil", loops: 2,
     notes: [
       // "Parabéns para você" - sol sol la sol do si
       createNote("G", 5, 500, 0, "xylophone"),    // Pa-
