@@ -390,49 +390,55 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Badge>
       </div>
 
-      <div className={`absolute top-2 right-2 z-10 flex gap-1 ${
-        isMobile ? 'top-1 right-1 flex-col' : 'top-4 right-4 flex-row'
-      }`}>
-        <Button 
-          onClick={() => {
-            console.log('🟡 Pause button clicked!');
-            pauseGame();
-          }}
-          variant="secondary" 
-          size={isMobile ? "sm" : "sm"}
-          className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
-            isPaused ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'
-          }`}
-        >
-          {isPaused ? '▶️' : '⏸️'} {isMobile ? '' : isPaused ? 'Retomar' : 'Pausar'}
-        </Button>
-        
-        <Button 
-          onClick={() => {
-            console.log('🔵 Repeat button clicked!');
-            toggleRepeat();
-          }}
-          variant="secondary" 
-          size={isMobile ? "sm" : "sm"}
-          className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
-            isRepeating ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'
-          }`}
-        >
-          🔁 {isMobile ? '' : isRepeating ? 'Repetir: ON' : 'Repetir: OFF'}
-        </Button>
-        
-        <Button 
-          onClick={() => {
-            console.log('🔴 Stop button clicked!');
-            stopGame();
-          }} 
-          variant="secondary" 
-          size={isMobile ? "sm" : "sm"}
-          className={`${isMobile ? 'text-xs px-2 py-1' : ''} bg-red-600 hover:bg-red-700`}
-        >
-          ⏹️ {isMobile ? '' : 'Parar'}
-        </Button>
-      </div>
+      {/* Control buttons - simplified and fixed */}
+      {isPlaying && (
+        <div className={`absolute z-50 flex gap-2 ${
+          isMobile 
+            ? 'top-2 right-2 flex-col' 
+            : 'top-4 right-4 flex-row'
+        }`} style={{ pointerEvents: 'auto' }}>
+          <button 
+            onClick={() => {
+              console.log('🟡 PAUSE CLICKED!');
+              pauseGame();
+            }}
+            className={`px-3 py-1 rounded text-white font-bold ${
+              isPaused 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-yellow-600 hover:bg-yellow-700'
+            }`}
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
+          >
+            {isPaused ? '▶️ Play' : '⏸️ Pause'}
+          </button>
+          
+          <button 
+            onClick={() => {
+              console.log('🔵 REPEAT CLICKED!');
+              toggleRepeat();
+            }}
+            className={`px-3 py-1 rounded text-white font-bold ${
+              isRepeating 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gray-600 hover:bg-gray-700'
+            }`}
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
+          >
+            🔁 {isRepeating ? 'ON' : 'OFF'}
+          </button>
+          
+          <button 
+            onClick={() => {
+              console.log('🔴 STOP CLICKED!');
+              stopGame();
+            }}
+            className="px-3 py-1 rounded text-white font-bold bg-red-600 hover:bg-red-700"
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
+          >
+            ⏹️ Stop
+          </button>
+        </div>
+      )}
 
       {/* Main game area with responsive grid */}
       <div className={`relative h-full grid grid-cols-7 ${
