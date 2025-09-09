@@ -537,8 +537,8 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  "boi-cara-preta-keyboard": {
-    id: "boi-cara-preta-keyboard", name: "Boi da Cara Preta", bpm: 100, timeSignature: "4/4",
+  "boi-da-cara-preta-keyboard": {
+    id: "boi-da-cara-preta-keyboard", name: "Boi da Cara Preta", bpm: 100, timeSignature: "4/4",
     totalDuration: 12000, difficulty: "Fácil", loops: 2,
     notes: [
       // Padrão: dó dó dó mi mi re do re re | re re re mi fa fa fa fa mi mi re re do do
