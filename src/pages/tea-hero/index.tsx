@@ -34,7 +34,7 @@ const TeaHero = () => {
       { id: "twinkle-bell", title: "Brilha, Brilha Estrelinha", hasSequence: true },
       { id: "parabens-bell", title: "Parabéns a Você", hasSequence: true },
       { id: "borboletinha-bell", title: "Borboletinha", hasSequence: true },
-      { id: "galinha-pintadinha-bell", title: "Galinha Pintadinha", hasSequence: true },
+      
       { id: "atirei-pau-bell", title: "Atirei o Pau no Gato", hasSequence: true },
       { id: "escravos-jó-bell", title: "Escravos de Jó", hasSequence: true },
     ],

@@ -183,55 +183,6 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  "galinha-pintadinha-bell": {
-    id: "galinha-pintadinha-bell", name: "Galinha Pintadinha", bpm: 140, timeSignature: "4/4",
-    totalDuration: 18000, difficulty: "Fácil", loops: 1,
-    notes: [
-      // "Galinha pintadinha e o galo carijó"
-      createNote("E", 4, 300, 0, "bell"),     // Ga-
-      createNote("E", 4, 300, 430, "bell"),   // -li-
-      createNote("E", 4, 300, 860, "bell"),   // -nha
-      createNote("G", 4, 300, 1290, "bell"),  // pin-
-      createNote("G", 4, 300, 1720, "bell"),  // -ta-
-      createNote("G", 4, 300, 2150, "bell"),  // -di-
-      createNote("E", 4, 600, 2580, "bell"),  // -nha
-      
-      createNote("D", 4, 300, 3400, "bell"),  // e
-      createNote("D", 4, 300, 3830, "bell"),  // o
-      createNote("F", 4, 300, 4260, "bell"),  // ga-
-      createNote("F", 4, 300, 4690, "bell"),  // -lo
-      createNote("A", 4, 300, 5120, "bell"),  // ca-
-      createNote("A", 4, 300, 5550, "bell"),  // -ri-
-      createNote("G", 4, 800, 5980, "bell"),  // -jó
-      
-      // "A galinha usa saia e o galo paletó"
-      createNote("E", 4, 300, 7200, "bell"),  // A
-      createNote("E", 4, 300, 7630, "bell"),  // ga-
-      createNote("G", 4, 300, 8060, "bell"),  // -li-
-      createNote("G", 4, 300, 8490, "bell"),  // -nha
-      createNote("A", 4, 300, 8920, "bell"),  // u-
-      createNote("A", 4, 300, 9350, "bell"),  // -sa
-      createNote("G", 4, 600, 9780, "bell"),  // sai-a
-      
-      createNote("F", 4, 300, 10700, "bell"), // e
-      createNote("F", 4, 300, 11130, "bell"), // o
-      createNote("E", 4, 300, 11560, "bell"), // ga-
-      createNote("D", 4, 300, 11990, "bell"), // -lo
-      createNote("C", 4, 300, 12420, "bell"), // pa-
-      createNote("D", 4, 300, 12850, "bell"), // -le-
-      createNote("E", 4, 600, 13280, "bell"), // -tó
-      
-      // Refrão: "Pó pó pó pó pó pó pó pó"
-      createNote("C", 4, 200, 14200, "bell"), // Pó
-      createNote("D", 4, 200, 14400, "bell"), // pó
-      createNote("E", 4, 200, 14600, "bell"), // pó
-      createNote("F", 4, 200, 14800, "bell"), // pó
-      createNote("G", 4, 200, 15000, "bell"), // pó
-      createNote("A", 4, 200, 15200, "bell"), // pó
-      createNote("G", 4, 200, 15400, "bell"), // pó
-      createNote("E", 4, 800, 15600, "bell")  // pó (final)
-    ]
-  },
 
   "atirei-pau-bell": {
     id: "atirei-pau-bell", name: "Atirei o Pau no Gato", bpm: 120, timeSignature: "4/4",

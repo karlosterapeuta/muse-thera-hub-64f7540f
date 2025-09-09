@@ -75,17 +75,6 @@ export const musicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  "galinha-pintadinha-bell": {
-    id: "galinha-pintadinha-bell", name: "Galinha Pintadinha", bpm: 130, timeSignature: "4/4",
-    totalDuration: 10000, difficulty: "Fácil", loops: 2,
-    notes: [
-      createNote("E", 4, 300, 0, "bell"), createNote("E", 4, 300, 460, "bell"),
-      createNote("E", 4, 300, 920, "bell"), createNote("E", 4, 300, 1380, "bell"),
-      createNote("G", 4, 300, 1840, "bell"), createNote("G", 4, 300, 2300, "bell"),
-      createNote("G", 4, 300, 2760, "bell"), createNote("G", 4, 300, 3220, "bell"),
-      createNote("E", 4, 600, 3680, "bell")
-    ]
-  },
 
   "atirei-pau-bell": {
     id: "atirei-pau-bell", name: "Atirei o Pau no Gato", bpm: 100, timeSignature: "4/4",
