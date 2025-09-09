@@ -140,7 +140,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 500, 0, "bell"),     // Bor-
       createNote("A", 4, 500, 500, "bell"),   // -bo-
       createNote("G", 4, 500, 1000, "bell"),  // -le-
-      createNote("C", 4, 500, 1500, "bell"),  // -ti-
+      createNote("C8", 4, 500, 1500, "bell"),  // -ti-
       createNote("G", 4, 500, 2000, "bell"),  // -nha
       createNote("A", 4, 500, 2500, "bell"),  // tá
       createNote("G", 4, 500, 3000, "bell"),  // na
@@ -154,7 +154,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 500, 6500, "bell"),  // -co-
       createNote("A", 4, 500, 7000, "bell"),  // -la-
       createNote("B", 4, 500, 7500, "bell"),  // -te
-      createNote("C", 4, 800, 8000, "bell"),  // pa-ra a ma-dri-nha
+      createNote("C8", 4, 800, 8000, "bell"),  // pa-ra a ma-dri-nha
       
       // "Poti, poti, perna de pau" - Rítmico e tradicional
       createNote("E", 4, 400, 9000, "bell"),  // Po-
@@ -164,7 +164,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("F", 4, 500, 10600, "bell"), // per-
       createNote("E", 4, 500, 11100, "bell"), // -na
       createNote("D", 4, 500, 11600, "bell"), // de
-      createNote("C", 4, 800, 12100, "bell"), // pau
+      createNote("C8", 4, 800, 12100, "bell"), // pau
       
       // "Olho de vidro e nariz de pica-pau" - Finalização tradicional
       createNote("G", 4, 300, 13100, "bell"), // O-
@@ -179,7 +179,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("F", 4, 300, 15800, "bell"), // pi-
       createNote("E", 4, 300, 16100, "bell"), // -ca-
       createNote("D", 4, 300, 16400, "bell"), // -pau
-      createNote("C", 4, 600, 16700, "bell")  // (final)
+      createNote("C8", 4, 600, 16700, "bell")  // (final)
     ]
   },
 
