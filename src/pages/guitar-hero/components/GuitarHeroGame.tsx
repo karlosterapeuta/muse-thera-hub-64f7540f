@@ -149,36 +149,46 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       return generateRandomNotes();
     }
 
-    console.log(`🎼 GENERATING AUTHENTIC: ${sequence.name} - ${sequence.notes.length} notes`);
+    console.log(`🎼 GENERATING AUTHENTIC: ${sequence.name} - ${sequence.notes.length} notes - ${sequence.loops} loops`);
     
     const gameNotes: Note[] = [];
     let currentTime = 2000;
 
-    sequence.notes.forEach((seqNote, index) => {
-      const laneIndex = NOTE_TO_LANE_MAP[seqNote.note];
-      if (laneIndex === undefined) {
-        console.warn(`⚠️ Note ${seqNote.note} not found in lane mapping`);
-        return;
-      }
-
-      const laneConfig = getLaneConfig(instrumentType, laneIndex);
+    // Repetir a sequência baseada no campo loops
+    for (let loop = 0; loop < (sequence.loops || 1); loop++) {
+      const loopStartTime = currentTime;
       
-      console.log(`🎵 SYNC CHECK: ${seqNote.note} → Lane ${laneIndex} → ${laneConfig.frequency}Hz (${laneConfig.color})`);
+      sequence.notes.forEach((seqNote, index) => {
+        const laneIndex = NOTE_TO_LANE_MAP[seqNote.note];
+        if (laneIndex === undefined) {
+          console.warn(`⚠️ Note ${seqNote.note} not found in lane mapping`);
+          return;
+        }
 
-      gameNotes.push({
-        id: `${selectedSong.id}-${index}`,
-        lane: laneIndex,
-        time: currentTime,
-        frequency: laneConfig.frequency,
-        color: laneConfig.color,
-        name: laneConfig.name,
-        note: seqNote.note
+        const laneConfig = getLaneConfig(instrumentType, laneIndex);
+        
+        console.log(`🎵 LOOP ${loop + 1} - SYNC CHECK: ${seqNote.note} → Lane ${laneIndex} → ${laneConfig.frequency}Hz (${laneConfig.color})`);
+
+        gameNotes.push({
+          id: `${selectedSong.id}-loop${loop}-${index}`,
+          lane: laneIndex,
+          time: currentTime,
+          frequency: laneConfig.frequency,
+          color: laneConfig.color,
+          name: laneConfig.name,
+          note: seqNote.note
+        });
+
+        currentTime += (seqNote.duration || 800) / gameSpeed;
       });
+      
+      // Adicionar pausa entre loops se houver mais de um loop
+      if (loop < (sequence.loops || 1) - 1) {
+        currentTime += 1000; // 1 segundo de pausa entre repetições
+      }
+    }
 
-      currentTime += (seqNote.duration || 800) / gameSpeed;
-    });
-
-    console.log(`✅ AUTHENTIC NOTES GENERATED: ${gameNotes.length} notes perfectly synchronized`);
+    console.log(`✅ AUTHENTIC NOTES WITH LOOPS: ${gameNotes.length} notes across ${sequence.loops} loops`);
     return gameNotes;
   }, [selectedSong, instrumentType, gameSpeed]);
 
