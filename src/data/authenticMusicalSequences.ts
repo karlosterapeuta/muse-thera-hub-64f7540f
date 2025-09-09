@@ -134,7 +134,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "borboletinha-bell": {
     id: "borboletinha-bell", name: "Borboletinha", bpm: 120, timeSignature: "4/4",
-    totalDuration: 16000, difficulty: "Fácil", loops: 1,
+    totalDuration: 32000, difficulty: "Fácil", loops: 2,
     notes: [
       // "Borboletinha tá na cozinha" - Melodia tradicional brasileira corrigida: G-A-G-C
       createNote("G", 4, 500, 0, "bell"),     // Bor-
