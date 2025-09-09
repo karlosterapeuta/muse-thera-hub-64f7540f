@@ -88,36 +88,38 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     id: "parabens-bell", name: "Parabéns a Você", bpm: 90, timeSignature: "4/4",
     totalDuration: 25000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Parabéns para você"
-      createNote("C", 4, 500, 0, "bell"),     // Pa-
-      createNote("C", 4, 500, 667, "bell"),   // -ra-
-      createNote("D", 4, 1000, 1334, "bell"), // -béns
-      createNote("C", 4, 1000, 2668, "bell"), // pa-
-      createNote("F", 4, 1000, 4002, "bell"), // -ra
-      createNote("E", 4, 2000, 5336, "bell"), // vo-cê
+      // "Parabéns para você" - sol sol la sol do si
+      createNote("G", 4, 500, 0, "bell"),     // Pa-
+      createNote("G", 4, 500, 500, "bell"),   // -ra-
+      createNote("A", 4, 800, 1000, "bell"),  // -béns
+      createNote("G", 4, 800, 1800, "bell"),  // pa-
+      createNote("C", 4, 800, 2600, "bell"),  // -ra
+      createNote("B", 4, 1600, 3400, "bell"), // vo-cê
       
-      // "Parabéns para você" 
-      createNote("C", 4, 500, 7670, "bell"),  // Pa-
-      createNote("C", 4, 500, 8337, "bell"),  // -ra-
-      createNote("D", 4, 1000, 9004, "bell"), // -béns
-      createNote("C", 4, 1000, 10338, "bell"), // pa-
-      createNote("G", 4, 1000, 11672, "bell"), // -ra
-      createNote("F", 4, 2000, 13006, "bell"), // vo-cê
+      // "Parabéns para você" - sol sol la sol re do
+      createNote("G", 4, 500, 5200, "bell"),  // Pa-
+      createNote("G", 4, 500, 5700, "bell"),  // -ra-
+      createNote("A", 4, 800, 6200, "bell"),  // -béns
+      createNote("G", 4, 800, 7000, "bell"),  // pa-
+      createNote("D", 4, 800, 7800, "bell"),  // -ra
+      createNote("C", 4, 1600, 8600, "bell"), // vo-cê
       
-      // "Parabéns querido/a [nome]"
-      createNote("C", 4, 500, 15340, "bell"), // Pa-
-      createNote("C", 4, 500, 16007, "bell"), // -ra-
-      createNote("A", 4, 1000, 16674, "bell"), // -béns
-      createNote("F", 4, 1000, 18008, "bell"), // que-
-      createNote("E", 4, 1000, 19342, "bell"), // -ri-
-      createNote("D", 4, 1000, 20676, "bell"), // -do/a
+      // "Parabéns querido/a" - sol sol sol mi do si la
+      createNote("G", 4, 500, 10400, "bell"), // Pa-
+      createNote("G", 4, 500, 10900, "bell"), // -ra-
+      createNote("G", 4, 800, 11400, "bell"), // -béns
+      createNote("E", 4, 800, 12200, "bell"), // que-
+      createNote("C", 4, 800, 13000, "bell"), // -ri-
+      createNote("B", 4, 800, 13800, "bell"), // -do/a
+      createNote("A", 4, 1600, 14600, "bell"), // [nome]
       
-      // "Muitas felicidades"
-      createNote("B", 4, 500, 22010, "bell"), // Mui-
-      createNote("B", 4, 500, 22677, "bell"), // -tas
-      createNote("A", 4, 1000, 23344, "bell"), // fe-
-      createNote("G", 4, 1000, 24678, "bell"), // -li-
-      createNote("C", 4, 2000, 26012, "bell")  // -ci-da-des
+      // "Muitas felicidades" - fa fa mi do re do
+      createNote("F", 4, 500, 16400, "bell"), // Mui-
+      createNote("F", 4, 500, 16900, "bell"), // -tas
+      createNote("E", 4, 800, 17400, "bell"), // fe-
+      createNote("C", 4, 800, 18200, "bell"), // -li-
+      createNote("D", 4, 800, 19000, "bell"), // -ci-
+      createNote("C", 4, 1600, 19800, "bell") // -da-des
     ]
   },
 
@@ -331,32 +333,40 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
   // === XILOFONE - 6 músicas completas ===
   "happy-birthday-xylophone": {
     id: "happy-birthday-xylophone", name: "Parabéns para Você", bpm: 90, timeSignature: "3/4",
-    totalDuration: 20000, difficulty: "Fácil", loops: 1,
+    totalDuration: 22000, difficulty: "Fácil", loops: 1,
     notes: [
-      // "Parabéns para você"
-      createNote("C", 5, 500, 0, "xylophone"),    // Pa-
-      createNote("C", 5, 500, 667, "xylophone"),  // -ra-
-      createNote("D", 5, 1000, 1334, "xylophone"), // -béns
-      createNote("C", 5, 1000, 2668, "xylophone"), // pa-
-      createNote("F", 5, 1000, 4002, "xylophone"), // -ra
-      createNote("E", 5, 2000, 5336, "xylophone"), // vo-cê
+      // "Parabéns para você" - sol sol la sol do si
+      createNote("G", 5, 500, 0, "xylophone"),    // Pa-
+      createNote("G", 5, 500, 500, "xylophone"),  // -ra-
+      createNote("A", 5, 800, 1000, "xylophone"), // -béns
+      createNote("G", 5, 800, 1800, "xylophone"), // pa-
+      createNote("C", 5, 800, 2600, "xylophone"), // -ra
+      createNote("B", 5, 1600, 3400, "xylophone"), // vo-cê
       
-      // "Parabéns para você"
-      createNote("C", 5, 500, 7670, "xylophone"),  // Pa-
-      createNote("C", 5, 500, 8337, "xylophone"),  // -ra-
-      createNote("D", 5, 1000, 9004, "xylophone"), // -béns
-      createNote("C", 5, 1000, 10338, "xylophone"), // pa-
-      createNote("G", 5, 1000, 11672, "xylophone"), // -ra
-      createNote("F", 5, 2000, 13006, "xylophone"), // vo-cê
+      // "Parabéns para você" - sol sol la sol re do
+      createNote("G", 5, 500, 5200, "xylophone"), // Pa-
+      createNote("G", 5, 500, 5700, "xylophone"), // -ra-
+      createNote("A", 5, 800, 6200, "xylophone"), // -béns
+      createNote("G", 5, 800, 7000, "xylophone"), // pa-
+      createNote("D", 5, 800, 7800, "xylophone"), // -ra
+      createNote("C", 5, 1600, 8600, "xylophone"), // vo-cê
       
-      // "Parabéns, parabéns"
-      createNote("C", 5, 500, 15340, "xylophone"), // Pa-
-      createNote("C", 5, 500, 16007, "xylophone"), // -ra-
-      createNote("C", 6, 1000, 16674, "xylophone"), // -béns
-      createNote("A", 5, 1000, 18008, "xylophone"), // pa-
-      createNote("F", 5, 1000, 19342, "xylophone"), // -ra-
-      createNote("E", 5, 1000, 20676, "xylophone"), // -béns
-      createNote("D", 5, 2000, 22010, "xylophone")  // ...
+      // "Parabéns querido/a" - sol sol sol mi do si la
+      createNote("G", 5, 500, 10400, "xylophone"), // Pa-
+      createNote("G", 5, 500, 10900, "xylophone"), // -ra-
+      createNote("G", 5, 800, 11400, "xylophone"), // -béns
+      createNote("E", 5, 800, 12200, "xylophone"), // que-
+      createNote("C", 5, 800, 13000, "xylophone"), // -ri-
+      createNote("B", 5, 800, 13800, "xylophone"), // -do/a
+      createNote("A", 5, 1600, 14600, "xylophone"), // [nome]
+      
+      // "Muitas felicidades" - fa fa mi do re do
+      createNote("F", 5, 500, 16400, "xylophone"), // Mui-
+      createNote("F", 5, 500, 16900, "xylophone"), // -tas
+      createNote("E", 5, 800, 17400, "xylophone"), // fe-
+      createNote("C", 5, 800, 18200, "xylophone"), // -li-
+      createNote("D", 5, 800, 19000, "xylophone"), // -ci-
+      createNote("C", 5, 1600, 19800, "xylophone")  // -da-des
     ]
   },
 
