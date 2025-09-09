@@ -102,7 +102,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   gameSpeed = 1.0
 }) => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [pressedLanes, setPressedLanes] = useState<boolean[]>(new Array(7).fill(false));
+  const [pressedLanes, setPressedLanes] = useState<boolean[]>(new Array(8).fill(false));
   const [score, setScore] = useState(0);
   const [gameTime, setGameTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -187,7 +187,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     const totalNotes = 20;
     
     for (let i = 0; i < totalNotes; i++) {
-      const laneIndex = Math.floor(Math.random() * 7);
+      const laneIndex = Math.floor(Math.random() * 8);
       const laneConfig = getLaneConfig(instrumentType, laneIndex);
       
       notes.push({
@@ -207,7 +207,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const laneIndex = parseInt(event.key) - 1;
-    if (laneIndex >= 0 && laneIndex < 7) {
+    if (laneIndex >= 0 && laneIndex < 8) {
       const laneConfig = getLaneConfig(instrumentType, laneIndex);
       
       console.log(`🎹 KEY PRESS: ${event.key} → Lane ${laneIndex} → ${laneConfig.frequency}Hz`);
@@ -340,7 +340,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
               </Badge>
             )}
             <p className={`text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-              Use as teclas 1-7 para tocar as notas
+              Use as teclas 1-8 para tocar as notas
             </p>
             <p className={`text-yellow-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
               Velocidade: {gameSpeed}x
@@ -411,7 +411,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
       )}
 
       {/* Main game area with responsive grid */}
-      <div className={`relative h-full grid grid-cols-7 ${
+      <div className={`relative h-full grid grid-cols-8 ${
         isMobile ? 'gap-0.5 p-1' : isTablet ? 'gap-1 p-2' : 'gap-1 p-4'
       }`}>
         {laneConfigs.map((laneConfig, index) => (
