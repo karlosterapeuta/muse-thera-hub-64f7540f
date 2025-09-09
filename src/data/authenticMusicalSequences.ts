@@ -407,7 +407,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       // Primeira linha: sol do dó sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"),
       createNote("C", 5, 400, 400, "xylophone"),
-      createNote("C", 5, 400, 800, "xylophone"),
+      createNote("C", 6, 400, 800, "xylophone"), // Dó8
       createNote("G", 5, 400, 1200, "xylophone"),
       createNote("A", 5, 400, 1600, "xylophone"),
       createNote("G", 5, 400, 2000, "xylophone"),
@@ -416,7 +416,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       // Segunda linha: sol do dó sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"),
       createNote("C", 5, 400, 3600, "xylophone"),
-      createNote("C", 5, 400, 4000, "xylophone"),
+      createNote("C", 6, 400, 4000, "xylophone"), // Dó8
       createNote("G", 5, 400, 4400, "xylophone"),
       createNote("A", 5, 400, 4800, "xylophone"),
       createNote("G", 5, 400, 5200, "xylophone"),

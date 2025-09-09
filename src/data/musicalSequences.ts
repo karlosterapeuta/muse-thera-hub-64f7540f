@@ -119,13 +119,13 @@ export const musicalSequences: Record<string, MusicalSequence> = {
     notes: [
       // Primeira linha: sol do dó sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"), createNote("C", 5, 400, 400, "xylophone"),
-      createNote("C", 5, 400, 800, "xylophone"), createNote("G", 5, 400, 1200, "xylophone"),
+      createNote("C", 6, 400, 800, "xylophone"), createNote("G", 5, 400, 1200, "xylophone"),
       createNote("A", 5, 400, 1600, "xylophone"), createNote("G", 5, 400, 2000, "xylophone"),
       createNote("E", 5, 800, 2400, "xylophone"),
       
       // Segunda linha: sol do dó sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"), createNote("C", 5, 400, 3600, "xylophone"),
-      createNote("C", 5, 400, 4000, "xylophone"), createNote("G", 5, 400, 4400, "xylophone"),
+      createNote("C", 6, 400, 4000, "xylophone"), createNote("G", 5, 400, 4400, "xylophone"),
       createNote("A", 5, 400, 4800, "xylophone"), createNote("G", 5, 400, 5200, "xylophone"),
       createNote("F", 5, 800, 5600, "xylophone"),
       
