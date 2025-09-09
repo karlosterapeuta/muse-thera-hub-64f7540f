@@ -390,22 +390,22 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Badge>
       </div>
 
-      {/* Control buttons - only Stop button */}
+      {/* Control buttons - Stop button repositioned */}
       {isPlaying && (
         <div className={`absolute z-50 ${
           isMobile 
-            ? 'top-2 right-2' 
-            : 'top-4 right-4'
+            ? 'top-16 right-2' 
+            : 'top-20 right-4'
         }`} style={{ pointerEvents: 'auto' }}>
           <button 
             onClick={() => {
               console.log('🔴 STOP CLICKED!');
               stopGame();
             }}
-            className="px-3 py-1 rounded text-white font-bold bg-red-600 hover:bg-red-700"
+            className="px-4 py-2 rounded text-white font-bold bg-red-600 hover:bg-red-700 shadow-lg"
             style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
-            ⏹️ Stop
+            ⏹️ Parar Jogo
           </button>
         </div>
       )}
