@@ -93,7 +93,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 500, 500, "bell"),   // -ra-
       createNote("A", 4, 800, 1000, "bell"),  // -béns
       createNote("G", 4, 800, 1800, "bell"),  // pa-
-      createNote("C", 4, 800, 2600, "bell"),  // -ra
+      createNote("C2", 4, 800, 2600, "bell"),  // -ra (Dó uma oitava acima)
       createNote("B", 4, 1600, 3400, "bell"), // vo-cê
       
       // "Parabéns para você" - sol sol la sol re do
@@ -109,7 +109,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 500, 10900, "bell"), // -ra-
       createNote("G", 4, 800, 11400, "bell"), // -béns
       createNote("E", 4, 800, 12200, "bell"), // que-
-      createNote("C", 4, 800, 13000, "bell"), // -ri-
+      createNote("C2", 4, 800, 13000, "bell"), // -ri- (Dó uma oitava acima)
       createNote("B", 4, 800, 13800, "bell"), // -do/a
       createNote("A", 4, 1600, 14600, "bell"), // [nome]
       
@@ -340,7 +340,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 500, 500, "xylophone"),  // -ra-
       createNote("A", 5, 800, 1000, "xylophone"), // -béns
       createNote("G", 5, 800, 1800, "xylophone"), // pa-
-      createNote("C", 5, 800, 2600, "xylophone"), // -ra
+      createNote("C2", 5, 800, 2600, "xylophone"), // -ra (Dó uma oitava acima)
       createNote("B", 5, 1600, 3400, "xylophone"), // vo-cê
       
       // "Parabéns para você" - sol sol la sol re do
@@ -356,7 +356,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 500, 10900, "xylophone"), // -ra-
       createNote("G", 5, 800, 11400, "xylophone"), // -béns
       createNote("E", 5, 800, 12200, "xylophone"), // que-
-      createNote("C", 5, 800, 13000, "xylophone"), // -ri-
+      createNote("C2", 5, 800, 13000, "xylophone"), // -ri- (Dó uma oitava acima)
       createNote("B", 5, 800, 13800, "xylophone"), // -do/a
       createNote("A", 5, 1600, 14600, "xylophone"), // [nome]
       
