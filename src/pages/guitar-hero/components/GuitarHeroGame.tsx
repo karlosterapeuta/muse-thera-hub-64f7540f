@@ -106,6 +106,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const [score, setScore] = useState(0);
   const [gameTime, setGameTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isRepeating, setIsRepeating] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const gameLoopRef = useRef<number>();
   const lastNoteTime = useRef(0);
@@ -248,20 +250,20 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   }, [isPlaying, handleKeyPress]);
 
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && !isPaused) {
       const interval = setInterval(() => {
         setGameTime(prev => prev + 16);
       }, 16);
       return () => clearInterval(interval);
     }
-  }, [isPlaying]);
+  }, [isPlaying, isPaused]);
 
   // Check falling note sounds on game time update
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && !isPaused) {
       checkFallingNoteSounds();
     }
-  }, [gameTime, isPlaying, checkFallingNoteSounds]);
+  }, [gameTime, isPlaying, isPaused, checkFallingNoteSounds]);
 
   useEffect(() => {
     setNotes(generateAuthenticGameNotes());
@@ -287,8 +289,19 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
 
   const stopGame = () => {
     setIsPlaying(false);
+    setIsPaused(false);
     setShowControls(true);
     teaHeroAudio.stop();
+  };
+
+  const pauseGame = () => {
+    const newPausedState = teaHeroAudio.togglePause();
+    setIsPaused(newPausedState);
+  };
+
+  const toggleRepeat = () => {
+    const newRepeatState = teaHeroAudio.toggleRepeat();
+    setIsRepeating(newRepeatState);
   };
 
   return (
@@ -346,7 +359,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         <div className={`${
           isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
         }`}>
-          Tempo: {Math.floor(gameTime / 1000)}s
+          Tempo: {Math.floor(gameTime / 1000)}s {isPaused ? '⏸️ PAUSADO' : ''}
         </div>
         {selectedSong && (
           <Badge 
@@ -368,14 +381,36 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Badge>
       </div>
 
-      <div className={`absolute top-2 right-2 z-10 ${
-        isMobile ? 'top-1 right-1' : 'top-4 right-4'
+      <div className={`absolute top-2 right-2 z-10 flex gap-1 ${
+        isMobile ? 'top-1 right-1 flex-col' : 'top-4 right-4 flex-row'
       }`}>
+        <Button 
+          onClick={pauseGame}
+          variant="secondary" 
+          size={isMobile ? "sm" : "sm"}
+          className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
+            isPaused ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'
+          }`}
+        >
+          {isPaused ? '▶️' : '⏸️'} {isMobile ? '' : isPaused ? 'Retomar' : 'Pausar'}
+        </Button>
+        
+        <Button 
+          onClick={toggleRepeat}
+          variant="secondary" 
+          size={isMobile ? "sm" : "sm"}
+          className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
+            isRepeating ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'
+          }`}
+        >
+          🔁 {isMobile ? '' : isRepeating ? 'Repetir: ON' : 'Repetir: OFF'}
+        </Button>
+        
         <Button 
           onClick={stopGame} 
           variant="secondary" 
           size={isMobile ? "sm" : "sm"}
-          className={isMobile ? 'text-xs px-2 py-1' : ''}
+          className={`${isMobile ? 'text-xs px-2 py-1' : ''} bg-red-600 hover:bg-red-700`}
         >
           ⏹️ {isMobile ? '' : 'Parar'}
         </Button>

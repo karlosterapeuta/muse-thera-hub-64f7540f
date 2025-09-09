@@ -12,11 +12,15 @@ interface TEAAudioSettings {
 
 class TEAHeroAudioManager {
   private audioContext: AudioContext | null = null;
-  private backgroundSource: AudioBufferSourceNode | null = null;
+  private backgroundSource: OscillatorNode | null = null;
   private masterGain: GainNode | null = null;
   private noteGain: GainNode | null = null;
   private backgroundGain: GainNode | null = null;
   private isPlaying: boolean = false;
+  private isPaused: boolean = false;
+  private isRepeating: boolean = false;
+  private currentSongId: string | null = null;
+  private currentInstrumentType: "bell" | "xylophone" | "keyboard" | null = null;
   
   private settings: TEAAudioSettings = {
     noteVolume: 0.95, // Volume máximo para funcionar sem fone
@@ -80,6 +84,10 @@ class TEAHeroAudioManager {
     if (!this.settings.backgroundEnabled || this.settings.audioMode === 'notes') return;
     if (!this.audioContext) return;
 
+    // Store current song and instrument for repeat functionality
+    this.currentSongId = songId;
+    this.currentInstrumentType = instrumentType;
+
     try {
       const sequence = getAuthenticMusicalSequence(songId);
       if (!sequence) {
@@ -88,6 +96,11 @@ class TEAHeroAudioManager {
       }
 
       console.log(`🎼 Creating background music for: ${sequence.name}`);
+      
+      // Stop any existing background music
+      if (this.backgroundSource) {
+        this.backgroundSource.stop();
+      }
       
       // Create a simple harmonic background
       const oscillator = this.audioContext.createOscillator();
@@ -109,8 +122,23 @@ class TEAHeroAudioManager {
         oscillator.connect(envelope);
         envelope.connect(this.backgroundGain!);
         
+        this.backgroundSource = oscillator;
+        this.isPlaying = true;
+        this.isPaused = false;
+        
         oscillator.start();
         oscillator.stop(this.audioContext.currentTime + sequence.totalDuration / 1000);
+        
+        // Auto-repeat if enabled
+        if (this.isRepeating) {
+          oscillator.onended = () => {
+            if (this.isRepeating && this.currentSongId && this.currentInstrumentType) {
+              setTimeout(() => {
+                this.createSyntheticBackgroundMusic(this.currentSongId!, this.currentInstrumentType!);
+              }, 500); // Small delay before repeat
+            }
+          };
+        }
         
         console.log(`✅ Background music started for ${sequence.totalDuration}ms`);
       }
@@ -143,6 +171,56 @@ class TEAHeroAudioManager {
     this.settings.backgroundEnabled = mode === 'background' || mode === 'both';
   }
 
+  // New playback control methods
+  pause(): void {
+    if (this.isPlaying && !this.isPaused && this.audioContext) {
+      this.audioContext.suspend();
+      this.isPaused = true;
+      console.log('⏸️ Music paused');
+    }
+  }
+
+  resume(): void {
+    if (this.isPaused && this.audioContext) {
+      this.audioContext.resume();
+      this.isPaused = false;
+      console.log('▶️ Music resumed');
+    }
+  }
+
+  togglePause(): boolean {
+    if (this.isPaused) {
+      this.resume();
+    } else {
+      this.pause();
+    }
+    return this.isPaused;
+  }
+
+  setRepeating(repeat: boolean): void {
+    this.isRepeating = repeat;
+    console.log(`🔁 Repeat mode: ${repeat ? 'ON' : 'OFF'}`);
+  }
+
+  toggleRepeat(): boolean {
+    this.isRepeating = !this.isRepeating;
+    console.log(`🔁 Repeat mode: ${this.isRepeating ? 'ON' : 'OFF'}`);
+    return this.isRepeating;
+  }
+
+  // Getters for status
+  getIsPlaying(): boolean {
+    return this.isPlaying && !this.isPaused;
+  }
+
+  getIsPaused(): boolean {
+    return this.isPaused;
+  }
+
+  getIsRepeating(): boolean {
+    return this.isRepeating;
+  }
+
   getSettings(): TEAAudioSettings {
     return { ...this.settings };
   }
@@ -153,6 +231,10 @@ class TEAHeroAudioManager {
       this.backgroundSource = null;
     }
     this.isPlaying = false;
+    this.isPaused = false;
+    this.currentSongId = null;
+    this.currentInstrumentType = null;
+    console.log('⏹️ Music stopped');
   }
 
   cleanup(): void {
