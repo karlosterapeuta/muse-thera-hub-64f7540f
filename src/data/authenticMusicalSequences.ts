@@ -297,56 +297,73 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "escravos-jó-bell": {
     id: "escravos-jó-bell", name: "Escravos de Jó", bpm: 120, timeSignature: "4/4", 
-    totalDuration: 18000, difficulty: "Fácil", loops: 1,
+    totalDuration: 60000, difficulty: "Fácil", loops: 2,
     notes: [
-      // "Escravos de Jó jogavam caxangá" - Melodia tradicional: C-B-A-G-A-G-A-G-F-E
-      createNote("C", 4, 400, 0, "bell"),     // Es-
-      createNote("B", 4, 400, 400, "bell"),   // -cra-
-      createNote("A", 4, 400, 800, "bell"),   // -vos
-      createNote("G", 4, 400, 1200, "bell"),  // de
-      createNote("A", 4, 400, 1600, "bell"),  // Jó
-      createNote("G", 4, 400, 2000, "bell"),  // jo-
-      createNote("A", 4, 400, 2400, "bell"),  // -ga-
-      createNote("G", 4, 400, 2800, "bell"),  // -vam
-      createNote("F", 4, 400, 3200, "bell"),  // ca-
-      createNote("E", 4, 800, 3600, "bell"),  // -xan-gá
+      // dó8 si la sol
+      createNote("C2", 4, 500, 0, "bell"),    // dó8 (oitava)
+      createNote("B", 4, 500, 500, "bell"),   // si
+      createNote("A", 4, 500, 1000, "bell"),  // la
+      createNote("G", 4, 800, 1500, "bell"),  // sol
       
-      // "Tira, põe, deixa ficar" - Continuação rítmica: G-E-G-E-E-E-D-C
-      createNote("G", 4, 400, 4800, "bell"),  // Ti-
-      createNote("E", 4, 400, 5200, "bell"),  // -ra
-      createNote("G", 4, 600, 5600, "bell"),  // põe
-      createNote("E", 4, 400, 6400, "bell"),  // dei-
-      createNote("E", 4, 400, 6800, "bell"),  // -xa
-      createNote("E", 4, 400, 7200, "bell"),  // fi-
-      createNote("D", 4, 400, 7600, "bell"),  // -
-      createNote("C", 4, 1200, 8000, "bell"), // -car
+      // la sol la sol fa mi
+      createNote("A", 4, 400, 2500, "bell"),  // la
+      createNote("G", 4, 400, 2900, "bell"),  // sol
+      createNote("A", 4, 400, 3300, "bell"),  // la
+      createNote("G", 4, 400, 3700, "bell"),  // sol
+      createNote("F", 4, 400, 4100, "bell"),  // fa
+      createNote("E", 4, 800, 4500, "bell"),  // mi
       
-      // "Guerreiros com guerreiros fazem zigue-zigue-zá" - Parte rápida e rítmica
-      createNote("C", 4, 300, 9600, "bell"),  // Guer-
-      createNote("C", 4, 300, 9900, "bell"),  // -rei-
-      createNote("D", 4, 300, 10200, "bell"), // -ros
-      createNote("E", 4, 300, 10500, "bell"), // com
-      createNote("F", 4, 300, 10800, "bell"), // guer-
-      createNote("G", 4, 300, 11100, "bell"), // -rei-
-      createNote("A", 4, 300, 11400, "bell"), // -ros
-      createNote("G", 4, 300, 11700, "bell"), // fa-
-      createNote("F", 4, 300, 12000, "bell"), // -zem
+      // sol mi sol mi.
+      createNote("G", 4, 400, 5500, "bell"),  // sol
+      createNote("E", 4, 400, 5900, "bell"),  // mi
+      createNote("G", 4, 400, 6300, "bell"),  // sol
+      createNote("E", 4, 800, 6700, "bell"),  // mi.
       
-      // "zigue-zigue-zá" - Finalização característica
-      createNote("E", 4, 300, 12600, "bell"), // zi-
-      createNote("F", 4, 300, 12900, "bell"), // -gue-
-      createNote("G", 4, 300, 13200, "bell"), // zi-
-      createNote("A", 4, 300, 13500, "bell"), // -gue-
-      createNote("G", 4, 600, 13800, "bell"), // -zá
+      // mi mi re do
+      createNote("E", 4, 400, 7700, "bell"),  // mi
+      createNote("E", 4, 400, 8100, "bell"),  // mi
+      createNote("D", 4, 400, 8500, "bell"),  // re
+      createNote("C", 4, 800, 8900, "bell"),  // do
       
-      // Repetição final do refrão
-      createNote("C", 4, 400, 14800, "bell"), // (Es-
-      createNote("B", 4, 400, 15200, "bell"), // cra-
-      createNote("A", 4, 400, 15600, "bell"), // vos
-      createNote("G", 4, 400, 16000, "bell"), // de
-      createNote("F", 4, 400, 16400, "bell"), // Jó)
-      createNote("E", 4, 400, 16800, "bell"), 
-      createNote("C", 4, 1200, 17200, "bell") // (final)
+      // sol la sol mi.
+      createNote("G", 4, 400, 9900, "bell"),  // sol
+      createNote("A", 4, 400, 10300, "bell"), // la
+      createNote("G", 4, 400, 10700, "bell"), // sol
+      createNote("E", 4, 800, 11100, "bell"), // mi.
+      
+      // sol la sol mi.
+      createNote("G", 4, 400, 12100, "bell"), // sol
+      createNote("A", 4, 400, 12500, "bell"), // la
+      createNote("G", 4, 400, 12900, "bell"), // sol
+      createNote("E", 4, 800, 13300, "bell"), // mi.
+      
+      // sol la sol la si dó
+      createNote("G", 4, 400, 14300, "bell"), // sol
+      createNote("A", 4, 400, 14700, "bell"), // la
+      createNote("G", 4, 400, 15100, "bell"), // sol
+      createNote("A", 4, 400, 15500, "bell"), // la
+      createNote("B", 4, 400, 15900, "bell"), // si
+      createNote("C2", 4, 800, 16300, "bell"), // dó
+      
+      // sol la sol mi.
+      createNote("G", 4, 400, 17300, "bell"), // sol
+      createNote("A", 4, 400, 17700, "bell"), // la
+      createNote("G", 4, 400, 18100, "bell"), // sol
+      createNote("E", 4, 800, 18500, "bell"), // mi.
+      
+      // sol la sol mi.
+      createNote("G", 4, 400, 19500, "bell"), // sol
+      createNote("A", 4, 400, 19900, "bell"), // la
+      createNote("G", 4, 400, 20300, "bell"), // sol
+      createNote("E", 4, 800, 20700, "bell"), // mi.
+      
+      // sol la sol la si dó
+      createNote("G", 4, 400, 21700, "bell"), // sol
+      createNote("A", 4, 400, 22100, "bell"), // la
+      createNote("G", 4, 400, 22500, "bell"), // sol
+      createNote("A", 4, 400, 22900, "bell"), // la
+      createNote("B", 4, 400, 23300, "bell"), // si
+      createNote("C2", 4, 1200, 23700, "bell") // dó (final)
     ]
   },
 
