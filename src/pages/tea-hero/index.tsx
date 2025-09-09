@@ -40,17 +40,11 @@ const TeaHero = () => {
     ],
     xylophone: [
       { id: "happy-birthday-xylophone", title: "Parabéns para Você", hasSequence: true },
-      { id: "xuxa-xylophone", title: "Ilariê (Xuxa)", hasSequence: true },
       { id: "sapo-nao-lava-xylophone", title: "O Sapo Não Lava o Pé", hasSequence: true },
-      { id: "frozen-let-it-go-xylophone", title: "Let It Go (Frozen)", hasSequence: true },
-      { id: "peppa-pig-xylophone", title: "Peppa Pig Theme", hasSequence: true },
-      { id: "patrulha-canina-xylophone", title: "Patrulha Canina", hasSequence: true },
     ],
     keyboard: [
       { id: "scale-keyboard", title: "Escala de Dó Maior", hasSequence: true },
       { id: "hot-cross-keyboard", title: "Três Notas Mágicas", hasSequence: true },
-      { id: "aquarela-keyboard", title: "Aquarela", hasSequence: true },
-      { id: "caranguejo-keyboard", title: "Caranguejo", hasSequence: true },
       { id: "ciranda-keyboard", title: "Ciranda, Cirandinha", hasSequence: true },
       { id: "boi-da-cara-preta-keyboard", title: "Boi da Cara Preta", hasSequence: true },
     ]

@@ -113,17 +113,6 @@ export const musicalSequences: Record<string, MusicalSequence> = {
     ]
   },
 
-  "xuxa-xylophone": {
-    id: "xuxa-xylophone", name: "Ilariê (Xuxa)", bpm: 140, timeSignature: "4/4",
-    totalDuration: 12000, difficulty: "Fácil", loops: 2,
-    notes: [
-      createNote("C", 5, 300, 0, "xylophone"), createNote("D", 5, 300, 428, "xylophone"),
-      createNote("E", 5, 300, 856, "xylophone"), createNote("G", 5, 300, 1284, "xylophone"),
-      createNote("A", 5, 300, 1712, "xylophone"), createNote("G", 5, 300, 2140, "xylophone"),
-      createNote("E", 5, 300, 2568, "xylophone"), createNote("C", 5, 600, 2996, "xylophone")
-    ]
-  },
-
   "sapo-nao-lava-xylophone": {
     id: "sapo-nao-lava-xylophone", name: "O Sapo Não Lava o Pé", bpm: 120, timeSignature: "4/4",
     totalDuration: 14000, difficulty: "Fácil", loops: 2,
@@ -133,39 +122,6 @@ export const musicalSequences: Record<string, MusicalSequence> = {
       createNote("A", 5, 400, 2000, "xylophone"), createNote("A", 5, 400, 2500, "xylophone"),
       createNote("G", 5, 400, 3000, "xylophone"), createNote("F", 5, 400, 3500, "xylophone"),
       createNote("E", 5, 400, 4000, "xylophone"), createNote("D", 5, 800, 4500, "xylophone")
-    ]
-  },
-
-  "frozen-let-it-go-xylophone": {
-    id: "frozen-let-it-go-xylophone", name: "Let It Go (Frozen)", bpm: 130, timeSignature: "4/4",
-    totalDuration: 16000, difficulty: "Médio", loops: 2,
-    notes: [
-      createNote("G", 5, 500, 0, "xylophone"), createNote("A", 5, 500, 500, "xylophone"),
-      createNote("B", 5, 500, 1000, "xylophone"), createNote("C", 6, 500, 1500, "xylophone"),
-      createNote("B", 5, 500, 2000, "xylophone"), createNote("A", 5, 500, 2500, "xylophone"),
-      createNote("G", 5, 1000, 3000, "xylophone")
-    ]
-  },
-
-  "peppa-pig-xylophone": {
-    id: "peppa-pig-xylophone", name: "Peppa Pig Theme", bpm: 120, timeSignature: "4/4",
-    totalDuration: 12000, difficulty: "Fácil", loops: 2,
-    notes: [
-      createNote("C", 5, 400, 0, "xylophone"), createNote("E", 5, 400, 500, "xylophone"),
-      createNote("G", 5, 400, 1000, "xylophone"), createNote("C", 6, 400, 1500, "xylophone"),
-      createNote("G", 5, 400, 2000, "xylophone"), createNote("E", 5, 400, 2500, "xylophone"),
-      createNote("C", 5, 800, 3000, "xylophone")
-    ]
-  },
-
-  "patrulha-canina-xylophone": {
-    id: "patrulha-canina-xylophone", name: "Patrulha Canina", bpm: 140, timeSignature: "4/4",
-    totalDuration: 10000, difficulty: "Fácil", loops: 2,
-    notes: [
-      createNote("E", 5, 300, 0, "xylophone"), createNote("G", 5, 300, 400, "xylophone"),
-      createNote("A", 5, 300, 800, "xylophone"), createNote("G", 5, 300, 1200, "xylophone"),
-      createNote("E", 5, 300, 1600, "xylophone"), createNote("D", 5, 300, 2000, "xylophone"),
-      createNote("C", 5, 600, 2400, "xylophone")
     ]
   },
 
@@ -188,28 +144,6 @@ export const musicalSequences: Record<string, MusicalSequence> = {
       createNote("E", 4, 600, 0, "keyboard"), createNote("D", 4, 600, 600, "keyboard"),
       createNote("C", 4, 1200, 1200, "keyboard"), createNote("E", 4, 600, 3000, "keyboard"),
       createNote("D", 4, 600, 3600, "keyboard"), createNote("C", 4, 1200, 4200, "keyboard")
-    ]
-  },
-
-  "aquarela-keyboard": {
-    id: "aquarela-keyboard", name: "Aquarela", bpm: 90, timeSignature: "4/4",
-    totalDuration: 20000, difficulty: "Médio", loops: 2,
-    notes: [
-      createNote("C", 4, 600, 0, "keyboard"), createNote("D", 4, 600, 700, "keyboard"),
-      createNote("E", 4, 600, 1400, "keyboard"), createNote("F", 4, 600, 2100, "keyboard"),
-      createNote("G", 4, 600, 2800, "keyboard"), createNote("A", 4, 600, 3500, "keyboard"),
-      createNote("B", 4, 600, 4200, "keyboard"), createNote("C", 5, 1200, 4900, "keyboard")
-    ]
-  },
-
-  "caranguejo-keyboard": {
-    id: "caranguejo-keyboard", name: "Caranguejo", bpm: 110, timeSignature: "4/4",
-    totalDuration: 14000, difficulty: "Fácil", loops: 2,
-    notes: [
-      createNote("G", 4, 400, 0, "keyboard"), createNote("A", 4, 400, 545, "keyboard"),
-      createNote("G", 4, 400, 1090, "keyboard"), createNote("F", 4, 400, 1635, "keyboard"),
-      createNote("E", 4, 400, 2180, "keyboard"), createNote("D", 4, 400, 2725, "keyboard"),
-      createNote("C", 4, 800, 3270, "keyboard")
     ]
   },
 
