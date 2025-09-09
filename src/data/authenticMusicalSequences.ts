@@ -235,52 +235,63 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "atirei-pau-bell": {
     id: "atirei-pau-bell", name: "Atirei o Pau no Gato", bpm: 120, timeSignature: "4/4",
-    totalDuration: 20000, difficulty: "Fácil", loops: 1,
+    totalDuration: 48000, difficulty: "Fácil", loops: 2,
     notes: [
-      // "Atirei o pau no gato-to" - Melodia tradicional completa G-F-E-D-E-F-G-G-G
-      createNote("G", 4, 500, 0, "bell"),     // A-
-      createNote("F", 4, 500, 500, "bell"),   // -ti-
-      createNote("E", 4, 500, 1000, "bell"),  // -rei
-      createNote("D", 4, 500, 1500, "bell"),  // o
-      createNote("E", 4, 500, 2000, "bell"),  // pau
-      createNote("F", 4, 500, 2500, "bell"),  // no
-      createNote("G", 4, 500, 3000, "bell"),  // ga-
-      createNote("G", 4, 500, 3500, "bell"),  // -to-
-      createNote("G", 4, 800, 4000, "bell"),  // -to
+      // sol fa mi re mi fa sol sol sol
+      createNote("G", 4, 500, 0, "bell"),     // sol
+      createNote("F", 4, 500, 500, "bell"),   // fa
+      createNote("E", 4, 500, 1000, "bell"),  // mi
+      createNote("D", 4, 500, 1500, "bell"),  // re
+      createNote("E", 4, 500, 2000, "bell"),  // mi
+      createNote("F", 4, 500, 2500, "bell"),  // fa
+      createNote("G", 4, 500, 3000, "bell"),  // sol
+      createNote("G", 4, 500, 3500, "bell"),  // sol
+      createNote("G", 4, 800, 4000, "bell"),  // sol
       
-      // "Mas o gato-to não morreu-reu-reu" - Continuação A-G-F-F-F-G-F-E-E-E-D-C
-      createNote("A", 4, 500, 5200, "bell"),  // Mas
-      createNote("G", 4, 500, 5700, "bell"),  // o
-      createNote("F", 4, 800, 6200, "bell"),  // ga-to-to
+      // la sol fa fa fa
+      createNote("A", 4, 500, 5000, "bell"),  // la
+      createNote("G", 4, 500, 5500, "bell"),  // sol
+      createNote("F", 4, 500, 6000, "bell"),  // fa
+      createNote("F", 4, 500, 6500, "bell"),  // fa
+      createNote("F", 4, 800, 7000, "bell"),  // fa
       
-      createNote("F", 4, 500, 7200, "bell"),  // não
-      createNote("F", 4, 500, 7700, "bell"),  // mor-
-      createNote("G", 4, 500, 8200, "bell"),  // -reu-
-      createNote("F", 4, 500, 8700, "bell"),  // -reu-
-      createNote("E", 4, 800, 9200, "bell"),  // -reu
+      // sol fa mi mi mi
+      createNote("G", 4, 500, 8000, "bell"),  // sol
+      createNote("F", 4, 500, 8500, "bell"),  // fa
+      createNote("E", 4, 500, 9000, "bell"),  // mi
+      createNote("E", 4, 500, 9500, "bell"),  // mi
+      createNote("E", 4, 800, 10000, "bell"), // mi
       
-      // "Dona Chica admirou-se" - Terceira parte E-E-G-E-G-E-E-E-D-C
-      createNote("E", 4, 500, 10400, "bell"), // Do-
-      createNote("E", 4, 500, 10900, "bell"), // -na
-      createNote("G", 4, 500, 11400, "bell"), // Chi-
-      createNote("E", 4, 500, 11900, "bell"), // -ca
-      createNote("G", 4, 500, 12400, "bell"), // ad-
-      createNote("E", 4, 500, 12900, "bell"), // -mi-
-      createNote("E", 4, 500, 13400, "bell"), // -rou-
-      createNote("E", 4, 500, 13900, "bell"), // -se
-      createNote("D", 4, 500, 14400, "bell"), // (se)
-      createNote("C", 4, 600, 14900, "bell"), // (final)
+      // do do la la la
+      createNote("C", 4, 500, 11000, "bell"), // do
+      createNote("C", 4, 500, 11500, "bell"), // do
+      createNote("A", 4, 500, 12000, "bell"), // la
+      createNote("A", 4, 500, 12500, "bell"), // la
+      createNote("A", 4, 800, 13000, "bell"), // la
       
-      // "Do berro que o gato deu" - Estrofe final completa
-      createNote("G", 4, 500, 16000, "bell"), // Do
-      createNote("F", 4, 500, 16500, "bell"), // ber-
-      createNote("E", 4, 500, 17000, "bell"), // -ro
-      createNote("D", 4, 500, 17500, "bell"), // que
-      createNote("E", 4, 500, 18000, "bell"), // o
-      createNote("F", 4, 500, 18500, "bell"), // ga-
-      createNote("G", 4, 500, 19000, "bell"), // -to
-      createNote("A", 4, 500, 19500, "bell"), // deu
-      createNote("G", 4, 1000, 20000, "bell") // (final)
+      // si la sol sol sol
+      createNote("B", 4, 500, 14000, "bell"), // si
+      createNote("A", 4, 500, 14500, "bell"), // la
+      createNote("G", 4, 500, 15000, "bell"), // sol
+      createNote("G", 4, 500, 15500, "bell"), // sol
+      createNote("G", 4, 800, 16000, "bell"), // sol
+      
+      // mi fa sol mi fa sol mi fa sol
+      createNote("E", 4, 400, 17000, "bell"), // mi
+      createNote("F", 4, 400, 17400, "bell"), // fa
+      createNote("G", 4, 400, 17800, "bell"), // sol
+      createNote("E", 4, 400, 18200, "bell"), // mi
+      createNote("F", 4, 400, 18600, "bell"), // fa
+      createNote("G", 4, 400, 19000, "bell"), // sol
+      createNote("E", 4, 400, 19400, "bell"), // mi
+      createNote("F", 4, 400, 19800, "bell"), // fa
+      createNote("G", 4, 600, 20200, "bell"), // sol
+      
+      // fa mi re do
+      createNote("F", 4, 500, 21000, "bell"), // fa
+      createNote("E", 4, 500, 21500, "bell"), // mi
+      createNote("D", 4, 500, 22000, "bell"), // re
+      createNote("C", 4, 1000, 22500, "bell") // do (final)
     ]
   },
 
@@ -811,69 +822,6 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("E", 4, 400, 13400, "keyboard"), // -ga
       createNote("D", 4, 400, 13800, "keyboard"), // não
       createNote("C", 4, 1200, 14200, "keyboard") // (final)
-    ]
-  },
-
-  // Nova sequência musical personalizada
-  "sequencia-personalizada-bell": {
-    id: "sequencia-personalizada-bell", name: "Sequência Musical", bpm: 120, timeSignature: "4/4",
-    totalDuration: 48000, difficulty: "Médio", loops: 2,
-    notes: [
-      // sol fa mi re mi fa sol sol sol
-      createNote("G", 4, 500, 0, "bell"),     // sol
-      createNote("F", 4, 500, 500, "bell"),   // fa
-      createNote("E", 4, 500, 1000, "bell"),  // mi
-      createNote("D", 4, 500, 1500, "bell"),  // re
-      createNote("E", 4, 500, 2000, "bell"),  // mi
-      createNote("F", 4, 500, 2500, "bell"),  // fa
-      createNote("G", 4, 500, 3000, "bell"),  // sol
-      createNote("G", 4, 500, 3500, "bell"),  // sol
-      createNote("G", 4, 800, 4000, "bell"),  // sol
-      
-      // la sol fa fa fa
-      createNote("A", 4, 500, 5000, "bell"),  // la
-      createNote("G", 4, 500, 5500, "bell"),  // sol
-      createNote("F", 4, 500, 6000, "bell"),  // fa
-      createNote("F", 4, 500, 6500, "bell"),  // fa
-      createNote("F", 4, 800, 7000, "bell"),  // fa
-      
-      // sol fa mi mi mi
-      createNote("G", 4, 500, 8000, "bell"),  // sol
-      createNote("F", 4, 500, 8500, "bell"),  // fa
-      createNote("E", 4, 500, 9000, "bell"),  // mi
-      createNote("E", 4, 500, 9500, "bell"),  // mi
-      createNote("E", 4, 800, 10000, "bell"), // mi
-      
-      // do do la la la
-      createNote("C", 4, 500, 11000, "bell"), // do
-      createNote("C", 4, 500, 11500, "bell"), // do
-      createNote("A", 4, 500, 12000, "bell"), // la
-      createNote("A", 4, 500, 12500, "bell"), // la
-      createNote("A", 4, 800, 13000, "bell"), // la
-      
-      // si la sol sol sol
-      createNote("B", 4, 500, 14000, "bell"), // si
-      createNote("A", 4, 500, 14500, "bell"), // la
-      createNote("G", 4, 500, 15000, "bell"), // sol
-      createNote("G", 4, 500, 15500, "bell"), // sol
-      createNote("G", 4, 800, 16000, "bell"), // sol
-      
-      // mi fa sol mi fa sol mi fa sol
-      createNote("E", 4, 400, 17000, "bell"), // mi
-      createNote("F", 4, 400, 17400, "bell"), // fa
-      createNote("G", 4, 400, 17800, "bell"), // sol
-      createNote("E", 4, 400, 18200, "bell"), // mi
-      createNote("F", 4, 400, 18600, "bell"), // fa
-      createNote("G", 4, 400, 19000, "bell"), // sol
-      createNote("E", 4, 400, 19400, "bell"), // mi
-      createNote("F", 4, 400, 19800, "bell"), // fa
-      createNote("G", 4, 600, 20200, "bell"), // sol
-      
-      // fa mi re do
-      createNote("F", 4, 500, 21000, "bell"), // fa
-      createNote("E", 4, 500, 21500, "bell"), // mi
-      createNote("D", 4, 500, 22000, "bell"), // re
-      createNote("C", 4, 1000, 22500, "bell") // do (final)
     ]
   }
 };
