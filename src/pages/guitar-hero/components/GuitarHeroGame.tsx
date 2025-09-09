@@ -116,6 +116,9 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const isTablet = useIsTablet();
   const laneConfigs = TEA_MASTER_FREQUENCIES[instrumentType];
 
+  // Debug log for button rendering
+  console.log('🎮 TEA-Hero State - isPlaying:', isPlaying, 'isPaused:', isPaused, 'isRepeating:', isRepeating);
+
   // Check for notes passing through hit zone and play their sounds
   const checkFallingNoteSounds = useCallback(() => {
     if (!isPlaying) return;
@@ -271,6 +274,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
 
   const startGame = async () => {
     console.log(`🎮 STARTING TEA-Hero: ${instrumentType} - ${selectedSong ? selectedSong.title : 'Random Mode'}`);
+    console.log('▶️ Start Game button clicked');
     
     // Initialize audio manager
     await teaHeroAudio.initialize();
@@ -288,6 +292,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   };
 
   const stopGame = () => {
+    console.log('🛑 Stop Game button clicked');
     setIsPlaying(false);
     setIsPaused(false);
     setShowControls(true);
@@ -295,13 +300,17 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   };
 
   const pauseGame = () => {
+    console.log('⏸️ Pause Game button clicked');
     const newPausedState = teaHeroAudio.togglePause();
     setIsPaused(newPausedState);
+    console.log('⏸️ New paused state:', newPausedState);
   };
 
   const toggleRepeat = () => {
+    console.log('🔁 Toggle Repeat button clicked');
     const newRepeatState = teaHeroAudio.toggleRepeat();
     setIsRepeating(newRepeatState);
+    console.log('🔁 New repeat state:', newRepeatState);
   };
 
   return (
@@ -385,7 +394,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         isMobile ? 'top-1 right-1 flex-col' : 'top-4 right-4 flex-row'
       }`}>
         <Button 
-          onClick={pauseGame}
+          onClick={() => {
+            console.log('🟡 Pause button clicked!');
+            pauseGame();
+          }}
           variant="secondary" 
           size={isMobile ? "sm" : "sm"}
           className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
@@ -396,7 +408,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Button>
         
         <Button 
-          onClick={toggleRepeat}
+          onClick={() => {
+            console.log('🔵 Repeat button clicked!');
+            toggleRepeat();
+          }}
           variant="secondary" 
           size={isMobile ? "sm" : "sm"}
           className={`${isMobile ? 'text-xs px-2 py-1' : ''} ${
@@ -407,7 +422,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Button>
         
         <Button 
-          onClick={stopGame} 
+          onClick={() => {
+            console.log('🔴 Stop button clicked!');
+            stopGame();
+          }} 
           variant="secondary" 
           size={isMobile ? "sm" : "sm"}
           className={`${isMobile ? 'text-xs px-2 py-1' : ''} bg-red-600 hover:bg-red-700`}
