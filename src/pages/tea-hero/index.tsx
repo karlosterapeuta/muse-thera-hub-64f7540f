@@ -166,20 +166,25 @@ const TeaHero = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          🎵 TEA-Hero MuseTera
-        </h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-violet-500 via-purple-600 to-purple-900 text-white">
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        {/* MuseTera Header */}
+        <div className="text-center space-y-4 mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="text-5xl animate-pulse-gentle">🎵</div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-300 via-purple-300 to-violet-300 bg-clip-text text-transparent">
+              TEA-Hero MuseTera
+            </h1>
+            <div className="text-5xl animate-pulse-gentle">🎵</div>
+          </div>
+        <p className="text-lg text-violet-200">
           Jogo musical terapêutico com melodias 100% sincronizadas visual-auditiva para TEA
         </p>
         <div className="flex justify-center gap-2">
-          <Badge variant="secondary">🎼 Melodias Autênticas</Badge>
-          <Badge variant="secondary">🔊 100% MuseTera</Badge>
-          <Badge variant="secondary">🎯 18 Canções Validadas</Badge>
-          <Badge variant="secondary">🎵 Zero Dessincronia</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50">🎼 Melodias Autênticas</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">🔊 100% MuseTera</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-violet-600 to-purple-500 text-white border-violet-400/50">🎯 18 Canções Validadas</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-600 to-violet-500 text-white border-purple-400/50">🎵 Zero Dessincronia</Badge>
         </div>
       </div>
 
@@ -461,6 +466,7 @@ const TeaHero = () => {
           </CardContent>
         </Card>
       </div>
+    </div>
     </div>
   );
 };

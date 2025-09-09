@@ -62,15 +62,17 @@ const Lane: React.FC<LaneProps> = ({ laneIndex, color, isPressed, instrumentType
   return (
     <div 
       className={`
-        relative w-full h-full border-2 border-gray-300 
-        ${isPressed ? 'bg-yellow-300' : 'bg-gray-100'}
-        transition-all duration-100 ease-in-out
+        relative w-full h-full border-2 transition-all duration-200 ease-in-out
         flex flex-col items-center justify-end
         ${isMobile ? 'p-1' : isTablet ? 'p-1.5' : 'p-2'}
+        ${isPressed 
+          ? 'bg-gradient-to-t from-violet-400/80 to-purple-400/60 border-violet-300 shadow-lg transform scale-95' 
+          : 'bg-gradient-to-t from-violet-900/20 to-purple-900/20 border-violet-400/30 hover:border-violet-400/60'
+        }
+        backdrop-blur-sm
       `}
       style={{
-        backgroundColor: isPressed ? '#fef08a' : color + '20',
-        borderColor: color
+        borderColor: isPressed ? '#a855f7' : color + '40'
       }}
     >
       <div className="text-center space-y-0.5">
@@ -324,40 +326,55 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   };
 
   return (
-    <div className="h-screen bg-gradient-to-b from-purple-900 to-black text-white overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-violet-500 via-purple-600 to-purple-900 text-white overflow-hidden">
+      {/* MuseTera Header */}
+      <div className="absolute top-0 left-0 right-0 z-5 bg-gradient-to-r from-violet-500/20 to-purple-600/20 backdrop-blur-sm border-b border-violet-400/30 p-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="text-2xl">🎵</div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              TEA-Hero MuseTera
+            </h1>
+          </div>
+          <div className="text-sm bg-gradient-to-r from-violet-500 to-purple-600 px-3 py-1 rounded-full">
+            Sistema Sincronizado
+          </div>
+        </div>
+      </div>
+
       {showControls && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-75">
-          <Card className={`text-center space-y-4 bg-gray-900 border-purple-500 ${
+          <Card className={`text-center space-y-4 bg-gradient-to-br from-violet-900/90 to-purple-900/90 border-violet-400/50 backdrop-blur-sm shadow-2xl ${
             isMobile ? 'p-4 mx-2' : isTablet ? 'p-6' : 'p-8'
           }`}>
-            <h2 className={`font-bold text-purple-300 ${
+            <h2 className={`font-bold bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent ${
               isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
             }`}>
-              🎵 TEA-Hero: {instrumentType.toUpperCase()}
+              🎵 TEA-Hero MuseTera: {instrumentType.toUpperCase()}
             </h2>
             {selectedSong ? (
               <div className="space-y-2">
-                <Badge variant="secondary" className="text-green-300 bg-green-800">
+                <Badge variant="secondary" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50">
                   🎼 {selectedSong.title}
                 </Badge>
-                <p className={`text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                  Melodia 100% sincronizada!
+                <p className={`text-violet-200 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                  Melodia 100% MuseTera sincronizada!
                 </p>
               </div>
             ) : (
-              <Badge variant="secondary" className="text-blue-300 bg-blue-800">
-                🎲 Modo Prática Musical
+              <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">
+                🎲 Modo Prática MuseTera
               </Badge>
             )}
-            <p className={`text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-              Use as teclas 1-8 para tocar as notas
+            <p className={`text-violet-200 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+              Use as teclas 1-8 para tocar as notas MuseTera
             </p>
-            <p className={`text-yellow-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-              Velocidade: {gameSpeed}x
+            <p className={`text-violet-300 font-semibold ${isMobile ? 'text-xs' : 'text-sm'}`}>
+              Velocidade MuseTera: {gameSpeed}x
             </p>
             <Button 
               onClick={startGame} 
-              className={`bg-purple-600 hover:bg-purple-700 ${
+              className={`bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg transform hover:scale-105 transition-all duration-200 ${
                 isMobile ? 'text-sm px-4 py-2' : 'text-base'
               }`}
             >
@@ -367,23 +384,23 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </div>
       )}
 
-      <div className={`absolute top-2 left-2 z-10 space-y-1 ${
-        isMobile ? 'top-1 left-1' : 'top-4 left-4'
+      <div className={`absolute z-10 space-y-1 bg-gradient-to-br from-violet-900/80 to-purple-900/80 backdrop-blur-sm rounded-lg p-3 border border-violet-400/30 ${
+        isMobile ? 'top-14 left-1' : 'top-20 left-4'
       }`}>
-        <div className={`font-bold ${
+        <div className={`font-bold text-violet-100 ${
           isMobile ? 'text-sm' : isTablet ? 'text-lg' : 'text-xl'
         }`}>
-          Pontuação: {score}
+          🏆 Pontuação: {score}
         </div>
-        <div className={`${
+        <div className={`text-violet-200 ${
           isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
         }`}>
-          Tempo: {Math.floor(gameTime / 1000)}s {isPaused ? '⏸️ PAUSADO' : ''}
+          ⏱️ Tempo: {Math.floor(gameTime / 1000)}s {isPaused ? '⏸️ PAUSADO' : ''}
         </div>
         {selectedSong && (
           <Badge 
             variant="secondary" 
-            className={`text-green-300 bg-green-800 ${
+            className={`bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50 ${
               isMobile ? 'text-xs px-1.5 py-0.5' : ''
             }`}
           >
@@ -392,11 +409,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         )}
         <Badge 
           variant="secondary" 
-          className={`text-purple-300 bg-purple-800 ${
+          className={`bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50 ${
             isMobile ? 'text-xs px-1.5 py-0.5' : ''
           }`}
         >
-          🎵 {instrumentType.toUpperCase()}
+          🎵 {instrumentType.toUpperCase()} MuseTera
         </Badge>
       </div>
 
@@ -412,10 +429,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
               console.log('🔴 STOP CLICKED!');
               stopGame();
             }}
-            className="px-4 py-2 rounded text-white font-bold bg-red-600 hover:bg-red-700 shadow-lg"
+            className="px-4 py-2 rounded text-white font-bold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-xl border border-red-400/50 backdrop-blur-sm transform hover:scale-105 transition-all duration-200"
             style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
-            ⏹️ Parar Jogo
+            ⏹️ Parar MuseTera
           </button>
         </div>
       )}
@@ -467,10 +484,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         ))}
       </div>
 
-      {/* Hit zone indicator */}
-      <div className={`absolute bottom-0 left-0 w-full bg-gradient-to-t from-red-500 to-transparent opacity-50 ${
+      {/* Hit zone indicator - MuseTera style */}
+      <div className={`absolute bottom-0 left-0 w-full bg-gradient-to-t from-violet-500/60 via-purple-500/40 to-transparent border-t border-violet-400/30 ${
         isMobile ? 'h-12' : isTablet ? 'h-14' : 'h-16'
-      }`} />
+      }`}>
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-400/20 to-transparent animate-pulse" />
+      </div>
     </div>
   );
 };
