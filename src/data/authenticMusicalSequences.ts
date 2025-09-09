@@ -499,43 +499,41 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
 
   "ciranda-keyboard": {
     id: "ciranda-keyboard", name: "Ciranda, Cirandinha", bpm: 110, timeSignature: "4/4",
-    totalDuration: 20000, difficulty: "Fácil", loops: 1,
+    totalDuration: 14500, difficulty: "Fácil", loops: 2,
     notes: [
-      // "Ciranda, cirandinha, vamos todos cirandar"
-      createNote("C", 4, 400, 0, "keyboard"),     // Ci-
-      createNote("D", 4, 400, 545, "keyboard"),   // -ran-
-      createNote("E", 4, 400, 1090, "keyboard"),  // -da
-      createNote("F", 4, 400, 1635, "keyboard"),  // ci-
-      createNote("E", 4, 400, 2180, "keyboard"),  // -ran-
-      createNote("D", 4, 400, 2725, "keyboard"),  // -di-
-      createNote("C", 4, 800, 3270, "keyboard"),  // -nha
-      
-      createNote("E", 4, 400, 4620, "keyboard"),  // va-
-      createNote("F", 4, 400, 5165, "keyboard"),  // -mos
-      createNote("G", 4, 400, 5710, "keyboard"),  // to-
-      createNote("A", 4, 400, 6255, "keyboard"),  // -dos
-      createNote("G", 4, 400, 6800, "keyboard"),  // ci-
-      createNote("F", 4, 400, 7345, "keyboard"),  // -ran-
-      createNote("E", 4, 800, 7890, "keyboard"),  // -dar
-      
-      // "Vamos dar a meia volta, volta e meia vamos dar"
-      createNote("G", 4, 400, 9240, "keyboard"),  // Va-
-      createNote("A", 4, 400, 9785, "keyboard"),  // -mos
-      createNote("G", 4, 400, 10330, "keyboard"), // dar
-      createNote("F", 4, 400, 10875, "keyboard"), // a
-      createNote("E", 4, 400, 11420, "keyboard"), // mei-
-      createNote("D", 4, 400, 11965, "keyboard"), // -a
-      createNote("C", 4, 800, 12510, "keyboard"), // vol-ta
-      
-      createNote("E", 4, 400, 13860, "keyboard"), // vol-
-      createNote("F", 4, 400, 14405, "keyboard"), // -ta
-      createNote("G", 4, 400, 14950, "keyboard"), // e
-      createNote("A", 4, 400, 15495, "keyboard"), // mei-
-      createNote("G", 4, 400, 16040, "keyboard"), // -a
-      createNote("F", 4, 400, 16585, "keyboard"), // va-
-      createNote("E", 4, 400, 17130, "keyboard"), // -mos
-      createNote("D", 4, 400, 17675, "keyboard"), // dar
-      createNote("C", 4, 2325, 18220, "keyboard") // (final)
+      // Padrão: sol sol sol mi | sol sol sol mi | sol la sol fa mi re | la la la la si la sol sol mi sol fa fa mi re do
+      createNote("G", 4, 500, 0, "keyboard"),
+      createNote("G", 4, 500, 500, "keyboard"),
+      createNote("G", 4, 500, 1000, "keyboard"),
+      createNote("E", 4, 500, 1500, "keyboard"),
+
+      createNote("G", 4, 500, 2000, "keyboard"),
+      createNote("G", 4, 500, 2500, "keyboard"),
+      createNote("G", 4, 500, 3000, "keyboard"),
+      createNote("E", 4, 500, 3500, "keyboard"),
+
+      createNote("G", 4, 500, 4000, "keyboard"),
+      createNote("A", 4, 500, 4500, "keyboard"),
+      createNote("G", 4, 500, 5000, "keyboard"),
+      createNote("F", 4, 500, 5500, "keyboard"),
+      createNote("E", 4, 500, 6000, "keyboard"),
+      createNote("D", 4, 500, 6500, "keyboard"),
+
+      createNote("A", 4, 500, 7000, "keyboard"),
+      createNote("A", 4, 500, 7500, "keyboard"),
+      createNote("A", 4, 500, 8000, "keyboard"),
+      createNote("A", 4, 500, 8500, "keyboard"),
+      createNote("B", 4, 500, 9000, "keyboard"),
+      createNote("A", 4, 500, 9500, "keyboard"),
+      createNote("G", 4, 500, 10000, "keyboard"),
+      createNote("G", 4, 500, 10500, "keyboard"),
+      createNote("E", 4, 500, 11000, "keyboard"),
+      createNote("G", 4, 500, 11500, "keyboard"),
+      createNote("F", 4, 500, 12000, "keyboard"),
+      createNote("F", 4, 500, 12500, "keyboard"),
+      createNote("E", 4, 500, 13000, "keyboard"),
+      createNote("D", 4, 500, 13500, "keyboard"),
+      createNote("C", 4, 500, 14000, "keyboard"),
     ]
   },
 
