@@ -170,14 +170,14 @@ const TeaHero = () => {
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          🎵 TEA-Hero SINCRONIZADO
+          🎵 TEA-Hero MuseTera
         </h1>
         <p className="text-lg text-muted-foreground">
           Jogo musical terapêutico com melodias 100% sincronizadas visual-auditiva para TEA
         </p>
         <div className="flex justify-center gap-2">
           <Badge variant="secondary">🎼 Melodias Autênticas</Badge>
-          <Badge variant="secondary">🔊 100% Sincronizado</Badge>
+          <Badge variant="secondary">🔊 100% MuseTera</Badge>
           <Badge variant="secondary">🎯 18 Canções Validadas</Badge>
           <Badge variant="secondary">🎵 Zero Dessincronia</Badge>
         </div>
@@ -188,10 +188,10 @@ const TeaHero = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🎛️ Configurações TEA-Sincronizadas
+              🎛️ Configurações TEA-MuseTera
             </CardTitle>
             <CardDescription>
-              Configure instrumento, música autêntica e velocidade - TUDO sincronizado
+              Configure instrumento, música autêntica e velocidade - TUDO MuseTera
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -381,7 +381,7 @@ const TeaHero = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              ℹ️ TEA-Hero 100% Sincronizado
+              ℹ️ TEA-Hero 100% MuseTera
             </CardTitle>
             <CardDescription>
               Sistema de melodias musicais com sincronização visual-auditiva perfeita
@@ -451,7 +451,7 @@ const TeaHero = () => {
             {!selectedSong && (
               <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg border">
                 <h4 className="font-medium text-yellow-900 dark:text-yellow-100">
-                  🎲 Modo Prática Musical Sincronizado
+                  🎲 Modo Prática Musical MuseTera
                 </h4>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
                   Padrões musicais harmoniosos com sincronização perfeita
