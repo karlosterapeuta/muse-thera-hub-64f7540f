@@ -4,12 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import GuitarHeroGame from "../guitar-hero/components/GuitarHeroGame";
 import { playNoteSound } from "@/utils/audioUtils";
 import { getAuthenticMusicalSequence } from "@/data/authenticMusicalSequences";
 import { TEA_MASTER_FREQUENCIES, validateSynchronization } from "@/constants/teaFrequencies";
 import { teaAudioEngine } from "@/utils/teaAudioEngine";
+import { teaHeroAudio } from "./utils/teaHeroAudioManager";
 
 const TeaHero = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
@@ -18,6 +20,13 @@ const TeaHero = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
   const [isTestingAudio, setIsTestingAudio] = useState(false);
+  
+  // Audio settings
+  const [noteVolume, setNoteVolume] = useState(80);
+  const [backgroundVolume, setBackgroundVolume] = useState(30);
+  const [noteSoundEnabled, setNoteSoundEnabled] = useState(true);
+  const [backgroundEnabled, setBackgroundEnabled] = useState(true);
+  const [audioMode, setAudioMode] = useState<'notes' | 'background' | 'both'>('both');
 
   // 18 MÚSICAS INFANTIS AUTÊNTICAS com sequências musicais reconhecíveis
   const songs = {
@@ -258,6 +267,86 @@ const TeaHero = () => {
                 <span>0.5x (Muito Lento)</span>
                 <span>1.0x (Normal)</span>
                 <span>2.0x (Muito Rápido)</span>
+              </div>
+            </div>
+
+            {/* Audio Controls */}
+            <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-medium text-sm">🔊 Controles de Áudio TEA</h4>
+              
+              {/* Audio Mode */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Modo de Áudio</label>
+                <Select value={audioMode} onValueChange={(value) => {
+                  const mode = value as 'notes' | 'background' | 'both';
+                  setAudioMode(mode);
+                  teaHeroAudio.setAudioMode(mode);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="notes">🎵 Só Notas Caindo</SelectItem>
+                    <SelectItem value="background">🎼 Só Música de Fundo</SelectItem>
+                    <SelectItem value="both">🎶 Ambos (Recomendado)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Volume Controls */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Volume Notas: {noteVolume}%</label>
+                  <Slider
+                    value={[noteVolume]}
+                    onValueChange={(value) => {
+                      setNoteVolume(value[0]);
+                      teaHeroAudio.setNoteVolume(value[0] / 100);
+                    }}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Volume Música: {backgroundVolume}%</label>
+                  <Slider
+                    value={[backgroundVolume]}
+                    onValueChange={(value) => {
+                      setBackgroundVolume(value[0]);
+                      teaHeroAudio.setBackgroundVolume(value[0] / 100);
+                    }}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Toggle Switches */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={noteSoundEnabled}
+                    onCheckedChange={(checked) => {
+                      setNoteSoundEnabled(checked);
+                      teaHeroAudio.setNoteSoundEnabled(checked);
+                    }}
+                  />
+                  <label className="text-xs">Sons das Notas</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={backgroundEnabled}
+                    onCheckedChange={(checked) => {
+                      setBackgroundEnabled(checked);
+                      teaHeroAudio.setBackgroundEnabled(checked);
+                    }}
+                  />
+                  <label className="text-xs">Música de Fundo</label>
+                </div>
               </div>
             </div>
 

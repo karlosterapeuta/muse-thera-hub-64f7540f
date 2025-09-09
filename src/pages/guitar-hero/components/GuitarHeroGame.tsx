@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { playNoteSound } from '@/utils/audioUtils';
 import { getAuthenticMusicalSequence } from '@/data/authenticMusicalSequences';
 import { TEA_MASTER_FREQUENCIES, getLaneConfig, NOTE_TO_LANE_MAP } from '@/constants/teaFrequencies';
+import { teaHeroAudio } from '@/pages/tea-hero/utils/teaHeroAudioManager';
 
 interface MusicalSequence {
   name: string;
@@ -30,6 +31,7 @@ interface Note {
   color: string;
   name: string;
   note: string;
+  soundPlayed?: boolean; // Track if falling note sound was played
 }
 
 interface LaneProps {
@@ -97,6 +99,25 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const lastNoteTime = useRef(0);
 
   const laneConfigs = TEA_MASTER_FREQUENCIES[instrumentType];
+
+  // Check for notes passing through hit zone and play their sounds
+  const checkFallingNoteSounds = useCallback(() => {
+    if (!isPlaying) return;
+    
+    setNotes(prevNotes => {
+      return prevNotes.map(note => {
+        const notePosition = (gameTime - note.time + 2000) / 2000 * 100;
+        
+        // Play sound when note is in hit zone (85-95% of screen) and hasn't been played yet
+        if (notePosition >= 85 && notePosition <= 95 && !note.soundPlayed) {
+          teaHeroAudio.playFallingNoteSound(note.frequency, instrumentType);
+          return { ...note, soundPlayed: true };
+        }
+        
+        return note;
+      });
+    });
+  }, [gameTime, isPlaying, instrumentType]);
 
   const generateAuthenticGameNotes = useCallback(() => {
     if (!selectedSong?.hasSequence) {
@@ -221,12 +242,28 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     }
   }, [isPlaying]);
 
+  // Check falling note sounds on game time update
+  useEffect(() => {
+    if (isPlaying) {
+      checkFallingNoteSounds();
+    }
+  }, [gameTime, isPlaying, checkFallingNoteSounds]);
+
   useEffect(() => {
     setNotes(generateAuthenticGameNotes());
   }, [generateAuthenticGameNotes]);
 
-  const startGame = () => {
+  const startGame = async () => {
     console.log(`🎮 STARTING TEA-Hero: ${instrumentType} - ${selectedSong ? selectedSong.title : 'Random Mode'}`);
+    
+    // Initialize audio manager
+    await teaHeroAudio.initialize();
+    
+    // Start background music if enabled and song is selected
+    if (selectedSong?.hasSequence) {
+      await teaHeroAudio.createSyntheticBackgroundMusic(selectedSong.id, instrumentType);
+    }
+    
     setIsPlaying(true);
     setShowControls(false);
     setScore(0);
@@ -237,6 +274,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const stopGame = () => {
     setIsPlaying(false);
     setShowControls(true);
+    teaHeroAudio.stop();
   };
 
   return (
