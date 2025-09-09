@@ -390,43 +390,13 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         </Badge>
       </div>
 
-      {/* Control buttons - simplified and fixed */}
+      {/* Control buttons - only Stop button */}
       {isPlaying && (
-        <div className={`absolute z-50 flex gap-2 ${
+        <div className={`absolute z-50 ${
           isMobile 
-            ? 'top-2 right-2 flex-col' 
-            : 'top-4 right-4 flex-row'
+            ? 'top-2 right-2' 
+            : 'top-4 right-4'
         }`} style={{ pointerEvents: 'auto' }}>
-          <button 
-            onClick={() => {
-              console.log('🟡 PAUSE CLICKED!');
-              pauseGame();
-            }}
-            className={`px-3 py-1 rounded text-white font-bold ${
-              isPaused 
-                ? 'bg-green-600 hover:bg-green-700' 
-                : 'bg-yellow-600 hover:bg-yellow-700'
-            }`}
-            style={{ pointerEvents: 'auto', zIndex: 999 }}
-          >
-            {isPaused ? '▶️ Play' : '⏸️ Pause'}
-          </button>
-          
-          <button 
-            onClick={() => {
-              console.log('🔵 REPEAT CLICKED!');
-              toggleRepeat();
-            }}
-            className={`px-3 py-1 rounded text-white font-bold ${
-              isRepeating 
-                ? 'bg-blue-600 hover:bg-blue-700' 
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-            style={{ pointerEvents: 'auto', zIndex: 999 }}
-          >
-            🔁 {isRepeating ? 'ON' : 'OFF'}
-          </button>
-          
           <button 
             onClick={() => {
               console.log('🔴 STOP CLICKED!');
