@@ -364,8 +364,8 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     notes: [
       // Primeira linha: sol do dó sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"),     // sol
-      createNote("C", 5, 400, 400, "xylophone"),   // do
-      createNote("C", 5, 400, 800, "xylophone"),   // dó
+      createNote("C", 8, 400, 400, "xylophone"),   // do
+      createNote("C", 8, 400, 800, "xylophone"),   // dó
       createNote("G", 5, 400, 1200, "xylophone"),  // sol
       createNote("A", 5, 400, 1600, "xylophone"),  // la
       createNote("G", 5, 400, 2000, "xylophone"),  // sol
@@ -373,8 +373,8 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       
       // Segunda linha: sol do dó sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"),  // sol
-      createNote("C", 5, 400, 3600, "xylophone"),  // do
-      createNote("C", 5, 400, 4000, "xylophone"),  // dó
+      createNote("C", 8, 400, 3600, "xylophone"),  // do
+      createNote("C", 8, 400, 4000, "xylophone"),  // dó
       createNote("G", 5, 400, 4400, "xylophone"),  // sol
       createNote("A", 5, 400, 4800, "xylophone"),  // la
       createNote("G", 5, 400, 5200, "xylophone"),  // sol
@@ -396,7 +396,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 400, 11200, "xylophone"), // sol
       createNote("A", 5, 400, 11600, "xylophone"), // la
       createNote("B", 5, 400, 12000, "xylophone"), // si
-      createNote("C", 6, 800, 12400, "xylophone")  // do (oitava superior)
+      createNote("C", 8, 800, 12400, "xylophone")  // do (oitava 8)
     ]
   },
 
@@ -406,8 +406,8 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     notes: [
       // Primeira linha: sol do dó sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"),
-      createNote("C", 5, 400, 400, "xylophone"),
-      createNote("C", 5, 400, 800, "xylophone"),
+      createNote("C", 8, 400, 400, "xylophone"),
+      createNote("C", 8, 400, 800, "xylophone"),
       createNote("G", 5, 400, 1200, "xylophone"),
       createNote("A", 5, 400, 1600, "xylophone"),
       createNote("G", 5, 400, 2000, "xylophone"),
@@ -415,8 +415,8 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       
       // Segunda linha: sol do dó sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"),
-      createNote("C", 5, 400, 3600, "xylophone"),
-      createNote("C", 5, 400, 4000, "xylophone"),
+      createNote("C", 8, 400, 3600, "xylophone"),
+      createNote("C", 8, 400, 4000, "xylophone"),
       createNote("G", 5, 400, 4400, "xylophone"),
       createNote("A", 5, 400, 4800, "xylophone"),
       createNote("G", 5, 400, 5200, "xylophone"),
@@ -438,7 +438,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 400, 11200, "xylophone"),
       createNote("A", 5, 400, 11600, "xylophone"),
       createNote("B", 5, 400, 12000, "xylophone"),
-      createNote("C", 6, 800, 12400, "xylophone")
+      createNote("C", 8, 800, 12400, "xylophone")
     ]
   },
 
