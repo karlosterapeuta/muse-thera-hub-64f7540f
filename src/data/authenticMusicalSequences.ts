@@ -445,7 +445,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
   // === TECLADO/KEYBOARD - 6 músicas ===
   "scale-keyboard": {
     id: "scale-keyboard", name: "Escala de Dó Maior", bpm: 80, timeSignature: "4/4",
-    totalDuration: 16000, difficulty: "Fácil", loops: 1,
+    totalDuration: 16000, difficulty: "Fácil", loops: 2,
     notes: [
       createNote("C", 4, 1000, 0, "keyboard"),    // Dó
       createNote("D", 4, 1000, 1000, "keyboard"), // Ré  
@@ -454,9 +454,9 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 4, 1000, 4000, "keyboard"), // Sol
       createNote("A", 4, 1000, 5000, "keyboard"), // Lá
       createNote("B", 4, 1000, 6000, "keyboard"), // Si
-      createNote("C", 5, 2000, 7000, "keyboard"), // Dó (oitava)
-      
-      // Descendo a escala
+    createNote("C2", 5, 2000, 7000, "keyboard"), // Dó (oitava)
+    
+    // Descendo a escala
       createNote("B", 4, 1000, 9500, "keyboard"), // Si
       createNote("A", 4, 1000, 10500, "keyboard"), // Lá
       createNote("G", 4, 1000, 11500, "keyboard"), // Sol
