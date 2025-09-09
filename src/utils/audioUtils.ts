@@ -73,19 +73,23 @@ const playBasicTEASynthesis = async (frequency: number, instrument?: string) => 
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     const audioContext = new AudioContext();
     
+    // Detecção mobile para ajustar volume
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const mobileVolumeMultiplier = isMobile ? 2.5 : 1.0; // Volume muito mais alto para mobile
+    
     // CONFIGURAÇÃO TEA-ESPECÍFICA MELHORADA
     let waveType: OscillatorType = 'triangle';
-    let teaVolume = 1.8; // Volume amplificado para TEA
+    let teaVolume = 2.2 * mobileVolumeMultiplier; // Volume base amplificado
     
     if (instrument === 'bell') {
       waveType = 'sine';
-      teaVolume = 2.0;
+      teaVolume = 2.5 * mobileVolumeMultiplier;
     } else if (instrument === 'xylophone') {
       waveType = 'triangle';
-      teaVolume = 1.9;
+      teaVolume = 2.3 * mobileVolumeMultiplier;
     } else if (instrument === 'keyboard') {
       waveType = 'sawtooth';
-      teaVolume = 1.8;
+      teaVolume = 2.2 * mobileVolumeMultiplier;
     }
     
     // Oscilador PRINCIPAL com FREQUÊNCIA EXATA
@@ -105,7 +109,7 @@ const playBasicTEASynthesis = async (frequency: number, instrument?: string) => 
     
     const attackTime = 0.001;
     const decayTime = 0.01;
-    const sustainLevel = 0.95;
+    const sustainLevel = 0.98; // Sustain mais alto
     const releaseTime = 1.5;
     
     // Principal - SOM CLARO E DESTACADO
@@ -151,7 +155,7 @@ const playBasicTEASynthesis = async (frequency: number, instrument?: string) => 
     oscillator1.stop(audioContext.currentTime + totalDuration);
     oscillator2.stop(audioContext.currentTime + totalDuration);
     
-    console.log(`🔊 TEA SYNCHRONIZED synthesis: ${frequency}Hz with ${waveType} for ${instrument}`);
+    console.log(`🔊 TEA SYNCHRONIZED synthesis: ${frequency}Hz with ${waveType} for ${instrument} (Mobile: ${isMobile}, Volume: ${teaVolume.toFixed(1)})`);
     
     oscillator1.onended = () => {
       if (audioContext.state !== 'closed') {

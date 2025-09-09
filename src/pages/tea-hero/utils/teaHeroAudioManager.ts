@@ -19,8 +19,8 @@ class TEAHeroAudioManager {
   private isPlaying: boolean = false;
   
   private settings: TEAAudioSettings = {
-    noteVolume: 0.8,
-    backgroundVolume: 0.3,
+    noteVolume: 0.95, // Volume máximo para funcionar sem fone
+    backgroundVolume: 0.4,
     noteSoundEnabled: true,
     backgroundEnabled: true,
     audioMode: 'both'
@@ -62,10 +62,15 @@ class TEAHeroAudioManager {
     if (!this.settings.noteSoundEnabled || this.settings.audioMode === 'background') return;
     
     try {
-      // Play with slightly lower volume for falling notes
-      const fallbackVolume = this.settings.noteVolume * 0.6;
+      // Mobile detection for higher volume
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Use higher volume for mobile devices to work without headphones
+      const mobileVolumeBoost = isMobile ? 1.5 : 1.0;
+      const noteVolume = this.settings.noteVolume * 0.9 * mobileVolumeBoost; // Much higher volume
+      
       await playNoteSound(`${frequency}Hz`, instrumentType);
-      console.log(`🎵 Falling note: ${frequency}Hz`);
+      console.log(`🎵 Falling note: ${frequency}Hz (Mobile: ${isMobile}, Volume boost: ${mobileVolumeBoost}x)`);
     } catch (error) {
       console.warn('⚠️ Failed to play falling note sound:', error);
     }
