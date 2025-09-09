@@ -362,25 +362,25 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     id: "sapo-xylophone", name: "O Sapo Não Lava o Pé", bpm: 110, timeSignature: "4/4",
     totalDuration: 16000, difficulty: "Fácil", loops: 2,
     notes: [
-      // Primeira linha: sol do dó sol la sol mi
+      // Primeira linha: sol do Dó8 sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"),     // sol
-      createNote("C", 8, 400, 400, "xylophone"),   // do
-      createNote("C", 8, 400, 800, "xylophone"),   // dó
+      createNote("C2", 5, 400, 400, "xylophone"),  // Dó8
+      createNote("C2", 5, 400, 800, "xylophone"),  // Dó8
       createNote("G", 5, 400, 1200, "xylophone"),  // sol
       createNote("A", 5, 400, 1600, "xylophone"),  // la
       createNote("G", 5, 400, 2000, "xylophone"),  // sol
       createNote("E", 5, 800, 2400, "xylophone"),  // mi
       
-      // Segunda linha: sol do dó sol la sol fa
+      // Segunda linha: sol do Dó8 sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"),  // sol
-      createNote("C", 8, 400, 3600, "xylophone"),  // do
-      createNote("C", 8, 400, 4000, "xylophone"),  // dó
+      createNote("C2", 5, 400, 3600, "xylophone"), // Dó8
+      createNote("C2", 5, 400, 4000, "xylophone"), // Dó8
       createNote("G", 5, 400, 4400, "xylophone"),  // sol
       createNote("A", 5, 400, 4800, "xylophone"),  // la
       createNote("G", 5, 400, 5200, "xylophone"),  // sol
       createNote("F", 5, 800, 5600, "xylophone"),  // fa
       
-      // Terceira linha: sol si si sol la sol si si sol la sol si sol la si do
+      // Terceira linha: sol si si sol la sol si si sol la sol si sol la si Dó8
       createNote("G", 5, 400, 6400, "xylophone"),  // sol
       createNote("B", 5, 400, 6800, "xylophone"),  // si
       createNote("B", 5, 400, 7200, "xylophone"),  // si
@@ -396,7 +396,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 400, 11200, "xylophone"), // sol
       createNote("A", 5, 400, 11600, "xylophone"), // la
       createNote("B", 5, 400, 12000, "xylophone"), // si
-      createNote("C", 8, 800, 12400, "xylophone")  // do (oitava 8)
+      createNote("C2", 5, 800, 12400, "xylophone") // Dó8
     ]
   },
 
@@ -404,25 +404,25 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
     id: "sapo-nao-lava-xylophone", name: "O Sapo Não Lava o Pé", bpm: 110, timeSignature: "4/4",
     totalDuration: 16000, difficulty: "Fácil", loops: 2,
     notes: [
-      // Primeira linha: sol do dó sol la sol mi
+      // Primeira linha: sol do Dó8 sol la sol mi
       createNote("G", 5, 400, 0, "xylophone"),
-      createNote("C", 8, 400, 400, "xylophone"),
-      createNote("C", 8, 400, 800, "xylophone"),
+      createNote("C2", 5, 400, 400, "xylophone"),
+      createNote("C2", 5, 400, 800, "xylophone"),
       createNote("G", 5, 400, 1200, "xylophone"),
       createNote("A", 5, 400, 1600, "xylophone"),
       createNote("G", 5, 400, 2000, "xylophone"),
       createNote("E", 5, 800, 2400, "xylophone"),
       
-      // Segunda linha: sol do dó sol la sol fa
+      // Segunda linha: sol do Dó8 sol la sol fa
       createNote("G", 5, 400, 3200, "xylophone"),
-      createNote("C", 8, 400, 3600, "xylophone"),
-      createNote("C", 8, 400, 4000, "xylophone"),
+      createNote("C2", 5, 400, 3600, "xylophone"),
+      createNote("C2", 5, 400, 4000, "xylophone"),
       createNote("G", 5, 400, 4400, "xylophone"),
       createNote("A", 5, 400, 4800, "xylophone"),
       createNote("G", 5, 400, 5200, "xylophone"),
       createNote("F", 5, 800, 5600, "xylophone"),
       
-      // Terceira linha: sol si si sol la sol si si sol la sol si sol la si do
+      // Terceira linha: sol si si sol la sol si si sol la sol si sol la si Dó8
       createNote("G", 5, 400, 6400, "xylophone"),
       createNote("B", 5, 400, 6800, "xylophone"),
       createNote("B", 5, 400, 7200, "xylophone"),
@@ -438,7 +438,7 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
       createNote("G", 5, 400, 11200, "xylophone"),
       createNote("A", 5, 400, 11600, "xylophone"),
       createNote("B", 5, 400, 12000, "xylophone"),
-      createNote("C", 8, 800, 12400, "xylophone")
+      createNote("C2", 5, 800, 12400, "xylophone")
     ]
   },
 
