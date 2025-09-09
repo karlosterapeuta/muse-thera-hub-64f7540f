@@ -130,10 +130,14 @@ export const musicalSequences: Record<string, MusicalSequence> = {
     id: "scale-keyboard", name: "Escala de Dó Maior", bpm: 80, timeSignature: "4/4",
     totalDuration: 16000, difficulty: "Fácil", loops: 2,
     notes: [
-      createNote("C", 4, 750, 0, "keyboard"), createNote("D", 4, 750, 750, "keyboard"),
-      createNote("E", 4, 750, 1500, "keyboard"), createNote("F", 4, 750, 2250, "keyboard"),
-      createNote("G", 4, 750, 3000, "keyboard"), createNote("A", 4, 750, 3750, "keyboard"),
-      createNote("B", 4, 750, 4500, "keyboard"), createNote("C", 5, 1500, 5250, "keyboard")
+      createNote("C", 4, 400, 0, "keyboard"), createNote("D", 4, 400, 400, "keyboard"),
+      createNote("E", 4, 400, 800, "keyboard"), createNote("F", 4, 400, 1200, "keyboard"),
+      createNote("G", 4, 400, 1600, "keyboard"), createNote("A", 4, 400, 2000, "keyboard"),
+      createNote("B", 4, 400, 2400, "keyboard"), createNote("C", 5, 400, 2800, "keyboard"),
+      createNote("B", 4, 400, 3200, "keyboard"), createNote("A", 4, 400, 3600, "keyboard"),
+      createNote("G", 4, 400, 4000, "keyboard"), createNote("F", 4, 400, 4400, "keyboard"),
+      createNote("E", 4, 400, 4800, "keyboard"), createNote("D", 4, 400, 5200, "keyboard"),
+      createNote("C", 4, 800, 5600, "keyboard")
     ]
   },
 
