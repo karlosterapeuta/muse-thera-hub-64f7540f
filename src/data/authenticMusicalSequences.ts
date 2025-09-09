@@ -35,52 +35,61 @@ export const authenticMusicalSequences: Record<string, MusicalSequence> = {
   // === SINO (BELL) - 6 músicas CORRIGIDAS ===
   "twinkle-bell": {
     id: "twinkle-bell", name: "Brilha, Brilha Estrelinha", bpm: 120, timeSignature: "4/4",
-    totalDuration: 24000, difficulty: "Fácil", loops: 1,
+    totalDuration: 32000, difficulty: "Fácil", loops: 2,
     notes: [
-      // Primeira frase: "Brilha, brilha, estrelinha"
-      createNote("C", 4, 600, 0, "bell"),     // Bri-
-      createNote("C", 4, 600, 600, "bell"),   // -lha
-      createNote("G", 4, 600, 1200, "bell"),  // bri-
-      createNote("G", 4, 600, 1800, "bell"),  // -lha
-      createNote("A", 4, 600, 2400, "bell"),  // es-
-      createNote("A", 4, 600, 3000, "bell"),  // -tre-
-      createNote("G", 4, 1200, 3600, "bell"), // -linha
+      // Primeira frase: "do do sol sol la la sol"
+      createNote("C", 4, 500, 0, "bell"),     // do
+      createNote("C", 4, 500, 500, "bell"),   // do
+      createNote("G", 4, 500, 1000, "bell"),  // sol
+      createNote("G", 4, 500, 1500, "bell"),  // sol
+      createNote("A", 4, 500, 2000, "bell"),  // la
+      createNote("A", 4, 500, 2500, "bell"),  // la
+      createNote("G", 4, 800, 3000, "bell"),  // sol
       
-      // Segunda frase: "Quero ver você brilhar"
-      createNote("F", 4, 600, 5000, "bell"),  // Que-
-      createNote("F", 4, 600, 5600, "bell"),  // -ro
-      createNote("E", 4, 600, 6200, "bell"),  // ver
-      createNote("E", 4, 600, 6800, "bell"),  // vo-
-      createNote("D", 4, 600, 7400, "bell"),  // -cê
-      createNote("D", 4, 600, 8000, "bell"),  // bri-
-      createNote("C", 4, 1200, 8600, "bell"), // -lhar
+      // Segunda frase: "fa fa mi mi re re do"
+      createNote("F", 4, 500, 4000, "bell"),  // fa
+      createNote("F", 4, 500, 4500, "bell"),  // fa
+      createNote("E", 4, 500, 5000, "bell"),  // mi
+      createNote("E", 4, 500, 5500, "bell"),  // mi
+      createNote("D", 4, 500, 6000, "bell"),  // re
+      createNote("D", 4, 500, 6500, "bell"),  // re
+      createNote("C", 4, 800, 7000, "bell"),  // do
       
-      // Terceira frase: "Lá no céu você está"
-      createNote("G", 4, 600, 10200, "bell"), // Lá
-      createNote("G", 4, 600, 10800, "bell"), // no
-      createNote("F", 4, 600, 11400, "bell"), // céu
-      createNote("F", 4, 600, 12000, "bell"), // vo-
-      createNote("E", 4, 600, 12600, "bell"), // -cê
-      createNote("E", 4, 600, 13200, "bell"), // es-
-      createNote("D", 4, 1200, 13800, "bell"), // -tá
+      // Terceira frase: "sol sol fa fa mi mi re"
+      createNote("G", 4, 500, 8000, "bell"),  // sol
+      createNote("G", 4, 500, 8500, "bell"),  // sol
+      createNote("F", 4, 500, 9000, "bell"),  // fa
+      createNote("F", 4, 500, 9500, "bell"),  // fa
+      createNote("E", 4, 500, 10000, "bell"), // mi
+      createNote("E", 4, 500, 10500, "bell"), // mi
+      createNote("D", 4, 800, 11000, "bell"), // re
       
-      // Quarta frase: "Como um diamante a brilhar"
-      createNote("G", 4, 600, 15400, "bell"), // Co-
-      createNote("G", 4, 600, 16000, "bell"), // -mo
-      createNote("F", 4, 600, 16600, "bell"), // um
-      createNote("F", 4, 600, 17200, "bell"), // dia-
-      createNote("E", 4, 600, 17800, "bell"), // -man-
-      createNote("E", 4, 600, 18400, "bell"), // -te
-      createNote("D", 4, 1200, 19000, "bell"), // bri-lhar
+      // Quarta frase: "sol sol fa fa mi mi re"
+      createNote("G", 4, 500, 12000, "bell"), // sol
+      createNote("G", 4, 500, 12500, "bell"), // sol
+      createNote("F", 4, 500, 13000, "bell"), // fa
+      createNote("F", 4, 500, 13500, "bell"), // fa
+      createNote("E", 4, 500, 14000, "bell"), // mi
+      createNote("E", 4, 500, 14500, "bell"), // mi
+      createNote("D", 4, 800, 15000, "bell"), // re
       
-      // Final repetindo primeira frase
-      createNote("C", 4, 600, 21000, "bell"),
-      createNote("C", 4, 600, 21600, "bell"),
-      createNote("G", 4, 600, 22200, "bell"),
-      createNote("G", 4, 600, 22800, "bell"),
-      createNote("A", 4, 600, 23400, "bell"),
-      createNote("A", 4, 600, 24000, "bell"),
-      createNote("G", 4, 1800, 24600, "bell")
+      // Quinta frase: "do do sol sol la la sol"
+      createNote("C", 4, 500, 16000, "bell"), // do
+      createNote("C", 4, 500, 16500, "bell"), // do
+      createNote("G", 4, 500, 17000, "bell"), // sol
+      createNote("G", 4, 500, 17500, "bell"), // sol
+      createNote("A", 4, 500, 18000, "bell"), // la
+      createNote("A", 4, 500, 18500, "bell"), // la
+      createNote("G", 4, 800, 19000, "bell"), // sol
+      
+      // Sexta frase: "fa fa mi mi re re do"
+      createNote("F", 4, 500, 20000, "bell"), // fa
+      createNote("F", 4, 500, 20500, "bell"), // fa
+      createNote("E", 4, 500, 21000, "bell"), // mi
+      createNote("E", 4, 500, 21500, "bell"), // mi
+      createNote("D", 4, 500, 22000, "bell"), // re
+      createNote("D", 4, 500, 22500, "bell"), // re
+      createNote("C", 4, 1000, 23000, "bell") // do (final)
     ]
   },
 
