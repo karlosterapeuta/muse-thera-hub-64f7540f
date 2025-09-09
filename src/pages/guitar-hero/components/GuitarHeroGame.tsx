@@ -6,6 +6,7 @@ import { playNoteSound } from '@/utils/audioUtils';
 import { getAuthenticMusicalSequence } from '@/data/authenticMusicalSequences';
 import { TEA_MASTER_FREQUENCIES, getLaneConfig, NOTE_TO_LANE_MAP } from '@/constants/teaFrequencies';
 import { teaHeroAudio } from '@/pages/tea-hero/utils/teaHeroAudioManager';
+import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
 
 interface MusicalSequence {
   name: string;
@@ -55,6 +56,8 @@ interface GuitarHeroGameProps {
 
 const Lane: React.FC<LaneProps> = ({ laneIndex, color, isPressed, instrumentType, children }) => {
   const laneConfig = getLaneConfig(instrumentType, laneIndex);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   
   return (
     <div 
@@ -62,19 +65,28 @@ const Lane: React.FC<LaneProps> = ({ laneIndex, color, isPressed, instrumentType
         relative w-full h-full border-2 border-gray-300 
         ${isPressed ? 'bg-yellow-300' : 'bg-gray-100'}
         transition-all duration-100 ease-in-out
-        flex flex-col items-center justify-end p-2
+        flex flex-col items-center justify-end
+        ${isMobile ? 'p-1' : isTablet ? 'p-1.5' : 'p-2'}
       `}
       style={{
         backgroundColor: isPressed ? '#fef08a' : color + '20',
         borderColor: color
       }}
     >
-      <div className="text-center space-y-1">
-        <div className="text-2xl">{laneConfig.symbol}</div>
-        <div className="text-sm font-bold">{laneConfig.name}</div>
-        <div className="text-xs text-gray-600">{laneConfig.note}</div>
-        <div className="text-xs text-gray-500">{Math.round(laneConfig.frequency)}Hz</div>
-        <div className="text-xs font-mono bg-black text-white px-1 rounded">
+      <div className="text-center space-y-0.5">
+        <div className={`${isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'}`}>
+          {laneConfig.symbol}
+        </div>
+        <div className={`font-bold ${isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'}`}>
+          {laneConfig.name}
+        </div>
+        <div className={`text-gray-600 ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
+          {laneConfig.note}
+        </div>
+        <div className={`text-gray-500 ${isMobile ? 'text-[9px]' : isTablet ? 'text-[10px]' : 'text-xs'}`}>
+          {Math.round(laneConfig.frequency)}Hz
+        </div>
+        <div className={`font-mono bg-black text-white px-1 rounded ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
           {laneIndex + 1}
         </div>
       </div>
@@ -98,6 +110,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   const gameLoopRef = useRef<number>();
   const lastNoteTime = useRef(0);
 
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const laneConfigs = TEA_MASTER_FREQUENCIES[instrumentType];
 
   // Check for notes passing through hit zone and play their sounds
@@ -281,8 +295,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
     <div className="h-screen bg-gradient-to-b from-purple-900 to-black text-white overflow-hidden">
       {showControls && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-75">
-          <Card className="p-8 text-center space-y-4 bg-gray-900 border-purple-500">
-            <h2 className="text-2xl font-bold text-purple-300">
+          <Card className={`text-center space-y-4 bg-gray-900 border-purple-500 ${
+            isMobile ? 'p-4 mx-2' : isTablet ? 'p-6' : 'p-8'
+          }`}>
+            <h2 className={`font-bold text-purple-300 ${
+              isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
+            }`}>
               🎵 TEA-Hero: {instrumentType.toUpperCase()}
             </h2>
             {selectedSong ? (
@@ -290,42 +308,83 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                 <Badge variant="secondary" className="text-green-300 bg-green-800">
                   🎼 {selectedSong.title}
                 </Badge>
-                <p className="text-sm text-gray-300">Melodia 100% sincronizada!</p>
+                <p className={`text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                  Melodia 100% sincronizada!
+                </p>
               </div>
             ) : (
               <Badge variant="secondary" className="text-blue-300 bg-blue-800">
                 🎲 Modo Prática Musical
               </Badge>
             )}
-            <p className="text-gray-300">Use as teclas 1-7 para tocar as notas</p>
-            <p className="text-sm text-yellow-300">Velocidade: {gameSpeed}x</p>
-            <Button onClick={startGame} className="bg-purple-600 hover:bg-purple-700">
+            <p className={`text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+              Use as teclas 1-7 para tocar as notas
+            </p>
+            <p className={`text-yellow-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+              Velocidade: {gameSpeed}x
+            </p>
+            <Button 
+              onClick={startGame} 
+              className={`bg-purple-600 hover:bg-purple-700 ${
+                isMobile ? 'text-sm px-4 py-2' : 'text-base'
+              }`}
+            >
               ▶️ Iniciar Jogo
             </Button>
           </Card>
         </div>
       )}
 
-      <div className="absolute top-4 left-4 z-10 space-y-2">
-        <div className="text-xl font-bold">Pontuação: {score}</div>
-        <div className="text-sm">Tempo: {Math.floor(gameTime / 1000)}s</div>
+      <div className={`absolute top-2 left-2 z-10 space-y-1 ${
+        isMobile ? 'top-1 left-1' : 'top-4 left-4'
+      }`}>
+        <div className={`font-bold ${
+          isMobile ? 'text-sm' : isTablet ? 'text-lg' : 'text-xl'
+        }`}>
+          Pontuação: {score}
+        </div>
+        <div className={`${
+          isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+        }`}>
+          Tempo: {Math.floor(gameTime / 1000)}s
+        </div>
         {selectedSong && (
-          <Badge variant="secondary" className="text-green-300 bg-green-800">
-            🎼 {selectedSong.title}
+          <Badge 
+            variant="secondary" 
+            className={`text-green-300 bg-green-800 ${
+              isMobile ? 'text-xs px-1.5 py-0.5' : ''
+            }`}
+          >
+            🎼 {isMobile ? selectedSong.title.substring(0, 15) + '...' : selectedSong.title}
           </Badge>
         )}
-        <Badge variant="secondary" className="text-purple-300 bg-purple-800">
+        <Badge 
+          variant="secondary" 
+          className={`text-purple-300 bg-purple-800 ${
+            isMobile ? 'text-xs px-1.5 py-0.5' : ''
+          }`}
+        >
           🎵 {instrumentType.toUpperCase()}
         </Badge>
       </div>
 
-      <div className="absolute top-4 right-4 z-10">
-        <Button onClick={stopGame} variant="secondary" size="sm">
-          ⏹️ Parar
+      <div className={`absolute top-2 right-2 z-10 ${
+        isMobile ? 'top-1 right-1' : 'top-4 right-4'
+      }`}>
+        <Button 
+          onClick={stopGame} 
+          variant="secondary" 
+          size={isMobile ? "sm" : "sm"}
+          className={isMobile ? 'text-xs px-2 py-1' : ''}
+        >
+          ⏹️ {isMobile ? '' : 'Parar'}
         </Button>
       </div>
 
-      <div className="relative h-full grid grid-cols-7 gap-1 p-4">
+      {/* Main game area with responsive grid */}
+      <div className={`relative h-full grid grid-cols-7 ${
+        isMobile ? 'gap-0.5 p-1' : isTablet ? 'gap-1 p-2' : 'gap-1 p-4'
+      }`}>
         {laneConfigs.map((laneConfig, index) => (
           <Lane
             key={index}
@@ -343,10 +402,14 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                   
                   if (yPosition > 100) return null;
                   
+                  const noteHeight = isMobile ? 'h-6' : isTablet ? 'h-7' : 'h-8';
+                  const textSize = isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs';
+                  const leadingClass = isMobile ? 'leading-6' : isTablet ? 'leading-7' : 'leading-8';
+                  
                   return (
                     <div
                       key={note.id}
-                      className="absolute w-full h-8 rounded-lg shadow-lg border-2 border-white"
+                      className={`absolute w-full ${noteHeight} rounded-lg shadow-lg border-2 border-white`}
                       style={{
                         backgroundColor: note.color,
                         top: `${Math.max(0, yPosition)}%`,
@@ -354,8 +417,8 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                         opacity: yPosition > 80 ? (100 - yPosition) / 20 : 1
                       }}
                     >
-                      <div className="text-center text-white text-xs font-bold leading-8">
-                        {note.name}
+                      <div className={`text-center text-white font-bold ${textSize} ${leadingClass}`}>
+                        {isMobile ? note.name.substring(0, 3) : note.name}
                       </div>
                     </div>
                   );
@@ -365,7 +428,10 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         ))}
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-red-500 to-transparent opacity-50" />
+      {/* Hit zone indicator */}
+      <div className={`absolute bottom-0 left-0 w-full bg-gradient-to-t from-red-500 to-transparent opacity-50 ${
+        isMobile ? 'h-12' : isTablet ? 'h-14' : 'h-16'
+      }`} />
     </div>
   );
 };
