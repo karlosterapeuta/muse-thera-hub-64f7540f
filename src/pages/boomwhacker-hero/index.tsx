@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Volume2, Play, Music, Trophy, Guitar, Star } from 'lucide-react';
+import { Volume2, Play, Music, Trophy, Guitar, Star, Youtube } from 'lucide-react';
 import { TRADITIONAL_SONGS, TraditionalSong, getSongsByDifficulty } from './data/traditionalSongs';
 import { useGuitarHeroGame } from './hooks/useGuitarHeroGame';
 import { guitarHeroAudio } from './utils/guitarHeroAudio';
 import GuitarHeroUI from './components/GuitarHeroUI';
+import { YouTubeVideoModal } from './components/YouTubeVideoModal';
+import { getYouTubeId } from '@/utils/youtubeUtils';
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
@@ -81,6 +83,8 @@ const BoomwhackerHero: React.FC = () => {
   const { toast } = useToast();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [volume, setVolume] = useState(0.7);
+  const [youtubeModalOpen, setYoutubeModalOpen] = useState(false);
+  const [selectedYouTubeSong, setSelectedYouTubeSong] = useState<TraditionalSong | null>(null);
   
   const {
     gameState,
@@ -132,8 +136,20 @@ const BoomwhackerHero: React.FC = () => {
     guitarHeroAudio.setMusicVolume(volume);
   }, [volume]);
 
-  // Iniciar jogo com música selecionada
+  // Iniciar jogo com música selecionada ou abrir vídeo do YouTube
   const handleStartGame = useCallback(async (song: TraditionalSong) => {
+    // Se é um vídeo do YouTube, abrir modal
+    if (song.youtubeId) {
+      setSelectedYouTubeSong(song);
+      setYoutubeModalOpen(true);
+      
+      toast({
+        title: "🎵 Vídeo MuseTera",
+        description: `Abrindo: ${song.title}`,
+      });
+      return;
+    }
+
     console.log(`🎮 Iniciando ${song.title} (${song.difficulty})`);
     
     const loaded = await guitarHeroAudio.loadTrack(song);
@@ -292,38 +308,74 @@ const BoomwhackerHero: React.FC = () => {
                 {songsToShow.map((song) => (
                   <Card 
                     key={song.id} 
-                    className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 transition-all hover:scale-105"
+                    className={`cursor-pointer transition-all hover:scale-105 ${
+                      song.isMuseteraCreated 
+                        ? 'bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-violet-200 dark:border-violet-700 hover:from-violet-100 hover:to-purple-100 dark:hover:from-violet-900/30 dark:hover:to-purple-900/30'
+                        : 'hover:bg-blue-50 dark:hover:bg-blue-900'
+                    }`}
                     onClick={() => handleStartGame(song)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-bold text-lg">{song.title}</h3>
-                        <Badge className={`${
-                          song.difficulty === 'easy' ? 'bg-green-600' : 
-                          song.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
-                        }`}>
-                          {song.difficulty === 'easy' ? 'Fácil' : 
-                           song.difficulty === 'medium' ? 'Médio' : 'Difícil'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-lg">{song.title}</h3>
+                          {song.youtubeId && (
+                            <Youtube className="w-4 h-4 text-red-500" />
+                          )}
+                        </div>
+                        <div className="flex gap-1">
+                          {song.isMuseteraCreated && (
+                            <Badge className="bg-violet-500 text-white text-xs">
+                              🎵 MuseTera
+                            </Badge>
+                          )}
+                          <Badge className={`${
+                            song.difficulty === 'easy' ? 'bg-green-600' : 
+                            song.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
+                          }`}>
+                            {song.difficulty === 'easy' ? 'Fácil' : 
+                             song.difficulty === 'medium' ? 'Médio' : 'Difícil'}
+                          </Badge>
+                        </div>
                       </div>
                       
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">{song.artist}</p>
+                      <p className="text-gray-600 dark:text-gray-300 mb-2">
+                        {song.artist}
+                        {song.isMuseteraCreated && (
+                          <span className="text-violet-600 dark:text-violet-400 text-xs block">
+                            Conteúdo Educacional Original
+                          </span>
+                        )}
+                      </p>
                       
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span>⏱️ {song.duration}s</span>
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                        <span>⏱️ {song.youtubeId ? `${Math.floor(song.duration / 60)}min` : `${song.duration}s`}</span>
                         <span>🎵 {song.bpm} BPM</span>
                         <span>🎼 {song.pattern.length} notas</span>
                       </div>
                       
                       <Button 
-                        className="w-full mt-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                        className={`w-full ${
+                          song.youtubeId 
+                            ? 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700' 
+                            : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                        }`}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleStartGame(song);
                         }}
                       >
-                        <Play className="w-4 h-4 mr-2" />
-                        Jogar Agora
+                        {song.youtubeId ? (
+                          <>
+                            <Youtube className="w-4 h-4 mr-2" />
+                            Assistir Vídeo MuseTera
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Jogar Agora
+                          </>
+                        )}
                       </Button>
                     </CardContent>
                   </Card>
@@ -375,6 +427,20 @@ const BoomwhackerHero: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* YouTube Video Modal */}
+        {selectedYouTubeSong && (
+          <YouTubeVideoModal
+            isOpen={youtubeModalOpen}
+            onClose={() => {
+              setYoutubeModalOpen(false);
+              setSelectedYouTubeSong(null);
+            }}
+            youtubeId={selectedYouTubeSong.youtubeId!}
+            title={selectedYouTubeSong.title}
+            customTitle={selectedYouTubeSong.youtubeTitle}
+          />
+        )}
       </div>
     );
   }

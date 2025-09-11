@@ -13,6 +13,10 @@ export interface TraditionalSong {
     duration: number; // note duration
     intensity?: number; // 0-1 for visual effects
   }[];
+  // YouTube integration fields
+  youtubeId?: string;
+  youtubeTitle?: string;
+  isMuseteraCreated?: boolean;
 }
 
 // Traditional Brazilian songs with complete note patterns
@@ -440,6 +444,34 @@ export const TRADITIONAL_SONGS: TraditionalSong[] = [
       { time: 24800, track: 4, duration: 200, intensity: 1.0 },
       { time: 25000, track: 5, duration: 200, intensity: 1.0 },
       { time: 25200, track: 4, duration: 1000, intensity: 1.0 }
+    ]
+  },
+  
+  // Vídeo educacional MuseTera
+  {
+    id: 'musicalizacao-museterapeutica',
+    title: 'Musicalização MuseTerapêutica',
+    artist: 'Sistema MuseTera',
+    audioFile: '/assets/music/museterapeutica.mp3', // placeholder
+    bpm: 120,
+    duration: 300, // 5 minutos estimado
+    difficulty: 'easy',
+    youtubeId: '-Z-cuKnH_uw',
+    youtubeTitle: 'Vídeo Educacional MuseTera - Musicalização Terapêutica',
+    isMuseteraCreated: true,
+    pattern: [
+      // Pattern simples para demonstração
+      { time: 1000, track: 0, duration: 500, intensity: 0.8 }, // C
+      { time: 2000, track: 1, duration: 500, intensity: 0.8 }, // D
+      { time: 3000, track: 2, duration: 500, intensity: 0.8 }, // E
+      { time: 4000, track: 3, duration: 500, intensity: 0.8 }, // F
+      { time: 5000, track: 4, duration: 500, intensity: 0.8 }, // G
+      { time: 6000, track: 5, duration: 500, intensity: 0.8 }, // A
+      { time: 7000, track: 4, duration: 500, intensity: 0.8 }, // G
+      { time: 8000, track: 3, duration: 500, intensity: 0.8 }, // F
+      { time: 9000, track: 2, duration: 500, intensity: 0.8 }, // E
+      { time: 10000, track: 1, duration: 500, intensity: 0.8 }, // D
+      { time: 11000, track: 0, duration: 1000, intensity: 1.0 } // C
     ]
   }
 ];
