@@ -22,20 +22,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const validateInviteCode = async (code: string) => {
-    const { data, error } = await supabase
-      .from('invite_codes')
-      .select('*')
-      .eq('code', code)
-      .eq('status', 'unused')
-      .gt('expires_at', new Date().toISOString())
-      .single();
-
-    if (error || !data) {
-      throw new Error("Código de convite inválido ou expirado");
-    }
-    return true;
-  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,19 +45,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       // Validate invite code format
       if (!validateInput(sanitizedInviteCode, 8) || !/^[A-Z0-9]{8}$/.test(sanitizedInviteCode)) {
         throw new Error("Código de convite deve ter 8 caracteres alfanuméricos");
-      }
-
-      // Validate invite code first
-      try {
-        await validateInviteCode(sanitizedInviteCode);
-      } catch (error: any) {
-        toast({
-          title: "Código de convite inválido",
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
       }
 
       // Registrar usuário e definir URL de redirecionamento do e-mail
