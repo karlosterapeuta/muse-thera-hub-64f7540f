@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,30 +30,18 @@ import {
 import { 
   Search, 
   UserRoundPlus,
-  Loader2,
   Users,
   Sparkles
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { PatientList } from "./components/patients/PatientList";
 import { PatientCard } from "./components/patients/PatientCard";
 import { AddPatientDialog, EditPatientDialog } from "./components/patients/PatientDialogs";
 import { ViewAnamnesisDialog } from "./components/patients/ViewAnamnesisDialog";
-
-type Patient = {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  birth_date: string | null;
-  responsible: string | null;
-  contact: string | null;
-  age: number | null;
-  has_anamnesis?: boolean;
-};
+import { usePatientsData, useDeletePatient, useDeleteAllPatients, Patient } from "@/hooks/usePatientsData";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Anamnesis = {
   id: string;
@@ -68,197 +56,48 @@ type Anamnesis = {
   [key: string]: any;
 };
 
-interface PatientFilter {
-  searchTerm: string;
-}
-
 export default function PatientsPage() {
-  const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);
-  const [isEditAnamnesisOpen, setIsEditAnamnesisOpen] = useState(false);
+  const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);  
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
-
-  const calculateAge = (birthDate: string | null): number | null => {
-    if (!birthDate) return null;
-    
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    
-    // Verificar se a data é válida
-    if (isNaN(birthDateObj.getTime())) return null;
-    
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    
-    // Se ainda não chegou ao aniversário deste ano, subtrair 1 da idade
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
-
-  const loadPatients = async () => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Usuário não encontrado",
-        });
-        return;
-      }
-      const { data, error } = await supabase
-        .from("patients")
-        .select("*")
-        .eq('professional_id', user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Erro ao carregar pacientes:", error);
-        throw error;
-      }
-
-      // Transform data to include the age property
-      const patientsWithAge = data?.map(patient => ({
-        ...patient,
-        age: patient.age || calculateAge(patient.birth_date)
-      })) || [];
-
-      // Check if each patient has anamnesis records
-      const patientsWithAnamnesis = await Promise.all(
-        patientsWithAge.map(async (patient) => {
-          const { data, error } = await supabase
-            .from("anamnesis")
-            .select("id")
-            .eq("patient_id", patient.id)
-            .maybeSingle();
-
-          return {
-            ...patient,
-            has_anamnesis: !!data
-          };
-        })
-      );
-
-      setPatients(patientsWithAnamnesis);
-    } catch (error) {
-      console.error("Erro ao carregar pacientes:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível carregar a lista de pacientes",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadPatients();
-  }, []);
+  
+  // Use React Query hooks
+  const { data: patients = [], isLoading, error } = usePatientsData();
+  const deletePatientMutation = useDeletePatient();
+  const deleteAllPatientsMutation = useDeleteAllPatients();
+  const queryClient = useQueryClient();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const applyFilters = (patients: Patient[], filters: PatientFilter): Patient[] => {
-    return patients.filter((patient) => {
-      const searchTermLower = filters.searchTerm.toLowerCase();
+  const filteredPatients = useMemo(() => 
+    patients.filter((patient) => {
+      const searchTermLower = searchTerm.toLowerCase();
       return (
         patient.name.toLowerCase().includes(searchTermLower) ||
         (patient.responsible?.toLowerCase().includes(searchTermLower) ?? false)
       );
-    });
+    }), 
+    [patients, searchTerm]
+  );
+
+  const handleDeleteAllPatients = () => {
+    deleteAllPatientsMutation.mutate();
   };
 
-  const filteredPatients = applyFilters(patients, { searchTerm });
-
-  const handleDeleteAllPatients = async () => {
-    try {
-      setIsLoading(true);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Usuário não encontrado",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from("patients")
-        .delete()
-        .eq('professional_id', user.id);
-
-      if (error) {
-        console.error("Erro ao excluir pacientes:", error);
-        throw error;
-      }
-
-      setPatients([]);
-      toast({
-        title: "Sucesso",
-        description: "Todos os pacientes foram excluídos",
-      });
-    } catch (error) {
-      console.error("Erro ao excluir pacientes:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível excluir os pacientes",
-      });
-    } finally {
-      setIsLoading(false);
-      setShowDeleteConfirm(false);
-    }
+  const handleDeletePatient = (patientId: string) => {
+    deletePatientMutation.mutate(patientId);
   };
 
-  const handleDeletePatient = async (patientId: string) => {
-    try {
-      setIsLoading(true);
-      
-      const { error } = await supabase
-        .from("patients")
-        .delete()
-        .eq('id', patientId);
-
-      if (error) {
-        console.error("Erro ao excluir paciente:", error);
-        throw error;
-      }
-
-      // Atualizar a lista local removendo o paciente excluído
-      setPatients(prevPatients => prevPatients.filter(p => p.id !== patientId));
-      
-      toast({
-        title: "Sucesso",
-        description: "Paciente excluído com sucesso",
-      });
-    } catch (error) {
-      console.error("Erro ao excluir paciente:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível excluir o paciente",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const loadPatients = () => {
+    queryClient.invalidateQueries({ queryKey: ["patients"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   const handleEditClick = (patient: Patient) => {
@@ -271,42 +110,23 @@ export default function PatientsPage() {
     setIsViewAnamnesisOpen(true);
   };
 
-  const handleEditAnamnesis = (patient: Patient) => {
+  const handleEditAnamnesis = async (patient: Patient) => {
     setSelectedPatient(patient);
-    // First, we need to fetch the anamnesis data
-    const fetchAnamnesis = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from("anamnesis")
-          .select("*")
-          .eq("patient_id", patient.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+    try {
+      const { data, error } = await supabase
+        .from("anamnesis")
+        .select("*")
+        .eq("patient_id", patient.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
 
-        if (error) {
-          throw error;
-        }
-
-        if (data) {
-          setSelectedAnamnesis(data);
-          // Navigate to anamnesis page with pre-populated data
-          window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar anamnese para edição:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Não foi possível carregar os dados da anamnese para edição.",
-        });
-      } finally {
-        setIsLoading(false);
+      if (data) {
+        window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
       }
-    };
-
-    fetchAnamnesis();
+    } catch (error) {
+      console.error("Erro ao carregar anamnese para edição:", error);
+    }
   };
 
   const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
@@ -337,9 +157,8 @@ export default function PatientsPage() {
           </div>
         </div>
 
-        {/* Main Card with enhanced design */}
+        {/* Main Card */}
         <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
-          {/* Header with gradient background */}
           <CardHeader className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 border-b border-gray-100">
             <div className="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent"></div>
             <div className="relative flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0">
@@ -369,7 +188,7 @@ export default function PatientsPage() {
           </CardHeader>
 
           <CardContent className="p-6 md:p-8">
-            {/* Enhanced Search Bar */}
+            {/* Search Bar */}
             <div className="mb-8">
               <div className="relative max-w-md mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-xl rounded-2xl"></div>
@@ -445,7 +264,7 @@ export default function PatientsPage() {
             )}
           </CardContent>
 
-          {/* Enhanced Footer */}
+          {/* Footer */}
           <CardFooter className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-t border-gray-100 p-6">
             <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
               <AlertDialog>
@@ -470,10 +289,7 @@ export default function PatientsPage() {
                   <AlertDialogFooter>
                     <AlertDialogCancel className="hover:bg-gray-100">Cancelar</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => {
-                        setShowDeleteConfirm(true);
-                        handleDeleteAllPatients();
-                      }}
+                      onClick={handleDeleteAllPatients}
                       className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
                     >
                       Excluir Todos
@@ -494,7 +310,7 @@ export default function PatientsPage() {
           </CardFooter>
         </Card>
 
-        {/* Dialogs - keeping existing dialog structure */}
+        {/* Dialogs */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
