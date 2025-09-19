@@ -22,6 +22,7 @@ import Anamnesis from "./pages/anamnesis";
 import Processes from "./pages/processes";
 import TreatmentPlan from "./pages/treatment-plan";
 import MusicotherapyTreatmentPlan from "./pages/musicotherapy-treatment-plan";
+import MusicotherapyTreatmentPlans from "./pages/musicotherapy-treatment-plans";
 import Intervention from "./pages/intervention";
 import Evaluation from "./pages/evaluation";
 import Reevaluation from "./pages/reevaluation";
@@ -118,6 +119,7 @@ const App = () => {
             <Route path="processes/report/:id" element={<ProcessReport />} />
             <Route path="processes/reports" element={<ProcessReports />} />
             <Route path="treatment-plan" element={<TreatmentPlan />} />
+            <Route path="musicotherapy-treatment-plans" element={<MusicotherapyTreatmentPlans />} />
             <Route path="musicotherapy-treatment-plan" element={<MusicotherapyTreatmentPlan />} />
             <Route path="musicotherapy-treatment-plan/:id" element={<MusicotherapyTreatmentPlan />} />
             <Route path="intervention" element={<Intervention />} />

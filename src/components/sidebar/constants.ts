@@ -28,6 +28,7 @@ export const mainMenuItems = [
 
 export const clinicalMenuItems = [
   { icon: FileText, text: "📋 Processos Clínicos", path: "/processes", gradient: "from-orange-500 to-red-600" },
+  { icon: ClipboardList, text: "🎼 Planos Musicoterapêuticos", path: "/musicotherapy-treatment-plans", gradient: "from-purple-500 to-pink-600", isNew: true },
   { icon: ListChecks, text: "🎯 Atividades Terapêuticas", path: "/activities", gradient: "from-cyan-500 to-blue-600", isNew: true },
 ];
 
