@@ -27,15 +27,14 @@ export function UserCredentialsModal({ open, onOpenChange, userData }: UserCrede
   const { toast } = useToast();
 
   const generateMessage = () => {
-    const systemUrl = window.location.origin;
-    return `🎵 MuseTera - Sistema de Gestão Musicoterápica
+    return `🎵 MuseTera - Sistema de Gestão Musicoterapeutas
 
 Olá! Suas credenciais de acesso ao MuseTera foram criadas:
 
 📧 E-mail: ${userData.email}
 🔑 Senha: ${userData.password}
 👤 Perfil: ${userData.role === 'admin' ? 'Administrador' : 'Profissional'}
-🌐 Link de Acesso: ${systemUrl}
+🌐 Link de Acesso: https://portal-musetera.netlify.app/login
 
 Para sua segurança, recomendamos alterar a senha no primeiro acesso.
 
@@ -78,7 +77,7 @@ Bem-vindo(a) ao MuseTera! 🎼`;
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Music className="h-6 w-6 text-primary" />
-                <h3 className="text-lg font-semibold text-primary">MuseTera - Sistema de Gestão Musicoterápica</h3>
+                <h3 className="text-lg font-semibold text-primary">MuseTera - Sistema de Gestão Musicoterapeutas</h3>
               </div>
               
               <p className="text-sm text-muted-foreground mb-4">
@@ -106,7 +105,7 @@ Bem-vindo(a) ao MuseTera! 🎼`;
                   <Globe className="h-4 w-4 text-primary" />
                   <div>
                     <span className="text-sm font-medium">Link de Acesso:</span>
-                    <p className="text-sm text-muted-foreground">{window.location.origin}</p>
+                    <p className="text-sm text-muted-foreground">https://portal-musetera.netlify.app/login</p>
                   </div>
                 </div>
               </div>
