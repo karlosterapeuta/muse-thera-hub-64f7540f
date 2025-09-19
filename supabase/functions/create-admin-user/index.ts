@@ -46,13 +46,13 @@ serve(async (req) => {
 
     // Check if the caller is admin using RPC function
     console.log("Checking admin privileges for user:", caller.id);
-    const { data: isAdmin, error: roleError } = await callerClient.rpc('has_role', { role: 'admin' });
+    const { data: isAdmin, error: roleCheckError } = await callerClient.rpc('has_role', { role: 'admin' });
     
-    console.log("Admin check result:", { isAdmin, roleError });
+    console.log("Admin check result:", { isAdmin, roleCheckError });
     
-    if (roleError) {
-      console.error("Error checking admin role:", roleError);
-      return jsonResponse({ error: "Erro ao verificar permissões: " + roleError.message }, { status: 400 });
+    if (roleCheckError) {
+      console.error("Error checking admin role:", roleCheckError);
+      return jsonResponse({ error: "Erro ao verificar permissões: " + roleCheckError.message }, { status: 400 });
     }
 
     if (!isAdmin) {
@@ -109,13 +109,13 @@ serve(async (req) => {
     console.log("Profile created successfully for user:", newUserId);
 
     // Assign role
-    const { error: roleError } = await adminClient.from("user_roles").insert({
+    const { error: assignRoleError } = await adminClient.from("user_roles").insert({
       user_id: newUserId,
       role,
     });
-    if (roleError) {
-      console.error("Role assignment failed:", roleError);
-      return jsonResponse({ error: "Erro ao atribuir função: " + roleError.message }, { status: 400 });
+    if (assignRoleError) {
+      console.error("Role assignment failed:", assignRoleError);
+      return jsonResponse({ error: "Erro ao atribuir função: " + assignRoleError.message }, { status: 400 });
     }
     
     console.log("Role assigned successfully:", { userId: newUserId, role });
