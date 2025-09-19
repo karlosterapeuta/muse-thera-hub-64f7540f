@@ -23,7 +23,7 @@ export function useProfessionalData() {
         
         if (userError) {
           console.error('Erro ao obter usuário:', userError);
-          return null;
+          throw userError;
         }
         
         if (!user) {
@@ -31,7 +31,7 @@ export function useProfessionalData() {
           return null;
         }
 
-        const { data: professional, error } = await supabase
+        let { data: professional, error } = await supabase
           .from('professionals')
           .select('*')
           .eq('user_id', user.id)
@@ -39,27 +39,43 @@ export function useProfessionalData() {
 
         if (error) {
           console.error('Error fetching professional data:', error);
-          return null;
+          throw error;
         }
 
         if (!professional) {
-          // If no professional profile exists, create one from user data
-          console.log('Nenhum perfil profissional encontrado, usando dados do usuário');
-          return {
-            id: user.id,
-            name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
-            email: user.email || '',
-            specialty: 'Musicoterapeuta'
-          };
+          // Create professional profile if it doesn't exist
+          console.log('Criando perfil profissional...');
+          const { data: newProfile, error: insertError } = await supabase
+            .from('professionals')
+            .upsert({
+              user_id: user.id,
+              name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+              register: '',
+              phone: '',
+              email: user.email || '',
+              specialty: 'Musicoterapeuta',
+              association: ''
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error('Erro ao criar perfil:', insertError);
+            throw insertError;
+          }
+
+          professional = newProfile;
         }
 
         return professional;
       } catch (error) {
         console.error('Erro inesperado ao buscar dados profissionais:', error);
-        return null;
+        throw error;
       }
     },
-    retry: 1,
+    retry: 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 }
