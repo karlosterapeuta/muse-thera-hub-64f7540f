@@ -80,7 +80,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           data: {
             name: sanitizedEmail.split('@')[0],
           },
-          emailRedirectTo: undefined, // Explicitly disable email confirmation
         },
       });
       
