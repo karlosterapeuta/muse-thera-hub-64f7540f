@@ -763,61 +763,157 @@ export type Database = {
       }
       treatment_plans: {
         Row: {
+          activity_sequence: string | null
           additional_notes: string | null
           approach_type: string | null
+          clinical_diagnosis: string | null
+          clinical_family_history: string | null
+          complementary_materials: Json | null
           created_at: string | null
+          estimated_period_months: number | null
           evaluation_criteria: string | null
+          evaluation_criteria_list: Json | null
+          evolution_recording: string | null
           expected_outcomes: string | null
+          flexibility_adjustments: string | null
+          general_objectives: Json | null
           id: string
+          interaction_communication_level: string | null
           intervention_frequency: string | null
           intervention_strategies: string | null
+          musical_composition: string | null
+          musical_improvisation: string | null
+          musical_instruments: Json | null
+          musical_interests: string | null
           musical_methods: string | null
+          musical_recreation: string | null
           musical_resources: string | null
+          necessary_adjustments: string | null
+          observed_behaviors: string | null
+          patient_age: string | null
+          patient_birth_date: string | null
+          patient_full_name: string | null
           patient_id: string | null
+          physical_cognitive_conditions: string | null
+          plan_start_date: string | null
           professional_id: string | null
+          receptive_listening: string | null
+          reevaluation_frequency: string | null
+          responsible_person: string | null
+          rhythmic_dynamics: string | null
           session_duration: string | null
+          session_duration_minutes: number | null
+          session_structure: string | null
+          specific_objectives: Json | null
           status: string | null
+          technological_resources: Json | null
           therapeutic_focus: string | null
           treatment_model: string | null
           updated_at: string | null
+          voice_body_resources: Json | null
+          weekly_sessions: number | null
         }
         Insert: {
+          activity_sequence?: string | null
           additional_notes?: string | null
           approach_type?: string | null
+          clinical_diagnosis?: string | null
+          clinical_family_history?: string | null
+          complementary_materials?: Json | null
           created_at?: string | null
+          estimated_period_months?: number | null
           evaluation_criteria?: string | null
+          evaluation_criteria_list?: Json | null
+          evolution_recording?: string | null
           expected_outcomes?: string | null
+          flexibility_adjustments?: string | null
+          general_objectives?: Json | null
           id?: string
+          interaction_communication_level?: string | null
           intervention_frequency?: string | null
           intervention_strategies?: string | null
+          musical_composition?: string | null
+          musical_improvisation?: string | null
+          musical_instruments?: Json | null
+          musical_interests?: string | null
           musical_methods?: string | null
+          musical_recreation?: string | null
           musical_resources?: string | null
+          necessary_adjustments?: string | null
+          observed_behaviors?: string | null
+          patient_age?: string | null
+          patient_birth_date?: string | null
+          patient_full_name?: string | null
           patient_id?: string | null
+          physical_cognitive_conditions?: string | null
+          plan_start_date?: string | null
           professional_id?: string | null
+          receptive_listening?: string | null
+          reevaluation_frequency?: string | null
+          responsible_person?: string | null
+          rhythmic_dynamics?: string | null
           session_duration?: string | null
+          session_duration_minutes?: number | null
+          session_structure?: string | null
+          specific_objectives?: Json | null
           status?: string | null
+          technological_resources?: Json | null
           therapeutic_focus?: string | null
           treatment_model?: string | null
           updated_at?: string | null
+          voice_body_resources?: Json | null
+          weekly_sessions?: number | null
         }
         Update: {
+          activity_sequence?: string | null
           additional_notes?: string | null
           approach_type?: string | null
+          clinical_diagnosis?: string | null
+          clinical_family_history?: string | null
+          complementary_materials?: Json | null
           created_at?: string | null
+          estimated_period_months?: number | null
           evaluation_criteria?: string | null
+          evaluation_criteria_list?: Json | null
+          evolution_recording?: string | null
           expected_outcomes?: string | null
+          flexibility_adjustments?: string | null
+          general_objectives?: Json | null
           id?: string
+          interaction_communication_level?: string | null
           intervention_frequency?: string | null
           intervention_strategies?: string | null
+          musical_composition?: string | null
+          musical_improvisation?: string | null
+          musical_instruments?: Json | null
+          musical_interests?: string | null
           musical_methods?: string | null
+          musical_recreation?: string | null
           musical_resources?: string | null
+          necessary_adjustments?: string | null
+          observed_behaviors?: string | null
+          patient_age?: string | null
+          patient_birth_date?: string | null
+          patient_full_name?: string | null
           patient_id?: string | null
+          physical_cognitive_conditions?: string | null
+          plan_start_date?: string | null
           professional_id?: string | null
+          receptive_listening?: string | null
+          reevaluation_frequency?: string | null
+          responsible_person?: string | null
+          rhythmic_dynamics?: string | null
           session_duration?: string | null
+          session_duration_minutes?: number | null
+          session_structure?: string | null
+          specific_objectives?: Json | null
           status?: string | null
+          technological_resources?: Json | null
           therapeutic_focus?: string | null
           treatment_model?: string | null
           updated_at?: string | null
+          voice_body_resources?: Json | null
+          weekly_sessions?: number | null
         }
         Relationships: [
           {
