@@ -18,7 +18,8 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
     name: '',
     email: '',
     role: 'professional',
-    method: 'direct'
+    method: 'direct',
+    password: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,7 +80,7 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
         <RadioGroup
           value={formData.method}
           onValueChange={(value: 'direct' | 'invite') => 
-            setFormData({ ...formData, method: value })
+            setFormData({ ...formData, method: value, password: value === 'direct' ? formData.password : '' })
           }
         >
           <div className="space-y-3">
@@ -93,7 +94,7 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
                   </Label>
                 </div>
                 <CardDescription className="ml-6">
-                  Cria o usuário imediatamente no sistema com senha temporária
+                  Cria o usuário imediatamente no sistema com senha personalizada ou temporária
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -114,6 +115,22 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
             </Card>
           </div>
         </RadioGroup>
+
+        {formData.method === 'direct' && (
+          <div className="space-y-2">
+            <Label htmlFor="password">Senha (opcional)</Label>
+            <Input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              placeholder="Deixe em branco para gerar automaticamente"
+            />
+            <p className="text-xs text-muted-foreground">
+              Se não informada, será gerada uma senha temporária automaticamente
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end gap-2">

@@ -8,6 +8,7 @@ export interface CreateUserData {
   email: string;
   role: 'admin' | 'professional';
   method: 'direct' | 'invite';
+  password?: string;
 }
 
 export function useCreateUser() {
@@ -18,12 +19,13 @@ export function useCreateUser() {
 
   const createDirectUser = useMutation({
     mutationFn: async (userData: CreateUserData) => {
-      // Criar usuário no Supabase Auth com senha temporária
-      const temporaryPassword = Math.random().toString(36).slice(-12) + 'A1!';
+      // Usar senha fornecida ou gerar uma temporária
+      const password = userData.password || Math.random().toString(36).slice(-12) + 'A1!';
+      const isTemporaryPassword = !userData.password;
       
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: userData.email,
-        password: temporaryPassword,
+        password: password,
         user_metadata: {
           name: userData.name
         },
@@ -53,12 +55,16 @@ export function useCreateUser() {
 
       if (roleError) throw roleError;
 
-      return { user: authData.user, temporaryPassword };
+      return { user: authData.user, password, isTemporaryPassword };
     },
     onSuccess: (data, variables) => {
+      const passwordMessage = data.isTemporaryPassword 
+        ? `Senha temporária: ${data.password}`
+        : 'Senha definida conforme especificado';
+        
       toast({
         title: "Usuário criado com sucesso!",
-        description: `${variables.name} foi adicionado ao sistema. Senha temporária: ${data.temporaryPassword}`,
+        description: `${variables.name} foi adicionado ao sistema. ${passwordMessage}`,
       });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
