@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { globalCacheManager } from '@/utils/cacheManager';
 
 export interface CacheStats {
@@ -30,17 +31,22 @@ export function useCacheManager() {
   const cleanupCache = useCallback(() => {
     const cleaned = globalCacheManager.cleanup();
     updateStats();
+    if (cleaned > 0) {
+      toast.success(`Cache limpo! ${cleaned} itens removidos.`);
+    }
     return cleaned;
   }, [updateStats]);
 
   const cleanWebStorage = useCallback(() => {
     globalCacheManager.cleanWebStorage();
     updateStats();
+    toast.success('Storage local limpo com sucesso!');
   }, [updateStats]);
 
   const cleanAudioCaches = useCallback(() => {
     globalCacheManager.cleanAudioCaches();
     updateStats();
+    toast.success('Cache de áudio limpo com sucesso!');
   }, [updateStats]);
 
   const performFullCleanup = useCallback(() => {
@@ -55,6 +61,7 @@ export function useCacheManager() {
     globalCacheManager.clearNamespace('sounds');
     
     updateStats();
+    toast.success(`Limpeza completa realizada! ${cleaned} itens removidos.`);
     return cleaned;
   }, [updateStats]);
 

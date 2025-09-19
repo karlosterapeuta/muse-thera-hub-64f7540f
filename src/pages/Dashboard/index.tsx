@@ -3,6 +3,7 @@ import React from "react";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
+import { CacheStatsCard } from "./components/CacheStatsCard";
 import { useDashboardData } from "./hooks/useDashboardData";
 
 export default function Dashboard() {
@@ -29,13 +30,19 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
-          <FinancialAgenda 
-            financialSchedule={data.financialSchedule} 
-            isLoading={data.isLoading}
-          />
+        {/* Cache Management */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2">
+            <FinancialAgenda 
+              financialSchedule={data.financialSchedule} 
+              isLoading={data.isLoading}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <CacheStatsCard />
+          </div>
         </div>
+
       </div>
     </div>
   );
