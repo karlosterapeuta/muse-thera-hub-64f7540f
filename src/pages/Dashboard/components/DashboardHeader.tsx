@@ -121,7 +121,7 @@ export function DashboardHeader({
               </div>
               
               <div className="relative">
-                <ProfessionalAvatar size="lg" />
+                <ProfessionalAvatar size="lg" editable={true} />
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
               </div>
             </div>
