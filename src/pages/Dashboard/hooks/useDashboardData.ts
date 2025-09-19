@@ -4,7 +4,8 @@ import { DashboardData, DayData, DashboardSession, FinancialAgendaItem } from ".
 import { getCurrentUserId } from "../services/professionalService";
 import { getWeekSessions, SessionData } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
-import { createWeekStructure, organizeSessionsByDay, addFinancialDataToDays, calculateStatistics } from "../utils/weekDataProcessor";
+import { createWeekStructure, organizeSessionsByDay, addFinancialDataToDays } from "../utils/weekDataProcessor";
+import { calculateStatistics } from "../utils/statisticsCalculator";
 import { usePatientsCount, useAnamnesisCount, useReportsCount } from "@/hooks/useDashboardCounts";
 
 export const useDashboardData = (): DashboardData => {
@@ -40,10 +41,10 @@ export const useDashboardData = (): DashboardData => {
       ]);
 
       // Process the data
-      const weekStructure = createWeekStructure();
-      const organizedSessions = organizeSessionsByDay(sessionsData, weekStructure);
-      const daysWithFinancialData = addFinancialDataToDays(organizedSessions, financialData);
-      const statistics = calculateStatistics(daysWithFinancialData);
+      const weekStructure = createWeekStructure(startOfWeek);
+      organizeSessionsByDay(weekStructure, sessionsData);
+      addFinancialDataToDays(weekStructure, financialData);
+      const statistics = calculateStatistics(sessionsData, financialData);
 
       // Mock data for upcoming sessions and session chart
       const mockUpcomingSessions = [
@@ -63,14 +64,14 @@ export const useDashboardData = (): DashboardData => {
       ];
 
       return {
-        weekDays: daysWithFinancialData,
+        weekDays: weekStructure,
         totalSessions: statistics.totalSessions,
         totalRevenue: statistics.totalRevenue,
         averagePerSession: statistics.averagePerSession,
-        upcomingSessions: mockUpcomingSessions,
+        upcomingSessions: statistics.futureSessions || mockUpcomingSessions,
         monthlyChange: 5.2,
-        completionRate: 87,
-        sessionData: mockSessionData,
+        completionRate: statistics.completionRate,
+        sessionData: statistics.sessionData || mockSessionData,
         financialSchedule: financialSchedule || [],
       };
     },
