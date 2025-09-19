@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
@@ -23,9 +23,28 @@ export default function Login() {
   const [isSettingNewPassword, setIsSettingNewPassword] = useState(false);
   const [isProcessingToken, setIsProcessingToken] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if user is already authenticated and redirect to dashboard
+    const checkAuthState = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        navigate('/dashboard');
+        return;
+      }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user && !isProcessingToken) {
+        navigate('/dashboard');
+      }
+    });
+
+    checkAuthState();
+
     const handlePasswordReset = async () => {
       try {
         console.log("URL atual:", window.location.href);
@@ -121,7 +140,9 @@ export default function Login() {
     };
 
     handlePasswordReset();
-  }, [location, toast]);
+
+    return () => subscription.unsubscribe();
+  }, [location, toast, navigate, isProcessingToken]);
 
   if (isProcessingToken) {
     return (

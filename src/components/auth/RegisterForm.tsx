@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const validateInviteCode = async (code: string) => {
     const { data, error } = await supabase
@@ -84,29 +86,48 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         },
       });
       
-      if (result.error) throw result.error;
+      // Handle different signup scenarios
+      let currentUser = result.data.user;
+      
+      if (result.error && result.error.message === "User already registered") {
+        // User exists, try to sign in instead
+        const signInResult = await supabase.auth.signInWithPassword({
+          email: sanitizedEmail,
+          password,
+        });
+        
+        if (signInResult.error) throw signInResult.error;
+        currentUser = signInResult.data.user;
+      } else if (result.error) {
+        throw result.error;
+      }
 
-      // Immediately update the invite code status after successful registration
+      if (!currentUser) {
+        throw new Error("Falha na autenticação do usuário");
+      }
+
+      // Validate invite code after authentication
       const { error: updateError } = await supabase.rpc(
         'validate_invite_code_with_limits',
         { 
           invite_code: sanitizedInviteCode,
-          user_id: result.data.user?.id
+          user_id: currentUser.id
         }
       );
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        // If invite code validation fails, sign out the user
+        await supabase.auth.signOut();
+        throw new Error("Código de convite inválido ou já utilizado");
+      }
       
-      console.log("Registration successful");
       toast({
         title: "Registro realizado com sucesso!",
-        description: "Você já pode fazer login com suas credenciais.",
+        description: "Redirecionando para o dashboard...",
       });
       
-      // Switch to login after successful registration
-      setTimeout(() => {
-        onSwitchToLogin();
-      }, 3000);
+      // Redirect to dashboard immediately
+      navigate('/dashboard');
       
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -166,15 +187,16 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700">
             Código de Convite
           </label>
-          <Input
-            id="inviteCode"
-            type="text"
-            value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value)}
-            className="mt-1"
-            placeholder="Digite seu código de convite"
-            required
-          />
+            <Input
+              id="inviteCode"
+              type="text"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              className="mt-1"
+              placeholder="Digite seu código de convite"
+              required
+              maxLength={8}
+            />
         </div>
       </div>
 
