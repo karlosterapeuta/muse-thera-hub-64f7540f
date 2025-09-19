@@ -96,8 +96,8 @@ const App = () => {
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <InstantAuthChecker />
       <BrowserRouter>
+        <InstantAuthChecker />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
