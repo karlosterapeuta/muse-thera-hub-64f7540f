@@ -9,6 +9,7 @@ export type Profile = {
   avatar_url: string | null;
   created_at: string;
   status: string;
+  expires_at: string | null;
   user_roles: UserRole[];
 }
 
