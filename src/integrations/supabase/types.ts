@@ -964,7 +964,9 @@ export type Database = {
     }
     Functions: {
       force_user_logout: {
-        Args: { target_user_id: string }
+        Args:
+          | { bypass_auth_check?: boolean; target_user_id: string }
+          | { target_user_id: string }
         Returns: boolean
       }
       generate_invite_code: {

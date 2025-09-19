@@ -8,6 +8,7 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { useEffect } from "react";
 import { globalCacheManager } from "@/utils/cacheManager";
+import InstantAuthChecker from "@/components/auth/InstantAuthChecker";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -95,6 +96,7 @@ const App = () => {
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+      <InstantAuthChecker />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

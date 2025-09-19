@@ -17,6 +17,7 @@ export function useUserActions() {
     try {
       const newStatus = user.status === 'active' ? 'inactive' : 'active';
       
+      // First update the user status
       const { error } = await supabase.rpc(
         'update_user_status',
         {
@@ -28,6 +29,17 @@ export function useUserActions() {
       if (error) {
         console.error('Error updating user status:', error);
         throw error;
+      }
+
+      // If deactivating user, immediately force logout
+      if (newStatus === 'inactive') {
+        console.log('🚫 Deactivating user, forcing immediate logout...');
+        try {
+          await handleForceLogout(user.id, user.name);
+        } catch (logoutError) {
+          console.error('Error during forced logout:', logoutError);
+          // Continue anyway, the database trigger should also handle this
+        }
       }
 
       queryClient.setQueryData<Profile[]>(["users"], (oldData) => {
