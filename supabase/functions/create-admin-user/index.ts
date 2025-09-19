@@ -151,6 +151,7 @@ serve(async (req) => {
       password,
       isTemporaryPassword,
       userData: { name, email, role },
+      accessLimit,
     });
   } catch (e: any) {
     return jsonResponse({ error: e?.message || "Unknown error" }, { status: 500 });

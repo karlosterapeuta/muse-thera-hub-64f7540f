@@ -43,7 +43,8 @@ export function CreateUserDialog() {
         name: result.userData.name,
         email: result.userData.email,
         password: result.password,
-        role: result.userData.role
+        role: result.userData.role,
+        accessLimit: result.accessLimit
       });
       setCredentialsOpen(true);
       console.log('Credentials modal should now open with data:', {

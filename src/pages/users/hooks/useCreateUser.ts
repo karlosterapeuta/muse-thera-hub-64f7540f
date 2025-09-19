@@ -42,6 +42,7 @@ export function useCreateUser() {
         user: data.user,
         password: data.password, // Use password from Edge Function response
         isTemporaryPassword: data.isTemporaryPassword,
+        accessLimit: data.accessLimit,
         userData: data.userData || {
           name: userData.name,
           email: userData.email,

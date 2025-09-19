@@ -8,8 +8,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Copy, Music, Mail, Lock, Globe, CheckCircle } from "lucide-react";
+import { Copy, Music, Mail, Lock, Globe, CheckCircle, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatAccessLimit } from "../utils/formatAccessLimit";
 
 interface UserCredentialsModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface UserCredentialsModalProps {
     email: string;
     password: string;
     role: string;
+    accessLimit?: string;
   };
 }
 
@@ -34,9 +36,8 @@ Olá! Suas credenciais de acesso ao MuseTera foram criadas:
 📧 E-mail: ${userData.email}
 🔑 Senha: ${userData.password}
 👤 Perfil: ${userData.role === 'admin' ? 'Administrador' : 'Profissional'}
+⏰ Limite de Acesso: ${formatAccessLimit(userData.accessLimit)}
 🌐 Link de Acesso: https://portal-musetera.netlify.app/login
-
-Para sua segurança, recomendamos alterar a senha no primeiro acesso.
 
 Bem-vindo(a) ao MuseTera! 🎼`;
   };
@@ -102,18 +103,20 @@ Bem-vindo(a) ao MuseTera! 🎼`;
                 </div>
                 
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                  <Clock className="h-4 w-4 text-primary" />
+                  <div>
+                    <span className="text-sm font-medium">Limite de Acesso:</span>
+                    <p className="text-sm text-muted-foreground">{formatAccessLimit(userData.accessLimit)}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                   <Globe className="h-4 w-4 text-primary" />
                   <div>
                     <span className="text-sm font-medium">Link de Acesso:</span>
                     <p className="text-sm text-muted-foreground">https://portal-musetera.netlify.app/login</p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-md">
-                <p className="text-sm text-amber-800 dark:text-amber-200">
-                  Para sua segurança, recomendamos alterar a senha no primeiro acesso.
-                </p>
               </div>
               
               <p className="text-sm text-center text-primary font-medium mt-4">
