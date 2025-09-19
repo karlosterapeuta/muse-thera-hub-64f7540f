@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import LoginForm from "@/components/auth/LoginForm";
-import RegisterForm from "@/components/auth/RegisterForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +17,6 @@ interface HashParams {
 }
 
 export default function Login() {
-  const [isRegistering, setIsRegistering] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [isSettingNewPassword, setIsSettingNewPassword] = useState(false);
   const [isProcessingToken, setIsProcessingToken] = useState(true);
@@ -167,16 +165,9 @@ export default function Login() {
           onSwitchToLogin={() => setIsResettingPassword(false)}
         />
       );
-    } else if (isRegistering) {
-      return (
-        <RegisterForm
-          onSwitchToLogin={() => setIsRegistering(false)}
-        />
-      );
     } else {
       return (
         <LoginForm
-          onSwitchToRegister={() => setIsRegistering(true)}
           onSwitchToPasswordReset={() => setIsResettingPassword(true)}
         />
       );

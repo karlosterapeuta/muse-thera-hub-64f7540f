@@ -8,11 +8,10 @@ import { Eye, EyeOff, Mail, Lock, Music, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type LoginFormProps = {
-  onSwitchToRegister: () => void;
   onSwitchToPasswordReset: () => void;
 };
 
-export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset }: LoginFormProps) {
+export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -206,23 +205,6 @@ export default function LoginForm({ onSwitchToRegister, onSwitchToPasswordReset 
                 )}
               </div>
             </Button>
-
-            {/* Register Link */}
-            <div className="text-center pt-6 md:pt-8 border-t border-border/20">
-              <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4 font-medium">Ainda não possui uma conta?</p>
-              <button
-                type="button"
-                onClick={onSwitchToRegister}
-                className="group text-base md:text-lg lg:text-xl font-black text-primary hover:text-primary/80 transition-all duration-300 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-primary/10 border-2 border-transparent hover:border-primary/30 relative overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  <Sparkles className="w-4 md:w-5 h-4 md:h-5 group-hover:rotate-12 transition-transform duration-300" />
-                  Crie sua conta
-                  <Music className="w-4 md:w-5 h-4 md:h-5 group-hover:-rotate-12 transition-transform duration-300" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
-            </div>
           </form>
         </div>
       </div>
