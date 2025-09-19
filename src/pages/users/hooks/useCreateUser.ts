@@ -7,17 +7,14 @@ export interface CreateUserData {
   name: string;
   email: string;
   role: 'admin' | 'professional';
-  method: 'direct' | 'invite';
   password?: string;
 }
 
 export function useCreateUser() {
-  const [inviteCode, setInviteCode] = useState<string | null>(null);
-  const [showInviteCode, setShowInviteCode] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const createDirectUser = useMutation({
+  const createUser = useMutation({
     mutationFn: async (userData: CreateUserData) => {
       // Usar senha fornecida ou gerar uma temporária
       const password = userData.password || Math.random().toString(36).slice(-12) + 'A1!';
@@ -77,50 +74,8 @@ export function useCreateUser() {
     },
   });
 
-  const generateInviteCode = useMutation({
-    mutationFn: async (userData: CreateUserData) => {
-      const { data, error } = await supabase.rpc('generate_invite_code', {
-        expiration_days: 7
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      setInviteCode(data);
-      setShowInviteCode(true);
-      toast({
-        title: "Código de convite gerado!",
-        description: "Compartilhe o link com o novo usuário.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro ao gerar código de convite",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleCreateUser = async (userData: CreateUserData) => {
-    if (userData.method === 'direct') {
-      await createDirectUser.mutateAsync(userData);
-    } else {
-      await generateInviteCode.mutateAsync(userData);
-    }
-  };
-
-  const closeInviteCode = () => {
-    setShowInviteCode(false);
-    setInviteCode(null);
-  };
-
   return {
-    createUser: handleCreateUser,
-    isLoading: createDirectUser.isPending || generateInviteCode.isPending,
-    inviteCode,
-    showInviteCode,
-    closeInviteCode,
+    createUser: createUser.mutateAsync,
+    isLoading: createUser.isPending,
   };
 }

@@ -9,28 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { CreateUserForm } from "./CreateUserForm";
-import { InviteCodeDisplay } from "./InviteCodeDisplay";
 import { useCreateUser } from "../hooks/useCreateUser";
 
 export function CreateUserDialog() {
   const [open, setOpen] = useState(false);
-  const { 
-    createUser, 
-    isLoading, 
-    inviteCode, 
-    showInviteCode, 
-    closeInviteCode 
-  } = useCreateUser();
+  const { createUser, isLoading } = useCreateUser();
 
   const handleCreateUser = async (userData: any) => {
     await createUser(userData);
-    if (userData.method === 'direct') {
-      setOpen(false);
-    }
-  };
-
-  const handleCloseInviteCode = () => {
-    closeInviteCode();
     setOpen(false);
   };
 
@@ -47,17 +33,10 @@ export function CreateUserDialog() {
           <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
         </DialogHeader>
         
-        {showInviteCode ? (
-          <InviteCodeDisplay 
-            inviteCode={inviteCode!} 
-            onClose={handleCloseInviteCode}
-          />
-        ) : (
-          <CreateUserForm 
-            onSubmit={handleCreateUser}
-            isLoading={isLoading}
-          />
-        )}
+        <CreateUserForm 
+          onSubmit={handleCreateUser}
+          isLoading={isLoading}
+        />
       </DialogContent>
     </Dialog>
   );
