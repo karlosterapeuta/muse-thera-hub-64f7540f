@@ -34,11 +34,13 @@ export function useCreateUser() {
       if (error) throw error;
       if (!data?.user) throw new Error('Usuário não foi criado');
 
+      console.log('Edge Function response:', data);
+      
       return {
         user: data.user,
-        password,
-        isTemporaryPassword,
-        userData: {
+        password: data.password, // Use password from Edge Function response
+        isTemporaryPassword: data.isTemporaryPassword,
+        userData: data.userData || {
           name: userData.name,
           email: userData.email,
           role: userData.role,

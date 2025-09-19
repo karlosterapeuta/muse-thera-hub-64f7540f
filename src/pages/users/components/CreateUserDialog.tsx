@@ -25,6 +25,20 @@ export function CreateUserDialog() {
       console.log('About to call createUser mutation');
       const result = await createUser(userData);
       console.log('CreateUser result:', result);
+      
+      // Validate that we have the required data
+      if (!result || !result.userData || !result.password) {
+        console.error('Invalid result structure:', result);
+        throw new Error('Resposta inválida do servidor - dados de credenciais não encontrados');
+      }
+      
+      console.log('Setting credentials data:', {
+        name: result.userData.name,
+        email: result.userData.email,
+        password: result.password,
+        role: result.userData.role
+      });
+      
       setCreatedUserData({
         name: result.userData.name,
         email: result.userData.email,
@@ -32,7 +46,15 @@ export function CreateUserDialog() {
         role: result.userData.role
       });
       setCredentialsOpen(true);
-      console.log('Credentials modal should now open');
+      console.log('Credentials modal should now open with data:', {
+        credentialsOpen,
+        createdUserData: {
+          name: result.userData.name,
+          email: result.userData.email,
+          password: result.password,
+          role: result.userData.role
+        }
+      });
     } catch (error) {
       console.error('Error in handleCreateUser:', error);
     }
