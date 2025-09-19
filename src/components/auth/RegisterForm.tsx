@@ -74,56 +74,58 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         return;
       }
 
-      // Register user with Supabase without email confirmation
-      const result = await supabase.auth.signUp({
+      // Registrar usuário e definir URL de redirecionamento do e-mail
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: sanitizedEmail,
         password,
         options: {
           data: {
             name: sanitizedEmail.split('@')[0],
           },
-          // Skip email confirmation by not setting emailRedirectTo
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
       
-      // Handle different signup scenarios
-      let currentUser = result.data.user;
+      let currentUser = signUpData?.user ?? null;
+      let session = signUpData?.session ?? null;
       
-      if (result.error && result.error.message === "User already registered") {
-        // User exists, try to sign in instead
-        const signInResult = await supabase.auth.signInWithPassword({
+      if (signUpError && signUpError.message === 'User already registered') {
+        // Usuário já existe, tentar login
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: sanitizedEmail,
           password,
         });
         
-        if (signInResult.error) throw signInResult.error;
-        currentUser = signInResult.data.user;
-      } else if (result.error) {
-        throw result.error;
+        if (signInError) throw signInError;
+        currentUser = signInData.user;
+        session = signInData.session;
+      } else if (signUpError) {
+        throw signUpError;
       }
 
-      if (!currentUser) {
-        throw new Error("Falha na autenticação do usuário");
+      // Se não veio sessão, confirmação de e-mail está habilitada
+      if (!session || !currentUser) {
+        toast({
+          title: 'Conta criada!',
+          description: 'Enviamos um e-mail de confirmação. Confirme para concluir o cadastro.',
+        });
+        return;
       }
 
-      // Validate invite code after authentication
-      const { error: updateError } = await supabase.rpc(
-        'validate_invite_code_with_limits',
-        { 
-          invite_code: sanitizedInviteCode,
-          user_id: currentUser.id
-        }
-      );
+      // Validar/consumir código de convite após autenticação
+      const { error: updateError } = await supabase.rpc('validate_invite_code_with_limits', {
+        invite_code: sanitizedInviteCode,
+        user_id: currentUser.id,
+      });
 
       if (updateError) {
-        // If invite code validation fails, sign out the user
         await supabase.auth.signOut();
-        throw new Error("Código de convite inválido ou já utilizado");
+        throw new Error('Código de convite inválido ou já utilizado');
       }
       
       toast({
-        title: "Registro realizado com sucesso!",
-        description: "Redirecionando para o dashboard...",
+        title: 'Registro realizado com sucesso!',
+        description: 'Redirecionando para o dashboard...',
       });
       
       // Redirect to dashboard immediately
