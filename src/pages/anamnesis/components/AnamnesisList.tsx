@@ -1,11 +1,9 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useAnamnesisData, useDeleteAnamnesis, AnamnesisItem } from "@/hooks/useAnamnesisData";
 import { 
   Eye, 
   Edit, 
@@ -30,14 +28,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 
-type AnamnesisItem = {
-  id: string;
-  patient_id: string;
-  created_at: string;
-  updated_at: string;
-  patient_name?: string;
-  main_clinical_demand?: string;
-};
 
 interface AnamnesesListProps {
   onCreateNew: () => void;
@@ -46,123 +36,21 @@ interface AnamnesesListProps {
 }
 
 export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProps) {
-  const [anamneses, setAnamneses] = useState<AnamnesisItem[]>([]);
-  const [filteredAnamneses, setFilteredAnamneses] = useState<AnamnesisItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const { toast } = useToast();
+  const { data: anamneses = [], isLoading, error } = useAnamnesisData();
+  const deleteAnamnesis = useDeleteAnamnesis();
 
-  useEffect(() => {
-    loadAnamneses();
-  }, []);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = anamneses.filter(anamnesis =>
-        anamnesis.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        anamnesis.main_clinical_demand?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredAnamneses(filtered);
-    } else {
-      setFilteredAnamneses(anamneses);
-    }
+  const filteredAnamneses = useMemo(() => {
+    if (!searchTerm) return anamneses;
+    
+    return anamneses.filter(anamnesis =>
+      anamnesis.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      anamnesis.main_clinical_demand?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }, [searchTerm, anamneses]);
 
-  const loadAnamneses = async () => {
-    try {
-      setIsLoading(true);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Get anamneses with patient names
-      console.log("🔍 Iniciando busca de anamneses para usuário:", user.id);
-      
-      const { data: anamnesisData, error } = await supabase
-        .from("anamnesis")
-        .select(`
-          id,
-          patient_id,
-          created_at,
-          updated_at,
-          main_clinical_demand,
-          patients(name)
-        `)
-        .eq("professional_id", user.id)
-        .order("updated_at", { ascending: false });
-
-      console.log("📊 Resposta da consulta de anamneses:", { data: anamnesisData, error });
-
-      if (error) {
-        console.error("❌ Erro ao carregar anamneses:", error);
-        toast({
-          title: "Erro",
-          description: `Erro ao carregar anamneses: ${error.message}`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const formattedData = anamnesisData?.map(item => ({
-        id: item.id,
-        patient_id: item.patient_id,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        main_clinical_demand: item.main_clinical_demand,
-        patient_name: item.patients?.name
-      })) || [];
-
-      console.log("✅ Dados formatados das anamneses:", formattedData);
-      setAnamneses(formattedData);
-    } catch (error) {
-      console.error("Erro ao carregar anamneses:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar as anamneses.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (anamnesisId: string) => {
-    try {
-      setIsDeleting(anamnesisId);
-      
-      const { error } = await supabase
-        .from("anamnesis")
-        .delete()
-        .eq("id", anamnesisId);
-
-      if (error) {
-        console.error("Erro ao excluir anamnese:", error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível excluir a anamnese.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Sucesso",
-        description: "Anamnese excluída com sucesso.",
-      });
-      
-      // Reload the list
-      await loadAnamneses();
-    } catch (error) {
-      console.error("Erro ao excluir anamnese:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível excluir a anamnese.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeleting(null);
-    }
+  const handleDelete = (anamnesisId: string) => {
+    deleteAnamnesis.mutate(anamnesisId);
   };
 
   const formatDate = (dateString: string) => {
@@ -178,8 +66,26 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <div className="text-destructive mb-4">
+            <h3 className="text-lg font-semibold">Erro ao carregar anamneses</h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              {error.message || "Não foi possível carregar as anamneses."}
+            </p>
+          </div>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Tentar Novamente
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -343,10 +249,10 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          disabled={isDeleting === anamnesis.id}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          disabled={deleteAnamnesis.isPending}
                         >
-                          {isDeleting === anamnesis.id ? (
+                          {deleteAnamnesis.isPending ? (
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
                           ) : (
                             <Trash2 size={14} />
@@ -365,7 +271,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(anamnesis.id)}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-destructive hover:bg-destructive/90"
                           >
                             Excluir
                           </AlertDialogAction>
