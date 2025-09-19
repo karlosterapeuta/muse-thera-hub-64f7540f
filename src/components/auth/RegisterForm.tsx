@@ -21,8 +21,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [rememberMe, setRememberMe] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [awaitingEmailConfirm, setAwaitingEmailConfirm] = useState(false);
-  const [lastRegisteredEmail, setLastRegisteredEmail] = useState<string>("");
 
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -49,7 +47,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         throw new Error("Código de convite deve ter 8 caracteres alfanuméricos");
       }
 
-      // Registrar usuário e definir URL de redirecionamento do e-mail
+      // Registrar usuário sem confirmação de e-mail
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: sanitizedEmail,
         password,
@@ -57,7 +55,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           data: {
             name: sanitizedEmail.split('@')[0],
           },
-          emailRedirectTo: `${window.location.origin}/`,
         },
       });
       
@@ -78,14 +75,9 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         throw signUpError;
       }
 
+      // Verificar se a sessão foi criada
       if (!session || !currentUser) {
-        setAwaitingEmailConfirm(true);
-        setLastRegisteredEmail(sanitizedEmail);
-        toast({
-          title: 'Conta criada! Confirme seu e-mail',
-          description: 'Enviamos um e-mail de confirmação. Após confirmar, volte e faça login.',
-        });
-        return;
+        throw new Error('Falha na criação da conta. Tente novamente.');
       }
 
       // Validar/consumir código de convite após autenticação
@@ -114,20 +106,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         description: error.message || "Erro ao registrar. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    if (!lastRegisteredEmail) return;
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.resend({ type: 'signup', email: lastRegisteredEmail });
-      if (error) throw error;
-      toast({ title: 'E-mail reenviado', description: 'Verifique sua caixa de entrada.' });
-    } catch (error: any) {
-      toast({ title: 'Falha ao reenviar', description: error.message || 'Tente novamente.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -191,17 +169,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             />
         </div>
       </div>
-
-      {awaitingEmailConfirm && (
-        <div className="rounded-md border border-yellow-300 bg-yellow-50 p-3 text-yellow-800 text-sm">
-          Conta criada! Verifique o e-mail {lastRegisteredEmail} para confirmar o cadastro.
-          <div className="mt-2">
-            <Button type="button" variant="outline" onClick={handleResendConfirmation} disabled={isLoading}>
-              Reenviar e-mail de confirmação
-            </Button>
-          </div>
-        </div>
-      )}
 
       <div className="flex items-center">
         <input
