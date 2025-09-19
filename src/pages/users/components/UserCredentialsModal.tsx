@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -67,6 +68,9 @@ Bem-vindo(a) ao MuseTera! 🎼`;
             <Music className="h-5 w-5 text-primary" />
             Credenciais do MuseTera - {userData.name}
           </DialogTitle>
+          <DialogDescription>
+            Credenciais de acesso geradas para o novo usuário
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

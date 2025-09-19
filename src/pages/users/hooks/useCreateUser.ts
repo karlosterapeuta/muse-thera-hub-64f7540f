@@ -75,8 +75,12 @@ export function useCreateUser() {
     },
   });
 
+  const createUserAction = async (userData: CreateUserData) => {
+    return await createUser.mutateAsync(userData);
+  };
+
   return {
-    createUser: createUser.mutateAsync,
+    createUser: createUserAction,
     isLoading: createUser.isPending,
   };
 }
