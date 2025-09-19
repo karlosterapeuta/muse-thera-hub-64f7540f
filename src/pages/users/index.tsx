@@ -9,6 +9,7 @@ import { StatusLogsDialog } from "./components/StatusLogsDialog";
 import { UsersTable } from "./components/UsersTable";
 import { UserFilters } from "./components/UserFilters";
 import { UserStats } from "./components/UserStats";
+import { CreateUserDialog } from "./components/CreateUserDialog";
 import { useUsers } from "./hooks/useUsers";
 import { useUserActions } from "./hooks/useUserActions";
 
@@ -85,7 +86,10 @@ export default function Users() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6 text-primary">Gestão de Usuários</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-bold text-primary">Gestão de Usuários</h1>
+        <CreateUserDialog />
+      </div>
       
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
