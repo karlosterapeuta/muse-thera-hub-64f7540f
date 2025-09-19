@@ -13,7 +13,7 @@ interface UserRowProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
-  loadingLogout?: string | null;
+  loadingLogout?: Record<string, boolean>;
 }
 
 export function UserRow({ 
@@ -24,7 +24,7 @@ export function UserRow({
   onForceLogout, 
   loadingLogout 
 }: UserRowProps) {
-  const isLogoutLoading = loadingLogout === user.id;
+  const isLogoutLoading = loadingLogout?.[user.id] || false;
 
   return (
     <TableRow key={user.id}>

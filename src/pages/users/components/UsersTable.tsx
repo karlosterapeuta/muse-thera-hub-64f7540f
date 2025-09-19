@@ -16,7 +16,7 @@ interface UsersTableProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
-  loadingLogout?: string | null;
+  loadingLogout?: Record<string, boolean>;
 }
 
 export function UsersTable({ 
