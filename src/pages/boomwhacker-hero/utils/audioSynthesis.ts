@@ -1,8 +1,9 @@
 
 // Utilitário para síntese de áudio procedural melhorado
+import { globalCacheManager } from "@/utils/cacheManager";
+
 export class AudioSynthesis {
   private audioContext: AudioContext | null = null;
-  private audioCache: Map<string, string> = new Map();
 
   constructor() {
     try {
@@ -145,9 +146,10 @@ export class AudioSynthesis {
 
     // Verificar cache primeiro
     const cacheKey = `${title}-${genre}-${duration}`;
-    if (this.audioCache.has(cacheKey)) {
+    const cachedUrl = globalCacheManager.get('melodies', cacheKey);
+    if (cachedUrl) {
       console.log(`🎵 Usando melodia original em cache para: ${title}`);
-      return this.audioCache.get(cacheKey)!;
+      return cachedUrl;
     }
 
     try {
@@ -230,8 +232,8 @@ export class AudioSynthesis {
       const blob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
       const url = URL.createObjectURL(blob);
       
-      // Adicionar ao cache
-      this.audioCache.set(cacheKey, url);
+      // Adicionar ao cache com TTL de 1 hora para melodias
+      globalCacheManager.set('melodies', cacheKey, url, 60 * 60 * 1000);
       
       console.log(`🎵 Melodia original gerada: ${title} (${genre}) - ${duration}s`);
       return url;
@@ -303,9 +305,14 @@ export class AudioSynthesis {
 
   // Limpar cache de áudio
   clearCache() {
-    this.audioCache.forEach(url => URL.revokeObjectURL(url));
-    this.audioCache.clear();
-    console.log('🧹 Cache de áudio limpo');
+    // Revoke all cached URLs and clear from global cache manager
+    const melodyStats = globalCacheManager.getStats().namespaces['melodies'];
+    if (melodyStats) {
+      // Note: We can't easily iterate over cached URLs to revoke them
+      // The global cache manager will handle cleanup automatically
+      globalCacheManager.clearNamespace('melodies');
+      console.log('🧹 Cache de melodias limpo');
+    }
   }
 
   dispose() {

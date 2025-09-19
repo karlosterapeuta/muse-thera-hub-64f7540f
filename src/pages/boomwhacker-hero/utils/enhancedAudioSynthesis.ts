@@ -1,5 +1,6 @@
 
 import { AudioSynthesis } from './audioSynthesis';
+import { globalCacheManager } from "@/utils/cacheManager";
 
 export class EnhancedAudioSynthesis extends AudioSynthesis {
   private harmonicContext: AudioContext | null = null;
@@ -116,6 +117,10 @@ export class EnhancedAudioSynthesis extends AudioSynthesis {
 
   dispose(): void {
     this.stopAllNotes();
+    
+    // Clear enhanced audio caches
+    globalCacheManager.clearNamespace('audio');
+    
     if (this.harmonicContext) {
       this.harmonicContext.close();
       this.harmonicContext = null;

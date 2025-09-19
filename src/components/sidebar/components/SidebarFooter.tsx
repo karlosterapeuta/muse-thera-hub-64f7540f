@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { globalCacheManager } from "@/utils/cacheManager";
 
 interface SidebarFooterProps {
   collapsed: boolean;
@@ -13,6 +14,10 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
   const handleLogout = async () => {
     try {
       console.log("Iniciando logout...");
+      
+      // Perform comprehensive cache cleanup
+      globalCacheManager.performFullCleanup();
+      globalCacheManager.clearAll();
       
       // Clear any local storage data
       localStorage.clear();

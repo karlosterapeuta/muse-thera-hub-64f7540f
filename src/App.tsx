@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import "./App.css";
 import Layout from "./components/Layout";
+import { useEffect } from "react";
+import { globalCacheManager } from "@/utils/cacheManager";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -59,7 +61,37 @@ import ActivityCategory from "./pages/activities/category";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    // Initialize cache namespaces
+    globalCacheManager.initCache('audio');
+    globalCacheManager.initCache('melodies');
+    globalCacheManager.initCache('sounds');
+    globalCacheManager.initCache('api');
+    globalCacheManager.initCache('user-data');
+
+    // Perform initial cleanup on app start
+    const cleaned = globalCacheManager.cleanup();
+    globalCacheManager.cleanWebStorage();
+    
+    if (cleaned > 0) {
+      console.log(`🧹 Initial cache cleanup: removed ${cleaned} expired items`);
+    }
+
+    // Cleanup on page unload
+    const handleBeforeUnload = () => {
+      globalCacheManager.performFullCleanup();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      globalCacheManager.dispose();
+    };
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -114,6 +146,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

@@ -1,5 +1,7 @@
 
 // Serviço de áudio simples e funcional para o musicograma
+import { globalCacheManager } from "@/utils/cacheManager";
+
 class SimpleAudioService {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
@@ -56,6 +58,17 @@ class SimpleAudioService {
     if (this.masterGain) {
       this.masterGain.gain.value = Math.max(0, Math.min(1, volume));
     }
+  }
+
+  dispose(): void {
+    // Clear simple audio caches
+    globalCacheManager.clearNamespace('sounds');
+    
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close();
+    }
+    this.audioContext = null;
+    this.masterGain = null;
   }
 }
 
