@@ -19,48 +19,30 @@ export function useCreateUser() {
       // Usar senha fornecida ou gerar uma temporária
       const password = userData.password || Math.random().toString(36).slice(-12) + 'A1!';
       const isTemporaryPassword = !userData.password;
-      
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
-        password: password,
-        user_metadata: {
-          name: userData.name
+
+      // Chamar Edge Function com Service Role que cria usuário e registra perfil/role
+      const { data, error } = await supabase.functions.invoke('create-admin-user', {
+        body: {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          password,
+          isTemporaryPassword,
         },
-        email_confirm: true
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Usuário não foi criado');
+      if (error) throw error;
+      if (!data?.user) throw new Error('Usuário não foi criado');
 
-      // Criar perfil
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          name: userData.name
-        });
-
-      if (profileError) throw profileError;
-
-      // Criar role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: authData.user.id,
-          role: userData.role
-        });
-
-      if (roleError) throw roleError;
-
-      return { 
-        user: authData.user, 
-        password, 
+      return {
+        user: data.user,
+        password,
         isTemporaryPassword,
         userData: {
           name: userData.name,
           email: userData.email,
-          role: userData.role
-        }
+          role: userData.role,
+        },
       };
     },
     onSuccess: (data) => {
