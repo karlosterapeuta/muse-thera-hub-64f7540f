@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Clock, Calendar, TrendingUp, Users, FileText, Activity, BarChart3 } from "lucide-react";
+import { Clock, Calendar, TrendingUp, Users, FileText, Activity, BarChart3, Camera } from "lucide-react";
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
 import LogoRound from "@/components/LogoRound";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
@@ -120,9 +120,19 @@ export function DashboardHeader({
                 </div>
               </div>
               
-              <div className="relative">
+              <div className="relative group">
                 <ProfessionalAvatar size="lg" editable={true} />
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
+                
+                {/* Camera indicator */}
+                <div className="absolute -top-1 -left-1 w-6 h-6 bg-blue-600 border-2 border-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-200">
+                  <Camera className="h-3 w-3 text-white" />
+                </div>
+                
+                {/* Tooltip */}
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                  Clique para alterar foto
+                </div>
               </div>
             </div>
           </div>
