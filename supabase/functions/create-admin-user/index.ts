@@ -97,25 +97,31 @@ serve(async (req) => {
     const newUserId = authData.user.id;
 
     // Create profile
-    const { error: profileError } = await adminClient.from("profiles").insert({
-      id: newUserId,
-      name,
-    });
+    const { error: profileError } = await adminClient
+      .from("profiles")
+      .upsert(
+        { id: newUserId, name },
+        { onConflict: "id", ignoreDuplicates: true }
+      );
     if (profileError) {
-      console.error("Profile creation failed:", profileError);
+      console.error("Profile upsert failed:", profileError);
       return jsonResponse({ error: "Erro ao criar perfil: " + profileError.message }, { status: 400 });
     }
     
     console.log("Profile created successfully for user:", newUserId);
 
     // Assign role
-    const { error: assignRoleError } = await adminClient.from("user_roles").insert({
-      user_id: newUserId,
-      role,
-    });
+    const { error: assignRoleError } = await adminClient
+      .from("user_roles")
+      .insert({ user_id: newUserId, role });
     if (assignRoleError) {
-      console.error("Role assignment failed:", assignRoleError);
-      return jsonResponse({ error: "Erro ao atribuir função: " + assignRoleError.message }, { status: 400 });
+      // Ignore duplicate role assignments
+      if ((assignRoleError as any).code === "23505") {
+        console.warn("Role already assigned, ignoring duplicate constraint:", assignRoleError?.message);
+      } else {
+        console.error("Role assignment failed:", assignRoleError);
+        return jsonResponse({ error: "Erro ao atribuir função: " + assignRoleError.message }, { status: 400 });
+      }
     }
     
     console.log("Role assigned successfully:", { userId: newUserId, role });
