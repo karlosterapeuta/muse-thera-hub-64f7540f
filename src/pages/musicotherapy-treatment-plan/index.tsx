@@ -32,6 +32,11 @@ import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDF';
 import { supabase } from '@/integrations/supabase/client';
+import { PromptSelector } from '@/components/musicotherapy/PromptSelector';
+import { DiagnosisSelector } from '@/components/musicotherapy/DiagnosisSelector';
+import { ObjectivesSelector } from '@/components/musicotherapy/ObjectivesSelector';
+import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector';
+import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
 
 type Patient = {
   id: string;
@@ -363,14 +368,10 @@ export default function MusicotherapyTreatmentPlanPage() {
                       />
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label>Diagnóstico clínico</Label>
-                      <Input
-                        value={planData.clinical_diagnosis || ''}
-                        onChange={(e) => updatePlanData({ clinical_diagnosis: e.target.value })}
-                        placeholder="Ex: TEA, TDAH, etc."
-                      />
-                    </div>
+                    <DiagnosisSelector
+                      value={planData.clinical_diagnosis || ''}
+                      onChange={(value) => updatePlanData({ clinical_diagnosis: value })}
+                    />
                     
                     <div className="space-y-2">
                       <Label>Responsável</Label>
@@ -404,35 +405,47 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label>Histórico clínico e familiar relevante</Label>
-                    <Textarea
-                      value={planData.clinical_family_history || ''}
-                      onChange={(e) => updatePlanData({ clinical_family_history: e.target.value })}
-                      placeholder="Descreva o histórico clínico e familiar relevante..."
-                      rows={4}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Histórico clínico e familiar relevante"
+                    prompts={[
+                      "Diagnóstico aos [idade] anos. Histórico de [condições]. Medicações em uso: [medicamentos]. Terapias complementares: [terapias].",
+                      "Desenvolvimento típico até [idade]. Primeira manifestação dos sintomas em [período]. Família com histórico de [condições].",
+                      "Parto sem intercorrências. Marco do desenvolvimento dentro da normalidade até [idade]. Histórico familiar sem relevância clínica.",
+                      "Nascimento prematuro com [complicações]. Acompanhamento médico desde [idade]. Família com suporte adequado."
+                    ]}
+                    value={planData.clinical_family_history || ''}
+                    onChange={(value) => updatePlanData({ clinical_family_history: value })}
+                    placeholder="Descreva o histórico clínico e familiar relevante..."
+                    rows={4}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Condições físicas, cognitivas, emocionais e sociais</Label>
-                    <Textarea
-                      value={planData.physical_cognitive_conditions || ''}
-                      onChange={(e) => updatePlanData({ physical_cognitive_conditions: e.target.value })}
-                      placeholder="Descreva as condições atuais do paciente..."
-                      rows={4}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Condições físicas, cognitivas, emocionais e sociais"
+                    prompts={[
+                      "Desenvolvimento motor: [típico/atípico]. Coordenação: [preservada/comprometida]. Atenção sustentada: [tempo]. Memória: [preservada/dificuldades].",
+                      "Comunicação verbal: [presente/ausente/limitada]. Compreensão: [adequada para idade/comprometida]. Aspectos sensoriais: [hiper/hipossensibilidade].",
+                      "Estado emocional estável. Comportamentos adaptativos adequados. Interação social apropriada para faixa etária.",
+                      "Ansiedade moderada em situações novas. Dificuldades de autorregulação emocional. Preferência por rotinas estruturadas."
+                    ]}
+                    value={planData.physical_cognitive_conditions || ''}
+                    onChange={(value) => updatePlanData({ physical_cognitive_conditions: value })}
+                    placeholder="Descreva as condições atuais do paciente..."
+                    rows={4}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Nível de interação e comunicação</Label>
-                    <Textarea
-                      value={planData.interaction_communication_level || ''}
-                      onChange={(e) => updatePlanData({ interaction_communication_level: e.target.value })}
-                      placeholder="Descreva como o paciente se comunica e interage..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Nível de interação e comunicação"
+                    prompts={[
+                      "Contato visual: [mantém/evita/eventual]. Iniciativa comunicativa: [presente/ausente]. Responde ao chamado pelo nome: [sim/não/às vezes].",
+                      "Interação social: [busca/evita/indiferente]. Brincadeiras: [solitárias/paralelas/cooperativas]. Turnos de comunicação: [compreende/não compreende].",
+                      "Comunicação funcional presente. Busca interação com adultos de referência. Compreende comandos simples.",
+                      "Comunicação não verbal predominante. Utiliza gestos para expressar necessidades. Preferência por interação individual."
+                    ]}
+                    value={planData.interaction_communication_level || ''}
+                    onChange={(value) => updatePlanData({ interaction_communication_level: value })}
+                    placeholder="Descreva como o paciente se comunica e interage..."
+                    rows={3}
+                  />
                   
                   <div className="space-y-2">
                     <Label>Interesses musicais</Label>
@@ -467,22 +480,14 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ArrayInput
+                  <ObjectivesSelector
                     label="Propósitos amplos da musicoterapia"
-                    field="general_objectives"
-                    placeholder="Ex: Promover a comunicação verbal e não verbal"
+                    objectives={planData.general_objectives || []}
+                    onAdd={(objective) => addArrayItem('general_objectives', objective)}
+                    onRemove={(index) => removeArrayItem('general_objectives', index)}
+                    suggestions={[]}
+                    type="general"
                   />
-                  
-                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">Exemplos de objetivos gerais:</h4>
-                    <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Promover a comunicação verbal e não verbal</li>
-                      <li>• Favorecer a autorregulação emocional</li>
-                      <li>• Estimular habilidades cognitivas (atenção, memória, concentração)</li>
-                      <li>• Melhorar habilidades motoras finas e grossas</li>
-                      <li>• Incentivar a socialização e interação com o outro</li>
-                    </ul>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -497,22 +502,14 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ArrayInput
+                  <ObjectivesSelector
                     label="Objetivos mensuráveis e específicos"
-                    field="specific_objectives"
-                    placeholder="Ex: Ampliar o tempo de atenção sustentada em atividades musicais para até 10 minutos"
+                    objectives={planData.specific_objectives || []}
+                    onAdd={(objective) => addArrayItem('specific_objectives', objective)}
+                    onRemove={(index) => removeArrayItem('specific_objectives', index)}
+                    suggestions={[]}
+                    type="specific"
                   />
-                  
-                  <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                    <h4 className="font-medium text-green-900 mb-2">Exemplos de objetivos específicos:</h4>
-                    <ul className="text-sm text-green-800 space-y-1">
-                      <li>• Ampliar o tempo de atenção sustentada em atividades musicais para até 10 minutos</li>
-                      <li>• Favorecer a iniciação de turnos musicais em atividades rítmicas</li>
-                      <li>• Desenvolver a expressão vocal através de canções dirigidas</li>
-                      <li>• Estimular movimentos coordenados ao acompanhar músicas</li>
-                      <li>• Incentivar a interação em grupo por meio de improvisações musicais</li>
-                    </ul>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -527,31 +524,46 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ArrayInput
-                      label="Instrumentos musicais"
-                      field="musical_instruments"
-                      placeholder="Ex: Violão, teclado, percussão"
-                    />
-                    
-                    <ArrayInput
-                      label="Recursos tecnológicos"
-                      field="technological_resources"
-                      placeholder="Ex: Aplicativos musicais, microfone"
-                    />
-                    
-                    <ArrayInput
-                      label="Voz e corpo"
-                      field="voice_body_resources"
-                      placeholder="Ex: Percussão corporal, canto"
-                    />
-                    
-                    <ArrayInput
-                      label="Materiais complementares"
-                      field="complementary_materials"
-                      placeholder="Ex: Imagens, cartões, objetos sonoros"
-                    />
-                  </div>
+                  <ResourcesSelector
+                    resources={[
+                      ...(planData.musical_instruments || []),
+                      ...(planData.technological_resources || []),
+                      ...(planData.voice_body_resources || []),
+                      ...(planData.complementary_materials || [])
+                    ]}
+                    onAdd={(resource) => {
+                      // Add to the first empty array or musical_instruments by default
+                      if (!planData.musical_instruments?.length) {
+                        addArrayItem('musical_instruments', resource);
+                      } else {
+                        addArrayItem('complementary_materials', resource);
+                      }
+                    }}
+                    onRemove={(index) => {
+                      // Find which array the item belongs to and remove it
+                      const allResources = [
+                        ...(planData.musical_instruments || []),
+                        ...(planData.technological_resources || []),
+                        ...(planData.voice_body_resources || []),
+                        ...(planData.complementary_materials || [])
+                      ];
+                      
+                      let currentIndex = 0;
+                      const fields: (keyof MusicotherapyTreatmentPlan)[] = [
+                        'musical_instruments', 'technological_resources', 
+                        'voice_body_resources', 'complementary_materials'
+                      ];
+                      
+                      for (const field of fields) {
+                        const fieldArray = planData[field] as string[] || [];
+                        if (index < currentIndex + fieldArray.length) {
+                          removeArrayItem(field, index - currentIndex);
+                          break;
+                        }
+                        currentIndex += fieldArray.length;
+                      }
+                    }}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -566,45 +578,61 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label>Improvisação musical</Label>
-                    <Textarea
-                      value={planData.musical_improvisation || ''}
-                      onChange={(e) => updatePlanData({ musical_improvisation: e.target.value })}
-                      placeholder="Interação livre ou dirigida com instrumentos..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Improvisação musical"
+                    prompts={[
+                      "Exploração livre de instrumentos seguida de estruturação gradual. Diálogos musicais entre terapeuta e paciente. Criação de 'conversas' rítmicas.",
+                      "Interação espontânea com instrumentos melódicos. Desenvolvimento de temas musicais improvisados. Jogos de pergunta e resposta musical.",
+                      "Criação livre com instrumentos de percussão. Expressão emocional através da improvisação. Exploração de texturas sonoras.",
+                      "Improvisação vocal livre seguida de estruturação rítmica. Diálogos sonoros não verbais. Expressão criativa sem julgamento."
+                    ]}
+                    value={planData.musical_improvisation || ''}
+                    onChange={(value) => updatePlanData({ musical_improvisation: value })}
+                    placeholder="Interação livre ou dirigida com instrumentos..."
+                    rows={3}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Recriação musical</Label>
-                    <Textarea
-                      value={planData.musical_recreation || ''}
-                      onChange={(e) => updatePlanData({ musical_recreation: e.target.value })}
-                      placeholder="Cantar ou tocar músicas conhecidas..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Recriação musical"
+                    prompts={[
+                      "Canções conhecidas adaptadas às necessidades terapêuticas. Modificação de letras para trabalhar objetivos específicos. Acompanhamento instrumental de repertório familiar.",
+                      "Reprodução de canções infantis com gestos corporais. Adaptação do tempo e ritmo conforme capacidade do paciente. Inclusão de instrumentos simples.",
+                      "Interpretação de músicas preferidas do paciente. Trabalho de memória através do repertório conhecido. Estímulo à participação vocal.",
+                      "Recriação de trilhas sonoras familiares. Associação de músicas a atividades cotidianas. Desenvolvimento de repertório terapêutico personalizado."
+                    ]}
+                    value={planData.musical_recreation || ''}
+                    onChange={(value) => updatePlanData({ musical_recreation: value })}
+                    placeholder="Cantar ou tocar músicas conhecidas..."
+                    rows={3}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Composição</Label>
-                    <Textarea
-                      value={planData.musical_composition || ''}
-                      onChange={(e) => updatePlanData({ musical_composition: e.target.value })}
-                      placeholder="Criar músicas, letras ou sons em conjunto..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Composição"
+                    prompts={[
+                      "Criação de pequenas melodias sobre temas do interesse do paciente. Composição de letras expressando sentimentos. Construção coletiva de canções simples.",
+                      "Desenvolvimento de sons e ritmos personalizados. Criação de histórias musicais. Composição colaborativa entre terapeuta e paciente.",
+                      "Invenção de canções temáticas para rotinas diárias. Criação de jingles musicais. Desenvolvimento de identidade sonora pessoal.",
+                      "Composição de músicas para expressar emoções específicas. Criação de trilhas para atividades favoritas. Desenvolvimento de repertório autoral."
+                    ]}
+                    value={planData.musical_composition || ''}
+                    onChange={(value) => updatePlanData({ musical_composition: value })}
+                    placeholder="Criar músicas, letras ou sons em conjunto..."
+                    rows={3}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Escuta receptiva</Label>
-                    <Textarea
-                      value={planData.receptive_listening || ''}
-                      onChange={(e) => updatePlanData({ receptive_listening: e.target.value })}
-                      placeholder="Ouvir músicas para estimular resposta emocional ou cognitiva..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Escuta receptiva"
+                    prompts={[
+                      "Músicas selecionadas para relaxamento e regulação emocional. Escuta ativa com movimentos corporais. Associação de músicas a imagens e histórias.",
+                      "Seleção de repertório para diferentes estados emocionais. Escuta direcionada para estimulação cognitiva. Trabalho de memória auditiva.",
+                      "Músicas para indução de estados de calma. Escuta com visualização dirigida. Trabalho de identificação de emoções através da música.",
+                      "Repertório adaptado para diferentes objetivos terapêuticos. Escuta com proposta de movimento expressivo. Estimulação sensorial através da música."
+                    ]}
+                    value={planData.receptive_listening || ''}
+                    onChange={(value) => updatePlanData({ receptive_listening: value })}
+                    placeholder="Ouvir músicas para estimular resposta emocional ou cognitiva..."
+                    rows={3}
+                  />
                   
                   <div className="space-y-2">
                     <Label>Dinâmicas rítmicas</Label>
@@ -700,22 +728,11 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ArrayInput
-                    label="Parâmetros observáveis para medir evolução"
-                    field="evaluation_criteria_list"
-                    placeholder="Ex: Aumento do tempo de engajamento na atividade"
+                  <EvaluationCriteriaSelector
+                    criteria={planData.evaluation_criteria_list || []}
+                    onAdd={(criterion) => addArrayItem('evaluation_criteria_list', criterion)}
+                    onRemove={(index) => removeArrayItem('evaluation_criteria_list', index)}
                   />
-                  
-                  <div className="mt-6 p-4 bg-purple-50 rounded-lg">
-                    <h4 className="font-medium text-purple-900 mb-2">Exemplos de critérios de avaliação:</h4>
-                    <ul className="text-sm text-purple-800 space-y-1">
-                      <li>• Aumento do tempo de engajamento na atividade</li>
-                      <li>• Participação espontânea em turnos musicais</li>
-                      <li>• Maior variedade de respostas vocais ou gestuais</li>
-                      <li>• Redução de comportamentos desregulados durante a sessão</li>
-                      <li>• Evidências de transferência das habilidades para outros contextos</li>
-                    </ul>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -730,35 +747,47 @@ export default function MusicotherapyTreatmentPlanPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label>Estrutura das sessões</Label>
-                    <Textarea
-                      value={planData.session_structure || ''}
-                      onChange={(e) => updatePlanData({ session_structure: e.target.value })}
-                      placeholder="Descreva a estrutura típica das sessões (início, desenvolvimento, fechamento)..."
-                      rows={4}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Estrutura das sessões"
+                    prompts={[
+                      "Ritual de chegada (5 min) → Aquecimento musical (10 min) → Atividade principal (25 min) → Relaxamento/fechamento (5 min)",
+                      "Acolhimento musical (5 min) → Exploração instrumental (15 min) → Atividades dirigidas (20 min) → Momento criativo (15 min) → Despedida musical (5 min)",
+                      "Canção de boas-vindas → Aquecimento corporal com música → Atividades principais conforme objetivos → Momento de expressão livre → Ritual de encerramento",
+                      "Início com música familiar → Atividades de maior demanda cognitiva → Pausa para regulação → Atividades expressivas → Fechamento relaxante"
+                    ]}
+                    value={planData.session_structure || ''}
+                    onChange={(value) => updatePlanData({ session_structure: value })}
+                    placeholder="Descreva a estrutura típica das sessões (início, desenvolvimento, fechamento)..."
+                    rows={4}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Sequência das atividades musicais propostas</Label>
-                    <Textarea
-                      value={planData.activity_sequence || ''}
-                      onChange={(e) => updatePlanData({ activity_sequence: e.target.value })}
-                      placeholder="Descreva a ordem e progressão das atividades musicais..."
-                      rows={4}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Sequência das atividades musicais propostas"
+                    prompts={[
+                      "1. Canção de boas-vindas; 2. Exploração instrumental livre; 3. Atividade dirigida conforme objetivo; 4. Momento criativo/expressivo; 5. Canção de despedida",
+                      "Início com música preferida → Atividades rítmicas corporais → Trabalho vocal/instrumental → Improvisação livre → Relaxamento musical",
+                      "Aquecimento vocal → Percussão corporal → Instrumentos melódicos → Criação musical → Escuta receptiva para fechamento",
+                      "Ritual musical inicial → Atividades de coordenação → Trabalho de objetivos específicos → Expressão criativa → Momento de integração final"
+                    ]}
+                    value={planData.activity_sequence || ''}
+                    onChange={(value) => updatePlanData({ activity_sequence: value })}
+                    placeholder="Descreva a ordem e progressão das atividades musicais..."
+                    rows={4}
+                  />
                   
-                  <div className="space-y-2">
-                    <Label>Flexibilidade para ajustes</Label>
-                    <Textarea
-                      value={planData.flexibility_adjustments || ''}
-                      onChange={(e) => updatePlanData({ flexibility_adjustments: e.target.value })}
-                      placeholder="Como o plano pode ser ajustado de acordo com as respostas do paciente..."
-                      rows={3}
-                    />
-                  </div>
+                  <PromptSelector
+                    label="Flexibilidade para ajustes"
+                    prompts={[
+                      "Ajustes conforme estado emocional e engajamento do paciente. Alternância entre atividades ativas e receptivas conforme necessidade de regulação.",
+                      "Adaptação do tempo e intensidade das atividades conforme resposta do paciente. Modificação de instrumentos e repertório conforme interesse demonstrado.",
+                      "Flexibilidade para interromper atividades que causem desconforto. Inclusão de pausas para autorregulação quando necessário.",
+                      "Possibilidade de modificar objetivos da sessão conforme demandas emergentes. Adaptação de recursos conforme disponibilidade e interesse."
+                    ]}
+                    value={planData.flexibility_adjustments || ''}
+                    onChange={(value) => updatePlanData({ flexibility_adjustments: value })}
+                    placeholder="Como o plano pode ser ajustado de acordo com as respostas do paciente..."
+                    rows={3}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
