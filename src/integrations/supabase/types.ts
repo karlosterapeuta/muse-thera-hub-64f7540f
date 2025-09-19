@@ -985,6 +985,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      is_valid_uuid: {
+        Args: { input_text: string }
+        Returns: boolean
+      }
       update_user_status: {
         Args: { new_status: string; target_user_id: string }
         Returns: boolean
