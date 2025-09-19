@@ -52,17 +52,18 @@ export function useCreateUser() {
 
       if (roleError) throw roleError;
 
-      return { user: authData.user, password, isTemporaryPassword };
+      return { 
+        user: authData.user, 
+        password, 
+        isTemporaryPassword,
+        userData: {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role
+        }
+      };
     },
-    onSuccess: (data, variables) => {
-      const passwordMessage = data.isTemporaryPassword 
-        ? `Senha temporária: ${data.password}`
-        : 'Senha definida conforme especificado';
-        
-      toast({
-        title: "Usuário criado com sucesso!",
-        description: `${variables.name} foi adicionado ao sistema. ${passwordMessage}`,
-      });
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: (error: any) => {
