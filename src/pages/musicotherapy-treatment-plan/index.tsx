@@ -37,6 +37,7 @@ import { DiagnosisSelector } from '@/components/musicotherapy/DiagnosisSelector'
 import { ObjectivesSelector } from '@/components/musicotherapy/ObjectivesSelector';
 import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector';
 import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
+import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
 
 type Patient = {
   id: string;
@@ -50,12 +51,37 @@ export default function MusicotherapyTreatmentPlanPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: professionalData } = useProfessionalData();
-  const { planData, updatePlanData, savePlan, isSaving, isLoading } = useMusicotherapyTreatmentPlan(id);
+  const { 
+    planData, 
+    updatePlanData, 
+    savePlan, 
+    isSaving, 
+    isLoading, 
+    hasUnsavedChanges, 
+    isAutoSaving, 
+    lastSaved,
+    validateRequiredFields,
+    getValidationErrors 
+  } = useMusicotherapyTreatmentPlan(id);
   
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
+
+  // Warning for unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   // Fetch patients
   useEffect(() => {
@@ -270,10 +296,32 @@ export default function MusicotherapyTreatmentPlanPage() {
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            {/* Save status indicator */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              {isAutoSaving && (
+                <div className="flex items-center gap-1">
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                  <span>Salvando automaticamente...</span>
+                </div>
+              )}
+              {hasUnsavedChanges && !isAutoSaving && (
+                <div className="flex items-center gap-1 text-amber-600">
+                  <div className="h-2 w-2 rounded-full bg-amber-600" />
+                  <span>Alterações não salvas</span>
+                </div>
+              )}
+              {lastSaved && !hasUnsavedChanges && !isAutoSaving && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <CheckCircle className="h-3 w-3" />
+                  <span>Salvo às {lastSaved.toLocaleTimeString()}</span>
+                </div>
+              )}
+            </div>
+            
             <Button
-              onClick={() => savePlan(planData)}
-              disabled={isSaving}
+              onClick={() => savePlan()}
+              disabled={isSaving || isAutoSaving}
               className="bg-green-600 hover:bg-green-700"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -289,6 +337,13 @@ export default function MusicotherapyTreatmentPlanPage() {
             </Button>
           </div>
         </div>
+
+        {/* Validation Summary */}
+        <ValidationSummary 
+          errors={getValidationErrors()} 
+          isValid={validateRequiredFields()}
+          className="mb-6"
+        />
 
         {/* Tabs Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

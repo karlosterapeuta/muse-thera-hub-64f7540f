@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -7,6 +7,12 @@ import { useProfessionalData } from './useProfessionalData';
 
 export function useMusicotherapyTreatmentPlan(planId?: string) {
   const [planData, setPlanData] = useState<Partial<MusicotherapyTreatmentPlan>>(defaultTreatmentPlan);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+  const initialDataRef = useRef<Partial<MusicotherapyTreatmentPlan>>();
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: professionalData } = useProfessionalData();
@@ -51,9 +57,78 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
     enabled: !!planId,
   });
 
-  // Update plan data
+  // Track changes and setup auto-save
+  useEffect(() => {
+    if (existingPlan && !initialDataRef.current) {
+      initialDataRef.current = existingPlan;
+      setPlanData(existingPlan);
+    }
+  }, [existingPlan]);
+
+  // Check for unsaved changes
+  useEffect(() => {
+    if (initialDataRef.current) {
+      const hasChanges = JSON.stringify(planData) !== JSON.stringify(initialDataRef.current);
+      setHasUnsavedChanges(hasChanges);
+    } else if (Object.keys(planData).some(key => planData[key as keyof MusicotherapyTreatmentPlan] !== defaultTreatmentPlan[key as keyof MusicotherapyTreatmentPlan])) {
+      setHasUnsavedChanges(true);
+    }
+  }, [planData]);
+
+  // Auto-save functionality
+  const triggerAutoSave = useCallback(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      if (hasUnsavedChanges && validateRequiredFields()) {
+        setIsAutoSaving(true);
+        savePlanMutation.mutate(planData, {
+          onSuccess: () => {
+            setIsAutoSaving(false);
+            setLastSaved(new Date());
+            setHasUnsavedChanges(false);
+            initialDataRef.current = { ...planData };
+          },
+          onError: () => {
+            setIsAutoSaving(false);
+          }
+        });
+      }
+    }, 30000); // Auto-save after 30 seconds of inactivity
+  }, [hasUnsavedChanges, planData]);
+
+  // Validation function
+  const validateRequiredFields = useCallback(() => {
+    const requiredFields = ['patient_full_name', 'clinical_diagnosis'];
+    return requiredFields.every(field => 
+      planData[field as keyof MusicotherapyTreatmentPlan] && 
+      String(planData[field as keyof MusicotherapyTreatmentPlan]).trim() !== ''
+    );
+  }, [planData]);
+
+  // Get validation errors
+  const getValidationErrors = useCallback(() => {
+    const errors: string[] = [];
+    if (!planData.patient_full_name?.trim()) errors.push('Nome completo do paciente');
+    if (!planData.clinical_diagnosis?.trim()) errors.push('Diagnóstico clínico');
+    return errors;
+  }, [planData]);
+
+  // Update plan data with auto-save trigger
   const updatePlanData = useCallback((updates: Partial<MusicotherapyTreatmentPlan>) => {
     setPlanData(prev => ({ ...prev, ...updates }));
+    triggerAutoSave();
+  }, [triggerAutoSave]);
+
+  // Cleanup auto-save timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Save plan mutation
@@ -104,6 +179,9 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
         title: planId ? 'Plano atualizado!' : 'Plano salvo!',
         description: 'O plano de tratamento foi salvo com sucesso.',
       });
+      setLastSaved(new Date());
+      setHasUnsavedChanges(false);
+      initialDataRef.current = { ...planData };
       queryClient.invalidateQueries({ queryKey: ['treatment-plan'] });
       queryClient.invalidateQueries({ queryKey: ['treatment-plans'] });
     },
@@ -147,10 +225,29 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   return {
     planData: existingPlan ? { ...defaultTreatmentPlan, ...existingPlan } : planData,
     updatePlanData,
-    savePlan: savePlanMutation.mutate,
+    savePlan: (data?: Partial<MusicotherapyTreatmentPlan>) => {
+      const dataToSave = data || planData;
+      const errors = data ? [] : getValidationErrors();
+      
+      if (errors.length > 0) {
+        toast({
+          variant: 'destructive',
+          title: 'Campos obrigatórios não preenchidos',
+          description: `Preencha os seguintes campos: ${errors.join(', ')}`,
+        });
+        return;
+      }
+      
+      savePlanMutation.mutate(dataToSave);
+    },
     deletePlan: deletePlanMutation.mutate,
     isSaving: savePlanMutation.isPending,
     isDeleting: deletePlanMutation.isPending,
     isLoading,
+    hasUnsavedChanges,
+    isAutoSaving,
+    lastSaved,
+    validateRequiredFields,
+    getValidationErrors,
   };
 }
