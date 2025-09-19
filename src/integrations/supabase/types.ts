@@ -617,6 +617,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          expires_at: string | null
           id: string
           name: string | null
           status: string
@@ -625,6 +626,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          expires_at?: string | null
           id: string
           name?: string | null
           status?: string
@@ -633,6 +635,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           name?: string | null
           status?: string
@@ -974,6 +977,10 @@ export type Database = {
       }
       has_role: {
         Args: { role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      is_user_access_expired: {
+        Args: { user_id: string }
         Returns: boolean
       }
       update_user_status: {

@@ -61,20 +61,40 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { name, email, role, password, isTemporaryPassword } = body as {
+    const { name, email, role, password, isTemporaryPassword, accessLimit } = body as {
       name: string;
       email: string;
       role: "admin" | "professional";
       password: string;
       isTemporaryPassword: boolean;
+      accessLimit?: "30-minutes" | "30-days" | "6-months" | "1-year";
     };
 
-    console.log("Creating user with data:", { email, name, role });
+    console.log("Creating user with data:", { email, name, role, accessLimit });
     
     if (!email || !name || !role || !password) {
       console.error("Missing required fields:", { email: !!email, name: !!name, role: !!role, password: !!password });
       return jsonResponse({ error: "Email, nome, função e senha são obrigatórios" }, { status: 400 });
     }
+
+    // Calculate expiration date based on access limit
+    const calculateExpirationDate = (limit: string) => {
+      const now = new Date();
+      switch (limit) {
+        case '30-minutes':
+          return new Date(now.getTime() + 30 * 60 * 1000);
+        case '30-days':
+          return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        case '6-months':
+          return new Date(now.getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
+        case '1-year':
+          return new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+        default:
+          return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // Default to 30 days
+      }
+    };
+
+    const expirationDate = calculateExpirationDate(accessLimit || '30-days');
 
     // Admin client with service role key
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
@@ -96,11 +116,11 @@ serve(async (req) => {
 
     const newUserId = authData.user.id;
 
-    // Create profile
+    // Create profile with expiration date
     const { error: profileError } = await adminClient
       .from("profiles")
       .upsert(
-        { id: newUserId, name },
+        { id: newUserId, name, expires_at: expirationDate.toISOString() },
         { onConflict: "id", ignoreDuplicates: true }
       );
     if (profileError) {

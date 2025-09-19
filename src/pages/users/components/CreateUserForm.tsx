@@ -16,7 +16,8 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
     name: '',
     email: '',
     role: 'professional',
-    password: ''
+    password: '',
+    accessLimit: '30-days'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,6 +82,29 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
               <SelectItem value="admin">Administrador</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Limite de Acesso</Label>
+          <Select 
+            value={formData.accessLimit} 
+            onValueChange={(value: '30-minutes' | '30-days' | '6-months' | '1-year') => 
+              setFormData({ ...formData, accessLimit: value })
+            }
+          >
+            <SelectTrigger className="text-sm sm:text-base">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="30-minutes">30 minutos (Teste)</SelectItem>
+              <SelectItem value="30-days">30 dias</SelectItem>
+              <SelectItem value="6-months">6 meses</SelectItem>
+              <SelectItem value="1-year">1 ano</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Define por quanto tempo o usuário terá acesso ao sistema
+          </p>
         </div>
 
         <div className="space-y-2">

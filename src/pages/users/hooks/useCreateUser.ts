@@ -8,6 +8,7 @@ export interface CreateUserData {
   email: string;
   role: 'admin' | 'professional';
   password?: string;
+  accessLimit?: '30-minutes' | '30-days' | '6-months' | '1-year';
 }
 
 export function useCreateUser() {
@@ -28,6 +29,7 @@ export function useCreateUser() {
           role: userData.role,
           password,
           isTemporaryPassword,
+          accessLimit: userData.accessLimit || '30-days',
         },
       });
 
