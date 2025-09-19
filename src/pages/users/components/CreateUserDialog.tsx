@@ -19,8 +19,11 @@ export function CreateUserDialog() {
   const { createUser, isLoading } = useCreateUser();
 
   const handleCreateUser = async (userData: any) => {
+    console.log('CreateUserDialog - handleCreateUser called with:', userData);
     try {
+      console.log('About to call createUser mutation');
       const result = await createUser(userData);
+      console.log('CreateUser result:', result);
       setCreatedUserData({
         name: result.userData.name,
         email: result.userData.email,
@@ -28,8 +31,9 @@ export function CreateUserDialog() {
         role: result.userData.role
       });
       setCredentialsOpen(true);
+      console.log('Credentials modal should now open');
     } catch (error) {
-      // Error is handled by the mutation
+      console.error('Error in handleCreateUser:', error);
     }
   };
 

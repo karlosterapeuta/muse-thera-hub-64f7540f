@@ -21,8 +21,18 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) return;
-    await onSubmit(formData);
+    console.log('Form submitted with data:', formData);
+    if (!formData.name || !formData.email) {
+      console.log('Form validation failed - missing name or email');
+      return;
+    }
+    try {
+      console.log('Calling onSubmit with:', formData);
+      await onSubmit(formData);
+      console.log('onSubmit completed successfully');
+    } catch (error) {
+      console.error('Error in form submission:', error);
+    }
   };
 
   const isFormValid = formData.name.trim() && formData.email.trim();
