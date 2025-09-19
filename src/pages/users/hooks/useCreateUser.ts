@@ -49,9 +49,22 @@ export function useCreateUser() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: (error: any) => {
+      console.error("Create user error:", error);
+      
+      // Extract error message from Supabase function response
+      let errorMessage = "Erro desconhecido ao criar usuário";
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast({
         title: "Erro ao criar usuário",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },

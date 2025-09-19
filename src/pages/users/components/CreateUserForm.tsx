@@ -35,7 +35,7 @@ export function CreateUserForm({ onSubmit, isLoading }: CreateUserFormProps) {
     }
   };
 
-  const isFormValid = formData.name.trim() && formData.email.trim();
+  const isFormValid = formData.name.trim() && formData.email.trim() && formData.role;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 max-h-[70vh] overflow-y-auto px-1">

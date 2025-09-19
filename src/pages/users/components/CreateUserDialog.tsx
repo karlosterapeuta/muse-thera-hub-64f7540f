@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -53,9 +54,12 @@ export function CreateUserDialog() {
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+          <DialogDescription>
+            Preencha os dados para criar um novo usuário no sistema
+          </DialogDescription>
+        </DialogHeader>
           
           <CreateUserForm 
             onSubmit={handleCreateUser}

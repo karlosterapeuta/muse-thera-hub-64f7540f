@@ -1,6 +1,9 @@
 project_id = "jztbkimlcrfndooyhohg"
 
-# Ensure JWT verification is enabled for generate-report function
+# Ensure JWT verification is enabled for functions
+[functions.create-admin-user]
+verify_jwt = true
+
 [functions.generate-report]
 verify_jwt = true
 

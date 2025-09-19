@@ -44,19 +44,20 @@ serve(async (req) => {
       return jsonResponse({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if the caller is admin
-    const { data: roles, error: rolesError } = await callerClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", caller.id);
-
-    if (rolesError) {
-      return jsonResponse({ error: rolesError.message }, { status: 400 });
+    // Check if the caller is admin using RPC function
+    console.log("Checking admin privileges for user:", caller.id);
+    const { data: isAdmin, error: roleError } = await callerClient.rpc('has_role', { role: 'admin' });
+    
+    console.log("Admin check result:", { isAdmin, roleError });
+    
+    if (roleError) {
+      console.error("Error checking admin role:", roleError);
+      return jsonResponse({ error: "Erro ao verificar permissões: " + roleError.message }, { status: 400 });
     }
 
-    const isAdmin = (roles || []).some((r: any) => r.role === "admin");
     if (!isAdmin) {
-      return jsonResponse({ error: "Only admins can create users" }, { status: 403 });
+      console.warn("Non-admin user attempted to create user:", caller.id);
+      return jsonResponse({ error: "Apenas administradores podem criar usuários" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -68,8 +69,11 @@ serve(async (req) => {
       isTemporaryPassword: boolean;
     };
 
+    console.log("Creating user with data:", { email, name, role });
+    
     if (!email || !name || !role || !password) {
-      return jsonResponse({ error: "Missing required fields" }, { status: 400 });
+      console.error("Missing required fields:", { email: !!email, name: !!name, role: !!role, password: !!password });
+      return jsonResponse({ error: "Email, nome, função e senha são obrigatórios" }, { status: 400 });
     }
 
     // Admin client with service role key
@@ -84,8 +88,11 @@ serve(async (req) => {
     });
 
     if (authError || !authData?.user) {
-      return jsonResponse({ error: authError?.message || "Failed to create auth user" }, { status: 400 });
+      console.error("Auth user creation failed:", authError);
+      return jsonResponse({ error: authError?.message || "Falha ao criar usuário de autenticação" }, { status: 400 });
     }
+    
+    console.log("Auth user created successfully:", authData.user.id);
 
     const newUserId = authData.user.id;
 
@@ -95,8 +102,11 @@ serve(async (req) => {
       name,
     });
     if (profileError) {
-      return jsonResponse({ error: profileError.message }, { status: 400 });
+      console.error("Profile creation failed:", profileError);
+      return jsonResponse({ error: "Erro ao criar perfil: " + profileError.message }, { status: 400 });
     }
+    
+    console.log("Profile created successfully for user:", newUserId);
 
     // Assign role
     const { error: roleError } = await adminClient.from("user_roles").insert({
@@ -104,8 +114,11 @@ serve(async (req) => {
       role,
     });
     if (roleError) {
-      return jsonResponse({ error: roleError.message }, { status: 400 });
+      console.error("Role assignment failed:", roleError);
+      return jsonResponse({ error: "Erro ao atribuir função: " + roleError.message }, { status: 400 });
     }
+    
+    console.log("Role assigned successfully:", { userId: newUserId, role });
 
     return jsonResponse({
       user: authData.user,
