@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { getCurrentUserId } from "./professionalService";
 
 export type SessionData = {
   id: string;
@@ -16,16 +15,10 @@ export type SessionData = {
 export async function getWeekSessions(professionalId: string, startDate: Date, endDate: Date): Promise<SessionData[]> {
   console.log("🔍 Buscando sessões da semana...");
   console.log("📅 Período:", format(startDate, "yyyy-MM-dd"), "até", format(endDate, "yyyy-MM-dd"));
+  console.log("👤 Professional ID para busca de sessões:", professionalId);
   
   try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
-      console.log("❌ Usuário não encontrado para buscar sessões");
-      return [];
-    }
-
-    console.log("👤 User ID para busca de sessões:", userId);
-
+    // Use the professionalId parameter directly (which should be user.id)
     // Buscar sessões através do relacionamento com pacientes
     const { data: sessionsData, error } = await supabase
       .from("sessions")
@@ -39,7 +32,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
           professional_id
         )
       `)
-      .eq('patients.professional_id', userId)
+      .eq('patients.professional_id', professionalId)
       .gte('date', format(startDate, "yyyy-MM-dd"))
       .lte('date', format(endDate, "yyyy-MM-dd"))
       .order('date');
@@ -61,7 +54,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
             professional_id
           )
         `)
-        .eq('patients.professional_id', userId)
+        .eq('patients.professional_id', professionalId)
         .order('date', { ascending: false })
         .limit(20);
 
@@ -98,7 +91,7 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
             professional_id
           )
         `)
-        .eq('patients.professional_id', userId)
+        .eq('patients.professional_id', professionalId)
         .order('date', { ascending: false })
         .limit(10);
 

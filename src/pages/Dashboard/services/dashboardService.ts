@@ -1,5 +1,5 @@
 
-import { getProfessionalId } from "./professionalService";
+import { getCurrentUserId } from "./professionalService";
 import { getPatientsCount, getAnamnesisCount, getReportsCount } from "./countsService";
 
 export interface DashboardData {
@@ -15,10 +15,11 @@ export async function getDashboardData(): Promise<DashboardData> {
   console.log("🔍 Carregando dados do dashboard...");
   
   try {
-    const professionalId = await getProfessionalId();
+    // Use getCurrentUserId to be consistent with other parts of the app
+    const professionalId = await getCurrentUserId();
     
     if (!professionalId) {
-      console.log("❌ ID do profissional não encontrado");
+      console.log("❌ ID do usuário não encontrado");
       return {
         totalPatients: 0,
         totalAnamnesis: 0,
