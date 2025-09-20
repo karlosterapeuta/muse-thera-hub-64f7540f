@@ -34,12 +34,13 @@ export default function Processes() {
       bgGradient: "from-purple-50 to-pink-50"
     },
     {
-      title: "Plano Terapêutico",
-      description: "Definição dos objetivos e estratégias de tratamento",
-      icon: Edit,
-      path: "/treatment-plan",
+      title: "Planos Musicoterapêuticos",
+      description: "Crie e gerencie planos de tratamento musicoterapêutico personalizados",
+      icon: ClipboardList,
+      path: "/musicotherapy-treatment-plans",
       gradient: "from-emerald-500 to-teal-500",
-      bgGradient: "from-emerald-50 to-teal-50"
+      bgGradient: "from-emerald-50 to-teal-50",
+      isNew: true
     },
     {
       title: "Intervenção",
