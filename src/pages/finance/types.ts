@@ -20,6 +20,13 @@ export interface FinancialRecord {
   created_at?: string;
   updated_at?: string;
   
+  // Recurrence fields
+  is_recurring?: boolean;
+  recurrence_type?: 'weekly' | 'monthly' | 'yearly';
+  recurrence_end_date?: string;
+  parent_record_id?: string;
+  recurrence_pattern?: Record<string, any>;
+  
   // Joined data
   clinic_name?: string;
   patient_name?: string;

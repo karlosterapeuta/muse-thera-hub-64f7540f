@@ -12,14 +12,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useClinics } from "../hooks/useClinics";
 import { useAddFinancialRecord, useUpdateFinancialRecord } from "../hooks/useFinancialData";
+import { useCreateRecurringRecord } from "../hooks/useRecurringFinancialRecords";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, RepeatIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
@@ -69,6 +72,9 @@ const formSchema = z.object({
   time: z.string().min(1, { message: "Horário é obrigatório" }),
   duration: z.string().min(1, { message: "Duração é obrigatória" }),
   description: z.string().optional(),
+  is_recurring: z.boolean().default(false),
+  recurrence_type: z.enum(['weekly', 'monthly', 'yearly']).optional(),
+  recurrence_end_date: z.date().optional(),
 });
 
 type FinancialRecordFormValues = z.infer<typeof formSchema>;
@@ -86,6 +92,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const { data: clinics = [] } = useClinics();
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
+  const createRecurringRecord = useCreateRecurringRecord();
   
   const { data: patients = [], isLoading: patientsLoading } = useQuery({
     queryKey: ["patients"],
@@ -206,11 +213,14 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
       amount: record?.amount || 0,
       session_date: record?.session_date ? parseSessionDate(record.session_date) : new Date(),
       weekday: defaultWeekday,
-      time: defaultTime,
-      duration: defaultDuration,
-      description: record?.description 
-        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "")
-        : "",
+        time: defaultTime,
+        duration: defaultDuration,
+        description: record?.description 
+          ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "")
+          : "",
+        is_recurring: record?.is_recurring || false,
+        recurrence_type: record?.recurrence_type || 'weekly',
+        recurrence_end_date: record?.recurrence_end_date ? new Date(record.recurrence_end_date) : undefined,
     },
   });
   
@@ -229,6 +239,9 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
         time: getTimeFromDescription(record.description),
         duration: getDurationFromDescription(record.description),
         description: cleanDescription,
+        is_recurring: record.is_recurring || false,
+        recurrence_type: record.recurrence_type || 'weekly',
+        recurrence_end_date: record.recurrence_end_date ? new Date(record.recurrence_end_date) : undefined,
       });
     } else {
       form.reset({
@@ -240,6 +253,9 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
         time: "08:00",
         duration: "45",
         description: "",
+        is_recurring: false,
+        recurrence_type: 'weekly',
+        recurrence_end_date: undefined,
       });
     }
   }, [record, form]);
@@ -259,7 +275,39 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
     
     const enhancedDescription = `Dia da semana: ${values.weekday} | Horário: ${values.time} | Duração: ${values.duration} minutos${values.description ? ` | ${values.description}` : ''}`;
     
-    if (isUpdating && record) {
+    // Handle recurring records
+    if (values.is_recurring && !isUpdating) {
+      createRecurringRecord.mutate(
+        {
+          clinic_id: values.clinic_id,
+          patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
+          amount: values.amount,
+          session_date: format(sessionDate, "yyyy-MM-dd"),
+          description: enhancedDescription,
+          is_recurring: true,
+          recurrence_type: values.recurrence_type!,
+          recurrence_end_date: values.recurrence_end_date ? format(values.recurrence_end_date, "yyyy-MM-dd") : undefined,
+        },
+        {
+          onSuccess: () => {
+            form.reset({
+              clinic_id: "",
+              patient_id: undefined,
+              amount: 0,
+              session_date: new Date(),
+              weekday: "segunda",
+              time: "08:00",
+              duration: "45",
+              description: "",
+              is_recurring: false,
+              recurrence_type: 'weekly',
+              recurrence_end_date: undefined,
+            });
+            onSuccess?.();
+          },
+        }
+      );
+    } else if (isUpdating && record) {
       updateRecord.mutate(
         { 
           id: record.id,
@@ -295,6 +343,9 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               time: "08:00",
               duration: "45",
               description: "",
+              is_recurring: false,
+              recurrence_type: 'weekly',
+              recurrence_end_date: undefined,
             });
             onSuccess?.();
           },
@@ -568,6 +619,122 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                 </FormItem>
               )}
             />
+
+            {!isUpdating && (
+              <>
+                <Separator className="my-6" />
+                
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <RepeatIcon className="h-5 w-5 text-primary" />
+                    <h4 className="text-sm font-medium">Configurações de Recorrência</h4>
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="is_recurring"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Tornar este registro recorrente
+                          </FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Gera automaticamente registros futuros baseados na frequência selecionada
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("is_recurring") && (
+                    <div className="space-y-4 pl-6 border-l-2 border-muted">
+                      <FormField
+                        control={form.control}
+                        name="recurrence_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Frequência</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecione a frequência" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="weekly">Semanal</SelectItem>
+                                <SelectItem value="monthly">Mensal</SelectItem>
+                                <SelectItem value="yearly">Anual</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="recurrence_end_date"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Data final da recorrência (opcional)</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "dd/MM/yyyy")
+                                    ) : (
+                                      <span>Selecione até quando repetir</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date < form.watch("session_date")
+                                  }
+                                  initialFocus
+                                  locale={ptBR}
+                                  captionLayout="dropdown-buttons"
+                                  fromYear={new Date().getFullYear()}
+                                  toYear={new Date().getFullYear() + 10}
+                                  className={cn("p-3 pointer-events-auto")}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <p className="text-xs text-muted-foreground">
+                              Se não informado, será gerado por 3 meses
+                            </p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </CardContent>
           
           <CardFooter className={`${isMobile ? 'flex flex-col gap-2 px-4 pb-6 flex-shrink-0' : isTablet ? 'flex justify-end gap-2 flex-shrink-0' : 'flex justify-end space-x-2 flex-shrink-0'}`}>

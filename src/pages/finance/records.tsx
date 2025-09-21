@@ -32,6 +32,7 @@ import { DateRangeFilter } from "./components/DateRangeFilter";
 import { PeriodFilter, FinancialRecord } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
+import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 
 export default function FinancialRecords() {
@@ -336,6 +337,9 @@ export default function FinancialRecords() {
               {duration}
             </div>
           )}
+          <div className="ml-auto">
+            <RecurringRecordIndicator record={record} />
+          </div>
         </div>
         
         <div className="mt-1">
@@ -393,11 +397,14 @@ export default function FinancialRecords() {
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
-          {duration && (
-            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-              {duration}
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {duration && (
+              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                {duration}
+              </div>
+            )}
+            <RecurringRecordIndicator record={record} />
+          </div>
         </div>
         
         <div className="space-y-1 mb-3">
