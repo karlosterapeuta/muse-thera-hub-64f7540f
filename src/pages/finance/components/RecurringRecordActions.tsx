@@ -74,7 +74,11 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 bg-background/80 hover:bg-accent hover:text-accent-foreground border-2 shadow-sm transition-all duration-200 hover:shadow-md"
+          >
             <MoreHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
