@@ -22,8 +22,8 @@ export class CacheManager {
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
       maxSize: 50, // 50MB default
-      defaultTTL: 24 * 60 * 60 * 1000, // 24 hours
-      cleanupInterval: 5 * 60 * 1000, // 5 minutes
+      defaultTTL: 15 * 60 * 1000, // 15 minutes (increased)
+      cleanupInterval: 30 * 60 * 1000, // 30 minutes (increased)
       maxItems: 1000,
       ...config
     };

@@ -62,24 +62,33 @@ import FinanceClinics from "./pages/finance/clinics";
 import ActivityFavorites from "./pages/activities/favorites";
 import ActivityCategory from "./pages/activities/category";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => {
   useEffect(() => {
-    // Initialize cache namespaces
+    // Initialize cache namespaces (reduced initial operations)
     globalCacheManager.initCache('audio');
     globalCacheManager.initCache('melodies');
     globalCacheManager.initCache('sounds');
     globalCacheManager.initCache('api');
     globalCacheManager.initCache('user-data');
 
-    // Perform initial cleanup on app start
-    const cleaned = globalCacheManager.cleanup();
-    globalCacheManager.cleanWebStorage();
-    
-    if (cleaned > 0) {
-      console.log(`🧹 Initial cache cleanup: removed ${cleaned} expired items`);
-    }
+    // Defer initial cleanup to avoid blocking UI
+    setTimeout(() => {
+      const cleaned = globalCacheManager.cleanup();
+      if (cleaned > 0) {
+        console.log(`🧹 Deferred cache cleanup: removed ${cleaned} expired items`);
+      }
+    }, 2000);
 
     // Cleanup on page unload
     const handleBeforeUnload = () => {

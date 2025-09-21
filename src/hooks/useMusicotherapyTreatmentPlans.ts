@@ -49,5 +49,9 @@ export function useMusicotherapyTreatmentPlans() {
       return data as MusicotherapyTreatmentPlanSummary[];
     },
     enabled: !!professionalData?.id,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 20 * 60 * 1000, // 20 minutes
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 }

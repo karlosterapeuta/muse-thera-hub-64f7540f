@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
 
 export interface ProfessionalData {
   id: string;
@@ -15,7 +16,7 @@ export interface ProfessionalData {
 }
 
 export function useProfessionalData() {
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: ["professional-data"],
     queryFn: async (): Promise<ProfessionalData | null> => {
       try {
@@ -73,9 +74,14 @@ export function useProfessionalData() {
         throw error;
       }
     },
-    retry: 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
+    staleTime: 15 * 60 * 1000, // 15 minutes (increased)
+    gcTime: 30 * 60 * 1000, // 30 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
+    refetchOnMount: false, // Changed to false to reduce initial requests
+    refetchInterval: false,
   });
+
+  // Memoize the result to prevent unnecessary re-renders
+  return useMemo(() => queryResult, [queryResult.data, queryResult.isLoading, queryResult.error]);
 }

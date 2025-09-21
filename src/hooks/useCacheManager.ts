@@ -68,8 +68,8 @@ export function useCacheManager() {
   useEffect(() => {
     updateStats();
     
-    // Update stats every 30 seconds
-    const interval = setInterval(updateStats, 30000);
+    // Update stats every 2 minutes (reduced frequency)
+    const interval = setInterval(updateStats, 120000);
     
     return () => clearInterval(interval);
   }, [updateStats]);
