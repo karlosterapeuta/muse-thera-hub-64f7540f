@@ -299,12 +299,12 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-50 border-green-200';
+          return 'bg-green-100 border-green-400';
         case 'no_show':
-          return 'bg-red-50 border-red-200';
+          return 'bg-red-100 border-red-400';
         case 'scheduled':
         default:
-          return 'bg-blue-50 border-blue-200';
+          return 'bg-blue-100 border-blue-400';
       }
     };
     
@@ -353,12 +353,12 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-50 border-green-300';
+          return 'bg-green-100 border-green-500';
         case 'no_show':
-          return 'bg-red-50 border-red-300';
+          return 'bg-red-100 border-red-500';
         case 'scheduled':
         default:
-          return 'bg-blue-50 border-blue-300';
+          return 'bg-blue-100 border-blue-500';
       }
     };
     

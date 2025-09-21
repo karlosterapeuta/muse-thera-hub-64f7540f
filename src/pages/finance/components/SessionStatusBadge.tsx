@@ -15,28 +15,28 @@ export function SessionStatusBadge({ status, className }: SessionStatusBadgeProp
           label: 'Agendada',
           variant: 'default' as const,
           icon: ClockIcon,
-          className: 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500'
+          className: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'
         };
       case 'completed':
         return {
           label: 'Concluída',
           variant: 'secondary' as const,
           icon: CheckCircleIcon,
-          className: 'bg-green-500 hover:bg-green-600 text-white border-green-500'
+          className: 'bg-green-600 hover:bg-green-700 text-white border-green-600'
         };
       case 'no_show':
         return {
           label: 'Faltou',
           variant: 'destructive' as const,
           icon: XCircleIcon,
-          className: 'bg-red-500 hover:bg-red-600 text-white border-red-500'
+          className: 'bg-red-600 hover:bg-red-700 text-white border-red-600'
         };
       default:
         return {
           label: 'Agendada',
           variant: 'default' as const,
           icon: ClockIcon,
-          className: 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500'
+          className: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'
         };
     }
   };
