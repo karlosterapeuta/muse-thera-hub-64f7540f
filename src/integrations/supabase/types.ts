@@ -450,8 +450,13 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          is_recurring: boolean | null
+          parent_record_id: string | null
           patient_id: string | null
           professional_id: string
+          recurrence_end_date: string | null
+          recurrence_pattern: Json | null
+          recurrence_type: string | null
           session_date: string
           updated_at: string | null
         }
@@ -461,8 +466,13 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
+          parent_record_id?: string | null
           patient_id?: string | null
           professional_id: string
+          recurrence_end_date?: string | null
+          recurrence_pattern?: Json | null
+          recurrence_type?: string | null
           session_date: string
           updated_at?: string | null
         }
@@ -472,8 +482,13 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
+          parent_record_id?: string | null
           patient_id?: string | null
           professional_id?: string
+          recurrence_end_date?: string | null
+          recurrence_pattern?: Json | null
+          recurrence_type?: string | null
           session_date?: string
           updated_at?: string | null
         }
@@ -483,6 +498,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_records_parent_record_id_fkey"
+            columns: ["parent_record_id"]
+            isOneToOne: false
+            referencedRelation: "financial_records"
             referencedColumns: ["id"]
           },
           {
@@ -1068,6 +1090,10 @@ export type Database = {
       generate_invite_code: {
         Args: { expiration_days?: number }
         Returns: string
+      }
+      generate_recurring_financial_records: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       get_user_sessions_count: {
         Args: { target_user_id: string }
