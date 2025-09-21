@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnamnesisList } from "./components/AnamnesisList";
 import { AnamnesisView } from "./components/AnamnesisView";
 import AnamnesisFormWrapper from "./AnamnesisFormWrapper";
@@ -20,6 +20,23 @@ export default function AnamnesisManager() {
   const [selectedAnamnesis, setSelectedAnamnesis] = useState<AnamnesisItem | null>(null);
   const [editAnamnesisId, setEditAnamnesisId] = useState<string | null>(null);
   const [editPatientId, setEditPatientId] = useState<string | null>(null);
+
+  // Read URL parameters to handle direct navigation to edit mode
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const patientId = urlParams.get('patient_id');
+    const anamnesisId = urlParams.get('anamnesis_id');
+    const mode = urlParams.get('mode');
+
+    if (mode === 'edit' && patientId && anamnesisId) {
+      setEditPatientId(patientId);
+      setEditAnamnesisId(anamnesisId);
+      setCurrentView('form');
+      // Clean URL parameters
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, []);
 
   const handleCreateNew = () => {
     setEditAnamnesisId(null);
