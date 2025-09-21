@@ -18,9 +18,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MoreHorizontalIcon, PencilIcon, TrashIcon, RefreshCwIcon, StopCircleIcon } from "lucide-react";
-import { FinancialRecord } from "../types";
+import { MoreHorizontalIcon, PencilIcon, TrashIcon, RefreshCwIcon, StopCircleIcon, CheckCircleIcon, ClockIcon, XCircleIcon } from "lucide-react";
+import { FinancialRecord, SessionStatus } from "../types";
 import { useDeleteRecurringSeries, useUpdateRecurringSeries } from "../hooks/useRecurringFinancialRecords";
+import { useUpdateSessionStatus } from "../hooks/useUpdateSessionStatus";
 import { toast } from "sonner";
 
 interface RecurringRecordActionsProps {
@@ -32,6 +33,7 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteType, setDeleteType] = useState<'single' | 'all'>('single');
   const deleteRecurringSeries = useDeleteRecurringSeries();
+  const updateSessionStatus = useUpdateSessionStatus();
 
   const isParent = record.is_recurring && !record.parent_record_id;
   const isChild = !!record.parent_record_id;
@@ -40,6 +42,10 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
   const handleDeleteClick = (type: 'single' | 'all') => {
     setDeleteType(type);
     setDeleteDialogOpen(true);
+  };
+
+  const handleStatusChange = (status: SessionStatus) => {
+    updateSessionStatus.mutate({ recordId: record.id, status });
   };
 
   const confirmDelete = () => {
@@ -72,7 +78,38 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
             <MoreHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[180px]">
+        <DropdownMenuContent align="end" className="w-[200px]">
+          <DropdownMenuLabel>Status da Sessão</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem 
+            className="flex items-center cursor-pointer"
+            onClick={() => handleStatusChange('scheduled')}
+            disabled={record.session_status === 'scheduled'}
+          >
+            <ClockIcon className="mr-2 h-4 w-4 text-blue-500" />
+            Marcar como Agendada
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
+            className="flex items-center cursor-pointer"
+            onClick={() => handleStatusChange('completed')}
+            disabled={record.session_status === 'completed'}
+          >
+            <CheckCircleIcon className="mr-2 h-4 w-4 text-green-500" />
+            Marcar como Concluída
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
+            className="flex items-center cursor-pointer"
+            onClick={() => handleStatusChange('no_show')}
+            disabled={record.session_status === 'no_show'}
+          >
+            <XCircleIcon className="mr-2 h-4 w-4 text-red-500" />
+            Marcar como Falta
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuSeparator />
           

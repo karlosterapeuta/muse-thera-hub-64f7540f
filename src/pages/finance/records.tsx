@@ -33,6 +33,8 @@ import { PeriodFilter, FinancialRecord } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
 import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
+import { RecurringRecordActions } from "./components/RecurringRecordActions";
+import { SessionStatusBadge } from "./components/SessionStatusBadge";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 
 export default function FinancialRecords() {
@@ -294,37 +296,25 @@ export default function FinancialRecords() {
     const time = getAppointmentTime(record.description);
     const duration = getAppointmentDuration(record.description);
     
+    const getCardStatusClasses = (status?: string) => {
+      switch (status) {
+        case 'completed':
+          return 'bg-green-50 border-green-200';
+        case 'no_show':
+          return 'bg-red-50 border-red-200';
+        case 'scheduled':
+        default:
+          return 'bg-blue-50 border-blue-200';
+      }
+    };
+    
     return (
       <div 
         key={record.id} 
-        className="bg-white border border-primary/10 rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-primary/30 relative group"
+        className={`${getCardStatusClasses(record.session_status)} rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="flex items-center cursor-pointer"
-                onClick={() => handleEditRecord(record)}
-              >
-                <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                onClick={() => handleDeleteClick(record.id)}
-              >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Excluir
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
         </div>
         
         <div className="flex items-center mb-2">
@@ -337,7 +327,8 @@ export default function FinancialRecords() {
               {duration}
             </div>
           )}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <SessionStatusBadge status={record.session_status || 'scheduled'} />
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
@@ -359,37 +350,25 @@ export default function FinancialRecords() {
     const time = getAppointmentTime(record.description);
     const duration = getAppointmentDuration(record.description);
     
+    const getCardStatusClasses = (status?: string) => {
+      switch (status) {
+        case 'completed':
+          return 'bg-green-50 border-green-300';
+        case 'no_show':
+          return 'bg-red-50 border-red-300';
+        case 'scheduled':
+        default:
+          return 'bg-blue-50 border-blue-300';
+      }
+    };
+    
     return (
       <div 
         key={record.id} 
-        className="bg-white border border-primary/20 rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-primary/40 relative group"
+        className={`${getCardStatusClasses(record.session_status)} rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="flex items-center cursor-pointer"
-                onClick={() => handleEditRecord(record)}
-              >
-                <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                onClick={() => handleDeleteClick(record.id)}
-              >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Excluir
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
         </div>
         
         <div className="flex items-center justify-between mb-2">
@@ -403,6 +382,7 @@ export default function FinancialRecords() {
                 {duration}
               </div>
             )}
+            <SessionStatusBadge status={record.session_status || 'scheduled'} />
             <RecurringRecordIndicator record={record} />
           </div>
         </div>

@@ -9,6 +9,8 @@ export interface Clinic {
   updated_at?: string;
 }
 
+export type SessionStatus = 'scheduled' | 'completed' | 'no_show';
+
 export interface FinancialRecord {
   id: string;
   professional_id: string;
@@ -19,6 +21,9 @@ export interface FinancialRecord {
   description?: string;
   created_at?: string;
   updated_at?: string;
+  
+  // Session status
+  session_status?: SessionStatus;
   
   // Recurrence fields
   is_recurring?: boolean;

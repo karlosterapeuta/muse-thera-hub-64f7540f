@@ -458,6 +458,7 @@ export type Database = {
           recurrence_pattern: Json | null
           recurrence_type: string | null
           session_date: string
+          session_status: Database["public"]["Enums"]["session_status"] | null
           updated_at: string | null
         }
         Insert: {
@@ -474,6 +475,7 @@ export type Database = {
           recurrence_pattern?: Json | null
           recurrence_type?: string | null
           session_date: string
+          session_status?: Database["public"]["Enums"]["session_status"] | null
           updated_at?: string | null
         }
         Update: {
@@ -490,6 +492,7 @@ export type Database = {
           recurrence_pattern?: Json | null
           recurrence_type?: string | null
           session_date?: string
+          session_status?: Database["public"]["Enums"]["session_status"] | null
           updated_at?: string | null
         }
         Relationships: [
@@ -1146,6 +1149,7 @@ export type Database = {
         | "technical_report"
         | "musicoterapia"
         | "evolution_musicoterapia"
+      session_status: "scheduled" | "completed" | "no_show"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1295,6 +1299,7 @@ export const Constants = {
         "musicoterapia",
         "evolution_musicoterapia",
       ],
+      session_status: ["scheduled", "completed", "no_show"],
     },
   },
 } as const
