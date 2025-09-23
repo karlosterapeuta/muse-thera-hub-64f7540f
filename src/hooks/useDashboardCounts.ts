@@ -93,7 +93,7 @@ export const useReportsCount = () => {
       return count || 0;
     },
     retry: 1,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 30 * 1000, // Reduzido para 30 segundos para forçar atualização
+    refetchOnWindowFocus: true, // Ativado para recarregar ao focar na janela
   });
 };
