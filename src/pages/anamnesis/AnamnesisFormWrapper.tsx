@@ -391,16 +391,52 @@ export default function AnamnesisFormWrapper({
       return;
     }
 
+    let currentAnamnesisId = existingAnamnesisId;
+
     // First, make sure the anamnesis is saved before exporting
-    if (!existingAnamnesisId) {
-      await saveAnamnesis();
-      if (!existingAnamnesisId) {
+    if (!currentAnamnesisId) {
+      try {
+        setIsSubmitting(true);
+        
+        const availableColumns = await getAvailableColumns();
+        const filteredData = filterDatabaseFields(formData, availableColumns);
+        
+        const anamnesisData: Record<string, any> = {
+          patient_id: selectedPatient,
+          professional_id: professionalId,
+          ...filteredData
+        };
+
+        const result = await supabase
+          .from("anamnesis")
+          .insert(anamnesisData)
+          .select();
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        if (result.data && result.data.length > 0) {
+          currentAnamnesisId = result.data[0].id;
+          setExistingAnamnesisId(currentAnamnesisId);
+        } else {
+          toast({
+            title: "Erro",
+            description: "Não foi possível salvar a anamnese para exportar o PDF.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch (error: any) {
+        console.error("Erro ao salvar anamnese para PDF:", error);
         toast({
           title: "Erro",
-          description: "É necessário salvar a anamnese antes de exportar o PDF.",
+          description: "Erro ao salvar anamnese antes da exportação.",
           variant: "destructive",
         });
         return;
+      } finally {
+        setIsSubmitting(false);
       }
     }
 
@@ -440,7 +476,7 @@ export default function AnamnesisFormWrapper({
 
       const anamnesisDataForPDF = {
         ...formData,
-        id: existingAnamnesisId,
+        id: currentAnamnesisId,
         patient_id: selectedPatient,
         professional_id: professionalId,
         created_at: formData.created_at || new Date().toISOString(),
