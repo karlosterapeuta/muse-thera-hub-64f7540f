@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -13,8 +13,12 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
   const isMobile = useIsMobile();
+  
+  // Open sidebar by default on desktop for dashboard page
+  const isDashboard = location.pathname === '/dashboard';
+  const [isOpen, setIsOpen] = useState(!isMobile && isDashboard);
 
   return (
     <div className="flex min-h-screen flex-col">
