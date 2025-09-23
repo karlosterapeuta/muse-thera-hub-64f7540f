@@ -8,6 +8,7 @@ import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
 import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
 import { ModernActionButtons } from "./components/ModernActionButtons";
+import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 
 type Patient = {
   id: string;
@@ -73,6 +74,7 @@ export default function AnamnesisFormWrapper({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -379,6 +381,99 @@ export default function AnamnesisFormWrapper({
     }
   };
 
+  const exportPDF = async () => {
+    if (!selectedPatient || !formData) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, selecione um paciente e preencha os dados.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // First, make sure the anamnesis is saved before exporting
+    if (!existingAnamnesisId) {
+      await saveAnamnesis();
+      if (!existingAnamnesisId) {
+        toast({
+          title: "Erro",
+          description: "É necessário salvar a anamnese antes de exportar o PDF.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    try {
+      setIsExportingPDF(true);
+      
+      // Get patient name
+      const patient = patients.find(p => p.id === selectedPatient);
+      const patientName = patient?.name || "Paciente";
+
+      // Get professional data
+      const { data: professionalData, error: profError } = await supabase
+        .from("professionals")
+        .select("*")
+        .eq("id", professionalId)
+        .single();
+
+      let professional = professionalData;
+      
+      if (profError || !professionalData) {
+        // Fallback to user data
+        professional = {
+          id: professionalId,
+          name: userName,
+          email: userEmail,
+          specialty: "Musicoterapeuta",
+          phone: "",
+          license_number: "",
+          register: "",
+          association: "",
+          avatar_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          user_id: professionalId
+        };
+      }
+
+      const anamnesisDataForPDF = {
+        ...formData,
+        id: existingAnamnesisId,
+        patient_id: selectedPatient,
+        professional_id: professionalId,
+        created_at: formData.created_at || new Date().toISOString(),
+        patient_name: patientName
+      };
+
+      const success = await generateProfessionalAnamnesePDF(
+        anamnesisDataForPDF,
+        professional,
+        patientName
+      );
+
+      if (success) {
+        toast({
+          title: "Sucesso",
+          description: "PDF da anamnese exportado com sucesso!",
+        });
+      } else {
+        throw new Error("Falha na geração do PDF");
+      }
+      
+    } catch (error: any) {
+      console.error("Erro ao exportar PDF:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível exportar o PDF da anamnese.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -446,9 +541,9 @@ export default function AnamnesisFormWrapper({
               <ModernActionButtons
                 onSave={saveAnamnesis}
                 onCancel={() => onBack ? onBack() : navigate("/processes")}
-                onSubmit={() => {}}
+                onExportPDF={exportPDF}
                 isSaving={isSubmitting}
-                isSubmitting={isSubmitting}
+                isExportingPDF={isExportingPDF}
                 showBack={!!onBack}
               />
             </form>

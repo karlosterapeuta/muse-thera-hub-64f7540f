@@ -5,18 +5,18 @@ import { Save, ArrowLeft, Download, Loader2 } from "lucide-react";
 interface ModernActionButtonsProps {
   onSave?: () => void;
   onCancel?: () => void;
-  onSubmit?: () => void;
-  isSubmitting?: boolean;
+  onExportPDF?: () => void;
   isSaving?: boolean;
+  isExportingPDF?: boolean;
   showBack?: boolean;
 }
 
 export function ModernActionButtons({
   onSave,
   onCancel,
-  onSubmit,
-  isSubmitting = false,
+  onExportPDF,
   isSaving = false,
+  isExportingPDF = false,
   showBack = false
 }: ModernActionButtonsProps) {
   return (
@@ -58,23 +58,23 @@ export function ModernActionButtons({
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSaving ? "Salvando..." : "Salvar"}
+            {isSaving ? "Salvando..." : "Salvar Anamnese"}
           </Button>
         )}
         
-        {onSubmit && (
+        {onExportPDF && (
           <Button
-            type="submit"
-            onClick={onSubmit}
-            disabled={isSubmitting}
+            type="button"
+            onClick={onExportPDF}
+            disabled={isExportingPDF || isSaving}
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
-            {isSubmitting ? (
+            {isExportingPDF ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Download className="h-4 w-4" />
             )}
-            {isSubmitting ? "Processando..." : "Salvar e Finalizar"}
+            {isExportingPDF ? "Exportando..." : "Exportar PDF"}
           </Button>
         )}
       </div>
