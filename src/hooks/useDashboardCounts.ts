@@ -55,7 +55,7 @@ export const useAnamnesisCount = () => {
 
 export const useReportsCount = () => {
   return useQuery({
-    queryKey: ["reports-count"],
+    queryKey: ["reports-count", "musicoterapia"],
     queryFn: async (): Promise<number> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -82,7 +82,8 @@ export const useReportsCount = () => {
       const { count, error } = await supabase
         .from("reports")
         .select('*', { count: 'exact', head: true })
-        .eq('professional_id', professional.id);
+        .eq('professional_id', professional.id)
+        .eq('type', 'musicoterapia');
 
       if (error) {
         console.error("Erro ao contar relatórios:", error);

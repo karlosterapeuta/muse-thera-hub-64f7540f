@@ -63,7 +63,8 @@ export async function getReportsCount(professionalId: string): Promise<number> {
     const { count: directCount, error: directError } = await supabase
       .from("reports")
       .select('*', { count: 'exact', head: true })
-      .eq('professional_id', professionalId);
+      .eq('professional_id', professionalId)
+      .eq('type', 'musicoterapia');
 
     if (!directError && directCount !== null) {
       console.log("✅ Relatórios encontrados:", directCount);
