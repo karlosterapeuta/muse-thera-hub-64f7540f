@@ -134,15 +134,30 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   // Save plan mutation
   const savePlanMutation = useMutation({
     mutationFn: async (data: Partial<MusicotherapyTreatmentPlan>) => {
-      // Always bind plan to the authenticated user to satisfy RLS (auth.uid() = professional_id)
+      // Bind plan to the professional profile (FK: treatment_plans.professional_id -> professionals.id)
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
 
+      // Prefer cached professionalData, fallback to DB lookup
+      let professionalId = professionalData?.id as string | undefined;
+      if (!professionalId) {
+        const { data: prof, error: profError } = await supabase
+          .from('professionals')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (profError) throw profError;
+        professionalId = prof?.id;
+      }
+      if (!professionalId) {
+        throw new Error('Professional profile not found');
+      }
+
       const planPayload = {
         ...data,
-        professional_id: user.id,
+        professional_id: professionalId,
         // Convert arrays to JSONB format
         general_objectives: JSON.stringify(data.general_objectives || []),
         specific_objectives: JSON.stringify(data.specific_objectives || []),
