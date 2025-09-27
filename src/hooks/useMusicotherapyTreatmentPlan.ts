@@ -134,18 +134,15 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   // Save plan mutation
   const savePlanMutation = useMutation({
     mutationFn: async (data: Partial<MusicotherapyTreatmentPlan>) => {
-      // Get current user as fallback
+      // Always bind plan to the authenticated user to satisfy RLS (auth.uid() = professional_id)
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
 
-      // Use professional ID or fallback to user ID
-      const professional_id = professionalData?.id || user.id;
-
       const planPayload = {
         ...data,
-        professional_id,
+        professional_id: user.id,
         // Convert arrays to JSONB format
         general_objectives: JSON.stringify(data.general_objectives || []),
         specific_objectives: JSON.stringify(data.specific_objectives || []),
