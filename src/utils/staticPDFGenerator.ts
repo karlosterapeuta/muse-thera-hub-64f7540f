@@ -17,8 +17,8 @@ export const generateStaticPDF = async (
 ): Promise<boolean> => {
   const {
     filename = 'documento.pdf',
-    waitTime = 4000,
-    quality = 2.0,
+    waitTime = 2000,
+    quality = 1.2,
     format = 'a4',
     orientation = 'portrait'
   } = options;

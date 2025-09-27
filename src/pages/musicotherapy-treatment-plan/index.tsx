@@ -68,6 +68,7 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Warning for unsaved changes
   useEffect(() => {
@@ -213,6 +214,16 @@ export default function MusicotherapyTreatmentPlanPage() {
   };
 
   const handleDownloadPDF = async () => {
+    if (!planData.patient_full_name) {
+      toast({
+        variant: "destructive",
+        title: "Campo obrigatório",
+        description: "Nome do paciente é obrigatório para gerar o PDF.",
+      });
+      return;
+    }
+
+    setIsGeneratingPDF(true);
     try {
       const component = React.createElement(MusicotherapyTreatmentPlanPDF, { 
         planData: planData as MusicotherapyTreatmentPlan,
@@ -221,8 +232,8 @@ export default function MusicotherapyTreatmentPlanPage() {
 
       const success = await generateStaticPDF(component, {
         filename: `Plano_Musicoterapeutico_${planData.patient_full_name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
-        waitTime: 5000,
-        quality: 2.0,
+        waitTime: 2000,
+        quality: 1.2,
         format: 'a4',
         orientation: 'portrait'
       });
@@ -246,6 +257,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         title: "Erro ao gerar PDF",
         description: "Erro inesperado ao gerar o PDF.",
       });
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -330,10 +343,10 @@ export default function MusicotherapyTreatmentPlanPage() {
             <Button
               onClick={handleDownloadPDF}
               variant="outline"
-              disabled={!planData.patient_full_name}
+              disabled={!planData.patient_full_name || isGeneratingPDF}
             >
               <Download className="h-4 w-4 mr-2" />
-              Baixar PDF
+              {isGeneratingPDF ? 'Gerando PDF...' : 'Baixar PDF'}
             </Button>
           </div>
         </div>

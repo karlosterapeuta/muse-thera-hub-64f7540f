@@ -134,13 +134,18 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   // Save plan mutation
   const savePlanMutation = useMutation({
     mutationFn: async (data: Partial<MusicotherapyTreatmentPlan>) => {
-      if (!professionalData?.id) {
-        throw new Error('Professional data not found');
+      // Get current user as fallback
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
       }
+
+      // Use professional ID or fallback to user ID
+      const professional_id = professionalData?.id || user.id;
 
       const planPayload = {
         ...data,
-        professional_id: professionalData.id,
+        professional_id,
         // Convert arrays to JSONB format
         general_objectives: JSON.stringify(data.general_objectives || []),
         specific_objectives: JSON.stringify(data.specific_objectives || []),
