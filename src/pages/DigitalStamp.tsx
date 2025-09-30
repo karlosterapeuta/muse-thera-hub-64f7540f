@@ -115,10 +115,10 @@ export default function DigitalStamp() {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
       <header className="text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-          Gerador de Assinatura e Carimbo Digital
+          Assinatura e Carimbo Digital MuseTera
         </h1>
         <p className="text-muted-foreground mt-2">
-          Para Musicoterapeutas. Preencha os campos para criar e baixar seus materiais.
+          Gerador de Assinatura e Carimbo Digital personalizado do sistema MuseTera.
         </p>
       </header>
 
