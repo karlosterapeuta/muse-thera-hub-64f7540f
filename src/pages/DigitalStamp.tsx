@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Download, User } from 'lucide-react';
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
 
@@ -85,12 +85,24 @@ export default function DigitalStamp() {
 
     setLoading(true);
     try {
-      const dataUrl = await domtoimage.toPng(element, { quality: 1.0 });
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
-      toast.success('Download realizado com sucesso!');
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success('Download realizado com sucesso!');
+        }
+      }, 'image/png');
     } catch (error) {
       console.error('Erro ao gerar imagem:', error);
       toast.error('Erro ao gerar a imagem. Tente novamente.');
