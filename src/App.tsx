@@ -43,6 +43,7 @@ import ChromeMusicLab from "./pages/ChromeMusicLab";
 import Hawkins from "./pages/hawkins";
 import Users from "./pages/users";
 import InviteCodes from "./pages/InviteCodes";
+import DigitalStamp from "./pages/DigitalStamp";
 
 // Process pages
 import MusicoterapiaReport from "./pages/processes/musicoterapia";
@@ -156,6 +157,7 @@ const App = () => {
             <Route path="hawkins" element={<Hawkins />} />
             <Route path="users" element={<Users />} />
             <Route path="invite-codes" element={<InviteCodes />} />
+            <Route path="digital-stamp" element={<DigitalStamp />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

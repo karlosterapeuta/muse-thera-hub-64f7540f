@@ -18,6 +18,7 @@ import {
   UsersRound,
   Key,
   ClipboardList,
+  Stamp,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -41,6 +42,7 @@ export const musicalGamesMenuItems = [
 
 export const toolsMenuItems = [
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
+  { icon: Stamp, text: "📝 Carimbo Digital", path: "/digital-stamp", gradient: "from-teal-500 to-cyan-600", isNew: true },
 ];
 
 export const managementMenuItems = [
