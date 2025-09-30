@@ -112,52 +112,52 @@ export default function DigitalStamp() {
   };
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
-      <header className="text-center mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl">
+      <header className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground px-2">
           Assinatura e Carimbo Digital MuseTera
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground mt-2 text-sm sm:text-base px-2">
           Gerador de Assinatura e Carimbo Digital personalizado do sistema MuseTera.
         </p>
       </header>
 
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12">
+      <div className="flex flex-col xl:flex-row items-start justify-center gap-6 sm:gap-8 lg:gap-12">
         {/* Preview Section */}
-        <div className="w-full lg:w-auto flex flex-col items-center gap-8 lg:sticky lg:top-8">
+        <div className="w-full xl:w-auto flex flex-col items-center gap-6 sm:gap-8 xl:sticky xl:top-8">
           {/* Signature Preview */}
-          <div className="w-full max-w-md">
-            <h2 className="text-lg font-semibold text-foreground mb-2 text-center">
+          <div className="w-full max-w-md px-2 sm:px-0">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
               Pré-visualização da Assinatura
             </h2>
             <Card
               id="signaturePreview"
-              className="w-full bg-card p-4 flex items-center gap-4"
+              className="w-full bg-card p-3 sm:p-4 flex flex-col sm:flex-row items-center gap-3 sm:gap-4"
             >
-              <div className="flex-shrink-0 w-24 h-24 rounded-full border-4 border-border overflow-hidden flex items-center justify-center bg-muted">
+              <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-border overflow-hidden flex items-center justify-center bg-muted">
                 {photoUrl ? (
                   <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="w-8 h-8 text-muted-foreground" />
+                  <User className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                 )}
               </div>
-              <div className="flex-grow">
-                <h3 className="text-lg font-bold text-teal-700">
+              <div className="flex-grow text-center sm:text-left">
+                <h3 className="text-base sm:text-lg font-bold text-teal-700 break-words">
                   {formData.name || defaultTexts.name}
                 </h3>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground break-words">
                   {formData.title || defaultTexts.title}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1 break-words">
                   {formData.registration || defaultTexts.registration}
                 </p>
                 <div className="mt-2 text-xs text-muted-foreground space-y-0.5">
-                  <p>{formData.email || defaultTexts.email}</p>
-                  <p>{formData.phone || defaultTexts.phone}</p>
+                  <p className="break-all">{formData.email || defaultTexts.email}</p>
+                  <p className="break-words">{formData.phone || defaultTexts.phone}</p>
                 </div>
               </div>
               {signatureQrDataUrl && (
-                <div className="flex-shrink-0 w-20 h-20">
+                <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
                   <img src={signatureQrDataUrl} alt="QR Code" className="w-full h-full" />
                 </div>
               )}
@@ -165,32 +165,32 @@ export default function DigitalStamp() {
           </div>
 
           {/* Stamp Preview */}
-          <div className="w-full max-w-xs">
-            <h2 className="text-lg font-semibold text-foreground mb-2 text-center">
+          <div className="w-full max-w-xs mx-auto px-2 sm:px-0">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
               Pré-visualização do Carimbo
             </h2>
             <Card
               id="stampPreview"
-              className="w-full aspect-square bg-card p-4 flex flex-col items-center justify-center text-center border-4 border-teal-600"
+              className="w-full aspect-square bg-card p-3 sm:p-4 flex flex-col items-center justify-center text-center border-4 border-teal-600"
             >
-              <div className="w-20 h-20 rounded-full border-2 border-border overflow-hidden flex items-center justify-center bg-muted mb-3">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-border overflow-hidden flex items-center justify-center bg-muted mb-2 sm:mb-3">
                 {photoUrl ? (
                   <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="w-8 h-8 text-muted-foreground" />
+                  <User className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                 )}
               </div>
-              <h3 className="text-base font-bold text-teal-700 leading-tight">
+              <h3 className="text-sm sm:text-base font-bold text-teal-700 leading-tight break-words px-1">
                 {formData.name || defaultTexts.name}
               </h3>
-              <p className="text-xs font-medium text-muted-foreground mt-1">
+              <p className="text-xs font-medium text-muted-foreground mt-1 break-words px-1">
                 {formData.title || defaultTexts.title}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5 break-words px-1">
                 {formData.registration || defaultTexts.registration}
               </p>
               {stampQrDataUrl && (
-                <div className="w-16 h-16 mt-3">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 mt-2 sm:mt-3">
                   <img src={stampQrDataUrl} alt="QR Code" className="w-full h-full" />
                 </div>
               )}
@@ -199,8 +199,8 @@ export default function DigitalStamp() {
         </div>
 
         {/* Form Section */}
-        <div className="w-full max-w-md">
-          <Card className="p-6 lg:p-8">
+        <div className="w-full max-w-md mx-auto px-2 sm:px-0">
+          <Card className="p-4 sm:p-6 lg:p-8">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="therapistName">Nome Completo</Label>
@@ -237,25 +237,27 @@ export default function DigitalStamp() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label htmlFor="therapistEmail">Email</Label>
+                  <Label htmlFor="therapistEmail" className="text-sm">Email</Label>
                   <Input
                     id="therapistEmail"
                     type="email"
                     placeholder="seu@email.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="text-sm"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="therapistPhone">Telefone</Label>
+                  <Label htmlFor="therapistPhone" className="text-sm">Telefone</Label>
                   <Input
                     id="therapistPhone"
                     type="tel"
                     placeholder="(41) 99999-8888"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
+                    className="text-sm"
                   />
                 </div>
               </div>
@@ -282,7 +284,7 @@ export default function DigitalStamp() {
               </div>
             </div>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 sm:mt-8 space-y-2 sm:space-y-3">
               <Button
                 onClick={() =>
                   downloadElementAsPng(
@@ -292,9 +294,9 @@ export default function DigitalStamp() {
                   )
                 }
                 disabled={isGeneratingSignature}
-                className="w-full bg-teal-600 hover:bg-teal-700"
+                className="w-full bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
               >
-                <Download className="mr-2 h-5 w-5" />
+                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura (PNG)'}
               </Button>
               <Button
@@ -303,9 +305,9 @@ export default function DigitalStamp() {
                 }
                 disabled={isGeneratingStamp}
                 variant="secondary"
-                className="w-full"
+                className="w-full h-10 sm:h-11 text-sm sm:text-base"
               >
-                <Download className="mr-2 h-5 w-5" />
+                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo (PNG)'}
               </Button>
             </div>
