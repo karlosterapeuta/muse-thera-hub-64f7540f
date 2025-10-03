@@ -55,7 +55,7 @@ Retorne um objeto JSON com os campos organizados e melhorados:
 
     console.log('Enviando prompt para Google AI:', prompt.substring(0, 200) + '...');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleAIApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleAIApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
