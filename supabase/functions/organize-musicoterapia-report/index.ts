@@ -43,7 +43,8 @@ INSTRUÇÕES:
 5. Garanta que o texto flua naturalmente
 6. Foque na evolução terapêutica através da música
 
-Retorne um objeto JSON com os campos organizados e melhorados:
+Retorne um objeto JSON com os campos organizados e melhorados, seguindo EXATAMENTE o schema abaixo.
+IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem ```).
 {
   "therapeutic_objectives": "texto organizado dos objetivos",
   "session_activities": "texto organizado das atividades", 
@@ -67,8 +68,9 @@ Retorne um objeto JSON com os campos organizados e melhorados:
           }]
         }],
         generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2048,
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+          response_mime_type: "application/json",
         }
       }),
     });
@@ -86,25 +88,47 @@ Retorne um objeto JSON com os campos organizados e melhorados:
       throw new Error('Resposta inválida da API Google AI');
     }
 
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason === 'MAX_TOKENS') {
+      console.warn('Resposta da IA truncada por limite de tokens (MAX_TOKENS).');
+    }
+
     const generatedText = data.candidates[0].content.parts[0].text;
     console.log('Texto gerado:', generatedText);
 
-    // Tentar extrair JSON da resposta
+    // Tentar extrair JSON da resposta (robusto e tolerante a markdown)
     let organizedContent;
     try {
-      // Remover markdown se presente
-      const jsonMatch = generatedText.match(/```json\s*([\s\S]*?)\s*```/) || generatedText.match(/\{[\s\S]*\}/);
-      const jsonText = jsonMatch ? jsonMatch[1] || jsonMatch[0] : generatedText;
-      organizedContent = JSON.parse(jsonText);
+      let text = generatedText.trim();
+
+      // Remover cercas de código ```json ... ``` se existirem
+      const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (fenced) {
+        text = fenced[1];
+      } else {
+        // Strip defensivo de marcas residuais
+        text = text.replace(/^```(?:json)?/i, '').replace(/```$/i, '').trim();
+      }
+
+      // Extrair bloco entre primeira { e última }
+      if (!text.startsWith('{')) {
+        const start = text.indexOf('{');
+        const end = text.lastIndexOf('}');
+        if (start !== -1 && end !== -1 && end > start) {
+          text = text.slice(start, end + 1);
+        }
+      }
+
+      organizedContent = JSON.parse(text);
     } catch (parseError) {
-      console.error('Erro ao parsear JSON:', parseError);
-      // Fallback: criar estrutura básica
+      console.error('Erro ao parsear JSON:', parseError, 'Resposta bruta:', generatedText);
+      // Fallback: estrutura clara e neutra (sem texto bruto desorganizado)
       organizedContent = {
-        therapeutic_objectives: "Conteúdo organizado com IA - verifique e ajuste conforme necessário",
-        session_activities: generatedText.substring(0, 500) + "...",
-        patient_evolution: "Evolução observada durante as sessões de musicoterapia",
-        recommendations: "Recomendações para continuidade do tratamento",
-        conclusion: "Síntese dos resultados obtidos através da musicoterapia"
+        therapeutic_objectives: 'Objetivos organizados com IA — revise e ajuste conforme necessário.',
+        session_activities: 'Atividades da sessão organizadas — inclua detalhes específicos observados.',
+        patient_evolution: 'Síntese da evolução musical e comportamental observada.',
+        recommendations: 'Recomendações terapêuticas para continuidade do plano.',
+        conclusion: 'Conclusão técnica com foco na evolução e próximos passos.'
       };
     }
 
