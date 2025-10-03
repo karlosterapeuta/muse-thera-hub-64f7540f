@@ -44,13 +44,13 @@ INSTRUÇÕES:
 6. Foque na evolução terapêutica através da música
 
 Retorne um objeto JSON com os campos organizados e melhorados, seguindo EXATAMENTE o schema abaixo.
-IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem ```).
+IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem \`\`\`).
 {
-  "therapeutic_objectives": "texto organizado dos objetivos",
-  "session_activities": "texto organizado das atividades", 
-  "patient_evolution": "texto organizado da evolução",
-  "recommendations": "texto organizado das recomendações",
-  "conclusion": "texto organizado da conclusão"
+  \"therapeutic_objectives\": \"texto organizado dos objetivos\",
+  \"session_activities\": \"texto organizado das atividades\", 
+  \"patient_evolution\": \"texto organizado da evolução\",
+  \"recommendations\": \"texto organizado das recomendações\",
+  \"conclusion\": \"texto organizado da conclusão\"
 }
 `;
 
