@@ -48,6 +48,7 @@ import DigitalStamp from "./pages/DigitalStamp";
 // Process pages
 import MusicoterapiaReport from "./pages/processes/musicoterapia";
 import EvolutionReport from "./pages/processes/evolution";
+import DevolutivaTEA from "./pages/processes/devolutiva-tea";
 import EvaluationProcess from "./pages/processes/evaluation";
 import TeaArticle from "./pages/processes/evaluation/tea-article";
 import EvaluationArticle from "./pages/processes/evaluation/article";
@@ -122,6 +123,7 @@ const App = () => {
             <Route path="processes" element={<Processes />} />
             <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
             <Route path="processes/evolution" element={<EvolutionReport />} />
+            <Route path="processes/devolutiva-tea" element={<DevolutivaTEA />} />
             <Route path="processes/evaluation" element={<EvaluationProcess />} />
             <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
             <Route path="processes/evaluation/article" element={<EvaluationArticle />} />
