@@ -18,7 +18,15 @@ type DateFieldProps = {
 };
 
 export function DateField({ label, value, onChange }: DateFieldProps) {
-  const date = value ? new Date(value + 'T12:00:00') : undefined;
+  // Validate date - only create Date object if value is valid
+  let date: Date | undefined = undefined;
+  if (value && value.trim()) {
+    const tempDate = new Date(value + 'T12:00:00');
+    // Check if date is valid (not NaN)
+    if (!isNaN(tempDate.getTime())) {
+      date = tempDate;
+    }
+  }
 
   return (
     <div className="space-y-2">
