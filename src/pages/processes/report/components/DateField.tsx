@@ -59,6 +59,7 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             formatters={{
               formatMonthCaption: (date) => format(date, "MMMM yyyy", { locale: ptBR }),
             }}
+            className="pointer-events-auto"
             classNames={{
               caption_label: "hidden", // Hide the default month/year text
               dropdown_month: "w-full",
