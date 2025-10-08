@@ -46,7 +46,7 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-white shadow-md border border-gray-100 rounded-lg" align="start" side="bottom" sideOffset={4} avoidCollisions={true}>
+        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
           <Calendar
             mode="single"
             selected={date}
@@ -59,35 +59,32 @@ export function DateField({ label, value, onChange }: DateFieldProps) {
             formatters={{
               formatMonthCaption: (date) => format(date, "MMMM yyyy", { locale: ptBR }),
             }}
-            className="pointer-events-auto"
+            className="p-3 pointer-events-auto"
             classNames={{
-              caption_label: "hidden", // Hide the default month/year text
+              caption_label: "hidden",
               dropdown_month: "w-full",
               dropdown_year: "w-full",
               caption: "flex justify-center pt-1",
-              dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary",
+              dropdown: "p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary pointer-events-auto",
               nav_button: cn(
-                "h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100 transition-opacity"
+                "h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100 transition-opacity pointer-events-auto"
               ),
               nav_button_previous: "absolute left-1",
               nav_button_next: "absolute right-1",
               table: "w-full border-collapse space-y-1",
               head_row: "flex",
-              head_cell: "text-gray-500 rounded-md w-9 font-normal text-[0.8rem] uppercase",
+              head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
               row: "flex w-full mt-2",
-              cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-gray-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+              cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 pointer-events-auto",
               day: cn(
-                "h-9 w-9 p-0 font-normal text-gray-700 aria-selected:opacity-100 hover:bg-gray-100 transition-colors"
+                "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-md pointer-events-auto cursor-pointer"
               ),
-              day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-              day_today: "bg-accent text-accent-foreground border border-gray-200",
-              day_outside: "text-gray-400 opacity-50",
-              day_disabled: "text-gray-400 opacity-50",
+              day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+              day_today: "bg-accent text-accent-foreground",
+              day_outside: "text-muted-foreground opacity-50",
+              day_disabled: "text-muted-foreground opacity-50 cursor-not-allowed",
               day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
               day_hidden: "invisible",
-              root: "bg-white",
-              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-              month: "space-y-4",
             }}
           />
         </PopoverContent>
