@@ -10,6 +10,9 @@ verify_jwt = true
 [functions.generate-recurring-records]
 verify_jwt = false
 
+[functions.organize-evolution-report]
+verify_jwt = true
+
 # Add rate limiting and other security settings for edge functions
 [functions]
 timeout = 60

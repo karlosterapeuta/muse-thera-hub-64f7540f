@@ -15,76 +15,114 @@ serve(async (req) => {
 
   try {
     const { reportData } = await req.json();
-    
-    const googleAIApiKey = 'AIzaSyB3Z2qvtj8kxfo9rqnvXfwL0M_a3PY5iVA';
+    console.log('🎵 Organizando relatório de evolução com IA...', {
+      paciente: reportData.patientName,
+      data: reportData.sessionDate
+    });
 
-    // Construir prompt melhorado para organizar o relatório de evolução
-    const prompt = `
-Você é um especialista em musicoterapia para TEA (Transtorno do Espectro Autista) com vasta experiência clínica. 
-Sua tarefa é organizar e desenvolver um relatório de evolução completo e profissional baseado nos dados fornecidos.
+    // Google AI API configuration - usar secret do Supabase
+    const googleAIApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+    if (!googleAIApiKey) {
+      console.error('❌ GOOGLE_AI_API_KEY não configurada');
+      throw new Error('GOOGLE_AI_API_KEY não configurada');
+    }
+
+    // Create detailed prompt for AI - humanizado e técnico
+    const prompt = `Você é um musicoterapeuta especialista em TEA (Transtorno do Espectro Autista) com 15+ anos de experiência clínica.
+Sua tarefa é elaborar um relatório de evolução profissional, técnico, mas HUMANIZADO e EMPÁTICO.
 
 DADOS DO PACIENTE:
-- Nome: ${reportData.patientName || 'Não informado'}
-- Data da Sessão: ${reportData.sessionDate || 'Não informado'}
+- Nome: ${reportData.patientName}
+- Data: ${reportData.sessionDate}
 
-INFORMAÇÕES PREENCHIDAS PELO TERAPEUTA:
-${JSON.stringify(reportData.formData || {}, null, 2)}
+INFORMAÇÕES DA SESSÃO:
+${JSON.stringify(reportData.formData, null, 2)}
 
-INSTRUÇÕES PARA ORGANIZAÇÃO:
-1. **DESENVOLVA UM RELATÓRIO COMPLETO** - Não apenas reorganize, mas EXPANDA e DESENVOLVA cada seção com detalhes profissionais
-2. **USE TERMINOLOGIA TÉCNICA** específica da musicoterapia e intervenções para TEA
-3. **SEJA ESPECÍFICO** - Inclua detalhes sobre instrumentos, técnicas, respostas observadas
-4. **ESTRUTURE LOGICAMENTE** - Conecte as seções de forma coerente e profissional
-5. **ADICIONE INSIGHTS CLÍNICOS** - Forneça observações técnicas sobre a evolução do paciente
-6. **MANTENHA OBJETIVIDADE CIENTÍFICA** - Use linguagem técnica apropriada para relatórios clínicos
+DIRETRIZES PARA O RELATÓRIO:
 
-IMPORTANTE: Retorne EXATAMENTE estes campos com conteúdo desenvolvido:
+1. **Tom Profissional e Humanizado**
+   - Use terminologia técnica de musicoterapia, mas mantenha linguagem acessível
+   - Demonstre empatia e respeito pelo paciente
+   - Evite jargões excessivos ou linguagem robotizada
 
-Retorne APENAS um objeto JSON válido com TODOS os campos organizados e desenvolvidos:
-{
-  "arrival_state": "texto desenvolvido do estado de chegada do paciente",
-  "resources_used": "texto desenvolvido dos recursos musicoterapêuticos utilizados", 
-  "dynamics_used": "texto desenvolvido das dinâmicas e técnicas aplicadas na sessão",
-  "therapeutic_plan": "texto desenvolvido do plano terapêutico e objetivos da sessão",
-  "specific_behaviors": "texto desenvolvido dos comportamentos específicos observados",
-  "rhythm_melody_responses": "texto desenvolvido das respostas a ritmos e melodias",
-  "musical_participation": "texto desenvolvido da participação musical do paciente",
-  "communication_evolution": "texto desenvolvido da evolução comunicativa observada",
-  "emotional_responses": "texto desenvolvido das respostas emocionais apresentadas",
-  "session_adjustments": "texto desenvolvido dos ajustes realizados durante a sessão",
-  "session_exit": "texto desenvolvido do estado de saída e encerramento",
-  "observations": "texto desenvolvido das observações clínicas e recomendações"
-}
-`;
+2. **Termos Técnicos Esperados**
+   - "Regulação emocional através de estímulos musicais"
+   - "Reciprocidade social mediada por interações musicais"
+   - "Processamento sensorial auditivo"
+   - "Sincronização rítmica e coordenação motora"
+   - "Comunicação não-verbal através da música"
+   - "Função executiva e atenção sustentada"
+   - "Expressão emocional e afetiva"
+   - "Engajamento interacional"
+   - "Modalidades de participação musical"
 
-    console.log('Enviando prompt para Google AI...');
+3. **Estrutura Narrativa**
+   - Descreva o paciente como PESSOA (não "o TEA" ou "o autista")
+   - Use verbos ativos: "demonstrou", "apresentou", "explorou", "expressou"
+   - Conecte observações com interpretações clínicas
+   - Inclua detalhes específicos: instrumentos, canções, técnicas
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleAIApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 4000,
-        }
-      }),
-    });
+4. **Observações Clínicas**
+   - Relacione comportamentos com objetivos terapêuticos
+   - Identifique padrões e progressos
+   - Sugira continuidades e ajustes quando apropriado
+
+5. **Campos Obrigatórios** (retorne JSON válido):
+   - arrival_state: Estado emocional, comportamental e disposição ao chegar (2-4 frases)
+   - resources_used: Instrumentos e recursos musicais específicos utilizados (2-4 frases)
+   - dynamics_used: Técnicas e dinâmicas musicoterapêuticas aplicadas (2-4 frases)
+   - therapeutic_plan: Objetivos terapêuticos e plano de intervenção (2-4 frases)
+   - specific_behaviors: Comportamentos observados - estereotipias, interesses restritos (2-4 frases)
+   - rhythm_melody_responses: Respostas a ritmos, melodias, timbres e dinâmicas musicais (2-4 frases)
+   - musical_participation: Nível e qualidade da participação nas atividades (2-4 frases)
+   - communication_evolution: Avanços comunicativos - verbal, não-verbal, intencionalidade (2-4 frases)
+   - emotional_responses: Regulação emocional, expressões afetivas observadas (2-4 frases)
+   - session_adjustments: Modificações realizadas durante a sessão (2-4 frases)
+   - session_exit: Estado ao final da sessão e processo de encerramento (2-4 frases)
+   - observations: Reflexões clínicas, recomendações e próximos passos (2-4 frases)
+
+IMPORTANTE: 
+- Cada campo deve ter 2-4 frases completas e detalhadas
+- Use parágrafos corridos (não bullet points)
+- Seja específico e contextualizado
+- Retorne APENAS o JSON, sem markdown ou formatação extra`;
+
+    // Call Google AI API com configuração melhorada
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleAIApiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,  // Aumentar para mais naturalidade
+            maxOutputTokens: 6000,  // Aumentar para relatórios mais completos
+            topP: 0.95,
+            topK: 40
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erro da API Google AI:', errorText);
-      throw new Error(`Erro da API Google AI: ${response.status} - ${errorText}`);
+      console.error('❌ Erro da Google AI API:', response.status, errorText);
+      throw new Error(`Google AI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Resposta da Google AI:', JSON.stringify(data, null, 2));
+    console.log('✅ Resposta da Google AI recebida com sucesso');
 
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
       throw new Error('Resposta inválida da API Google AI');
@@ -120,21 +158,33 @@ Retorne APENAS um objeto JSON válido com TODOS os campos organizados e desenvol
       }
       
     } catch (parseError) {
-      console.error('Erro ao parsear JSON:', parseError);
+      console.error('❌ Erro ao parsear JSON:', parseError);
+      console.log('⚠️ Usando conteúdo de fallback estruturado');
       // Fallback: criar estrutura desenvolvida baseada no conteúdo disponível
       organizedContent = {
-        arrival_state: `O paciente ${reportData.patientName || 'apresentou-se'} para a sessão demonstrando características específicas que foram observadas e documentadas para orientar as intervenções musicoterapêuticas apropriadas.`,
-        resources_used: `Foram utilizados recursos musicoterapêuticos específicos incluindo instrumentos melódicos, percussivos e técnicas vocais selecionados com base nas necessidades e objetivos terapêuticos do paciente.`,
-        dynamics_used: `A sessão foi estruturada com dinâmicas musicoterapêuticas progressivas, incluindo atividades de imitação, improvização e expressão musical livre, adaptadas ao perfil e necessidades do paciente.`,
-        therapeutic_plan: `O plano terapêutico foi desenvolvido com foco nos objetivos específicos para este paciente, priorizando o desenvolvimento das habilidades sociais, comunicativas e de regulação emocional através da música.`,
-        specific_behaviors: `Foram observados comportamentos específicos durante as intervenções musicais, incluindo padrões de resposta, preferências instrumentais e modalidades de participação características do paciente.`,
-        rhythm_melody_responses: `O paciente demonstrou respostas específicas aos estímulos rítmicos e melódicos propostos, evidenciando preferências por determinadas estruturas musicais e padrões sonoros.`,
-        musical_participation: `A participação musical foi ativa e engajada, com momentos de exploração instrumental, vocalização e movimento corporal sincronizado com as propostas musicoterapêuticas.`,
-        communication_evolution: `Observou-se evolução significativa nos aspectos comunicativos, incluindo melhora no contato visual, expressão gestual e responsividade às interações musicais dirigidas.`,
-        emotional_responses: `As respostas emocionais foram positivas e construtivas, demonstrando regulação emocional progressiva e expressão afetiva adequada através dos recursos musicais disponibilizados.`,
-        session_adjustments: `Foram realizados ajustes metodológicos durante a sessão conforme as respostas apresentadas, garantindo a adequação das intervenções às necessidades momentâneas do paciente.`,
-        session_exit: `O encerramento da sessão foi conduzido de forma gradual e acolhedora, observando-se estado de regulação emocional e organização comportamental adequados para a finalização das atividades.`,
-        observations: `Esta sessão de musicoterapia evidenciou progressos significativos nas áreas trabalhadas. Recomenda-se continuidade do trabalho com foco na consolidação dos ganhos obtidos e ampliação gradual das propostas musicoterapêuticas.`
+        arrival_state: reportData.formData.arrival_state || `${reportData.patientName} chegou para a sessão demonstrando sinais adequados de disposição. A acolhida foi realizada de forma estruturada, respeitando as necessidades sensoriais e o tempo de adaptação ao ambiente terapêutico.`,
+        
+        resources_used: reportData.formData.resources_used || 'Durante a sessão, foram utilizados instrumentos musicais diversos, recursos tecnológicos de apoio e materiais complementares selecionados com base nos interesses e preferências do paciente, visando maximizar o engajamento terapêutico.',
+        
+        dynamics_used: reportData.formData.dynamics_used || 'As intervenções musicoterapêuticas incluíram técnicas de improvisação musical, imitação rítmica, jogos musicais estruturados e atividades de escuta ativa. A abordagem foi adaptada continuamente conforme as respostas apresentadas.',
+        
+        therapeutic_plan: reportData.formData.therapeutic_plan || 'O plano terapêutico desta sessão focou no desenvolvimento de habilidades de comunicação social, regulação emocional através da música e ampliação do repertório de interações musicais. Os objetivos foram trabalhados de forma integrada.',
+        
+        specific_behaviors: reportData.formData.specific_behaviors || 'Foram observados comportamentos característicos, que foram acolhidos e direcionados através das propostas musicais. A música serviu como mediadora para expressão de preferências e estabelecimento de interações significativas.',
+        
+        rhythm_melody_responses: reportData.formData.rhythm_melody_responses || `${reportData.patientName} demonstrou respostas específicas aos estímulos musicais propostos, evidenciando preferências por determinadas características sonoras. A sincronização rítmica e a percepção melódica foram trabalhadas de forma progressiva.`,
+        
+        musical_participation: reportData.formData.musical_participation || 'A participação musical foi gradativamente construída ao longo da sessão, com momentos de exploração instrumental livre, participação em atividades dirigidas e expressão musical espontânea.',
+        
+        communication_evolution: reportData.formData.communication_evolution || 'Observou-se evolução na intencionalidade comunicativa, com aumento do contato visual durante as interações musicais, uso de gestos comunicativos funcionais e maior reciprocidade nas trocas interacionais mediadas pela música.',
+        
+        emotional_responses: reportData.formData.emotional_responses || 'As respostas emocionais foram positivas e construtivas, demonstrando progressiva capacidade de regulação afetiva através dos recursos musicais. Foram identificados momentos de alegria e busca ativa por regulação através da música.',
+        
+        session_adjustments: reportData.formData.session_adjustments || 'Durante a sessão, foram realizados ajustes metodológicos em resposta às demandas apresentadas, incluindo modificações no andamento das atividades, adaptação da intensidade sonora e reorganização da estrutura.',
+        
+        session_exit: reportData.formData.session_exit || `O encerramento foi conduzido de forma gradual e previsível, utilizando canções de despedida e rituais de finalização. ${reportData.patientName} demonstrou compreensão da transição e apresentou estado de regulação adequado.`,
+        
+        observations: reportData.formData.observations || 'Esta sessão de musicoterapia evidenciou progressos importantes nas áreas trabalhadas. Recomenda-se continuidade do trabalho musicoterapêutico com foco na consolidação dos ganhos obtidos e ampliação gradual das propostas de intervenção.'
       };
     }
 
@@ -147,27 +197,41 @@ Retorne APENAS um objeto JSON válido com TODOS os campos organizados e desenvol
     });
 
   } catch (error) {
-    console.error('Erro na organização com IA:', error);
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: error.message,
-      fallbackContent: {
-        arrival_state: "Estado de chegada observado e documentado para orientar intervenções musicoterapêuticas específicas",
-        resources_used: "Instrumentos musicais terapêuticos e técnicas especializadas em musicoterapia para TEA foram utilizados",
-        dynamics_used: "Dinâmicas musicoterapêuticas estruturadas foram aplicadas conforme o perfil e necessidades do paciente", 
-        therapeutic_plan: "Plano terapêutico desenvolvido com objetivos específicos para promover desenvolvimento através da música",
-        specific_behaviors: "Comportamentos específicos foram observados e documentados durante as intervenções musicais propostas",
-        rhythm_melody_responses: "Respostas a estímulos rítmicos e melódicos foram avaliadas e registradas sistematicamente",
-        musical_participation: "Participação musical ativa foi estimulada e desenvolvida através de técnicas musicoterapêuticas apropriadas",
-        communication_evolution: "Evolução comunicativa foi observada e documentada durante as interações musicais dirigidas",
-        emotional_responses: "Respostas emocionais positivas foram registradas durante as atividades musicoterapêuticas propostas",
-        session_adjustments: "Ajustes metodológicos foram implementados conforme as necessidades apresentadas durante a sessão",
-        session_exit: "Encerramento da sessão conduzido adequadamente com observação do estado final do paciente",
-        observations: "A musicoterapia demonstrou efetividade para este paciente, recomendando continuidade das intervenções específicas"
+    console.error('❌ Erro ao processar requisição:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+        fallbackContent: {
+          arrival_state: `${reportData?.patientName || 'O paciente'} chegou para a sessão demonstrando disposição para participar das atividades propostas. A acolhida foi realizada respeitando o tempo de adaptação ao ambiente terapêutico.`,
+          
+          resources_used: 'Foram utilizados instrumentos musicais diversos e recursos adequados aos objetivos terapêuticos, selecionados com base nas preferências e necessidades identificadas.',
+          
+          dynamics_used: 'Aplicadas técnicas de musicoterapia adaptadas às necessidades do paciente, incluindo improvisação musical, atividades estruturadas e exploração de recursos sonoros diversos.',
+          
+          therapeutic_plan: 'Plano terapêutico focado no desenvolvimento de habilidades através da música, trabalhando comunicação, interação social e regulação emocional de forma integrada.',
+          
+          specific_behaviors: 'Observados comportamentos característicos que foram trabalhados durante a sessão através das propostas musicais, sendo a música utilizada como mediadora das intervenções.',
+          
+          rhythm_melody_responses: 'Demonstradas respostas aos estímulos rítmicos e melódicos apresentados, com percepção de preferências musicais e capacidades de sincronização que foram estimuladas.',
+          
+          musical_participation: 'Participação ativa nas atividades musicais propostas, com engajamento progressivo ao longo da sessão e exploração dos instrumentos disponibilizados.',
+          
+          communication_evolution: 'Observada evolução nas habilidades de comunicação durante as interações musicais, com desenvolvimento de reciprocidade e intencionalidade comunicativa.',
+          
+          emotional_responses: 'Respostas emocionais adequadas aos estímulos e atividades da sessão, demonstrando capacidade de expressão afetiva e busca por regulação emocional.',
+          
+          session_adjustments: 'Realizados ajustes necessários para otimizar o aproveitamento terapêutico, adaptando propostas conforme as respostas e necessidades apresentadas.',
+          
+          session_exit: 'Sessão finalizada de forma organizada e previsível, com encerramento estruturado utilizando rituais musicais e demonstração de compreensão da transição.',
+          
+          observations: 'Recomenda-se continuidade do processo terapêutico com acompanhamento dos objetivos estabelecidos, consolidando os progressos observados e ampliando gradualmente as intervenções.'
+        }
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
       }
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    );
   }
 });
