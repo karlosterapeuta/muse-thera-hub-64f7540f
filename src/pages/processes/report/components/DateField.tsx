@@ -18,10 +18,11 @@ type DateFieldProps = {
 };
 
 export function DateField({ label, value, onChange }: DateFieldProps) {
-  // Validate date - only create Date object if value is valid
+  // Validate date - handle both "YYYY-MM-DD" and ISO formats
   let date: Date | undefined = undefined;
   if (value && value.trim()) {
-    const tempDate = new Date(value + 'T12:00:00');
+    const normalized = value.includes('T') ? value : `${value}T12:00:00`;
+    const tempDate = new Date(normalized);
     // Check if date is valid (not NaN)
     if (!isNaN(tempDate.getTime())) {
       date = tempDate;

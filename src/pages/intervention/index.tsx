@@ -551,8 +551,8 @@ export default function InterventionForm() {
                       <FormControl>
                         <DateField 
                           label=""
-                          value={field.value ? field.value.toISOString() : ""}
-                          onChange={(date) => field.onChange(date ? new Date(date) : undefined)}
+                          value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                          onChange={(dateStr) => field.onChange(dateStr ? new Date(`${dateStr}T12:00:00`) : undefined)}
                         />
                       </FormControl>
                       <FormMessage />
