@@ -14,6 +14,7 @@ export type ReportFormData = {
     | 'team_report'
     | 'technical_report'
     | 'musicoterapia'
-    | 'evolution_musicoterapia';
+    | 'evolution_musicoterapia'
+    | 'devolutiva_tea';
   content: Record<string, any>;
 };

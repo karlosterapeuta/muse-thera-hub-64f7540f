@@ -53,6 +53,7 @@ import TeaArticle from "./pages/processes/evaluation/tea-article";
 import EvaluationArticle from "./pages/processes/evaluation/article";
 import ProcessReport from "./pages/processes/report";
 import ProcessReports from "./pages/processes/reports";
+import DevolutivaTea from "./pages/processes/devolutiva-tea";
 
 // Finance pages
 import FinanceRecords from "./pages/finance/records";
@@ -122,6 +123,7 @@ const App = () => {
             <Route path="processes" element={<Processes />} />
             <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
             <Route path="processes/evolution" element={<EvolutionReport />} />
+            <Route path="processes/devolutiva-tea" element={<DevolutivaTea />} />
             <Route path="processes/evaluation" element={<EvaluationProcess />} />
             <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
             <Route path="processes/evaluation/article" element={<EvaluationArticle />} />

@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Music,
   TrendingUp,
+  Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -73,6 +74,15 @@ export default function Processes() {
       path: "/processes/evolution",
       gradient: "from-green-500 to-blue-500",
       bgGradient: "from-green-50 to-blue-50",
+      isNew: true
+    },
+    {
+      title: "Devolutiva Musicoterapia TEA",
+      description: "Relatório simplificado para famílias de pacientes com TEA",
+      icon: Heart,
+      path: "/processes/devolutiva-tea",
+      gradient: "from-pink-500 to-rose-500",
+      bgGradient: "from-pink-50 to-rose-50",
       isNew: true
     },
   ];
