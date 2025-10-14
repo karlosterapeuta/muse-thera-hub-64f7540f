@@ -123,18 +123,6 @@ export default function MusicotherapyTreatmentPlanPage() {
     }
   }, [planData.patient_id]);
 
-  // Check if plan exists when editing
-  useEffect(() => {
-    if (id && !isLoading && !planData.patient_full_name) {
-      toast({
-        variant: 'destructive',
-        title: 'Plano não encontrado',
-        description: 'O plano solicitado não existe ou foi excluído.',
-      });
-      navigate('/musicotherapy-treatment-plans');
-    }
-  }, [id, isLoading, planData.patient_full_name, toast, navigate]);
-
   const handlePatientSelect = (value: string) => {
     setSelectedPatient(value);
     const patient = patients.find((p) => p.id === value);
