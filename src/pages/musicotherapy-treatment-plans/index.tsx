@@ -256,7 +256,10 @@ export default function MusicotherapyTreatmentPlans() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => navigate(`/musicotherapy-treatment-plan/${plan.id}`)}
+                            onClick={() => {
+                              console.log('Navigating to edit plan:', plan.id);
+                              navigate(`/musicotherapy-treatment-plan/${plan.id}`);
+                            }}
                             className="gap-1"
                           >
                             <Edit className="h-4 w-4" />

@@ -17,29 +17,34 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   const queryClient = useQueryClient();
   const { data: professionalData } = useProfessionalData();
 
+  // Helper function to safely parse JSON fields
+  const parseField = (field: any): string[] => {
+    if (!field) return [];
+    if (Array.isArray(field)) return field;
+    try {
+      const parsed = JSON.parse(field);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
   // Helper function to parse database JSON fields
   const parseDbPlan = (dbData: any): MusicotherapyTreatmentPlan => {
     return {
       ...dbData,
-      general_objectives: dbData.general_objectives ? 
-        (Array.isArray(dbData.general_objectives) ? dbData.general_objectives : JSON.parse(dbData.general_objectives)) : [],
-      specific_objectives: dbData.specific_objectives ? 
-        (Array.isArray(dbData.specific_objectives) ? dbData.specific_objectives : JSON.parse(dbData.specific_objectives)) : [],
-      musical_instruments: dbData.musical_instruments ? 
-        (Array.isArray(dbData.musical_instruments) ? dbData.musical_instruments : JSON.parse(dbData.musical_instruments)) : [],
-      technological_resources: dbData.technological_resources ? 
-        (Array.isArray(dbData.technological_resources) ? dbData.technological_resources : JSON.parse(dbData.technological_resources)) : [],
-      voice_body_resources: dbData.voice_body_resources ? 
-        (Array.isArray(dbData.voice_body_resources) ? dbData.voice_body_resources : JSON.parse(dbData.voice_body_resources)) : [],
-      complementary_materials: dbData.complementary_materials ? 
-        (Array.isArray(dbData.complementary_materials) ? dbData.complementary_materials : JSON.parse(dbData.complementary_materials)) : [],
-      evaluation_criteria_list: dbData.evaluation_criteria_list ? 
-        (Array.isArray(dbData.evaluation_criteria_list) ? dbData.evaluation_criteria_list : JSON.parse(dbData.evaluation_criteria_list)) : [],
+      general_objectives: parseField(dbData.general_objectives),
+      specific_objectives: parseField(dbData.specific_objectives),
+      musical_instruments: parseField(dbData.musical_instruments),
+      technological_resources: parseField(dbData.technological_resources),
+      voice_body_resources: parseField(dbData.voice_body_resources),
+      complementary_materials: parseField(dbData.complementary_materials),
+      evaluation_criteria_list: parseField(dbData.evaluation_criteria_list),
     } as MusicotherapyTreatmentPlan;
   };
 
   // Fetch existing plan if planId is provided
-  const { data: existingPlan, isLoading } = useQuery({
+  const { data: existingPlan, isLoading, error: queryError } = useQuery({
     queryKey: ['treatment-plan', planId],
     queryFn: async () => {
       if (!planId) return null;
@@ -48,22 +53,44 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
         .from('treatment_plans')
         .select('*')
         .eq('id', planId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          throw new Error('Plano não encontrado');
+        }
+        throw error;
+      }
       
       return data ? parseDbPlan(data) : null;
     },
     enabled: !!planId,
   });
 
+  // Show error toast when plan fails to load
+  useEffect(() => {
+    if (queryError) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar plano',
+        description: queryError.message || 'Não foi possível carregar o plano de tratamento.',
+      });
+    }
+  }, [queryError, toast]);
+
   // Track changes and setup auto-save
   useEffect(() => {
     if (existingPlan && !initialDataRef.current) {
-      initialDataRef.current = existingPlan;
-      setPlanData(existingPlan);
+      const parsedPlan = parseDbPlan(existingPlan);
+      initialDataRef.current = parsedPlan;
+      setPlanData(parsedPlan);
+      
+      toast({
+        title: "Plano carregado",
+        description: `Plano de ${parsedPlan.patient_full_name || 'paciente'} carregado com sucesso.`,
+      });
     }
-  }, [existingPlan]);
+  }, [existingPlan, toast]);
 
   // Check for unsaved changes
   useEffect(() => {
@@ -240,7 +267,7 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
   });
 
   return {
-    planData: existingPlan ? { ...defaultTreatmentPlan, ...existingPlan } : planData,
+    planData,
     updatePlanData,
     savePlan: (data?: Partial<MusicotherapyTreatmentPlan>) => {
       const dataToSave = data || planData;

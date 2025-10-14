@@ -116,6 +116,25 @@ export default function MusicotherapyTreatmentPlanPage() {
     }
   }, [professionalData, planData.professional_id, updatePlanData]);
 
+  // Sync selectedPatient when planData loads
+  useEffect(() => {
+    if (planData.patient_id && planData.patient_id !== selectedPatient) {
+      setSelectedPatient(planData.patient_id);
+    }
+  }, [planData.patient_id]);
+
+  // Check if plan exists when editing
+  useEffect(() => {
+    if (id && !isLoading && !planData.patient_full_name) {
+      toast({
+        variant: 'destructive',
+        title: 'Plano não encontrado',
+        description: 'O plano solicitado não existe ou foi excluído.',
+      });
+      navigate('/musicotherapy-treatment-plans');
+    }
+  }, [id, isLoading, planData.patient_full_name, toast, navigate]);
+
   const handlePatientSelect = (value: string) => {
     setSelectedPatient(value);
     const patient = patients.find((p) => p.id === value);
@@ -275,12 +294,15 @@ export default function MusicotherapyTreatmentPlanPage() {
     { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
   ];
 
-  if (isLoading) {
+  if (isLoading && id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="mt-4 text-lg">Carregando plano de tratamento...</p>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
+          <div>
+            <p className="text-xl font-semibold">Carregando plano...</p>
+            <p className="text-sm text-muted-foreground">Aguarde enquanto buscamos os dados</p>
+          </div>
         </div>
       </div>
     );
