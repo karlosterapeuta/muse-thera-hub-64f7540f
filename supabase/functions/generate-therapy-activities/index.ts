@@ -138,8 +138,60 @@ IMPORTANTE:
     }
 
     if (!success || !response || !response.ok) {
-      console.error('❌ Todas as tentativas falharam. Último erro:', lastError);
-      throw new Error(`Erro na API Gemini. Verifique a chave e o acesso aos modelos. Último erro: ${lastError}`);
+      console.warn('⚠️ Tentativas com Google Gemini falharam. Tentando Lovable AI Gateway...');
+
+      const lovableKey = Deno.env.get('LOVABLE_API_KEY');
+      if (!lovableKey) {
+        console.error('❌ LOVABLE_API_KEY ausente');
+        throw new Error(`Erro na API Gemini. Verifique a chave e o acesso aos modelos. Último erro: ${lastError}`);
+      }
+
+      const gatewayResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: 'Você é um especialista em Musicoterapia clínica. Responda SEMPRE apenas com JSON válido conforme solicitado.' },
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+
+      if (!gatewayResp.ok) {
+        const t = await gatewayResp.text();
+        console.error('❌ Erro Lovable AI Gateway:', gatewayResp.status, t);
+        throw new Error(`Erro no Lovable AI Gateway: ${gatewayResp.status}`);
+      }
+
+      const gatewayJson = await gatewayResp.json();
+      const content = gatewayJson.choices?.[0]?.message?.content ?? '';
+
+      if (!content) {
+        throw new Error('Resposta vazia do Lovable AI Gateway');
+      }
+
+      let cleaned = String(content).trim();
+      if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      if (cleaned.startsWith('```')) cleaned = cleaned.replace(/```\n?/g, '');
+
+      try {
+        const parsed = JSON.parse(cleaned);
+        if (!parsed.activities || !Array.isArray(parsed.activities) || parsed.activities.length !== 10) {
+          throw new Error('Formato inválido retornado pelo gateway');
+        }
+        console.log('✅ 10 atividades geradas via Lovable AI Gateway');
+        return new Response(
+          JSON.stringify({ activities: parsed.activities }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (e) {
+        console.error('❌ Falha ao parsear resposta do gateway:', e);
+        throw new Error('Falha ao interpretar resposta do gateway');
+      }
     }
 
     const data = await response.json();
