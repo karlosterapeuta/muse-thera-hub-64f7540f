@@ -403,6 +403,177 @@ export const teaDemandCategories = [
   }
 ];
 
+export const tdahDemandCategories = [
+  {
+    category: 'Atenção e Funções Executivas',
+    icon: '🧠',
+    subDemands: [
+      {
+        id: 'tdah-ate-1',
+        label: 'Dificuldade em manter o foco por longos períodos',
+        associatedConditions: ['Transtorno da Função Executiva']
+      },
+      {
+        id: 'tdah-ate-2',
+        label: 'Esquecimento de tarefas e materiais escolares',
+        associatedConditions: ['Transtorno da Função Executiva']
+      },
+      {
+        id: 'tdah-ate-3',
+        label: 'Tendência à distração por estímulos externos',
+        associatedConditions: ['Transtorno do Processamento Auditivo Central (TPAC)']
+      },
+      {
+        id: 'tdah-ate-4',
+        label: 'Problemas em seguir instruções complexas',
+        associatedConditions: ['TPAC', 'Transtorno de Aprendizagem']
+      },
+      {
+        id: 'tdah-ate-5',
+        label: 'Lentidão para iniciar e concluir tarefas',
+        associatedConditions: ['Transtorno da Função Executiva']
+      },
+      {
+        id: 'tdah-ate-6',
+        label: 'Falta de organização no tempo e no espaço',
+        associatedConditions: ['Transtorno do Sono']
+      }
+    ]
+  },
+  {
+    category: 'Comportamento e Autorregulação',
+    icon: '💥',
+    subDemands: [
+      {
+        id: 'tdah-com-1',
+        label: 'Impulsividade (agir antes de pensar)',
+        associatedConditions: ['TOD - Transtorno Opositivo-Desafiador']
+      },
+      {
+        id: 'tdah-com-2',
+        label: 'Interrompe conversas, fala sem ser chamado'
+      },
+      {
+        id: 'tdah-com-3',
+        label: 'Dificuldade em esperar a vez ou lidar com regras',
+        associatedConditions: ['TOD']
+      },
+      {
+        id: 'tdah-com-4',
+        label: 'Comportamentos de risco e busca por estímulos intensos',
+        associatedConditions: ['Transtorno de Conduta']
+      },
+      {
+        id: 'tdah-com-5',
+        label: 'Dificuldade em manter o autocontrole frente a frustrações',
+        associatedConditions: ['Transtorno Disruptivo da Regulação do Humor', 'Transtorno de Ansiedade Generalizada']
+      },
+      {
+        id: 'tdah-com-6',
+        label: 'Agitação motora (balançar pernas, levantar-se)'
+      }
+    ]
+  },
+  {
+    category: 'Socioemocional e Autoestima',
+    icon: '💞',
+    subDemands: [
+      {
+        id: 'tdah-soc-1',
+        label: 'Sentimento de inadequação e rejeição social',
+        associatedConditions: ['Transtorno de Ansiedade Social', 'Depressão Infantil ou Adolescente']
+      },
+      {
+        id: 'tdah-soc-2',
+        label: 'Dificuldade em fazer e manter amizades',
+        associatedConditions: ['Transtorno de Ansiedade Social']
+      },
+      {
+        id: 'tdah-soc-3',
+        label: 'Frustração e desânimo diante de críticas',
+        associatedConditions: ['Depressão Infantil ou Adolescente']
+      },
+      {
+        id: 'tdah-soc-4',
+        label: 'Baixa tolerância à espera e à negação'
+      },
+      {
+        id: 'tdah-soc-5',
+        label: 'Oscilações de humor',
+        associatedConditions: ['Transtorno de Humor Bipolar']
+      },
+      {
+        id: 'tdah-soc-6',
+        label: 'Necessidade constante de reforço positivo',
+        associatedConditions: ['Transtorno de Apego Reativo']
+      }
+    ]
+  },
+  {
+    category: 'Cognitivo e Aprendizagem',
+    icon: '📚',
+    subDemands: [
+      {
+        id: 'tdah-cog-1',
+        label: 'Dificuldade em manter o raciocínio lógico sequencial',
+        associatedConditions: ['Dislexia', 'Discalculia']
+      },
+      {
+        id: 'tdah-cog-2',
+        label: 'Problemas com leitura prolongada e interpretação',
+        associatedConditions: ['Dislexia', 'Disortografia']
+      },
+      {
+        id: 'tdah-cog-3',
+        label: 'Lentidão na execução de tarefas escolares'
+      },
+      {
+        id: 'tdah-cog-4',
+        label: 'Esquecimento de conteúdos já aprendidos'
+      },
+      {
+        id: 'tdah-cog-5',
+        label: 'Pouca capacidade de planejamento e autoavaliação',
+        associatedConditions: ['Transtorno de Aprendizagem Não Verbal']
+      },
+      {
+        id: 'tdah-cog-6',
+        label: 'Maior desempenho em atividades práticas',
+        associatedConditions: ['Transtorno de Processamento Sensorial Leve', 'Transtorno de Linguagem Expressiva']
+      }
+    ]
+  },
+  {
+    category: 'Sensorial e Motor',
+    icon: '👂',
+    subDemands: [
+      {
+        id: 'tdah-sen-1',
+        label: 'Inquietação física constante'
+      },
+      {
+        id: 'tdah-sen-2',
+        label: 'Dificuldade em permanecer sentado ou quieto'
+      },
+      {
+        id: 'tdah-sen-3',
+        label: 'Coordenação motora fina prejudicada',
+        associatedConditions: ['Dispraxia Motora']
+      },
+      {
+        id: 'tdah-sen-4',
+        label: 'Hipersensibilidade a sons ou toques',
+        associatedConditions: ['Transtorno do Processamento Sensorial (TPS)']
+      },
+      {
+        id: 'tdah-sen-5',
+        label: 'Necessidade de movimento para manter atenção',
+        associatedConditions: ['Transtornos de Tique', 'Síndrome de Tourette']
+      }
+    ]
+  }
+];
+
 export const disorderOptions = [
   {
     disorder: 'TEA',
