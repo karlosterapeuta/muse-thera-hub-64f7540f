@@ -691,7 +691,7 @@ export default function InterventionForm() {
   };
 
   return (
-    <div className="container mx-auto p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-6 max-w-7xl">
+    <div className="w-full px-2 sm:px-3 py-2 sm:py-4 md:py-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto">
       {/* Saved Plans Section */}
       <Card className="border-primary/20">
         <CardHeader className="p-4 sm:p-6">

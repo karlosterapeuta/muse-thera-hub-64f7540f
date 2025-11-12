@@ -728,7 +728,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
+      <div className="w-full px-1 sm:px-2 py-4 sm:py-6 space-y-4 sm:space-y-6 animate-fade-in">
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in">

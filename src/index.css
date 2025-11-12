@@ -314,3 +314,48 @@
     color-adjust: exact !important;
   }
 }
+
+/* Otimização de layout para aproveitamento máximo da tela */
+.layout-optimized {
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+}
+
+/* Container fluido para páginas */
+.page-container {
+  width: 100%;
+  padding-left: clamp(8px, 2vw, 16px);
+  padding-right: clamp(8px, 2vw, 16px);
+}
+
+/* Card com melhor aproveitamento */
+.card-full-width {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Breakpoints personalizados */
+@media (max-width: 640px) {
+  .mobile-full-width {
+    width: calc(100vw - 16px);
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-optimized {
+    width: calc(100vw - 32px);
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}
+
+/* Título sem quebra estranha */
+.title-balanced {
+  text-wrap: balance;
+  word-break: keep-all;
+  hyphens: none;
+}

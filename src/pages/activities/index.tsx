@@ -240,7 +240,7 @@ export default function ActivitiesPage() {
                          userActivityData.recentlyViewed.length > 2;
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-7xl">
+    <div className="w-full px-2 sm:px-3 py-4 sm:py-6">
         <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
             <div className="flex-1 text-center lg:text-left">

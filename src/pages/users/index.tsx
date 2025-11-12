@@ -74,7 +74,7 @@ export default function Users() {
 
   if (!isAdmin) {
     return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="w-full px-2 sm:px-3 py-4 sm:py-6">
         <Card className="p-6 flex flex-col items-center justify-center text-center">
           <AlertCircle className="h-12 w-12 text-destructive mb-4" />
           <h2 className="text-xl font-bold">Acesso Restrito</h2>
@@ -85,7 +85,7 @@ export default function Users() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="w-full px-2 sm:px-3 py-4 sm:py-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-primary">Gestão de Usuários</h1>
         <CreateUserDialog />
