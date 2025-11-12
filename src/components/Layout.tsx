@@ -29,7 +29,7 @@ export default function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 lg:hidden group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-14 h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
+                className="fixed top-2 sm:top-4 left-2 sm:left-4 z-50 lg:hidden group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-12 h-12 sm:w-14 sm:h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-110 sm:hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
               >
                 {/* Efeito de brilho animado */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
@@ -38,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="absolute inset-0 rounded-full border-2 border-white/40 group-hover:border-white/60 transition-colors duration-300" />
                 <div className="absolute -inset-1 rounded-full border border-primary/20 group-hover:border-primary/40 animate-pulse" />
                 
-                <Menu className="h-7 w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
+                <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-72">
@@ -51,7 +51,7 @@ export default function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(!isOpen)}
-              className="fixed top-4 left-4 z-50 group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-14 h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
+              className="fixed top-2 sm:top-4 left-2 sm:left-4 z-50 group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-12 h-12 sm:w-14 sm:h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-110 sm:hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
             >
               {/* Efeito de brilho animado */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
@@ -60,7 +60,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="absolute inset-0 rounded-full border-2 border-white/40 group-hover:border-white/60 transition-colors duration-300" />
               <div className="absolute -inset-1 rounded-full border border-primary/20 group-hover:border-primary/40 animate-pulse" />
               
-              <Menu className="h-7 w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
+              <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
             </Button>
             
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -70,19 +70,19 @@ export default function Layout({ children }: LayoutProps) {
             </Sheet>
           </>
         )}
-        <main className="flex-1 px-2 sm:px-3 md:px-4 py-2 bg-background min-h-screen relative overflow-y-auto scroll-container">
-          <div className="fixed top-4 right-4 z-50">
+        <main className="flex-1 px-0 sm:px-2 md:px-4 py-2 bg-background min-h-screen relative overflow-y-auto scroll-container">
+          <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="w-full max-w-[98vw] sm:max-w-[96vw] md:max-w-[95vw] lg:max-w-7xl mx-auto pt-20 sm:pt-24 md:pt-20">
+          <div className="w-full max-w-full sm:max-w-[96vw] md:max-w-[95vw] lg:max-w-7xl mx-auto pt-16 sm:pt-20 md:pt-20">
             {children || <Outlet />}
           </div>
         </main>
       </div>
       
       {/* Footer */}
-      <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
+      <footer className="w-full py-3 sm:py-4 text-center text-xs sm:text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm">
+        <div className="w-full px-2 sm:px-4">
           © 2025 MuseTera • Plataforma de Musicoterapia
         </div>
       </footer>

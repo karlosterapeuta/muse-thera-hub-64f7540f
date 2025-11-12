@@ -547,7 +547,7 @@ export default function AnamnesisFormWrapper({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-4 space-y-6 max-w-6xl">
+      <div className="w-full px-0 sm:px-2 py-4 space-y-6 max-w-6xl mx-auto">
         <Card className="border-0 shadow-2xl overflow-hidden">
           <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
           
