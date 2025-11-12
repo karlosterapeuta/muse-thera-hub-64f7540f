@@ -88,7 +88,7 @@ export function DashboardHeader({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]" />
       
       {/* Main header container */}
-      <div className="relative backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm">
+      <div className="relative w-screen backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm rounded-none">
         <div className="w-full px-0 py-2 sm:py-3">
           {/* Header Top Section - Logo + Title + Time */}
           <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0 sm:px-3">

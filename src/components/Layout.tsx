@@ -70,11 +70,11 @@ export default function Layout({ children }: LayoutProps) {
             </Sheet>
           </>
         )}
-        <main className="flex-1 px-0 py-0 bg-background min-h-screen relative overflow-y-auto scroll-container">
+        <main className="flex-1 w-screen px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="w-full max-w-full mx-auto pt-0">
+          <div className="w-full max-w-none pt-0">
             {children || <Outlet />}
           </div>
         </main>
