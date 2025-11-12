@@ -20,7 +20,7 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="w-full px-0 py-2 sm:py-3 space-y-3 sm:space-y-4">
+      <div className="w-full px-0 py-0 space-y-2 sm:space-y-3">
         {/* Statistics Cards - mantendo como backup/detalhado */}
         <div className="mt-0 px-2 sm:px-3">
           <DashboardStats

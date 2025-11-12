@@ -5,6 +5,29 @@
 @tailwind utilities;
 
 @layer base {
+  /* Reset absoluto para 100% de aproveitamento */
+  html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw;
+    max-width: 100vw;
+  }
+  
+  #root {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+  }
+
   :root {
     --background: 221.2 83.2% 90%;
     --foreground: 222.2 84% 4.9%;

@@ -74,18 +74,18 @@ export default function Layout({ children }: LayoutProps) {
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="w-full max-w-full mx-auto pt-14 sm:pt-16">
+          <div className="w-full max-w-full mx-auto pt-0">
             {children || <Outlet />}
           </div>
         </main>
       </div>
       
       {/* Footer */}
-      <footer className="w-full py-3 sm:py-4 text-center text-xs sm:text-sm text-muted-foreground border-t bg-background/80 backdrop-blur-sm">
-        <div className="w-full px-2 sm:px-4">
-          © 2025 MuseTera • Plataforma de Musicoterapia
-        </div>
-      </footer>
+        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-background/80">
+          <div className="w-full px-2">
+            © 2025 MuseTera
+          </div>
+        </footer>
     </div>
   );
 }
