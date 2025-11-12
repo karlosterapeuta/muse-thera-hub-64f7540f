@@ -428,7 +428,7 @@ export default function InterventionForm() {
       {/* Create New Plan Section */}
       <Card className="border-primary/20">
         <CardHeader>
-          <CardTitle className="text-2xl">Criar Novo Plano de Atividades</CardTitle>
+          <CardTitle className="text-2xl">Criar Novo Plano de Intervenção</CardTitle>
           <CardDescription>
             Selecione o paciente e as demandas para gerar sugestões de atividades para a sua especialidade: <span className="text-primary font-semibold">Musicoterapia</span>.
           </CardDescription>
