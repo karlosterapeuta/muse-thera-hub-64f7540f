@@ -146,6 +146,7 @@ IMPORTANTE:
         throw new Error(`Erro na API Gemini. Verifique a chave e o acesso aos modelos. Último erro: ${lastError}`);
       }
 
+      console.log('🌐 Chamando Lovable AI Gateway...');
       const gatewayResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -155,7 +156,7 @@ IMPORTANTE:
         body: JSON.stringify({
           model: 'google/gemini-2.5-flash',
           messages: [
-            { role: 'system', content: 'Você é um especialista em Musicoterapia clínica. Responda SEMPRE apenas com JSON válido conforme solicitado.' },
+            { role: 'system', content: 'Você é um especialista em Musicoterapia clínica. Responda SEMPRE apenas com JSON válido conforme solicitado, sem nenhum texto adicional antes ou depois.' },
             { role: 'user', content: prompt }
           ],
         }),
@@ -168,29 +169,68 @@ IMPORTANTE:
       }
 
       const gatewayJson = await gatewayResp.json();
+      console.log('📦 Resposta do gateway recebida');
+      
       const content = gatewayJson.choices?.[0]?.message?.content ?? '';
+      console.log('📄 Conteúdo bruto (primeiros 200 chars):', content.substring(0, 200));
 
       if (!content) {
         throw new Error('Resposta vazia do Lovable AI Gateway');
       }
 
+      // Limpeza mais agressiva
       let cleaned = String(content).trim();
-      if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-      if (cleaned.startsWith('```')) cleaned = cleaned.replace(/```\n?/g, '');
+      
+      // Remover blocos de código markdown
+      if (cleaned.includes('```')) {
+        const jsonMatch = cleaned.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+        if (jsonMatch) {
+          cleaned = jsonMatch[1];
+        } else {
+          cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+        }
+      }
+      
+      // Remover texto antes do primeiro {
+      const firstBrace = cleaned.indexOf('{');
+      if (firstBrace > 0) {
+        cleaned = cleaned.substring(firstBrace);
+      }
+      
+      // Remover texto após o último }
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (lastBrace !== -1 && lastBrace < cleaned.length - 1) {
+        cleaned = cleaned.substring(0, lastBrace + 1);
+      }
+
+      console.log('🧹 JSON limpo (primeiros 200 chars):', cleaned.substring(0, 200));
 
       try {
         const parsed = JSON.parse(cleaned);
-        if (!parsed.activities || !Array.isArray(parsed.activities) || parsed.activities.length !== 10) {
-          throw new Error('Formato inválido retornado pelo gateway');
+        console.log('✅ JSON parseado com sucesso');
+        
+        if (!parsed.activities || !Array.isArray(parsed.activities)) {
+          console.error('❌ Estrutura inválida:', { hasActivities: !!parsed.activities, isArray: Array.isArray(parsed.activities) });
+          throw new Error('Formato inválido: campo "activities" ausente ou não é array');
         }
-        console.log('✅ 10 atividades geradas via Lovable AI Gateway');
+        
+        if (parsed.activities.length !== 10) {
+          console.warn(`⚠️ Quantidade incorreta: ${parsed.activities.length} atividades ao invés de 10`);
+          // Aceitar mesmo assim se tiver pelo menos algumas atividades
+          if (parsed.activities.length === 0) {
+            throw new Error('Nenhuma atividade retornada pelo gateway');
+          }
+        }
+        
+        console.log(`✅ ${parsed.activities.length} atividades geradas via Lovable AI Gateway`);
         return new Response(
           JSON.stringify({ activities: parsed.activities }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
-      } catch (e) {
-        console.error('❌ Falha ao parsear resposta do gateway:', e);
-        throw new Error('Falha ao interpretar resposta do gateway');
+      } catch (e: any) {
+        console.error('❌ Falha ao parsear resposta do gateway:', e.message);
+        console.error('📄 Conteúdo que falhou:', cleaned);
+        throw new Error(`Falha ao interpretar resposta: ${e.message}`);
       }
     }
 
