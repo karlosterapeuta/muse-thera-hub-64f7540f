@@ -88,48 +88,58 @@ IMPORTANTE:
     // 5. Chamar Google Gemini API
     console.log('🎵 Gerando atividades com Gemini API...');
     
-    // Tentar múltiplos modelos em ordem de preferência
-    const models = ['gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro'];
-    let response;
-    let lastError;
-    
-    for (const model of models) {
-      try {
-        console.log(`🔄 Tentando modelo: ${model}`);
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.8,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 8192,
-              }
-            })
+    // Tentar múltiplos modelos e versões da API em ordem de preferência
+    const apiVersions = ['v1', 'v1beta'];
+    const models = ['gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-1.5-flash-001'];
+
+    let response: Response | undefined;
+    let lastError: string | undefined;
+    let success = false;
+
+    for (const version of apiVersions) {
+      for (const model of models) {
+        try {
+          console.log(`🔄 Tentando versão/modelo: ${version} / ${model}`);
+          response = await fetch(
+            `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent`,
+            {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'x-goog-api-key': geminiApiKey,
+              },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                  temperature: 0.8,
+                  topK: 40,
+                  topP: 0.95,
+                  maxOutputTokens: 8192,
+                }
+              })
+            }
+          );
+
+          if (response.ok) {
+            console.log(`✅ Sucesso com: ${version} / ${model}`);
+            success = true;
+            break;
           }
-        );
-        
-        if (response.ok) {
-          console.log(`✅ Sucesso com modelo: ${model}`);
-          break;
+
+          const errorText = await response.text();
+          lastError = `${version}/${model}: ${response.status} - ${errorText}`;
+          console.warn(`⚠️ Falha ${version}/${model}:`, errorText);
+        } catch (error: any) {
+          lastError = `${version}/${model}: ${error.message}`;
+          console.warn(`⚠️ Erro ao tentar ${version}/${model}:`, error.message);
         }
-        
-        const errorText = await response.text();
-        lastError = `${model}: ${response.status} - ${errorText}`;
-        console.warn(`⚠️ Modelo ${model} falhou:`, errorText);
-      } catch (error) {
-        lastError = `${model}: ${error.message}`;
-        console.warn(`⚠️ Erro ao tentar ${model}:`, error.message);
       }
+      if (success) break;
     }
 
-    if (!response || !response.ok) {
-      console.error('❌ Todos os modelos falharam. Último erro:', lastError);
-      throw new Error(`Erro na API Gemini. Verifique se a chave API está correta e tem acesso aos modelos Gemini. Último erro: ${lastError}`);
+    if (!success || !response || !response.ok) {
+      console.error('❌ Todas as tentativas falharam. Último erro:', lastError);
+      throw new Error(`Erro na API Gemini. Verifique a chave e o acesso aos modelos. Último erro: ${lastError}`);
     }
 
     const data = await response.json();
