@@ -38,7 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { therapyActivities, disorderOptions, teaDemandCategories, tdahDemandCategories, todDemandCategories } from "@/data/therapy-activities";
+import { therapyActivities, disorderOptions, teaDemandCategories, tdahDemandCategories, todDemandCategories, diDemandCategories } from "@/data/therapy-activities";
 import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -988,29 +988,83 @@ export default function InterventionForm() {
                           );
                         })}
                       </div>
-                    ) : (
-                      // DI com demandas simples
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {option.demands.map((demand) => (
-                          <div
-                            key={demand}
-                            className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors"
-                          >
+                    ) : option.disorder === 'DI' ? (
+                      // DI com estrutura hierárquica
+                      <div className="space-y-3">
+                        {diDemandCategories.map((category) => {
+                          const isExpanded = expandedCategories[category.category] || false;
+                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const totalCount = category.subDemands.length;
+
+                          return (
+                            <Collapsible key={category.category} open={isExpanded}>
+                              <div className="border rounded-lg overflow-hidden">
+                                <CollapsibleTrigger
+                                  onClick={() => toggleCategory(category.category)}
+                                  className="w-full p-4 flex items-center justify-between hover:bg-accent transition-colors"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{category.icon}</span>
+                                    <div className="text-left">
+                                      <div className="font-semibold">{category.category}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {selectedCount}/{totalCount} selecionadas
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <ChevronDown 
+                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                  />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                  <div className="p-4 pt-2 space-y-3 border-t">
+                                    {category.subDemands.map((subDemand) => (
+                                      <div key={subDemand.id} className="flex items-start gap-3">
+                                        <Checkbox
+                                          id={subDemand.id}
+                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                        />
+                                        <div className="flex-1">
+                                          <Label
+                                            htmlFor={subDemand.id}
+                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                          >
+                                            {subDemand.label}
+                                          </Label>
+                                          {subDemand.associatedConditions && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                              Condições associadas: {subDemand.associatedConditions.join(', ')}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </CollapsibleContent>
+                              </div>
+                            </Collapsible>
+                          );
+                        })}
+                        
+                        {/* Autonomia como demanda adicional simples */}
+                        <div className="border rounded-lg p-4">
+                          <div className="flex items-center space-x-3">
                             <Checkbox
-                              id={`${option.disorder}-${demand}`}
-                              checked={selectedDemands[option.disorder]?.includes(demand) || false}
-                              onCheckedChange={() => handleDemandToggle(option.disorder, demand)}
+                              id="di-autonomia"
+                              checked={selectedDemands['DI']?.includes('Autonomia') || false}
+                              onCheckedChange={() => handleDemandToggle('DI', 'Autonomia')}
                             />
                             <label
-                              htmlFor={`${option.disorder}-${demand}`}
+                              htmlFor="di-autonomia"
                               className="text-sm font-medium leading-none cursor-pointer flex-1"
                             >
-                              {demand}
+                              Autonomia
                             </label>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    )}
+                    ) : null}
                   </CardContent>
                 </Card>
               ))}

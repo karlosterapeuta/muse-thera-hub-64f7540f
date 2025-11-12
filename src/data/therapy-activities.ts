@@ -706,6 +706,147 @@ export const todDemandCategories = [
   }
 ];
 
+export const diDemandCategories = [
+  {
+    category: 'Cognitivo e Aprendizagem',
+    icon: '🧠',
+    subDemands: [
+      {
+        id: 'di-cog-1',
+        label: 'Dificuldade em compreender conceitos abstratos (tempo, quantidade, causa e efeito)',
+        associatedConditions: ['Dislexia', 'Discalculia', 'Disortografia']
+      },
+      {
+        id: 'di-cog-2',
+        label: 'Atraso nas habilidades acadêmicas (leitura, escrita, matemática)',
+        associatedConditions: ['Transtorno Específico de Aprendizagem']
+      },
+      {
+        id: 'di-cog-3',
+        label: 'Ritmo de aprendizagem lento, exigindo repetição e reforço'
+      },
+      {
+        id: 'di-cog-4',
+        label: 'Dificuldade em planejar, organizar e concluir tarefas',
+        associatedConditions: ['TDAH', 'Transtorno de Comunicação Social (Pragmático)']
+      },
+      {
+        id: 'di-cog-5',
+        label: 'Dependência de instruções concretas e visuais'
+      },
+      {
+        id: 'di-cog-6',
+        label: 'Dificuldade em generalizar aprendizados para novos contextos',
+        associatedConditions: ['TGD não especificado', 'TEA leve coexistente']
+      }
+    ]
+  },
+  {
+    category: 'Comunicação e Linguagem',
+    icon: '💬',
+    subDemands: [
+      {
+        id: 'di-com-1',
+        label: 'Atraso no desenvolvimento da fala',
+        associatedConditions: ['Transtorno de Linguagem Expressiva e Receptiva']
+      },
+      {
+        id: 'di-com-2',
+        label: 'Vocabulário reduzido e dificuldade de articulação',
+        associatedConditions: ['Transtorno Fonológico']
+      },
+      {
+        id: 'di-com-3',
+        label: 'Dificuldade em compreender instruções longas ou abstratas'
+      },
+      {
+        id: 'di-com-4',
+        label: 'Comunicação centrada em necessidades básicas'
+      },
+      {
+        id: 'di-com-5',
+        label: 'Uso frequente de gestos, expressões e comunicação alternativa',
+        associatedConditions: ['Apraxia de Fala Infantil']
+      },
+      {
+        id: 'di-com-6',
+        label: 'Dificuldade de manutenção de diálogo espontâneo',
+        associatedConditions: ['Mutismo seletivo', 'TEA associado']
+      }
+    ]
+  },
+  {
+    category: 'Socioemocional e Comportamental',
+    icon: '💞',
+    subDemands: [
+      {
+        id: 'di-soc-1',
+        label: 'Dificuldade em interpretar emoções próprias e dos outros',
+        associatedConditions: ['Transtorno de Regulação Emocional']
+      },
+      {
+        id: 'di-soc-2',
+        label: 'Imaturidade emocional (reações infantis, mesmo em idades avançadas)'
+      },
+      {
+        id: 'di-soc-3',
+        label: 'Frustração fácil diante de tarefas difíceis',
+        associatedConditions: ['Transtorno de Ansiedade Generalizada']
+      },
+      {
+        id: 'di-soc-4',
+        label: 'Ansiedade em situações sociais ou novas',
+        associatedConditions: ['Transtorno de Ansiedade Generalizada']
+      },
+      {
+        id: 'di-soc-5',
+        label: 'Dificuldade em resolver conflitos de forma adequada',
+        associatedConditions: ['Transtorno de Conduta leve (em adolescentes)']
+      },
+      {
+        id: 'di-soc-6',
+        label: 'Baixa autoestima devido à percepção de limitações',
+        associatedConditions: ['Transtorno Depressivo Leve', 'Transtorno de Apego Reativo']
+      }
+    ]
+  },
+  {
+    category: 'Sensorial e Motor',
+    icon: '👂',
+    subDemands: [
+      {
+        id: 'di-sen-1',
+        label: 'Atraso no desenvolvimento motor grosso e fino (andar, correr, segurar objetos)',
+        associatedConditions: ['Transtorno do Desenvolvimento da Coordenação (Dispraxia)']
+      },
+      {
+        id: 'di-sen-2',
+        label: 'Dificuldade em coordenação e equilíbrio',
+        associatedConditions: ['Paralisia Cerebral leve']
+      },
+      {
+        id: 'di-sen-3',
+        label: 'Hipotonia muscular (fraqueza ou baixo tônus)',
+        associatedConditions: ['Síndromes genéticas (Down, Williams, Angelman)']
+      },
+      {
+        id: 'di-sen-4',
+        label: 'Dificuldade em atividades que exigem precisão motora'
+      },
+      {
+        id: 'di-sen-5',
+        label: 'Necessidade de estimulação sensorial controlada',
+        associatedConditions: ['Transtorno do Processamento Sensorial (TPS)']
+      },
+      {
+        id: 'di-sen-6',
+        label: 'Respostas exageradas a estímulos sensoriais (sons, toques, texturas)',
+        associatedConditions: ['TPS']
+      }
+    ]
+  }
+];
+
 export const disorderOptions = [
   {
     disorder: 'TEA',
@@ -750,8 +891,10 @@ export const disorderOptions = [
     icon: '🌱',
     color: 'from-blue-500 to-blue-600',
     demands: [
-      'Cognição e Aprendizagem',
+      'Cognitivo e Aprendizagem',
       'Comunicação e Linguagem',
+      'Socioemocional e Comportamental',
+      'Sensorial e Motor',
       'Autonomia'
     ]
   }

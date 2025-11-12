@@ -92,7 +92,35 @@ export type Demand =
   | 'Hipersensibilidade a sons, luzes ou contato físico (levando à irritabilidade)'
   | 'Dificuldade em relaxar e controlar impulsos motores'
   | 'Reações corporais exageradas (chutar, bater, empurrar)'
-  | 'Necessidade de atividades que ajudem na descarga de energia emocional';
+  | 'Necessidade de atividades que ajudem na descarga de energia emocional'
+  // DI - Sub-demandas de Cognitivo e Aprendizagem
+  | 'Dificuldade em compreender conceitos abstratos (tempo, quantidade, causa e efeito)'
+  | 'Atraso nas habilidades acadêmicas (leitura, escrita, matemática)'
+  | 'Ritmo de aprendizagem lento, exigindo repetição e reforço'
+  | 'Dificuldade em planejar, organizar e concluir tarefas'
+  | 'Dependência de instruções concretas e visuais'
+  | 'Dificuldade em generalizar aprendizados para novos contextos'
+  // DI - Sub-demandas de Comunicação e Linguagem
+  | 'Atraso no desenvolvimento da fala'
+  | 'Vocabulário reduzido e dificuldade de articulação'
+  | 'Dificuldade em compreender instruções longas ou abstratas'
+  | 'Comunicação centrada em necessidades básicas'
+  | 'Uso frequente de gestos, expressões e comunicação alternativa'
+  | 'Dificuldade de manutenção de diálogo espontâneo'
+  // DI - Sub-demandas de Socioemocional e Comportamental
+  | 'Dificuldade em interpretar emoções próprias e dos outros'
+  | 'Imaturidade emocional (reações infantis, mesmo em idades avançadas)'
+  | 'Frustração fácil diante de tarefas difíceis'
+  | 'Ansiedade em situações sociais ou novas'
+  | 'Dificuldade em resolver conflitos de forma adequada'
+  | 'Baixa autoestima devido à percepção de limitações'
+  // DI - Sub-demandas de Sensorial e Motor
+  | 'Atraso no desenvolvimento motor grosso e fino (andar, correr, segurar objetos)'
+  | 'Dificuldade em coordenação e equilíbrio'
+  | 'Hipotonia muscular (fraqueza ou baixo tônus)'
+  | 'Dificuldade em atividades que exigem precisão motora'
+  | 'Necessidade de estimulação sensorial controlada'
+  | 'Respostas exageradas a estímulos sensoriais (sons, toques, texturas)';
 
 export type Specialty = 
   | 'Musicoterapia'
