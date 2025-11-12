@@ -82,7 +82,7 @@ export default function Layout({ children }: LayoutProps) {
       
       {/* Footer */}
         <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-background/80">
-          <div className="w-full px-2">
+          <div className="w-full px-0">
             © 2025 MuseTera
           </div>
         </footer>
