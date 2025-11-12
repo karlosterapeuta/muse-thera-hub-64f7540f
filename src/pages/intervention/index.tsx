@@ -244,31 +244,50 @@ export default function InterventionForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const planData = {
-        patient_id: selectedPatient,
-        professional_id: user.id,
-        created_at: new Date().toISOString(),
-        status: 'active',
-        activities: suggestedActivities.map(a => a.id),
-        selected_demands: selectedDemands
-      };
+      // Buscar o ID do profissional (tabela professionals) para respeitar as RLS de treatment_plans
+      const { data: professional, error: profError } = await supabase
+        .from('professionals')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      // Salvar no banco de dados (você pode criar uma tabela específica para PTI)
+      if (profError) throw profError;
+      if (!professional?.id) {
+        toast({
+          variant: "destructive",
+          title: "Perfil profissional necessário",
+          description: "Complete seus dados profissionais antes de salvar o plano.",
+        });
+        return;
+      }
+
+      // Inserir o plano na tabela existente treatment_plans
+      const { error: insertError } = await supabase
+        .from('treatment_plans')
+        .insert({
+          patient_id: selectedPatient,
+          professional_id: professional.id,
+          status: 'active',
+          // Guardamos as seleções e atividades nos campos JSONB existentes
+          general_objectives: { selected_demands: selectedDemands } as any,
+          complementary_materials: { activities: suggestedActivities } as any,
+        });
+
+      if (insertError) throw insertError;
+
       toast({
         title: "Plano salvo com sucesso!",
         description: "O Plano Terapêutico Individual foi registrado.",
       });
-
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao salvar plano:", error);
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
-        description: "Não foi possível salvar o plano.",
+        description: error?.message || "Não foi possível salvar o plano.",
       });
     }
   };
-
   const generatePDF = async () => {
     if (!selectedPatient || suggestedActivities.length === 0) {
       toast({
