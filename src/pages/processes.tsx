@@ -49,7 +49,8 @@ export default function Processes() {
       icon: Users,
       path: "/intervention",
       gradient: "from-orange-500 to-red-500",
-      bgGradient: "from-orange-50 to-red-50"
+      bgGradient: "from-orange-50 to-red-50",
+      isNew: true
     },
     {
       title: "Reavaliação",
