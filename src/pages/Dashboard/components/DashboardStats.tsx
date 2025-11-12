@@ -44,7 +44,7 @@ export function DashboardStats({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {stats.map((_, index) => (
           <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
             <div className="p-4 sm:p-6 space-y-4">
@@ -67,14 +67,14 @@ export function DashboardStats({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
       {stats.map((stat, index) => {
         console.log(`📊 Renderizando card ${index}:`, stat.title, "Valor:", stat.value);
         
         return (
           <Card 
             key={index} 
-            className={`relative overflow-hidden border-0 shadow-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl transition-all duration-500 group cursor-pointer`}
+            className={`relative overflow-hidden border-0 shadow-none rounded-none bg-gradient-to-br ${stat.gradient} text-white hover:shadow-lg transition-all duration-500 group cursor-pointer`}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative p-4 sm:p-6">
