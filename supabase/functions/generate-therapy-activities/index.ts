@@ -88,27 +88,48 @@ IMPORTANTE:
     // 5. Chamar Google Gemini API
     console.log('🎵 Gerando atividades com Gemini API...');
     
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.8,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192,
+    // Tentar múltiplos modelos em ordem de preferência
+    const models = ['gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro'];
+    let response;
+    let lastError;
+    
+    for (const model of models) {
+      try {
+        console.log(`🔄 Tentando modelo: ${model}`);
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.8,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 8192,
+              }
+            })
           }
-        })
+        );
+        
+        if (response.ok) {
+          console.log(`✅ Sucesso com modelo: ${model}`);
+          break;
+        }
+        
+        const errorText = await response.text();
+        lastError = `${model}: ${response.status} - ${errorText}`;
+        console.warn(`⚠️ Modelo ${model} falhou:`, errorText);
+      } catch (error) {
+        lastError = `${model}: ${error.message}`;
+        console.warn(`⚠️ Erro ao tentar ${model}:`, error.message);
       }
-    );
+    }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Erro Gemini API:', response.status, errorText);
-      throw new Error(`Erro na API Gemini: ${response.status}`);
+    if (!response || !response.ok) {
+      console.error('❌ Todos os modelos falharam. Último erro:', lastError);
+      throw new Error(`Erro na API Gemini. Verifique se a chave API está correta e tem acesso aos modelos Gemini. Último erro: ${lastError}`);
     }
 
     const data = await response.json();
