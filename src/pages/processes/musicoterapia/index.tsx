@@ -436,9 +436,9 @@ export default function MusicoterapiaPage() {
   }, [professionalId]);
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="w-full max-w-full mx-auto px-0 py-0 space-y-6">
       {/* Header */}
-      <Card className="border-2 border-primary/20">
+      <Card className="border-2 border-primary/20 rounded-none sm:rounded-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -516,7 +516,7 @@ export default function MusicoterapiaPage() {
       {viewMode === 'create' ? (
         <>
           {/* Export PDF Card */}
-          <Card className="border-2 border-primary/20 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
+          <Card className="border-2 border-primary/20 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-none sm:rounded-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -580,7 +580,7 @@ export default function MusicoterapiaPage() {
             </TabsContent>
 
             <TabsContent value="preview" className="space-y-6">
-              <Card>
+              <Card className="rounded-none sm:rounded-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5 text-primary" />
@@ -604,7 +604,7 @@ export default function MusicoterapiaPage() {
         /* Lista de Relatórios Salvos */
         <div className="space-y-6">
           {/* Search and Filters */}
-          <Card>
+          <Card className="rounded-none sm:rounded-lg">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <List className="h-5 w-5" />
@@ -631,14 +631,14 @@ export default function MusicoterapiaPage() {
 
           {/* Reports List */}
           {isLoadingReports ? (
-            <Card>
+            <Card className="rounded-none sm:rounded-lg">
               <CardContent className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                 <span className="ml-2">Carregando relatórios...</span>
               </CardContent>
             </Card>
           ) : filteredReports.length === 0 ? (
-            <Card>
+            <Card className="rounded-none sm:rounded-lg">
               <CardContent className="text-center py-8">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
@@ -654,7 +654,7 @@ export default function MusicoterapiaPage() {
           ) : (
             <div className="grid gap-4">
               {filteredReports.map((report) => (
-                <Card key={report.id} className="hover:shadow-lg transition-shadow">
+                <Card key={report.id} className="hover:shadow-lg transition-shadow rounded-none sm:rounded-lg">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
@@ -723,7 +723,7 @@ export default function MusicoterapiaPage() {
 
 
       {/* Footer with Template Info */}
-      <Card>
+      <Card className="rounded-none sm:rounded-lg">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center space-x-4">
