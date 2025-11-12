@@ -383,7 +383,7 @@ export default function InterventionForm() {
 
       toast({
         title: "Plano salvo com sucesso!",
-        description: "O Plano Terapêutico Individual foi registrado.",
+        description: "O Plano de Intervenção foi registrado.",
       });
     } catch (error: any) {
       console.error("Erro ao salvar plano:", error);
@@ -616,9 +616,9 @@ export default function InterventionForm() {
       element.innerHTML = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #2563EB;">
-            <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
-              Plano Terapêutico Individual (PTI)
-            </h1>
+              <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
+                Plano de Intervenção (PI)
+              </h1>
             <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
               Musicoterapia
             </h2>
@@ -669,7 +669,7 @@ export default function InterventionForm() {
       
       toast({
         title: "PDF gerado com sucesso!",
-        description: "O Plano Terapêutico Individual foi baixado.",
+        description: "O Plano de Intervenção foi baixado.",
       });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
@@ -1135,9 +1135,9 @@ export default function InterventionForm() {
               <Target className="h-6 w-6 text-primary" />
               Atividades Sugeridas ({suggestedActivities.length})
             </CardTitle>
-            <CardDescription>
-              Plano Terapêutico Individual baseado nas demandas selecionadas
-            </CardDescription>
+                <CardDescription>
+                  Plano de Intervenção baseado nas demandas selecionadas
+                </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {suggestedActivities.map((activity, index) => {
