@@ -691,9 +691,9 @@ export default function InterventionForm() {
   };
 
   return (
-    <div className="w-full px-2 sm:px-3 py-2 sm:py-4 md:py-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto">
+    <div className="w-full px-0 py-2 sm:py-4 space-y-3 sm:space-y-4">
       {/* Saved Plans Section */}
-      <Card className="border-primary/20">
+      <Card className="mx-1 sm:mx-2 border-primary/20">
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
             <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -766,7 +766,7 @@ export default function InterventionForm() {
       </Card>
 
       {/* Create New Plan Section */}
-      <Card className="border-primary/20">
+      <Card className="mx-1 sm:mx-2 border-primary/20">
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
           <CardDescription className="text-xs sm:text-sm">
@@ -1132,7 +1132,7 @@ export default function InterventionForm() {
 
       {/* Suggested Activities */}
       {showSuggestions && suggestedActivities.length > 0 && (
-        <Card className="border-primary/20">
+        <Card className="mx-1 sm:mx-2 border-primary/20">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
               <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -1236,7 +1236,7 @@ export default function InterventionForm() {
       )}
 
       {showSuggestions && suggestedActivities.length === 0 && (
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="mx-1 sm:mx-2 border-yellow-200 bg-yellow-50">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 text-yellow-800">
               <AlertCircle className="h-5 w-5" />
