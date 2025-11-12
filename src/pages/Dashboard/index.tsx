@@ -20,9 +20,9 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="w-full px-1 sm:px-2 py-4 sm:py-6 space-y-4 sm:space-y-6 lg:space-y-8">
+      <div className="w-full px-0 py-2 sm:py-3 space-y-3 sm:space-y-4">
         {/* Statistics Cards - mantendo como backup/detalhado */}
-        <div className="mt-4 sm:mt-6 lg:mt-8">
+        <div className="mt-0 px-2 sm:px-3">
           <DashboardStats
             totalPatients={data.totalPatients}
             totalReports={data.totalReports}
@@ -31,7 +31,7 @@ export default function Dashboard() {
         </div>
 
         {/* Cache Management */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 px-2 sm:px-3">
           <div className="lg:col-span-2">
             <FinancialAgenda 
               financialSchedule={data.financialSchedule} 
