@@ -281,6 +281,128 @@ export const therapyActivities: TherapyActivity[] = [
   }
 ];
 
+export const teaDemandCategories = [
+  {
+    category: 'Comunicação e Linguagem',
+    icon: '💬',
+    subDemands: [
+      {
+        id: 'tea-com-1',
+        label: 'Ausência ou atraso na fala',
+        associatedConditions: ['Transtorno de linguagem receptivo-expressivo', 'Apraxia de fala infantil']
+      },
+      {
+        id: 'tea-com-2',
+        label: 'Dificuldade em manter turnos de conversação',
+      },
+      {
+        id: 'tea-com-3',
+        label: 'Ecolalia (repetição de palavras ou frases)',
+      },
+      {
+        id: 'tea-com-4',
+        label: 'Uso inadequado da entonação ou do olhar',
+      },
+      {
+        id: 'tea-com-5',
+        label: 'Dificuldade em compreender linguagem figurada',
+      },
+      {
+        id: 'tea-com-6',
+        label: 'Pouca intenção comunicativa',
+        associatedConditions: ['Mutismo seletivo', 'Transtorno fonológico']
+      }
+    ]
+  },
+  {
+    category: 'Cognição e Aprendizagem',
+    icon: '🧠',
+    subDemands: [
+      {
+        id: 'tea-cog-1',
+        label: 'Dificuldade em generalizar o aprendizado',
+      },
+      {
+        id: 'tea-cog-2',
+        label: 'Pensamento concreto e literal',
+      },
+      {
+        id: 'tea-cog-3',
+        label: 'Hiperfoco em temas de interesse restrito',
+      },
+      {
+        id: 'tea-cog-4',
+        label: 'Desempenho irregular',
+        associatedConditions: ['Dislexia', 'Disortografia', 'Discalculia']
+      },
+      {
+        id: 'tea-cog-5',
+        label: 'Lentidão no processamento das informações',
+        associatedConditions: ['TDAH associado', 'Transtorno de aprendizagem não verbal']
+      }
+    ]
+  },
+  {
+    category: 'Socioemocional',
+    icon: '💞',
+    subDemands: [
+      {
+        id: 'tea-soc-1',
+        label: 'Dificuldade em reconhecer e expressar emoções',
+        associatedConditions: ['Transtorno de regulação emocional']
+      },
+      {
+        id: 'tea-soc-2',
+        label: 'Pouco interesse em interações sociais',
+        associatedConditions: ['Transtorno de ansiedade social']
+      },
+      {
+        id: 'tea-soc-3',
+        label: 'Crises de ansiedade frente a mudanças',
+        associatedConditions: ['Transtorno obsessivo-compulsivo (TOC)']
+      },
+      {
+        id: 'tea-soc-4',
+        label: 'Dificuldade com frustrações ou espera',
+      },
+      {
+        id: 'tea-soc-5',
+        label: 'Apegos excessivos a objetos ou rotinas',
+        associatedConditions: ['Depressão infantil']
+      }
+    ]
+  },
+  {
+    category: 'Sensorial e Motor',
+    icon: '👂',
+    subDemands: [
+      {
+        id: 'tea-sen-1',
+        label: 'Hipersensibilidade sensorial',
+        associatedConditions: ['Transtorno do Processamento Sensorial (TPS)']
+      },
+      {
+        id: 'tea-sen-2',
+        label: 'Hipossensibilidade (busca de estímulos)',
+      },
+      {
+        id: 'tea-sen-3',
+        label: 'Estereotipias motoras',
+      },
+      {
+        id: 'tea-sen-4',
+        label: 'Dificuldades em coordenação motora',
+        associatedConditions: ['Dispraxia motora']
+      },
+      {
+        id: 'tea-sen-5',
+        label: 'Preferência por atividades repetitivas',
+        associatedConditions: ['Transtorno do sono associado']
+      }
+    ]
+  }
+];
+
 export const disorderOptions = [
   {
     disorder: 'TEA',

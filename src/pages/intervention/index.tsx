@@ -37,10 +37,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { therapyActivities, disorderOptions } from "@/data/therapy-activities";
+import { therapyActivities, disorderOptions, teaDemandCategories } from "@/data/therapy-activities";
 import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type Patient = {
   id: string;
@@ -54,6 +55,8 @@ export default function InterventionForm() {
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedDemands, setSelectedDemands] = useState<Record<string, string[]>>({});
+  const [selectedSubDemands, setSelectedSubDemands] = useState<Record<string, string[]>>({});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [suggestedActivities, setSuggestedActivities] = useState<TherapyActivity[]>([]);
   const [expandedActivities, setExpandedActivities] = useState<Set<string>>(new Set());
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -192,6 +195,27 @@ export default function InterventionForm() {
     });
   };
 
+  const handleSubDemandToggle = (category: string, subDemandLabel: string) => {
+    setSelectedSubDemands(prev => {
+      const current = prev[category] || [];
+      const updated = current.includes(subDemandLabel)
+        ? current.filter(d => d !== subDemandLabel)
+        : [...current, subDemandLabel];
+      
+      return {
+        ...prev,
+        [category]: updated
+      };
+    });
+  };
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
   const generateSuggestions = async () => {
     if (!selectedPatient) {
       toast({
@@ -206,7 +230,9 @@ export default function InterventionForm() {
       disorder => selectedDemands[disorder].length > 0
     );
 
-    if (selectedDisorders.length === 0) {
+    const hasTeaSubDemands = Object.values(selectedSubDemands).some(arr => arr.length > 0);
+
+    if (selectedDisorders.length === 0 && !hasTeaSubDemands) {
       toast({
         variant: "destructive",
         title: "Selecione demandas",
@@ -232,7 +258,8 @@ export default function InterventionForm() {
       const { data, error } = await supabase.functions.invoke('generate-therapy-activities', {
         body: {
           patientName: patient.name,
-          selectedDemands: selectedDemands
+          selectedDemands: selectedDemands,
+          selectedSubDemands: selectedSubDemands
         }
       });
 
@@ -768,26 +795,103 @@ export default function InterventionForm() {
                     </div>
                   </div>
                   <CardContent className="pt-4">
-                    <div className="grid gap-3 md:grid-cols-2">
-                      {option.demands.map((demand) => (
-                        <div
-                          key={demand}
-                          className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors"
-                        >
-                          <Checkbox
-                            id={`${option.disorder}-${demand}`}
-                            checked={selectedDemands[option.disorder]?.includes(demand) || false}
-                            onCheckedChange={() => handleDemandToggle(option.disorder, demand)}
-                          />
-                          <label
-                            htmlFor={`${option.disorder}-${demand}`}
-                            className="text-sm font-medium leading-none cursor-pointer flex-1"
+                    {option.disorder === 'TEA' ? (
+                      // TEA com sub-demandas hierárquicas
+                      <div className="space-y-3">
+                        {teaDemandCategories.map((category) => {
+                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const totalCount = category.subDemands.length;
+                          
+                          return (
+                            <Collapsible
+                              key={category.category}
+                              open={expandedCategories[category.category]}
+                              onOpenChange={() => toggleCategory(category.category)}
+                            >
+                              <div className="border rounded-lg overflow-hidden">
+                                <CollapsibleTrigger className="w-full">
+                                  <div className="flex items-center justify-between p-4 hover:bg-accent transition-colors">
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-2xl">{category.icon}</span>
+                                      <div className="text-left">
+                                        <h5 className="font-semibold">{category.category}</h5>
+                                        <p className="text-xs text-muted-foreground">
+                                          {selectedCount > 0 ? `${selectedCount}/${totalCount} selecionadas` : `${totalCount} sub-demandas`}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {selectedCount > 0 && (
+                                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                                          {selectedCount}
+                                        </Badge>
+                                      )}
+                                      {expandedCategories[category.category] ? (
+                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                      ) : (
+                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                      )}
+                                    </div>
+                                  </div>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                  <div className="p-4 pt-0 space-y-2 bg-muted/30">
+                                    {category.subDemands.map((subDemand) => (
+                                      <div
+                                        key={subDemand.id}
+                                        className="flex items-start space-x-3 p-3 rounded-lg bg-background border hover:border-primary/50 transition-colors"
+                                      >
+                                        <Checkbox
+                                          id={subDemand.id}
+                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                          className="mt-0.5"
+                                        />
+                                        <div className="flex-1">
+                                          <label
+                                            htmlFor={subDemand.id}
+                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                          >
+                                            {subDemand.label}
+                                          </label>
+                                          {subDemand.associatedConditions && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                              Condições associadas: {subDemand.associatedConditions.join(', ')}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </CollapsibleContent>
+                              </div>
+                            </Collapsible>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      // Outros transtornos com demandas simples
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {option.demands.map((demand) => (
+                          <div
+                            key={demand}
+                            className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors"
                           >
-                            {demand}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
+                            <Checkbox
+                              id={`${option.disorder}-${demand}`}
+                              checked={selectedDemands[option.disorder]?.includes(demand) || false}
+                              onCheckedChange={() => handleDemandToggle(option.disorder, demand)}
+                            />
+                            <label
+                              htmlFor={`${option.disorder}-${demand}`}
+                              className="text-sm font-medium leading-none cursor-pointer flex-1"
+                            >
+                              {demand}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
