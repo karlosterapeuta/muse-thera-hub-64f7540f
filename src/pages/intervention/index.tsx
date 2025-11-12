@@ -12,7 +12,8 @@ import {
   Clock,
   Target,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,8 @@ export default function InterventionForm() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState<string>("");
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -121,7 +124,7 @@ export default function InterventionForm() {
     });
   };
 
-  const generateSuggestions = () => {
+  const generateSuggestions = async () => {
     if (!selectedPatient) {
       toast({
         variant: "destructive",
@@ -144,21 +147,75 @@ export default function InterventionForm() {
       return;
     }
 
-    const filtered = therapyActivities.filter(activity => {
-      const disorderMatch = selectedDisorders.includes(activity.disorder);
-      const demandMatch = selectedDisorders.some(disorder => 
-        selectedDemands[disorder].includes(activity.demand)
-      );
-      return disorderMatch && demandMatch;
-    });
+    setIsGenerating(true);
+    setGenerationProgress("Consultando dados do paciente...");
 
-    setSuggestedActivities(filtered);
-    setShowSuggestions(true);
+    try {
+      // Buscar dados do paciente
+      const patient = patients.find(p => p.id === selectedPatient);
+      
+      if (!patient) {
+        throw new Error("Paciente não encontrado");
+      }
 
-    toast({
-      title: "Sugestões geradas!",
-      description: `${filtered.length} atividades sugeridas com base nas demandas selecionadas.`,
-    });
+      setGenerationProgress("Gerando atividades personalizadas com IA...");
+
+      // Chamar Edge Function
+      const { data, error } = await supabase.functions.invoke('generate-therapy-activities', {
+        body: {
+          patientName: patient.name,
+          selectedDemands: selectedDemands
+        }
+      });
+
+      if (error) {
+        console.error("Erro da Edge Function:", error);
+        throw error;
+      }
+
+      setGenerationProgress("Processando atividades...");
+
+      // Validar resposta
+      if (!data?.activities || !Array.isArray(data.activities)) {
+        throw new Error("Formato de resposta inválido");
+      }
+
+      if (data.activities.length !== 10) {
+        throw new Error(`Esperado 10 atividades, recebido ${data.activities.length}`);
+      }
+
+      // Atualizar estado
+      setSuggestedActivities(data.activities);
+      setShowSuggestions(true);
+
+      toast({
+        title: "✨ Atividades geradas com sucesso!",
+        description: `${data.activities.length} atividades personalizadas criadas pela IA.`,
+      });
+
+    } catch (error: any) {
+      console.error("Erro ao gerar atividades:", error);
+      
+      let errorTitle = "Erro ao gerar atividades";
+      let errorDescription = "Não foi possível gerar as sugestões. Tente novamente.";
+
+      if (error.message?.includes("GOOGLE_AI_API_KEY")) {
+        errorTitle = "Configuração da API";
+        errorDescription = "Chave da API não configurada. Entre em contato com o suporte.";
+      } else if (error.message?.includes("Erro na API Gemini")) {
+        errorTitle = "Erro na API de IA";
+        errorDescription = "O serviço de IA está temporariamente indisponível.";
+      }
+
+      toast({
+        variant: "destructive",
+        title: errorTitle,
+        description: errorDescription,
+      });
+    } finally {
+      setIsGenerating(false);
+      setGenerationProgress("");
+    }
   };
 
   const toggleActivity = (id: string) => {
@@ -434,9 +491,19 @@ export default function InterventionForm() {
               onClick={generateSuggestions} 
               size="lg" 
               className="w-full"
+              disabled={isGenerating || !selectedPatient || Object.keys(selectedDemands).filter(d => selectedDemands[d].length > 0).length === 0}
             >
-              <Sparkles className="mr-2 h-5 w-5" />
-              3. Gerar Sugestões
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  {generationProgress || "Gerando..."}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  3. Gerar Sugestões com IA
+                </>
+              )}
             </Button>
             
             {showSuggestions && suggestedActivities.length > 0 && (
