@@ -691,66 +691,69 @@ export default function InterventionForm() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 max-w-6xl">
+    <div className="container mx-auto p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-6 max-w-7xl">
       {/* Saved Plans Section */}
       <Card className="border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Music2 className="h-6 w-6 text-primary" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
+            <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             Planos de Intervenção Salvos
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Visualize, baixe ou exclua os planos gerados.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {isLoadingSavedPlans ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="ml-2 text-muted-foreground">Carregando planos...</span>
+              <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
+              <span className="ml-2 text-sm sm:text-base text-muted-foreground">Carregando planos...</span>
             </div>
           ) : savedPlans.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground text-center py-8 text-sm sm:text-base">
               Nenhum plano de atividades salvo ainda.
             </p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {savedPlans.map((plan) => (
                 <Card key={plan.id} className="border-border/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-lg">{plan.patient_name}</h4>
-                        <p className="text-sm text-muted-foreground">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-base sm:text-lg truncate">{plan.patient_name}</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           Criado em {format(new Date(plan.created_at), "PPP", { locale: ptBR })}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {plan.complementary_materials?.activities?.length || 0} atividades
                         </p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2 sm:flex-nowrap">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setViewingPlan(plan)}
+                          className="flex-1 sm:flex-none text-xs sm:text-sm"
                         >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Visualizar
+                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Visualizar</span>
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => downloadPlanPDF(plan)}
+                          className="flex-1 sm:flex-none text-xs sm:text-sm"
                         >
-                          <Download className="h-4 w-4 mr-1" />
-                          Baixar PDF
+                          <Download className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">PDF</span>
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={(e) => deletePlan(plan.id, e)}
+                          className="text-xs sm:text-sm"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </div>
@@ -764,16 +767,16 @@ export default function InterventionForm() {
 
       {/* Create New Plan Section */}
       <Card className="border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-2xl">Criar Novo Plano de Intervenção</CardTitle>
-          <CardDescription>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
             Selecione o paciente e as demandas para gerar sugestões de atividades para a sua especialidade: <span className="text-primary font-semibold">Musicoterapia</span>.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           {/* Patient Selection */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">1. Nome do Paciente</h3>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3">1. Nome do Paciente</h3>
             <PatientSelect 
               patients={patients}
               selectedPatient={selectedPatient}
@@ -785,20 +788,20 @@ export default function InterventionForm() {
 
           {/* Demands Selection */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">2. Principais Demandas</h3>
-            <div className="space-y-4">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">2. Principais Demandas</h3>
+            <div className="space-y-3 sm:space-y-4">
               {disorderOptions.map((option) => (
                 <Card key={option.disorder} className="overflow-hidden">
-                  <div className={`bg-gradient-to-r ${option.color} p-4 text-white`}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">{option.icon}</span>
-                      <h4 className="font-semibold text-lg">{option.label}</h4>
+                  <div className={`bg-gradient-to-r ${option.color} p-3 sm:p-4 text-white`}>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="text-2xl sm:text-3xl">{option.icon}</span>
+                      <h4 className="font-semibold text-base sm:text-lg">{option.label}</h4>
                     </div>
                   </div>
-                  <CardContent className="pt-4">
+                  <CardContent className="pt-3 sm:pt-4 p-3 sm:p-6">
                     {option.disorder === 'TEA' ? (
                       // TEA com sub-demandas hierárquicas
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {teaDemandCategories.map((category) => {
                           const selectedCount = selectedSubDemands[category.category]?.length || 0;
                           const totalCount = category.subDemands.length;
@@ -811,36 +814,36 @@ export default function InterventionForm() {
                             >
                               <div className="border rounded-lg overflow-hidden">
                                 <CollapsibleTrigger className="w-full">
-                                  <div className="flex items-center justify-between p-4 hover:bg-accent transition-colors">
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-2xl">{category.icon}</span>
-                                      <div className="text-left">
-                                        <h5 className="font-semibold">{category.category}</h5>
+                                  <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-accent transition-colors">
+                                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                                      <span className="text-xl sm:text-2xl flex-shrink-0">{category.icon}</span>
+                                      <div className="text-left min-w-0 flex-1">
+                                        <h5 className="font-semibold text-sm sm:text-base truncate">{category.category}</h5>
                                         <p className="text-xs text-muted-foreground">
                                           {selectedCount > 0 ? `${selectedCount}/${totalCount} selecionadas` : `${totalCount} sub-demandas`}
                                         </p>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-shrink-0">
                                       {selectedCount > 0 && (
-                                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                                        <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
                                           {selectedCount}
                                         </Badge>
                                       )}
                                       {expandedCategories[category.category] ? (
-                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                                       ) : (
-                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                                       )}
                                     </div>
                                   </div>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                  <div className="p-4 pt-0 space-y-2 bg-muted/30">
+                                  <div className="p-3 sm:p-4 pt-0 space-y-2 bg-muted/30">
                                     {category.subDemands.map((subDemand) => (
                                       <div
                                         key={subDemand.id}
-                                        className="flex items-start space-x-3 p-3 rounded-lg bg-background border hover:border-primary/50 transition-colors"
+                                        className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-background border hover:border-primary/50 transition-colors"
                                       >
                                         <Checkbox
                                           id={subDemand.id}
@@ -848,10 +851,10 @@ export default function InterventionForm() {
                                           onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
                                           className="mt-0.5"
                                         />
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                           <label
                                             htmlFor={subDemand.id}
-                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                            className="text-xs sm:text-sm font-medium leading-none cursor-pointer block"
                                           >
                                             {subDemand.label}
                                           </label>
@@ -872,7 +875,7 @@ export default function InterventionForm() {
                       </div>
                     ) : option.disorder === 'TDAH' ? (
                       // TDAH com estrutura hierárquica
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {tdahDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
                           const selectedCount = selectedSubDemands[category.category]?.length || 0;
@@ -883,34 +886,34 @@ export default function InterventionForm() {
                               <div className="border rounded-lg overflow-hidden">
                                 <CollapsibleTrigger
                                   onClick={() => toggleCategory(category.category)}
-                                  className="w-full p-4 flex items-center justify-between hover:bg-accent transition-colors"
+                                  className="w-full p-3 sm:p-4 flex items-center justify-between hover:bg-accent transition-colors"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{category.icon}</span>
-                                    <div className="text-left">
-                                      <div className="font-semibold">{category.category}</div>
+                                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                                    <span className="text-xl sm:text-2xl flex-shrink-0">{category.icon}</span>
+                                    <div className="text-left min-w-0 flex-1">
+                                      <div className="font-semibold text-sm sm:text-base truncate">{category.category}</div>
                                       <div className="text-xs text-muted-foreground">
                                         {selectedCount}/{totalCount} selecionadas
                                       </div>
                                     </div>
                                   </div>
                                   <ChevronDown 
-                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
                                   />
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                  <div className="p-4 pt-2 space-y-3 border-t">
+                                  <div className="p-3 sm:p-4 pt-2 space-y-2 sm:space-y-3 border-t">
                                     {category.subDemands.map((subDemand) => (
-                                      <div key={subDemand.id} className="flex items-start gap-3">
+                                      <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
                                           checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
                                           onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
                                         />
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                           <Label
                                             htmlFor={subDemand.id}
-                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                            className="text-xs sm:text-sm font-medium leading-none cursor-pointer block"
                                           >
                                             {subDemand.label}
                                           </Label>
@@ -931,7 +934,7 @@ export default function InterventionForm() {
                       </div>
                     ) : option.disorder === 'TOD' ? (
                       // TOD com estrutura hierárquica
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {todDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
                           const selectedCount = selectedSubDemands[category.category]?.length || 0;
@@ -942,34 +945,34 @@ export default function InterventionForm() {
                               <div className="border rounded-lg overflow-hidden">
                                 <CollapsibleTrigger
                                   onClick={() => toggleCategory(category.category)}
-                                  className="w-full p-4 flex items-center justify-between hover:bg-accent transition-colors"
+                                  className="w-full p-3 sm:p-4 flex items-center justify-between hover:bg-accent transition-colors"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{category.icon}</span>
-                                    <div className="text-left">
-                                      <div className="font-semibold">{category.category}</div>
+                                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                                    <span className="text-xl sm:text-2xl flex-shrink-0">{category.icon}</span>
+                                    <div className="text-left min-w-0 flex-1">
+                                      <div className="font-semibold text-sm sm:text-base truncate">{category.category}</div>
                                       <div className="text-xs text-muted-foreground">
                                         {selectedCount}/{totalCount} selecionadas
                                       </div>
                                     </div>
                                   </div>
                                   <ChevronDown 
-                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
                                   />
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                  <div className="p-4 pt-2 space-y-3 border-t">
+                                  <div className="p-3 sm:p-4 pt-2 space-y-2 sm:space-y-3 border-t">
                                     {category.subDemands.map((subDemand) => (
-                                      <div key={subDemand.id} className="flex items-start gap-3">
+                                      <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
                                           checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
                                           onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
                                         />
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                           <Label
                                             htmlFor={subDemand.id}
-                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                            className="text-xs sm:text-sm font-medium leading-none cursor-pointer block"
                                           >
                                             {subDemand.label}
                                           </Label>
@@ -990,7 +993,7 @@ export default function InterventionForm() {
                       </div>
                     ) : option.disorder === 'DI' ? (
                       // DI com estrutura hierárquica
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {diDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
                           const selectedCount = selectedSubDemands[category.category]?.length || 0;
@@ -1001,34 +1004,34 @@ export default function InterventionForm() {
                               <div className="border rounded-lg overflow-hidden">
                                 <CollapsibleTrigger
                                   onClick={() => toggleCategory(category.category)}
-                                  className="w-full p-4 flex items-center justify-between hover:bg-accent transition-colors"
+                                  className="w-full p-3 sm:p-4 flex items-center justify-between hover:bg-accent transition-colors"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{category.icon}</span>
-                                    <div className="text-left">
-                                      <div className="font-semibold">{category.category}</div>
+                                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                                    <span className="text-xl sm:text-2xl flex-shrink-0">{category.icon}</span>
+                                    <div className="text-left min-w-0 flex-1">
+                                      <div className="font-semibold text-sm sm:text-base truncate">{category.category}</div>
                                       <div className="text-xs text-muted-foreground">
                                         {selectedCount}/{totalCount} selecionadas
                                       </div>
                                     </div>
                                   </div>
                                   <ChevronDown 
-                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
                                   />
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                  <div className="p-4 pt-2 space-y-3 border-t">
+                                  <div className="p-3 sm:p-4 pt-2 space-y-2 sm:space-y-3 border-t">
                                     {category.subDemands.map((subDemand) => (
-                                      <div key={subDemand.id} className="flex items-start gap-3">
+                                      <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
                                           checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
                                           onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
                                         />
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                           <Label
                                             htmlFor={subDemand.id}
-                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                            className="text-xs sm:text-sm font-medium leading-none cursor-pointer block"
                                           >
                                             {subDemand.label}
                                           </Label>
@@ -1048,8 +1051,8 @@ export default function InterventionForm() {
                         })}
                         
                         {/* Autonomia como demanda adicional simples */}
-                        <div className="border rounded-lg p-4">
-                          <div className="flex items-center space-x-3">
+                        <div className="border rounded-lg p-3 sm:p-4">
+                          <div className="flex items-center space-x-2 sm:space-x-3">
                             <Checkbox
                               id="di-autonomia"
                               checked={selectedDemands['DI']?.includes('Autonomia') || false}
@@ -1057,7 +1060,7 @@ export default function InterventionForm() {
                             />
                             <label
                               htmlFor="di-autonomia"
-                              className="text-sm font-medium leading-none cursor-pointer flex-1"
+                              className="text-xs sm:text-sm font-medium leading-none cursor-pointer flex-1"
                             >
                               Autonomia
                             </label>
@@ -1072,7 +1075,7 @@ export default function InterventionForm() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             <Button 
               onClick={generateSuggestions} 
               size="lg" 
@@ -1118,8 +1121,8 @@ export default function InterventionForm() {
 
           {/* Instructions */}
           {!showSuggestions && (
-            <div className="bg-muted p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground">
+            <div className="bg-muted p-3 sm:p-4 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Selecione um paciente, escolha as demandas e clique em 'Gerar Sugestões' para começar.
               </p>
             </div>
@@ -1130,47 +1133,50 @@ export default function InterventionForm() {
       {/* Suggested Activities */}
       {showSuggestions && suggestedActivities.length > 0 && (
         <Card className="border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-6 w-6 text-primary" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
+              <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               Atividades Sugeridas ({suggestedActivities.length})
             </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Plano de Intervenção baseado nas demandas selecionadas
                 </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
             {suggestedActivities.map((activity, index) => {
               const isExpanded = expandedActivities.has(activity.id);
               return (
                 <Card key={activity.id} className="overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 cursor-pointer hover:from-primary/90 hover:to-primary/70 transition-all"
+                    className="bg-gradient-to-r from-primary to-primary/80 text-white p-3 sm:p-4 cursor-pointer hover:from-primary/90 hover:to-primary/70 transition-all"
                     onClick={() => toggleActivity(activity.id)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl font-bold">#{index + 1}</span>
-                        <div>
-                          <h4 className="font-bold text-lg">{activity.disorder}</h4>
-                          <p className="text-sm opacity-90">{activity.demand}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <span className="text-xl sm:text-2xl font-bold flex-shrink-0">#{index + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-sm sm:text-lg truncate">{activity.disorder}</h4>
+                          <p className="text-xs sm:text-sm opacity-90 truncate">{activity.demand}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getComplexityColor(activity.complexityLevel)}>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Badge className={`${getComplexityColor(activity.complexityLevel)} text-xs hidden sm:inline-flex`}>
                           {activity.complexityLevel}
                         </Badge>
-                        {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                        {isExpanded ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
                       </div>
                     </div>
                   </div>
                   
                   {isExpanded && (
-                    <CardContent className="pt-6 space-y-4">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <Badge variant="outline">{activity.specialty}</Badge>
+                    <CardContent className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 p-3 sm:p-6">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                        <Badge variant="outline" className="text-xs">{activity.specialty}</Badge>
+                        <Badge className={`${getComplexityColor(activity.complexityLevel)} text-xs sm:hidden`}>
+                          {activity.complexityLevel}
+                        </Badge>
                         <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                           {activity.estimatedTime}
                         </div>
                       </div>
@@ -1178,31 +1184,31 @@ export default function InterventionForm() {
                       <Separator />
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                          <Target className="h-4 w-4 text-primary" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-2 flex items-center gap-2">
+                          <Target className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Objetivo Terapêutico Geral
                         </h5>
-                        <p className="text-sm text-muted-foreground">{activity.generalObjective}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.generalObjective}</p>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-primary" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-2 flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Objetivo Específico
                         </h5>
-                        <p className="text-sm text-muted-foreground">{activity.specificObjective}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.specificObjective}</p>
                       </div>
 
                       <Separator />
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-2">Descrição da Atividade</h5>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{activity.activityDescription}</p>
+                        <h5 className="font-semibold text-xs sm:text-sm mb-2">Descrição da Atividade</h5>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{activity.activityDescription}</p>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-2">Materiais Necessários</h5>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <h5 className="font-semibold text-xs sm:text-sm mb-2">Materiais Necessários</h5>
+                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {activity.materials.map((material, i) => (
                             <li key={i}>{material}</li>
                           ))}
@@ -1210,11 +1216,11 @@ export default function InterventionForm() {
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4 text-primary" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-2 flex items-center gap-2">
+                          <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Critérios de Avaliação
                         </h5>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {activity.evaluationCriteria.map((criterion, i) => (
                             <li key={i}>{criterion}</li>
                           ))}
@@ -1245,25 +1251,25 @@ export default function InterventionForm() {
       
       {/* Dialog de Visualização do Plano */}
       <Dialog open={!!viewingPlan} onOpenChange={(open) => !open && setViewingPlan(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl md:max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
-              <Music2 className="h-6 w-6 text-primary" />
-              Plano de Intervenção - {viewingPlan?.patient_name}
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl flex items-center gap-2">
+              <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <span className="truncate">Plano de Intervenção - {viewingPlan?.patient_name}</span>
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs sm:text-sm">
               Criado em {viewingPlan && format(new Date(viewingPlan.created_at), "PPP", { locale: ptBR })}
             </DialogDescription>
           </DialogHeader>
           
           {viewingPlan && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               {/* Demandas Selecionadas */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Demandas Selecionadas</CardTitle>
+                <CardHeader className="p-3 sm:p-6">
+                  <CardTitle className="text-base sm:text-lg">Demandas Selecionadas</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-3 sm:p-6 pt-0">
                   {viewingPlan.general_objectives?.selected_demands && 
                     Object.entries(viewingPlan.general_objectives.selected_demands).map(([disorder, demands]: [string, any]) => (
                       demands.length > 0 && (
@@ -1282,80 +1288,80 @@ export default function InterventionForm() {
               </Card>
 
               {/* Atividades */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold">Atividades Sugeridas</h3>
+              <div className="space-y-2 sm:space-y-3">
+                <h3 className="text-base sm:text-lg font-semibold">Atividades Sugeridas</h3>
                 {viewingPlan.complementary_materials?.activities?.map((activity: any, index: number) => (
                   <Card key={index} className="border-primary/20">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base flex items-center justify-between">
-                        <span>Atividade {index + 1}: {activity.disorder}</span>
-                        <Badge className={getComplexityColor(activity.complexityLevel)}>
+                    <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+                      <CardTitle className="text-sm sm:text-base flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <span className="truncate">Atividade {index + 1}: {activity.disorder}</span>
+                        <Badge className={`${getComplexityColor(activity.complexityLevel)} text-xs flex-shrink-0`}>
                           {activity.complexityLevel}
                         </Badge>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="grid grid-cols-3 gap-2 text-sm">
+                    <CardContent className="space-y-2 sm:space-y-3 p-3 sm:p-6 pt-0">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
                         <div>
                           <span className="font-semibold">Transtorno:</span>
-                          <p className="text-muted-foreground">{activity.disorder}</p>
+                          <p className="text-muted-foreground truncate">{activity.disorder}</p>
                         </div>
                         <div>
                           <span className="font-semibold">Demanda:</span>
-                          <p className="text-muted-foreground">{activity.demand}</p>
+                          <p className="text-muted-foreground truncate">{activity.demand}</p>
                         </div>
                         <div>
                           <span className="font-semibold">Especialidade:</span>
-                          <p className="text-muted-foreground">{activity.specialty}</p>
+                          <p className="text-muted-foreground truncate">{activity.specialty}</p>
                         </div>
                       </div>
 
                       <Separator />
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
-                          <Target className="h-4 w-4" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-1 flex items-center gap-2">
+                          <Target className="h-3 w-3 sm:h-4 sm:w-4" />
                           Objetivo Terapêutico Geral
                         </h5>
-                        <p className="text-sm text-muted-foreground">{activity.generalObjective}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.generalObjective}</p>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
-                          <Target className="h-4 w-4" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-1 flex items-center gap-2">
+                          <Target className="h-3 w-3 sm:h-4 sm:w-4" />
                           Objetivo Específico
                         </h5>
-                        <p className="text-sm text-muted-foreground">{activity.specificObjective}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.specificObjective}</p>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-1">Descrição da Atividade</h5>
-                        <p className="text-sm text-muted-foreground">{activity.activityDescription}</p>
+                        <h5 className="font-semibold text-xs sm:text-sm mb-1">Descrição da Atividade</h5>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.activityDescription}</p>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-1">Materiais Necessários</h5>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <h5 className="font-semibold text-xs sm:text-sm mb-1">Materiais Necessários</h5>
+                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {activity.materials.map((material: string, idx: number) => (
                             <li key={idx}>{material}</li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="flex gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-primary" />
+                      <div className="flex gap-2 sm:gap-4 text-xs sm:text-sm">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           <span className="font-semibold">Tempo:</span>
                           <span className="text-muted-foreground">{activity.estimatedTime}</span>
                         </div>
                       </div>
 
                       <div>
-                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4" />
+                        <h5 className="font-semibold text-xs sm:text-sm mb-1 flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           Critérios de Avaliação
                         </h5>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {activity.evaluationCriteria.map((criteria: string, idx: number) => (
                             <li key={idx}>{criteria}</li>
                           ))}
@@ -1367,10 +1373,11 @@ export default function InterventionForm() {
               </div>
 
               {/* Botões de ação */}
-              <div className="flex gap-2 justify-end pt-4">
+              <div className="flex flex-col sm:flex-row gap-2 justify-end pt-3 sm:pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setViewingPlan(null)}
+                  className="w-full sm:w-auto text-xs sm:text-sm"
                 >
                   Fechar
                 </Button>
@@ -1379,8 +1386,9 @@ export default function InterventionForm() {
                     downloadPlanPDF(viewingPlan);
                     setViewingPlan(null);
                   }}
+                  className="w-full sm:w-auto text-xs sm:text-sm"
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Baixar PDF
                 </Button>
               </div>
