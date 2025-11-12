@@ -10,7 +10,7 @@ export default function Dashboard() {
   const data = useDashboardData();
 
   return (
-    <div className="min-h-screen bg-background w-full overflow-x-hidden">
+    <div className="min-h-screen bg-background w-screen overflow-x-hidden">
       {/* Modern Header */}
       <DashboardHeader
         totalPatients={data.totalPatients}
@@ -20,7 +20,7 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="w-full px-0 py-0 space-y-2 sm:space-y-3">
+      <div className="w-screen px-0 py-0 space-y-2 sm:space-y-3">
         {/* Statistics Cards - mantendo como backup/detalhado */}
         <div className="mt-0 px-0">
           <DashboardStats

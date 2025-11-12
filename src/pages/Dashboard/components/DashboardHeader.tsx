@@ -82,7 +82,7 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
+    <div className="relative w-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]" />
