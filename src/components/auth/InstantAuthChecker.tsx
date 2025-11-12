@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { globalCacheManager } from "@/utils/cacheManager";
 
 // Cache for profile status to avoid repeated requests
 const profileStatusCache = new Map<string, { status: string; expires_at: string | null; timestamp: number }>();
@@ -77,13 +78,33 @@ export default function InstantAuthChecker() {
     }
   }, [navigate, toast]);
 
+  const clearCacheOnLogin = useCallback(() => {
+    try {
+      console.log("🧹 Limpando cache ao entrar no sistema...");
+      
+      // Limpa todo o cache
+      globalCacheManager.clearAll();
+      
+      // Limpa também o cache de perfil local deste componente
+      profileStatusCache.clear();
+      
+      console.log("✅ Cache limpo com sucesso!");
+    } catch (error) {
+      console.error("❌ Erro ao limpar cache:", error);
+    }
+  }, []);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only check on SIGNED_IN events and debounce the check
+      // Limpa cache ao fazer login
       if (event === 'SIGNED_IN' && session?.user) {
+        // Primeiro limpa o cache
+        clearCacheOnLogin();
+        
+        // Depois verifica o status do usuário
         setTimeout(() => {
           checkUserStatus(session.user.id);
-        }, 0);
+        }, 100);
       }
     });
     
@@ -91,7 +112,7 @@ export default function InstantAuthChecker() {
       console.log("🔌 InstantAuthChecker: Cleaning up subscription");
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [checkUserStatus, clearCacheOnLogin]);
 
   // This component renders nothing
   return null;
