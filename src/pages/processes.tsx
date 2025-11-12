@@ -90,9 +90,9 @@ export default function Processes() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-2 sm:px-3 py-6 sm:py-8 lg:py-10">
+      <div className="w-full px-0 py-4 sm:py-6 lg:py-8">
         {/* Header Section */}
-        <div className="text-center mb-12 lg:mb-16">
+        <div className="text-center mb-12 lg:mb-16 px-2 sm:px-3">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-purple-600 rounded-full mb-6 shadow-lg">
             <Users className="h-8 w-8 text-white" />
           </div>
@@ -105,7 +105,7 @@ export default function Processes() {
         </div>
         
         {/* Process Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-3">
           {processes.map((process, index) => (
             <Link 
               to={process.path} 
@@ -157,7 +157,7 @@ export default function Processes() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-16 text-center">
+        <div className="mt-16 text-center px-2 sm:px-3">
           <div className="inline-flex items-center justify-center space-x-2 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>Sistema integrado de gestão musicoterapêutica</span>

@@ -728,10 +728,10 @@ const [activeTab, setActiveTab] = useState("evaluation");
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-1 sm:px-2 py-4 sm:py-6 space-y-4 sm:space-y-6 animate-fade-in">
+      <div className="w-full px-0 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
         <EvaluationLevelsHero />
         
-        <div className="text-center mb-8 animate-fade-in">
+        <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
