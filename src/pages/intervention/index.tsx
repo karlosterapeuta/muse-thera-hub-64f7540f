@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Trash2
+  Trash2,
+  Eye
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
@@ -55,6 +63,7 @@ export default function InterventionForm() {
   const [generationProgress, setGenerationProgress] = useState<string>("");
   const [savedPlans, setSavedPlans] = useState<any[]>([]);
   const [isLoadingSavedPlans, setIsLoadingSavedPlans] = useState(false);
+  const [viewingPlan, setViewingPlan] = useState<any | null>(null);
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -484,16 +493,26 @@ export default function InterventionForm() {
     }
   };
 
-  const deletePlan = async (planId: string) => {
+  const deletePlan = async (planId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    
+    if (!confirm("Tem certeza que deseja excluir este plano?")) {
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('treatment_plans')
         .delete()
         .eq('id', planId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao excluir:", error);
+        throw error;
+      }
 
-      await fetchSavedPlans();
+      // Atualizar lista local removendo o plano
+      setSavedPlans(prev => prev.filter(p => p.id !== planId));
 
       toast({
         title: "Plano excluído",
@@ -685,6 +704,14 @@ export default function InterventionForm() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => setViewingPlan(plan)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Visualizar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => downloadPlanPDF(plan)}
                         >
                           <Download className="h-4 w-4 mr-1" />
@@ -693,9 +720,9 @@ export default function InterventionForm() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => deletePlan(plan.id)}
+                          onClick={(e) => deletePlan(plan.id, e)}
                         >
-                          Excluir
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -938,6 +965,152 @@ export default function InterventionForm() {
           </CardContent>
         </Card>
       )}
+      
+      {/* Dialog de Visualização do Plano */}
+      <Dialog open={!!viewingPlan} onOpenChange={(open) => !open && setViewingPlan(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Music2 className="h-6 w-6 text-primary" />
+              Plano de Intervenção - {viewingPlan?.patient_name}
+            </DialogTitle>
+            <DialogDescription>
+              Criado em {viewingPlan && format(new Date(viewingPlan.created_at), "PPP", { locale: ptBR })}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {viewingPlan && (
+            <div className="space-y-4 mt-4">
+              {/* Demandas Selecionadas */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Demandas Selecionadas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {viewingPlan.general_objectives?.selected_demands && 
+                    Object.entries(viewingPlan.general_objectives.selected_demands).map(([disorder, demands]: [string, any]) => (
+                      demands.length > 0 && (
+                        <div key={disorder} className="mb-3">
+                          <h4 className="font-semibold text-sm mb-1">{disorder}</h4>
+                          <ul className="list-disc list-inside text-sm text-muted-foreground">
+                            {demands.map((demand: string) => (
+                              <li key={demand}>{demand}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    ))
+                  }
+                </CardContent>
+              </Card>
+
+              {/* Atividades */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold">Atividades Sugeridas</h3>
+                {viewingPlan.complementary_materials?.activities?.map((activity: any, index: number) => (
+                  <Card key={index} className="border-primary/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center justify-between">
+                        <span>Atividade {index + 1}: {activity.disorder}</span>
+                        <Badge className={getComplexityColor(activity.complexityLevel)}>
+                          {activity.complexityLevel}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <span className="font-semibold">Transtorno:</span>
+                          <p className="text-muted-foreground">{activity.disorder}</p>
+                        </div>
+                        <div>
+                          <span className="font-semibold">Demanda:</span>
+                          <p className="text-muted-foreground">{activity.demand}</p>
+                        </div>
+                        <div>
+                          <span className="font-semibold">Especialidade:</span>
+                          <p className="text-muted-foreground">{activity.specialty}</p>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          Objetivo Terapêutico Geral
+                        </h5>
+                        <p className="text-sm text-muted-foreground">{activity.generalObjective}</p>
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          Objetivo Específico
+                        </h5>
+                        <p className="text-sm text-muted-foreground">{activity.specificObjective}</p>
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-1">Descrição da Atividade</h5>
+                        <p className="text-sm text-muted-foreground">{activity.activityDescription}</p>
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-1">Materiais Necessários</h5>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          {activity.materials.map((material: string, idx: number) => (
+                            <li key={idx}>{material}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="flex gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-primary" />
+                          <span className="font-semibold">Tempo:</span>
+                          <span className="text-muted-foreground">{activity.estimatedTime}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Critérios de Avaliação
+                        </h5>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          {activity.evaluationCriteria.map((criteria: string, idx: number) => (
+                            <li key={idx}>{criteria}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Botões de ação */}
+              <div className="flex gap-2 justify-end pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewingPlan(null)}
+                >
+                  Fechar
+                </Button>
+                <Button
+                  onClick={() => {
+                    downloadPlanPDF(viewingPlan);
+                    setViewingPlan(null);
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Baixar PDF
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
