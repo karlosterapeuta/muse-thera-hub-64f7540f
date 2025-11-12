@@ -429,7 +429,7 @@ export default function InterventionForm() {
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #2563EB;">
             <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
-              Plano Terapêutico Individual (PTI)
+              Plano Intervenção Individual (PII)
             </h1>
             <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
               Musicoterapia
@@ -462,7 +462,7 @@ export default function InterventionForm() {
 
       const opt = {
         margin: [15, 15, 15, 15],
-        filename: `PTI - ${patient.name} - ${format(new Date(), "dd-MM-yyyy")}.pdf`,
+        filename: `PII - ${patient.name} - ${format(new Date(), "dd-MM-yyyy")}.pdf`,
         pagebreak: { mode: 'avoid-all' },
         jsPDF: {
           unit: 'mm',
@@ -481,7 +481,7 @@ export default function InterventionForm() {
       
       toast({
         title: "PDF gerado com sucesso!",
-        description: "O Plano Terapêutico Individual foi baixado.",
+        description: "O Plano Intervenção Individual foi baixado.",
       });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
