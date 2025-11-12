@@ -91,7 +91,7 @@ export function DashboardHeader({
       <div className="relative w-screen backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm rounded-none">
         <div className="w-full px-0 py-2 sm:py-3">
           {/* Header Top Section - Logo + Title + Time */}
-          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0 sm:px-3">
+          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0">
             {/* Left - Logo + Title */}
             <div className="flex items-center gap-3 sm:gap-4">
               <LogoRound size="md" className="shadow-lg border border-slate-200/50 w-12 h-12 sm:w-14 sm:h-14" />
@@ -138,7 +138,7 @@ export function DashboardHeader({
           </div>
 
           {/* Welcome Section */}
-          <div className="mb-6 sm:mb-8 text-center lg:text-left px-0 sm:px-3">
+          <div className="mb-6 sm:mb-8 text-center lg:text-left px-0">
             <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-800 mb-2">
               {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
             </h2>
@@ -148,7 +148,7 @@ export function DashboardHeader({
           </div>
 
           {/* Quick stats grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-0 sm:px-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-0">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
