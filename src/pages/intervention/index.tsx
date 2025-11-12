@@ -412,7 +412,7 @@ export default function InterventionForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music2 className="h-6 w-6 text-primary" />
-            Planos de Atividades Salvos
+            Planos de Intervenção Salvos
           </CardTitle>
           <CardDescription>
             Visualize, baixe ou exclua os planos gerados.
