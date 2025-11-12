@@ -13,7 +13,8 @@ import {
   Target,
   CheckCircle2,
   AlertCircle,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,8 @@ export default function InterventionForm() {
   const [userName, setUserName] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<string>("");
+  const [savedPlans, setSavedPlans] = useState<any[]>([]);
+  const [isLoadingSavedPlans, setIsLoadingSavedPlans] = useState(false);
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -108,7 +111,63 @@ export default function InterventionForm() {
     };
 
     fetchUserData();
+    fetchSavedPlans();
   }, [toast, navigate]);
+
+  const fetchSavedPlans = async () => {
+    try {
+      setIsLoadingSavedPlans(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Buscar professional_id
+      const { data: professional } = await supabase
+        .from('professionals')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!professional?.id) return;
+
+      // Buscar planos salvos
+      const { data: plans, error } = await supabase
+        .from('treatment_plans')
+        .select(`
+          id,
+          created_at,
+          patient_id,
+          status,
+          general_objectives,
+          complementary_materials
+        `)
+        .eq('professional_id', professional.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Enriquecer com nomes dos pacientes
+      const enrichedPlans = await Promise.all(
+        (plans || []).map(async (plan) => {
+          const { data: patient } = await supabase
+            .from('patients')
+            .select('name')
+            .eq('id', plan.patient_id)
+            .single();
+          
+          return {
+            ...plan,
+            patient_name: patient?.name || 'Paciente não encontrado'
+          };
+        })
+      );
+
+      setSavedPlans(enrichedPlans);
+    } catch (error) {
+      console.error("Erro ao carregar planos salvos:", error);
+    } finally {
+      setIsLoadingSavedPlans(false);
+    }
+  };
 
   const handleDemandToggle = (disorder: string, demand: string) => {
     setSelectedDemands(prev => {
@@ -244,36 +303,46 @@ export default function InterventionForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Buscar o ID do profissional (tabela professionals) para respeitar as RLS de treatment_plans
-      const { data: professional, error: profError } = await supabase
+      // Buscar ou criar profissional
+      let { data: professional, error: profError } = await supabase
         .from('professionals')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
       if (profError) throw profError;
+
+      // Se não existir, criar automaticamente
       if (!professional?.id) {
-        toast({
-          variant: "destructive",
-          title: "Perfil profissional necessário",
-          description: "Complete seus dados profissionais antes de salvar o plano.",
-        });
-        return;
+        const { data: newProfessional, error: createError } = await supabase
+          .from('professionals')
+          .insert({
+            user_id: user.id,
+            name: userName || formatNameFromEmail(user.email || ''),
+            email: user.email,
+          })
+          .select('id')
+          .single();
+
+        if (createError) throw createError;
+        professional = newProfessional;
       }
 
-      // Inserir o plano na tabela existente treatment_plans
+      // Inserir o plano na tabela treatment_plans
       const { error: insertError } = await supabase
         .from('treatment_plans')
         .insert({
           patient_id: selectedPatient,
           professional_id: professional.id,
           status: 'active',
-          // Guardamos as seleções e atividades nos campos JSONB existentes
           general_objectives: { selected_demands: selectedDemands } as any,
           complementary_materials: { activities: suggestedActivities } as any,
         });
 
       if (insertError) throw insertError;
+
+      // Recarregar lista de planos
+      await fetchSavedPlans();
 
       toast({
         title: "Plano salvo com sucesso!",
@@ -415,6 +484,156 @@ export default function InterventionForm() {
     }
   };
 
+  const deletePlan = async (planId: string) => {
+    try {
+      const { error } = await supabase
+        .from('treatment_plans')
+        .delete()
+        .eq('id', planId);
+
+      if (error) throw error;
+
+      await fetchSavedPlans();
+
+      toast({
+        title: "Plano excluído",
+        description: "O plano foi removido com sucesso.",
+      });
+    } catch (error: any) {
+      console.error("Erro ao excluir plano:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir",
+        description: error?.message || "Não foi possível excluir o plano.",
+      });
+    }
+  };
+
+  const downloadPlanPDF = async (plan: any) => {
+    try {
+      const activities = plan.complementary_materials?.activities || [];
+      if (activities.length === 0) {
+        toast({
+          variant: "destructive",
+          title: "Sem atividades",
+          description: "Este plano não possui atividades para gerar PDF.",
+        });
+        return;
+      }
+
+      const element = document.createElement('div');
+      
+      const activitiesHTML = activities.map((activity: any, index: number) => `
+        <div style="margin-bottom: 24px; page-break-inside: avoid;">
+          <div style="background: linear-gradient(to right, #2563EB, #1E40AF); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
+            Atividade ${index + 1}: ${activity.disorder}
+          </div>
+          <div style="border: 2px solid #E5E7EB; border-top: none; padding: 16px; border-radius: 0 0 8px 8px;">
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${activity.disorder}</span> | 
+              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${activity.demand}</span> | 
+              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${activity.specialty}</span>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Terapêutico Geral:</strong>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.generalObjective}</p>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Específico:</strong>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.specificObjective}</p>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Descrição da Atividade:</strong>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.activityDescription}</p>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Materiais Necessários:</strong>
+              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
+                ${activity.materials.map((m: string) => `<li>${m}</li>`).join('')}
+              </ul>
+            </div>
+            <div style="margin-bottom: 12px; display: flex; gap: 16px;">
+              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${activity.estimatedTime}</span></div>
+              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${activity.complexityLevel}</span></div>
+            </div>
+            <div>
+              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Critérios de Avaliação:</strong>
+              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
+                ${activity.evaluationCriteria.map((c: string) => `<li>${c}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      element.innerHTML = `
+        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #2563EB;">
+            <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
+              Plano Terapêutico Individual (PTI)
+            </h1>
+            <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
+              Musicoterapia
+            </h2>
+            <p style="color: #6B7280; font-size: 16px; margin-bottom: 4px;">
+              <strong>Paciente:</strong> ${plan.patient_name}
+            </p>
+            <p style="color: #6B7280; font-size: 14px;">
+              Data: ${format(new Date(plan.created_at), "PPP", { locale: ptBR })}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 32px;">
+            ${activitiesHTML}
+          </div>
+
+          <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB;">
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
+              Documento gerado em ${format(new Date(), "PPP", { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
+              Musetera - Sistema de Gestão para Musicoterapia
+            </p>
+            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
+              Musicoterapeuta: ${userName} | Email: ${userEmail}
+            </p>
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [15, 15, 15, 15],
+        filename: `PTI - ${plan.patient_name} - ${format(new Date(plan.created_at), "dd-MM-yyyy")}.pdf`,
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+        },
+      };
+
+      await html2pdf().from(element).set(opt).save();
+      
+      toast({
+        title: "PDF gerado com sucesso!",
+        description: "O Plano Terapêutico Individual foi baixado.",
+      });
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível gerar o PDF do plano.",
+      });
+    }
+  };
+
   const getComplexityColor = (level: string) => {
     switch (level) {
       case 'Leve': return 'bg-green-100 text-green-800 border-green-300';
@@ -438,9 +657,53 @@ export default function InterventionForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            Nenhum plano de atividades salvo ainda.
-          </p>
+          {isLoadingSavedPlans ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Carregando planos...</span>
+            </div>
+          ) : savedPlans.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              Nenhum plano de atividades salvo ainda.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {savedPlans.map((plan) => (
+                <Card key={plan.id} className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-lg">{plan.patient_name}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Criado em {format(new Date(plan.created_at), "PPP", { locale: ptBR })}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {plan.complementary_materials?.activities?.length || 0} atividades
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => downloadPlanPDF(plan)}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Baixar PDF
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deletePlan(plan.id)}
+                        >
+                          Excluir
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
