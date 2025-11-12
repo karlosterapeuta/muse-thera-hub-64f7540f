@@ -63,14 +63,14 @@ export default function Layout({ children }: LayoutProps) {
               <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
             </Button>
             
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetContent side="left" className="p-0 w-72 border-0 shadow-none rounded-none">
+            {isOpen && (
+              <aside className="shrink-0">
                 <Sidebar onNavigate={() => setIsOpen(false)} />
-              </SheetContent>
-            </Sheet>
+              </aside>
+            )}
           </>
         )}
-        <main className="flex-1 w-screen px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
+        <main className="flex-1 w-full px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
