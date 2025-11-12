@@ -574,6 +574,138 @@ export const tdahDemandCategories = [
   }
 ];
 
+export const todDemandCategories = [
+  {
+    category: 'Comportamento e Controle Emocional',
+    icon: '💬',
+    subDemands: [
+      {
+        id: 'tod-comp-1',
+        label: 'Recusa frequente em seguir regras e instruções',
+        associatedConditions: ['TDAH - em mais de 60% dos casos']
+      },
+      {
+        id: 'tod-comp-2',
+        label: 'Discussões constantes com figuras de autoridade',
+        associatedConditions: ['Transtorno de Conduta']
+      },
+      {
+        id: 'tod-comp-3',
+        label: 'Agressividade verbal (gritos, insultos, ameaças)',
+        associatedConditions: ['Transtorno de Conduta']
+      },
+      {
+        id: 'tod-comp-4',
+        label: 'Reatividade emocional exagerada diante de contrariedades',
+        associatedConditions: ['Transtorno Disruptivo da Regulação do Humor']
+      },
+      {
+        id: 'tod-comp-5',
+        label: 'Tendência a culpar os outros por seus erros'
+      },
+      {
+        id: 'tod-comp-6',
+        label: 'Resistência a mudanças ou ordens externas',
+        associatedConditions: ['Transtorno de Ansiedade Generalizada', 'Transtorno Depressivo Persistente']
+      }
+    ]
+  },
+  {
+    category: 'Socioemocional e Relações Interpessoais',
+    icon: '💞',
+    subDemands: [
+      {
+        id: 'tod-soc-1',
+        label: 'Dificuldade em lidar com frustração e rejeição',
+        associatedConditions: ['Transtorno de Ansiedade Social']
+      },
+      {
+        id: 'tod-soc-2',
+        label: 'Baixa tolerância à crítica e ao erro',
+        associatedConditions: ['Transtorno de Apego Reativo']
+      },
+      {
+        id: 'tod-soc-3',
+        label: 'Conflitos frequentes com pares (colegas, irmãos)'
+      },
+      {
+        id: 'tod-soc-4',
+        label: 'Pouca empatia e dificuldade em reconhecer emoções nos outros'
+      },
+      {
+        id: 'tod-soc-5',
+        label: 'Baixa autoestima mascarada por atitudes de superioridade',
+        associatedConditions: ['Transtorno de Humor Bipolar Infantil']
+      },
+      {
+        id: 'tod-soc-6',
+        label: 'Comportamento controlador ou desafiador para obter atenção',
+        associatedConditions: ['TEPT - Transtorno de Estresse Pós-Traumático']
+      }
+    ]
+  },
+  {
+    category: 'Cognitivo e Aprendizagem',
+    icon: '🧠',
+    subDemands: [
+      {
+        id: 'tod-cog-1',
+        label: 'Desinteresse por atividades que exigem esforço mental prolongado',
+        associatedConditions: ['TDAH combinado']
+      },
+      {
+        id: 'tod-cog-2',
+        label: 'Dificuldade de concentração, principalmente em tarefas sem estímulo imediato',
+        associatedConditions: ['TDAH combinado']
+      },
+      {
+        id: 'tod-cog-3',
+        label: 'Desorganização e resistência à rotina'
+      },
+      {
+        id: 'tod-cog-4',
+        label: 'Baixo rendimento escolar por desmotivação ou oposição',
+        associatedConditions: ['Dislexia', 'Discalculia', 'Transtorno de Aprendizagem Não Verbal']
+      },
+      {
+        id: 'tod-cog-5',
+        label: 'Uso de comportamento desafiador como forma de evitar tarefas difíceis',
+        associatedConditions: ['Transtorno do Processamento Auditivo']
+      }
+    ]
+  },
+  {
+    category: 'Regulação Sensorial e Motora',
+    icon: '⚡',
+    subDemands: [
+      {
+        id: 'tod-reg-1',
+        label: 'Agitação psicomotora em momentos de tensão',
+        associatedConditions: ['TDAH hiperativo']
+      },
+      {
+        id: 'tod-reg-2',
+        label: 'Hipersensibilidade a sons, luzes ou contato físico (levando à irritabilidade)',
+        associatedConditions: ['Transtorno do Processamento Sensorial (TPS)']
+      },
+      {
+        id: 'tod-reg-3',
+        label: 'Dificuldade em relaxar e controlar impulsos motores',
+        associatedConditions: ['Transtorno de Coordenação Motora (Dispraxia)']
+      },
+      {
+        id: 'tod-reg-4',
+        label: 'Reações corporais exageradas (chutar, bater, empurrar)',
+        associatedConditions: ['Transtorno de Tiques']
+      },
+      {
+        id: 'tod-reg-5',
+        label: 'Necessidade de atividades que ajudem na descarga de energia emocional'
+      }
+    ]
+  }
+];
+
 export const disorderOptions = [
   {
     disorder: 'TEA',
@@ -594,8 +726,10 @@ export const disorderOptions = [
     color: 'from-yellow-500 to-yellow-600',
     demands: [
       'Atenção e Funções Executivas',
-      'Comportamento',
-      'Socioemocional'
+      'Comportamento e Autorregulação',
+      'Socioemocional e Autoestima',
+      'Cognitivo e Aprendizagem',
+      'Sensorial e Motor'
     ]
   },
   {
@@ -604,8 +738,10 @@ export const disorderOptions = [
     icon: '😤',
     color: 'from-red-500 to-red-600',
     demands: [
-      'Comportamento',
-      'Socioemocional'
+      'Comportamento e Controle Emocional',
+      'Socioemocional e Relações Interpessoais',
+      'Cognitivo e Aprendizagem',
+      'Regulação Sensorial e Motora'
     ]
   },
   {

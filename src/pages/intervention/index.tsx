@@ -38,7 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { therapyActivities, disorderOptions, teaDemandCategories, tdahDemandCategories } from "@/data/therapy-activities";
+import { therapyActivities, disorderOptions, teaDemandCategories, tdahDemandCategories, todDemandCategories } from "@/data/therapy-activities";
 import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -908,12 +908,71 @@ export default function InterventionForm() {
                                           onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
                                         />
                                         <div className="flex-1">
-                                          <label
+                                          <Label
                                             htmlFor={subDemand.id}
                                             className="text-sm font-medium leading-none cursor-pointer block"
                                           >
                                             {subDemand.label}
-                                          </label>
+                                          </Label>
+                                          {subDemand.associatedConditions && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                              Condições associadas: {subDemand.associatedConditions.join(', ')}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </CollapsibleContent>
+                              </div>
+                            </Collapsible>
+                          );
+                        })}
+                      </div>
+                    ) : option.disorder === 'TOD' ? (
+                      // TOD com estrutura hierárquica
+                      <div className="space-y-3">
+                        {todDemandCategories.map((category) => {
+                          const isExpanded = expandedCategories[category.category] || false;
+                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const totalCount = category.subDemands.length;
+
+                          return (
+                            <Collapsible key={category.category} open={isExpanded}>
+                              <div className="border rounded-lg overflow-hidden">
+                                <CollapsibleTrigger
+                                  onClick={() => toggleCategory(category.category)}
+                                  className="w-full p-4 flex items-center justify-between hover:bg-accent transition-colors"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{category.icon}</span>
+                                    <div className="text-left">
+                                      <div className="font-semibold">{category.category}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {selectedCount}/{totalCount} selecionadas
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <ChevronDown 
+                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                  />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                  <div className="p-4 pt-2 space-y-3 border-t">
+                                    {category.subDemands.map((subDemand) => (
+                                      <div key={subDemand.id} className="flex items-start gap-3">
+                                        <Checkbox
+                                          id={subDemand.id}
+                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                        />
+                                        <div className="flex-1">
+                                          <Label
+                                            htmlFor={subDemand.id}
+                                            className="text-sm font-medium leading-none cursor-pointer block"
+                                          >
+                                            {subDemand.label}
+                                          </Label>
                                           {subDemand.associatedConditions && (
                                             <p className="text-xs text-muted-foreground mt-1">
                                               Condições associadas: {subDemand.associatedConditions.join(', ')}
@@ -930,7 +989,7 @@ export default function InterventionForm() {
                         })}
                       </div>
                     ) : (
-                      // Outros transtornos com demandas simples
+                      // DI com demandas simples
                       <div className="grid gap-3 md:grid-cols-2">
                         {option.demands.map((demand) => (
                           <div

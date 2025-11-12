@@ -66,7 +66,33 @@ export type Demand =
   | 'Dificuldade em permanecer sentado ou quieto'
   | 'Coordenação motora fina prejudicada'
   | 'Hipersensibilidade a sons ou toques'
-  | 'Necessidade de movimento para manter atenção';
+  | 'Necessidade de movimento para manter atenção'
+  // TOD - Sub-demandas de Comportamento e Controle Emocional
+  | 'Recusa frequente em seguir regras e instruções'
+  | 'Discussões constantes com figuras de autoridade'
+  | 'Agressividade verbal (gritos, insultos, ameaças)'
+  | 'Reatividade emocional exagerada diante de contrariedades'
+  | 'Tendência a culpar os outros por seus erros'
+  | 'Resistência a mudanças ou ordens externas'
+  // TOD - Sub-demandas de Socioemocional e Relações Interpessoais
+  | 'Dificuldade em lidar com frustração e rejeição'
+  | 'Baixa tolerância à crítica e ao erro'
+  | 'Conflitos frequentes com pares (colegas, irmãos)'
+  | 'Pouca empatia e dificuldade em reconhecer emoções nos outros'
+  | 'Baixa autoestima mascarada por atitudes de superioridade'
+  | 'Comportamento controlador ou desafiador para obter atenção'
+  // TOD - Sub-demandas de Cognitivo e Aprendizagem
+  | 'Desinteresse por atividades que exigem esforço mental prolongado'
+  | 'Dificuldade de concentração, principalmente em tarefas sem estímulo imediato'
+  | 'Desorganização e resistência à rotina'
+  | 'Baixo rendimento escolar por desmotivação ou oposição'
+  | 'Uso de comportamento desafiador como forma de evitar tarefas difíceis'
+  // TOD - Sub-demandas de Regulação Sensorial e Motora
+  | 'Agitação psicomotora em momentos de tensão'
+  | 'Hipersensibilidade a sons, luzes ou contato físico (levando à irritabilidade)'
+  | 'Dificuldade em relaxar e controlar impulsos motores'
+  | 'Reações corporais exageradas (chutar, bater, empurrar)'
+  | 'Necessidade de atividades que ajudem na descarga de energia emocional';
 
 export type Specialty = 
   | 'Musicoterapia'
