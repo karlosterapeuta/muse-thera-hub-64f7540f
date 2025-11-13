@@ -22,7 +22,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1 relative gap-0">
+      <div className="flex flex-1 relative gap-0 items-stretch overflow-hidden">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -70,7 +70,7 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </>
         )}
-        <main className="flex-1 w-full px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
+        <main className="flex-1 w-full m-0 p-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
