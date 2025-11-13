@@ -83,7 +83,7 @@ export function DevolutivaHistory() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando histórico...</p>
+          <p className="text-muted-foreground">Carregando histórico...</p>
         </div>
       </div>
     );
@@ -93,7 +93,7 @@ export function DevolutivaHistory() {
     <div className="space-y-6">
       <div className="flex gap-4 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Buscar por nome do paciente..."
             value={searchTerm}
@@ -106,7 +106,7 @@ export function DevolutivaHistory() {
       {filteredRecords.length === 0 ? (
         <Card>
           <CardContent className="py-12">
-            <div className="text-center text-gray-500">
+            <div className="text-center text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Nenhuma devolutiva encontrada</p>
               {searchTerm && (
@@ -125,7 +125,7 @@ export function DevolutivaHistory() {
                     <FileText className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-lg">{record.content.patient_name}</p>
-                      <p className="text-sm font-normal text-gray-600">
+                      <p className="text-sm font-normal text-muted-foreground">
                         Sessão #{record.content.session_number}
                       </p>
                     </div>
@@ -141,7 +141,7 @@ export function DevolutivaHistory() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <span>

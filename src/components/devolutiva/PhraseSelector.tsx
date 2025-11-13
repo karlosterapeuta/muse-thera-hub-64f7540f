@@ -51,7 +51,7 @@ export function PhraseSelector({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-2xl">{icon}</span>
-              <h3 className="font-semibold text-gray-800">{title}</h3>
+              <h3 className="font-semibold text-foreground">{title}</h3>
               {selectedPhrases.length > 0 && (
                 <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                   {selectedPhrases.length} selecionada{selectedPhrases.length > 1 ? 's' : ''}
@@ -77,7 +77,7 @@ export function PhraseSelector({
                     className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/30 ${
                       selectedPhrases.includes(phrase)
                         ? 'border-primary bg-primary/5'
-                        : 'border-gray-200'
+                        : 'border-border'
                     }`}
                     onClick={() => togglePhrase(phrase)}
                   >
@@ -133,12 +133,12 @@ export function PhraseSelector({
                   placeholder="Edite o texto conforme necessário..."
                 />
               ) : (
-                <div className="p-3 bg-gray-50 rounded-lg border-2 border-gray-200 text-sm leading-relaxed">
+                <div className="p-3 bg-muted/50 rounded-lg border-2 border-border text-sm leading-relaxed">
                   {combinedText || 'Nenhum texto selecionado'}
                 </div>
               )}
 
-              <div className="text-xs text-gray-500 text-right">
+              <div className="text-xs text-muted-foreground text-right">
                 {combinedText.length} caracteres
               </div>
             </div>
