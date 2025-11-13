@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 
 // Set initial theme
-const theme = localStorage.getItem('theme') || 'light';
+const theme = localStorage.getItem('theme') || 'dark';
 document.documentElement.classList.add(theme);
 
 
