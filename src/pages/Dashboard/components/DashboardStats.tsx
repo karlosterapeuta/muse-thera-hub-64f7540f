@@ -77,7 +77,7 @@ export function DashboardStats({
             className={`relative overflow-hidden border-0 shadow-none rounded-none bg-gradient-to-br ${stat.gradient} text-white hover:shadow-lg transition-all duration-500 group cursor-pointer`}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative p-0">
+            <div className="relative p-4 sm:p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="p-1.5 sm:p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                   <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
