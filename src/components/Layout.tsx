@@ -41,7 +41,7 @@ export default function Layout({ children }: LayoutProps) {
                 <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[18rem] max-w-[18rem] sm:max-w-[18rem] border-0 shadow-none rounded-none">
+            <SheetContent side="left" className="p-0 w-4/5 max-w-[280px] sm:max-w-[280px] shadow-2xl">
               <Sidebar onNavigate={() => setIsOpen(false)} />
             </SheetContent>
           </Sheet>
@@ -64,7 +64,7 @@ export default function Layout({ children }: LayoutProps) {
             </Button>
             
             {isOpen && (
-              <aside className="shrink-0 m-0 p-0 relative z-10 overflow-hidden">
+              <aside className="shrink-0 w-60 m-0 p-0 relative z-10 overflow-hidden">
                 <Sidebar onNavigate={() => setIsOpen(false)} />
               </aside>
             )}

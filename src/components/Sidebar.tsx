@@ -15,12 +15,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   return (
     <div
       className={cn(
-        "h-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30 backdrop-blur-xl border-0 ring-0 shadow-none transition-all duration-300 flex flex-col relative overflow-hidden",
-        collapsed ? "w-16" : "w-64"
+        "h-full bg-white/95 backdrop-blur-md border-r border-gray-200/50 shadow-xl transition-all duration-300 flex flex-col relative overflow-hidden",
+        collapsed ? "w-16" : "w-60"
       )}
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/3 to-pink-500/3"></div>
       
       <SidebarHeader collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       
