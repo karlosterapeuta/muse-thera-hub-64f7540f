@@ -83,7 +83,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
                       }
                     </p>
                     {record.description && record.description.trim() && (
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
                         {record.description}
                       </p>
                     )}
@@ -103,7 +103,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
             ))}
             {financialSchedule.length > 8 && (
               <div className="text-center py-2">
-                <Button variant="ghost" size="sm" className="text-sm text-gray-500">
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
                   Ver mais {financialSchedule.length - 8} registros
                 </Button>
               </div>

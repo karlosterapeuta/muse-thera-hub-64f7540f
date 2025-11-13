@@ -46,18 +46,18 @@ export function DashboardStats({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {stats.map((_, index) => (
-          <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
+          <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 animate-pulse">
             <div className="p-4 sm:p-6 space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-xl"></div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 dark:bg-gray-600 rounded-xl"></div>
                 <div className="space-y-2 flex-1">
-                  <div className="h-3 bg-gray-300 rounded w-3/4"></div>
-                  <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                  <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+                  <div className="h-2 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="h-6 sm:h-8 bg-gray-300 rounded w-1/2"></div>
-                <div className="h-3 sm:h-4 bg-gray-300 rounded w-2/3"></div>
+                <div className="h-6 sm:h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                <div className="h-3 sm:h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
               </div>
             </div>
           </Card>

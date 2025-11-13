@@ -43,7 +43,7 @@ export function CacheStatsCard() {
           </div>
           <Progress value={Math.min(memoryUsagePercent, 100)} className="h-2" />
           {memoryUsagePercent > 80 && (
-            <p className="text-xs text-amber-600 flex items-center gap-1">
+            <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
               ⚠️ Cache alto - limpeza recomendada
             </p>
           )}
@@ -77,7 +77,7 @@ export function CacheStatsCard() {
             variant="outline"
             size="sm"
             onClick={() => performFullCleanup()}
-            className="flex-1 text-xs text-red-600 hover:text-red-700"
+            className="flex-1 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
           >
             <Trash2 className="h-3 w-3 mr-1" />
             Reset
@@ -86,7 +86,7 @@ export function CacheStatsCard() {
 
         {/* Auto-cleanup indicator */}
         <div className="text-center">
-          <Badge variant="outline" className="text-xs text-emerald-600">
+          <Badge variant="outline" className="text-xs text-emerald-600 dark:text-emerald-400">
             🤖 Limpeza automática ativa
           </Badge>
         </div>
