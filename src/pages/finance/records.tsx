@@ -388,7 +388,7 @@ export default function FinancialRecords() {
         </div>
         
         <div className="space-y-1 mb-3">
-          <div className="font-semibold text-gray-900 line-clamp-1">
+          <div className="font-semibold text-foreground line-clamp-1">
             {record.patient_name || 'Sem paciente'}
           </div>
           <div className="text-sm text-muted-foreground line-clamp-1 flex items-center">
@@ -398,12 +398,12 @@ export default function FinancialRecords() {
         </div>
         
         {getCleanDescription(record.description) && (
-          <div className="text-xs text-muted-foreground mb-2 line-clamp-2 bg-gray-50 p-2 rounded-md">
+          <div className="text-xs text-muted-foreground mb-2 line-clamp-2 bg-muted/50 p-2 rounded-md">
             {getCleanDescription(record.description)}
           </div>
         )}
         
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-2 border-t border-border">
           <div className="text-xs text-muted-foreground">
             Dia da semana: {getWeekdayLabel(record.description) || format(parseISO(record.session_date), "EEEE", { locale: ptBR })}
           </div>
@@ -477,11 +477,11 @@ export default function FinancialRecords() {
       </div>
       
       
-      <div className="md:col-span-3 bg-white/50 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-gray-100">
+      <div className="md:col-span-3 bg-card/80 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-border">
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="relative bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5">
+        <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             className="pl-9"
@@ -490,7 +490,7 @@ export default function FinancialRecords() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="bg-white/50 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1.5 flex justify-center">
+        <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5 flex justify-center">
           <Button 
             variant={viewMode === "agenda" ? "default" : "outline"} 
             size="sm" 
@@ -513,7 +513,7 @@ export default function FinancialRecords() {
       </div>
       
       
-      <Card className="shadow-md border-gray-100 overflow-hidden">
+      <Card className="shadow-md border-border overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
@@ -587,7 +587,7 @@ export default function FinancialRecords() {
                           <div className="text-sm">{day.dayShort}</div>
                           <div className="text-xs opacity-90">{day.formatted}</div>
                         </div>
-                        <div className="bg-gray-50 border border-t-0 rounded-b-lg">
+                        <div className="bg-muted/50 border border-t-0 rounded-b-lg">
                           <div className="p-2 bg-white border-b flex justify-between items-center text-xs">
                             <span>{day.records.length} sessões</span>
                             <span className="font-semibold text-primary">{formatCurrency(day.total)}</span>
