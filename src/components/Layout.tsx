@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import { cn } from "@/lib/utils";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -22,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col m-0 p-0">
-      <div className={`relative flex-1 ${!isMobile && isOpen ? 'grid grid-cols-[auto,1fr]' : 'flex'} gap-0 items-stretch overflow-hidden m-0 p-0`}>
+      <div className="relative flex-1 grid grid-cols-[auto,1fr] gap-0 items-stretch overflow-hidden m-0 p-0">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -64,11 +65,12 @@ export default function Layout({ children }: LayoutProps) {
               <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
             </Button>
             
-            {isOpen && (
-              <aside className="shrink-0 w-60 m-0 p-0 relative z-10 overflow-hidden">
-                <Sidebar onNavigate={() => setIsOpen(false)} />
-              </aside>
-            )}
+            <aside className={cn(
+              "shrink-0 m-0 p-0 relative z-10 overflow-hidden transition-all duration-300",
+              isOpen ? "w-60" : "w-0"
+            )}>
+              <Sidebar onNavigate={() => setIsOpen(false)} />
+            </aside>
           </>
         )}
         <main className="flex-1 w-full m-0 px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container pr-0 mr-0 -ml-px">
