@@ -93,11 +93,9 @@ IMPORTANTE:
     
     if (lovableKey) {
       try {
-        console.log(`⏱️ [${new Date().toISOString()}] 🌐 Tentando Lovable AI Gateway (rápido)...`);
+        console.log(`⏱️ [${new Date().toISOString()}] 🌐 Tentando Lovable AI Gateway...`);
         
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-        
+        // Sem timeout para Lovable AI - deixar a API decidir
         const gatewayResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -113,10 +111,7 @@ IMPORTANTE:
             temperature: 0.7,
             max_tokens: 4000,
           }),
-          signal: controller.signal,
         });
-
-        clearTimeout(timeoutId);
 
         if (gatewayResp.ok) {
           const gatewayJson = await gatewayResp.json();
@@ -172,7 +167,7 @@ IMPORTANTE:
     
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout para Gemini
       
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent`,
