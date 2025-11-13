@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { TopHeader } from "./TopHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -74,9 +73,6 @@ export default function Layout({ children }: LayoutProps) {
         
         {/* Main content que será empurrado */}
         <div className="flex-1 flex flex-col w-full">
-          {/* Header fixo com botão do menu e theme toggle */}
-          <TopHeader />
-          
           {/* Conteúdo principal */}
           <main className="flex-1 overflow-auto">
             {children || <Outlet />}
