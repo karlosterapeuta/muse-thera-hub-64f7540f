@@ -43,8 +43,8 @@ export function DashboardHeader({
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-sm">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
+    <div className="sticky top-0 z-40 w-full bg-white border-b border-slate-200 shadow-sm">
+      <div className="w-full px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Left: Logo + Title */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
