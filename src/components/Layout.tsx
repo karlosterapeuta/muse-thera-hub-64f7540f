@@ -21,8 +21,8 @@ export default function Layout({ children }: LayoutProps) {
   const [isOpen, setIsOpen] = useState(!isMobile && isDashboard);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="relative flex-1 grid grid-cols-[auto,1fr] gap-0 items-stretch overflow-hidden">
+    <div className="flex min-h-screen flex-col m-0 p-0">
+      <div className="relative flex-1 grid grid-cols-[auto,1fr] gap-0 items-stretch overflow-hidden m-0 p-0">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
