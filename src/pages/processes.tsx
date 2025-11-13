@@ -120,7 +120,7 @@ export default function Processes() {
               key={index}
               className="group block transform transition-all duration-300 hover:scale-105"
             >
-              <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-gradient-to-br ${process.bgGradient} ${process.bgGradientDark} h-full group-hover:bg-gradient-to-r`}>
+              <Card className={`relative overflow-hidden border border-border shadow-lg hover:shadow-2xl transition-all duration-500 bg-card h-full group`}>
                 {/* NEW Badge */}
                 {process.isNew && (
                   <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-2 py-1 animate-pulse shadow-lg">
@@ -151,7 +151,7 @@ export default function Processes() {
                   </p>
                   
                   {/* Arrow */}
-                  <div className="flex items-center text-primary group-hover:text-purple-600 transition-colors">
+                  <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
                     <span className="text-sm font-medium mr-2">Acessar</span>
                     <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
