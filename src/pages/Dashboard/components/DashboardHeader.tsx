@@ -82,14 +82,14 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="relative w-full overflow-hidden m-0 p-0 -ml-px bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
+    <div className="relative w-full overflow-hidden m-0 p-0 lg:-ml-px bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]" />
       
       {/* Main header container */}
       <div className="relative w-full backdrop-blur-sm bg-white/95 rounded-none">
-        <div className="w-full px-0 py-2 sm:py-3">
+        <div className="w-full m-0 px-0 py-2 sm:py-3">
           {/* Header Top Section - Logo + Title + Time */}
           <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0">
             {/* Left - Logo + Title */}
