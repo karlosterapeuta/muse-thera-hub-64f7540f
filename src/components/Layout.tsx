@@ -2,18 +2,34 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { Music2 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children?: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+function LayoutContent({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { toggleSidebar } = useSidebar();
+
+  // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [toggleSidebar]);
 
   // Route guard: check authentication and profile status for protected routes
   useEffect(() => {
@@ -66,26 +82,48 @@ export default function Layout({ children }: LayoutProps) {
   }, [location.pathname, navigate, toast]);
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        {/* Sidebar com push behavior */}
-        <Sidebar />
-        
-        {/* Main content que será empurrado */}
-        <div className="flex-1 flex flex-col w-full">
-          {/* Conteúdo principal */}
-          <main className="flex-1 overflow-auto">
-            {children || <Outlet />}
-          </main>
-          
-          {/* Footer */}
-          <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-background/80">
-            <div className="w-full px-0">
-              © 2025 MuseTera
+    <div className="flex min-h-screen w-full">
+      {/* Sidebar com push behavior */}
+      <Sidebar />
+      
+      {/* Main content que será empurrado */}
+      <div className="flex-1 flex flex-col w-full min-w-0">
+        {/* Header fixo com toggle e breadcrumbs */}
+        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-14 items-center px-4 gap-4">
+            <SidebarTrigger className="-ml-1" />
+            <div className="flex items-center gap-2">
+              <Music2 className="h-5 w-5 text-primary" />
+              <span className="font-semibold hidden sm:inline-block">MuseTera</span>
             </div>
-          </footer>
-        </div>
+            <div className="flex-1 overflow-hidden">
+              <Breadcrumbs />
+            </div>
+          </div>
+        </header>
+        
+        {/* Conteúdo principal */}
+        <main className="flex-1 overflow-auto">
+          {children || <Outlet />}
+        </main>
+        
+        {/* Footer */}
+        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-background/80">
+          <div className="w-full px-0">
+            © 2025 MuseTera
+          </div>
+        </footer>
       </div>
+    </div>
+  );
+}
+
+export default function Layout({ children }: LayoutProps) {
+  const isMobile = useIsMobile();
+
+  return (
+    <SidebarProvider defaultOpen={!isMobile}>
+      <LayoutContent>{children}</LayoutContent>
     </SidebarProvider>
   );
 }
