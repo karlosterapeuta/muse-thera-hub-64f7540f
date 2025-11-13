@@ -67,18 +67,18 @@ export function DashboardStats({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 px-0 mx-0 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       {stats.map((stat, index) => {
         console.log(`📊 Renderizando card ${index}:`, stat.title, "Valor:", stat.value);
         
         return (
           <Card 
             key={index} 
-            className={`relative overflow-hidden border-0 shadow-none rounded-none bg-gradient-to-br ${stat.gradient} text-white hover:shadow-lg transition-all duration-500 group cursor-pointer`}
+            className={`relative overflow-hidden border-0 shadow-lg rounded-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 group cursor-pointer`}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative px-0 py-4 sm:py-6">
-              <div className="flex items-center gap-2 mb-4 px-0">
+            <div className="relative px-6 py-6">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="p-1.5 sm:p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                   <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>

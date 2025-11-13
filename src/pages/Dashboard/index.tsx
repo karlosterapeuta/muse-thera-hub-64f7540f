@@ -10,8 +10,8 @@ export default function Dashboard() {
   const data = useDashboardData();
 
   return (
-    <div className="min-h-screen bg-background w-full overflow-x-hidden px-0 mx-0">
-      {/* Modern Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 w-full overflow-x-hidden">
+      {/* Simplified Header */}
       <DashboardHeader
         totalPatients={data.totalPatients}
         totalReports={data.totalReports}
@@ -20,9 +20,9 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="w-full px-0 mx-0 py-0 space-y-0">
-        {/* Statistics Cards - mantendo como backup/detalhado */}
-        <div className="mt-0 px-0 mx-0">
+      <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
+        {/* Statistics Cards */}
+        <div>
           <DashboardStats
             totalPatients={data.totalPatients}
             totalReports={data.totalReports}
@@ -30,8 +30,8 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Cache Management */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 px-0 mx-0">
+        {/* Financial Agenda & Cache Management */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <FinancialAgenda 
               financialSchedule={data.financialSchedule} 
@@ -42,7 +42,6 @@ export default function Dashboard() {
             <CacheStatsCard />
           </div>
         </div>
-
       </div>
     </div>
   );

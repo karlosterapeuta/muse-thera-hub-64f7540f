@@ -24,8 +24,8 @@ export function CacheStatsCard() {
   const memoryUsagePercent = (stats.memoryUsage / (50 * 1024 * 1024)) * 100; // 50MB max
 
   return (
-    <Card className="h-full border-0 shadow-none rounded-none">
-      <CardHeader className="px-0 py-4">
+    <Card className="h-full border border-slate-200 shadow-lg rounded-xl bg-white hover:shadow-xl transition-all duration-300">
+      <CardHeader className="px-6 py-4 border-b border-slate-100">
         <CardTitle className="flex items-center gap-2 text-lg">
           <HardDrive className="h-5 w-5" />
           Cache do Sistema
@@ -34,7 +34,7 @@ export function CacheStatsCard() {
           Monitoramento automático de memória
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 px-0 py-4 pt-0">
+      <CardContent className="space-y-4 px-6 py-6">
         {/* Memory Usage */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
