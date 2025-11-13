@@ -94,6 +94,19 @@ export default function InstantAuthChecker() {
     }
   }, []);
 
+  // Check status on initial load for existing sessions
+  useEffect(() => {
+    const checkInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        console.log("🔍 InstantAuthChecker: Checking existing session on mount");
+        await checkUserStatus(session.user.id);
+      }
+    };
+    
+    checkInitialSession();
+  }, [checkUserStatus]);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       // Limpa cache ao fazer login

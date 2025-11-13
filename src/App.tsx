@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 import { useEffect } from "react";
 import { globalCacheManager } from "@/utils/cacheManager";
 import InstantAuthChecker from "@/components/auth/InstantAuthChecker";
+import AuthStatusChecker from "@/components/auth/AuthStatusChecker";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -111,6 +112,7 @@ const App = () => {
       <Toaster />
       <BrowserRouter>
         <InstantAuthChecker />
+        <AuthStatusChecker />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
