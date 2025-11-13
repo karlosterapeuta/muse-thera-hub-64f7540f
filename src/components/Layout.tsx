@@ -1,12 +1,14 @@
 
-import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -14,9 +16,61 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   const [isOpen, setIsOpen] = useState(false);
+
+  // Route guard: check authentication and profile status for protected routes
+  useEffect(() => {
+    const publicRoutes = ["/", "/login", "/reset-password"];
+    
+    // Skip validation for public routes
+    if (publicRoutes.includes(location.pathname)) {
+      return;
+    }
+
+    const validateAccess = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // If no session, redirect to login
+        if (!session?.user) {
+          navigate('/login');
+          return;
+        }
+
+        // Check profile status
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('status, expires_at')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (error) {
+          console.error("Error checking profile status:", error);
+          return;
+        }
+
+        const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
+        
+        if (profile?.status !== 'active' || isExpired) {
+          await supabase.auth.signOut();
+          navigate('/login');
+          toast({
+            title: "Acesso bloqueado - Pagamento pendente",
+            description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error validating access:", error);
+      }
+    };
+
+    validateAccess();
+  }, [location.pathname, navigate, toast]);
 
   return (
     <div className="flex min-h-screen flex-col">

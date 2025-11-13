@@ -29,7 +29,37 @@ export default function Login() {
     const checkAuthState = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        navigate('/dashboard');
+        // Validate profile status before redirecting
+        try {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('status, expires_at')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (error) {
+            console.error("Error checking profile status:", error);
+            navigate('/dashboard');
+            return;
+          }
+
+          const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
+          
+          if (profile?.status !== 'active' || isExpired) {
+            await supabase.auth.signOut();
+            toast({
+              title: "Acesso bloqueado - Pagamento pendente",
+              description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          navigate('/dashboard');
+        } catch (error) {
+          console.error("Error validating profile:", error);
+          navigate('/dashboard');
+        }
         return;
       }
     };
@@ -37,7 +67,39 @@ export default function Login() {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user && !isProcessingToken) {
-        navigate('/dashboard');
+        // Use setTimeout to avoid deadlock when calling Supabase inside callback
+        setTimeout(async () => {
+          try {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('status, expires_at')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (error) {
+              console.error("Error checking profile status:", error);
+              navigate('/dashboard');
+              return;
+            }
+
+            const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
+            
+            if (profile?.status !== 'active' || isExpired) {
+              await supabase.auth.signOut();
+              toast({
+                title: "Acesso bloqueado - Pagamento pendente",
+                description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
+                variant: "destructive",
+              });
+              return;
+            }
+            
+            navigate('/dashboard');
+          } catch (error) {
+            console.error("Error validating profile:", error);
+            navigate('/dashboard');
+          }
+        }, 0);
       }
     });
 
