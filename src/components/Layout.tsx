@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetOverlay } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -41,6 +41,7 @@ export default function Layout({ children }: LayoutProps) {
                 <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-white drop-shadow-lg relative z-10 group-hover:text-primary-foreground transition-colors duration-300" />
               </Button>
             </SheetTrigger>
+            <SheetOverlay className="bg-black/40 backdrop-blur-sm dark:bg-black/60 dark:backdrop-blur-md" />
             <SheetContent side="left" className="p-0 w-4/5 max-w-[280px] sm:max-w-[280px] shadow-2xl">
               <Sidebar onNavigate={() => setIsOpen(false)} />
             </SheetContent>
