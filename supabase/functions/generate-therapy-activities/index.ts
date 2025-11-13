@@ -85,194 +85,163 @@ IMPORTANTE:
 - Cada atividade deve ter ID único (ativ-001 até ativ-010)
 - Responda APENAS com o JSON, sem texto adicional`;
 
-    // 5. Chamar Google Gemini API
-    console.log('🎵 Gerando atividades com Gemini API...');
+    const startTime = Date.now();
+    console.log(`⏱️ [${new Date().toISOString()}] 🚀 Iniciando geração de atividades...`);
+
+    // 5. ESTRATÉGIA OTIMIZADA: Tentar Lovable AI Gateway PRIMEIRO (rápido: 2-5s)
+    const lovableKey = Deno.env.get('LOVABLE_API_KEY');
     
-    // Tentar múltiplos modelos e versões da API em ordem de preferência
-    const apiVersions = ['v1', 'v1beta'];
-    const models = ['gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-1.5-flash-001'];
-
-    let response: Response | undefined;
-    let lastError: string | undefined;
-    let success = false;
-
-    for (const version of apiVersions) {
-      for (const model of models) {
-        try {
-          console.log(`🔄 Tentando versão/modelo: ${version} / ${model}`);
-          response = await fetch(
-            `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent`,
-            {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'x-goog-api-key': geminiApiKey,
-              },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                  temperature: 0.8,
-                  topK: 40,
-                  topP: 0.95,
-                  maxOutputTokens: 8192,
-                }
-              })
-            }
-          );
-
-          if (response.ok) {
-            console.log(`✅ Sucesso com: ${version} / ${model}`);
-            success = true;
-            break;
-          }
-
-          const errorText = await response.text();
-          lastError = `${version}/${model}: ${response.status} - ${errorText}`;
-          console.warn(`⚠️ Falha ${version}/${model}:`, errorText);
-        } catch (error: any) {
-          lastError = `${version}/${model}: ${error.message}`;
-          console.warn(`⚠️ Erro ao tentar ${version}/${model}:`, error.message);
-        }
-      }
-      if (success) break;
-    }
-
-    if (!success || !response || !response.ok) {
-      console.warn('⚠️ Tentativas com Google Gemini falharam. Tentando Lovable AI Gateway...');
-
-      const lovableKey = Deno.env.get('LOVABLE_API_KEY');
-      if (!lovableKey) {
-        console.error('❌ LOVABLE_API_KEY ausente');
-        throw new Error(`Erro na API Gemini. Verifique a chave e o acesso aos modelos. Último erro: ${lastError}`);
-      }
-
-      console.log('🌐 Chamando Lovable AI Gateway...');
-      const gatewayResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
-          messages: [
-            { role: 'system', content: 'Você é um especialista em Musicoterapia clínica. Responda SEMPRE apenas com JSON válido conforme solicitado, sem nenhum texto adicional antes ou depois.' },
-            { role: 'user', content: prompt }
-          ],
-        }),
-      });
-
-      if (!gatewayResp.ok) {
-        const t = await gatewayResp.text();
-        console.error('❌ Erro Lovable AI Gateway:', gatewayResp.status, t);
-        throw new Error(`Erro no Lovable AI Gateway: ${gatewayResp.status}`);
-      }
-
-      const gatewayJson = await gatewayResp.json();
-      console.log('📦 Resposta do gateway recebida');
-      
-      const content = gatewayJson.choices?.[0]?.message?.content ?? '';
-      console.log('📄 Conteúdo bruto (primeiros 200 chars):', content.substring(0, 200));
-
-      if (!content) {
-        throw new Error('Resposta vazia do Lovable AI Gateway');
-      }
-
-      // Limpeza mais agressiva
-      let cleaned = String(content).trim();
-      
-      // Remover blocos de código markdown
-      if (cleaned.includes('```')) {
-        const jsonMatch = cleaned.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
-        if (jsonMatch) {
-          cleaned = jsonMatch[1];
-        } else {
-          cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-        }
-      }
-      
-      // Remover texto antes do primeiro {
-      const firstBrace = cleaned.indexOf('{');
-      if (firstBrace > 0) {
-        cleaned = cleaned.substring(firstBrace);
-      }
-      
-      // Remover texto após o último }
-      const lastBrace = cleaned.lastIndexOf('}');
-      if (lastBrace !== -1 && lastBrace < cleaned.length - 1) {
-        cleaned = cleaned.substring(0, lastBrace + 1);
-      }
-
-      console.log('🧹 JSON limpo (primeiros 200 chars):', cleaned.substring(0, 200));
-
+    if (lovableKey) {
       try {
-        const parsed = JSON.parse(cleaned);
-        console.log('✅ JSON parseado com sucesso');
+        console.log(`⏱️ [${new Date().toISOString()}] 🌐 Tentando Lovable AI Gateway (rápido)...`);
         
-        if (!parsed.activities || !Array.isArray(parsed.activities)) {
-          console.error('❌ Estrutura inválida:', { hasActivities: !!parsed.activities, isArray: Array.isArray(parsed.activities) });
-          throw new Error('Formato inválido: campo "activities" ausente ou não é array');
-        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
         
-        if (parsed.activities.length !== 10) {
-          console.warn(`⚠️ Quantidade incorreta: ${parsed.activities.length} atividades ao invés de 10`);
-          // Aceitar mesmo assim se tiver pelo menos algumas atividades
-          if (parsed.activities.length === 0) {
-            throw new Error('Nenhuma atividade retornada pelo gateway');
+        const gatewayResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${lovableKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              { role: 'system', content: 'Você é um especialista em Musicoterapia clínica. Responda SEMPRE apenas com JSON válido conforme solicitado, sem nenhum texto adicional antes ou depois.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 4000,
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (gatewayResp.ok) {
+          const gatewayJson = await gatewayResp.json();
+          const content = gatewayJson.choices?.[0]?.message?.content ?? '';
+          
+          const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.log(`⏱️ [${new Date().toISOString()}] ⚡ Lovable AI respondeu em ${elapsedTime}s`);
+
+          if (content) {
+            // Limpeza do JSON
+            let cleaned = String(content).trim();
+            
+            if (cleaned.includes('```')) {
+              const jsonMatch = cleaned.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+              if (jsonMatch) {
+                cleaned = jsonMatch[1];
+              } else {
+                cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+              }
+            }
+            
+            const firstBrace = cleaned.indexOf('{');
+            if (firstBrace > 0) {
+              cleaned = cleaned.substring(firstBrace);
+            }
+            
+            const lastBrace = cleaned.lastIndexOf('}');
+            if (lastBrace !== -1 && lastBrace < cleaned.length - 1) {
+              cleaned = cleaned.substring(0, lastBrace + 1);
+            }
+
+            const parsed = JSON.parse(cleaned);
+            
+            if (parsed.activities && Array.isArray(parsed.activities) && parsed.activities.length > 0) {
+              console.log(`✅ ${parsed.activities.length} atividades geradas via Lovable AI em ${elapsedTime}s`);
+              return new Response(
+                JSON.stringify({ activities: parsed.activities }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
           }
         }
         
-        console.log(`✅ ${parsed.activities.length} atividades geradas via Lovable AI Gateway`);
-        return new Response(
-          JSON.stringify({ activities: parsed.activities }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      } catch (e: any) {
-        console.error('❌ Falha ao parsear resposta do gateway:', e.message);
-        console.error('📄 Conteúdo que falhou:', cleaned);
-        throw new Error(`Falha ao interpretar resposta: ${e.message}`);
+        console.warn(`⚠️ Lovable AI falhou ou retornou dados inválidos. Status: ${gatewayResp.status}`);
+      } catch (error: any) {
+        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+        console.warn(`⚠️ [${new Date().toISOString()}] Erro no Lovable AI após ${elapsedTime}s:`, error.message);
       }
     }
 
-    const data = await response.json();
-    const generatedText = data.candidates[0]?.content?.parts[0]?.text;
-
-    if (!generatedText) {
-      throw new Error('Resposta vazia da IA');
-    }
-
-    console.log('📄 Resposta da IA recebida');
-
-    // 6. Parse do JSON (remover markdown se houver)
-    let cleanedText = generatedText.trim();
-    if (cleanedText.startsWith('```json')) {
-      cleanedText = cleanedText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    } else if (cleanedText.startsWith('```')) {
-      cleanedText = cleanedText.replace(/```\n?/g, '');
-    }
+    // 6. FALLBACK: Google Gemini API (lento: 5-10s)
+    console.log(`⏱️ [${new Date().toISOString()}] 🐢 Tentando Google Gemini como fallback...`);
     
-    const parsedData = JSON.parse(cleanedText);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent`,
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-goog-api-key': geminiApiKey,
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 4000,
+            }
+          }),
+          signal: controller.signal,
+        }
+      );
 
-    // 7. Validação
-    if (!parsedData.activities || !Array.isArray(parsedData.activities)) {
-      throw new Error('Formato de resposta inválido - activities não é um array');
-    }
+      clearTimeout(timeoutId);
 
-    if (parsedData.activities.length !== 10) {
-      throw new Error(`IA retornou ${parsedData.activities.length} atividades ao invés de 10`);
-    }
-
-    console.log('✅ 10 atividades geradas com sucesso');
-
-    return new Response(
-      JSON.stringify({ activities: parsedData.activities }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Google Gemini falhou: ${response.status} - ${errorText}`);
       }
-    );
+
+      const data = await response.json();
+      const generatedText = data.candidates[0]?.content?.parts[0]?.text;
+
+      if (!generatedText) {
+        throw new Error('Resposta vazia do Google Gemini');
+      }
+
+      const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+      console.log(`⏱️ [${new Date().toISOString()}] 🎵 Google Gemini respondeu em ${elapsedTime}s`);
+
+      // Parse do JSON
+      let cleanedText = generatedText.trim();
+      if (cleanedText.startsWith('```json')) {
+        cleanedText = cleanedText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      } else if (cleanedText.startsWith('```')) {
+        cleanedText = cleanedText.replace(/```\n?/g, '');
+      }
+      
+      const parsedData = JSON.parse(cleanedText);
+
+      if (!parsedData.activities || !Array.isArray(parsedData.activities)) {
+        throw new Error('Formato de resposta inválido - activities não é um array');
+      }
+
+      if (parsedData.activities.length === 0) {
+        throw new Error('Nenhuma atividade retornada');
+      }
+
+      console.log(`✅ ${parsedData.activities.length} atividades geradas via Google Gemini em ${elapsedTime}s`);
+
+      return new Response(
+        JSON.stringify({ activities: parsedData.activities }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } catch (error: any) {
+      const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+      console.error(`❌ [${new Date().toISOString()}] Ambas APIs falharam após ${elapsedTime}s:`, error.message);
+      throw new Error(`Erro ao gerar atividades: ${error.message}`);
+    }
 
   } catch (error) {
     console.error('❌ Erro:', error);
