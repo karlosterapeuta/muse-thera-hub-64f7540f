@@ -82,13 +82,9 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="relative w-full overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]" />
-      
+    <div className="relative w-full overflow-hidden bg-white">
       {/* Main header container */}
-      <div className="relative w-full backdrop-blur-sm bg-white/95 border-b border-slate-200/60 shadow-sm rounded-none">
+      <div className="relative w-full bg-white border-b border-slate-200/60 shadow-sm rounded-none">
         <div className="w-full px-0 py-2 sm:py-3">
           {/* Header Top Section - Logo + Title + Time */}
           <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0">
@@ -189,9 +185,6 @@ export function DashboardHeader({
           </div>
         </div>
       </div>
-
-      {/* Subtle bottom accent */}
-      <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
     </div>
   );
 }
