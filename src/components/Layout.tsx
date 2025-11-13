@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1 relative gap-0">
+      <div className="flex flex-1 relative gap-0 px-0 mx-0">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="w-full max-w-none pt-0 px-0">
+          <div className="w-full max-w-none pt-0 px-0 mx-0">
             {children || <Outlet />}
           </div>
         </main>

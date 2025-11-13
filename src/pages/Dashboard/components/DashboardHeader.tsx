@@ -85,11 +85,11 @@ export function DashboardHeader({
     <div className="relative w-full overflow-hidden bg-white">
       {/* Main header container */}
       <div className="relative w-full bg-white border-b border-slate-200/60 shadow-sm rounded-none">
-        <div className="w-full pl-0 pr-0 py-2 sm:py-3">
+        <div className="w-full px-0 py-2 sm:py-3">
           {/* Header Top Section - Logo + Title + Time */}
-          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 pl-0 pr-0">
+          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0">
             {/* Left - Logo + Title */}
-            <div className="flex items-center gap-3 sm:gap-4 pl-0">
+            <div className="flex items-center gap-3 sm:gap-4 px-0">
               <LogoRound size="md" className="shadow-lg border border-slate-200/50 w-12 h-12 sm:w-14 sm:h-14" />
               <div className="flex flex-col">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
@@ -103,7 +103,7 @@ export function DashboardHeader({
             </div>
 
             {/* Right - Time + Avatar */}
-            <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-end lg:self-center">
+            <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-end lg:self-center px-0">
               <div className="flex flex-col items-start sm:items-end text-left sm:text-right">
                 <div className="flex items-center gap-2 text-slate-600 mb-1">
                   <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -134,7 +134,7 @@ export function DashboardHeader({
           </div>
 
           {/* Welcome Section */}
-          <div className="mb-6 sm:mb-8 text-center lg:text-left pl-0 pr-0">
+          <div className="mb-6 sm:mb-8 text-center lg:text-left px-0">
             <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-800 mb-2">
               {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}!
             </h2>
@@ -144,7 +144,7 @@ export function DashboardHeader({
           </div>
 
           {/* Quick stats grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 pl-0 pr-0">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 px-0">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
