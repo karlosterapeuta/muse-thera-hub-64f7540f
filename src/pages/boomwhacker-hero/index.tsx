@@ -348,7 +348,7 @@ const BoomwhackerHero: React.FC = () => {
                         )}
                       </p>
                       
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
                         <span>⏱️ {song.youtubeId ? `${Math.floor(song.duration / 60)}min` : `${song.duration}s`}</span>
                         <span>🎵 {song.bpm} BPM</span>
                         <span>🎼 {song.pattern.length} notas</span>
@@ -383,7 +383,7 @@ const BoomwhackerHero: React.FC = () => {
               </div>
               
               {songsToShow.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <Music className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>Nenhuma música encontrada para esta dificuldade</p>
                 </div>
@@ -404,13 +404,13 @@ const BoomwhackerHero: React.FC = () => {
                 <div>
                   <h4 className="font-bold mb-2">🎮 Controles:</h4>
                   <ul className="space-y-1 text-sm">
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">A</kbd> = Nota C (Dó)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">S</kbd> = Nota D (Ré)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">D</kbd> = Nota E (Mi)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">F</kbd> = Nota F (Fá)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">G</kbd> = Nota G (Sol)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">H</kbd> = Nota A (Lá)</li>
-                    <li><kbd className="bg-gray-700 px-2 py-1 rounded">Espaço</kbd> = Pausar/Continuar</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">A</kbd> = Nota C (Dó)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">S</kbd> = Nota D (Ré)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">D</kbd> = Nota E (Mi)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">F</kbd> = Nota F (Fá)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">G</kbd> = Nota G (Sol)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">H</kbd> = Nota A (Lá)</li>
+                    <li><kbd className="bg-muted border border-border px-2 py-1 rounded">Espaço</kbd> = Pausar/Continuar</li>
                   </ul>
                 </div>
                 

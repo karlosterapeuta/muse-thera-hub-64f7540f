@@ -82,13 +82,13 @@ const Lane: React.FC<LaneProps> = ({ laneIndex, color, isPressed, instrumentType
         <div className={`font-bold ${isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'}`}>
           {laneConfig.name}
         </div>
-        <div className={`text-gray-600 ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
+        <div className={`text-muted-foreground ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
           {laneConfig.note}
         </div>
-        <div className={`text-gray-500 ${isMobile ? 'text-[9px]' : isTablet ? 'text-[10px]' : 'text-xs'}`}>
+        <div className={`text-muted-foreground ${isMobile ? 'text-[9px]' : isTablet ? 'text-[10px]' : 'text-xs'}`}>
           {Math.round(laneConfig.frequency)}Hz
         </div>
-        <div className={`font-mono bg-black text-white px-1 rounded ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
+        <div className={`font-mono bg-foreground text-background px-1 rounded ${isMobile ? 'text-[10px]' : isTablet ? 'text-xs' : 'text-xs'}`}>
           {laneIndex + 1}
         </div>
       </div>
