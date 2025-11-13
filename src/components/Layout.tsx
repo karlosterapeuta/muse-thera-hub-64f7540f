@@ -70,7 +70,7 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </>
         )}
-        <main className="flex-1 w-full m-0 px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
+        <main className="flex-1 w-full m-0 px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container lg:-ml-px">
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
