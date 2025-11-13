@@ -22,7 +22,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1 relative gap-0 items-stretch overflow-hidden">
+      <div className="relative flex-1 grid grid-cols-[auto,1fr] gap-0 items-stretch overflow-hidden">
         {isMobile ? (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -64,13 +64,13 @@ export default function Layout({ children }: LayoutProps) {
             </Button>
             
             {isOpen && (
-              <aside className="shrink-0 m-0 p-0">
+              <aside className="shrink-0 m-0 p-0 relative z-10 overflow-hidden">
                 <Sidebar onNavigate={() => setIsOpen(false)} />
               </aside>
             )}
           </>
         )}
-        <main className="flex-1 w-full m-0 px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container lg:-ml-px">
+        <main className="flex-1 w-full m-0 px-0 py-0 bg-background min-h-screen relative overflow-x-hidden overflow-y-auto scroll-container">
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
