@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { globalCacheManager } from "@/utils/cacheManager";
 import InstantAuthChecker from "@/components/auth/InstantAuthChecker";
 import AuthStatusChecker from "@/components/auth/AuthStatusChecker";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -110,6 +111,7 @@ const App = () => {
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+      <PWAInstallPrompt />
       <BrowserRouter>
         <InstantAuthChecker />
         <AuthStatusChecker />
