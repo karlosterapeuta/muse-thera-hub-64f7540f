@@ -80,7 +80,7 @@ export default function Layout({ children }: LayoutProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="fixed top-2 sm:top-4 left-2 sm:left-4 z-50 group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-12 h-12 sm:w-14 sm:h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-110 sm:hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
+              className="fixed top-2 sm:top-4 left-2 sm:left-4 z-[100] group relative overflow-hidden transition-all duration-500 ease-out rounded-full w-12 h-12 sm:w-14 sm:h-14 border-0 bg-gradient-to-br from-primary/90 via-primary to-primary/80 hover:from-primary hover:to-primary/90 shadow-2xl hover:shadow-primary/30 backdrop-blur-xl transform hover:scale-110 sm:hover:scale-125 active:scale-95 hover:rotate-3 hover:-translate-y-1"
             >
               {/* Efeito de brilho animado */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
