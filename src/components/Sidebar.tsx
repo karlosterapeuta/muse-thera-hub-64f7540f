@@ -15,7 +15,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   return (
     <div
       className={cn(
-        "h-full backdrop-blur-md border-r shadow-xl transition-all duration-300 flex flex-col relative overflow-hidden",
+        "h-full backdrop-blur-md border-l shadow-xl transition-all duration-300 flex flex-col relative overflow-hidden",
         "bg-white/95 border-gray-200/50",
         "dark:bg-gray-900/95 dark:border-gray-700/50 dark:shadow-2xl",
         collapsed ? "w-16" : "w-60"
