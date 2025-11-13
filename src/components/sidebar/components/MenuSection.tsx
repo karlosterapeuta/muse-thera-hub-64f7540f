@@ -8,7 +8,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
     <div className="space-y-1">
       {!collapsed && showTitle && (
         <div className="px-3 py-2">
-          <span className="text-xs font-semibold text-slate-500/80 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {title}
           </span>
         </div>
@@ -23,19 +23,19 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
               rel="noopener noreferrer"
               onClick={() => onNavigate?.()}
               className={cn(
-                "group relative flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-95 mx-2 text-slate-700 hover:bg-white/50 hover:shadow-sm hover:text-slate-800",
+                "group relative flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-95 mx-2 text-foreground hover:bg-muted/50 hover:shadow-sm hover:text-foreground",
                 collapsed && "justify-center px-2"
               )}
             >
               <div className="relative transition-all duration-200">
                 <item.icon 
                   size={18} 
-                  className="text-slate-600 group-hover:text-slate-800 transition-all duration-200" 
+                  className="text-muted-foreground group-hover:text-foreground transition-all duration-200" 
                 />
               </div>
               
               {!collapsed && (
-                <span className="font-medium transition-all duration-200 text-sm text-slate-700 group-hover:text-slate-800">
+                <span className="font-medium transition-all duration-200 text-sm text-foreground group-hover:text-foreground">
                   {item.text}
                 </span>
               )}
@@ -43,7 +43,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
               {/* External link indicator */}
               {!collapsed && (
                 <div className="ml-auto">
-                  <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </div>
@@ -63,7 +63,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 collapsed && "justify-center px-2",
                 isActive 
                   ? `bg-gradient-to-r ${item.gradient} text-white shadow-md shadow-${item.gradient.split('-')[1]}-500/25`
-                  : "text-slate-700 hover:bg-white/50 hover:shadow-sm hover:text-slate-800"
+                  : "text-foreground hover:bg-muted/50 hover:shadow-sm hover:text-foreground"
               )
             }
           >
@@ -79,7 +79,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                       "transition-all duration-200",
                       isActive 
                         ? "text-white" 
-                        : "text-slate-600 group-hover:text-slate-800"
+                        : "text-muted-foreground group-hover:text-foreground"
                     )} 
                   />
                 </div>
@@ -90,7 +90,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                       "font-medium transition-all duration-200 text-sm",
                       isActive 
                         ? "text-white" 
-                        : "text-slate-700 group-hover:text-slate-800"
+                        : "text-foreground group-hover:text-foreground"
                     )}>
                       {item.text.includes("em construção") ? (
                         <>

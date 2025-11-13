@@ -46,11 +46,11 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
   };
 
   return (
-    <div className="relative p-3 border-t border-white/20 bg-white/10 backdrop-blur-sm">
+    <div className="relative p-3 border-t border-border/50 bg-muted/20 backdrop-blur-sm">
       <Button
         variant="ghost"
         className={cn(
-          "w-full justify-center text-slate-700 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group",
+          "w-full justify-center text-foreground hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group",
           !collapsed && "justify-start"
         )}
         onClick={handleLogout}
