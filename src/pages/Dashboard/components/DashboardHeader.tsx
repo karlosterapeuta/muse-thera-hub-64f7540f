@@ -89,7 +89,7 @@ export function DashboardHeader({
       
       {/* Main header container */}
       <div className="relative w-full backdrop-blur-sm bg-white/95 rounded-none">
-        <div className="w-full m-0 px-0 py-2 sm:py-3 pr-3 sm:pr-4 md:pr-6 lg:pr-8">
+        <div className="w-full m-0 px-0 py-2 sm:py-3 pr-0">
           {/* Header Top Section - Logo + Title + Time */}
           <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center mb-6 sm:mb-8 px-0">
             {/* Left - Logo + Title */}
