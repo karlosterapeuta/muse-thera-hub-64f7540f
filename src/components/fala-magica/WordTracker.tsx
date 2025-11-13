@@ -141,7 +141,7 @@ const WordTracker = () => {
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center p-6 text-gray-500"
+                className="text-center p-6 text-muted-foreground"
               >
                 <List className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>Adicione palavras para treinar a fala</p>

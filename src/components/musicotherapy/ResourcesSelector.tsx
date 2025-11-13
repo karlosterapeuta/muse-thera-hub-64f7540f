@@ -70,7 +70,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-medium text-gray-700 dark:text-gray-300">
+        <Label className="text-base font-medium text-foreground">
           Recursos Musicoterapêuticos
         </Label>
         <Button
@@ -144,7 +144,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
       {resources.length > 0 && (
         <div className="space-y-2">
           {resources.map((resource, index) => (
-            <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+            <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
               <span className="flex-1 text-sm">{resource}</span>
               <Button
                 type="button"

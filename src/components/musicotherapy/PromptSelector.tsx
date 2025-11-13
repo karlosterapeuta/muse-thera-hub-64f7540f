@@ -36,7 +36,7 @@ export function PromptSelector({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-base font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-base font-medium text-foreground">
           {label}
         </label>
         <Button
@@ -82,7 +82,7 @@ export function PromptSelector({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="min-h-[100px] border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-vertical"
+        className="min-h-[100px] border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-vertical"
       />
     </div>
   );

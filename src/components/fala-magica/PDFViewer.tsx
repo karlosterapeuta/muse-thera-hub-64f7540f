@@ -236,7 +236,7 @@ const PDFViewer = ({ pdf, onPlayWord }: PDFViewerProps) => {
           
           <CardContent className="p-6">
             <div className="flex justify-between mb-6">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 Palavra {currentWordIndex + 1} de {pdf.words.length}
               </div>
               <Button 

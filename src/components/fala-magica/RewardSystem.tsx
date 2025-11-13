@@ -119,7 +119,7 @@ export default function RewardSystem({
               className={`relative border rounded-lg p-3 text-center transition-all ${
                 isUnlocked 
                   ? 'bg-white border-yellow-300 shadow-md' 
-                  : 'bg-gray-100 border-gray-200 opacity-70'
+                  : 'bg-muted border-border opacity-70'
               }`}
             >
               <div className="h-20 flex items-center justify-center mb-2">
@@ -130,13 +130,13 @@ export default function RewardSystem({
                     className="max-h-full max-w-full object-contain" 
                   />
                 ) : (
-                  <div className="bg-gray-200 rounded-full w-12 h-12 flex items-center justify-center">
-                    <Award size={24} className="text-gray-400" />
+                  <div className="bg-muted rounded-full w-12 h-12 flex items-center justify-center">
+                    <Award size={24} className="text-muted-foreground" />
                   </div>
                 )}
               </div>
               
-              <h5 className={`text-sm font-medium mb-1 ${isUnlocked ? 'text-amber-700' : 'text-gray-500'}`}>
+              <h5 className={`text-sm font-medium mb-1 ${isUnlocked ? 'text-amber-700' : 'text-muted-foreground'}`}>
                 {reward.name}
               </h5>
               
@@ -150,7 +150,7 @@ export default function RewardSystem({
                   Ver Recompensa
                 </Button>
               ) : (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   Faltam {reward.requiredPoints - userProgress.totalPoints} pontos
                 </div>
               )}
