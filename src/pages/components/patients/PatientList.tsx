@@ -47,7 +47,7 @@ interface PatientListProps {
 export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis }: PatientListProps) {
   if (patients.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
+      <div className="text-center text-muted-foreground py-8 bg-muted/30 rounded-md">
         Nenhum paciente encontrado.
       </div>
     );
@@ -77,11 +77,11 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
               <TableCell>{patient.contact || "N/A"}</TableCell>
               <TableCell>
                 {patient.has_anamnesis ? (
-                  <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
+                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 border-green-200 dark:border-green-700">
                     Registrada
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-gray-50 text-gray-500 hover:bg-gray-100 border-gray-200">
+                  <Badge variant="outline" className="bg-muted text-muted-foreground hover:bg-muted/80 border-border">
                     Não registrada
                   </Badge>
                 )}
@@ -91,7 +91,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(patient)}
-                  className="text-gray-600 hover:text-primary mr-1"
+                  className="text-muted-foreground hover:text-primary mr-1"
                 >
                   <Pencil className="h-4 w-4 mr-1" />
                   Editar
@@ -103,7 +103,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                       variant="ghost"
                       size="sm"
                       onClick={() => onViewAnamnesis(patient)}
-                      className="text-gray-600 hover:text-blue-600 mr-1"
+                      className="text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 mr-1"
                     >
                       <FileText className="h-4 w-4 mr-1" />
                       Ver Anamnese
@@ -114,7 +114,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                         variant="ghost"
                         size="sm"
                         onClick={() => onEditAnamnesis(patient)}
-                        className="text-gray-600 hover:text-green-600 mr-1"
+                        className="text-muted-foreground hover:text-green-600 dark:hover:text-green-400 mr-1"
                       >
                         <Pencil className="h-4 w-4 mr-1" />
                         Editar Anamnese
@@ -128,7 +128,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="text-gray-600 hover:text-destructive"
+                      className="text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       Excluir

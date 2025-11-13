@@ -39,7 +39,7 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <h3 className="text-lg font-semibold truncate">{patient.name}</h3>
-            <div className="space-y-1 mt-2 text-sm text-gray-600">
+            <div className="space-y-1 mt-2 text-sm text-muted-foreground">
               <p>Idade: {patient.age !== null ? `${patient.age} anos` : "N/A"}</p>
               <p className="truncate">Responsável: {patient.responsible || "N/A"}</p>
               <p className="truncate">Contato: {patient.contact || "N/A"}</p>
@@ -47,18 +47,18 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
           </div>
           <div className="ml-2">
             {patient.has_anamnesis ? (
-              <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200 text-xs whitespace-nowrap">
+              <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 border-green-200 dark:border-green-700 text-xs whitespace-nowrap">
                 Anamnese
               </Badge>
             ) : (
-              <Badge variant="outline" className="bg-gray-50 text-gray-500 hover:bg-gray-100 border-gray-200 text-xs whitespace-nowrap">
+              <Badge variant="outline" className="bg-muted text-muted-foreground hover:bg-muted/80 border-border text-xs whitespace-nowrap">
                 Sem Anamnese
               </Badge>
             )}
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-wrap justify-end gap-1 bg-gray-50 p-2">
+      <CardFooter className="flex flex-wrap justify-end gap-1 bg-muted/30 p-2">
         <Button variant="ghost" size="sm" onClick={onEdit} className="h-8 px-2">
           <Pencil className="h-3.5 w-3.5" />
           <span className="ml-1 text-xs">Editar</span>
