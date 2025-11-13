@@ -554,7 +554,7 @@ export default function AnamnesisFormWrapper({
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Patient Selection */}
-              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
@@ -565,7 +565,7 @@ export default function AnamnesisFormWrapper({
               
               {/* Form Content in Tabs */}
               <ModernTabsNavigation>
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                   <InitialEvaluationForm
                     content={formData}
                     onChange={updateFormData}
