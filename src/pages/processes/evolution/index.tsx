@@ -226,7 +226,7 @@ export default function EvolutionReport() {
                     {/* Subtitle with decorative line */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
-                      <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-700">
+                      <span className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                         Relatório de Evolução MuseTera
                       </span>
                       <div className="hidden sm:block h-1 w-8 sm:w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
@@ -234,7 +234,7 @@ export default function EvolutionReport() {
                   </div>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
+                  <p className="text-muted-foreground text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
                     Sistema profissional para documentação detalhada da evolução do paciente durante sessões de musicoterapia, 
                     registrando progressos, comportamentos e interações terapêuticas de forma estruturada.
                   </p>
@@ -245,15 +245,15 @@ export default function EvolutionReport() {
               <div className="hidden xl:flex flex-col gap-3">
                 <div className="text-right">
                   <div className="text-3xl font-black text-blue-600">+</div>
-                  <div className="text-sm font-semibold text-gray-600">Profissional</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Profissional</div>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-black text-indigo-600">AI</div>
-                  <div className="text-sm font-semibold text-gray-600">Organização</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Organização</div>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-black text-purple-600">PDF</div>
-                  <div className="text-sm font-semibold text-gray-600">Export</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Export</div>
                 </div>
               </div>
             </div>
@@ -315,7 +315,7 @@ export default function EvolutionReport() {
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="patient" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Label htmlFor="patient" className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-blue-600" />
                     Paciente *
                   </Label>
@@ -323,12 +323,12 @@ export default function EvolutionReport() {
                     value={selectedPatient?.id || ""} 
                     onValueChange={handlePatientSelection}
                   >
-                    <SelectTrigger className="h-10 sm:h-12 border-2 border-gray-200 focus:border-blue-500 transition-colors bg-white">
+                    <SelectTrigger className="h-10 sm:h-12 border-2 border-border focus:border-blue-500 transition-colors bg-background">
                       <SelectValue placeholder={isLoadingPatients ? "Carregando..." : "Selecione um paciente"} />
                     </SelectTrigger>
                     <SelectContent className="bg-white border shadow-lg z-50">
                       {patients.map((patient) => (
-                        <SelectItem key={patient.id} value={patient.id} className="hover:bg-gray-50">
+                        <SelectItem key={patient.id} value={patient.id} className="hover:bg-muted/50">
                           {patient.name}
                         </SelectItem>
                       ))}
@@ -336,11 +336,11 @@ export default function EvolutionReport() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Clock className="h-4 w-4 text-green-600" />
                     Data da Sessão
                   </Label>
-                  <div className="h-10 sm:h-12 p-3 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-lg border-2 border-gray-200 flex items-center font-medium text-gray-700 text-sm sm:text-base">
+                  <div className="h-10 sm:h-12 p-3 bg-gradient-to-r from-muted/30 to-blue-50/50 rounded-lg border-2 border-border flex items-center font-medium text-foreground text-sm sm:text-base">
                     {new Date().toLocaleDateString('pt-BR')}
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export default function EvolutionReport() {
                     <CardContent className="space-y-6">
                       {/* Enhanced Quick Options */}
                       <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                           <Target className="h-4 w-4 text-blue-600" />
                           Opções Rápidas:
                         </Label>
@@ -411,7 +411,7 @@ export default function EvolutionReport() {
                                 <div className="p-1 bg-blue-100 group-hover:bg-blue-200 rounded transition-colors flex-shrink-0 mt-0.5">
                                   <CheckCircle className="h-3 w-3 text-blue-600" />
                                 </div>
-                                <span className="text-gray-700 group-hover:text-gray-900 leading-relaxed">
+                                <span className="text-foreground group-hover:text-foreground leading-relaxed">
                                   {option}
                                 </span>
                               </div>
@@ -423,7 +423,7 @@ export default function EvolutionReport() {
                       {/* Enhanced Custom Text Area */}
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <Label htmlFor={section.key} className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <Label htmlFor={section.key} className="text-sm font-semibold text-foreground flex items-center gap-2">
                             <MessageCircle className="h-4 w-4 text-purple-600" />
                             Texto Personalizado:
                           </Label>
@@ -442,7 +442,7 @@ export default function EvolutionReport() {
                           placeholder={section.placeholder}
                           value={formData[section.key as keyof typeof formData] as string || ""}
                           onChange={(e) => updateField(section.key as any, e.target.value)}
-                          className="min-h-[100px] sm:min-h-[120px] resize-y border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-200 rounded-lg text-sm sm:text-base"
+                          className="min-h-[100px] sm:min-h-[120px] resize-y border-2 border-border focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-200 rounded-lg text-sm sm:text-base"
                         />
                       </div>
                     </CardContent>
