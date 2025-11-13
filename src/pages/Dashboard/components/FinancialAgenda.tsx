@@ -13,8 +13,8 @@ interface FinancialAgendaProps {
 export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgendaProps) {
   if (isLoading) {
     return (
-      <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500">
-        <div className="p-0">
+    <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 p-0">
+      <div className="p-0 w-full">
           <div className="flex items-center space-x-3 mb-6 px-0 pt-6">
             <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
               <DollarSign className="h-6 w-6 text-white" />
@@ -37,8 +37,8 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
   const hasData = financialSchedule && Array.isArray(financialSchedule) && financialSchedule.length > 0;
 
   return (
-    <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500">
-      <div className="p-0">
+    <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 p-0">
+      <div className="p-0 w-full">
         <div className="flex items-center justify-between mb-6 px-0 pt-6">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
