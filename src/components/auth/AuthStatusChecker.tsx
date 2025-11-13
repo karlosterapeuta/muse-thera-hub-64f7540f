@@ -52,10 +52,9 @@ export default function AuthStatusChecker() {
           
           // Exibe mensagem de expiração
           toast({
-            title: "⚠️ Acesso Bloqueado - Pagamento Pendente",
-            description: "Seu acesso está suspenso por falta de pagamento. Para continuar usando o MuseTera, regularize sua situação financeira entrando em contato com o administrador ou através da área de pagamentos.",
+            title: "Acesso expirado",
+            description: "Seu período de acesso ao sistema expirou. Entre em contato com o administrador para renovar.",
             variant: "destructive",
-            duration: 8000,
           });
           return;
         }
@@ -96,10 +95,9 @@ export default function AuthStatusChecker() {
           
           // Exibe uma mensagem
           toast({
-            title: "⚠️ Acesso Bloqueado - Pagamento Pendente",
-            description: "Seu acesso está suspenso por falta de pagamento. Para continuar usando o MuseTera, regularize sua situação financeira entrando em contato com o administrador ou através da área de pagamentos.",
+            title: "Sessão encerrada",
+            description: "Sua conta está desativa. Entre em contato com o administrador.",
             variant: "destructive",
-            duration: 8000,
           });
         }
       }

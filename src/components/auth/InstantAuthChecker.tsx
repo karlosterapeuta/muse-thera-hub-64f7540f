@@ -30,10 +30,11 @@ export default function InstantAuthChecker() {
         await supabase.auth.signOut();
         navigate("/login");
         toast({
-          title: "⚠️ Acesso Bloqueado - Pagamento Pendente",
-          description: "Seu acesso está suspenso por falta de pagamento. Para continuar usando o MuseTera, regularize sua situação financeira entrando em contato com o administrador ou através da área de pagamentos.",
+          title: isExpired ? "Acesso expirado" : "Conta desativada",
+          description: isExpired 
+            ? "Seu período de acesso ao sistema expirou. Entre em contato com o administrador para renovar."
+            : "Sua conta foi desativada. Entre em contato com o administrador.",
           variant: "destructive",
-          duration: 8000,
         });
       }
       return;
@@ -64,10 +65,11 @@ export default function InstantAuthChecker() {
         await supabase.auth.signOut();
         navigate("/login");
         toast({
-          title: "⚠️ Acesso Bloqueado - Pagamento Pendente",
-          description: "Seu acesso está suspenso por falta de pagamento. Para continuar usando o MuseTera, regularize sua situação financeira entrando em contato com o administrador ou através da área de pagamentos.",
+          title: isExpired ? "Acesso expirado" : "Conta desativada",
+          description: isExpired 
+            ? "Seu período de acesso ao sistema expirou. Entre em contato com o administrador para renovar."
+            : "Sua conta foi desativada. Entre em contato com o administrador.",
           variant: "destructive",
-          duration: 8000,
         });
       }
       
