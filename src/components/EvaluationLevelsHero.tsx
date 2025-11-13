@@ -12,8 +12,8 @@ const developmentLevels = [
     level: 0,
     name: "Não Observado",
     description: "Habilidade não demonstrada ou não observada durante a avaliação",
-    color: "border-gray-500 bg-gray-50 text-gray-700",
-    circleColor: "bg-gray-500"
+    color: "border-muted-foreground bg-muted/30 text-foreground",
+    circleColor: "bg-muted-foreground"
   },
   {
     level: 1,
@@ -83,10 +83,10 @@ export function EvaluationLevelsHero() {
               <Info className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 leading-tight">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground leading-tight">
                 Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Sistema de 6 níveis com pontuação de 0 a 100 pontos para avaliação musicoterapêutica profissional
               </p>
             </div>
@@ -172,12 +172,12 @@ export function EvaluationLevelsHero() {
             ))}
           </div>
 
-          <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-white/60 rounded-lg border border-gray-200">
-            <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+          <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-card/60 rounded-lg border border-border">
+            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2 text-sm sm:text-base">
               <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />
               Como usar a Escala MuseTera (0-5) - Total de 100 Pontos:
             </h4>
-            <ul className="text-xs sm:text-sm text-gray-700 space-y-2">
+            <ul className="text-xs sm:text-sm text-foreground space-y-2">
               <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada ou observada</li>
               <li className="leading-relaxed">• <strong>1 - Emergente:</strong> 20 pontos (20%) - Primeiros sinais da habilidade, demonstrações esporádicas</li>
               <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> 40 pontos (40%) - Habilidade presente mas com grande variação na qualidade</li>

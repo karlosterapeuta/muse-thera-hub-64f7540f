@@ -114,7 +114,7 @@ export default function NewPasswordForm({ onSuccessCallback }: NewPasswordFormPr
     <form className="mt-8 space-y-6" onSubmit={handleUpdatePassword}>
       <div className="space-y-4">
         <div className="relative">
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="newPassword" className="block text-sm font-medium text-foreground">
             Nova Senha
           </label>
           <div className="relative">
@@ -131,7 +131,7 @@ export default function NewPasswordForm({ onSuccessCallback }: NewPasswordFormPr
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -139,7 +139,7 @@ export default function NewPasswordForm({ onSuccessCallback }: NewPasswordFormPr
         </div>
 
         <div className="relative">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
             Confirmar Senha
           </label>
           <div className="relative">

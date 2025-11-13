@@ -102,7 +102,7 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
     <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
       <div className="space-y-4">
         <div>
-          <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="reset-email" className="block text-sm font-medium text-foreground">
             E-mail
           </label>
           <Input

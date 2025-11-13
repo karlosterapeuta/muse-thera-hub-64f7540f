@@ -15,8 +15,8 @@ export default function AuthHeader({ title, description }: AuthHeaderProps) {
         className="mx-auto h-32 w-32 mb-4"
       />
       <h2 className="text-4xl font-bold text-primary mb-2">MuseTera</h2>
-      <h3 className="text-2xl text-gray-600">{title}</h3>
-      <p className="mt-2 text-lg text-gray-600">{description}</p>
+      <h3 className="text-2xl text-muted-foreground">{title}</h3>
+      <p className="mt-2 text-lg text-muted-foreground">{description}</p>
     </div>
   );
 }
