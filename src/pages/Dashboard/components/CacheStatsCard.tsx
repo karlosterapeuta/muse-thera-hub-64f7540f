@@ -24,8 +24,8 @@ export function CacheStatsCard() {
   const memoryUsagePercent = (stats.memoryUsage / (50 * 1024 * 1024)) * 100; // 50MB max
 
   return (
-    <Card className="h-full border border-slate-200 shadow-lg rounded-xl bg-white hover:shadow-xl transition-all duration-300">
-      <CardHeader className="px-6 py-4 border-b border-slate-100">
+    <Card className="h-full border border-border shadow-lg rounded-xl bg-card hover:shadow-xl transition-all duration-300">
+      <CardHeader className="px-6 py-4 border-b border-border">
         <CardTitle className="flex items-center gap-2 text-lg">
           <HardDrive className="h-5 w-5" />
           Cache do Sistema

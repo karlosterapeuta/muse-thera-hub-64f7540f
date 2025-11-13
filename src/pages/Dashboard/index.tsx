@@ -10,7 +10,7 @@ export default function Dashboard() {
   const data = useDashboardData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 w-full overflow-x-hidden">
       {/* Simplified Header */}
       <DashboardHeader
         totalPatients={data.totalPatients}
