@@ -15,7 +15,7 @@ type CheckboxSectionProps = {
 export function CheckboxSection({ title, fields }: CheckboxSectionProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {fields.map((field) => (
           <div key={field.id} className="flex items-center space-x-2">

@@ -76,7 +76,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       <Card>
         <CardContent className="p-8 text-center">
           <div className="text-destructive mb-4">
-            <h3 className="text-lg font-semibold">Erro ao carregar anamneses</h3>
+            <h3 className="text-lg font-semibold text-foreground">Erro ao carregar anamneses</h3>
             <p className="text-sm text-muted-foreground mt-2">
               {error.message || "Não foi possível carregar as anamneses."}
             </p>
@@ -165,7 +165,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
         <Card>
           <CardContent className="p-8 text-center">
             <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               {anamneses.length === 0 ? "Nenhuma anamnese encontrada" : "Nenhuma anamnese corresponde à busca"}
             </h3>
             <p className="text-muted-foreground mb-4">
