@@ -33,19 +33,22 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('status')
+        .select('status, expires_at')
         .eq('id', result.data.user.id)
         .single();
       
       if (profileError) throw profileError;
       
-      if (profile.status !== 'active') {
+      const isExpired = profile.expires_at ? new Date(profile.expires_at) < new Date() : false;
+      
+      if (profile.status !== 'active' || isExpired) {
         await supabase.auth.signOut();
         
         toast({
-          title: "Acesso negado",
-          description: "Sua conta está desativa. Atualize seu pagamento.",
+          title: "⚠️ Acesso Bloqueado - Pagamento Pendente",
+          description: "Seu acesso está suspenso por falta de pagamento. Para continuar usando o MuseTera, regularize sua situação financeira entrando em contato com o administrador ou através da área de pagamentos.",
           variant: "destructive",
+          duration: 8000,
         });
         return;
       }
