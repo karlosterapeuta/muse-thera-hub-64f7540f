@@ -11,11 +11,21 @@ import { ProfessionalInfo } from "./sidebar/components/ProfessionalInfo";
 import { SidebarNavigation } from "./sidebar/components/SidebarNavigation";
 import { SidebarFooter as CustomFooter } from "./sidebar/components/SidebarFooter";
 import type { SidebarProps } from "./sidebar/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function AppSidebar({ onNavigate }: SidebarProps) {
   const { userEmail, isAdmin, professional, professionalInfo } = useSidebarData();
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
+  const isMobile = useIsMobile();
+
+  const handleNavigate = () => {
+    // Fecha sidebar no mobile após navegação
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+    onNavigate?.();
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -35,14 +45,14 @@ export default function AppSidebar({ onNavigate }: SidebarProps) {
 
         <SidebarNavigation 
           collapsed={collapsed}
-          onNavigate={onNavigate}
+          onNavigate={handleNavigate}
           userEmail={userEmail}
           isAdmin={isAdmin}
         />
       </SidebarContent>
 
       <SidebarFooter className="bg-gradient-to-br from-background via-card/80 to-blue-50/20 dark:to-blue-950/20 backdrop-blur-xl">
-        <CustomFooter collapsed={collapsed} onNavigate={onNavigate} />
+        <CustomFooter collapsed={collapsed} onNavigate={handleNavigate} />
       </SidebarFooter>
     </Sidebar>
   );
