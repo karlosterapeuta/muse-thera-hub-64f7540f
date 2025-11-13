@@ -169,10 +169,10 @@ export default function DevolutivaTea() {
             <Heart className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-foreground">
               Devolutiva Musicoterapia TEA
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Relatório simplificado para famílias de pacientes com TEA
             </p>
           </div>

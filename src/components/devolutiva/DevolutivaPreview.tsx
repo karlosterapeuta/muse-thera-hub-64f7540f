@@ -41,10 +41,10 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
         {/* Header */}
         <div className="text-center mb-8 space-y-2">
           <div className="text-4xl mb-2">🎵</div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-foreground">
             DEVOLUTIVA MUSICOTERAPIA
           </h1>
-          <div className="text-sm text-gray-600 space-y-1">
+          <div className="text-sm text-muted-foreground space-y-1">
             <p><strong>Paciente:</strong> {data.patient_name}</p>
             <p><strong>Data:</strong> {new Date(data.session_date).toLocaleDateString('pt-BR')}</p>
             <p><strong>Sessão #:</strong> {data.session_number}</p>
@@ -60,11 +60,11 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
               <div key={section.title} className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">{section.icon}</span>
-                  <h3 className="text-lg font-semibold text-gray-800">
+                  <h3 className="text-lg font-semibold text-foreground">
                     {section.title}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed pl-8">
+                <p className="text-sm text-foreground leading-relaxed pl-8">
                   {section.content}
                 </p>
               </div>
@@ -76,19 +76,19 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
 
         {/* Footer */}
         <div className="space-y-4">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-foreground">
             <p><strong>Profissional:</strong> {data.professional_name}</p>
             <p><strong>Registro:</strong> {data.professional_registry}</p>
           </div>
-          <div className="pt-8 border-t-2 border-gray-300">
-            <p className="text-sm text-gray-600 text-center">
+          <div className="pt-8 border-t-2 border-border">
+            <p className="text-sm text-muted-foreground text-center">
               Assinatura: _________________________________
             </p>
           </div>
         </div>
 
-        <div className="mt-8 p-4 bg-pink-50 rounded-lg border-2 border-pink-200">
-          <p className="text-xs text-gray-600 text-center italic">
+        <div className="mt-8 p-4 bg-primary/5 rounded-lg border-2 border-primary/20">
+          <p className="text-xs text-muted-foreground text-center italic">
             A música é uma ponte que conecta, desenvolve e transforma. Continuemos juntos nesta jornada! 🎵
           </p>
         </div>
