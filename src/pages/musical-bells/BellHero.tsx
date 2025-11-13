@@ -65,7 +65,7 @@ const BellHero = () => {
           <CardContent className="p-8">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold mb-2">Sinos Musicais</h2>
-              <p className="text-gray-600">Clique nos sinos para ouvir as notas</p>
+              <p className="text-muted-foreground">Clique nos sinos para ouvir as notas</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
@@ -77,7 +77,7 @@ const BellHero = () => {
                 >
                   <div
                     className={`
-                      relative w-20 h-24 rounded-b-full border-4 border-gray-800 
+                      relative w-20 h-24 rounded-b-full border-4 border-gray-800 dark:border-gray-300 
                       flex items-end justify-center pb-2 shadow-lg
                       transition-all duration-200 transform group-hover:scale-110
                       ${activeNote === bell.note ? 'scale-110 shadow-xl' : ''}
@@ -91,11 +91,11 @@ const BellHero = () => {
                     }}
                   >
                     {/* Bell striker */}
-                    <div className="w-3 h-3 bg-gray-800 rounded-full mb-1"></div>
+                    <div className="w-3 h-3 bg-gray-800 dark:bg-gray-300 rounded-full mb-1"></div>
                     
                     {/* Bell top */}
                     <div 
-                      className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-4 rounded-t-full border-2 border-gray-800"
+                      className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-4 rounded-t-full border-2 border-gray-800 dark:border-gray-300"
                       style={{ backgroundColor: bell.color }}
                     ></div>
                   </div>
