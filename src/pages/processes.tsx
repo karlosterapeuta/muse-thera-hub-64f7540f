@@ -24,7 +24,8 @@ export default function Processes() {
       icon: ClipboardList,
       path: "/anamnesis",
       gradient: "from-blue-500 to-cyan-500",
-      bgGradient: "from-blue-50 to-cyan-50"
+      bgGradient: "from-blue-50 to-cyan-50",
+      bgGradientDark: "dark:from-blue-950/30 dark:to-cyan-950/30"
     },
     {
       title: "Avaliação",
@@ -32,7 +33,8 @@ export default function Processes() {
       icon: FileText,
       path: "/evaluation",
       gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50"
+      bgGradient: "from-purple-50 to-pink-50",
+      bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
     },
     {
       title: "Planos Musicoterapêuticos",
@@ -41,6 +43,7 @@ export default function Processes() {
       path: "/musicotherapy-treatment-plans",
       gradient: "from-emerald-500 to-teal-500",
       bgGradient: "from-emerald-50 to-teal-50",
+      bgGradientDark: "dark:from-emerald-950/30 dark:to-teal-950/30",
       isNew: true
     },
     {
@@ -50,6 +53,7 @@ export default function Processes() {
       path: "/intervention",
       gradient: "from-orange-500 to-red-500",
       bgGradient: "from-orange-50 to-red-50",
+      bgGradientDark: "dark:from-orange-950/30 dark:to-red-950/30",
       isNew: true
     },
     {
@@ -58,7 +62,8 @@ export default function Processes() {
       icon: ChartBar,
       path: "/reevaluation",
       gradient: "from-indigo-500 to-purple-500",
-      bgGradient: "from-indigo-50 to-purple-50"
+      bgGradient: "from-indigo-50 to-purple-50",
+      bgGradientDark: "dark:from-indigo-950/30 dark:to-purple-950/30"
     },
     {
       title: "Relatório MuseTera TEA",
@@ -66,7 +71,8 @@ export default function Processes() {
       icon: Music,
       path: "/processes/musicoterapia",
       gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50"
+      bgGradient: "from-purple-50 to-pink-50",
+      bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
     },
     {
       title: "Relatório de Evolução – MuseTera",
@@ -75,6 +81,7 @@ export default function Processes() {
       path: "/processes/evolution",
       gradient: "from-green-500 to-blue-500",
       bgGradient: "from-green-50 to-blue-50",
+      bgGradientDark: "dark:from-green-950/30 dark:to-blue-950/30",
       isNew: true
     },
     {
@@ -84,6 +91,7 @@ export default function Processes() {
       path: "/processes/devolutiva-tea",
       gradient: "from-pink-500 to-rose-500",
       bgGradient: "from-pink-50 to-rose-50",
+      bgGradientDark: "dark:from-pink-950/30 dark:to-rose-950/30",
       isNew: true
     },
   ];
@@ -112,7 +120,7 @@ export default function Processes() {
               key={index}
               className="group block transform transition-all duration-300 hover:scale-105"
             >
-              <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-gradient-to-br ${process.bgGradient} h-full group-hover:bg-gradient-to-r`}>
+              <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-gradient-to-br ${process.bgGradient} ${process.bgGradientDark} h-full group-hover:bg-gradient-to-r`}>
                 {/* NEW Badge */}
                 {process.isNew && (
                   <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-2 py-1 animate-pulse shadow-lg">
@@ -122,7 +130,7 @@ export default function Processes() {
                 
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent transform rotate-12 scale-150"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white dark:via-gray-800 to-transparent transform rotate-12 scale-150"></div>
                 </div>
                 
                 {/* Content */}

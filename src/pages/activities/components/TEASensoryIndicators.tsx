@@ -23,7 +23,7 @@ export function TEASensoryIndicators({ activity, className }: TEASensoryIndicato
   const getSensoryLevelValue = (level: string): number => {
     switch (level) {
       case 'low': case 'minimal': case 'none': return 25;
-      case 'medium': case 'moderate': case 'minimal': return 50;
+      case 'medium': case 'moderate': return 50;
       case 'high': case 'rich': return 75;
       default: return 0;
     }
@@ -32,7 +32,7 @@ export function TEASensoryIndicators({ activity, className }: TEASensoryIndicato
   const getSensoryLevelColor = (level: string): string => {
     switch (level) {
       case 'low': case 'minimal': case 'none': return 'text-green-600';
-      case 'medium': case 'moderate': case 'minimal': return 'text-yellow-600';
+      case 'medium': case 'moderate': return 'text-yellow-600';
       case 'high': case 'rich': return 'text-red-600';
       default: return 'text-gray-400';
     }
@@ -41,7 +41,7 @@ export function TEASensoryIndicators({ activity, className }: TEASensoryIndicato
   const getSensoryLevelBg = (level: string): string => {
     switch (level) {
       case 'low': case 'minimal': case 'none': return 'bg-green-100';
-      case 'medium': case 'moderate': case 'minimal': return 'bg-yellow-100';
+      case 'medium': case 'moderate': return 'bg-yellow-100';
       case 'high': case 'rich': return 'bg-red-100';
       default: return 'bg-gray-100';
     }
