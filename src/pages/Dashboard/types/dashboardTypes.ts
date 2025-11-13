@@ -41,6 +41,7 @@ export type DashboardData = {
   totalPatients: number;
   totalAnamnesis: number;
   totalReports: number;
+  totalInterventions: number;
   financialSchedule: FinancialAgendaItem[];
   isLoading: boolean;
 };

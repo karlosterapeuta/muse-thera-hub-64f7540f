@@ -98,3 +98,31 @@ export const useReportsCount = () => {
     refetchOnWindowFocus: true, // Ativado para recarregar ao focar na janela
   });
 };
+
+export const useInterventionsCount = () => {
+  return useQuery({
+    queryKey: ["interventions-count"],
+    queryFn: async (): Promise<number> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("Usuário não encontrado");
+      }
+
+      const { count, error } = await supabase
+        .from("treatment_plans")
+        .select('*', { count: 'exact', head: true })
+        .eq('professional_id', user.id);
+
+      if (error) {
+        console.error("Erro ao contar intervenções:", error);
+        throw error;
+      }
+
+      console.log("✅ Total de intervenções encontradas:", count);
+      return count || 0;
+    },
+    retry: 1,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: false,
+  });
+};
