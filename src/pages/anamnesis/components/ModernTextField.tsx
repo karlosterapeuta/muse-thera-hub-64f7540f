@@ -24,7 +24,7 @@ export function ModernTextField({
 }: ModernTextFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <Label className="text-sm font-semibold text-gray-700 flex items-center gap-1">
+      <Label className="text-sm font-semibold text-foreground flex items-center gap-1">
         {label}
         {required && <span className="text-red-500">*</span>}
       </Label>
@@ -47,7 +47,7 @@ export function ModernTextField({
       )}
       
       {value.length > 0 && (
-        <div className="text-xs text-gray-500 flex justify-end">
+        <div className="text-xs text-muted-foreground flex justify-end">
           {value.length} caracteres
         </div>
       )}

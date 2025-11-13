@@ -31,7 +31,7 @@ export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeade
           </h1>
         </div>
         
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Avaliação completa do paciente através de uma abordagem musicoterapêutica integral
         </p>
         
@@ -48,7 +48,7 @@ export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeade
               <div className={`p-2 bg-gradient-to-r ${item.color} rounded-full mb-1 transition-transform group-hover:scale-110`}>
                 <item.icon className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xs text-gray-500 font-medium">{item.label}</span>
+              <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
             </div>
           ))}
         </div>

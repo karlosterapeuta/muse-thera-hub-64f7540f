@@ -57,12 +57,12 @@ export function PatientSelect({
         <SelectContent className="z-[9999] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg">
           {!isLoading && hasPatients ? (
             patients.map((patient) => (
-              <SelectItem key={patient.id} value={patient.id} className="text-gray-900 dark:text-gray-100">
+              <SelectItem key={patient.id} value={patient.id} className="text-foreground">
                 {patient.name}
               </SelectItem>
             ))
           ) : !isLoading && (
-            <SelectItem value="no-patients" disabled className="text-gray-500 dark:text-gray-400">
+            <SelectItem value="no-patients" disabled className="text-muted-foreground">
               {emptyMessage}
             </SelectItem>
           )}

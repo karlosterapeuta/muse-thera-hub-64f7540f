@@ -95,7 +95,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Anamneses Salvas</h1>
-          <p className="text-gray-600">Gerencie todas as anamneses dos seus pacientes</p>
+          <p className="text-muted-foreground">Gerencie todas as anamneses dos seus pacientes</p>
         </div>
         <Button onClick={onCreateNew} className="flex items-center gap-2">
           <Plus size={16} />
@@ -105,7 +105,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
         <Input
           placeholder="Buscar por paciente ou demanda..."
           value={searchTerm}
@@ -120,7 +120,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total de Anamneses</p>
+                <p className="text-sm text-muted-foreground">Total de Anamneses</p>
                 <p className="text-2xl font-bold">{anamneses.length}</p>
               </div>
               <FileText className="text-blue-500" size={24} />
@@ -131,7 +131,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Pacientes Únicos</p>
+                <p className="text-sm text-muted-foreground">Pacientes Únicos</p>
                 <p className="text-2xl font-bold">
                   {new Set(anamneses.map(a => a.patient_id)).size}
                 </p>
@@ -144,7 +144,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Esta Semana</p>
+                <p className="text-sm text-muted-foreground">Esta Semana</p>
                 <p className="text-2xl font-bold">
                   {anamneses.filter(a => {
                     const created = new Date(a.created_at);
@@ -164,11 +164,11 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       {filteredAnamneses.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
-            <FileText className="mx-auto mb-4 text-gray-400" size={48} />
+            <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />
             <h3 className="text-lg font-semibold mb-2">
               {anamneses.length === 0 ? "Nenhuma anamnese encontrada" : "Nenhuma anamnese corresponde à busca"}
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               {anamneses.length === 0 
                 ? "Comece criando sua primeira anamnese clicando no botão acima."
                 : "Tente ajustar os termos de busca para encontrar a anamnese desejada."
@@ -202,14 +202,14 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                 <div className="space-y-3">
                   {anamnesis.main_clinical_demand && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Demanda Principal:</p>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm font-medium text-foreground">Demanda Principal:</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {anamnesis.main_clinical_demand}
                       </p>
                     </div>
                   )}
                   
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center gap-1">
                       <Calendar size={12} />
                       Criada: {formatDate(anamnesis.created_at)}
