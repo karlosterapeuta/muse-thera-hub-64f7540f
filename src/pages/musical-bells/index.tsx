@@ -444,9 +444,9 @@ const MusicalBells = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-medium mb-2">Seleção de Música</h3>
+                  <h3 className="font-medium mb-2 text-foreground">Seleção de Música</h3>
                   <select 
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border border-border rounded bg-background text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     value={selectedSong.title}
                     onChange={(e) => {
                       const song = songs.find(s => s.title === e.target.value);
@@ -462,7 +462,7 @@ const MusicalBells = () => {
                 </div>
                 
                 <div>
-                  <h3 className="font-medium mb-2">Controles</h3>
+                  <h3 className="font-medium mb-2 text-foreground">Controles</h3>
                   <div className="flex space-x-2">
                     <Button 
                       onClick={handlePlaySong}
