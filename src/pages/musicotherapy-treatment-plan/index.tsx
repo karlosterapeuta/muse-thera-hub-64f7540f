@@ -186,7 +186,7 @@ export default function MusicotherapyTreatmentPlanPage() {
 
     return (
       <div className="space-y-3">
-        <Label className="text-base font-medium text-gray-700">{label}</Label>
+        <Label className="text-base font-medium text-foreground">{label}</Label>
         <div className="flex gap-2">
           <Input
             value={inputValue}
@@ -202,7 +202,7 @@ export default function MusicotherapyTreatmentPlanPage() {
         {items.length > 0 && (
           <div className="space-y-2">
             {items.map((item, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+              <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
                 <span className="flex-1 text-sm">{item}</span>
                 <Button
                   type="button"
@@ -313,7 +313,7 @@ export default function MusicotherapyTreatmentPlanPage() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {id ? 'Editar' : 'Novo'} Plano Musicoterapêutico
               </h1>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Modelo profissional completo em 10 seções
               </p>
             </div>
@@ -402,7 +402,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                     <div className="space-y-2">
                       <Label>Paciente</Label>
                       {isLoadingPatients ? (
-                        <div className="text-sm text-gray-500">Carregando pacientes...</div>
+                        <div className="text-sm text-muted-foreground">Carregando pacientes...</div>
                       ) : (
                         <Select value={selectedPatient} onValueChange={handlePatientSelect}>
                           <SelectTrigger>
