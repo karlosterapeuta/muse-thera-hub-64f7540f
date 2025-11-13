@@ -16,9 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const isMobile = useIsMobile();
   
-  // Open sidebar by default on desktop for dashboard page
-  const isDashboard = location.pathname === '/dashboard';
-  const [isOpen, setIsOpen] = useState(!isMobile && isDashboard);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
