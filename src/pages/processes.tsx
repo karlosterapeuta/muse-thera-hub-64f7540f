@@ -99,7 +99,7 @@ export default function Processes() {
           <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             Processos Musicoterapêuticos
           </h1>
-          <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Gerencie todo o ciclo terapêutico com ferramentas especializadas para cada etapa do tratamento
           </p>
         </div>
@@ -133,12 +133,12 @@ export default function Processes() {
                   </div>
                   
                   {/* Title */}
-                  <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-3 group-hover:text-gray-900 transition-colors">
+                  <h2 className="text-xl lg:text-2xl font-bold text-foreground mb-3 transition-colors">
                     {process.title}
                   </h2>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-base lg:text-lg leading-relaxed flex-grow mb-4">
+                  <p className="text-muted-foreground text-base lg:text-lg leading-relaxed flex-grow mb-4">
                     {process.description}
                   </p>
                   
@@ -158,7 +158,7 @@ export default function Processes() {
 
         {/* Bottom Section */}
         <div className="mt-16 text-center px-2 sm:px-3">
-          <div className="inline-flex items-center justify-center space-x-2 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
+          <div className="inline-flex items-center justify-center space-x-2 text-sm text-muted-foreground bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>Sistema integrado de gestão musicoterapêutica</span>
           </div>
