@@ -137,7 +137,7 @@ export default function AudioGuide({ audio, onComplete }: AudioGuideProps) {
         
         <div>
           <h3 className="text-xl font-bold text-purple-700">{audio.title}</h3>
-          <p className="text-sm text-gray-600">{audio.description}</p>
+          <p className="text-sm text-muted-foreground">{audio.description}</p>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">
               {audio.voiceType}
@@ -156,8 +156,8 @@ export default function AudioGuide({ audio, onComplete }: AudioGuideProps) {
       
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">{formatTime(currentTime)}</span>
-          <span className="text-sm text-gray-600">{formatTime(duration)}</span>
+          <span className="text-sm text-muted-foreground">{formatTime(currentTime)}</span>
+          <span className="text-sm text-muted-foreground">{formatTime(duration)}</span>
         </div>
         
         <Progress value={(currentTime / duration) * 100} className="h-2 mb-2" />

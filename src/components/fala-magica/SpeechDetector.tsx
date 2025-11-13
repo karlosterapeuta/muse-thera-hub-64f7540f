@@ -464,7 +464,7 @@ export default function SpeechDetector({
                 ? soundDetected 
                   ? 'bg-green-500' 
                   : 'bg-purple-500' 
-                : 'bg-gray-200'
+                : 'bg-muted'
             }`}
             animate={isListening ? {
               scale: soundDetected ? [1, 1.2, 1] : [1, 1.1, 1],
@@ -485,7 +485,7 @@ export default function SpeechDetector({
                   ? soundDetected 
                     ? 'text-white hover:bg-green-600' 
                     : 'text-white hover:bg-purple-600' 
-                  : 'text-gray-500 hover:bg-gray-300'
+                  : 'text-muted-foreground hover:bg-muted'
               }`}
             >
               {isListening ? <MicOff size={48} /> : <Mic size={48} />}
@@ -532,7 +532,7 @@ export default function SpeechDetector({
               )}
             </div>
             
-            <div className="relative w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className={getVolumeStyles(volume)}
                 style={{
@@ -548,7 +548,7 @@ export default function SpeechDetector({
               />
             </div>
             
-            <div className="w-full flex justify-between text-xs text-gray-500">
+            <div className="w-full flex justify-between text-xs text-muted-foreground">
               <span>Baixo</span>
               <span>Médio</span>
               <span>Alto</span>

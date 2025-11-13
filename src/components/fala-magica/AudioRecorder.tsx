@@ -83,7 +83,7 @@ export default function AudioRecorder({ onSave, maxDuration = 300 }: AudioRecord
   return (
     <div className="p-4 border rounded-lg bg-white shadow-sm space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-muted-foreground">
           Tempo: {formatTime(duration)} / {formatTime(maxDuration)}
         </span>
         <Progress 

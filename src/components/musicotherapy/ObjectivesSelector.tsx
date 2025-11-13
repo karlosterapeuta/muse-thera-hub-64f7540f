@@ -66,7 +66,7 @@ export function ObjectivesSelector({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-medium text-gray-700 dark:text-gray-300">
+        <Label className="text-base font-medium text-foreground">
           {label}
         </Label>
         <Button
@@ -123,7 +123,7 @@ export function ObjectivesSelector({
       {objectives.length > 0 && (
         <div className="space-y-2">
           {objectives.map((objective, index) => (
-            <div key={index} className="flex items-start gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div key={index} className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
               <span className="flex-1 text-sm">{objective}</span>
               <Button
                 type="button"

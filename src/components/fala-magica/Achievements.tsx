@@ -42,25 +42,25 @@ const Achievements = ({ achievements }: AchievementsProps) => {
               className={`p-4 rounded-lg ${
                 achievement.unlocked 
                   ? 'bg-gradient-to-r from-purple-50 to-indigo-50' 
-                  : 'bg-gray-50'
+                  : 'bg-muted/50'
               }`}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-start space-x-3">
                 <div className={`p-2 rounded-full ${
-                  achievement.unlocked ? 'bg-white' : 'bg-gray-100'
+                  achievement.unlocked ? 'bg-white' : 'bg-muted'
                 }`}>
                   {getIcon(achievement.icon)}
                 </div>
                 <div>
                   <h4 className={`font-medium ${
-                    achievement.unlocked ? 'text-purple-700' : 'text-gray-500'
+                    achievement.unlocked ? 'text-purple-700' : 'text-muted-foreground'
                   }`}>
                     {achievement.title}
                   </h4>
                   <p className={`text-sm ${
-                    achievement.unlocked ? 'text-purple-600' : 'text-gray-400'
+                    achievement.unlocked ? 'text-purple-600' : 'text-muted-foreground/70'
                   }`}>
                     {achievement.description}
                   </p>
