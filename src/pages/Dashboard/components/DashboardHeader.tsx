@@ -148,13 +148,13 @@ export function DashboardHeader({
           </div>
 
           {/* Quick stats grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-0">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 px-0">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div
                   key={stat.label}
-                  className="group relative overflow-hidden rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+                  className="group relative overflow-hidden rounded-none bg-white border-0 shadow-none transition-all duration-300"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   <div className="p-3 sm:p-4 lg:p-5">
@@ -182,7 +182,7 @@ export function DashboardHeader({
                   </div>
                   
                   {/* Subtle hover effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-xl`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-none`} />
                 </div>
               );
             })}
