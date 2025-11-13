@@ -16,25 +16,25 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
     <nav className="relative flex-1 py-4 space-y-4 overflow-y-auto">
       <MenuSection title="Principal" items={mainMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-white/20"></div>
+      <div className="mx-4 border-t border-border/50"></div>
       
       <MenuSection title="Clínico" items={clinicalMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-white/20"></div>
+      <div className="mx-4 border-t border-border/50"></div>
       
       <MenuSection title="Jogos Musicais" items={musicalGamesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-white/20"></div>
+      <div className="mx-4 border-t border-border/50"></div>
       
       <MenuSection title="Ferramentas" items={toolsMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-white/20"></div>
+      <div className="mx-4 border-t border-border/50"></div>
       
       <MenuSection title="Gestão" items={managementMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
       {adminMenuItems.length > 0 && (
         <>
-          <div className="mx-4 border-t border-white/20"></div>
+          <div className="mx-4 border-t border-border/50"></div>
           <MenuSection title="Administração" items={adminMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
         </>
       )}
