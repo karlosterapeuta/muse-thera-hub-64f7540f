@@ -1,13 +1,14 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { FileText, UserCheck, Plus, ClipboardList } from "lucide-react";
+import { FileText, UserCheck, Plus, ClipboardList, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardStatsProps {
   totalPatients: number;
   totalReports: number;
   totalAnamnesis: number;
+  totalInterventions: number;
   isLoading: boolean;
 }
 
@@ -15,12 +16,14 @@ export function DashboardStats({
   totalPatients,
   totalReports,
   totalAnamnesis,
+  totalInterventions,
   isLoading
 }: DashboardStatsProps) {
   console.log("🎯 DashboardStats recebeu os dados:", {
     totalPatients,
     totalReports,
     totalAnamnesis,
+    totalInterventions,
     isLoading
   });
 
@@ -42,6 +45,15 @@ export function DashboardStats({
       gradient: "from-blue-500 via-blue-600 to-indigo-700",
       actionText: totalAnamnesis === 0 ? "Realizar Primeira Anamnese" : `${totalAnamnesis} anamneses registradas`,
       isEmpty: totalAnamnesis === 0
+    },
+    {
+      title: "Intervenções Criadas",
+      value: totalInterventions || 0,
+      subtitle: "Planos terapêuticos",
+      icon: Target,
+      gradient: "from-amber-500 via-orange-600 to-red-700",
+      actionText: totalInterventions === 0 ? "Criar Primeira Intervenção" : `${totalInterventions} planos ativos`,
+      isEmpty: totalInterventions === 0
     },
     {
       title: "Relatórios Gerados",

@@ -6,13 +6,14 @@ import { getWeekSessions, SessionData } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
 import { createWeekStructure, organizeSessionsByDay, addFinancialDataToDays } from "../utils/weekDataProcessor";
 import { calculateStatistics } from "../utils/statisticsCalculator";
-import { usePatientsCount, useAnamnesisCount, useReportsCount } from "@/hooks/useDashboardCounts";
+import { usePatientsCount, useAnamnesisCount, useReportsCount, useInterventionsCount } from "@/hooks/useDashboardCounts";
 
 export const useDashboardData = (): DashboardData => {
   // Use individual hooks for counts to leverage React Query caching
   const { data: totalPatients = 0, isLoading: isLoadingPatients } = usePatientsCount();
   const { data: totalAnamnesis = 0, isLoading: isLoadingAnamnesis } = useAnamnesisCount();
   const { data: totalReports = 0, isLoading: isLoadingReports } = useReportsCount();
+  const { data: totalInterventions = 0, isLoading: isLoadingInterventions } = useInterventionsCount();
 
   const { data: dashboardData, isLoading: isLoadingDashboard } = useQuery({
     queryKey: ["dashboard-data"],
@@ -80,7 +81,7 @@ export const useDashboardData = (): DashboardData => {
     refetchOnWindowFocus: false,
   });
 
-  const isLoading = isLoadingPatients || isLoadingAnamnesis || isLoadingReports || isLoadingDashboard;
+  const isLoading = isLoadingPatients || isLoadingAnamnesis || isLoadingReports || isLoadingInterventions || isLoadingDashboard;
 
   return {
     ...dashboardData,

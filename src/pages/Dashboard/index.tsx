@@ -27,6 +27,7 @@ export default function Dashboard() {
             totalPatients={data.totalPatients}
             totalReports={data.totalReports}
             totalAnamnesis={data.totalAnamnesis}
+            totalInterventions={data.totalInterventions}
             isLoading={data.isLoading}
           />
         </div>
