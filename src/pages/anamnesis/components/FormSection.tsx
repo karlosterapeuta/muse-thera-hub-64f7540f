@@ -18,7 +18,7 @@ type FormSectionProps = {
 export function FormSection({ title, fields }: FormSectionProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold pt-4">{title}</h3>
+      <h3 className="text-lg font-semibold text-foreground pt-4">{title}</h3>
       {fields.map((field) => (
         <div key={field.key} className="space-y-2">
           <Label htmlFor={field.key}>{field.label}</Label>
