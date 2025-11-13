@@ -157,7 +157,7 @@ export function DashboardHeader({
                   className="group relative overflow-hidden rounded-none bg-white border-0 shadow-none transition-all duration-300"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  <div className="p-3 sm:p-4 lg:p-5">
+                  <div className="p-0">
                     <div className="flex items-center justify-between mb-3 sm:mb-4">
                       <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-r ${stat.color} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
                         <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
