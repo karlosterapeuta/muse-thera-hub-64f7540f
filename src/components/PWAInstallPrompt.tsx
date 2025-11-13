@@ -26,49 +26,73 @@ export const PWAInstallPrompt = () => {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Detectar iOS
+    console.log('[PWA InstallPrompt] Componente montado');
+    
+    // Detectar iOS e Android
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    const isChrome = /Chrome/.test(navigator.userAgent);
     setIsIOS(iOS);
     
-    // Verificar se já está instalado
-    const standalone = window.matchMedia('(display-mode: standalone)').matches;
+    // Verificar se já está instalado (múltiplas formas)
+    const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                      (window.navigator as any).standalone === true ||
+                      document.referrer.includes('android-app://');
     setIsStandalone(standalone);
 
-    console.log('[PWA] Configuração inicial:', {
+    console.log('[PWA InstallPrompt] Detecção de plataforma:', {
       iOS,
+      isAndroid,
+      isChrome,
       standalone,
       userAgent: navigator.userAgent,
-      displayMode: window.matchMedia('(display-mode: standalone)').matches
+      displayMode: window.matchMedia('(display-mode: standalone)').matches,
+      navigatorStandalone: (window.navigator as any).standalone
     });
+
+    // Se já está instalado, não mostrar
+    if (standalone) {
+      console.log('[PWA InstallPrompt] App já instalado, não mostrando prompt');
+      return;
+    }
 
     // Capturar evento beforeinstallprompt
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      console.log('[PWA] beforeinstallprompt capturado!', e);
+      console.log('[PWA InstallPrompt] beforeinstallprompt capturado!', e);
       e.preventDefault();
       setDeferredPrompt(e);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Mostrar popup após 2 segundos (SEMPRE, para debug)
+    // Verificar se beforeinstallprompt já foi disparado
+    setTimeout(() => {
+      console.log('[PWA InstallPrompt] Verificando deferredPrompt após 1s:', !!deferredPrompt);
+    }, 1000);
+
+    // Mostrar popup após 3 segundos
     const timer = setTimeout(() => {
-      console.log('[PWA] Timer de 2s disparado');
-      console.log('[PWA] Estado atual:', {
+      console.log('[PWA InstallPrompt] Timer de 3s disparado');
+      console.log('[PWA InstallPrompt] Estado atual:', {
         standalone,
         iOS,
+        isAndroid,
+        isChrome,
         deferredPromptExists: !!deferredPrompt
       });
       
-      // SEMPRE mostrar o prompt para debug
-      setShowPrompt(true);
-      console.log('[PWA] Popup configurado para aparecer!');
-    }, 2000);
+      // Mostrar prompt se não estiver instalado
+      if (!standalone) {
+        setShowPrompt(true);
+        console.log('[PWA InstallPrompt] Popup configurado para aparecer!');
+      }
+    }, 3000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       clearTimeout(timer);
     };
-  }, [deferredPrompt]);
+  }, []);
 
   const handleInstallClick = async () => {
     console.log('[PWA] Botão de instalação clicado');

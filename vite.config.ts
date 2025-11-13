@@ -17,37 +17,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-original.png', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'Musetera - Terapia Musical',
-        short_name: 'Musetera',
-        description: 'Plataforma de terapia musical para bem-estar e relaxamento',
-        theme_color: '#4A90E2',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: '/icon-original.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/icon-original.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/apple-touch-icon.png',
-            sizes: '180x180',
-            type: 'image/png'
-          }
-        ]
-      },
+      includeAssets: ['icon-original.png', 'apple-touch-icon.png', 'manifest.json'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
