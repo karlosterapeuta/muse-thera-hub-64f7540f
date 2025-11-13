@@ -33,14 +33,14 @@ export function ProfessionalCredentialsCard({
     <Card className="hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl">
-          <Award className="h-5 w-5 text-purple-600" />
+          <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           Credenciais Profissionais
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="specialty" className="flex items-center gap-2 text-sm font-medium">
-            <Award className="h-4 w-4 text-gray-500" />
+            <Award className="h-4 w-4 text-muted-foreground" />
             Especialidade
           </Label>
           <Input
@@ -48,14 +48,14 @@ export function ProfessionalCredentialsCard({
             value={formData.specialty}
             onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
             disabled={!isEditing}
-            className={isEditing ? "border-purple-200 focus:border-purple-500" : "bg-gray-50"}
+            className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
             placeholder="Ex: Musicoterapia Neurológica"
           />
         </div>
 
         <div className="space-y-4">
           <Label className="flex items-center gap-2 text-sm font-medium">
-            <Building className="h-4 w-4 text-gray-500" />
+            <Building className="h-4 w-4 text-muted-foreground" />
             Associação Profissional
           </Label>
           
@@ -64,7 +64,7 @@ export function ProfessionalCredentialsCard({
             value={formData.association}
             onValueChange={(value) => setFormData({ ...formData, association: value })}
           >
-            <SelectTrigger className={isEditing ? "border-purple-200 focus:border-purple-500" : "bg-gray-50"}>
+            <SelectTrigger className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}>
               <SelectValue placeholder="Selecione uma associação" />
             </SelectTrigger>
             <SelectContent className="max-h-60">
@@ -78,7 +78,7 @@ export function ProfessionalCredentialsCard({
 
           <div className="space-y-2">
             <Label htmlFor="register" className="flex items-center gap-2 text-sm font-medium">
-              <FileText className="h-4 w-4 text-gray-500" />
+              <FileText className="h-4 w-4 text-muted-foreground" />
               Número de Registro
             </Label>
             <Input
@@ -86,22 +86,22 @@ export function ProfessionalCredentialsCard({
               value={formData.register}
               onChange={(e) => setFormData({ ...formData, register: e.target.value })}
               disabled={!isEditing}
-              className={isEditing ? "border-purple-200 focus:border-purple-500" : "bg-gray-50"}
+              className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
               placeholder="Informe seu número de registro"
             />
           </div>
 
           {formData.association && formData.register && !isEditing && (
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-700">
               <div className="flex items-center gap-2 mb-2">
-                <Award className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Credenciais Verificadas</span>
+                <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-medium text-green-800 dark:text-green-300">Credenciais Verificadas</span>
               </div>
               <div className="space-y-1">
-                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600">
                   {formData.association.split('(')[0].trim()}
                 </Badge>
-                <p className="text-xs text-green-700">Registro: {formData.register}</p>
+                <p className="text-xs text-green-700 dark:text-green-400">Registro: {formData.register}</p>
               </div>
             </div>
           )}
