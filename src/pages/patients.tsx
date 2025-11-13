@@ -151,26 +151,26 @@ export default function PatientsPage() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Pacientes
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Gerencie seus pacientes com facilidade e organize todo o processo terapêutico
             </p>
           </div>
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
-          <CardHeader className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 border-b border-gray-100">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent"></div>
+        <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
+          <CardHeader className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 border-b border-border">
+            <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent"></div>
             <div className="relative flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0">
               <div className="flex items-center space-x-4">
                 <div className="p-3 bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-lg">
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                  <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
                     Gerenciar Pacientes
                   </CardTitle>
-                  <CardDescription className="text-base md:text-lg text-gray-600">
+                  <CardDescription className="text-base md:text-lg text-muted-foreground">
                     Organize e acompanhe seus pacientes
                   </CardDescription>
                 </div>
@@ -192,14 +192,14 @@ export default function PatientsPage() {
             <div className="mb-8">
               <div className="relative max-w-md mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-xl rounded-2xl"></div>
-                <div className="relative flex items-center bg-white/90 backdrop-blur-sm border-2 border-gray-100 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-primary/30">
-                  <Search className="h-5 w-5 text-gray-400 mr-3" />
+                <div className="relative flex items-center bg-background/90 backdrop-blur-sm border-2 border-border rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-primary/30">
+                  <Search className="h-5 w-5 text-muted-foreground mr-3" />
                   <Input
                     type="search"
                     placeholder="Buscar paciente por nome ou responsável..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 placeholder-gray-400 text-base"
+                    className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground text-base"
                   />
                 </div>
               </div>
@@ -213,8 +213,8 @@ export default function PatientsPage() {
                   <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/30 border-t-primary shadow-lg"></div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-gray-700">Carregando pacientes...</h3>
-                  <p className="text-gray-500">Aguarde um momento</p>
+                  <h3 className="text-xl font-semibold text-foreground">Carregando pacientes...</h3>
+                  <p className="text-muted-foreground">Aguarde um momento</p>
                 </div>
               </div>
             ) : (
@@ -239,18 +239,18 @@ export default function PatientsPage() {
                       ))
                     ) : (
                       <div className="text-center py-16 space-y-6">
-                        <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto">
-                          <Users className="h-12 w-12 text-gray-400" />
+                        <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mx-auto">
+                          <Users className="h-12 w-12 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="text-xl font-semibold text-gray-600">Nenhum paciente encontrado</h3>
-                          <p className="text-gray-500">Comece adicionando seu primeiro paciente</p>
+                          <h3 className="text-xl font-semibold text-foreground">Nenhum paciente encontrado</h3>
+                          <p className="text-muted-foreground">Comece adicionando seu primeiro paciente</p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-100 overflow-hidden shadow-lg">
+                  <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border overflow-hidden shadow-lg">
                     <PatientList
                       patients={filteredPatients}
                       onEdit={handleEditClick}
@@ -265,7 +265,7 @@ export default function PatientsPage() {
           </CardContent>
 
           {/* Footer */}
-          <CardFooter className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-t border-gray-100 p-6">
+          <CardFooter className="bg-gradient-to-r from-muted/30 to-muted/50 border-t border-border p-6">
             <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -280,8 +280,8 @@ export default function PatientsPage() {
                 </AlertDialogTrigger>
                 <AlertDialogContent className="border-0 shadow-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-xl font-bold text-gray-800">Tem certeza?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-600 text-base">
+                    <AlertDialogTitle className="text-xl font-bold text-foreground">Tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-muted-foreground text-base">
                       Esta ação irá excluir todos os pacientes permanentemente e não
                       poderá ser desfeita.
                     </AlertDialogDescription>
@@ -298,7 +298,7 @@ export default function PatientsPage() {
                 </AlertDialogContent>
               </AlertDialog>
               
-              <div className="flex items-center space-x-3 text-gray-600">
+              <div className="flex items-center space-x-3 text-muted-foreground">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-gradient-to-r from-primary to-purple-600 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium">
@@ -317,7 +317,7 @@ export default function PatientsPage() {
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 Adicionar Paciente
               </DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-muted-foreground">
                 Crie um novo paciente para iniciar o processo terapêutico.
               </DialogDescription>
             </DialogHeader>
@@ -333,7 +333,7 @@ export default function PatientsPage() {
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 Editar Paciente
               </DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-muted-foreground">
                 Atualize as informações do paciente.
               </DialogDescription>
             </DialogHeader>
@@ -355,7 +355,7 @@ export default function PatientsPage() {
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 Anamnese
               </DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-muted-foreground">
                 Visualize a anamnese do paciente.
               </DialogDescription>
             </DialogHeader>
