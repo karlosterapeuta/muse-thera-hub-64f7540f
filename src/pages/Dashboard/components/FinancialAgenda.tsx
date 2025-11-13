@@ -83,7 +83,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
                       }
                     </p>
                     {record.description && record.description.trim() && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                         {record.description}
                       </p>
                     )}

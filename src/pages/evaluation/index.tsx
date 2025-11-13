@@ -735,7 +735,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 font-medium">
+          <p className="text-lg sm:text-xl text-muted-foreground font-medium">
             Instrumento de Avaliação Musicoterapêutica Profissional
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
@@ -765,7 +765,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-700">Data da Avaliação</label>
+                <label className="text-sm font-semibold text-foreground">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button

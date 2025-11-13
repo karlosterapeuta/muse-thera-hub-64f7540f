@@ -18,7 +18,7 @@ interface EnhancedSessionChartProps {
 export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSessionChartProps) {
   if (isLoading) {
     return (
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
@@ -29,7 +29,7 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
           <div className="flex items-center justify-center h-64">
             <div className="space-y-4 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-              <p className="text-gray-500">Carregando dados do gráfico...</p>
+              <p className="text-muted-foreground">Carregando dados do gráfico...</p>
             </div>
           </div>
         </CardContent>
@@ -49,7 +49,7 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
   ];
 
   return (
-    <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
+    <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
@@ -67,11 +67,11 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
       <CardContent>
         {totalSessions === 0 ? (
           <div className="flex flex-col items-center justify-center h-64">
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-full p-6 mb-6">
-              <Calendar className="h-12 w-12 text-blue-600" />
+            <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full p-6 mb-6">
+              <Calendar className="h-12 w-12 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Comece sua jornada!</h3>
-            <p className="text-gray-500 text-center mb-6 max-w-md leading-relaxed">
+            <h3 className="text-xl font-semibold text-foreground mb-3">Comece sua jornada!</h3>
+            <p className="text-muted-foreground text-center mb-6 max-w-md leading-relaxed">
               Ainda não há sessões registradas. Agende seu primeiro atendimento para começar a acompanhar sua evolução profissional.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -92,11 +92,11 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
               <XAxis 
                 dataKey="name" 
                 className="text-sm"
-                tick={{ fill: '#6B7280' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
               />
               <YAxis 
                 className="text-sm"
-                tick={{ fill: '#6B7280' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
               />
               <Tooltip 
                 contentStyle={{
