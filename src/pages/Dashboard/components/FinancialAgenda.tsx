@@ -14,8 +14,8 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
   if (isLoading) {
     return (
       <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500">
-        <div className="p-6 md:p-8">
-          <div className="flex items-center space-x-3 mb-6">
+        <div className="p-0">
+          <div className="flex items-center space-x-3 mb-6 px-4 sm:px-6 pt-6">
             <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
               <DollarSign className="h-6 w-6 text-white" />
             </div>
@@ -23,7 +23,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
               Agenda Financeira
             </h3>
           </div>
-          <div className="flex items-center justify-center h-32">
+          <div className="flex items-center justify-center h-32 px-4 sm:px-6 pb-6">
             <div className="space-y-4 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
               <p className="text-gray-500">Carregando registros financeiros...</p>
@@ -38,8 +38,8 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
 
   return (
     <Card className="border-0 shadow-none rounded-none bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500">
-      <div className="p-6 md:p-8">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-0">
+        <div className="flex items-center justify-between mb-6 px-4 sm:px-6 pt-6">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
               <DollarSign className="h-6 w-6 text-white" />
@@ -55,7 +55,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
         </div>
         
         {hasData ? (
-          <div className="space-y-4">
+          <div className="space-y-4 px-4 sm:px-6 pb-6">
             {financialSchedule.slice(0, 8).map((record, index) => (
               <div
                 key={record.id}
@@ -110,7 +110,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
             )}
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16 px-4 sm:px-6">
             <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <DollarSign className="h-10 w-10 text-green-500" />
             </div>

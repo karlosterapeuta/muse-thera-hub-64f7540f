@@ -25,7 +25,7 @@ export function CacheStatsCard() {
 
   return (
     <Card className="h-full border-0 shadow-none rounded-none">
-      <CardHeader className="pb-3">
+      <CardHeader className="p-4">
         <CardTitle className="flex items-center gap-2 text-lg">
           <HardDrive className="h-5 w-5" />
           Cache do Sistema
@@ -34,7 +34,7 @@ export function CacheStatsCard() {
           Monitoramento automático de memória
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 pt-0">
         {/* Memory Usage */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">

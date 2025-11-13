@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50">
             <ThemeToggle />
           </div>
-          <div className="w-full max-w-none pt-0">
+          <div className="w-full max-w-none pt-0 px-0">
             {children || <Outlet />}
           </div>
         </main>
