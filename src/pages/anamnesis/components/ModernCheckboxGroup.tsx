@@ -23,7 +23,7 @@ export function ModernCheckboxGroup({
 }: ModernCheckboxGroupProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
         {title}
       </h3>
       
@@ -34,7 +34,7 @@ export function ModernCheckboxGroup({
             className={`p-4 border-2 transition-all duration-200 hover:shadow-md cursor-pointer ${
               field.checked 
                 ? 'border-primary bg-primary/5 shadow-sm' 
-                : 'border-gray-200 hover:border-gray-300'
+                : 'border-border hover:border-muted-foreground'
             }`}
             onClick={() => field.onChange(!field.checked)}
           >

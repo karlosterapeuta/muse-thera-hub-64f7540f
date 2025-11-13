@@ -282,10 +282,10 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
       
       return (
         <div key={index} className="mb-4">
-          <h3 className="text-md font-semibold text-gray-700 mb-2">{section.title}</h3>
-          <div className="bg-gray-50 p-3 rounded-md">
+          <h3 className="text-md font-semibold text-foreground mb-2">{section.title}</h3>
+          <div className="bg-muted/50 p-3 rounded-md">
             {selectedFields.map((field, idx) => (
-              <span key={idx} className="inline-flex items-center mr-2 mb-2 px-2 py-1 bg-white border border-gray-200 rounded-md text-sm">
+              <span key={idx} className="inline-flex items-center mr-2 mb-2 px-2 py-1 bg-background border border-border rounded-md text-sm">
                 {field.label}
               </span>
             ))}
@@ -314,8 +314,8 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
       
       return (
         <div key={index} className="mb-4">
-          <h3 className="text-md font-semibold text-gray-700 mb-1">{field.label}</h3>
-          <div className="bg-gray-50 p-3 rounded-md text-sm">{anamnesis[field.key]}</div>
+          <h3 className="text-md font-semibold text-foreground mb-1">{field.label}</h3>
+          <div className="bg-muted/50 p-3 rounded-md text-sm">{anamnesis[field.key]}</div>
         </div>
       );
     });

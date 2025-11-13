@@ -51,7 +51,7 @@ export function ModernActionButtons({
             variant="secondary"
             onClick={onSave}
             disabled={isSaving}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 dark:from-gray-600 dark:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 text-white transition-all duration-200"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

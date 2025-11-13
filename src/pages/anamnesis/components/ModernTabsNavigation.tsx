@@ -87,7 +87,7 @@ export function ModernTabsNavigation({
                 </div>
                 <div className="text-center">
                   <div className="font-semibold text-sm">{tab.label}</div>
-                  <div className="text-xs text-gray-500 mt-1 hidden md:block">
+                  <div className="text-xs text-muted-foreground mt-1 hidden md:block">
                     {tab.description}
                   </div>
                 </div>
