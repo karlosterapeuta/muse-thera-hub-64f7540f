@@ -83,13 +83,13 @@ export default function InviteCodes() {
   const getStatusColor = (status: InviteCode["status"]) => {
     switch (status) {
       case "unused":
-        return "text-green-600";
+        return "text-green-600 dark:text-green-400";
       case "used":
         return "text-blue-600";
       case "expired":
         return "text-red-600";
       default:
-        return "text-gray-600";
+        return "text-muted-foreground";
     }
   };
 
@@ -109,13 +109,13 @@ export default function InviteCodes() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Códigos de Convite</h1>
+        <h1 className="text-2xl font-bold text-foreground">Códigos de Convite</h1>
         <Button onClick={generateCode} disabled={isGenerating}>
           {isGenerating ? "Gerando..." : "Gerar Novo Código"}
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-card rounded-lg shadow overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
