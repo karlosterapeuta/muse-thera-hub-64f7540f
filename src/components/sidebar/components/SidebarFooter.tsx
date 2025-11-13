@@ -23,6 +23,15 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
       localStorage.clear();
       sessionStorage.clear();
       
+      // Unregister service worker to prevent cached content on next login
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+          console.log('[PWA] Service Worker desregistrado no logout');
+        }
+      }
+      
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
       
@@ -35,13 +44,15 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
       // Call onNavigate if provided
       onNavigate?.();
       
-      // Force redirect to login page
-      window.location.replace('/login');
+      // Force complete reload to clear all cache
+      window.location.href = '/login';
+      window.location.reload();
     } catch (error) {
       console.error("Erro durante o logout:", error);
-      // Even if there's an error, redirect to login
+      // Even if there's an error, redirect to login with reload
       onNavigate?.();
-      window.location.replace('/login');
+      window.location.href = '/login';
+      window.location.reload();
     }
   };
 
