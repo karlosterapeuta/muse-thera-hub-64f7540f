@@ -88,6 +88,7 @@ export const useDashboardData = (): DashboardData => {
     totalPatients,
     totalAnamnesis, 
     totalReports,
+    totalInterventions,
     isLoading,
     // Fallback values
     weekDays: dashboardData?.weekDays || [],
