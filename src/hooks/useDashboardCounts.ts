@@ -108,10 +108,27 @@ export const useInterventionsCount = () => {
         throw new Error("Usuário não encontrado");
       }
 
+      // Primeiro buscar o professional_id baseado no user_id
+      const { data: professional, error: profError } = await supabase
+        .from("professionals")
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profError) {
+        console.error("Erro ao buscar profissional:", profError);
+        return 0;
+      }
+
+      if (!professional) {
+        console.log("Nenhum profissional encontrado para user_id:", user.id);
+        return 0;
+      }
+
       const { count, error } = await supabase
         .from("treatment_plans")
         .select('*', { count: 'exact', head: true })
-        .eq('professional_id', user.id);
+        .eq('professional_id', professional.id);
 
       if (error) {
         console.error("Erro ao contar intervenções:", error);
