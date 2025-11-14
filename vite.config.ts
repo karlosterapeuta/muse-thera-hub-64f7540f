@@ -17,11 +17,24 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      manifest: {
+        name: 'Musetera - Terapia Musical',
+        short_name: 'Musetera',
+        theme_color: '#4A90E2',
+        background_color: '#0a0a0a',
+        display: 'standalone',
+        orientation: 'portrait',
+        scope: '/',
+        start_url: '/',
+        id: '/',
+      },
       includeAssets: ['icon-original.png', 'apple-touch-icon.png', 'manifest.json'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
         navigateFallbackDenylist: [/^\/login/, /^\/reset-password/],
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /\.html$/,
