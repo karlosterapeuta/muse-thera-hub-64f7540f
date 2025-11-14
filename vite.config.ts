@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: null, // Desabilita injeção automática, usaremos registro manual
       manifest: {
         name: 'Musetera - Terapia Musical',
         short_name: 'Musetera',
@@ -35,6 +36,7 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/login/, /^\/reset-password/],
         skipWaiting: true,
         clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /\.html$/,

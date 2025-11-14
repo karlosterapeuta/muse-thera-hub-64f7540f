@@ -107,40 +107,6 @@ const App = () => {
     };
   }, []);
 
-  // Auto-reload when service worker updates - VERSÃO MELHORADA
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      let refreshing = false;
-
-      // Detectar quando o novo service worker assume o controle
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true;
-          console.log('[PWA] Novo Service Worker ativo, recarregando...');
-          window.location.reload();
-        }
-      });
-
-      // Verificar atualizações periodicamente (a cada 60 segundos)
-      const checkForUpdates = () => {
-        navigator.serviceWorker.ready.then(registration => {
-          console.log('[PWA] Verificando atualizações...');
-          registration.update();
-        });
-      };
-
-      // Verificar ao montar o componente
-      checkForUpdates();
-
-      // Verificar periodicamente
-      const updateInterval = setInterval(checkForUpdates, 60 * 1000);
-
-      // Cleanup
-      return () => {
-        clearInterval(updateInterval);
-      };
-    }
-  }, []);
 
   return (
   <QueryClientProvider client={queryClient}>
