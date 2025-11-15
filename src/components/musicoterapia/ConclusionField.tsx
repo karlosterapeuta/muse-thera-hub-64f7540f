@@ -17,23 +17,44 @@ const CONCLUSION_DATA = {
     "A expressão musical demonstra evolução significativa, evidenciada pela maior criatividade e espontaneidade na exploração de sons, ritmos e melodias durante as sessões.",
     "Observa-se desenvolvimento notável na capacidade de improvisação musical, favorecendo a expressão de sentimentos e comunicação não-verbal através da música.",
     "A comunicação musical evoluiu de forma expressiva, constituindo-se como um canal efetivo para interação e expressão de conteúdos emocionais internos.",
-    "A criatividade musical apresenta expansão significativa, refletindo-se em maior diversidade expressiva e uso funcional dos recursos musicais disponíveis."
+    "A criatividade musical apresenta expansão significativa, refletindo-se em maior diversidade expressiva e uso funcional dos recursos musicais disponíveis.",
+    "A expressão musical apresenta regressão no período avaliado, evidenciada pela redução na espontaneidade e criatividade nas produções sonoras durante as sessões.",
+    "A capacidade de expressão musical mantém-se estagnada, sem evolução mensurável no período analisado, demandando revisão das estratégias terapêuticas adotadas.",
+    "Não se observa resposta significativa às intervenções voltadas para expressão musical, indicando necessidade de abordagens alternativas ou reavaliação dos objetivos terapêuticos.",
+    "As limitações na expressão musical permanecem inalteradas, com o paciente mantendo padrões restritivos e repetitivos apesar das intervenções realizadas."
   ],
   "Regulação Através da Música": [
     "A autorregulação emocional através da música demonstra progressos importantes, evidenciados pela maior capacidade de modulação do estado afetivo durante as experiências musicais.",
     "O relaxamento e bem-estar promovidos pela música apresentam resultados consistentes, favorecendo estados de calma e organização interna.",
     "Observa-se evolução significativa na modulação do humor através de experiências musicais específicas, desenvolvendo repertório de estratégias de autorregulação.",
-    "O uso funcional da música para regulação emocional consolida-se como recurso terapêutico efetivo, proporcionando maior estabilidade e equilíbrio emocional."
+    "O uso funcional da música para regulação emocional consolida-se como recurso terapêutico efetivo, proporcionando maior estabilidade e equilíbrio emocional.",
+    "A autorregulação emocional através da música não demonstra progressos, persistindo padrões de desregulação que comprometem o aproveitamento das sessões terapêuticas.",
+    "Os recursos musicais de relaxamento apresentam efeito limitado ou inconsistente, não consolidando-se como estratégia efetiva de modulação emocional para o paciente.",
+    "Observa-se resistência persistente às estratégias de regulação através da música, com o paciente demonstrando dificuldade em engajar-se nas propostas de organização interna.",
+    "A dependência da música para regulação emocional torna-se problemática, comprometendo o desenvolvimento de recursos internos de autorregulação do paciente."
   ],
   "Desenvolvimento Musical": [
     "As habilidades musicais básicas demonstram evolução progressiva, com desenvolvimento da percepção rítmica, melódica e harmônica de forma integrada.",
     "A percepção musical apresenta refinamento gradual, evidenciado pela maior sensibilidade aos elementos musicais e capacidade de discriminação sonora.",
-    "A coordenação rítmica evoluiu de forma consistente, favorecendo a sincronização corporal e a expressão através do movimento integrado à música."
+    "A coordenação rítmica evoluiu de forma consistente, favorecendo a sincronização corporal e a expressão através do movimento integrado à música.",
+    "As habilidades musicais básicas mantêm-se estagnadas, sem evidências de desenvolvimento progressivo da percepção rítmica, melódica ou harmônica no período avaliado.",
+    "Observa-se regressão nas habilidades de percepção e coordenação musical, com o paciente apresentando desempenho inferior ao demonstrado em avaliações anteriores.",
+    "As dificuldades na coordenação rítmica e discriminação sonora permanecem inalteradas, indicando necessidade de adaptação das estratégias de intervenção musical.",
+    "O aproveitamento das atividades de desenvolvimento musical mostra-se limitado, com o paciente demonstrando baixo interesse e engajamento nas propostas apresentadas."
   ],
   "Integração Terapêutica": [
     "Em síntese, a musicoterapia proporciona benefícios multidimensionais, integrando aspectos expressivos, regulatórios e relacionais através da experiência musical.",
     "O impacto terapêutico da música evidencia-se de forma clara, promovendo desenvolvimento em múltiplas áreas e favorecendo o bem-estar global do paciente.",
-    "Conclui-se que as perspectivas de continuidade são promissoras, com a música consolidando-se como recurso valioso para desenvolvimento e expressão pessoal."
+    "Conclui-se que as perspectivas de continuidade são promissoras, com a música consolidando-se como recurso valioso para desenvolvimento e expressão pessoal.",
+    "Em síntese, os benefícios terapêuticos da musicoterapia mostram-se limitados no período avaliado, indicando necessidade de revisão dos objetivos e estratégias de intervenção.",
+    "O impacto terapêutico da música não se evidencia de forma clara no quadro atual do paciente, sugerindo necessidade de reavaliação da adequação desta modalidade terapêutica.",
+    "Conclui-se que as perspectivas de evolução permanecem incertas, sendo necessário considerar abordagens complementares ou ajustes significativos no plano terapêutico.",
+    "A resposta do paciente à musicoterapia mostra-se aquém do esperado, com progressos mínimos ou ausentes, demandando discussão em equipe multidisciplinar sobre continuidade e adaptações.",
+    "Observa-se manutenção do quadro clínico sem alterações significativas, sugerindo que os recursos musicais não têm sido suficientes para promover mudanças terapêuticas no período analisado."
+  ],
+  "Desafios e Resistências": [
+    "Concluindo, os desafios relacionados à resistência ao processo terapêutico permanecem como fator limitante, demandando estratégias de vínculo e engajamento.",
+    "Em síntese, as dificuldades de tolerância e flexibilidade nas atividades musicais constituem-se como principais obstáculos ao desenvolvimento terapêutico no momento atual."
   ]
 };
 
@@ -42,7 +63,8 @@ const CATEGORY_FILTERS = [
   "Expressão Musical", 
   "Regulação Através da Música",
   "Desenvolvimento Musical",
-  "Integração Terapêutica"
+  "Integração Terapêutica",
+  "Desafios e Resistências"
 ];
 
 export function ConclusionField({ value, onChange }: ConclusionFieldProps) {

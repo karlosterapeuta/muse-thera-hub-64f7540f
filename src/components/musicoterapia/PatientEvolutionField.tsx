@@ -17,25 +17,47 @@ const PATIENT_EVOLUTION_DATA = {
     "Apresenta evolução significativa na improvisação musical, criando espontaneamente melodias e ritmos pessoais.",
     "Observa-se progressos na criatividade musical, explorando diferentes instrumentos e sonoridades com originalidade.",
     "Evolução positiva na comunicação através da música, utilizando elementos musicais para expressar estados internos.",
-    "Demonstra avanços na expressão emocional musical, conectando sentimentos com produção sonora de forma autêntica."
+    "Demonstra avanços na expressão emocional musical, conectando sentimentos com produção sonora de forma autêntica.",
+    "Apresenta regressão na improvisação musical, demonstrando menor espontaneidade e criatividade em relação a sessões anteriores.",
+    "Observa-se estagnação na expressão musical, mantendo-se no mesmo nível de exploração sonora sem avanços significativos no período avaliado.",
+    "Não demonstra interesse ou engajamento nas atividades de expressão musical, mantendo-se passivo ou resistente às propostas apresentadas.",
+    "Apresenta resistência às atividades de improvisação musical, evitando exploração de instrumentos e limitando-se a padrões repetitivos já conhecidos."
   ],
   "Regulação Através da Música": [
     "Apresenta progressos na autorregulação emocional através da música, utilizando-a como ferramenta de organização interna.",
     "Observa-se evolução no relaxamento musical, demonstrando maior capacidade de acalmar-se com estímulos sonoros.",
     "Evolução positiva na modulação do humor através da música, alterando estados emocionais conforme necessário.",
-    "Demonstra avanços na organização interna através de estruturas musicais, encontrando equilíbrio e harmonia pessoal."
+    "Demonstra avanços na organização interna através de estruturas musicais, encontrando equilíbrio e harmonia pessoal.",
+    "Apresenta maior dificuldade na autorregulação emocional, com a música não produzindo o efeito organizador esperado nas intervenções.",
+    "Observa-se resposta paradoxal aos estímulos musicais relaxantes, demonstrando aumento de agitação ou desconforto durante atividades que deveriam promover calma.",
+    "Demonstra dependência excessiva da música para regulação, com dificuldade em manter-se organizado na ausência de estímulos musicais estruturados.",
+    "Não apresenta evolução na capacidade de utilizar a música como recurso de autorregulação, mantendo padrões de desregulação emocional inalterados."
   ],
   "Comunicação Musical": [
     "Apresenta progressos no diálogo musical, estabelecendo conversas sonoras com terapeuta e pares.",
     "Observa-se evolução nos turnos rítmicos, respeitando espaços temporais e criando interações musicais sincronizadas.",
     "Evolução positiva na reciprocidade musical, respondendo e iniciando trocas musicais de forma espontânea.",
-    "Demonstra avanços na atenção compartilhada musical, focalizando conjuntamente em experiências sonoras."
+    "Demonstra avanços na atenção compartilhada musical, focalizando conjuntamente em experiências sonoras.",
+    "Apresenta retrocesso na comunicação musical, evitando diálogos sonoros e demonstrando preferência por atividades musicais solitárias.",
+    "Não demonstra reciprocidade musical, ignorando tentativas de interação sonora do terapeuta ou mantendo-se alheio às propostas de turnos rítmicos.",
+    "Observa-se ausência de progressos na comunicação através da música, mantendo-se restrito a padrões comunicativos limitados e repetitivos.",
+    "Apresenta resistência ativa às tentativas de estabelecimento de diálogo musical, interrompendo bruscamente interações ou se retirando das atividades propostas."
   ],
   "Desenvolvimento Musical": [
     "Apresenta progressos na percepção musical, discriminando altura, timbre, intensidade e duração com maior precisão.",
     "Observa-se evolução na coordenação rítmica, sincronizando movimentos corporais com pulsação musical.",
     "Evolução positiva na discriminação sonora, identificando e diferenciando diversos elementos musicais.",
-    "Demonstra avanços na memória musical, recordando e reproduzindo sequências melódicas e rítmicas complexas."
+    "Demonstra avanços na memória musical, recordando e reproduzindo sequências melódicas e rítmicas complexas.",
+    "Apresenta regressão nas habilidades de percepção musical, demonstrando maior dificuldade em discriminar elementos básicos como altura e intensidade.",
+    "Observa-se piora na coordenação rítmica, com maior descoordenação motora e dificuldade em sincronizar movimentos com pulsação musical.",
+    "Não apresenta evolução mensurável nas habilidades musicais básicas, mantendo-se em um platô de desenvolvimento sem avanços significativos.",
+    "Demonstra desinteresse persistente nas atividades de desenvolvimento musical, com baixa motivação e engajamento limitado nas propostas apresentadas."
+  ],
+  "Desafios e Resistências": [
+    "Apresenta resistência significativa ao setting terapêutico, com dificuldade em manter-se presente nas atividades propostas.",
+    "Observa-se padrão de evitação das experiências musicais, com o paciente recusando-se a participar ou engajar-se nas intervenções.",
+    "Demonstra baixa tolerância às frustrações musicais, reagindo com irritabilidade ou desorganização diante de desafios propostos.",
+    "Mantém padrões de comportamento disruptivo durante as sessões, comprometendo o aproveitamento das intervenções musicoterapêuticas."
   ]
 };
 
@@ -44,7 +66,8 @@ const CATEGORY_FILTERS = [
   "Expressão Musical", 
   "Regulação Através da Música",
   "Comunicação Musical",
-  "Desenvolvimento Musical"
+  "Desenvolvimento Musical",
+  "Desafios e Resistências"
 ];
 
 export function PatientEvolutionField({ value, onChange }: PatientEvolutionFieldProps) {
