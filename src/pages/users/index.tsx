@@ -13,11 +13,15 @@ import { CreateUserDialog } from "./components/CreateUserDialog";
 import { UserDetailsDialog } from "./components/UserDetailsDialog";
 import { useUsers } from "./hooks/useUsers";
 import { useUserActions } from "./hooks/useUserActions";
+import { useExpiringUsers } from "./hooks/useExpiringUsers";
 import { Profile } from "./types";
+import { ExpirationBanner } from "./components/ExpirationBanner";
+import { UserAnalyticsDashboard } from "./components/UserAnalyticsDashboard";
 
 export default function Users() {
   const { data: users, isLoading } = useUsers();
   const { data: isAdmin } = useAdmin();
+  const { data: expiringUsers = [] } = useExpiringUsers(7);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -128,6 +132,8 @@ export default function Users() {
         <CreateUserDialog />
       </div>
       
+      <ExpirationBanner expiringUsers={expiringUsers} days={7} />
+      
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Importante</AlertTitle>
@@ -135,6 +141,8 @@ export default function Users() {
           Usuários inativos não podem fazer login. Usuários com sessão ativa serão desconectados automaticamente quando desativados.
         </AlertDescription>
       </Alert>
+
+      <UserAnalyticsDashboard />
 
       <UserStats users={users || []} />
       
