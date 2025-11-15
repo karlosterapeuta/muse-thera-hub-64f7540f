@@ -1084,20 +1084,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      force_user_logout: {
-        Args:
-          | { bypass_auth_check?: boolean; target_user_id: string }
-          | { target_user_id: string }
-        Returns: boolean
-      }
+      force_user_logout:
+        | { Args: { target_user_id: string }; Returns: boolean }
+        | {
+            Args: { bypass_auth_check?: boolean; target_user_id: string }
+            Returns: boolean
+          }
       generate_invite_code: {
         Args: { expiration_days?: number }
         Returns: string
       }
-      generate_recurring_financial_records: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      generate_recurring_financial_records: { Args: never; Returns: undefined }
       get_user_sessions_count: {
         Args: { target_user_id: string }
         Returns: number
@@ -1106,14 +1103,8 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
-      is_user_access_expired: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
-      is_valid_uuid: {
-        Args: { input_text: string }
-        Returns: boolean
-      }
+      is_user_access_expired: { Args: { user_id: string }; Returns: boolean }
+      is_valid_uuid: { Args: { input_text: string }; Returns: boolean }
       update_user_status: {
         Args: { new_status: string; target_user_id: string }
         Returns: boolean
