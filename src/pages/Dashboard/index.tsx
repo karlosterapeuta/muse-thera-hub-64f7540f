@@ -1,6 +1,5 @@
 
 import React from "react";
-import { DashboardHeader } from "./components/DashboardHeader";
 import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
 import { CacheStatsCard } from "./components/CacheStatsCard";
@@ -11,14 +10,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 w-full overflow-x-hidden">
-      {/* Simplified Header */}
-      <DashboardHeader
-        totalPatients={data.totalPatients}
-        totalReports={data.totalReports}
-        totalRevenue={data.totalRevenue}
-        completionRate={data.completionRate}
-      />
-
       {/* Main Content */}
       <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Statistics Cards */}

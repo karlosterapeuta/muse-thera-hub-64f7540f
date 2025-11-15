@@ -6,8 +6,14 @@ import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sid
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Breadcrumbs } from "./Breadcrumbs";
-import { Music2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { HeaderLogo } from "./header/HeaderLogo";
+import { HeaderGreeting } from "./header/HeaderGreeting";
+import { HeaderTime } from "./header/HeaderTime";
+import { NotificationBell } from "./header/NotificationBell";
+import { ProfessionalAvatar } from "./ProfessionalAvatar";
+import ThemeToggle from "./ThemeToggle";
+import { Separator } from "./ui/separator";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -18,6 +24,7 @@ function LayoutContent({ children }: LayoutProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { toggleSidebar } = useSidebar();
+  const isDashboard = location.pathname === '/dashboard';
 
   // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
   useEffect(() => {
@@ -88,18 +95,42 @@ function LayoutContent({ children }: LayoutProps) {
       
       {/* Main content que será empurrado */}
       <div className="flex-1 flex flex-col w-full min-w-0">
-        {/* Header fixo com toggle e breadcrumbs */}
-        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex h-14 items-center px-4 gap-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex items-center gap-2">
-              <Music2 className="h-5 w-5 text-primary" />
-              <span className="font-semibold hidden sm:inline-block">MuseTera</span>
+        {/* Universal Header com design moderno */}
+        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+          {/* Gradient line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-blue-500 to-pink-600 animate-gradient" />
+          
+          <div className="flex h-16 items-center justify-between px-4 sm:px-6 gap-4">
+            {/* Left: Trigger + Logo + Breadcrumbs */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <SidebarTrigger className="relative hover:bg-muted/50 transition-all duration-300" />
+              </div>
+              
+              <HeaderLogo />
+              
+              <Separator orientation="vertical" className="h-6 hidden lg:block" />
+              
+              <div className="hidden md:block flex-1 overflow-hidden">
+                <Breadcrumbs />
+              </div>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <Breadcrumbs />
+            
+            {/* Center: Contextual Info (Dashboard only) */}
+            {isDashboard && <HeaderGreeting />}
+            
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <HeaderTime />
+              <NotificationBell />
+              <ThemeToggle />
+              <ProfessionalAvatar size="sm" />
             </div>
           </div>
+          
+          {/* Shadow bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </header>
         
         {/* Conteúdo principal */}
