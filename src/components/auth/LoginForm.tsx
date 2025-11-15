@@ -5,6 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, Music, Sparkles, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { GradientButton } from "./GradientButton";
+import { WelcomeToast } from "./WelcomeToast";
+import { useWelcomeMessage } from "@/hooks/useWelcomeMessage";
+import { logUserActivity } from "@/utils/activityLogger";
+import { createPortal } from "react-dom";
 
 type LoginFormProps = {
   onSwitchToPasswordReset: () => void;
@@ -15,8 +19,11 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [showWelcome, setShowWelcome] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { data: welcomeData } = useWelcomeMessage(userId);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,11 +56,22 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
         return;
       }
       
-      toast({
-        title: "Login realizado com sucesso",
-        description: "Bem-vindo ao MuseTera!",
-      });
-      navigate("/dashboard");
+      // Registrar atividade de login
+      await logUserActivity(result.data.user.id, "login");
+      
+      // Definir userId para buscar dados de boas-vindas
+      setUserId(result.data.user.id);
+      
+      // Aguardar um pouco para o hook carregar os dados
+      setTimeout(() => {
+        setShowWelcome(true);
+        
+        // Navegar após mostrar a mensagem
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 800);
+      }, 300);
+      
     } catch (error: any) {
       toast({
         title: "Falha no login",
@@ -66,7 +84,8 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
   };
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate-fade-in relative">
+    <>
+      <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate-fade-in relative">
       {/* Enhanced Floating Musical Elements */}
       <div className="absolute -top-4 md:-top-6 -left-4 md:-left-6 w-12 md:w-16 h-12 md:h-16 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-2xl animate-pulse"></div>
       <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -204,5 +223,18 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
         </form>
       </div>
     </div>
+
+    {/* WelcomeToast - renderizado com portal */}
+    {showWelcome && welcomeData &&
+      createPortal(
+        <WelcomeToast
+          greetingIcon={welcomeData.greetingIcon}
+          mainMessage={welcomeData.mainMessage}
+          secondaryInfo={welcomeData.secondaryInfo}
+          onClose={() => setShowWelcome(false)}
+        />,
+        document.body
+      )}
+  </>
   );
 }
