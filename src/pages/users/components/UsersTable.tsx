@@ -35,7 +35,8 @@ export function UsersTable({
             <TableHead>Usuário</TableHead>
             <TableHead>Função</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Data de Criação</TableHead>
+            <TableHead>Data de Início</TableHead>
+            <TableHead>Expiração do Plano</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>

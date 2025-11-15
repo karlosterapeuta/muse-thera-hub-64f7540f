@@ -5,6 +5,7 @@ import { RoleBadge } from "./RoleBadge";
 import { StatusToggle } from "./StatusToggle";
 import { DeleteUserDialog } from "./DeleteUserDialog";
 import { ForceLogoutDialog } from "./ForceLogoutDialog";
+import { ExpirationBadge } from "./ExpirationBadge";
 import { Profile } from "../types";
 
 interface UserRowProps {
@@ -45,7 +46,19 @@ export function UserRow({
         />
       </TableCell>
       <TableCell>
-        {new Date(user.created_at).toLocaleDateString('pt-BR')}
+        <div className="text-sm text-muted-foreground">
+          {new Date(user.created_at).toLocaleDateString('pt-BR')}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-col gap-1">
+          <ExpirationBadge expiresAt={user.expires_at} />
+          {user.expires_at && (
+            <div className="text-xs text-muted-foreground">
+              {new Date(user.expires_at).toLocaleDateString('pt-BR')}
+            </div>
+          )}
+        </div>
       </TableCell>
       <TableCell className="space-x-1">
         <DeleteUserDialog onDelete={() => onDeleteUser(user.id)} />

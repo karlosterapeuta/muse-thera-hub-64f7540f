@@ -20,6 +20,7 @@ export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [expirationFilter, setExpirationFilter] = useState("all");
   
   const {
     selectedUser,
@@ -38,22 +39,49 @@ export default function Users() {
     if (!users) return [];
     
     return users.filter(user => {
-      const matchesSearch = !searchTerm || 
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+      const matchesRole = roleFilter === "all" || user.user_roles?.[0]?.role === roleFilter;
       
-      const matchesRole = roleFilter === "all" || 
-        user.user_roles?.[0]?.role === roleFilter;
+      // Expiration filter logic
+      let matchesExpiration = true;
+      if (expirationFilter !== "all") {
+        const now = new Date();
+        
+        if (expirationFilter === "unlimited") {
+          matchesExpiration = !user.expires_at;
+        } else if (expirationFilter === "expired") {
+          matchesExpiration = user.expires_at ? new Date(user.expires_at) < now : false;
+        } else if (expirationFilter === "expiring_7") {
+          if (!user.expires_at) {
+            matchesExpiration = false;
+          } else {
+            const expiration = new Date(user.expires_at);
+            const daysUntil = Math.ceil((expiration.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            matchesExpiration = daysUntil > 0 && daysUntil <= 7;
+          }
+        } else if (expirationFilter === "expiring_30") {
+          if (!user.expires_at) {
+            matchesExpiration = false;
+          } else {
+            const expiration = new Date(user.expires_at);
+            const daysUntil = Math.ceil((expiration.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            matchesExpiration = daysUntil > 7 && daysUntil <= 30;
+          }
+        } else if (expirationFilter === "active") {
+          matchesExpiration = !user.expires_at || new Date(user.expires_at) >= now;
+        }
+      }
       
-      return matchesSearch && matchesStatus && matchesRole;
+      return matchesSearch && matchesStatus && matchesRole && matchesExpiration;
     });
-  }, [users, searchTerm, statusFilter, roleFilter]);
+  }, [users, searchTerm, statusFilter, roleFilter, expirationFilter]);
 
   const handleClearFilters = () => {
     setSearchTerm("");
     setStatusFilter("all");
     setRoleFilter("all");
+    setExpirationFilter("all");
   };
 
   if (isLoading) {
@@ -101,15 +129,17 @@ export default function Users() {
 
       <UserStats users={users || []} />
       
-      <UserFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        roleFilter={roleFilter}
-        onRoleFilterChange={setRoleFilter}
-        onClearFilters={handleClearFilters}
-      />
+        <UserFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          roleFilter={roleFilter}
+          onRoleFilterChange={setRoleFilter}
+          expirationFilter={expirationFilter}
+          onExpirationFilterChange={setExpirationFilter}
+          onClearFilters={handleClearFilters}
+        />
       
       <UsersTable 
         users={filteredUsers}

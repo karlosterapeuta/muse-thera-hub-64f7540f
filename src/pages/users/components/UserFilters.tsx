@@ -13,6 +13,8 @@ interface UserFiltersProps {
   onStatusFilterChange: (status: string) => void;
   roleFilter: string;
   onRoleFilterChange: (role: string) => void;
+  expirationFilter: string;
+  onExpirationFilterChange: (filter: string) => void;
   onClearFilters: () => void;
 }
 
@@ -23,9 +25,11 @@ export function UserFilters({
   onStatusFilterChange,
   roleFilter,
   onRoleFilterChange,
+  expirationFilter,
+  onExpirationFilterChange,
   onClearFilters
 }: UserFiltersProps) {
-  const hasFilters = searchTerm || statusFilter !== "all" || roleFilter !== "all";
+  const hasFilters = searchTerm || statusFilter !== "all" || roleFilter !== "all" || expirationFilter !== "all";
 
   return (
     <Card className="mb-6">
@@ -61,6 +65,20 @@ export function UserFilters({
                 <SelectItem value="all">Todas</SelectItem>
                 <SelectItem value="admin">Administrador</SelectItem>
                 <SelectItem value="professional">Profissional</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={expirationFilter} onValueChange={onExpirationFilterChange}>
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <SelectValue placeholder="Expiração" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os planos</SelectItem>
+                <SelectItem value="unlimited">Ilimitados</SelectItem>
+                <SelectItem value="active">Ativos</SelectItem>
+                <SelectItem value="expiring_7">Expira em 7 dias</SelectItem>
+                <SelectItem value="expiring_30">Expira em 30 dias</SelectItem>
+                <SelectItem value="expired">Expirados</SelectItem>
               </SelectContent>
             </Select>
 
