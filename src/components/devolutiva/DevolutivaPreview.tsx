@@ -16,6 +16,7 @@ interface DevolutivaPreviewProps {
     family_guidelines: string;
     next_steps: string;
     general_observations: string;
+    challenges_resistance: string;
     professional_name: string;
     professional_registry: string;
   };
@@ -32,7 +33,8 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
     { title: 'Conquistas da Sessão', icon: '🎯', content: data.achievements },
     { title: 'Orientações para Família', icon: '👨‍👩‍👧‍👦', content: data.family_guidelines },
     { title: 'Próximos Passos', icon: '🔜', content: data.next_steps },
-    { title: 'Observações Gerais', icon: '📝', content: data.general_observations }
+    { title: 'Observações Gerais', icon: '📝', content: data.general_observations },
+    { title: 'Desafios e Resistências', icon: '⚠️', content: data.challenges_resistance }
   ];
 
   return (
