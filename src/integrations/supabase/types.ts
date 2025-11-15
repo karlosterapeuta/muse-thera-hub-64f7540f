@@ -990,6 +990,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity_logs: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -1105,6 +1135,10 @@ export type Database = {
       }
       is_user_access_expired: { Args: { user_id: string }; Returns: boolean }
       is_valid_uuid: { Args: { input_text: string }; Returns: boolean }
+      update_user_expiration: {
+        Args: { new_expires_at: string; target_user_id: string }
+        Returns: boolean
+      }
       update_user_status: {
         Args: { new_status: string; target_user_id: string }
         Returns: boolean

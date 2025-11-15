@@ -16,6 +16,7 @@ interface UsersTableProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
+  onViewDetails: (user: Profile) => void;
   loadingLogout?: Record<string, boolean>;
 }
 
@@ -25,6 +26,7 @@ export function UsersTable({
   onViewStatusLogs, 
   onDeleteUser, 
   onForceLogout,
+  onViewDetails,
   loadingLogout 
 }: UsersTableProps) {
   return (
@@ -41,17 +43,18 @@ export function UsersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
-            <UserRow
-              key={user.id}
-              user={user}
-              onToggleStatus={onToggleStatus}
-              onViewStatusLogs={onViewStatusLogs}
-              onDeleteUser={onDeleteUser}
-              onForceLogout={onForceLogout}
-              loadingLogout={loadingLogout}
-            />
-          ))}
+            {users.map((user) => (
+              <UserRow
+                key={user.id}
+                user={user}
+                onToggleStatus={onToggleStatus}
+                onViewStatusLogs={onViewStatusLogs}
+                onDeleteUser={onDeleteUser}
+                onForceLogout={onForceLogout}
+                onViewDetails={onViewDetails}
+                loadingLogout={loadingLogout}
+              />
+            ))}
         </TableBody>
       </Table>
     </Card>
