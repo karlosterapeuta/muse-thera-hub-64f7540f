@@ -201,31 +201,6 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
             )}
             {isLoading && <span>Entrando...</span>}
           </GradientButton>
-
-          {/* Enhanced Divider */}
-          <div className="relative my-6 md:my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-            </div>
-            <div className="relative flex justify-center text-xs sm:text-sm">
-              <span className="bg-gradient-to-r from-background via-background to-background px-4 md:px-6 text-muted-foreground font-medium backdrop-blur-sm">
-                Primeira vez aqui?
-              </span>
-            </div>
-          </div>
-
-          {/* Enhanced Sign Up Link */}
-          <div className="text-center p-4 rounded-xl bg-primary/5 border border-primary/10 hover:border-primary/20 transition-all duration-300">
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Ainda não possui uma conta?{" "}
-              <a
-                href="/cadastro"
-                className="font-bold text-primary hover:text-primary/80 transition-all duration-300 underline underline-offset-4 hover:underline-offset-8"
-              >
-                Criar conta gratuita
-              </a>
-            </p>
-          </div>
         </form>
       </div>
     </div>
