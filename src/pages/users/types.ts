@@ -23,10 +23,24 @@ export type StatusLog = {
   changer_name?: string;
 }
 
+export type ActivityLog = {
+  id: string;
+  user_id: string;
+  activity_type: 'login' | 'logout' | 'page_view';
+  activity_data: any;
+  created_at: string;
+}
+
+export type UserActivityStats = {
+  lastLogin: string | null;
+  monthlyLogins: number;
+  topPages: { page: string; count: number }[];
+}
+
 declare module '@supabase/supabase-js' {
   interface SupabaseClient {
     rpc<T = any>(
-      fn: 'force_user_logout' | 'generate_invite_code' | 'has_role' | 'update_user_status' | 'validate_and_use_invite_code',
+      fn: 'force_user_logout' | 'generate_invite_code' | 'has_role' | 'update_user_status' | 'update_user_expiration' | 'validate_and_use_invite_code',
       params?: object,
       options?: object
     ): { data: T; error: Error | null };

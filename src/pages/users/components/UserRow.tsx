@@ -7,6 +7,8 @@ import { DeleteUserDialog } from "./DeleteUserDialog";
 import { ForceLogoutDialog } from "./ForceLogoutDialog";
 import { ExpirationBadge } from "./ExpirationBadge";
 import { Profile } from "../types";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
 
 interface UserRowProps {
   user: Profile;
@@ -14,6 +16,7 @@ interface UserRowProps {
   onViewStatusLogs: (user: Profile) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onForceLogout: (userId: string, userName: string | null) => Promise<void>;
+  onViewDetails: (user: Profile) => void;
   loadingLogout?: Record<string, boolean>;
 }
 
@@ -22,7 +25,8 @@ export function UserRow({
   onToggleStatus, 
   onViewStatusLogs, 
   onDeleteUser, 
-  onForceLogout, 
+  onForceLogout,
+  onViewDetails,
   loadingLogout 
 }: UserRowProps) {
   const isLogoutLoading = loadingLogout?.[user.id] || false;
@@ -61,6 +65,15 @@ export function UserRow({
         </div>
       </TableCell>
       <TableCell className="space-x-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onViewDetails(user)}
+          title="Ver detalhes"
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+        
         <DeleteUserDialog onDelete={() => onDeleteUser(user.id)} />
         
         {user.status === 'active' && (

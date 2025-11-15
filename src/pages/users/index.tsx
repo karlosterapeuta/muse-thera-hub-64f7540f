@@ -10,8 +10,10 @@ import { UsersTable } from "./components/UsersTable";
 import { UserFilters } from "./components/UserFilters";
 import { UserStats } from "./components/UserStats";
 import { CreateUserDialog } from "./components/CreateUserDialog";
+import { UserDetailsDialog } from "./components/UserDetailsDialog";
 import { useUsers } from "./hooks/useUsers";
 import { useUserActions } from "./hooks/useUserActions";
+import { Profile } from "./types";
 
 export default function Users() {
   const { data: users, isLoading } = useUsers();
@@ -21,6 +23,8 @@ export default function Users() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [expirationFilter, setExpirationFilter] = useState("all");
+  const [detailsUser, setDetailsUser] = useState<Profile | null>(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   
   const {
     selectedUser,
@@ -34,6 +38,11 @@ export default function Users() {
     handleDeleteUser,
     handleForceLogout
   } = useUserActions();
+
+  const handleViewDetails = (user: Profile) => {
+    setDetailsUser(user);
+    setShowDetailsDialog(true);
+  };
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
@@ -147,6 +156,7 @@ export default function Users() {
         onViewStatusLogs={handleViewStatusLogs}
         onDeleteUser={handleDeleteUser}
         onForceLogout={handleForceLogout}
+        onViewDetails={handleViewDetails}
         loadingLogout={loadingLogout}
       />
 
@@ -156,6 +166,12 @@ export default function Users() {
         logs={statusLogs}
         userName={selectedUser?.name}
         isLoading={loadingLogs}
+      />
+
+      <UserDetailsDialog
+        user={detailsUser}
+        open={showDetailsDialog}
+        onOpenChange={setShowDetailsDialog}
       />
     </div>
   );
