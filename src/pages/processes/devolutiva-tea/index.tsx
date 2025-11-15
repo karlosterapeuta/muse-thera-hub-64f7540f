@@ -38,6 +38,7 @@ export default function DevolutivaTea() {
     family_guidelines: [],
     next_steps: [],
     general_observations: [],
+    challenges_resistance: [],
     professional_name: '',
     professional_registry: ''
   });
@@ -156,6 +157,7 @@ export default function DevolutivaTea() {
       family_guidelines: customTexts.family_guidelines || formData.family_guidelines.join('. ') + (formData.family_guidelines.length > 0 ? '.' : ''),
       next_steps: customTexts.next_steps || formData.next_steps.join('. ') + (formData.next_steps.length > 0 ? '.' : ''),
       general_observations: customTexts.general_observations || formData.general_observations.join('. ') + (formData.general_observations.length > 0 ? '.' : ''),
+      challenges_resistance: customTexts.challenges_resistance || formData.challenges_resistance.join('. ') + (formData.challenges_resistance.length > 0 ? '.' : ''),
       professional_name: formData.professional_name,
       professional_registry: formData.professional_registry
     };

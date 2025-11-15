@@ -19,6 +19,7 @@ export interface DevolutivaFormData {
   family_guidelines: string[];
   next_steps: string[];
   general_observations: string[];
+  challenges_resistance: string[];
   professional_name: string;
   professional_registry: string;
 }
@@ -38,7 +39,8 @@ export function useDevolutivaReport() {
     achievements: '',
     family_guidelines: '',
     next_steps: '',
-    general_observations: ''
+    general_observations: '',
+    challenges_resistance: ''
   });
 
   const combineText = (phrases: string[], customText: string): string => {
@@ -65,6 +67,7 @@ export function useDevolutivaReport() {
         family_guidelines: combineText(formData.family_guidelines, customTexts.family_guidelines),
         next_steps: combineText(formData.next_steps, customTexts.next_steps),
         general_observations: combineText(formData.general_observations, customTexts.general_observations),
+        challenges_resistance: combineText(formData.challenges_resistance, customTexts.challenges_resistance),
         professional_name: formData.professional_name,
         professional_registry: formData.professional_registry
       };
@@ -117,6 +120,7 @@ export function useDevolutivaReport() {
         family_guidelines: combineText(formData.family_guidelines, customTexts.family_guidelines),
         next_steps: combineText(formData.next_steps, customTexts.next_steps),
         general_observations: combineText(formData.general_observations, customTexts.general_observations),
+        challenges_resistance: combineText(formData.challenges_resistance, customTexts.challenges_resistance),
         professional_name: formData.professional_name,
         professional_registry: formData.professional_registry
       };
