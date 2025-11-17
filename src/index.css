@@ -28,6 +28,11 @@
     padding: 0;
   }
 
+  /* Global fallback to enforce background */
+  html, body, #root {
+    background-color: hsl(var(--background)) !important;
+  }
+
   :root {
     --background: 218 100% 95.5%;
     --foreground: 222.2 84% 4.9%;
