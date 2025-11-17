@@ -76,7 +76,7 @@ export default function ChromeMusicLab() {
           <div className="flex items-center gap-4">
             {/* MuseTera Logo */}
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src="/images/logo-musetera.png"
               alt="MuseTera Logo"
               className="h-12 w-12 rounded-xl shadow-md ring-2 ring-primary/20"
             />
@@ -144,7 +144,7 @@ export default function ChromeMusicLab() {
               {/* MuseTera Logo in Loading */}
               <div className="mb-6">
                 <img
-                  src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+                  src="/images/logo-musetera.png"
                   alt="MuseTera"
                   className="h-16 w-16 rounded-xl shadow-lg ring-2 ring-primary/20 animate-pulse-gentle"
                 />
@@ -271,7 +271,7 @@ export default function ChromeMusicLab() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src="/images/logo-musetera.png"
               alt="MuseTera"
               className="h-8 w-8 rounded-lg shadow-sm"
             />
