@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "react-i18next";
 
 export type AnamnesisItem = {
   id: string;
@@ -52,6 +53,7 @@ export const useAnamnesisData = () => {
 export const useDeleteAnamnesis = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { t } = useTranslation('anamnesis');
 
   return useMutation({
     mutationFn: async (anamnesisId: string) => {
@@ -66,15 +68,13 @@ export const useDeleteAnamnesis = () => {
       queryClient.invalidateQueries({ queryKey: ANAMNESIS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard-counts"] });
       toast({
-        title: "Sucesso",
-        description: "Anamnese excluída com sucesso.",
+        title: t('toast.deleteSuccess'),
       });
     },
     onError: (error: Error) => {
       console.error("Erro ao excluir anamnese:", error);
       toast({
-        title: "Erro",
-        description: "Não foi possível excluir a anamnese.",
+        title: t('toast.error'),
         variant: "destructive",
       });
     },

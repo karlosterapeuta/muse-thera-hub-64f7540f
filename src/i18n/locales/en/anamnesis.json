@@ -1,0 +1,49 @@
+{
+  "title": "Anamnesis",
+  "description": "Complete music therapy anamnesis form",
+  "list": {
+    "title": "Anamnesis List",
+    "empty": "No anamnesis found",
+    "createNew": "New Anamnesis",
+    "searchPlaceholder": "Search anamnesis..."
+  },
+  "form": {
+    "personalData": "Personal Data",
+    "clinicalData": "Clinical Data",
+    "familyData": "Family Data",
+    "musicalHistory": "Musical History",
+    "developmentData": "Development Data",
+    "therapeuticData": "Therapeutic Data"
+  },
+  "fields": {
+    "legalGuardian": "Legal Guardian",
+    "familyRelationship": "Relationship",
+    "referralProfessional": "Referring Professional",
+    "mainClinicalDemand": "Main Clinical Demand",
+    "currentMedication": "Current Medication",
+    "therapeuticGoals": "Therapeutic Goals",
+    "treatmentApproach": "Treatment Approach"
+  },
+  "sections": {
+    "diagnosis": "Clinical Diagnosis",
+    "development": "Development",
+    "musical": "Musical History",
+    "family": "Family Context",
+    "therapeutic": "Therapeutic Context"
+  },
+  "buttons": {
+    "save": "Save Anamnesis",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "delete": "Delete"
+  },
+  "toast": {
+    "saveSuccess": "Anamnesis saved successfully!",
+    "updateSuccess": "Anamnesis updated successfully!",
+    "deleteSuccess": "Anamnesis deleted successfully!",
+    "error": "Error processing anamnesis",
+    "loadError": "Error loading anamnesis"
+  }
+}

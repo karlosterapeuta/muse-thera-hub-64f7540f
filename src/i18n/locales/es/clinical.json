@@ -1,0 +1,65 @@
+{
+  "devolutiva": {
+    "title": "Informe de Devolución TEA",
+    "description": "Registro detallado de la sesión de musicoterapia",
+    "tabs": {
+      "form": "Formulario",
+      "preview": "Vista Previa",
+      "history": "Historial"
+    },
+    "fields": {
+      "patient": "Paciente",
+      "selectPatient": "Seleccione un paciente",
+      "sessionDate": "Fecha de la Sesión",
+      "sessionNumber": "Número de Sesión",
+      "professionalName": "Nombre del Profesional",
+      "professionalRegistry": "Registro Profesional"
+    },
+    "sections": {
+      "basicInfo": "Información Básica",
+      "sessionDetails": "Detalles de la Sesión",
+      "phraseSelection": "Selección de Frases Clínicas"
+    },
+    "buttons": {
+      "save": "Guardar Informe",
+      "generatePDF": "Generar PDF",
+      "clear": "Limpiar Todo",
+      "expand": "Expandir",
+      "collapse": "Contraer",
+      "addPhrase": "Agregar Frase",
+      "selectPhrase": "Seleccionar Frase"
+    },
+    "messages": {
+      "noPatientSelected": "Ningún paciente seleccionado",
+      "selectPatientFirst": "Seleccione un paciente primero",
+      "phraseAdded": "Frase agregada",
+      "phraseRemoved": "Frase eliminada"
+    },
+    "toast": {
+      "saveSuccess": "¡Informe guardado con éxito!",
+      "pdfSuccess": "¡PDF generado con éxito!",
+      "selectPatient": "Por favor, seleccione un paciente",
+      "error": "Error al procesar la operación",
+      "loadError": "Error al cargar datos"
+    }
+  },
+  "evolution": {
+    "title": "Evolución del Paciente",
+    "description": "Seguimiento longitudinal del proceso terapéutico",
+    "period": "Período",
+    "progress": "Progreso",
+    "observations": "Observaciones"
+  },
+  "evaluation": {
+    "title": "Evaluación",
+    "description": "Evaluación detallada del paciente",
+    "criteria": "Criterios de Evaluación",
+    "results": "Resultados"
+  },
+  "musicoterapia": {
+    "title": "Informe MuseTera TEA",
+    "description": "Escala de evaluación en musicoterapia",
+    "areas": "Áreas Evaluadas",
+    "score": "Puntuación"
+  }
+}

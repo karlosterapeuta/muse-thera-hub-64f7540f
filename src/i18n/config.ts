@@ -7,18 +7,30 @@ import commonPT from './locales/pt-BR/common.json';
 import authPT from './locales/pt-BR/auth.json';
 import sidebarPT from './locales/pt-BR/sidebar.json';
 import headerPT from './locales/pt-BR/header.json';
+import patientsPT from './locales/pt-BR/patients.json';
+import clinicalPT from './locales/pt-BR/clinical.json';
+import phrasesPT from './locales/pt-BR/phrases.json';
+import anamnesisPT from './locales/pt-BR/anamnesis.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
 import authEN from './locales/en/auth.json';
 import sidebarEN from './locales/en/sidebar.json';
 import headerEN from './locales/en/header.json';
+import patientsEN from './locales/en/patients.json';
+import clinicalEN from './locales/en/clinical.json';
+import phrasesEN from './locales/en/phrases.json';
+import anamnesisEN from './locales/en/anamnesis.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
 import authES from './locales/es/auth.json';
 import sidebarES from './locales/es/sidebar.json';
 import headerES from './locales/es/header.json';
+import patientsES from './locales/es/patients.json';
+import clinicalES from './locales/es/clinical.json';
+import phrasesES from './locales/es/phrases.json';
+import anamnesisES from './locales/es/anamnesis.json';
 
 i18n
   .use(LanguageDetector)
@@ -30,23 +42,35 @@ i18n
         auth: authPT,
         sidebar: sidebarPT,
         header: headerPT,
+        patients: patientsPT,
+        clinical: clinicalPT,
+        phrases: phrasesPT,
+        anamnesis: anamnesisPT,
       },
       'en': {
         common: commonEN,
         auth: authEN,
         sidebar: sidebarEN,
         header: headerEN,
+        patients: patientsEN,
+        clinical: clinicalEN,
+        phrases: phrasesEN,
+        anamnesis: anamnesisEN,
       },
       'es': {
         common: commonES,
         auth: authES,
         sidebar: sidebarES,
         header: headerES,
+        patients: patientsES,
+        clinical: clinicalES,
+        phrases: phrasesES,
+        anamnesis: anamnesisES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis'],
     
     interpolation: {
       escapeValue: false, // React já faz escape

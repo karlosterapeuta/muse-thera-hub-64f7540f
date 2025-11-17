@@ -1,0 +1,78 @@
+{
+  "title": "Gerenciamento de Pacientes",
+  "description": "Gerencie seus pacientes e processos clínicos de musicoterapia",
+  "search": {
+    "placeholder": "Buscar por nome do paciente ou responsável..."
+  },
+  "buttons": {
+    "addPatient": "Adicionar Paciente",
+    "newPatient": "Novo Paciente",
+    "deleteAll": "Excluir Todos os Pacientes",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "viewAnamnesis": "Ver Anamnese",
+    "editAnamnesis": "Editar Anamnese",
+    "createAnamnesis": "Criar Anamnese"
+  },
+  "dialog": {
+    "add": {
+      "title": "Adicionar Paciente",
+      "description": "Crie um novo paciente para iniciar o processo terapêutico."
+    },
+    "edit": {
+      "title": "Editar Paciente",
+      "description": "Atualize as informações do paciente."
+    },
+    "deleteAll": {
+      "title": "Tem certeza?",
+      "description": "Esta ação irá excluir todos os pacientes permanentemente e não poderá ser desfeita.",
+      "confirm": "Excluir Todos",
+      "cancel": "Cancelar"
+    },
+    "deleteOne": {
+      "title": "Excluir Paciente",
+      "description": "Tem certeza que deseja excluir este paciente? Esta ação não pode ser desfeita.",
+      "confirm": "Sim, excluir",
+      "cancel": "Cancelar"
+    }
+  },
+  "form": {
+    "name": "Nome do Paciente",
+    "birthDate": "Data de Nascimento",
+    "age": "Idade",
+    "responsible": "Responsável",
+    "contact": "Contato",
+    "namePlaceholder": "Digite o nome completo",
+    "responsiblePlaceholder": "Nome do responsável",
+    "contactPlaceholder": "Telefone ou e-mail"
+  },
+  "table": {
+    "name": "Nome",
+    "age": "Idade",
+    "responsible": "Responsável",
+    "contact": "Contato",
+    "anamnesis": "Anamnese",
+    "actions": "Ações",
+    "hasAnamnesis": "Possui Anamnese",
+    "noAnamnesis": "Sem Anamnese"
+  },
+  "counter": {
+    "total": "Total de {{count}} paciente",
+    "total_plural": "Total de {{count}} pacientes",
+    "active": "{{count}} ativo",
+    "active_plural": "{{count}} ativos"
+  },
+  "empty": {
+    "title": "Nenhum paciente cadastrado",
+    "description": "Adicione seu primeiro paciente para começar.",
+    "noResults": "Nenhum paciente encontrado"
+  },
+  "toast": {
+    "addSuccess": "Paciente adicionado com sucesso!",
+    "editSuccess": "Paciente atualizado com sucesso!",
+    "deleteSuccess": "Paciente excluído com sucesso!",
+    "deleteAllSuccess": "Todos os pacientes foram excluídos!",
+    "error": "Erro ao processar operação",
+    "loadError": "Erro ao carregar pacientes"
+  }
+}
