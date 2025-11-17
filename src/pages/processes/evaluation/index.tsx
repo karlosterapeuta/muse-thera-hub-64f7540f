@@ -781,11 +781,11 @@ export default function Evaluation() {
           </CardContent>
         </Card>
         
-        <Card className="backdrop-blur-sm bg-white/90 border-0 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-900/90 border-0 dark:border dark:border-gray-800 shadow-2xl shadow-blue-500/10 dark:shadow-purple-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
-                <div className="bg-white rounded-xl p-4">
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
@@ -797,22 +797,22 @@ export default function Evaluation() {
               </div>
               
               {selectedPatientData && (
-                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200">
-                  <p className="text-sm font-medium text-emerald-800">
-                    <span className="text-emerald-600">Idade:</span> {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/80 dark:to-teal-950/80 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">
+                    <span className="text-emerald-600 dark:text-emerald-400">Idade:</span> {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
                   </p>
                 </div>
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-700">Data da Avaliação</label>
+                <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-[220px] justify-start text-left font-normal bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300",
-                        !evaluationDate && "text-muted-foreground"
+                        "w-[220px] justify-start text-left font-normal bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border-blue-200 dark:border-blue-800 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/70 dark:hover:to-indigo-900/70 transition-all duration-300",
+                        !evaluationDate && "text-muted-foreground dark:text-gray-400"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
@@ -838,7 +838,7 @@ export default function Evaluation() {
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
               >
-                <SelectTrigger className="w-full sm:w-[200px] bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100 transition-all duration-300">
+                <SelectTrigger className="w-full sm:w-[200px] bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 border-gray-200 dark:border-gray-700 hover:from-gray-100 hover:to-slate-100 dark:hover:from-gray-800/70 dark:hover:to-slate-800/70 transition-all duration-300">
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
@@ -887,31 +887,31 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 p-1 rounded-2xl h-14">
+            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 p-1 rounded-2xl h-14">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-purple-600 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all duration-300"
               >
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-all duration-300"
               >
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all duration-300"
               >
                 Comparação
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="evaluation" className="space-y-8 mt-8">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
-                <p className="text-blue-700 text-sm">
+              <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Escala MuseTera - Versão Profissional</h3>
+                <p className="text-blue-700 dark:text-blue-300 text-sm">
                   Sistema de 6 níveis (0-5): Não Observado (0), Emergente (1), Inconsistente (2), 
                   Moderado (3), Consistente (4), Excepcional (5) - Total de 100 pontos
                 </p>
