@@ -4,6 +4,7 @@ import { Music, Maximize2, RotateCcw, Star, Heart, X, Smartphone } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
+import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 export default function ChromeMusicLab() {
   const [isLoading, setIsLoading] = useState(true);
@@ -75,11 +76,9 @@ export default function ChromeMusicLab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* MuseTera Logo */}
-            <img
-              src="/images/logo-musetera.png"
-              alt="MuseTera Logo"
-              className="h-12 w-12 rounded-xl shadow-md ring-2 ring-primary/20"
-            />
+            <div className="h-12 w-12">
+              <MuseteraLogo size={48} showText={false} />
+            </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 🎵 Jogos Musicais - MuseTera
@@ -143,11 +142,9 @@ export default function ChromeMusicLab() {
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm z-20">
               {/* MuseTera Logo in Loading */}
               <div className="mb-6">
-                <img
-                  src="/images/logo-musetera.png"
-                  alt="MuseTera"
-                  className="h-16 w-16 rounded-xl shadow-lg ring-2 ring-primary/20 animate-pulse-gentle"
-                />
+                <div className="h-16 w-16 animate-pulse-gentle">
+                  <MuseteraLogo size={64} showText={false} />
+                </div>
               </div>
               
               <div className="text-center space-y-6 max-w-sm mx-auto p-6">
@@ -270,11 +267,9 @@ export default function ChromeMusicLab() {
       <footer className="w-full py-6 mt-8 border-t bg-gradient-to-r from-primary/5 to-primary/10">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <img
-              src="/images/logo-musetera.png"
-              alt="MuseTera"
-              className="h-8 w-8 rounded-lg shadow-sm"
-            />
+            <div className="h-8 w-8">
+              <MuseteraLogo size={32} showText={false} />
+            </div>
             <div className="text-sm">
               <div className="font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 🎵 Sistema MuseTera

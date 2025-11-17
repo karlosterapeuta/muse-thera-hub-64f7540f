@@ -1,16 +1,11 @@
 import { Sparkles } from "lucide-react";
+import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 export function HeaderLogo() {
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-pink-500/10 rounded-xl border border-purple-300/30 dark:border-purple-700/30 hover:scale-105 transition-all duration-300 cursor-pointer group">
-      {/* Logo com glow effect */}
-      <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 rounded-lg blur opacity-30 group-hover:opacity-60 transition-all animate-gradient"></div>
-        <img 
-          src="/images/logo-musetera.png"
-          alt="MuseTera"
-          className="relative h-7 w-7 rounded-lg shadow-lg group-hover:rotate-12 transition-transform duration-300"
-        />
+      <div className="relative group-hover:rotate-12 transition-transform duration-300">
+        <MuseteraLogo size={28} showText={false} />
       </div>
       
       {/* Nome com gradiente */}
