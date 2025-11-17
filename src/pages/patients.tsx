@@ -34,6 +34,7 @@ import {
   Users,
   Sparkles
 } from "lucide-react";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -141,23 +142,28 @@ export default function PatientsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-4 md:py-8 space-y-8 animate-fadeIn">
-        {/* Hero Section */}
-        <div className="text-center space-y-6 mb-12">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-3xl rounded-full"></div>
-            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-2xl">
-              <Users className="h-10 w-10 text-white" />
-            </div>
-          </div>
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {t('title')}
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {t('description')}
-            </p>
+      {/* Hero Section */}
+      <div className="text-center space-y-6 mb-12 relative">
+        {/* Language Selector */}
+        <div className="absolute top-0 right-0 md:right-4">
+          <LanguageSelector />
+        </div>
+        
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-3xl rounded-full"></div>
+          <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-2xl">
+            <Users className="h-10 w-10 text-white" />
           </div>
         </div>
+        <div className="space-y-3">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            {t('title')}
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {t('description')}
+          </p>
+        </div>
+      </div>
 
         {/* Main Card */}
         <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
