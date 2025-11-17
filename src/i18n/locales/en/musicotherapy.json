@@ -343,6 +343,140 @@
       "bimonthly": "Bimonthly",
       "quarterly": "Quarterly",
       "semiannual": "Semiannual"
+    },
+    "objectives": {
+      "general": {
+        "label": "Broad purposes of music therapy",
+        "buttonShow": "Suggestions",
+        "buttonHide": "Hide",
+        "suggestionsTitle": "Suggested Objectives",
+        "placeholder": "Enter an objective or choose from suggestions",
+        "suggestions": [
+          "Promote verbal and non-verbal communication",
+          "Foster emotional self-regulation",
+          "Stimulate social interaction",
+          "Develop motor skills",
+          "Expand sustained attention",
+          "Facilitate expression of feelings",
+          "Strengthen therapeutic bond",
+          "Promote well-being through music"
+        ]
+      },
+      "specific": {
+        "label": "Measurable and specific objectives",
+        "placeholder": "Enter a specific objective",
+        "suggestions": [
+          "Expand sustained attention time by 5 minutes",
+          "Initiate 3 spontaneous interactions per session",
+          "Use musical instrument to express emotion",
+          "Follow simple verbal commands in musical context",
+          "Participate in group activity for 15 minutes",
+          "Identify and name 5 emotions through music",
+          "Reproduce 3-beat rhythmic patterns",
+          "Maintain eye contact during musical activity",
+          "Express musical preferences clearly",
+          "Complete 4-movement sequence with music"
+        ]
+      }
+    },
+    "resources": {
+      "title": "Music Therapy Resources",
+      "buttonShow": "Catalog",
+      "buttonHide": "Hide",
+      "catalogTitle": "Resource Catalog",
+      "placeholder": "Enter a resource or choose from catalog",
+      "categories": {
+        "instruments": {
+          "label": "Instruments",
+          "items": [
+            "Guitar",
+            "Keyboard",
+            "Children's Drums",
+            "Tambourine",
+            "Shakers",
+            "Xylophone",
+            "Metallophone",
+            "Recorder",
+            "Drum",
+            "Triangle",
+            "Bell",
+            "Maracas",
+            "Bongo",
+            "Guiro",
+            "Claves",
+            "Rain Stick"
+          ]
+        },
+        "technology": {
+          "label": "Technology",
+          "items": [
+            "Music Apps",
+            "Recorded Music",
+            "Karaoke",
+            "Music Videos",
+            "Music Software",
+            "Sound Samples",
+            "Digital Metronome",
+            "Audio Recorder"
+          ]
+        },
+        "voice": {
+          "label": "Voice/Body",
+          "items": [
+            "Free Singing",
+            "Directed Songs",
+            "Vocalizations",
+            "Body Percussion",
+            "Vocal Sounds",
+            "Onomatopoeia",
+            "Vocal Improvisation",
+            "Sung Breathing"
+          ]
+        },
+        "complementary": {
+          "label": "Complementary",
+          "items": [
+            "Thematic Images",
+            "Music Cards",
+            "Simple Scores",
+            "Puppets",
+            "Sound Objects",
+            "Colorful Fabrics",
+            "Balloons",
+            "Dance Scarves"
+          ]
+        }
+      }
+    },
+    "evaluationCriteria": {
+      "title": "Evaluation Criteria",
+      "buttonShow": "Examples",
+      "buttonHide": "Hide",
+      "suggestionsTitle": "Suggested Criteria",
+      "placeholder": "Enter an evaluation criterion or choose from suggestions",
+      "suggestions": [
+        "Increase in engagement time in musical activity",
+        "Spontaneous participation in musical turns",
+        "Improvement in emotional regulation during sessions",
+        "Increase in communication initiatives",
+        "Development of new instrumental skills",
+        "Greater tolerance to activity changes",
+        "Expansion of emotional expression repertoire",
+        "Improvement in fine and gross motor coordination",
+        "Increase in positive social behaviors",
+        "Reduction of challenging behaviors",
+        "Greater autonomy in musical choices",
+        "Positive feedback from family and team"
+      ]
+    },
+    "frequency": {
+      "weeklySessionsLabel": "Weekly sessions",
+      "sessionDurationLabel": "Session duration (minutes)",
+      "estimatedPeriodLabel": "Estimated period (months)",
+      "perWeek": "per week",
+      "minutes": "minutes",
+      "month": "month",
+      "months": "months"
     }
   }
 }

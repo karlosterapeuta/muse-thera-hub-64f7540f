@@ -343,6 +343,140 @@
       "bimonthly": "Bimestral",
       "quarterly": "Trimestral",
       "semiannual": "Semestral"
+    },
+    "objectives": {
+      "general": {
+        "label": "Propósitos amplos da musicoterapia",
+        "buttonShow": "Sugestões",
+        "buttonHide": "Ocultar",
+        "suggestionsTitle": "Objetivos Sugeridos",
+        "placeholder": "Digite um objetivo ou escolha das sugestões",
+        "suggestions": [
+          "Promover comunicação verbal e não verbal",
+          "Favorecer autorregulação emocional",
+          "Estimular interação social",
+          "Desenvolver habilidades motoras",
+          "Ampliar atenção sustentada",
+          "Facilitar expressão de sentimentos",
+          "Fortalecer vínculo terapêutico",
+          "Promover bem-estar através da música"
+        ]
+      },
+      "specific": {
+        "label": "Objetivos mensuráveis e específicos",
+        "placeholder": "Digite um objetivo específico",
+        "suggestions": [
+          "Ampliar tempo de atenção sustentada em 5 minutos",
+          "Iniciar 3 interações espontâneas por sessão",
+          "Utilizar instrumento musical para expressar emoção",
+          "Seguir comandos verbais simples em contexto musical",
+          "Participar de atividade em grupo por 15 minutos",
+          "Identificar e nomear 5 emoções através da música",
+          "Reproduzir padrões rítmicos de 3 tempos",
+          "Manter contato visual durante atividade musical",
+          "Expressar preferências musicais de forma clara",
+          "Completar sequência de 4 movimentos com música"
+        ]
+      }
+    },
+    "resources": {
+      "title": "Recursos Musicoterapêuticos",
+      "buttonShow": "Catálogo",
+      "buttonHide": "Ocultar",
+      "catalogTitle": "Catálogo de Recursos",
+      "placeholder": "Digite um recurso ou escolha do catálogo",
+      "categories": {
+        "instruments": {
+          "label": "Instrumentos",
+          "items": [
+            "Violão",
+            "Teclado",
+            "Bateria infantil",
+            "Pandeiro",
+            "Chocalhos",
+            "Xilofone",
+            "Metalofone",
+            "Flauta doce",
+            "Tambor",
+            "Triângulo",
+            "Sino",
+            "Maracas",
+            "Bongô",
+            "Reco-reco",
+            "Clavas",
+            "Pau de chuva"
+          ]
+        },
+        "technology": {
+          "label": "Tecnologia",
+          "items": [
+            "Apps de música",
+            "Música gravada",
+            "Karaokê",
+            "Vídeos musicais",
+            "Software musical",
+            "Samples sonoros",
+            "Metrônomo digital",
+            "Gravador de áudio"
+          ]
+        },
+        "voice": {
+          "label": "Voz/Corpo",
+          "items": [
+            "Canto livre",
+            "Canções dirigidas",
+            "Vocalizes",
+            "Percussão corporal",
+            "Sons vocais",
+            "Onomatopeias",
+            "Improvisação vocal",
+            "Respiração cantada"
+          ]
+        },
+        "complementary": {
+          "label": "Complementares",
+          "items": [
+            "Imagens temáticas",
+            "Cartões de música",
+            "Partituras simples",
+            "Fantoches",
+            "Objetos sonoros",
+            "Tecidos coloridos",
+            "Balões",
+            "Lenços para dança"
+          ]
+        }
+      }
+    },
+    "evaluationCriteria": {
+      "title": "Critérios de Avaliação",
+      "buttonShow": "Exemplos",
+      "buttonHide": "Ocultar",
+      "suggestionsTitle": "Critérios Sugeridos",
+      "placeholder": "Digite um critério de avaliação ou escolha das sugestões",
+      "suggestions": [
+        "Aumento no tempo de engajamento em atividade musical",
+        "Participação espontânea em turnos musicais",
+        "Melhora na regulação emocional durante sessões",
+        "Aumento de iniciativas de comunicação",
+        "Desenvolvimento de novas habilidades instrumentais",
+        "Maior tolerância a mudanças de atividade",
+        "Ampliação do repertório de expressão emocional",
+        "Melhora na coordenação motora fina e grossa",
+        "Aumento de comportamentos sociais positivos",
+        "Redução de comportamentos desafiadores",
+        "Maior autonomia em escolhas musicais",
+        "Feedback positivo de família e equipe"
+      ]
+    },
+    "frequency": {
+      "weeklySessionsLabel": "Sessões semanais",
+      "sessionDurationLabel": "Duração da sessão (minutos)",
+      "estimatedPeriodLabel": "Período estimado (meses)",
+      "perWeek": "por semana",
+      "minutes": "minutos",
+      "month": "mês",
+      "months": "meses"
     }
   }
 }
