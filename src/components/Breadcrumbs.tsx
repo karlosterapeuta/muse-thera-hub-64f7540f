@@ -45,7 +45,7 @@ export function Breadcrumbs() {
         to="/dashboard"
         className="flex items-center gap-1 hover:text-foreground transition-colors"
       >
-        <Home className="h-4 w-4" />
+        <Home className="h-5 w-5" />
       </Link>
 
       {pathnames.map((_, index) => {
@@ -55,7 +55,7 @@ export function Breadcrumbs() {
 
         return (
           <div key={routeTo} className="flex items-center gap-2">
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
             {isLast ? (
               <span className="font-medium text-foreground">{routeName}</span>
             ) : (
