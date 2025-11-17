@@ -215,8 +215,8 @@ export default function PatientsPage() {
                   <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/30 border-t-primary shadow-lg"></div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">Carregando pacientes...</h3>
-                  <p className="text-muted-foreground">Aguarde um momento</p>
+                  <h3 className="text-xl font-semibold text-foreground">{t('loading.title')}</h3>
+                  <p className="text-muted-foreground">{t('loading.message')}</p>
                 </div>
               </div>
             ) : (
@@ -245,8 +245,8 @@ export default function PatientsPage() {
                           <Users className="h-12 w-12 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="text-xl font-semibold text-foreground">Nenhum paciente encontrado</h3>
-                          <p className="text-muted-foreground">Comece adicionando seu primeiro paciente</p>
+                          <h3 className="text-xl font-semibold text-foreground">{t('empty.title')}</h3>
+                          <p className="text-muted-foreground">{t('empty.description')}</p>
                         </div>
                       </div>
                     )}
@@ -277,24 +277,23 @@ export default function PatientsPage() {
                     disabled={patients.length === 0}
                     className="w-full md:w-auto bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    Excluir Todos os Pacientes
+                    {t('dialog.deleteAll.button')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="border-0 shadow-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-xl font-bold text-foreground">Tem certeza?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-xl font-bold text-foreground">{t('dialog.deleteAll.title')}</AlertDialogTitle>
                     <AlertDialogDescription className="text-muted-foreground text-base">
-                      Esta ação irá excluir todos os pacientes permanentemente e não
-                      poderá ser desfeita.
+                      {t('dialog.deleteAll.description')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="hover:bg-gray-100">Cancelar</AlertDialogCancel>
+                    <AlertDialogCancel className="hover:bg-gray-100">{t('dialog.deleteAll.cancel')}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteAllPatients}
                       className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
                     >
-                      Excluir Todos
+                      {t('dialog.deleteAll.confirm')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -304,7 +303,7 @@ export default function PatientsPage() {
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-gradient-to-r from-primary to-purple-600 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium">
-                    {patients.length} paciente{patients.length !== 1 ? 's' : ''} cadastrado{patients.length !== 1 ? 's' : ''}
+                    {t('counter.registered', { count: patients.length })}
                   </span>
                 </div>
               </div>
@@ -317,10 +316,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Adicionar Paciente
+                {t('dialog.add.title')}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                Crie um novo paciente para iniciar o processo terapêutico.
+                {t('dialog.add.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">
@@ -333,10 +332,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Editar Paciente
+                {t('dialog.edit.title')}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                Atualize as informações do paciente.
+                {t('dialog.edit.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">
@@ -355,10 +354,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Anamnese
+                {t('dialog.viewAnamnesis.title')}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                Visualize a anamnese do paciente.
+                {t('dialog.viewAnamnesis.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">

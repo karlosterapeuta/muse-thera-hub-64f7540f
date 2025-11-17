@@ -14,6 +14,23 @@
     "editAnamnesis": "Edit Anamnesis",
     "createAnamnesis": "Create Anamnesis"
   },
+  "loading": {
+    "title": "Loading patients...",
+    "message": "Please wait a moment"
+  },
+  "empty": {
+    "title": "No patients found",
+    "description": "Start by adding your first patient",
+    "noResults": "No patients found."
+  },
+  "counter": {
+    "total": "Total of {{count}} patient",
+    "total_plural": "Total of {{count}} patients",
+    "active": "{{count}} active",
+    "active_plural": "{{count}} active",
+    "registered": "{{count}} patient registered",
+    "registered_plural": "{{count}} patients registered"
+  },
   "dialog": {
     "add": {
       "title": "Add Patient",
@@ -24,16 +41,21 @@
       "description": "Update patient information."
     },
     "deleteAll": {
+      "button": "Delete All Patients",
       "title": "Are you sure?",
       "description": "This action will permanently delete all patients and cannot be undone.",
       "confirm": "Delete All",
       "cancel": "Cancel"
     },
     "deleteOne": {
-      "title": "Delete Patient",
-      "description": "Are you sure you want to delete this patient? This action cannot be undone.",
-      "confirm": "Yes, delete",
+      "title": "Are you sure?",
+      "description": "This action will permanently delete patient \"{{name}}\" and cannot be undone.",
+      "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "viewAnamnesis": {
+      "title": "Anamnesis",
+      "description": "View patient anamnesis."
     }
   },
   "form": {
@@ -54,18 +76,29 @@
     "anamnesis": "Anamnesis",
     "actions": "Actions",
     "hasAnamnesis": "Has Anamnesis",
-    "noAnamnesis": "No Anamnesis"
-  },
-  "counter": {
-    "total": "Total of {{count}} patient",
-    "total_plural": "Total of {{count}} patients",
-    "active": "{{count}} active",
-    "active_plural": "{{count}} active"
-  },
-  "empty": {
-    "title": "No patients registered",
-    "description": "Add your first patient to get started.",
-    "noResults": "No patients found"
+    "noAnamnesis": "No Anamnesis",
+    "headers": {
+      "name": "Name",
+      "age": "Age",
+      "responsible": "Guardian",
+      "contact": "Contact",
+      "anamnesis": "Anamnesis",
+      "actions": "Actions"
+    },
+    "age": {
+      "years": "years old",
+      "notAvailable": "N/A"
+    },
+    "anamnesis": {
+      "registered": "Recorded",
+      "notRegistered": "Not recorded"
+    },
+    "actions": {
+      "edit": "Edit",
+      "viewAnamnesis": "View Anamnesis",
+      "editAnamnesis": "Edit Anamnesis",
+      "delete": "Delete"
+    }
   },
   "toast": {
     "addSuccess": "Patient added successfully!",

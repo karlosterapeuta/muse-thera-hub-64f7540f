@@ -14,6 +14,23 @@
     "editAnamnesis": "Editar Anamnese",
     "createAnamnesis": "Criar Anamnese"
   },
+  "loading": {
+    "title": "Carregando pacientes...",
+    "message": "Aguarde um momento"
+  },
+  "empty": {
+    "title": "Nenhum paciente encontrado",
+    "description": "Comece adicionando seu primeiro paciente",
+    "noResults": "Nenhum paciente encontrado."
+  },
+  "counter": {
+    "total": "Total de {{count}} paciente",
+    "total_plural": "Total de {{count}} pacientes",
+    "active": "{{count}} ativo",
+    "active_plural": "{{count}} ativos",
+    "registered": "{{count}} paciente cadastrado",
+    "registered_plural": "{{count}} pacientes cadastrados"
+  },
   "dialog": {
     "add": {
       "title": "Adicionar Paciente",
@@ -24,16 +41,21 @@
       "description": "Atualize as informações do paciente."
     },
     "deleteAll": {
+      "button": "Excluir Todos os Pacientes",
       "title": "Tem certeza?",
       "description": "Esta ação irá excluir todos os pacientes permanentemente e não poderá ser desfeita.",
       "confirm": "Excluir Todos",
       "cancel": "Cancelar"
     },
     "deleteOne": {
-      "title": "Excluir Paciente",
-      "description": "Tem certeza que deseja excluir este paciente? Esta ação não pode ser desfeita.",
-      "confirm": "Sim, excluir",
+      "title": "Tem certeza?",
+      "description": "Esta ação irá excluir o paciente \"{{name}}\" permanentemente e não poderá ser desfeita.",
+      "confirm": "Excluir",
       "cancel": "Cancelar"
+    },
+    "viewAnamnesis": {
+      "title": "Anamnese",
+      "description": "Visualize a anamnese do paciente."
     }
   },
   "form": {
@@ -54,18 +76,29 @@
     "anamnesis": "Anamnese",
     "actions": "Ações",
     "hasAnamnesis": "Possui Anamnese",
-    "noAnamnesis": "Sem Anamnese"
-  },
-  "counter": {
-    "total": "Total de {{count}} paciente",
-    "total_plural": "Total de {{count}} pacientes",
-    "active": "{{count}} ativo",
-    "active_plural": "{{count}} ativos"
-  },
-  "empty": {
-    "title": "Nenhum paciente cadastrado",
-    "description": "Adicione seu primeiro paciente para começar.",
-    "noResults": "Nenhum paciente encontrado"
+    "noAnamnesis": "Sem Anamnese",
+    "headers": {
+      "name": "Nome",
+      "age": "Idade",
+      "responsible": "Responsável",
+      "contact": "Contato",
+      "anamnesis": "Anamnese",
+      "actions": "Ações"
+    },
+    "age": {
+      "years": "anos",
+      "notAvailable": "N/A"
+    },
+    "anamnesis": {
+      "registered": "Registrada",
+      "notRegistered": "Não registrada"
+    },
+    "actions": {
+      "edit": "Editar",
+      "viewAnamnesis": "Ver Anamnese",
+      "editAnamnesis": "Editar Anamnese",
+      "delete": "Excluir"
+    }
   },
   "toast": {
     "addSuccess": "Paciente adicionado com sucesso!",
