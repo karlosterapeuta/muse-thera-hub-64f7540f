@@ -1,0 +1,60 @@
+{
+  "plans": {
+    "title": "Planes de Musicoterapia",
+    "description": "Gestione sus planes de tratamiento guardados",
+    "newPlan": "Nuevo Plan",
+    "loading": "Cargando planes...",
+    "filters": {
+      "searchPlaceholder": "Buscar por paciente o diagnóstico...",
+      "status": "Estado",
+      "allStatus": "Todos los estados",
+      "sortBy": "Ordenar por",
+      "lastUpdate": "Última actualización",
+      "createdDate": "Fecha de creación",
+      "patientName": "Nombre del paciente"
+    },
+    "status": {
+      "active": "Activo",
+      "completed": "Completado",
+      "draft": "Borrador",
+      "archived": "Archivado",
+      "none": "Sin estado"
+    },
+    "empty": {
+      "title": "No se encontraron planes",
+      "adjustFilters": "Intente ajustar los filtros de búsqueda.",
+      "createFirst": "Comience creando su primer plan de musicoterapia.",
+      "createButton": "Crear Primer Plan"
+    },
+    "table": {
+      "plansFound": "{{count}} plan encontrado",
+      "plansFound_plural": "{{count}} planes encontrados",
+      "headers": {
+        "patient": "Paciente",
+        "diagnosis": "Diagnóstico",
+        "status": "Estado",
+        "lastUpdate": "Última actualización",
+        "actions": "Acciones"
+      },
+      "notInformed": "No informado",
+      "nameNotInformed": "Nombre no informado",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "view": "Ver"
+    },
+    "deleteDialog": {
+      "title": "Eliminar plan de musicoterapia",
+      "description": "¿Está seguro de que desea eliminar el plan de {{name}}?",
+      "warning": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "toast": {
+      "deleted": "Plan eliminado",
+      "deletedSuccess": "El plan de musicoterapia se eliminó con éxito.",
+      "deleteError": "Error al eliminar",
+      "deleteErrorMessage": "No se pudo eliminar el plan. Inténtelo de nuevo."
+    },
+    "invalidDate": "Fecha inválida"
+  }
+}

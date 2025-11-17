@@ -1,0 +1,60 @@
+{
+  "plans": {
+    "title": "Music Therapy Plans",
+    "description": "Manage your saved treatment plans",
+    "newPlan": "New Plan",
+    "loading": "Loading plans...",
+    "filters": {
+      "searchPlaceholder": "Search by patient or diagnosis...",
+      "status": "Status",
+      "allStatus": "All statuses",
+      "sortBy": "Sort by",
+      "lastUpdate": "Last update",
+      "createdDate": "Creation date",
+      "patientName": "Patient name"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "draft": "Draft",
+      "archived": "Archived",
+      "none": "No status"
+    },
+    "empty": {
+      "title": "No plans found",
+      "adjustFilters": "Try adjusting your search filters.",
+      "createFirst": "Start by creating your first music therapy plan.",
+      "createButton": "Create First Plan"
+    },
+    "table": {
+      "plansFound": "{{count}} plan found",
+      "plansFound_plural": "{{count}} plans found",
+      "headers": {
+        "patient": "Patient",
+        "diagnosis": "Diagnosis",
+        "status": "Status",
+        "lastUpdate": "Last update",
+        "actions": "Actions"
+      },
+      "notInformed": "Not informed",
+      "nameNotInformed": "Name not informed",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
+    },
+    "deleteDialog": {
+      "title": "Delete music therapy plan",
+      "description": "Are you sure you want to delete the plan for {{name}}?",
+      "warning": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "toast": {
+      "deleted": "Plan deleted",
+      "deletedSuccess": "The music therapy plan was successfully deleted.",
+      "deleteError": "Error deleting",
+      "deleteErrorMessage": "Could not delete the plan. Please try again."
+    },
+    "invalidDate": "Invalid date"
+  }
+}
