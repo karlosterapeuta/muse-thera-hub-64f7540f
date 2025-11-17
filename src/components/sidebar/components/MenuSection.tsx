@@ -2,8 +2,18 @@
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { MenuSectionProps } from "../types";
+import { useTranslation } from "react-i18next";
 
 export function MenuSection({ title, items, collapsed, onNavigate, showTitle = true }: MenuSectionProps) {
+  const { t } = useTranslation();
+  
+  const getItemText = (item: any) => {
+    if (item.textKey) {
+      return t(item.textKey);
+    }
+    return item.text || "";
+  };
+  
   return (
     <div className="space-y-1">
       {!collapsed && showTitle && (
@@ -14,6 +24,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
         </div>
       )}
       {items.map((item) => {
+        const itemText = getItemText(item);
         if (item.external) {
           return (
             <a
@@ -36,7 +47,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
               
               {!collapsed && (
                 <span className="font-medium transition-all duration-200 text-sm text-foreground group-hover:text-foreground">
-                  {item.text}
+                  {itemText}
                 </span>
               )}
               
@@ -92,13 +103,13 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                         ? "text-white" 
                         : "text-foreground group-hover:text-foreground"
                     )}>
-                      {item.text.includes("em construção") ? (
+                      {itemText.includes("em construção") ? (
                         <>
-                          {item.text.split(" - em construção")[0]}
+                          {itemText.split(" - em construção")[0]}
                           <span className="text-red-500 font-bold ml-1">- em construção</span>
                         </>
                       ) : (
-                        item.text
+                        itemText
                       )}
                     </span>
                     {item.isNew && (
