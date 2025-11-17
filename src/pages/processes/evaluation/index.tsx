@@ -769,7 +769,7 @@ export default function Evaluation() {
       <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
         <EvaluationLevelsHero />
         
-        <Card className="text-center mb-8 animate-fade-in bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-purple-100/60 dark:border-purple-800/60 shadow-xl">
+        <Card className="text-center mb-8 animate-fade-in bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-800 shadow-xl">
           <CardContent className="pt-6 pb-6">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 dark:from-purple-400 dark:via-blue-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
               Escala MuseTera
@@ -945,7 +945,7 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className="border-l-4 border-l-purple-400 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                        <Card className="border-l-4 border-l-purple-400 bg-transparent backdrop-blur-sm p-6 rounded-2xl shadow-lg">
                           <div className="flex items-center mb-4">
                             <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
                             <TooltipProvider>
