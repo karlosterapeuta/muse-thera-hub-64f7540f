@@ -27,7 +27,14 @@
       "wednesday": "Quarta",
       "thursday": "Quinta",
       "friday": "Sexta",
-      "saturday": "Sábado"
+      "saturday": "Sábado",
+      "domingo": "Domingo",
+      "segunda": "Segunda",
+      "terca": "Terça",
+      "quarta": "Quarta",
+      "quinta": "Quinta",
+      "sexta": "Sexta",
+      "sabado": "Sábado"
     },
     "messages": {
       "created": "Clínica criada com sucesso!",

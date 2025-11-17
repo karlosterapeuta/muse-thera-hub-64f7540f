@@ -138,7 +138,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   return (
     <div className="w-full">
       <CardHeader className={isMobile ? "p-4" : "p-6"}>
-        <CardTitle className="text-xl md:text-2xl">{isUpdating ? "Editar Clínica" : "Nova Clínica"}</CardTitle>
+        <CardTitle className="text-xl md:text-2xl">{isUpdating ? t('clinics.edit') : t('clinics.new')}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -148,10 +148,10 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>{t('clinics.form.name')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Nome da clínica"
+                      placeholder={t('clinics.form.name')}
                       {...field}
                     />
                   </FormControl>
@@ -165,10 +165,10 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Endereço (opcional)</FormLabel>
+                  <FormLabel>{t('clinics.form.address')} ({t('common.optional')})</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Endereço da clínica"
+                      placeholder={t('clinics.form.address')}
                       {...field}
                       value={field.value || ""}
                     />
@@ -183,7 +183,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="service_days"
               render={() => (
                 <FormItem>
-                  <FormLabel>Dias de Atendimento</FormLabel>
+                  <FormLabel>{t('clinics.form.serviceDays')}</FormLabel>
                   <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-2"} gap-2`}>
                     {WEEKDAYS.map((day) => (
                       <div key={day.value} className="flex items-center space-x-2">
@@ -206,7 +206,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                           htmlFor={`day-${day.value}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          {day.label}
+                          {t(`clinics.weekdays.${day.value}`)}
                         </label>
                       </div>
                     ))}
@@ -221,11 +221,11 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="patient_ids"
               render={() => (
                 <FormItem>
-                  <FormLabel>Pacientes</FormLabel>
+                  <FormLabel>{t('clinics.form.patients')}</FormLabel>
                   <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
                     {isLoading ? (
                       <div className="text-sm text-muted-foreground py-2 text-center">
-                        Carregando pacientes...
+                        {t('clinics.loading')}
                       </div>
                     ) : patients.length > 0 ? (
                       patients.map((patient) => (
@@ -255,7 +255,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                       ))
                     ) : (
                       <div className="text-sm text-muted-foreground py-2 text-center">
-                        Nenhum paciente cadastrado no seu perfil
+                        {t('clinics.noResults')}
                       </div>
                     )}
                   </div>
@@ -272,14 +272,14 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               onClick={() => onSuccess?.()}
               className={isMobile ? "w-full" : ""}
             >
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={addClinic.isPending || updateClinic.isPending}
               className={isMobile ? "w-full" : ""}
             >
-              {isUpdating ? "Atualizar" : "Salvar"}
+              {isUpdating ? t('common.edit') : t('common.save')}
             </Button>
           </CardFooter>
         </form>
