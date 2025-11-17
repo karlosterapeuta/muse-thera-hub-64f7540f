@@ -727,7 +727,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
   };
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-background">
       <div className="w-full px-0 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
         <EvaluationLevelsHero />
         
@@ -1237,7 +1237,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              <Card className="border-0 shadow-2xl p-8 rounded-3xl bg-gradient-to-br from-white via-gray-50 to-slate-50">
+              <Card className="border-0 shadow-2xl p-8 rounded-3xl bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50 border border-blue-200">
                 <div className="flex justify-center items-center h-[400px]">
                   <div className="text-center">
                     <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6">

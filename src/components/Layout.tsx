@@ -134,7 +134,7 @@ function LayoutContent({ children }: LayoutProps) {
         </header>
         
         {/* Conteúdo principal */}
-        <main className="flex-1 overflow-auto bg-transparent">
+        <main className="flex-1 overflow-auto bg-background">
           {children || <Outlet />}
         </main>
         
