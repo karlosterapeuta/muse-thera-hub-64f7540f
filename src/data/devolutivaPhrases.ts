@@ -7,24 +7,6 @@ export interface PhraseCategory {
 
 export const devolutivaPhrases: PhraseCategory[] = [
   {
-    id: 'arrival_state',
-    title: 'Estado de Chegada',
-    icon: '👋',
-    phrases: [
-      'Chegou tranquilo e receptivo à sessão',
-      'Apresentou ansiedade inicial que foi acolhida com música suave',
-      'Demonstrou entusiasmo ao reconhecer o ambiente terapêutico',
-      'Necessitou de tempo extra para adaptação ao espaço',
-      'Chegou agitado, mas se acalmou gradualmente com atividades rítmicas',
-      'Mostrou-se confortável e familiarizado com o setting terapêutico',
-      'Apresentou resistência inicial que foi trabalhada musicalmente',
-      'Apresentou resistência persistente ao entrar na sala, necessitando de múltiplas tentativas de acolhimento',
-      'Demonstrou irritabilidade desde a chegada, mantendo-se desorganizado durante toda a sessão',
-      'Recusou-se a participar das atividades, permanecendo isolado mesmo com tentativas de engajamento musical',
-      'Chegou em estado de desregulação emocional intensa que não foi possível modular durante a sessão'
-    ]
-  },
-  {
     id: 'communication',
     title: 'Comunicação e Interação',
     icon: '💬',

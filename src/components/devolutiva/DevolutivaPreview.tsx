@@ -6,7 +6,6 @@ interface DevolutivaPreviewProps {
     patient_name: string;
     session_date: string;
     session_number: number;
-    arrival_state: string;
     communication: string;
     emotional_regulation: string;
     motor_development: string;
@@ -24,7 +23,6 @@ interface DevolutivaPreviewProps {
 
 export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
   const sections = [
-    { title: 'Estado de Chegada', icon: '👋', content: data.arrival_state },
     { title: 'Comunicação e Interação', icon: '💬', content: data.communication },
     { title: 'Regulação Emocional', icon: '❤️', content: data.emotional_regulation },
     { title: 'Desenvolvimento Motor', icon: '🤸', content: data.motor_development },

@@ -9,7 +9,6 @@ export interface DevolutivaFormData {
   patient_name: string;
   session_date: string;
   session_number: number;
-  arrival_state: string[];
   communication: string[];
   emotional_regulation: string[];
   motor_development: string[];
@@ -30,7 +29,6 @@ export function useDevolutivaReport() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const [customTexts, setCustomTexts] = useState<Record<string, string>>({
-    arrival_state: '',
     communication: '',
     emotional_regulation: '',
     motor_development: '',
@@ -57,7 +55,6 @@ export function useDevolutivaReport() {
         patient_name: formData.patient_name,
         session_date: formData.session_date,
         session_number: formData.session_number,
-        arrival_state: combineText(formData.arrival_state, customTexts.arrival_state),
         communication: combineText(formData.communication, customTexts.communication),
         emotional_regulation: combineText(formData.emotional_regulation, customTexts.emotional_regulation),
         motor_development: combineText(formData.motor_development, customTexts.motor_development),
@@ -110,7 +107,6 @@ export function useDevolutivaReport() {
         patient_name: formData.patient_name,
         session_date: formData.session_date,
         session_number: formData.session_number,
-        arrival_state: combineText(formData.arrival_state, customTexts.arrival_state),
         communication: combineText(formData.communication, customTexts.communication),
         emotional_regulation: combineText(formData.emotional_regulation, customTexts.emotional_regulation),
         motor_development: combineText(formData.motor_development, customTexts.motor_development),
