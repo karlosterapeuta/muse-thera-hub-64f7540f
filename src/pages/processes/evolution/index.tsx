@@ -404,16 +404,16 @@ export default function EvolutionReport() {
                               key={optionIndex}
                               variant="outline"
                               size="sm"
-                              className="justify-start text-left h-auto p-3 lg:p-4 whitespace-normal hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 transition-all duration-200 group text-sm lg:text-base"
+                              className="justify-start text-left h-auto p-3 lg:p-4 whitespace-normal hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/40 dark:hover:to-indigo-900/40 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 group text-sm lg:text-base"
                               onClick={() => selectOption(section.key as any, option)}
                             >
                               <div className="flex items-start gap-2 lg:gap-3 w-full">
                                 <div className="p-1 bg-blue-100 group-hover:bg-blue-200 rounded transition-colors flex-shrink-0 mt-0.5">
                                   <CheckCircle className="h-3 w-3 text-blue-600" />
                                 </div>
-                                <span className="text-foreground group-hover:text-foreground leading-relaxed">
-                                  {option}
-                                </span>
+                        <span className="text-foreground group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-relaxed">
+                          {option}
+                        </span>
                               </div>
                             </Button>
                           ))}
