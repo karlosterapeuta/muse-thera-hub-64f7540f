@@ -14,6 +14,23 @@
     "editAnamnesis": "Editar Anamnesis",
     "createAnamnesis": "Crear Anamnesis"
   },
+  "loading": {
+    "title": "Cargando pacientes...",
+    "message": "Por favor espere un momento"
+  },
+  "empty": {
+    "title": "No se encontraron pacientes",
+    "description": "Comience agregando su primer paciente",
+    "noResults": "No se encontraron pacientes."
+  },
+  "counter": {
+    "total": "Total de {{count}} paciente",
+    "total_plural": "Total de {{count}} pacientes",
+    "active": "{{count}} activo",
+    "active_plural": "{{count}} activos",
+    "registered": "{{count}} paciente registrado",
+    "registered_plural": "{{count}} pacientes registrados"
+  },
   "dialog": {
     "add": {
       "title": "Agregar Paciente",
@@ -24,16 +41,21 @@
       "description": "Actualice la información del paciente."
     },
     "deleteAll": {
+      "button": "Eliminar Todos los Pacientes",
       "title": "¿Está seguro?",
       "description": "Esta acción eliminará permanentemente todos los pacientes y no se puede deshacer.",
       "confirm": "Eliminar Todos",
       "cancel": "Cancelar"
     },
     "deleteOne": {
-      "title": "Eliminar Paciente",
-      "description": "¿Está seguro de que desea eliminar este paciente? Esta acción no se puede deshacer.",
-      "confirm": "Sí, eliminar",
+      "title": "¿Está seguro?",
+      "description": "Esta acción eliminará permanentemente al paciente \"{{name}}\" y no se puede deshacer.",
+      "confirm": "Eliminar",
       "cancel": "Cancelar"
+    },
+    "viewAnamnesis": {
+      "title": "Anamnesis",
+      "description": "Ver anamnesis del paciente."
     }
   },
   "form": {
@@ -54,18 +76,29 @@
     "anamnesis": "Anamnesis",
     "actions": "Acciones",
     "hasAnamnesis": "Tiene Anamnesis",
-    "noAnamnesis": "Sin Anamnesis"
-  },
-  "counter": {
-    "total": "Total de {{count}} paciente",
-    "total_plural": "Total de {{count}} pacientes",
-    "active": "{{count}} activo",
-    "active_plural": "{{count}} activos"
-  },
-  "empty": {
-    "title": "No hay pacientes registrados",
-    "description": "Agregue su primer paciente para comenzar.",
-    "noResults": "No se encontraron pacientes"
+    "noAnamnesis": "Sin Anamnesis",
+    "headers": {
+      "name": "Nombre",
+      "age": "Edad",
+      "responsible": "Responsable",
+      "contact": "Contacto",
+      "anamnesis": "Anamnesis",
+      "actions": "Acciones"
+    },
+    "age": {
+      "years": "años",
+      "notAvailable": "N/D"
+    },
+    "anamnesis": {
+      "registered": "Registrada",
+      "notRegistered": "No registrada"
+    },
+    "actions": {
+      "edit": "Editar",
+      "viewAnamnesis": "Ver Anamnesis",
+      "editAnamnesis": "Editar Anamnesis",
+      "delete": "Eliminar"
+    }
   },
   "toast": {
     "addSuccess": "¡Paciente agregado con éxito!",
