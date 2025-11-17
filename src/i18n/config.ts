@@ -19,6 +19,7 @@ import pwaPT from './locales/pt-BR/pwa.json';
 import profilePT from './locales/pt-BR/profile.json';
 import digitalStampPT from './locales/pt-BR/digitalStamp.json';
 import processesPT from './locales/pt-BR/processes.json';
+import musicotherapyPT from './locales/pt-BR/musicotherapy.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -37,6 +38,7 @@ import pwaEN from './locales/en/pwa.json';
 import profileEN from './locales/en/profile.json';
 import digitalStampEN from './locales/en/digitalStamp.json';
 import processesEN from './locales/en/processes.json';
+import musicotherapyEN from './locales/en/musicotherapy.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -55,6 +57,7 @@ import pwaES from './locales/es/pwa.json';
 import profileES from './locales/es/profile.json';
 import digitalStampES from './locales/es/digitalStamp.json';
 import processesES from './locales/es/processes.json';
+import musicotherapyES from './locales/es/musicotherapy.json';
 
 i18n
   .use(LanguageDetector)
@@ -78,6 +81,7 @@ i18n
         profile: profilePT,
         digitalStamp: digitalStampPT,
         processes: processesPT,
+        musicotherapy: musicotherapyPT,
       },
       'en': {
         common: commonEN,
@@ -96,6 +100,7 @@ i18n
         profile: profileEN,
         digitalStamp: digitalStampEN,
         processes: processesEN,
+        musicotherapy: musicotherapyEN,
       },
       'es': {
         common: commonES,
@@ -118,7 +123,7 @@ i18n
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile', 'digitalStamp', 'processes'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile', 'digitalStamp', 'processes', 'musicotherapy'],
     
     interpolation: {
       escapeValue: false, // React já faz escape

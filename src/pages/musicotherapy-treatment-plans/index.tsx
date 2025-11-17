@@ -13,17 +13,31 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS, es } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function MusicotherapyTreatmentPlans() {
   const navigate = useNavigate();
   const { data: plans, isLoading } = useMusicotherapyTreatmentPlans();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation('musicotherapy');
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('updated_at');
+
+  const getDateFnsLocale = () => {
+    switch (i18n.language) {
+      case 'en':
+        return enUS;
+      case 'es':
+        return es;
+      default:
+        return ptBR;
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -47,15 +61,15 @@ export default function MusicotherapyTreatmentPlans() {
   const getStatusLabel = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return 'Ativo';
+        return t('plans.status.active');
       case 'completed':
-        return 'Concluído';
+        return t('plans.status.completed');
       case 'draft':
-        return 'Rascunho';
+        return t('plans.status.draft');
       case 'archived':
-        return 'Arquivado';
+        return t('plans.status.archived');
       default:
-        return status || 'Sem status';
+        return status || t('plans.status.none');
     }
   };
 
@@ -90,16 +104,16 @@ export default function MusicotherapyTreatmentPlans() {
       if (error) throw error;
 
       toast({
-        title: 'Plano excluído',
-        description: 'O plano musicoterapêutico foi excluído com sucesso.',
+        title: t('plans.toast.deleted'),
+        description: t('plans.toast.deletedSuccess'),
       });
       
       queryClient.invalidateQueries({ queryKey: ['musicotherapy-treatment-plans'] });
     } catch (error) {
       console.error('Error deleting plan:', error);
       toast({
-        title: 'Erro ao excluir',
-        description: 'Não foi possível excluir o plano. Tente novamente.',
+        title: t('plans.toast.deleteError'),
+        description: t('plans.toast.deleteErrorMessage'),
         variant: 'destructive',
       });
     }
@@ -107,9 +121,9 @@ export default function MusicotherapyTreatmentPlans() {
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'dd/MM/yyyy', { locale: ptBR });
+      return format(new Date(dateString), 'dd/MM/yyyy', { locale: getDateFnsLocale() });
     } catch {
-      return 'Data inválida';
+      return t('plans.invalidDate');
     }
   };
 
@@ -126,14 +140,17 @@ export default function MusicotherapyTreatmentPlans() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center relative">
+        <div className="absolute top-0 right-0 md:right-4">
+          <LanguageSelector />
+        </div>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Planos Musicoterapêuticos</h1>
-          <p className="text-muted-foreground">Gerencie seus planos de tratamento salvos</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('plans.title')}</h1>
+          <p className="text-muted-foreground">{t('plans.description')}</p>
         </div>
         <Button onClick={() => navigate('/musicotherapy-treatment-plan')} className="gap-2">
           <Plus className="h-4 w-4" />
-          Novo Plano
+          {t('plans.newPlan')}
         </Button>
       </div>
 
@@ -144,7 +161,7 @@ export default function MusicotherapyTreatmentPlans() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por paciente ou diagnóstico..."
+                placeholder={t('plans.filters.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -153,25 +170,25 @@ export default function MusicotherapyTreatmentPlans() {
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <Filter className="h-4 w-4" />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t('plans.filters.status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="draft">Rascunho</SelectItem>
-                <SelectItem value="completed">Concluído</SelectItem>
-                <SelectItem value="archived">Arquivado</SelectItem>
+                <SelectItem value="all">{t('plans.filters.allStatus')}</SelectItem>
+                <SelectItem value="active">{t('plans.status.active')}</SelectItem>
+                <SelectItem value="draft">{t('plans.status.draft')}</SelectItem>
+                <SelectItem value="completed">{t('plans.status.completed')}</SelectItem>
+                <SelectItem value="archived">{t('plans.status.archived')}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Ordenar por" />
+                <SelectValue placeholder={t('plans.filters.sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="updated_at">Última atualização</SelectItem>
-                <SelectItem value="created_at">Data de criação</SelectItem>
-                <SelectItem value="patient_name">Nome do paciente</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
+                <SelectItem value="updated_at">{t('plans.filters.lastUpdate')}</SelectItem>
+                <SelectItem value="created_at">{t('plans.filters.createdDate')}</SelectItem>
+                <SelectItem value="patient_name">{t('plans.filters.patientName')}</SelectItem>
+                <SelectItem value="status">{t('plans.filters.status')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -187,18 +204,18 @@ export default function MusicotherapyTreatmentPlans() {
                 <Calendar className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Nenhum plano encontrado</h3>
+                <h3 className="text-lg font-semibold">{t('plans.empty.title')}</h3>
                 <p className="text-muted-foreground">
                   {searchTerm || statusFilter !== 'all' 
-                    ? 'Tente ajustar os filtros de busca.' 
-                    : 'Comece criando seu primeiro plano musicoterapêutico.'
+                    ? t('plans.empty.adjustFilters')
+                    : t('plans.empty.createFirst')
                   }
                 </p>
               </div>
               {!searchTerm && statusFilter === 'all' && (
                 <Button onClick={() => navigate('/musicotherapy-treatment-plan')} className="gap-2">
                   <Plus className="h-4 w-4" />
-                  Criar Primeiro Plano
+                  {t('plans.empty.createButton')}
                 </Button>
               )}
             </div>
@@ -209,7 +226,7 @@ export default function MusicotherapyTreatmentPlans() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {sortedPlans.length} plano{sortedPlans.length !== 1 ? 's' : ''} encontrado{sortedPlans.length !== 1 ? 's' : ''}
+              {t('plans.table.plansFound', { count: sortedPlans.length })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -217,11 +234,11 @@ export default function MusicotherapyTreatmentPlans() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Paciente</TableHead>
-                    <TableHead>Diagnóstico</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Última atualização</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    <TableHead>{t('plans.table.headers.patient')}</TableHead>
+                    <TableHead>{t('plans.table.headers.diagnosis')}</TableHead>
+                    <TableHead>{t('plans.table.headers.status')}</TableHead>
+                    <TableHead>{t('plans.table.headers.lastUpdate')}</TableHead>
+                    <TableHead className="text-right">{t('plans.table.headers.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -231,7 +248,7 @@ export default function MusicotherapyTreatmentPlans() {
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <div>{plan.patient_full_name || 'Nome não informado'}</div>
+                            <div>{plan.patient_full_name || t('plans.table.nameNotInformed')}</div>
                             {plan.patient_age && (
                               <div className="text-sm text-muted-foreground">{plan.patient_age}</div>
                             )}
@@ -240,7 +257,7 @@ export default function MusicotherapyTreatmentPlans() {
                       </TableCell>
                       <TableCell>
                         <div className="max-w-xs truncate" title={plan.clinical_diagnosis}>
-                          {plan.clinical_diagnosis || 'Não informado'}
+                          {plan.clinical_diagnosis || t('plans.table.notInformed')}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -263,30 +280,31 @@ export default function MusicotherapyTreatmentPlans() {
                             className="gap-1"
                           >
                             <Edit className="h-4 w-4" />
-                            Editar
+                            {t('plans.table.edit')}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive">
                                 <Trash2 className="h-4 w-4" />
-                                Excluir
+                                {t('plans.table.delete')}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Excluir plano musicoterapêutico</AlertDialogTitle>
+                                <AlertDialogTitle>{t('plans.deleteDialog.title')}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir o plano de <strong>{plan.patient_full_name}</strong>? 
-                                  Esta ação não pode ser desfeita.
+                                  {t('plans.deleteDialog.description', { name: plan.patient_full_name || t('plans.table.nameNotInformed') })}
+                                  <br />
+                                  <span className="font-semibold text-destructive">{t('plans.deleteDialog.warning')}</span>
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel>{t('plans.deleteDialog.cancel')}</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDelete(plan.id)}
                                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
-                                  Excluir
+                                  {t('plans.deleteDialog.confirm')}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>

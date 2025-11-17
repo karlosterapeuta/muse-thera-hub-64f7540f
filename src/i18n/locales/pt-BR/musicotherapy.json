@@ -1,0 +1,60 @@
+{
+  "plans": {
+    "title": "Planos Musicoterapêuticos",
+    "description": "Gerencie seus planos de tratamento salvos",
+    "newPlan": "Novo Plano",
+    "loading": "Carregando planos...",
+    "filters": {
+      "searchPlaceholder": "Buscar por paciente ou diagnóstico...",
+      "status": "Status",
+      "allStatus": "Todos os status",
+      "sortBy": "Ordenar por",
+      "lastUpdate": "Última atualização",
+      "createdDate": "Data de criação",
+      "patientName": "Nome do paciente"
+    },
+    "status": {
+      "active": "Ativo",
+      "completed": "Concluído",
+      "draft": "Rascunho",
+      "archived": "Arquivado",
+      "none": "Sem status"
+    },
+    "empty": {
+      "title": "Nenhum plano encontrado",
+      "adjustFilters": "Tente ajustar os filtros de busca.",
+      "createFirst": "Comece criando seu primeiro plano musicoterapêutico.",
+      "createButton": "Criar Primeiro Plano"
+    },
+    "table": {
+      "plansFound": "{{count}} plano encontrado",
+      "plansFound_plural": "{{count}} planos encontrados",
+      "headers": {
+        "patient": "Paciente",
+        "diagnosis": "Diagnóstico",
+        "status": "Status",
+        "lastUpdate": "Última atualização",
+        "actions": "Ações"
+      },
+      "notInformed": "Não informado",
+      "nameNotInformed": "Nome não informado",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "view": "Visualizar"
+    },
+    "deleteDialog": {
+      "title": "Excluir plano musicoterapêutico",
+      "description": "Tem certeza que deseja excluir o plano de {{name}}?",
+      "warning": "Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Excluir"
+    },
+    "toast": {
+      "deleted": "Plano excluído",
+      "deletedSuccess": "O plano musicoterapêutico foi excluído com sucesso.",
+      "deleteError": "Erro ao excluir",
+      "deleteErrorMessage": "Não foi possível excluir o plano. Tente novamente."
+    },
+    "invalidDate": "Data inválida"
+  }
+}
