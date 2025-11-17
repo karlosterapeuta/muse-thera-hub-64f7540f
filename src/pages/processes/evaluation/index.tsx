@@ -781,7 +781,7 @@ export default function Evaluation() {
           </CardContent>
         </Card>
         
-        <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-900/90 border-0 dark:border dark:border-gray-800 shadow-2xl shadow-blue-500/10 dark:shadow-purple-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-white/95 dark:bg-gray-900/95 border-0 dark:border dark:border-gray-800 shadow-2xl shadow-blue-500/10 dark:shadow-purple-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
@@ -805,7 +805,7 @@ export default function Evaluation() {
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Data da Avaliação</label>
+                <label className="text-sm font-semibold text-gray-900 dark:text-white">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -815,8 +815,12 @@ export default function Evaluation() {
                         !evaluationDate && "text-muted-foreground dark:text-gray-400"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
-                      {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
+                      <CalendarIcon className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      {evaluationDate ? (
+                        <span className="text-gray-900 dark:text-gray-100">{format(evaluationDate, "dd/MM/yyyy")}</span>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400">Selecionar data</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 border-0 shadow-xl" align="start">
@@ -890,19 +894,19 @@ export default function Evaluation() {
             <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 p-1 rounded-2xl h-14">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all duration-300"
               >
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-all duration-300"
               >
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl font-semibold text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all duration-300"
               >
                 Comparação
               </TabsTrigger>
