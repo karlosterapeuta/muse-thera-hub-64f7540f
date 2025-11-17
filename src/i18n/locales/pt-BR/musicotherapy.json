@@ -262,6 +262,79 @@
         "Músicas para indução de estados de calma. Escuta com visualização dirigida. Trabalho de identificação de emoções através da música.",
         "Repertório adaptado para diferentes objetivos terapêuticos. Escuta com proposta de movimento expressivo. Estimulação sensorial através da música."
       ]
+    },
+    "strategies": {
+      "musicalImprovisation": {
+        "label": "Improvisação musical",
+        "placeholder": "Interação livre ou dirigida com instrumentos...",
+        "prompts": [
+          "Exploração livre de instrumentos seguida de estruturação gradual. Diálogos musicais entre terapeuta e paciente. Criação de 'conversas' rítmicas.",
+          "Interação espontânea com instrumentos melódicos. Desenvolvimento de temas musicais improvisados. Jogos de pergunta e resposta musical.",
+          "Criação livre com instrumentos de percussão. Expressão emocional através da improvisação. Exploração de texturas sonoras.",
+          "Improvisação vocal livre seguida de estruturação rítmica. Diálogos sonoros não verbais. Expressão criativa sem julgamento."
+        ]
+      },
+      "musicalRecreation": {
+        "label": "Recriação musical",
+        "placeholder": "Cantar ou tocar músicas conhecidas...",
+        "prompts": [
+          "Canções conhecidas adaptadas às necessidades terapêuticas. Modificação de letras para trabalhar objetivos específicos. Acompanhamento instrumental de repertório familiar.",
+          "Reprodução de canções infantis com gestos corporais. Adaptação do tempo e ritmo conforme capacidade do paciente. Inclusão de instrumentos simples.",
+          "Interpretação de músicas preferidas do paciente. Trabalho de memória através do repertório conhecido. Estímulo à participação vocal.",
+          "Recriação de trilhas sonoras familiares. Associação de músicas a atividades cotidianas. Desenvolvimento de repertório terapêutico personalizado."
+        ]
+      },
+      "composition": {
+        "label": "Composição",
+        "placeholder": "Criar músicas, letras ou sons em conjunto...",
+        "prompts": [
+          "Criação de pequenas melodias sobre temas do interesse do paciente. Composição de letras expressando sentimentos. Construção coletiva de canções simples.",
+          "Desenvolvimento de sons e ritmos personalizados. Criação de histórias musicais. Composição colaborativa entre terapeuta e paciente.",
+          "Invenção de canções temáticas para rotinas diárias. Criação de jingles musicais. Desenvolvimento de identidade sonora pessoal.",
+          "Composição de músicas para expressar emoções específicas. Criação de trilhas para atividades favoritas. Desenvolvimento de repertório autoral."
+        ]
+      },
+      "receptiveListening": {
+        "label": "Escuta receptiva",
+        "placeholder": "Ouvir músicas para estimular resposta emocional ou cognitiva...",
+        "prompts": [
+          "Músicas selecionadas para relaxamento e regulação emocional. Escuta ativa com movimentos corporais. Associação de músicas a imagens e histórias.",
+          "Seleção de repertório para diferentes estados emocionais. Escuta direcionada para estimulação cognitiva. Trabalho de memória auditiva.",
+          "Músicas para indução de estados de calma. Escuta com visualização dirigida. Trabalho de identificação de emoções através da música.",
+          "Repertório adaptado para diferentes objetivos terapêuticos. Escuta com proposta de movimento expressivo. Estimulação sensorial através da música."
+        ]
+      },
+      "movementDance": {
+        "label": "Movimento e dança",
+        "placeholder": "Expressão corporal através da música...",
+        "prompts": [
+          "Movimentos livres seguindo ritmos musicais. Dança improvisada para expressão emocional. Coordenação de movimentos com diferentes andamentos.",
+          "Atividades de psicomotricidade com música. Exploração de diferentes formas de movimento. Trabalho de consciência corporal através do ritmo.",
+          "Danças estruturadas adaptadas às capacidades do paciente. Expressão de emoções através do corpo. Integração sensório-motora com estímulos musicais.",
+          "Jogos de movimento com música. Trabalho de coordenação motora ampla. Regulação através de atividades rítmicas corporais."
+        ]
+      },
+      "musicalGames": {
+        "label": "Jogos musicais",
+        "placeholder": "Atividades lúdicas com elementos musicais...",
+        "prompts": [
+          "Jogos de imitação sonora. Brincadeiras musicais para estimular interação social. Atividades lúdicas com instrumentos.",
+          "Jogos rítmicos de grupo. Brincadeiras de roda adaptadas. Atividades musicais cooperativas.",
+          "Caça ao tesouro sonoro. Jogos de memória musical. Adivinhação de sons e instrumentos.",
+          "Jogos de pulsação e coordenação. Brincadeiras musicais para desenvolvimento cognitivo. Atividades competitivas lúdicas com música."
+        ]
+      },
+      "rhythmicDynamics": {
+        "label": "Dinâmicas rítmicas",
+        "placeholder": "Jogos de pulsação e coordenação motora..."
+      }
+    },
+    "reevaluationOptions": {
+      "biweekly": "Quinzenal",
+      "monthly": "Mensal",
+      "bimonthly": "Bimestral",
+      "quarterly": "Trimestral",
+      "semiannual": "Semestral"
     }
   }
 }
