@@ -765,7 +765,7 @@ export default function Evaluation() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950">
       <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
         <EvaluationLevelsHero />
         
@@ -891,22 +891,22 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 p-1 rounded-2xl h-14">
+            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950 p-1 rounded-2xl h-14 border border-blue-200 dark:border-blue-800">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:via-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:via-blue-800 dark:data-[state=active]:to-blue-900 data-[state=active]:border data-[state=active]:border-blue-200 dark:data-[state=active]:border-blue-800 data-[state=active]:shadow-lg data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all duration-300"
               >
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:via-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:via-blue-800 dark:data-[state=active]:to-blue-900 data-[state=active]:border data-[state=active]:border-blue-200 dark:data-[state=active]:border-blue-800 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-all duration-300"
               >
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all duration-300"
+                className="rounded-xl font-semibold text-gray-800 dark:text-gray-100 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:via-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:via-blue-800 dark:data-[state=active]:to-blue-900 data-[state=active]:border data-[state=active]:border-blue-200 dark:data-[state=active]:border-blue-800 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all duration-300"
               >
                 Comparação
               </TabsTrigger>
