@@ -59,7 +59,7 @@ export function DiagnosisSelector({ value, onChange }: DiagnosisSelectorProps) {
                 <Badge
                   key={diagnosis}
                   variant="outline"
-                  className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                  className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border-blue-300 dark:border-blue-600 text-blue-700 dark:text-white"
                   onClick={() => handleDiagnosisSelect(diagnosis)}
                 >
                   <Plus className="h-3 w-3 mr-1" />
