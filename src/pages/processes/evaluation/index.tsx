@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
   Select,
@@ -769,15 +769,17 @@ export default function Evaluation() {
       <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 animate-fade-in">
         <EvaluationLevelsHero />
         
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
-            Escala MuseTera
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 font-medium">
-            Instrumento de Avaliação Musicoterapêutica Profissional
-          </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
-        </div>
+        <Card className="text-center mb-8 animate-fade-in bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-purple-100/60 dark:border-purple-800/60 shadow-xl">
+          <CardContent className="pt-6 pb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 dark:from-purple-400 dark:via-blue-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+              Escala MuseTera
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 font-medium">
+              Instrumento de Avaliação Musicoterapêutica Profissional
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-400 dark:to-blue-400 mx-auto mt-4 rounded-full"></div>
+          </CardContent>
+        </Card>
         
         <Card className="backdrop-blur-sm bg-white/90 border-0 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
