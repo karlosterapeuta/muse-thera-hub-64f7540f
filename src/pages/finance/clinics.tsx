@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslation } from "react-i18next";
 
 const WEEKDAY_LABELS = {
   domingo: "Domingo",
@@ -43,6 +44,7 @@ const WEEKDAY_LABELS = {
 };
 
 export default function ClinicsManagement() {
+  const { t } = useTranslation('financial');
   const [searchTerm, setSearchTerm] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | undefined>();
@@ -115,8 +117,8 @@ export default function ClinicsManagement() {
   };
   
   const formatServiceDays = (days?: string[]) => {
-    if (!days?.length) return "Não definido";
-    return days.map(day => WEEKDAY_LABELS[day as keyof typeof WEEKDAY_LABELS]).join(", ");
+    if (!days?.length) return t('clinics.form.selectDays');
+    return days.map(day => t(`clinics.weekdays.${day}`)).join(", ");
   };
   
   const getPatientCount = (patientIds?: string[]) => {
@@ -132,7 +134,7 @@ export default function ClinicsManagement() {
   return (
     <div className="container py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Gerenciar Clínicas</h1>
+        <h1 className="text-3xl font-bold">{t('clinics.title')}</h1>
         <Button
           onClick={() => {
             setSelectedClinic(undefined);
@@ -140,7 +142,7 @@ export default function ClinicsManagement() {
           }}
         >
           <PlusIcon className="mr-2 h-4 w-4" />
-          Nova Clínica
+          {t('clinics.new')}
         </Button>
       </div>
       
@@ -148,7 +150,7 @@ export default function ClinicsManagement() {
         <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           className="pl-9 max-w-md"
-          placeholder="Pesquisar clínicas..."
+          placeholder={t('clinics.search')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -156,25 +158,25 @@ export default function ClinicsManagement() {
       
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle>Clínicas</CardTitle>
+          <CardTitle>{t('clinics.list')}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="py-20 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-              <p className="mt-2 text-muted-foreground">Carregando clínicas...</p>
+              <p className="mt-2 text-muted-foreground">{t('clinics.loading')}</p>
             </div>
           ) : filteredClinics.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead className="hidden md:table-cell">Endereço</TableHead>
-                    <TableHead className="hidden md:table-cell">Dias de Atendimento</TableHead>
-                    <TableHead>Pacientes</TableHead>
-                    <TableHead className="hidden md:table-cell">Data de Cadastro</TableHead>
-                    <TableHead className="w-[80px]">Ações</TableHead>
+                    <TableHead>{t('clinics.form.name')}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t('clinics.form.address')}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t('clinics.form.serviceDays')}</TableHead>
+                    <TableHead>{t('clinics.form.patients')}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t('common.date')}</TableHead>
+                    <TableHead className="w-[80px]">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

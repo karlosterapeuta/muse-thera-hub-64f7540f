@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { SessionStatus } from "../types";
 import { CheckCircleIcon, ClockIcon, XCircleIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface SessionStatusBadgeProps {
   status: SessionStatus;
@@ -8,32 +9,34 @@ interface SessionStatusBadgeProps {
 }
 
 export function SessionStatusBadge({ status, className }: SessionStatusBadgeProps) {
+  const { t } = useTranslation('financial');
+  
   const getStatusConfig = (status: SessionStatus) => {
     switch (status) {
       case 'scheduled':
         return {
-          label: 'Agendada',
+          label: t('records.status.scheduled'),
           variant: 'default' as const,
           icon: ClockIcon,
           className: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'
         };
       case 'completed':
         return {
-          label: 'Concluída',
+          label: t('records.status.completed'),
           variant: 'secondary' as const,
           icon: CheckCircleIcon,
           className: 'bg-green-600 hover:bg-green-700 text-white border-green-600'
         };
       case 'no_show':
         return {
-          label: 'Faltou',
+          label: t('records.status.noShow'),
           variant: 'destructive' as const,
           icon: XCircleIcon,
           className: 'bg-red-600 hover:bg-red-700 text-white border-red-600'
         };
       default:
         return {
-          label: 'Agendada',
+          label: t('records.status.scheduled'),
           variant: 'default' as const,
           icon: ClockIcon,
           className: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'

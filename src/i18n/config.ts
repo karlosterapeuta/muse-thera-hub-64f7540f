@@ -13,6 +13,7 @@ import phrasesPT from './locales/pt-BR/phrases.json';
 import anamnesisPT from './locales/pt-BR/anamnesis.json';
 import reportsPT from './locales/pt-BR/reports.json';
 import gamesPT from './locales/pt-BR/games.json';
+import financialPT from './locales/pt-BR/financial.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -25,6 +26,7 @@ import phrasesEN from './locales/en/phrases.json';
 import anamnesisEN from './locales/en/anamnesis.json';
 import reportsEN from './locales/en/reports.json';
 import gamesEN from './locales/en/games.json';
+import financialEN from './locales/en/financial.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -37,6 +39,7 @@ import phrasesES from './locales/es/phrases.json';
 import anamnesisES from './locales/es/anamnesis.json';
 import reportsES from './locales/es/reports.json';
 import gamesES from './locales/es/games.json';
+import financialES from './locales/es/financial.json';
 
 i18n
   .use(LanguageDetector)
@@ -54,6 +57,7 @@ i18n
         anamnesis: anamnesisPT,
         reports: reportsPT,
         games: gamesPT,
+        financial: financialPT,
       },
       'en': {
         common: commonEN,
@@ -66,6 +70,7 @@ i18n
         anamnesis: anamnesisEN,
         reports: reportsEN,
         games: gamesEN,
+        financial: financialEN,
       },
       'es': {
         common: commonES,
@@ -78,11 +83,12 @@ i18n
         anamnesis: anamnesisES,
         reports: reportsES,
         games: gamesES,
+        financial: financialES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial'],
     
     interpolation: {
       escapeValue: false, // React já faz escape
