@@ -164,19 +164,23 @@ export default function DevolutivaTea() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-lg">
-            <Heart className="h-8 w-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Devolutiva Musicoterapia TEA
-            </h1>
-            <p className="text-gray-800 dark:text-gray-100 font-medium">
-              Relatório simplificado para famílias de pacientes com TEA
-            </p>
-          </div>
-        </div>
+        <Card className="mb-8 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-lg">
+                <Heart className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Devolutiva Musicoterapia TEA
+                </h1>
+                <p className="text-gray-800 dark:text-gray-100 font-medium">
+                  Relatório simplificado para famílias de pacientes com TEA
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
