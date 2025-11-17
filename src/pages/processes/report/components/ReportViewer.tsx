@@ -1,6 +1,8 @@
 
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { format } from "date-fns";
+import { ptBR, enUS, es } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -42,9 +44,19 @@ const statusLabels: Record<string, string> = {
 };
 
 export function ReportViewer({ report }: ReportViewerProps) {
+  const { t, i18n } = useTranslation(['reports', 'common']);
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'es': return es;
+      default: return ptBR;
+    }
+  };
+
   const renderContent = () => {
     if (!report.content || Object.keys(report.content).length === 0) {
-      return <p className="text-muted-foreground">Nenhum conteúdo disponível.</p>;
+      return <p className="text-muted-foreground">{t('reports:list.empty.description')}</p>;
     }
 
     return Object.entries(report.content).map(([key, value]) => {
