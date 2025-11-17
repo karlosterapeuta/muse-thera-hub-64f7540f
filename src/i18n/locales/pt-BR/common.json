@@ -47,5 +47,11 @@
   "active": "Ativo",
   "documentInfo": "Informações do Documento",
   "generatedAt": "Data de Geração",
-  "digitalSignature": "Assinatura Digital"
+  "digitalSignature": "Assinatura Digital",
+  "errorBoundary": {
+    "title": "Oops! Algo deu errado",
+    "description": "Ocorreu um erro inesperado. Tente recarregar a página.",
+    "reload": "Recarregar Página",
+    "details": "Detalhes do erro"
+  }
 }

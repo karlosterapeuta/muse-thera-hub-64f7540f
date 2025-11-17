@@ -47,5 +47,11 @@
   "active": "Active",
   "documentInfo": "Document Information",
   "generatedAt": "Generated At",
-  "digitalSignature": "Digital Signature"
+  "digitalSignature": "Digital Signature",
+  "errorBoundary": {
+    "title": "Oops! Something went wrong",
+    "description": "An unexpected error occurred. Please try reloading the page.",
+    "reload": "Reload Page",
+    "details": "Error details"
+  }
 }

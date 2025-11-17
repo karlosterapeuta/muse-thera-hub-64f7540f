@@ -1,0 +1,31 @@
+{
+  "routes": {
+    "dashboard": "Dashboard",
+    "professional": "Profissional",
+    "patients": "Pacientes",
+    "sessions": "Sessões",
+    "processes": "Processos",
+    "reports": "Relatórios",
+    "patientsNew": "Novo Paciente",
+    "sessionsNew": "Nova Sessão",
+    "financial": "Financeiro",
+    "goals": "Objetivos",
+    "anamnesis": "Anamnese",
+    "activities": "Atividades",
+    "musicActivities": "Atividades Musicais",
+    "games": "Jogos",
+    "musicGames": "Jogos Musicais",
+    "rhythmGame": "Jogo de Ritmo",
+    "melodyGame": "Jogo de Melodia",
+    "harmonyGame": "Jogo de Harmonia",
+    "instruments": "Instrumentos",
+    "metronome": "Metrônomo",
+    "tuner": "Afinador",
+    "sheetMusic": "Partituras",
+    "calendar": "Agenda",
+    "settings": "Configurações",
+    "admin": "Administração",
+    "adminUsers": "Usuários",
+    "adminPayments": "Pagamentos"
+  }
+}

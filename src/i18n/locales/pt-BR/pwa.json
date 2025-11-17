@@ -1,0 +1,37 @@
+{
+  "install": {
+    "title": "Instalar MuseTera",
+    "subtitle": "Acesse mais rápido instalando nosso app",
+    "benefits": {
+      "title": "Benefícios de instalar:",
+      "offline": "Acesso offline",
+      "faster": "Carregamento mais rápido",
+      "notifications": "Notificações push",
+      "homescreen": "Atalho na tela inicial"
+    },
+    "buttons": {
+      "install": "Instalar Agora",
+      "later": "Agora Não"
+    },
+    "manual": {
+      "ios": {
+        "title": "Como instalar no iOS (Safari):",
+        "step1": "Toque no botão de compartilhar",
+        "step2": "Role para baixo e toque em 'Adicionar à Tela de Início'",
+        "step3": "Toque em 'Adicionar' para confirmar"
+      },
+      "android": {
+        "title": "Como instalar no Android:",
+        "step1": "Toque no menu (⋮) no canto superior direito",
+        "step2": "Toque em 'Adicionar à tela inicial'",
+        "step3": "Toque em 'Adicionar' para confirmar"
+      },
+      "desktop": {
+        "title": "Como instalar no Desktop:",
+        "step1": "Clique no ícone de instalação na barra de endereços",
+        "step2": "Ou acesse Menu > Instalar MuseTera",
+        "step3": "Clique em 'Instalar' para confirmar"
+      }
+    }
+  }
+}

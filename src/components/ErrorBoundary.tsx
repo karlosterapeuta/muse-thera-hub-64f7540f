@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -7,6 +8,40 @@ interface ErrorBoundaryState {
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
+}
+
+// Wrapper component to use hooks
+function ErrorFallback({ error, onReset }: { error?: Error; onReset: () => void }) {
+  const { t } = useTranslation('common');
+  
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center p-8">
+        <h1 className="text-2xl font-bold text-foreground mb-4">
+          {t('errorBoundary.title')}
+        </h1>
+        <p className="text-muted-foreground mb-6">
+          {t('errorBoundary.description')}
+        </p>
+        <button
+          onClick={onReset}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+        >
+          {t('errorBoundary.reload')}
+        </button>
+        {error && (
+          <details className="mt-4 text-left">
+            <summary className="text-sm text-muted-foreground cursor-pointer">
+              {t('errorBoundary.details')}
+            </summary>
+            <pre className="mt-2 text-xs text-red-500 overflow-auto">
+              {error.message}
+            </pre>
+          </details>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -26,32 +61,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Oops! Algo deu errado
-            </h1>
-            <p className="text-muted-foreground mb-6">
-              Ocorreu um erro inesperado. Tente recarregar a página.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Recarregar Página
-            </button>
-            {this.state.error && (
-              <details className="mt-4 text-left">
-                <summary className="text-sm text-muted-foreground cursor-pointer">
-                  Detalhes do erro
-                </summary>
-                <pre className="mt-2 text-xs text-red-500 overflow-auto">
-                  {this.state.error.message}
-                </pre>
-              </details>
-            )}
-          </div>
-        </div>
+        <ErrorFallback 
+          error={this.state.error} 
+          onReset={() => window.location.reload()} 
+        />
       );
     }
 
