@@ -16,6 +16,7 @@ import gamesPT from './locales/pt-BR/games.json';
 import financialPT from './locales/pt-BR/financial.json';
 import navigationPT from './locales/pt-BR/navigation.json';
 import pwaPT from './locales/pt-BR/pwa.json';
+import profilePT from './locales/pt-BR/profile.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -31,6 +32,7 @@ import gamesEN from './locales/en/games.json';
 import financialEN from './locales/en/financial.json';
 import navigationEN from './locales/en/navigation.json';
 import pwaEN from './locales/en/pwa.json';
+import profileEN from './locales/en/profile.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -46,6 +48,7 @@ import gamesES from './locales/es/games.json';
 import financialES from './locales/es/financial.json';
 import navigationES from './locales/es/navigation.json';
 import pwaES from './locales/es/pwa.json';
+import profileES from './locales/es/profile.json';
 
 i18n
   .use(LanguageDetector)
@@ -66,6 +69,7 @@ i18n
         financial: financialPT,
         navigation: navigationPT,
         pwa: pwaPT,
+        profile: profilePT,
       },
       'en': {
         common: commonEN,
@@ -81,6 +85,7 @@ i18n
         financial: financialEN,
         navigation: navigationEN,
         pwa: pwaEN,
+        profile: profileEN,
       },
       'es': {
         common: commonES,
@@ -96,11 +101,12 @@ i18n
         financial: financialES,
         navigation: navigationES,
         pwa: pwaES,
+        profile: profileES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile'],
     
     interpolation: {
       escapeValue: false, // React já faz escape
