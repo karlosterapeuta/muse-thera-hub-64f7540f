@@ -17,6 +17,7 @@ import financialPT from './locales/pt-BR/financial.json';
 import navigationPT from './locales/pt-BR/navigation.json';
 import pwaPT from './locales/pt-BR/pwa.json';
 import profilePT from './locales/pt-BR/profile.json';
+import digitalStampPT from './locales/pt-BR/digitalStamp.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -33,6 +34,7 @@ import financialEN from './locales/en/financial.json';
 import navigationEN from './locales/en/navigation.json';
 import pwaEN from './locales/en/pwa.json';
 import profileEN from './locales/en/profile.json';
+import digitalStampEN from './locales/en/digitalStamp.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -49,6 +51,7 @@ import financialES from './locales/es/financial.json';
 import navigationES from './locales/es/navigation.json';
 import pwaES from './locales/es/pwa.json';
 import profileES from './locales/es/profile.json';
+import digitalStampES from './locales/es/digitalStamp.json';
 
 i18n
   .use(LanguageDetector)
@@ -70,6 +73,7 @@ i18n
         navigation: navigationPT,
         pwa: pwaPT,
         profile: profilePT,
+        digitalStamp: digitalStampPT,
       },
       'en': {
         common: commonEN,
@@ -86,6 +90,7 @@ i18n
         navigation: navigationEN,
         pwa: pwaEN,
         profile: profileEN,
+        digitalStamp: digitalStampEN,
       },
       'es': {
         common: commonES,
@@ -102,11 +107,12 @@ i18n
         navigation: navigationES,
         pwa: pwaES,
         profile: profileES,
+        digitalStamp: digitalStampES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile', 'digitalStamp'],
     
     interpolation: {
       escapeValue: false, // React já faz escape

@@ -1,0 +1,40 @@
+{
+  "title": "Assinatura e Carimbo Digital MuseTera",
+  "subtitle": "Gerador de Assinatura e Carimbo Digital personalizado do sistema MuseTera.",
+  "signaturePreview": "Pré-visualização da Assinatura",
+  "stampPreview": "Pré-visualização do Carimbo",
+  "form": {
+    "fullName": "Nome Completo",
+    "professionalTitle": "Título Profissional",
+    "registration": "Número de Registro",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "qrLink": "Link para QR Code",
+    "uploadPhoto": "Carregar Foto",
+    "placeholders": {
+      "fullName": "Digite seu nome completo",
+      "professionalTitle": "Ex: Musicoterapeuta",
+      "registration": "Número de registro profissional",
+      "email": "email@dominio.com",
+      "phone": "(00) 12345-6789",
+      "qrLink": "https://exemplo.com/perfil"
+    }
+  },
+  "defaultTexts": {
+    "name": "Nome do Profissional",
+    "title": "Título Profissional",
+    "registration": "Nº de Registro",
+    "email": "email@dominio.com",
+    "phone": "(00) 12345-6789"
+  },
+  "buttons": {
+    "downloadSignature": "Baixar Assinatura",
+    "downloadStamp": "Baixar Carimbo",
+    "downloading": "Baixando..."
+  },
+  "messages": {
+    "downloadSuccess": "Download realizado com sucesso!",
+    "downloadError": "Erro ao gerar a imagem. Tente novamente.",
+    "qrCodeError": "Erro ao gerar QR Code:"
+  }
+}
