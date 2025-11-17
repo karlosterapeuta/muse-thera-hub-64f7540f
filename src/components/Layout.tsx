@@ -96,21 +96,21 @@ function LayoutContent({ children }: LayoutProps) {
       {/* Main content que será empurrado */}
       <div className="flex-1 flex flex-col w-full min-w-0">
         {/* Universal Header com design moderno */}
-        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 shadow-lg">
           {/* Gradient line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-blue-500 to-pink-600 animate-gradient" />
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-blue-500 to-pink-600 animate-gradient shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
           
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6 gap-4">
+          <div className="flex h-20 items-center justify-between px-6 sm:px-8 gap-6">
             {/* Left: Trigger + Logo + Breadcrumbs */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <SidebarTrigger className="relative hover:bg-muted/50 transition-all duration-300" />
+                <SidebarTrigger className="relative hover:bg-muted/50 hover:scale-110 transition-all duration-300" />
               </div>
               
               <HeaderLogo />
               
-              <Separator orientation="vertical" className="h-6 hidden lg:block" />
+              <Separator orientation="vertical" className="h-8 hidden lg:block bg-gradient-to-b from-transparent via-border to-transparent" />
               
               <div className="hidden md:block flex-1 overflow-hidden">
                 <Breadcrumbs />
@@ -121,7 +121,7 @@ function LayoutContent({ children }: LayoutProps) {
             {isDashboard && <HeaderGreeting />}
             
             {/* Right: Actions */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
               <HeaderTime />
               <NotificationBell />
               <ThemeToggle />
