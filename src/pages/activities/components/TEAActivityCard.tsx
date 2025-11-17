@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Clock, Users, Volume2, Eye, Move, AlertTriangle } from 'lucide-react';
 import { TEAActivity } from '../data/tea-specific-activities';
+import { useTranslation } from 'react-i18next';
 
 interface TEAActivityCardProps {
   activity: TEAActivity;
@@ -48,6 +49,8 @@ const getMovementIcon = (movement: string) => {
 };
 
 export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProps) {
+  const { t } = useTranslation('games');
+  
   return (
     <Card className="h-full hover:shadow-md transition-shadow duration-200">
       <CardHeader className="pb-3">
@@ -59,7 +62,7 @@ export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProp
             variant="outline" 
             className={`text-xs whitespace-nowrap ${getSupportLevelColor(activity.supportLevel)}`}
           >
-            Nível {activity.supportLevel}
+            {t('teaHero.supportLevel')} {activity.supportLevel}
           </Badge>
         </div>
         
@@ -83,19 +86,19 @@ export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProp
 
         {/* Perfil sensorial */}
         <div className="space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">Perfil Sensorial:</div>
+          <div className="text-xs font-medium text-muted-foreground">{t('teaHero.sensoryProfile')}:</div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1" title="Intensidade Auditiva">
               {getSensoryIntensityIcon(activity.sensoryProfile.auditoryIntensity)}
-              <span className="text-xs">Audio</span>
+              <span className="text-xs">{t('teaHero.audio')}</span>
             </div>
             <div className="flex items-center gap-1" title="Estímulos Visuais">
               {getVisualStimuliIcon(activity.sensoryProfile.visualStimuli)}
-              <span className="text-xs">Visual</span>
+              <span className="text-xs">{t('teaHero.visual')}</span>
             </div>
             <div className="flex items-center gap-1" title="Movimento Necessário">
               {getMovementIcon(activity.sensoryProfile.movementRequired)}
-              <span className="text-xs">Movimento</span>
+              <span className="text-xs">{t('teaHero.movement')}</span>
             </div>
           </div>
         </div>
@@ -107,7 +110,7 @@ export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProp
               {activity.communicationStyle}
             </Badge>
             <Badge variant="outline" className="text-xs">
-              Atenção: {activity.attentionSpan}min
+              {t('teaHero.attention')}: {activity.attentionSpan}min
             </Badge>
             <Badge variant="outline" className="text-xs">
               {activity.predictabilityLevel} estrutura
@@ -131,7 +134,7 @@ export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProp
         {/* Benefícios TEA específicos */}
         {activity.teaSpecificBenefits.length > 0 && (
           <div className="text-xs">
-            <div className="font-medium text-muted-foreground mb-1">Benefícios TEA:</div>
+            <div className="font-medium text-muted-foreground mb-1">{t('teaHero.benefits')}:</div>
             <div className="text-muted-foreground">
               {activity.teaSpecificBenefits[0]}
               {activity.teaSpecificBenefits.length > 1 && (
@@ -163,7 +166,7 @@ export function TEAActivityCard({ activity, onViewDetails }: TEAActivityCardProp
           size="sm" 
           className="w-full"
         >
-          Ver Detalhes TEA
+          {t('teaHero.viewDetails')}
         </Button>
       </CardFooter>
     </Card>
