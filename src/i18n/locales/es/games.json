@@ -1,0 +1,300 @@
+{
+  "common": {
+    "start": "Iniciar Juego",
+    "stop": "Detener",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "restart": "Reiniciar",
+    "repeat": "Repetir",
+    "score": "Puntuación",
+    "time": "Tiempo",
+    "speed": "Velocidad",
+    "level": "Nivel",
+    "hit": "¡Acierto!",
+    "miss": "¡Fallo!",
+    "combo": "Combo",
+    "perfect": "¡Perfecto!",
+    "great": "¡Genial!",
+    "good": "¡Bien!",
+    "paused": "PAUSADO",
+    "gameOver": "Fin del Juego",
+    "finalScore": "Puntuación Final",
+    "playAgain": "Jugar de Nuevo",
+    "backToMenu": "Volver al Menú",
+    "loading": "Cargando...",
+    "instructions": "Instrucciones",
+    "settings": "Configuración",
+    "syncSystem": "Sistema Sincronizado",
+    "practiceMode": "Modo Práctica",
+    "authenticMelody": "Melodía 100% Auténtica",
+    "useKeys": "Usa las teclas {{keys}} para tocar las notas",
+    "teaOptimized": "Optimizado para TEA",
+    "selectSong": "Seleccionar Canción",
+    "randomMode": "Modo Aleatorio",
+    "difficulty": {
+      "easy": "Fácil",
+      "medium": "Medio",
+      "hard": "Difícil",
+      "expert": "Experto"
+    }
+  },
+  "guitarHero": {
+    "title": "Guitar Hero",
+    "subtitle": "¡Rasguea las cuerdas al ritmo!",
+    "description": "Juego de ritmo donde necesitas presionar las teclas en el momento correcto cuando las notas llegan a la zona de acierto.",
+    "instructions": {
+      "title": "Cómo Jugar",
+      "step1": "Usa las teclas 1-8 para tocar las notas correspondientes",
+      "step2": "Presiona la tecla cuando la nota de color llegue a la zona de acierto",
+      "step3": "Acumula puntos tocando las notas en el momento correcto",
+      "step4": "Practica para mejorar tu precisión y velocidad"
+    },
+    "feedback": {
+      "hitZone": "Zona de Acierto",
+      "notesPassed": "notas tocadas",
+      "accuracy": "Precisión"
+    }
+  },
+  "bellHero": {
+    "title": "Campana Hero",
+    "subtitle": "¡Toca las campanas mágicas!",
+    "description": "Juego de ritmo con sonidos de campana optimizado para TEA, ofreciendo una experiencia sensorial suave y envolvente.",
+    "instructions": {
+      "title": "Cómo Jugar",
+      "step1": "Usa las teclas 1-8 para tocar las campanas MuseTera",
+      "step2": "Cada campana tiene una frecuencia específica optimizada para TEA",
+      "step3": "Toca las campanas cuando las notas lleguen a la zona de acierto",
+      "step4": "Sonidos de campana reales amplificados para estimulación terapéutica"
+    },
+    "teaFeatures": {
+      "title": "Características TEA",
+      "realSamples": "Muestras de campana reales",
+      "enhancedSynthesis": "Síntesis mejorada",
+      "therapeuticFeedback": "Retroalimentación terapéutica amplificada"
+    }
+  },
+  "teaHero": {
+    "title": "TEA-Hero MuseTera",
+    "subtitle": "Juego terapéutico musical para TEA",
+    "description": "Sistema de juego musical especializado con frecuencias sincronizadas MuseTera, desarrollado específicamente para terapia en TEA.",
+    "instructions": {
+      "title": "Cómo Jugar",
+      "step1": "Selecciona un instrumento terapéutico (campana, xilófono o teclado)",
+      "step2": "Elige una canción o modo práctica MuseTera",
+      "step3": "Usa las teclas 1-8 para tocar las notas sincronizadas",
+      "step4": "Todas las frecuencias están optimizadas para estimulación terapéutica"
+    },
+    "features": {
+      "synchronizedFrequencies": "Frecuencias Sincronizadas",
+      "therapeuticInstruments": "Instrumentos Terapéuticos",
+      "museTeraSystem": "Sistema MuseTera",
+      "realTimeFeedback": "Retroalimentación en Tiempo Real",
+      "visualSupport": "Soporte Visual"
+    },
+    "instruments": {
+      "bell": "Campana",
+      "xylophone": "Xilófono",
+      "keyboard": "Teclado"
+    }
+  },
+  "xylophoneHero": {
+    "title": "Xilófono Hero",
+    "subtitle": "¡Toca el xilófono colorido!",
+    "description": "Juego de ritmo con sonidos de xilófono vibrantes, ofreciendo estimulación visual y auditiva coordinada.",
+    "instructions": {
+      "title": "Cómo Jugar",
+      "step1": "Usa las teclas 1-8 para tocar las notas del xilófono",
+      "step2": "Cada tecla corresponde a una barra de color del xilófono",
+      "step3": "Toca en ritmo para crear melodías armoniosas",
+      "step4": "Sonidos de xilófono reales para experiencia auténtica"
+    },
+    "features": {
+      "colorCoding": "Codificación por Colores",
+      "vibrantSounds": "Sonidos Vibrantes",
+      "visualFeedback": "Retroalimentación Visual Intensa"
+    }
+  },
+  "boomwhackerHero": {
+    "title": "Boomwhacker Hero",
+    "subtitle": "¡Toca los tubos musicales!",
+    "description": "Juego de ritmo con sonidos de boomwhackers, tubos musicales coloridos que ofrecen una experiencia divertida y educativa.",
+    "instructions": {
+      "title": "Cómo Jugar",
+      "step1": "Usa las teclas 1-8 para tocar los boomwhackers",
+      "step2": "Cada tubo tiene un color y tono específico",
+      "step3": "Toca al ritmo de las canciones",
+      "step4": "Sonidos auténticos de tubos musicales"
+    },
+    "features": {
+      "authenticTubeSounds": "Sonidos Auténticos de Tubos",
+      "colorfulExperience": "Experiencia Colorida",
+      "rhythmicPlay": "Juego Rítmico"
+    }
+  },
+  "musicalBells": {
+    "title": "Campanas Musicales",
+    "subtitle": "¡Crea melodías con campanas!",
+    "description": "Instrumento virtual de campanas musicales para exploración libre y creación de melodías terapéuticas.",
+    "instructions": {
+      "title": "Cómo Usar",
+      "step1": "Haz clic en las campanas o usa las teclas 1-8",
+      "step2": "Explora diferentes combinaciones de sonidos",
+      "step3": "Crea tus propias melodías",
+      "step4": "Modo libre sin presión de tiempo"
+    },
+    "modes": {
+      "freePlay": "Juego Libre",
+      "guided": "Guiado",
+      "recording": "Grabación"
+    },
+    "features": {
+      "freeExploration": "Exploración Libre",
+      "noTimePressure": "Sin Presión de Tiempo",
+      "therapeuticSounds": "Sonidos Terapéuticos",
+      "creativeFreedom": "Libertad Creativa"
+    }
+  },
+  "musicComposer": {
+    "title": "Compositor Musical",
+    "subtitle": "¡Compón tus propias canciones!",
+    "description": "Herramienta de composición musical que te permite crear, editar y tocar tus propias melodías terapéuticas.",
+    "instructions": {
+      "title": "Cómo Componer",
+      "step1": "Selecciona un instrumento de la paleta",
+      "step2": "Haz clic en la cuadrícula para añadir notas",
+      "step3": "Ajusta la duración e intensidad de las notas",
+      "step4": "Reproduce tu composición y comparte"
+    },
+    "tools": {
+      "addNote": "Añadir Nota",
+      "removeNote": "Eliminar Nota",
+      "selectInstrument": "Seleccionar Instrumento",
+      "adjustTempo": "Ajustar Tempo",
+      "adjustVolume": "Ajustar Volumen",
+      "play": "Reproducir",
+      "stop": "Detener",
+      "clear": "Limpiar",
+      "save": "Guardar",
+      "load": "Cargar"
+    },
+    "features": {
+      "visualEditor": "Editor Visual",
+      "multipleInstruments": "Múltiples Instrumentos",
+      "tempoControl": "Control de Tempo",
+      "saveLoad": "Guardar y Cargar",
+      "export": "Exportar"
+    },
+    "panels": {
+      "timeline": "Línea de Tiempo",
+      "instruments": "Instrumentos",
+      "properties": "Propiedades",
+      "preview": "Vista Previa"
+    }
+  },
+  "musicogram": {
+    "title": "Musicograma",
+    "subtitle": "¡Visualiza y toca música!",
+    "description": "Representación visual de canciones que ayuda a comprender la estructura musical y facilita el aprendizaje terapéutico.",
+    "instructions": {
+      "title": "Cómo Usar",
+      "step1": "Selecciona una canción de la biblioteca",
+      "step2": "Observa la representación visual de la estructura musical",
+      "step3": "Sigue los símbolos mientras la música suena",
+      "step4": "Interactúa con los elementos visuales para controlar la reproducción"
+    },
+    "elements": {
+      "intro": "Introducción",
+      "verse": "Estrofa",
+      "chorus": "Coro",
+      "bridge": "Puente",
+      "outro": "Final",
+      "instrumental": "Instrumental",
+      "repetition": "Repetición"
+    },
+    "features": {
+      "visualRepresentation": "Representación Visual",
+      "structureMapping": "Mapeo de Estructura",
+      "interactivePlayback": "Reproducción Interactiva",
+      "learningSupport": "Soporte de Aprendizaje",
+      "therapeuticVisualization": "Visualización Terapéutica"
+    },
+    "controls": {
+      "playPause": "Reproducir/Pausar",
+      "rewind": "Retroceder",
+      "forward": "Avanzar",
+      "repeat": "Repetir Sección",
+      "zoomIn": "Ampliar",
+      "zoomOut": "Reducir"
+    }
+  },
+  "settings": {
+    "title": "Configuración del Juego",
+    "audio": {
+      "title": "Audio",
+      "masterVolume": "Volumen General",
+      "musicVolume": "Volumen de Música",
+      "effectsVolume": "Volumen de Efectos",
+      "noteVolume": "Volumen de Notas"
+    },
+    "visual": {
+      "title": "Visual",
+      "brightness": "Brillo",
+      "contrast": "Contraste",
+      "colorBlindMode": "Modo para Daltónicos",
+      "highContrast": "Alto Contraste",
+      "reducedMotion": "Movimiento Reducido",
+      "largeText": "Texto Grande"
+    },
+    "gameplay": {
+      "title": "Jugabilidad",
+      "scrollSpeed": "Velocidad de Desplazamiento",
+      "noteSize": "Tamaño de Notas",
+      "hitWindow": "Ventana de Acierto",
+      "showHints": "Mostrar Consejos",
+      "autoPlay": "Reproducción Automática"
+    },
+    "accessibility": {
+      "title": "Accesibilidad",
+      "teaMode": "Modo TEA",
+      "simplifiedInterface": "Interfaz Simplificada",
+      "audioDescription": "Descripción de Audio",
+      "keyboardOnly": "Solo Teclado",
+      "screenReader": "Lector de Pantalla"
+    }
+  },
+  "achievements": {
+    "title": "Logros",
+    "unlocked": "¡Desbloqueado!",
+    "locked": "Bloqueado",
+    "progress": "Progreso",
+    "firstNote": {
+      "title": "Primera Nota",
+      "description": "Toca tu primera nota con éxito"
+    },
+    "perfectScore": {
+      "title": "Puntuación Perfecta",
+      "description": "Completa una canción sin fallar ninguna nota"
+    },
+    "speedDemon": {
+      "title": "Demonio de la Velocidad",
+      "description": "Completa una canción a velocidad 2x"
+    },
+    "therapeutic": {
+      "title": "Terapeuta Musical",
+      "description": "Juega 10 sesiones en modo TEA"
+    }
+  },
+  "messages": {
+    "gameStarted": "¡Juego iniciado! ¡Buena suerte!",
+    "gamePaused": "Juego pausado",
+    "gameResumed": "Juego reanudado",
+    "gameStopped": "Juego detenido",
+    "songCompleted": "¡Canción completada!",
+    "newHighScore": "¡Nueva puntuación récord!",
+    "loadingSong": "Cargando canción...",
+    "audioInitializing": "Inicializando sistema de audio...",
+    "audioReady": "¡Sistema de audio listo!",
+    "noSongSelected": "Ninguna canción seleccionada",
+    "selectSongFirst": "Por favor, selecciona una canción primero"
+  }
+}
