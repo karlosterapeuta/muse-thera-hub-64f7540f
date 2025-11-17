@@ -47,5 +47,11 @@
   "active": "Activo",
   "documentInfo": "Información del Documento",
   "generatedAt": "Generado el",
-  "digitalSignature": "Firma Digital"
+  "digitalSignature": "Firma Digital",
+  "errorBoundary": {
+    "title": "¡Ups! Algo salió mal",
+    "description": "Ocurrió un error inesperado. Intenta recargar la página.",
+    "reload": "Recargar Página",
+    "details": "Detalles del error"
+  }
 }

@@ -14,6 +14,8 @@ import anamnesisPT from './locales/pt-BR/anamnesis.json';
 import reportsPT from './locales/pt-BR/reports.json';
 import gamesPT from './locales/pt-BR/games.json';
 import financialPT from './locales/pt-BR/financial.json';
+import navigationPT from './locales/pt-BR/navigation.json';
+import pwaPT from './locales/pt-BR/pwa.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -27,6 +29,8 @@ import anamnesisEN from './locales/en/anamnesis.json';
 import reportsEN from './locales/en/reports.json';
 import gamesEN from './locales/en/games.json';
 import financialEN from './locales/en/financial.json';
+import navigationEN from './locales/en/navigation.json';
+import pwaEN from './locales/en/pwa.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -40,6 +44,8 @@ import anamnesisES from './locales/es/anamnesis.json';
 import reportsES from './locales/es/reports.json';
 import gamesES from './locales/es/games.json';
 import financialES from './locales/es/financial.json';
+import navigationES from './locales/es/navigation.json';
+import pwaES from './locales/es/pwa.json';
 
 i18n
   .use(LanguageDetector)
@@ -58,6 +64,8 @@ i18n
         reports: reportsPT,
         games: gamesPT,
         financial: financialPT,
+        navigation: navigationPT,
+        pwa: pwaPT,
       },
       'en': {
         common: commonEN,
@@ -71,6 +79,8 @@ i18n
         reports: reportsEN,
         games: gamesEN,
         financial: financialEN,
+        navigation: navigationEN,
+        pwa: pwaEN,
       },
       'es': {
         common: commonES,
@@ -84,11 +94,13 @@ i18n
         reports: reportsES,
         games: gamesES,
         financial: financialES,
+        navigation: navigationES,
+        pwa: pwaES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa'],
     
     interpolation: {
       escapeValue: false, // React já faz escape
