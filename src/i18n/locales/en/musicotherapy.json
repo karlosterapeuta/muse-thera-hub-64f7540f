@@ -263,6 +263,14 @@
         "Repertoire adapted for different therapeutic objectives. Listening with expressive movement proposal. Sensory stimulation through music."
       ]
     },
+    "clinicalFamilyHistory": "Relevant clinical and family history",
+    "clinicalFamilyHistoryPlaceholder": "Describe clinical conditions, relevant medical history...",
+    "physicalCognitiveConditions": "Physical, cognitive, emotional and social conditions",
+    "physicalCognitiveConditionsPlaceholder": "Describe patient's current conditions...",
+    "interactionCommunicationLevel": "Interaction and communication level",
+    "interactionCommunicationLevelPlaceholder": "Describe how the patient communicates and interacts...",
+    "musicalInterestsLabel": "Musical interests",
+    "musicalInterestsPlaceholder": "Preferred instruments, musical styles, sound preferences...",
     "strategies": {
       "musicalImprovisation": {
         "label": "Musical improvisation",
