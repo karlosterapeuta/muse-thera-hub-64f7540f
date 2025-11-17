@@ -4,7 +4,6 @@ import { RefreshCw, Maximize, X, Music, Star, Heart, Smartphone, AlertTriangle, 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 export default function SprunKi() {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,9 +70,11 @@ export default function SprunKi() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             {/* MuseTera Logo */}
-            <div className={`${isMobile ? 'h-10 w-10' : 'h-12 w-12'}`}>
-              <MuseteraLogo size={isMobile ? 40 : 48} showText={false} />
-            </div>
+            <img
+              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              alt="MuseTera Logo"
+              className={`${isMobile ? 'h-10 w-10' : 'h-12 w-12'} rounded-xl shadow-md ring-2 ring-primary/20`}
+            />
             <div>
               <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent`}>
                 🎵 Sprunki Musical - MuseTera
@@ -137,9 +138,11 @@ export default function SprunKi() {
             <div className="absolute inset-0 bg-card z-10 flex flex-col items-center justify-center p-8">
               {/* MuseTera Logo in Loading */}
               <div className="mb-6">
-                <div className="h-16 w-16 animate-pulse-gentle">
-                  <MuseteraLogo size={64} showText={false} />
-                </div>
+                <img
+                  src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+                  alt="MuseTera"
+                  className="h-16 w-16 rounded-xl shadow-lg ring-2 ring-primary/20 animate-pulse-gentle"
+                />
               </div>
               
               <div className="space-y-4 w-full max-w-md">
@@ -302,9 +305,11 @@ export default function SprunKi() {
       <footer className="w-full py-6 mt-8 border-t bg-gradient-to-r from-primary/5 to-primary/10">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="h-8 w-8">
-              <MuseteraLogo size={32} showText={false} />
-            </div>
+            <img
+              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              alt="MuseTera"
+              className="h-8 w-8 rounded-lg shadow-sm"
+            />
             <div className="text-sm">
               <div className="font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 🎵 Sistema MuseTera

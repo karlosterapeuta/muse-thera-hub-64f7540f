@@ -1,5 +1,4 @@
 import { Music2, Sparkles } from "lucide-react";
-import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 interface SidebarHeaderProps {
   collapsed: boolean;
@@ -22,16 +21,34 @@ export function SidebarHeader({ collapsed }: SidebarHeaderProps) {
         // Versão colapsada - logo médio centralizado
         <div className="flex items-center justify-center">
           <div className="relative group">
-            <MuseteraLogo size={40} showText={false} className="group-hover:scale-110 transition-all duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity animate-pulse-slow"></div>
+            <img
+              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              alt="MuseTera"
+              className="relative h-10 w-10 rounded-full shadow-xl ring-2 ring-border group-hover:ring-border/80 transition-all group-hover:scale-110 duration-300"
+            />
           </div>
         </div>
       ) : (
         // Versão expandida - logo grande com texto
         <div className="relative flex flex-col items-center space-y-3">
+          {/* Logo com efeitos */}
           <div className="relative group cursor-pointer">
-            <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 rounded-full blur-lg opacity-40 group-hover:opacity-75 transition-all duration-500 animate-gradient"></div>
-            <div className="relative group-hover:scale-110 transition-all duration-300">
-              <MuseteraLogo size={64} showText={false} />
+            {/* Glow effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 rounded-full blur-lg opacity-40 group-hover:opacity-75 transition-all duration-500 animate-gradient"></div>
+            
+            {/* Logo principal */}
+            <div className="relative">
+              <img
+                src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+                alt="MuseTera"
+                className="h-16 w-16 rounded-full shadow-2xl ring-4 ring-border group-hover:ring-border/80 transition-all group-hover:scale-110 duration-300"
+              />
+              
+              {/* Badge decorativo */}
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-background">
+                <Music2 className="w-3 h-3 text-white" />
+              </div>
             </div>
           </div>
 
