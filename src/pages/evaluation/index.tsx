@@ -741,11 +741,11 @@ const [activeTab, setActiveTab] = useState("evaluation");
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-white/90 border-0 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-white/95 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
-                <div className="bg-white rounded-xl p-4">
+                <div className="bg-white rounded-xl p-4 shadow-sm">
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
@@ -864,22 +864,22 @@ const [activeTab, setActiveTab] = useState("evaluation");
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-gray-100 to-slate-100 p-1 rounded-2xl h-14">
+            <TabsList className="grid w-full grid-cols-3 bg-white/90 backdrop-blur-sm p-1 rounded-2xl h-14 border border-blue-200/50 dark:border-blue-800/50 shadow-md">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-purple-600 transition-all duration-300"
+                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
               >
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all duration-300"
+                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
               >
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl font-semibold data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 transition-all duration-300"
+                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
               >
                 Comparação
               </TabsTrigger>
