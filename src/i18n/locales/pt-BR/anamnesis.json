@@ -31,7 +31,222 @@
     "familyData": "Dados Familiares",
     "musicalHistory": "Histórico Musical",
     "developmentData": "Dados de Desenvolvimento",
-    "therapeuticData": "Dados Terapêuticos"
+    "therapeuticData": "Dados Terapêuticos",
+    "header": {
+      "newTitle": "Nova Anamnese Musicoterapêutica",
+      "editTitle": "Editar Anamnese",
+      "description": "Avaliação completa do paciente através de uma abordagem musicoterapêutica integral",
+      "indicators": {
+        "personal": "Pessoal",
+        "musical": "Musical",
+        "clinical": "Clínico",
+        "cognitive": "Cognitivo",
+        "emotional": "Emocional"
+      }
+    },
+    "tabs": {
+      "personal": {
+        "label": "Dados Pessoais",
+        "description": "Informações básicas do paciente"
+      },
+      "musical": {
+        "label": "Histórico Musical",
+        "description": "Experiências e preferências musicais"
+      },
+      "clinical": {
+        "label": "Avaliação Clínica",
+        "description": "Diagnósticos e tratamentos atuais"
+      },
+      "development": {
+        "label": "Desenvolvimento",
+        "description": "Marcos do desenvolvimento"
+      },
+      "behavioral": {
+        "label": "Comportamental",
+        "description": "Aspectos comportamentais e sociais"
+      }
+    },
+    "actions": {
+      "back": "Voltar",
+      "cancel": "Cancelar",
+      "save": "Salvar Anamnese",
+      "saving": "Salvando...",
+      "exportPDF": "Exportar PDF",
+      "exporting": "Exportando..."
+    },
+    "sections": {
+      "personalData": {
+        "title": "Dados Pessoais e Familiares",
+        "legalGuardian": {
+          "label": "Responsável Legal",
+          "placeholder": "Nome do responsável legal"
+        },
+        "familyRelationship": {
+          "label": "Parentesco",
+          "placeholder": "Grau de parentesco com o paciente"
+        },
+        "referralProfessional": {
+          "label": "Profissional que Encaminhou",
+          "placeholder": "Nome do profissional"
+        },
+        "mainClinicalDemand": {
+          "label": "Demanda Clínica Principal",
+          "placeholder": "Descreva a demanda clínica principal"
+        }
+      },
+      "musicalHistory": {
+        "title": "Histórico Musical",
+        "musicalEducation": "Educação Musical",
+        "instrumentalPractice": "Prática Instrumental",
+        "bodyMusicalExpression": "Expressão Corporal Musical",
+        "vocalExpression": "Expressão Vocal",
+        "choralActivities": "Atividades Corais",
+        "noMusicalExperience": "Sem Experiência Musical"
+      },
+      "soundHistory": {
+        "title": "História Sonora e Musical Detalhada",
+        "pregnancySoundExperiences": {
+          "label": "Vivências sonoras durante a gravidez",
+          "placeholder": "Descreva as vivências sonoras durante a gravidez"
+        },
+        "motherMovementsSongs": {
+          "label": "Movimentos corporais e canções da mãe",
+          "placeholder": "Descreva os movimentos corporais e canções da mãe"
+        },
+        "childhoodSoundEnvironment": {
+          "label": "Ambiente sonoro durante a infância",
+          "placeholder": "Descreva o ambiente sonoro durante a infância"
+        },
+        "parentsSoundReactions": {
+          "label": "Reações dos pais aos sons e aos ruídos",
+          "placeholder": "Descreva as reações dos pais aos sons e ruídos"
+        },
+        "typicalHouseSounds": {
+          "label": "Os sons típicos da casa (bater de portas, gritos, prantos, ruídos de mastigar, tiques com sons, murmúrios, assobios, etc...)",
+          "placeholder": "Descreva os sons típicos da casa"
+        },
+        "nightBodySounds": {
+          "label": "Sons durante a noite e sons corporais",
+          "placeholder": "Descreva os sons durante a noite e sons corporais"
+        },
+        "familyMusicalHistory": {
+          "label": "História Musical da família",
+          "placeholder": "Descreva a história musical da família"
+        },
+        "patientMusicalHistory": {
+          "label": "História musical do paciente",
+          "placeholder": "Descreva a história musical do paciente"
+        }
+      },
+      "musicalBehavior": {
+        "title": "Comportamento Musical",
+        "activeMusicalListening": "Escuta Musical Ativa",
+        "bodyExpression": "Expressão Corporal",
+        "soundResponsiveness": "Responsividade Sonora",
+        "spontaneousVocal": "Emissões Vocais Espontâneas",
+        "instrumentalExploration": "Exploração Instrumental",
+        "positiveMusicalResponse": "Resposta Musical Positiva",
+        "activeSoundSearch": "Busca Ativa por Sons",
+        "soundSourceLocation": "Localização da Fonte Sonora",
+        "adverseSoundReactivity": "Reatividade Adversa a Sons",
+        "specificSoundAversion": "Aversão a Sons Específicos",
+        "auditoryHypersensitivity": "Hipersensibilidade Auditiva"
+      },
+      "soundProcessing": {
+        "title": "Processamento Sonoro"
+      },
+      "musicalPreferences": {
+        "title": "Preferências Musicais",
+        "childrenRepertoire": "Repertório Infantil",
+        "brazilianPopular": "Música Popular Brasileira",
+        "rockGenre": "Rock",
+        "countryMusic": "Sertanejo",
+        "sacredGospel": "Música Sacra/Gospel",
+        "classicalMusic": "Música Clássica",
+        "otherMusicalGenres": "Outros Gêneros Musicais"
+      },
+      "development": {
+        "title": "Desenvolvimento",
+        "cervicalControl": "Controle Cervical",
+        "independentSitting": "Sentar Independente",
+        "crawlingPattern": "Padrão de Engatinhar",
+        "autonomousWalking": "Marcha Autônoma",
+        "broadMotorDev": "Desenvolvimento Motor Amplo",
+        "fineMotorDev": "Desenvolvimento Motor Fino"
+      },
+      "languageDevelopment": {
+        "title": "Desenvolvimento da Linguagem",
+        "babbling": "Balbucio",
+        "firstWords": "Primeiras Palavras",
+        "simplePhrases": "Frases Simples",
+        "echolalia": "Ecolalia",
+        "verbalLanguageAbsence": "Ausência de Linguagem Verbal",
+        "nonverbalCommunication": "Comunicação Não-Verbal"
+      },
+      "behavior": {
+        "title": "Comportamento",
+        "frequentCrying": "Choro Frequente",
+        "irritability": "Irritabilidade",
+        "lowFrustrationTolerance": "Baixa Tolerância à Frustração",
+        "restrictedInterests": "Interesses Restritos",
+        "stereotypedBehavior": "Comportamento Estereotipado",
+        "heteroaggressive": "Heteroagressividade"
+      },
+      "emotionalRegulation": {
+        "title": "Regulação Emocional",
+        "visualContact": "Contato Visual",
+        "nominalCallResponse": "Resposta ao Chamado pelo Nome",
+        "peerInteraction": "Interação com Pares",
+        "sharedPlay": "Brincadeira Compartilhada",
+        "emotionalAbility": "Habilidade Emocional",
+        "anxiety": "Ansiedade"
+      },
+      "mentalDisorders": {
+        "title": "Transtornos Mentais",
+        "autismSpectrum": "Transtorno do Espectro Autista (TEA)",
+        "adhd": "Transtorno do Déficit de Atenção e Hiperatividade (TDAH)",
+        "anxietyDisorders": "Transtornos de Ansiedade",
+        "intellectualDisability": "Deficiência Intelectual",
+        "downSyndrome": "Síndrome de Down",
+        "chronicEncephalopathy": "Encefalopatia Crônica",
+        "otherDiagnoses": "Outros Diagnósticos"
+      },
+      "otherConditions": {
+        "title": "Outras Condições",
+        "socialIsolation": "Isolamento Social"
+      },
+      "medication": {
+        "title": "Medicação",
+        "currentMedication": {
+          "label": "Medicação Atual",
+          "placeholder": "Liste as medicações em uso"
+        }
+      },
+      "therapies": {
+        "title": "Terapias",
+        "speechTherapy": "Fonoaudiologia",
+        "occupationalTherapy": "Terapia Ocupacional",
+        "physiotherapy": "Fisioterapia",
+        "psychologicalSupport": "Acompanhamento Psicológico",
+        "psychopedagogical": "Psicopedagogia",
+        "equineTherapy": "Equoterapia"
+      },
+      "socialAspects": {
+        "title": "Aspectos Sociais",
+        "schoolEnrollment": {
+          "label": "Escolarização",
+          "placeholder": "Descreva a situação escolar"
+        },
+        "schoolAdaptation": {
+          "label": "Adaptação Escolar",
+          "placeholder": "Descreva a adaptação escolar"
+        },
+        "extracurricularActivities": {
+          "label": "Atividades Extracurriculares",
+          "placeholder": "Liste as atividades extracurriculares"
+        }
+      }
+    }
   },
   "fields": {
     "legalGuardian": "Responsável Legal",
