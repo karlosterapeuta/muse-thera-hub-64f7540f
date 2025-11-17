@@ -359,6 +359,109 @@
   },
   "boomwhackerHero": {
     "title": "Boomwhacker Hero",
+    "description": "🎵 Toque músicas tradicionais com tubos sonoros coloridos! Aprenda ritmo e melodia de forma divertida!",
+    "backToMenu": "← Voltar ao Menu",
+    "badges": {
+      "traditional": "🎼 Músicas Tradicionais Brasileiras",
+      "colorSound": "🎨 Cores e Sons",
+      "educational": "🎯 Modo Educativo"
+    },
+    "hero": {
+      "title": "🇧🇷 GUITAR HERO BRASILEIRO",
+      "subtitle": "Toque as clássicas músicas tradicionais do Brasil!"
+    },
+    "difficulty": {
+      "label": "🎯 Dificuldade:",
+      "easy": "Iniciante",
+      "medium": "Intermediário",
+      "hard": "Avançado"
+    },
+    "volume": {
+      "label": "Volume: {volume}%"
+    },
+    "songs": {
+      "title": "📚 Músicas Tradicionais Disponíveis:"
+    },
+    "stats": {
+      "score": "Pontos",
+      "combo": "Combo",
+      "hits": "Acertos",
+      "misses": "Erros"
+    }
+  },
+  "musicalBells": {
+    "title": "🔔 Sinos Musicais Coloridos",
+    "subtitle": "Sistema educacional de aprendizagem musical com cores e formas",
+    "description": "Aprenda músicas populares tocando sinos coloridos sincronizados!",
+    "selectSong": "Escolha uma Música:",
+    "currentSong": "Música Atual:",
+    "exportPDF": "📥 Baixar Partitura (PDF)",
+    "viewSheet": "📄 Ver Partitura",
+    "hideSheet": "Ocultar",
+    "play": "▶ Tocar",
+    "pause": "⏸ Pausar",
+    "stop": "⏹ Parar",
+    "mute": "🔇 Silenciado",
+    "unmute": "🔊 Som",
+    "messages": {
+      "exportSuccess": "✅ Partitura exportada!",
+      "exportError": "❌ Erro ao exportar partitura",
+      "playbackStarted": "▶️ Reprodução iniciada",
+      "playbackStopped": "⏹️ Reprodução pausada",
+      "muted": "🔇 Som desativado",
+      "unmuted": "🔊 Som ativado",
+      "soundDisabled": "Som silenciado.",
+      "soundEnabled": "Agora você pode ouvir as notas!"
+    }
+  },
+  "musicComposer": {
+    "title": "🎵 Compositor Musical Educativo",
+    "subtitle": "Crie, aprenda e compartilhe músicas usando cores, formas e sons!",
+    "tabs": {
+      "compose": "🎵 Compor",
+      "learn": "📚 Aprender",
+      "import": "📥 Importar"
+    },
+    "buttons": {
+      "play": "▶ Tocar",
+      "pause": "⏸ Pausar",
+      "stop": "⏹ Parar",
+      "clear": "🗑️ Limpar",
+      "save": "💾 Salvar",
+      "export": "📤 Exportar",
+      "mute": "🔇",
+      "unmute": "🔊"
+    },
+    "controls": {
+      "volume": "Volume: {volume}%",
+      "tempo": "Tempo: {tempo} BPM",
+      "timeSignature": "Fórmula de Compasso"
+    },
+    "messages": {
+      "compositionSaved": "💾 Música salva!",
+      "compositionCleared": "🗑️ Tudo limpo!",
+      "playbackStarted": "▶️ Reprodução iniciada",
+      "playbackPaused": "⏸️ Reprodução pausada",
+      "playbackStopped": "⏹️ Reprodução parada",
+      "muted": "🔇 Som desativado",
+      "unmuted": "🔊 Som ativado",
+      "soundDisabled": "Som silenciado.",
+      "soundEnabled": "Agora você pode ouvir as notas!",
+      "noteAdded": "🎵 Nota adicionada!",
+      "allCleared": "Todas as notas foram removidas da partitura."
+    }
+  },
+  "teaHeroFull": {
+    "title": "TEA-Hero MuseTera",
+    "subtitle": "Jogo musical terapêutico com melodias 100% sincronizadas visual-auditiva para TEA",
+    "backToMenu": "← Voltar ao Menu",
+    "badges": {
+      "authenticMelodies": "🎼 Melodias Autênticas",
+      "musetera": "🔊 100% MuseTera",
+      "validatedSongs": "🎯 18 Canções Validadas",
+      "zeroDesync": "🎵 Zero Dessincronia"
+    },
+    "title": "Boomwhacker Hero",
     "subtitle": "Toque os tubos coloridos no ritmo!",
     "description": "Jogo musical com tubos percussivos Boomwhackers, explorando ritmo e coordenação motora.",
     "difficulty": {

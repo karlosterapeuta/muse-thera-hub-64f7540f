@@ -359,6 +359,109 @@
   },
   "boomwhackerHero": {
     "title": "Boomwhacker Hero",
+    "description": "🎵 Play traditional songs with colorful sound tubes! Learn rhythm and melody in a fun way!",
+    "backToMenu": "← Back to Menu",
+    "badges": {
+      "traditional": "🎼 Traditional Brazilian Songs",
+      "colorSound": "🎨 Colors and Sounds",
+      "educational": "🎯 Educational Mode"
+    },
+    "hero": {
+      "title": "🇧🇷 BRAZILIAN GUITAR HERO",
+      "subtitle": "Play the classic traditional songs of Brazil!"
+    },
+    "difficulty": {
+      "label": "🎯 Difficulty:",
+      "easy": "Beginner",
+      "medium": "Intermediate",
+      "hard": "Advanced"
+    },
+    "volume": {
+      "label": "Volume: {volume}%"
+    },
+    "songs": {
+      "title": "📚 Available Traditional Songs:"
+    },
+    "stats": {
+      "score": "Score",
+      "combo": "Combo",
+      "hits": "Hits",
+      "misses": "Misses"
+    }
+  },
+  "musicalBells": {
+    "title": "🔔 Colorful Musical Bells",
+    "subtitle": "Educational musical learning system with colors and shapes",
+    "description": "Learn popular songs by playing synchronized colorful bells!",
+    "selectSong": "Choose a Song:",
+    "currentSong": "Current Song:",
+    "exportPDF": "📥 Download Sheet (PDF)",
+    "viewSheet": "📄 View Sheet",
+    "hideSheet": "Hide",
+    "play": "▶ Play",
+    "pause": "⏸ Pause",
+    "stop": "⏹ Stop",
+    "mute": "🔇 Muted",
+    "unmute": "🔊 Sound",
+    "messages": {
+      "exportSuccess": "✅ Sheet exported!",
+      "exportError": "❌ Error exporting sheet",
+      "playbackStarted": "▶️ Playback started",
+      "playbackStopped": "⏹️ Playback paused",
+      "muted": "🔇 Sound disabled",
+      "unmuted": "🔊 Sound enabled",
+      "soundDisabled": "Sound muted.",
+      "soundEnabled": "Now you can hear the notes!"
+    }
+  },
+  "musicComposer": {
+    "title": "🎵 Educational Music Composer",
+    "subtitle": "Create, learn and share music using colors, shapes and sounds!",
+    "tabs": {
+      "compose": "🎵 Compose",
+      "learn": "📚 Learn",
+      "import": "📥 Import"
+    },
+    "buttons": {
+      "play": "▶ Play",
+      "pause": "⏸ Pause",
+      "stop": "⏹ Stop",
+      "clear": "🗑️ Clear",
+      "save": "💾 Save",
+      "export": "📤 Export",
+      "mute": "🔇",
+      "unmute": "🔊"
+    },
+    "controls": {
+      "volume": "Volume: {volume}%",
+      "tempo": "Tempo: {tempo} BPM",
+      "timeSignature": "Time Signature"
+    },
+    "messages": {
+      "compositionSaved": "💾 Music saved!",
+      "compositionCleared": "🗑️ All cleared!",
+      "playbackStarted": "▶️ Playback started",
+      "playbackPaused": "⏸️ Playback paused",
+      "playbackStopped": "⏹️ Playback stopped",
+      "muted": "🔇 Sound disabled",
+      "unmuted": "🔊 Sound enabled",
+      "soundDisabled": "Sound muted.",
+      "soundEnabled": "Now you can hear the notes!",
+      "noteAdded": "🎵 Note added!",
+      "allCleared": "All notes were removed from the staff."
+    }
+  },
+  "teaHeroFull": {
+    "title": "TEA-Hero MuseTera",
+    "subtitle": "Therapeutic musical game with 100% visual-auditory synchronized melodies for ASD",
+    "backToMenu": "← Back to Menu",
+    "badges": {
+      "authenticMelodies": "🎼 Authentic Melodies",
+      "musetera": "🔊 100% MuseTera",
+      "validatedSongs": "🎯 18 Validated Songs",
+      "zeroDesync": "🎵 Zero Desynchronization"
+    },
+    "title": "Boomwhacker Hero",
     "subtitle": "Play the colorful tubes on beat!",
     "description": "Musical game with percussive Boomwhacker tubes, exploring rhythm and motor coordination.",
     "difficulty": {

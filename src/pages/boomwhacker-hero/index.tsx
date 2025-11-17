@@ -254,9 +254,9 @@ const BoomwhackerHero: React.FC = () => {
 
         <div className="pt-20 px-4 max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">🇧🇷 GUITAR HERO BRASILEIRO</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('boomwhackerHero.hero.title')}</h1>
             <p className="text-xl text-purple-200">
-              Toque as clássicas músicas tradicionais do Brasil!
+              {t('boomwhackerHero.hero.subtitle')}
             </p>
             <div className="mt-4 p-3 bg-green-900 bg-opacity-50 rounded-lg">
               <p className="text-sm text-green-200">
