@@ -1,5 +1,6 @@
 
 import React, { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from "react-router-dom";
 import { Form } from "@/components/ui/form";
 import {
@@ -18,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function ReportForm() {
+  const { t } = useTranslation(['reports', 'common']);
   const { reportId } = useParams();
   const [searchParams] = useSearchParams();
   const patientIdFromQuery = searchParams.get('patient_id');
@@ -75,8 +77,8 @@ export default function ReportForm() {
         console.error("Erro ao carregar relatório:", error);
         toast({
           variant: "destructive",
-          title: "Erro",
-          description: "Não foi possível carregar o relatório.",
+          title: t('common:error'),
+          description: t('reports:toast.error.load'),
         });
       }
     };
@@ -101,12 +103,12 @@ export default function ReportForm() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {reportId ? "Editar Relatório" : "Novo Relatório"}
+            {reportId ? t('reports:form.title.edit') : t('reports:form.title.new')}
           </CardTitle>
           <CardDescription>
             {reportId 
-              ? "Edite as informações do relatório existente"
-              : "Registre um novo relatório para o paciente"
+              ? t('reports:form.description.edit')
+              : t('reports:form.description.new')
             }
           </CardDescription>
         </CardHeader>

@@ -1,0 +1,175 @@
+{
+  "title": "Relatórios",
+  "description": "Gerencie todos os relatórios musicoterapêuticos",
+  "new": "Novo Relatório",
+  "edit": "Editar Relatório",
+  "view": "Visualizar Relatório",
+  "delete": "Excluir Relatório",
+  
+  "form": {
+    "title": {
+      "new": "Novo Relatório",
+      "edit": "Editar Relatório"
+    },
+    "description": {
+      "new": "Registre um novo relatório para o paciente",
+      "edit": "Edite as informações do relatório existente"
+    },
+    "fields": {
+      "patient": {
+        "label": "Paciente",
+        "placeholder": "Selecione um paciente",
+        "loading": "Carregando pacientes...",
+        "empty": "Nenhum paciente encontrado",
+        "ageFormat": "{{name}} ({{age}} anos)"
+      },
+      "date": {
+        "label": "Data do Relatório",
+        "placeholder": "Selecione uma data"
+      },
+      "type": {
+        "label": "Tipo de Relatório",
+        "placeholder": "Selecione o tipo de relatório"
+      }
+    },
+    "tabs": {
+      "manual": "Preenchimento Manual",
+      "ai": "Gerar com IA"
+    },
+    "actions": {
+      "save": "Salvar Relatório",
+      "update": "Atualizar Relatório",
+      "cancel": "Cancelar",
+      "generatePDF": "Gerar PDF",
+      "generating": "Gerando..."
+    }
+  },
+
+  "types": {
+    "individual_session": "Sessão Individual",
+    "group_session": "Sessão em Grupo",
+    "daily_evolution": "Evolução Diária",
+    "monthly_evolution": "Evolução Mensal",
+    "semester_evolution": "Evolução Semestral",
+    "therapeutic_discharge": "Alta Terapêutica",
+    "technical_report": "Relatório Técnico",
+    "initial_evaluation": "Avaliação Inicial",
+    "progress_report": "Relatório de Progresso",
+    "session_summary": "Resumo de Sessão",
+    "family_report": "Relatório Familiar",
+    "team_report": "Relatório de Equipe",
+    "assessment_report": "Relatório de Avaliação",
+    "discharge_summary": "Resumo de Alta",
+    "administrative_discharge": "Alta Administrativa",
+    "tea_scale": "Escala TEA",
+    "musicoterapia": "Relatório MuseTera TEA - Musicoterapia"
+  },
+
+  "list": {
+    "title": "Relatórios Musicoterapêuticos",
+    "subtitle": "Gerencie e visualize todos os relatórios dos seus pacientes",
+    "search": "Buscar relatórios...",
+    "filter": "Filtrar",
+    "viewMode": {
+      "list": "Lista",
+      "grid": "Grade"
+    },
+    "stats": {
+      "total": "Total de Relatórios",
+      "thisMonth": "Este Mês",
+      "patients": "Pacientes Ativos",
+      "growth": "+{{percent}}% vs mês anterior"
+    },
+    "table": {
+      "headers": {
+        "type": "Tipo",
+        "patient": "Paciente",
+        "professional": "Profissional",
+        "date": "Data",
+        "actions": "Ações"
+      },
+      "actions": {
+        "view": "Visualizar",
+        "edit": "Editar",
+        "delete": "Excluir"
+      }
+    },
+    "empty": {
+      "title": "Nenhum relatório encontrado",
+      "description": "Comece criando seu primeiro relatório.",
+      "noResults": "Nenhum relatório corresponde à sua busca.",
+      "action": "Criar Primeiro Relatório"
+    },
+    "loading": "Carregando relatórios..."
+  },
+
+  "dialog": {
+    "view": {
+      "title": "Visualizar Relatório",
+      "close": "Fechar"
+    },
+    "delete": {
+      "title": "Excluir Relatório",
+      "description": "Tem certeza que deseja excluir este relatório? Esta ação não pode ser desfeita.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
+    }
+  },
+
+  "content": {
+    "daily_evolution": {
+      "initial_state": "Estado Inicial",
+      "activities": "Atividades Realizadas",
+      "responses": "Respostas Observadas",
+      "observations": "Observações"
+    },
+    "monthly_evolution": {
+      "therapeutic_objectives": "Objetivos Terapêuticos",
+      "achievements": "Conquistas",
+      "challenges": "Desafios",
+      "adjustments": "Ajustes Necessários",
+      "next_steps": "Próximos Passos"
+    },
+    "semester_evolution": {
+      "initial_evaluation": "Avaliação Inicial",
+      "therapeutic_process": "Processo Terapêutico",
+      "evolution_areas": "Áreas de Evolução",
+      "family_involvement": "Envolvimento Familiar",
+      "conclusions": "Conclusões",
+      "recommendations": "Recomendações"
+    },
+    "therapeutic_discharge": {
+      "treatment_summary": "Resumo do Tratamento",
+      "achieved_goals": "Objetivos Alcançados",
+      "recommendations": "Recomendações"
+    },
+    "individual_session": {
+      "objectives": "Objetivos",
+      "activities": "Atividades Realizadas",
+      "patient_response": "Resposta do Paciente",
+      "observations": "Observações",
+      "next_steps": "Próximos Passos"
+    },
+    "group_session": {
+      "participants": "Participantes",
+      "theme": "Tema",
+      "group_dynamics": "Dinâmica do Grupo",
+      "activities": "Atividades Realizadas",
+      "group_response": "Resposta do Grupo",
+      "observations": "Observações"
+    }
+  },
+
+  "toast": {
+    "created": "Relatório criado com sucesso!",
+    "updated": "Relatório atualizado com sucesso!",
+    "deleted": "Relatório excluído com sucesso!",
+    "error": {
+      "load": "Não foi possível carregar o relatório.",
+      "create": "Erro ao criar relatório.",
+      "update": "Erro ao atualizar relatório.",
+      "delete": "Erro ao excluir relatório.",
+      "pdf": "Erro ao gerar PDF."
+    }
+  }
+}
