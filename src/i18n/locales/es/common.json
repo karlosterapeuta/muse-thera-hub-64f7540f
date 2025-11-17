@@ -27,7 +27,9 @@
     "phone": "Teléfono",
     "address": "Dirección",
     "status": "Estado",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "signature": "Firma",
+    "years": "años"
   },
   "messages": {
     "success": "Operación realizada con éxito",
@@ -36,7 +38,8 @@
     "noData": "No se encontraron datos",
     "confirmDelete": "¿Está seguro de que desea eliminar?",
     "languageChanged": "Idioma cambiado",
-    "nowUsing": "Ahora usando"
+    "nowUsing": "Ahora usando",
+    "tryAgain": "Intentar de Nuevo"
   },
   "selectLanguage": "Seleccionar idioma",
   "active": "Activo"

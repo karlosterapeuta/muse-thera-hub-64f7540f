@@ -2,10 +2,28 @@
   "title": "Anamnese",
   "description": "Formulário completo de anamnese musicoterapêutica",
   "list": {
-    "title": "Lista de Anamneses",
+    "title": "Anamneses Salvas",
+    "description": "Gerencie todas as anamneses dos seus pacientes",
     "empty": "Nenhuma anamnese encontrada",
     "createNew": "Nova Anamnese",
-    "searchPlaceholder": "Buscar anamnese..."
+    "searchPlaceholder": "Buscar por paciente ou demanda...",
+    "stats": {
+      "total": "Total de Anamneses",
+      "lastMonth": "Último Mês",
+      "thisWeek": "Esta Semana"
+    },
+    "actions": {
+      "view": "Visualizar",
+      "edit": "Editar",
+      "download": "Baixar PDF",
+      "delete": "Excluir"
+    },
+    "confirmDelete": {
+      "title": "Confirmar exclusão",
+      "description": "Tem certeza que deseja excluir esta anamnese? Esta ação não pode ser desfeita.",
+      "confirm": "Sim, excluir",
+      "cancel": "Cancelar"
+    }
   },
   "form": {
     "personalData": "Dados Pessoais",

@@ -1,5 +1,5 @@
-
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ interface AnamnesesListProps {
 }
 
 export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProps) {
+  const { t, i18n } = useTranslation(['anamnesis', 'common']);
   const [searchTerm, setSearchTerm] = useState("");
   const { data: anamneses = [], isLoading, error } = useAnamnesisData();
   const deleteAnamnesis = useDeleteAnamnesis();
@@ -54,7 +55,12 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
+    const localeMap: Record<string, string> = {
+      'pt-BR': 'pt-BR',
+      'en': 'en-US',
+      'es': 'es-ES'
+    };
+    return new Date(dateString).toLocaleDateString(localeMap[i18n.language] || 'pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -76,13 +82,13 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       <Card>
         <CardContent className="p-8 text-center">
           <div className="text-destructive mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Erro ao carregar anamneses</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t('anamnesis:toast.loadError')}</h3>
             <p className="text-sm text-muted-foreground mt-2">
-              {error.message || "Não foi possível carregar as anamneses."}
+              {error.message || t('anamnesis:toast.error')}
             </p>
           </div>
           <Button onClick={() => window.location.reload()} variant="outline">
-            Tentar Novamente
+            {t('common:messages.tryAgain')}
           </Button>
         </CardContent>
       </Card>
@@ -94,12 +100,12 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Anamneses Salvas</h1>
-          <p className="text-muted-foreground">Gerencie todas as anamneses dos seus pacientes</p>
+          <h1 className="text-2xl font-bold">{t('anamnesis:list.title')}</h1>
+          <p className="text-muted-foreground">{t('anamnesis:list.description')}</p>
         </div>
         <Button onClick={onCreateNew} className="flex items-center gap-2">
           <Plus size={16} />
-          Nova Anamnese
+          {t('anamnesis:list.createNew')}
         </Button>
       </div>
 
@@ -107,7 +113,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
         <Input
-          placeholder="Buscar por paciente ou demanda..."
+          placeholder={t('anamnesis:list.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10"
@@ -120,7 +126,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total de Anamneses</p>
+                <p className="text-sm text-muted-foreground">{t('anamnesis:list.stats.total')}</p>
                 <p className="text-2xl font-bold">{anamneses.length}</p>
               </div>
               <FileText className="text-blue-500" size={24} />
@@ -131,7 +137,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pacientes Únicos</p>
+                <p className="text-sm text-muted-foreground">{t('anamnesis:list.stats.lastMonth')}</p>
                 <p className="text-2xl font-bold">
                   {new Set(anamneses.map(a => a.patient_id)).size}
                 </p>
@@ -144,7 +150,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Esta Semana</p>
+                <p className="text-sm text-muted-foreground">{t('anamnesis:list.stats.thisWeek')}</p>
                 <p className="text-2xl font-bold">
                   {anamneses.filter(a => {
                     const created = new Date(a.created_at);
@@ -166,18 +172,18 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           <CardContent className="p-8 text-center">
             <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              {anamneses.length === 0 ? "Nenhuma anamnese encontrada" : "Nenhuma anamnese corresponde à busca"}
+              {anamneses.length === 0 ? t('anamnesis:list.empty') : t('common:messages.noData')}
             </h3>
             <p className="text-muted-foreground mb-4">
               {anamneses.length === 0 
-                ? "Comece criando sua primeira anamnese clicando no botão acima."
-                : "Tente ajustar os termos de busca para encontrar a anamnese desejada."
+                ? t('anamnesis:list.description')
+                : t('common:messages.noData')
               }
             </p>
             {anamneses.length === 0 && (
               <Button onClick={onCreateNew} variant="outline">
                 <Plus size={16} className="mr-2" />
-                Criar Primeira Anamnese
+                {t('anamnesis:list.createNew')}
               </Button>
             )}
           </CardContent>
@@ -231,7 +237,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                         className="flex items-center gap-1"
                       >
                         <Eye size={14} />
-                        Ver
+                        {t('anamnesis:list.actions.view')}
                       </Button>
                       <Button
                         size="sm"
@@ -240,7 +246,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                         className="flex items-center gap-1"
                       >
                         <Edit size={14} />
-                        Editar
+                        {t('anamnesis:list.actions.edit')}
                       </Button>
                     </div>
                     
@@ -261,19 +267,18 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Anamnese</AlertDialogTitle>
+                          <AlertDialogTitle>{t('anamnesis:list.confirmDelete.title')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja excluir a anamnese de <strong>{anamnesis.patient_name}</strong>? 
-                            Esta ação não pode ser desfeita.
+                            {t('anamnesis:list.confirmDelete.description')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>{t('anamnesis:list.confirmDelete.cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(anamnesis.id)}
                             className="bg-destructive hover:bg-destructive/90"
                           >
-                            Excluir
+                            {t('anamnesis:list.confirmDelete.confirm')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

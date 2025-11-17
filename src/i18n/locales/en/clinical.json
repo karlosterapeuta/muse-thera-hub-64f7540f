@@ -27,7 +27,8 @@
       "expand": "Expand",
       "collapse": "Collapse",
       "addPhrase": "Add Phrase",
-      "selectPhrase": "Select Phrase"
+      "selectPhrase": "Select Phrase",
+      "editText": "Edit Text"
     },
     "messages": {
       "noPatientSelected": "No patient selected",
@@ -35,6 +36,10 @@
       "phraseAdded": "Phrase added",
       "phraseRemoved": "Phrase removed"
     },
+    "selected": "selected",
+    "selected_plural": "selected",
+    "selectedText": "Selected Text",
+    "closingMessage": "Music is a bridge that connects, develops and transforms. Let's continue together on this journey! 🎵",
     "toast": {
       "saveSuccess": "Report saved successfully!",
       "pdfSuccess": "PDF generated successfully!",

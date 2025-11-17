@@ -27,7 +27,8 @@
       "expand": "Expandir",
       "collapse": "Recolher",
       "addPhrase": "Adicionar Frase",
-      "selectPhrase": "Selecionar Frase"
+      "selectPhrase": "Selecionar Frase",
+      "editText": "Editar Texto"
     },
     "messages": {
       "noPatientSelected": "Nenhum paciente selecionado",
@@ -35,6 +36,10 @@
       "phraseAdded": "Frase adicionada",
       "phraseRemoved": "Frase removida"
     },
+    "selected": "selecionada",
+    "selected_plural": "selecionadas",
+    "selectedText": "Texto Selecionado",
+    "closingMessage": "A música é uma ponte que conecta, desenvolve e transforma. Continuemos juntos nesta jornada! 🎵",
     "toast": {
       "saveSuccess": "Relatório salvo com sucesso!",
       "pdfSuccess": "PDF gerado com sucesso!",

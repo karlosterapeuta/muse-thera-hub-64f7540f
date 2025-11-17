@@ -2,10 +2,28 @@
   "title": "Anamnesis",
   "description": "Complete music therapy anamnesis form",
   "list": {
-    "title": "Anamnesis List",
+    "title": "Saved Anamneses",
+    "description": "Manage all your patient anamneses",
     "empty": "No anamnesis found",
     "createNew": "New Anamnesis",
-    "searchPlaceholder": "Search anamnesis..."
+    "searchPlaceholder": "Search by patient or demand...",
+    "stats": {
+      "total": "Total Anamneses",
+      "lastMonth": "Last Month",
+      "thisWeek": "This Week"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "download": "Download PDF",
+      "delete": "Delete"
+    },
+    "confirmDelete": {
+      "title": "Confirm deletion",
+      "description": "Are you sure you want to delete this anamnesis? This action cannot be undone.",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel"
+    }
   },
   "form": {
     "personalData": "Personal Data",

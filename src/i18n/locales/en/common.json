@@ -27,7 +27,9 @@
     "phone": "Phone",
     "address": "Address",
     "status": "Status",
-    "actions": "Actions"
+    "actions": "Actions",
+    "signature": "Signature",
+    "years": "years"
   },
   "messages": {
     "success": "Operation completed successfully",
@@ -36,7 +38,8 @@
     "noData": "No data found",
     "confirmDelete": "Are you sure you want to delete?",
     "languageChanged": "Language changed",
-    "nowUsing": "Now using"
+    "nowUsing": "Now using",
+    "tryAgain": "Try Again"
   },
   "selectLanguage": "Select language",
   "active": "Active"

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -23,18 +24,29 @@ interface DevolutivaPreviewProps {
 }
 
 export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
+  const { t, i18n } = useTranslation(['clinical', 'phrases', 'common']);
+  
+  const getLocaleDateString = (dateString: string) => {
+    const localeMap: Record<string, string> = {
+      'pt-BR': 'pt-BR',
+      'en': 'en-US',
+      'es': 'es-ES'
+    };
+    return new Date(dateString).toLocaleDateString(localeMap[i18n.language] || 'pt-BR');
+  };
+  
   const sections = [
-    { title: 'Estado de Chegada', icon: '👋', content: data.arrival_state },
-    { title: 'Comunicação e Interação', icon: '💬', content: data.communication },
-    { title: 'Regulação Emocional', icon: '❤️', content: data.emotional_regulation },
-    { title: 'Desenvolvimento Motor', icon: '🤸', content: data.motor_development },
-    { title: 'Aspectos Sensoriais', icon: '🎵', content: data.sensory_aspects },
-    { title: 'Participação Musical', icon: '🎼', content: data.musical_participation },
-    { title: 'Conquistas da Sessão', icon: '🎯', content: data.achievements },
-    { title: 'Orientações para Família', icon: '👨‍👩‍👧‍👦', content: data.family_guidelines },
-    { title: 'Próximos Passos', icon: '🔜', content: data.next_steps },
-    { title: 'Observações Gerais', icon: '📝', content: data.general_observations },
-    { title: 'Desafios e Resistências', icon: '⚠️', content: data.challenges_resistance }
+    { title: t('phrases:categories.arrival_state.title'), icon: t('phrases:categories.arrival_state.icon'), content: data.arrival_state },
+    { title: t('phrases:categories.communication.title'), icon: t('phrases:categories.communication.icon'), content: data.communication },
+    { title: t('phrases:categories.emotional_regulation.title'), icon: t('phrases:categories.emotional_regulation.icon'), content: data.emotional_regulation },
+    { title: t('phrases:categories.motor_development.title'), icon: t('phrases:categories.motor_development.icon'), content: data.motor_development },
+    { title: t('phrases:categories.sensory_aspects.title'), icon: t('phrases:categories.sensory_aspects.icon'), content: data.sensory_aspects },
+    { title: t('phrases:categories.musical_participation.title'), icon: t('phrases:categories.musical_participation.icon'), content: data.musical_participation },
+    { title: t('phrases:categories.achievements.title'), icon: t('phrases:categories.achievements.icon'), content: data.achievements },
+    { title: t('phrases:categories.family_guidelines.title'), icon: t('phrases:categories.family_guidelines.icon'), content: data.family_guidelines },
+    { title: t('phrases:categories.next_steps.title'), icon: t('phrases:categories.next_steps.icon'), content: data.next_steps },
+    { title: t('phrases:categories.general_observations.title'), icon: t('phrases:categories.general_observations.icon'), content: data.general_observations },
+    { title: t('phrases:categories.challenges_resistance.title'), icon: t('phrases:categories.challenges_resistance.icon'), content: data.challenges_resistance }
   ];
 
   return (
@@ -44,12 +56,12 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
         <div className="text-center mb-8 space-y-2">
           <div className="text-4xl mb-2">🎵</div>
           <h1 className="text-2xl font-bold text-foreground">
-            DEVOLUTIVA MUSICOTERAPIA
+            {t('clinical:devolutiva.title').toUpperCase()}
           </h1>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p><strong>Paciente:</strong> {data.patient_name}</p>
-            <p><strong>Data:</strong> {new Date(data.session_date).toLocaleDateString('pt-BR')}</p>
-            <p><strong>Sessão #:</strong> {data.session_number}</p>
+            <p><strong>{t('clinical:devolutiva.fields.patient')}:</strong> {data.patient_name}</p>
+            <p><strong>{t('common:date')}:</strong> {getLocaleDateString(data.session_date)}</p>
+            <p><strong>{t('clinical:devolutiva.fields.sessionNumber')} #:</strong> {data.session_number}</p>
           </div>
         </div>
 
@@ -79,19 +91,19 @@ export function DevolutivaPreview({ data }: DevolutivaPreviewProps) {
         {/* Footer */}
         <div className="space-y-4">
           <div className="text-sm text-foreground">
-            <p><strong>Profissional:</strong> {data.professional_name}</p>
-            <p><strong>Registro:</strong> {data.professional_registry}</p>
+            <p><strong>{t('clinical:devolutiva.fields.professionalName')}:</strong> {data.professional_name}</p>
+            <p><strong>{t('clinical:devolutiva.fields.professionalRegistry')}:</strong> {data.professional_registry}</p>
           </div>
           <div className="pt-8 border-t-2 border-border">
             <p className="text-sm text-muted-foreground text-center">
-              Assinatura: _________________________________
+              {t('common:signature')}: _________________________________
             </p>
           </div>
         </div>
 
         <div className="mt-8 p-4 bg-primary/5 rounded-lg border-2 border-primary/20">
           <p className="text-xs text-muted-foreground text-center italic">
-            A música é uma ponte que conecta, desenvolve e transforma. Continuemos juntos nesta jornada! 🎵
+            {t('clinical:devolutiva.closingMessage')}
           </p>
         </div>
       </CardContent>
