@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,6 +58,7 @@ type Anamnesis = {
 };
 
 export default function PatientsPage() {
+  const { t } = useTranslation('patients');
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -149,10 +151,10 @@ export default function PatientsPage() {
           </div>
           <div className="space-y-3">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Pacientes
+              {t('title')}
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Gerencie seus pacientes com facilidade e organize todo o processo terapêutico
+              {t('description')}
             </p>
           </div>
         </div>
@@ -168,10 +170,10 @@ export default function PatientsPage() {
                 </div>
                 <div>
                   <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
-                    Gerenciar Pacientes
+                    {t('title')}
                   </CardTitle>
                   <CardDescription className="text-base md:text-lg text-muted-foreground">
-                    Organize e acompanhe seus pacientes
+                    {t('description')}
                   </CardDescription>
                 </div>
               </div>
@@ -182,7 +184,7 @@ export default function PatientsPage() {
               >
                 <UserRoundPlus className="h-5 w-5 mr-2" />
                 <Sparkles className="h-4 w-4 mr-1" />
-                {isMobile ? "Novo Paciente" : "Adicionar Paciente"}
+                {isMobile ? t('buttons.newPatient') : t('buttons.addPatient')}
               </Button>
             </div>
           </CardHeader>
@@ -196,7 +198,7 @@ export default function PatientsPage() {
                   <Search className="h-5 w-5 text-muted-foreground mr-3" />
                   <Input
                     type="search"
-                    placeholder="Buscar paciente por nome ou responsável..."
+                    placeholder={t('search.placeholder')}
                     value={searchTerm}
                     onChange={handleSearchChange}
                     className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground text-base"
