@@ -1,0 +1,49 @@
+{
+  "title": "Anamnesis",
+  "description": "Formulario completo de anamnesis de musicoterapia",
+  "list": {
+    "title": "Lista de Anamnesis",
+    "empty": "No se encontró ninguna anamnesis",
+    "createNew": "Nueva Anamnesis",
+    "searchPlaceholder": "Buscar anamnesis..."
+  },
+  "form": {
+    "personalData": "Datos Personales",
+    "clinicalData": "Datos Clínicos",
+    "familyData": "Datos Familiares",
+    "musicalHistory": "Historial Musical",
+    "developmentData": "Datos de Desarrollo",
+    "therapeuticData": "Datos Terapéuticos"
+  },
+  "fields": {
+    "legalGuardian": "Tutor Legal",
+    "familyRelationship": "Grado de Parentesco",
+    "referralProfessional": "Profesional Derivante",
+    "mainClinicalDemand": "Demanda Clínica Principal",
+    "currentMedication": "Medicación Actual",
+    "therapeuticGoals": "Objetivos Terapéuticos",
+    "treatmentApproach": "Abordaje de Tratamiento"
+  },
+  "sections": {
+    "diagnosis": "Diagnóstico Clínico",
+    "development": "Desarrollo",
+    "musical": "Historial Musical",
+    "family": "Contexto Familiar",
+    "therapeutic": "Contexto Terapéutico"
+  },
+  "buttons": {
+    "save": "Guardar Anamnesis",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "view": "Ver",
+    "back": "Volver",
+    "delete": "Eliminar"
+  },
+  "toast": {
+    "saveSuccess": "¡Anamnesis guardada con éxito!",
+    "updateSuccess": "¡Anamnesis actualizada con éxito!",
+    "deleteSuccess": "¡Anamnesis eliminada con éxito!",
+    "error": "Error al procesar la anamnesis",
+    "loadError": "Error al cargar la anamnesis"
+  }
+}

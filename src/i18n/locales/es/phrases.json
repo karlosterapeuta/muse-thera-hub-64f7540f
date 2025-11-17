@@ -1,0 +1,169 @@
+{
+  "categories": {
+    "arrival_state": {
+      "title": "Estado de Llegada",
+      "icon": "👋"
+    },
+    "communication": {
+      "title": "Comunicación e Interacción",
+      "icon": "💬"
+    },
+    "emotional_regulation": {
+      "title": "Regulación Emocional",
+      "icon": "❤️"
+    },
+    "motor_development": {
+      "title": "Desarrollo Motor",
+      "icon": "🤸"
+    },
+    "sensory_aspects": {
+      "title": "Aspectos Sensoriales",
+      "icon": "🎵"
+    },
+    "musical_participation": {
+      "title": "Participación Musical",
+      "icon": "🎼"
+    },
+    "achievements": {
+      "title": "Logros de la Sesión",
+      "icon": "🎯"
+    },
+    "family_guidelines": {
+      "title": "Orientaciones para la Familia",
+      "icon": "👨‍👩‍👧‍👦"
+    },
+    "next_steps": {
+      "title": "Próximos Pasos",
+      "icon": "📅"
+    },
+    "general_observations": {
+      "title": "Observaciones Generales",
+      "icon": "📝"
+    },
+    "challenges_resistance": {
+      "title": "Desafíos y Resistencias",
+      "icon": "⚠️"
+    }
+  },
+  "arrival_state": [
+    "Llegó tranquilo y receptivo a la sesión",
+    "Presentó ansiedad inicial que fue acogida con música suave",
+    "Demostró entusiasmo al reconocer el ambiente terapéutico",
+    "Necesitó tiempo extra para adaptarse al espacio",
+    "Llegó agitado pero se calmó gradualmente con actividades rítmicas",
+    "Se mostró cómodo y familiarizado con el encuadre terapéutico",
+    "Presentó resistencia inicial que fue trabajada musicalmente",
+    "Llegó en estado de desregulación emocional que fue acogido a través de canciones de su preferencia",
+    "Demostró irritabilidad desde la llegada, necesitando tiempo para organizarse emocionalmente",
+    "Se negó inicialmente a entrar en la sala, pero aceptó después de mediación con instrumento de su elección"
+  ],
+  "communication": [
+    "Mantuvo contacto visual durante las actividades musicales",
+    "Inició interacciones espontáneas a través de gestos musicales",
+    "Respondió a llamadas por su nombre con mayor frecuencia",
+    "Demostró preferencias musicales de forma clara",
+    "Comunicó necesidades a través de elecciones de instrumentos",
+    "Participó en turnos comunicativos con apoyo musical",
+    "Se expresó a través de vocalizaciones sincronizadas con la música",
+    "Señaló instrumentos deseados, demostrando intencionalidad comunicativa",
+    "Utilizó gestos funcionales para solicitar repetición de actividades preferidas",
+    "Compartió miradas significativas durante momentos de pausa musical",
+    "Imitó gestos y sonidos propuestos por el musicoterapeuta, demostrando compromiso comunicativo"
+  ],
+  "emotional_regulation": [
+    "Reguló estados emocionales a través de la música",
+    "Se calmó con canciones de cuna adaptadas a su repertorio",
+    "Utilizó instrumentos para expresar emociones de forma adecuada",
+    "Demostró mayor tolerancia a la frustración durante desafíos musicales",
+    "Solicitó música específica para organizarse emocionalmente",
+    "Se mantuvo comprometido incluso en situaciones de mayor estimulación sensorial",
+    "Respondió positivamente a estrategias de modulación a través del ritmo",
+    "Expresó alegría a través de sonrisas y vocalizaciones durante actividades preferidas",
+    "Toleró transiciones entre actividades con apoyo musical",
+    "Aceptó pausas y momentos de silencio como parte de la experiencia musical"
+  ],
+  "motor_development": [
+    "Exploró instrumentos con coordinación motora fina progresiva",
+    "Realizó movimientos corporales rítmicos sincronizados con la música",
+    "Demostró equilibrio y control postural durante actividades de danza terapéutica",
+    "Manipuló baquetas e instrumentos de percusión con mayor precisión",
+    "Participó en actividades de coordinación bilateral con instrumentos emparejados",
+    "Exploró diferentes planos espaciales a través del movimiento musical",
+    "Demostró fuerza y resistencia muscular adecuadas durante actividades rítmicas intensas",
+    "Realizó movimientos de pinza para manipulación de pequeños instrumentos",
+    "Coordinó movimientos de brazos y piernas en actividades de danza circular"
+  ],
+  "sensory_aspects": [
+    "Exploró diferentes texturas sonoras con curiosidad",
+    "Demostró preferencia por sonidos graves/agudos específicos",
+    "Toleró variaciones de intensidad sonora con mayor flexibilidad",
+    "Reguló entrada sensorial a través de elecciones musicales conscientes",
+    "Exploró propiocepción a través de instrumentos de percusión corporal",
+    "Demostró integración sensorial al combinar estímulos visuales y auditivos",
+    "Aceptó experiencias táctiles a través de la exploración de instrumentos diversos",
+    "Mantuvo atención auditiva durante toda la sesión, incluso con cambios de timbres",
+    "Respondió adecuadamente a estímulos vestibulares en actividades de balanceo musical"
+  ],
+  "musical_participation": [
+    "Participó activamente en todas las propuestas musicales",
+    "Eligió instrumentos de forma autónoma e intencional",
+    "Mantuvo compromiso sostenido durante improvisaciones musicales",
+    "Demostró creatividad en la exploración de posibilidades sonoras",
+    "Respetó turnos en actividades musicales grupales",
+    "Se sincronizó rítmicamente con las propuestas del musicoterapeuta",
+    "Exploró diferentes dinámicas musicales (forte/piano) con control",
+    "Participó en canciones conocidas completando fragmentos familiares",
+    "Inició propuestas musicales propias, liderando momentos de la sesión",
+    "Demostró memoria musical al reconocer y anticipar canciones del repertorio terapéutico"
+  ],
+  "achievements": [
+    "Se mantuvo comprometido durante toda la sesión sin necesidad de pausas",
+    "Aceptó probar un nuevo instrumento musical por primera vez",
+    "Realizó primera vocalización espontánea sincronizada con la música",
+    "Toleró cambio de actividad sin signos de desorganización",
+    "Inició interacción comunicativa de forma independiente",
+    "Demostró progresos significativos en la coordinación motora fina",
+    "Expresó emociones a través de la música de forma más clara e intencional",
+    "Mantuvo contacto visual por períodos más prolongados durante interacciones musicales",
+    "Solicitó repetición de actividad favorita usando comunicación funcional"
+  ],
+  "family_guidelines": [
+    "Se sugiere mantener rutina de escucha musical en casa, priorizando el repertorio trabajado en sesión",
+    "Se recomienda disponer de instrumentos simples en ambiente doméstico para exploración libre",
+    "Importante observar y registrar preferencias musicales demostradas en la vida cotidiana",
+    "Se sugiere uso de música como estrategia de transición entre actividades diarias",
+    "Se recomienda creación de lista de reproducción personalizada para momentos de regulación emocional",
+    "Importante valorar y reforzar intentos de comunicación a través de sonidos y gestos musicales",
+    "Se sugiere participación en actividades musicales familiares, respetando el tiempo e interés del niño",
+    "Se recomienda atención a los signos de sobrecarga sensorial y uso de música calmante cuando sea necesario"
+  ],
+  "next_steps": [
+    "Continuar trabajando habilidades de atención compartida a través de actividades musicales emparejadas",
+    "Ampliar repertorio de estrategias de regulación emocional usando música",
+    "Introducir gradualmente nuevos instrumentos para ampliar experiencias sensoriales",
+    "Intensificar trabajo de coordinación motora a través de actividades rítmicas específicas",
+    "Fortalecer comunicación intencional a través de elecciones musicales estructuradas",
+    "Desarrollar tolerancia a cambios a través de variaciones controladas en el encuadre musical",
+    "Ampliar tiempo de compromiso sostenido en actividades musicales complejas",
+    "Trabajar habilidades sociales a través de actividades musicales en grupo cuando sea apropiado"
+  ],
+  "general_observations": [
+    "Sesión productiva con compromiso consistente del paciente",
+    "Se observa evolución gradual y continua en las áreas trabajadas",
+    "Paciente demostró apertura a nuevas experiencias musicales",
+    "Vínculo terapéutico fortalecido a través de experiencias musicales compartidas",
+    "Las respuestas a las intervenciones musicales fueron consistentes con los objetivos terapéuticos establecidos",
+    "La familia demuestra compromiso y comprensión del proceso terapéutico",
+    "El paciente presenta potencial significativo para el desarrollo a través de la musicoterapia",
+    "Importante mantener consistencia y previsibilidad en la estructura de las sesiones"
+  ],
+  "challenges_resistance": [
+    "Presentó dificultad inicial en aceptar cambio de actividad, necesitando apoyo musical adicional",
+    "Demostró resistencia a la exploración de nuevos instrumentos, prefiriendo permanecer en zona de confort",
+    "Necesitó múltiples intentos para compromiso en actividades menos familiares",
+    "Mostró signos de sobrecarga sensorial en momentos de mayor complejidad sonora",
+    "Presentó comportamientos de evitación en actividades que requerían mayor interacción social",
+    "Demostró baja tolerancia a la frustración en desafíos musicales más complejos",
+    "Necesitó pausas reguladoras durante la sesión para mantener organización"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "title": "Anamnese",
+  "description": "Formulário completo de anamnese musicoterapêutica",
+  "list": {
+    "title": "Lista de Anamneses",
+    "empty": "Nenhuma anamnese encontrada",
+    "createNew": "Nova Anamnese",
+    "searchPlaceholder": "Buscar anamnese..."
+  },
+  "form": {
+    "personalData": "Dados Pessoais",
+    "clinicalData": "Dados Clínicos",
+    "familyData": "Dados Familiares",
+    "musicalHistory": "Histórico Musical",
+    "developmentData": "Dados de Desenvolvimento",
+    "therapeuticData": "Dados Terapêuticos"
+  },
+  "fields": {
+    "legalGuardian": "Responsável Legal",
+    "familyRelationship": "Grau de Parentesco",
+    "referralProfessional": "Profissional que Encaminhou",
+    "mainClinicalDemand": "Demanda Clínica Principal",
+    "currentMedication": "Medicação Atual",
+    "therapeuticGoals": "Objetivos Terapêuticos",
+    "treatmentApproach": "Abordagem de Tratamento"
+  },
+  "sections": {
+    "diagnosis": "Diagnóstico Clínico",
+    "development": "Desenvolvimento",
+    "musical": "Histórico Musical",
+    "family": "Contexto Familiar",
+    "therapeutic": "Contexto Terapêutico"
+  },
+  "buttons": {
+    "save": "Salvar Anamnese",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "view": "Visualizar",
+    "back": "Voltar",
+    "delete": "Excluir"
+  },
+  "toast": {
+    "saveSuccess": "Anamnese salva com sucesso!",
+    "updateSuccess": "Anamnese atualizada com sucesso!",
+    "deleteSuccess": "Anamnese excluída com sucesso!",
+    "error": "Erro ao processar anamnese",
+    "loadError": "Erro ao carregar anamnese"
+  }
+}

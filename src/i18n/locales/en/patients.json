@@ -1,0 +1,78 @@
+{
+  "title": "Patient Management",
+  "description": "Manage your patients and music therapy clinical processes",
+  "search": {
+    "placeholder": "Search by patient name or guardian..."
+  },
+  "buttons": {
+    "addPatient": "Add Patient",
+    "newPatient": "New Patient",
+    "deleteAll": "Delete All Patients",
+    "edit": "Edit",
+    "delete": "Delete",
+    "viewAnamnesis": "View Anamnesis",
+    "editAnamnesis": "Edit Anamnesis",
+    "createAnamnesis": "Create Anamnesis"
+  },
+  "dialog": {
+    "add": {
+      "title": "Add Patient",
+      "description": "Create a new patient to start the therapeutic process."
+    },
+    "edit": {
+      "title": "Edit Patient",
+      "description": "Update patient information."
+    },
+    "deleteAll": {
+      "title": "Are you sure?",
+      "description": "This action will permanently delete all patients and cannot be undone.",
+      "confirm": "Delete All",
+      "cancel": "Cancel"
+    },
+    "deleteOne": {
+      "title": "Delete Patient",
+      "description": "Are you sure you want to delete this patient? This action cannot be undone.",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel"
+    }
+  },
+  "form": {
+    "name": "Patient Name",
+    "birthDate": "Date of Birth",
+    "age": "Age",
+    "responsible": "Guardian",
+    "contact": "Contact",
+    "namePlaceholder": "Enter full name",
+    "responsiblePlaceholder": "Guardian's name",
+    "contactPlaceholder": "Phone or email"
+  },
+  "table": {
+    "name": "Name",
+    "age": "Age",
+    "responsible": "Guardian",
+    "contact": "Contact",
+    "anamnesis": "Anamnesis",
+    "actions": "Actions",
+    "hasAnamnesis": "Has Anamnesis",
+    "noAnamnesis": "No Anamnesis"
+  },
+  "counter": {
+    "total": "Total of {{count}} patient",
+    "total_plural": "Total of {{count}} patients",
+    "active": "{{count}} active",
+    "active_plural": "{{count}} active"
+  },
+  "empty": {
+    "title": "No patients registered",
+    "description": "Add your first patient to get started.",
+    "noResults": "No patients found"
+  },
+  "toast": {
+    "addSuccess": "Patient added successfully!",
+    "editSuccess": "Patient updated successfully!",
+    "deleteSuccess": "Patient deleted successfully!",
+    "deleteAllSuccess": "All patients have been deleted!",
+    "error": "Error processing operation",
+    "loadError": "Error loading patients"
+  }
+}

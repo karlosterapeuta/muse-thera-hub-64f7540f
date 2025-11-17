@@ -1,0 +1,65 @@
+{
+  "devolutiva": {
+    "title": "Devolutiva TEA",
+    "description": "Registro detalhado da sessão de musicoterapia",
+    "tabs": {
+      "form": "Formulário",
+      "preview": "Visualizar",
+      "history": "Histórico"
+    },
+    "fields": {
+      "patient": "Paciente",
+      "selectPatient": "Selecione um paciente",
+      "sessionDate": "Data da Sessão",
+      "sessionNumber": "Número da Sessão",
+      "professionalName": "Nome do Profissional",
+      "professionalRegistry": "Registro Profissional"
+    },
+    "sections": {
+      "basicInfo": "Informações Básicas",
+      "sessionDetails": "Detalhes da Sessão",
+      "phraseSelection": "Seleção de Frases Clínicas"
+    },
+    "buttons": {
+      "save": "Salvar Relatório",
+      "generatePDF": "Gerar PDF",
+      "clear": "Limpar Tudo",
+      "expand": "Expandir",
+      "collapse": "Recolher",
+      "addPhrase": "Adicionar Frase",
+      "selectPhrase": "Selecionar Frase"
+    },
+    "messages": {
+      "noPatientSelected": "Nenhum paciente selecionado",
+      "selectPatientFirst": "Selecione um paciente primeiro",
+      "phraseAdded": "Frase adicionada",
+      "phraseRemoved": "Frase removida"
+    },
+    "toast": {
+      "saveSuccess": "Relatório salvo com sucesso!",
+      "pdfSuccess": "PDF gerado com sucesso!",
+      "selectPatient": "Por favor, selecione um paciente",
+      "error": "Erro ao processar operação",
+      "loadError": "Erro ao carregar dados"
+    }
+  },
+  "evolution": {
+    "title": "Evolução do Paciente",
+    "description": "Acompanhamento longitudinal do processo terapêutico",
+    "period": "Período",
+    "progress": "Progresso",
+    "observations": "Observações"
+  },
+  "evaluation": {
+    "title": "Avaliação",
+    "description": "Avaliação detalhada do paciente",
+    "criteria": "Critérios de Avaliação",
+    "results": "Resultados"
+  },
+  "musicoterapia": {
+    "title": "Relatório MuseTera TEA",
+    "description": "Escala de avaliação em musicoterapia",
+    "areas": "Áreas Avaliadas",
+    "score": "Pontuação"
+  }
+}

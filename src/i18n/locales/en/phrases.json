@@ -1,0 +1,169 @@
+{
+  "categories": {
+    "arrival_state": {
+      "title": "Arrival State",
+      "icon": "👋"
+    },
+    "communication": {
+      "title": "Communication and Interaction",
+      "icon": "💬"
+    },
+    "emotional_regulation": {
+      "title": "Emotional Regulation",
+      "icon": "❤️"
+    },
+    "motor_development": {
+      "title": "Motor Development",
+      "icon": "🤸"
+    },
+    "sensory_aspects": {
+      "title": "Sensory Aspects",
+      "icon": "🎵"
+    },
+    "musical_participation": {
+      "title": "Musical Participation",
+      "icon": "🎼"
+    },
+    "achievements": {
+      "title": "Session Achievements",
+      "icon": "🎯"
+    },
+    "family_guidelines": {
+      "title": "Family Guidelines",
+      "icon": "👨‍👩‍👧‍👦"
+    },
+    "next_steps": {
+      "title": "Next Steps",
+      "icon": "📅"
+    },
+    "general_observations": {
+      "title": "General Observations",
+      "icon": "📝"
+    },
+    "challenges_resistance": {
+      "title": "Challenges and Resistance",
+      "icon": "⚠️"
+    }
+  },
+  "arrival_state": [
+    "Arrived calm and receptive to the session",
+    "Presented initial anxiety which was addressed with soft music",
+    "Showed enthusiasm upon recognizing the therapeutic environment",
+    "Needed extra time to adapt to the space",
+    "Arrived agitated but gradually calmed down with rhythmic activities",
+    "Appeared comfortable and familiar with the therapeutic setting",
+    "Presented initial resistance that was worked through musically",
+    "Arrived in a state of emotional dysregulation that was received through songs of their preference",
+    "Showed irritability since arrival, needing time to emotionally organize",
+    "Initially refused to enter the room but accepted after mediation with instrument of choice"
+  ],
+  "communication": [
+    "Maintained eye contact during musical activities",
+    "Initiated spontaneous interactions through musical gestures",
+    "Responded to name calls more frequently",
+    "Clearly demonstrated musical preferences",
+    "Communicated needs through instrument choices",
+    "Participated in communicative turns with musical support",
+    "Expressed through vocalizations synchronized with music",
+    "Pointed to desired instruments, showing communicative intentionality",
+    "Used functional gestures to request repetition of preferred activities",
+    "Shared meaningful gazes during musical pause moments",
+    "Imitated gestures and sounds proposed by the music therapist, showing communicative engagement"
+  ],
+  "emotional_regulation": [
+    "Regulated emotional states through music",
+    "Calmed down with lullabies adapted to their repertoire",
+    "Used instruments to express emotions appropriately",
+    "Showed greater frustration tolerance during musical challenges",
+    "Requested specific music to emotionally organize",
+    "Remained engaged even in situations of greater sensory stimulation",
+    "Responded positively to modulation strategies through rhythm",
+    "Expressed joy through smiles and vocalizations during preferred activities",
+    "Tolerated transitions between activities with musical support",
+    "Accepted pauses and moments of silence as part of musical experience"
+  ],
+  "motor_development": [
+    "Explored instruments with progressive fine motor coordination",
+    "Performed rhythmic body movements synchronized with music",
+    "Demonstrated balance and postural control during therapeutic dance activities",
+    "Manipulated mallets and percussion instruments with greater precision",
+    "Participated in bilateral coordination activities with paired instruments",
+    "Explored different spatial planes through musical movement",
+    "Showed adequate muscle strength and endurance during intense rhythmic activities",
+    "Performed pincer movements for manipulation of small instruments",
+    "Coordinated arm and leg movements in circular dance activities"
+  ],
+  "sensory_aspects": [
+    "Explored different sound textures with curiosity",
+    "Showed preference for specific low/high sounds",
+    "Tolerated sound intensity variations with greater flexibility",
+    "Regulated sensory input through conscious musical choices",
+    "Explored proprioception through body percussion instruments",
+    "Demonstrated sensory integration by combining visual and auditory stimuli",
+    "Accepted tactile experiences through exploration of diverse instruments",
+    "Maintained auditory attention throughout the session, even with timbre changes",
+    "Responded adequately to vestibular stimuli in musical swinging activities"
+  ],
+  "musical_participation": [
+    "Actively participated in all musical proposals",
+    "Chose instruments autonomously and intentionally",
+    "Maintained sustained engagement during musical improvisations",
+    "Demonstrated creativity in exploring sound possibilities",
+    "Respected turns in group musical activities",
+    "Synchronized rhythmically with music therapist's proposals",
+    "Explored different musical dynamics (forte/piano) with control",
+    "Participated in familiar songs completing familiar passages",
+    "Initiated own musical proposals, leading session moments",
+    "Demonstrated musical memory by recognizing and anticipating songs from therapeutic repertoire"
+  ],
+  "achievements": [
+    "Remained engaged throughout entire session without need for breaks",
+    "Accepted trying new musical instrument for the first time",
+    "Made first spontaneous vocalization synchronized with music",
+    "Tolerated activity change without signs of disorganization",
+    "Initiated communicative interaction independently",
+    "Showed significant progress in fine motor coordination",
+    "Expressed emotions through music more clearly and intentionally",
+    "Maintained eye contact for longer periods during musical interactions",
+    "Requested repetition of favorite activity using functional communication"
+  ],
+  "family_guidelines": [
+    "It is suggested to maintain musical listening routine at home, prioritizing repertoire worked in session",
+    "It is recommended to provide simple instruments in home environment for free exploration",
+    "Important to observe and record musical preferences demonstrated in daily life",
+    "It is suggested to use music as transition strategy between daily activities",
+    "It is recommended to create personalized playlist for emotional regulation moments",
+    "Important to value and reinforce communication attempts through sounds and musical gestures",
+    "It is suggested to participate in family musical activities, respecting child's time and interest",
+    "It is recommended to pay attention to sensory overload signs and use calm music when necessary"
+  ],
+  "next_steps": [
+    "Continue working on joint attention skills through paired musical activities",
+    "Expand repertoire of emotional regulation strategies using music",
+    "Gradually introduce new instruments to broaden sensory experiences",
+    "Intensify motor coordination work through specific rhythmic activities",
+    "Strengthen intentional communication through structured musical choices",
+    "Develop tolerance to changes through controlled variations in musical setting",
+    "Expand sustained engagement time in complex musical activities",
+    "Work on social skills through group musical activities when appropriate"
+  ],
+  "general_observations": [
+    "Productive session with consistent patient engagement",
+    "Gradual and continuous evolution observed in areas worked",
+    "Patient demonstrated openness to new musical experiences",
+    "Therapeutic bond strengthened through shared musical experiences",
+    "Responses to musical interventions were consistent with established therapeutic objectives",
+    "Family demonstrates engagement and understanding of therapeutic process",
+    "Patient presents significant potential for development through music therapy",
+    "Important to maintain consistency and predictability in session structure"
+  ],
+  "challenges_resistance": [
+    "Presented initial difficulty in accepting activity change, needing additional musical support",
+    "Showed resistance to exploring new instruments, preferring to remain in comfort zone",
+    "Needed multiple attempts for engagement in less familiar activities",
+    "Showed signs of sensory overload in moments of greater sound complexity",
+    "Presented avoidance behaviors in activities requiring greater social interaction",
+    "Showed low frustration tolerance in more complex musical challenges",
+    "Needed regular regulatory pauses during session to maintain organization"
+  ]
+}
