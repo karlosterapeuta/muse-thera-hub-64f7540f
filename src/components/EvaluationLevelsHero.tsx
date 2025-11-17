@@ -75,7 +75,7 @@ export function EvaluationLevelsHero() {
   };
 
   return (
-    <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 border-blue-200 shadow-lg">
+    <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950 border-blue-200 dark:border-blue-800 shadow-lg">
       <CardContent className="p-3 sm:p-4 lg:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3">
@@ -83,10 +83,10 @@ export function EvaluationLevelsHero() {
               <Info className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground leading-tight">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
                 Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 mt-1">
                 Sistema de 6 níveis com pontuação de 0 a 100 pontos para avaliação musicoterapêutica profissional
               </p>
             </div>
@@ -173,11 +173,11 @@ export function EvaluationLevelsHero() {
           </div>
 
           <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-card/60 rounded-lg border border-border">
-            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2 text-sm sm:text-base">
+            <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sm sm:text-base">
               <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />
               Como usar a Escala MuseTera (0-5) - Total de 100 Pontos:
             </h4>
-            <ul className="text-xs sm:text-sm text-foreground space-y-2">
+            <ul className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 space-y-2">
               <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada ou observada</li>
               <li className="leading-relaxed">• <strong>1 - Emergente:</strong> 20 pontos (20%) - Primeiros sinais da habilidade, demonstrações esporádicas</li>
               <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> 40 pontos (40%) - Habilidade presente mas com grande variação na qualidade</li>
@@ -185,8 +185,8 @@ export function EvaluationLevelsHero() {
               <li className="leading-relaxed">• <strong>4 - Consistente:</strong> 80 pontos (80%) - Habilidade bem estabelecida e demonstrada independentemente</li>
               <li className="leading-relaxed">• <strong>5 - Excepcional:</strong> 100 pontos (100%) - Demonstração exemplar com criatividade e maestria</li>
             </ul>
-            <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-              <p className="text-xs sm:text-sm text-blue-800 font-medium leading-relaxed">
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-400">
+              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-medium leading-relaxed">
                 💡 <strong>Dica:</strong> Considere o contexto individual de cada paciente e use evidências observáveis para justificar sua pontuação.
               </p>
             </div>
