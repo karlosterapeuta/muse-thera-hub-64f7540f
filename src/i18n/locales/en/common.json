@@ -1,0 +1,43 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export",
+    "print": "Print",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset"
+  },
+  "labels": {
+    "patient": "Patient",
+    "session": "Session",
+    "date": "Date",
+    "professional": "Professional",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "messages": {
+    "success": "Operation completed successfully",
+    "error": "Error performing operation",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "confirmDelete": "Are you sure you want to delete?",
+    "languageChanged": "Language changed",
+    "nowUsing": "Now using"
+  },
+  "selectLanguage": "Select language",
+  "active": "Active"
+}

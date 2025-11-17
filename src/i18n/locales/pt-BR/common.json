@@ -1,0 +1,43 @@
+{
+  "buttons": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "export": "Exportar",
+    "print": "Imprimir",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "finish": "Finalizar",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "reset": "Resetar"
+  },
+  "labels": {
+    "patient": "Paciente",
+    "session": "Sessão",
+    "date": "Data",
+    "professional": "Profissional",
+    "name": "Nome",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "address": "Endereço",
+    "status": "Status",
+    "actions": "Ações"
+  },
+  "messages": {
+    "success": "Operação realizada com sucesso",
+    "error": "Erro ao realizar operação",
+    "loading": "Carregando...",
+    "noData": "Nenhum dado encontrado",
+    "confirmDelete": "Tem certeza que deseja excluir?",
+    "languageChanged": "Idioma alterado",
+    "nowUsing": "Agora usando"
+  },
+  "selectLanguage": "Selecionar idioma",
+  "active": "Ativo"
+}

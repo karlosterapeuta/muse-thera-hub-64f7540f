@@ -1,0 +1,39 @@
+{
+  "main": {
+    "dashboard": "📊 Dashboard",
+    "professionalProfile": "🎵 Professional Profile",
+    "digitalStamp": "📝 Digital Stamp",
+    "patients": "👥 Patients"
+  },
+  "clinical": {
+    "title": "Clinical",
+    "processes": "📋 Music Therapy Processes",
+    "activities": "🎯 Therapeutic Activities"
+  },
+  "games": {
+    "title": "Musical Games",
+    "museteraGames": "🎮 MuseTera Games",
+    "teaHero": "🧩 TEA-Hero",
+    "musicalBells": "🔔 Musical Bells",
+    "sprunkiMusical": "🎵 Sprunki Musical",
+    "bellHero": "🔔 Bell Hero",
+    "boomwhackerHero": "🎺 Boomwhacker Hero",
+    "xylophoneHero": "🎹 Xylophone Hero",
+    "musicComposer": "🎼 Music Composer",
+    "musicogram": "📊 Musicogram"
+  },
+  "tools": {
+    "title": "Tools",
+    "binauralFrequencies": "🧠 Binaural Frequencies",
+    "hawkinsScale": "📈 Hawkins Scale"
+  },
+  "management": {
+    "title": "Management",
+    "finance": "💰 Financial Management"
+  },
+  "admin": {
+    "title": "Administration",
+    "users": "👤 User Management",
+    "inviteCodes": "🔑 Invite Codes"
+  }
+}

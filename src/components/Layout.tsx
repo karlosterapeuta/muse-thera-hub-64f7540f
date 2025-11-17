@@ -14,6 +14,7 @@ import { NotificationBell } from "./header/NotificationBell";
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
 import ThemeToggle from "./ThemeToggle";
 import { Separator } from "./ui/separator";
+import { LanguageSelector } from "./LanguageSelector";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -124,6 +125,7 @@ function LayoutContent({ children }: LayoutProps) {
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <HeaderTime />
               <NotificationBell />
+              <LanguageSelector />
               <ThemeToggle />
               <ProfessionalAvatar size="sm" />
             </div>
