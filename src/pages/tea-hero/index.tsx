@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +15,7 @@ import { teaAudioEngine } from "@/utils/teaAudioEngine";
 import { teaHeroAudio } from "./utils/teaHeroAudioManager";
 
 const TeaHero = () => {
+  const { t } = useTranslation('games');
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
   const [selectedSong, setSelectedSong] = useState<{ id: string; title: string; hasSequence?: boolean; } | null>(null);
   const [gameSpeed, setGameSpeed] = useState(1.0);
@@ -56,11 +58,11 @@ const TeaHero = () => {
       console.log('🎵 Initializing TEA Audio Engine...');
       await teaAudioEngine.initialize();
       setAudioInitialized(true);
-      toast.success("🎵 Áudio inicializado com sucesso!");
+      toast.success(t('teaHeroFull.messages.audioInitialized'));
       console.log('✅ TEA Audio Engine initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize audio:', error);
-      toast.error("❌ Falha ao inicializar o áudio");
+      toast.error(t('teaHeroFull.messages.audioFailed'));
     }
   };
 
@@ -77,15 +79,15 @@ const TeaHero = () => {
       const success = await playNoteSound("261.63Hz", selectedInstrument);
       
       if (success) {
-        toast.success("🔊 Teste de áudio OK!");
+        toast.success(t('teaHeroFull.messages.audioTestOk'));
         console.log('✅ Audio test successful');
       } else {
         console.warn('⚠️ Audio test returned false, but no error thrown');
-        toast.warning("⚠️ Áudio pode ter problemas");
+        toast.warning(t('teaHeroFull.messages.audioTestWarning'));
       }
     } catch (error) {
       console.error('❌ Audio test failed:', error);
-      toast.error("❌ Teste de áudio falhou");
+      toast.error(t('teaHeroFull.messages.audioTestFailed'));
     } finally {
       setIsTestingAudio(false);
     }
@@ -117,7 +119,7 @@ const TeaHero = () => {
     if (!audioInitialized) {
       await initializeAudio();
       if (!audioInitialized) {
-        toast.error("❌ Não é possível iniciar sem áudio funcionando");
+        toast.error(t('teaHeroFull.messages.noAudio'));
         return;
       }
     }
@@ -126,7 +128,7 @@ const TeaHero = () => {
     const isValid = validateSynchronization(selectedInstrument);
     if (!isValid) {
       console.error(`❌ Cannot start game: synchronization validation failed for ${selectedInstrument}`);
-      toast.error("❌ Falha na validação de sincronização");
+      toast.error(t('teaHeroFull.messages.syncFailed'));
       return;
     }
     
@@ -138,7 +140,7 @@ const TeaHero = () => {
       }
     }
     
-    toast.success("🎮 Jogo iniciado!");
+    toast.success(t('teaHeroFull.messages.gameStarted'));
     setGameStarted(true);
   };
 
@@ -158,7 +160,7 @@ const TeaHero = () => {
         />
         <div className="absolute top-4 right-4 z-10">
           <Button onClick={handleBackToMenu} variant="secondary" size="sm">
-            ← Voltar ao Menu
+            {t('teaHeroFull.backToMenu')}
           </Button>
         </div>
       </div>
@@ -173,17 +175,17 @@ const TeaHero = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="text-5xl animate-pulse-gentle">🎵</div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-300 via-purple-300 to-violet-300 bg-clip-text text-transparent">
-              TEA-Hero MuseTera
+              {t('teaHeroFull.title')}
             </h1>
             <div className="text-5xl animate-pulse-gentle">🎵</div>
           </div>
         <p className="text-lg text-violet-200">
-          Jogo musical terapêutico com melodias 100% sincronizadas visual-auditiva para TEA
+          {t('teaHeroFull.subtitle')}
         </p>
         <div className="flex justify-center gap-2">
-          <Badge variant="secondary" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50">🎼 Melodias Autênticas</Badge>
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">🔊 100% MuseTera</Badge>
-          <Badge variant="secondary" className="bg-gradient-to-r from-violet-600 to-purple-500 text-white border-violet-400/50">🎯 18 Canções Validadas</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50">{t('teaHeroFull.badges.authenticMelodies')}</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">{t('teaHeroFull.badges.musetera')}</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-violet-600 to-purple-500 text-white border-violet-400/50">{t('teaHeroFull.badges.validatedSongs')}</Badge>
           <Badge variant="secondary" className="bg-gradient-to-r from-purple-600 to-violet-500 text-white border-purple-400/50">🎵 Zero Dessincronia</Badge>
         </div>
       </div>

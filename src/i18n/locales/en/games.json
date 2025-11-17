@@ -295,6 +295,160 @@
     "audioInitializing": "Initializing audio system...",
     "audioReady": "Audio system ready!",
     "noSongSelected": "No song selected",
-    "selectSongFirst": "Please select a song first"
+    "selectSongFirst": "Select a song first"
+  },
+  "teaHeroFull": {
+    "title": "ASD-Hero MuseTera",
+    "subtitle": "Therapeutic music game with 100% visual-auditory synchronized melodies for ASD",
+    "backToMenu": "← Back to Menu",
+    "badges": {
+      "authenticMelodies": "🎼 Authentic Melodies",
+      "musetera": "🔊 100% MuseTera",
+      "validatedSongs": "🎯 18 Validated Songs"
+    },
+    "instrument": {
+      "label": "Instrument (Auto Validation)",
+      "bell": "🔔 Bell (C4: 261-493 Hz) ✅",
+      "xylophone": "🎵 Xylophone (C5: 523-987 Hz) ✅",
+      "keyboard": "🎹 Keyboard (C4: 261-493 Hz) ✅"
+    },
+    "song": {
+      "label": "Authentic ASD Song (18 available)",
+      "placeholder": "Select an authentic song...",
+      "freeMode": "🎲 Free Mode (Musical Pattern)",
+      "authentic": "(AUTHENTIC)"
+    },
+    "speed": {
+      "label": "Speed: {speed}x",
+      "verySlow": "0.5x (Very Slow)",
+      "slow": "0.75x (Slow)",
+      "normal": "1.0x (Normal)",
+      "fast": "1.5x (Fast)",
+      "veryFast": "2.0x (Very Fast)"
+    },
+    "audioControls": {
+      "title": "🔊 ASD Audio Controls",
+      "mode": "Audio Mode",
+      "both": "🔊 Notes + Background",
+      "notesOnly": "🎵 Notes Only",
+      "backgroundOnly": "🎼 Background Only",
+      "noteVolume": "Note Volume: {volume}%",
+      "backgroundVolume": "Background Volume: {volume}%",
+      "noteSounds": "Note Sounds",
+      "backgroundMusic": "Background Music"
+    },
+    "buttons": {
+      "initializeAudio": "🎵 Initialize Audio",
+      "testAudio": "🔊 Test Audio",
+      "testing": "🔊 Testing...",
+      "startGame": "🎮 Start ASD-Hero"
+    },
+    "messages": {
+      "audioInitialized": "🎵 Audio initialized successfully!",
+      "audioFailed": "❌ Failed to initialize audio",
+      "audioTestOk": "🔊 Audio test OK!",
+      "audioTestWarning": "⚠️ Audio may have issues",
+      "audioTestFailed": "❌ Audio test failed",
+      "gameStarted": "🎮 Game started!",
+      "noAudio": "❌ Cannot start without working audio",
+      "syncFailed": "❌ Synchronization validation failed",
+      "audioReady": "✅ Audio ready",
+      "initializeFirst": "⚠️ Click to initialize audio",
+      "initializeAudioFirst": "⚠️ Initialize audio first"
+    }
+  },
+  "boomwhackerHero": {
+    "title": "Boomwhacker Hero",
+    "subtitle": "Play the colorful tubes on beat!",
+    "description": "Musical game with percussive Boomwhacker tubes, exploring rhythm and motor coordination.",
+    "difficulty": {
+      "label": "Difficulty",
+      "all": "All",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "buttons": {
+      "play": "▶ Play",
+      "pause": "⏸ Pause",
+      "stop": "⏹ Stop",
+      "backToMenu": "← Back to Menu",
+      "watchVideo": "Watch MuseTera Video",
+      "playGame": "Play Now"
+    },
+    "stats": {
+      "score": "Score",
+      "combo": "Combo",
+      "accuracy": "Accuracy",
+      "hits": "Hits",
+      "misses": "Misses"
+    },
+    "messages": {
+      "gameStarted": "🎮 Game started!",
+      "gamePaused": "⏸ Game paused",
+      "gameResumed": "▶ Game resumed",
+      "gameStopped": "⏹ Game stopped",
+      "songCompleted": "🎉 Song completed!",
+      "selectSong": "Select a song to begin"
+    },
+    "songInfo": {
+      "minutes": "min",
+      "notes": "notes",
+      "museteraContent": "Original Educational Content",
+      "songs": "songs"
+    }
+  },
+  "musicalBells": {
+    "title": "Colorful Musical Bells",
+    "subtitle": "Educational musical learning system with colors and shapes",
+    "description": "Learn popular songs by playing synchronized colorful bells!",
+    "selectSong": "Choose a Song",
+    "currentSong": "Current Song:",
+    "buttons": {
+      "exportPDF": "📥 Download Sheet Music (PDF)",
+      "viewSheet": "📄 View Sheet Music",
+      "play": "▶ Play",
+      "pause": "⏸ Pause",
+      "stop": "⏹ Stop",
+      "mute": "🔇 Mute",
+      "unmute": "🔊 Unmute"
+    },
+    "messages": {
+      "exportSuccess": "✅ Sheet music exported!",
+      "exportError": "❌ Error exporting sheet music",
+      "playbackStarted": "▶️ Playback started",
+      "playbackStopped": "⏹️ Playback stopped"
+    }
+  },
+  "musicComposer": {
+    "title": "Educational Music Composer",
+    "subtitle": "Create, learn and share music",
+    "tabs": {
+      "compose": "🎵 Compose",
+      "learn": "📚 Learn",
+      "import": "📥 Import"
+    },
+    "buttons": {
+      "play": "▶ Play",
+      "pause": "⏸ Pause",
+      "stop": "⏹ Stop",
+      "clear": "🗑️ Clear",
+      "save": "💾 Save",
+      "export": "📤 Export",
+      "mute": "🔇 Mute",
+      "unmute": "🔊 Unmute"
+    },
+    "controls": {
+      "volume": "Volume: {volume}%",
+      "tempo": "Tempo: {tempo} BPM",
+      "timeSignature": "Time Signature"
+    },
+    "messages": {
+      "compositionSaved": "💾 Composition saved!",
+      "compositionCleared": "🗑️ Composition cleared!",
+      "playbackStarted": "▶️ Playback started",
+      "playbackPaused": "⏸️ Playback paused",
+      "playbackStopped": "⏹️ Playback stopped"
+    }
   }
 }
