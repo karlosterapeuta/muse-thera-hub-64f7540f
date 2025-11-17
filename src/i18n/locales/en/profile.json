@@ -13,7 +13,43 @@
     "dataUpdated": "Data updated successfully."
   },
   "actions": {
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "edit": "Edit Profile",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel"
+  },
+  "personalInfo": {
+    "title": "Personal Information",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "placeholders": {
+      "name": "Enter your full name",
+      "email": "your.email@example.com",
+      "phone": "(11) 99999-9999"
+    }
+  },
+  "credentials": {
+    "title": "Professional Credentials",
+    "specialty": "Specialty",
+    "association": "Professional Association",
+    "register": "Registration Number",
+    "verified": "Verified Credentials",
+    "validRegistration": "Valid and recognized professional registration.",
+    "placeholders": {
+      "specialty": "e.g., Neurological Music Therapy",
+      "association": "Select an association",
+      "register": "Enter your registration number"
+    }
+  },
+  "header": {
+    "avatarAlt": "Professional Photo",
+    "professionalTitle": "Professional Music Therapist",
+    "defaultName": "Professional Name",
+    "defaultSpecialty": "Music Therapy Specialty",
+    "verified": "Verified",
+    "active": "Active"
   },
   "associations": {
     "AMT-PR": "Music Therapy Association of Paraná (AMT-PR)",
@@ -30,6 +66,7 @@
     "AMT-DF": "Music Therapy Association of Federal District (AMT-DF)",
     "ACAMT": "Santa Catarina Music Therapists Association (ACAMT)",
     "ABMT": "Brazilian Association of Music Therapists (ABMT)",
-    "AMT-CE": "Ceará Music Therapy Association (AMT-CE)"
+    "AMT-CE": "Ceará Music Therapy Association (AMT-CE)",
+    "AMPT-PI": "Music Therapy Association of Piauí (AMPT-PI)"
   }
 }
