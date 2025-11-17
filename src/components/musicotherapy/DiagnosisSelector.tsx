@@ -47,9 +47,9 @@ export function DiagnosisSelector({ value, onChange }: DiagnosisSelectorProps) {
           placeholder="Digite o diagnóstico ou selecione abaixo"
         />
         
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-700 dark:bg-blue-950/40">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-800">
+            <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-300">
               Diagnósticos Comuns
             </CardTitle>
           </CardHeader>
@@ -59,7 +59,7 @@ export function DiagnosisSelector({ value, onChange }: DiagnosisSelectorProps) {
                 <Badge
                   key={diagnosis}
                   variant="outline"
-                  className="cursor-pointer hover:bg-blue-100 transition-colors border-blue-300 text-blue-700"
+                  className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
                   onClick={() => handleDiagnosisSelect(diagnosis)}
                 >
                   <Plus className="h-3 w-3 mr-1" />
