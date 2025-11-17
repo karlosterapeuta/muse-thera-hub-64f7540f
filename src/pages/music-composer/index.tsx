@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import EducationalKeyboard from "./components/EducationalKeyboard";
 import EducationalStaff from "./components/EducationalStaff";
@@ -30,6 +31,7 @@ interface Composition {
 }
 
 const MusicComposer = () => {
+  const { t } = useTranslation('games');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);

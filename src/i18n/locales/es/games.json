@@ -295,6 +295,160 @@
     "audioInitializing": "Inicializando sistema de audio...",
     "audioReady": "¡Sistema de audio listo!",
     "noSongSelected": "Ninguna canción seleccionada",
-    "selectSongFirst": "Por favor, selecciona una canción primero"
+    "selectSongFirst": "Selecciona una canción primero"
+  },
+  "teaHeroFull": {
+    "title": "TEA-Hero MuseTera",
+    "subtitle": "Juego musical terapéutico con melodías 100% sincronizadas visual-auditiva para TEA",
+    "backToMenu": "← Volver al Menú",
+    "badges": {
+      "authenticMelodies": "🎼 Melodías Auténticas",
+      "musetera": "🔊 100% MuseTera",
+      "validatedSongs": "🎯 18 Canciones Validadas"
+    },
+    "instrument": {
+      "label": "Instrumento (Validación Automática)",
+      "bell": "🔔 Campana (C4: 261-493 Hz) ✅",
+      "xylophone": "🎵 Xilófono (C5: 523-987 Hz) ✅",
+      "keyboard": "🎹 Teclado (C4: 261-493 Hz) ✅"
+    },
+    "song": {
+      "label": "Canción TEA Auténtica (18 disponibles)",
+      "placeholder": "Selecciona una canción auténtica...",
+      "freeMode": "🎲 Modo Libre (Patrón Musical)",
+      "authentic": "(AUTÉNTICA)"
+    },
+    "speed": {
+      "label": "Velocidad: {speed}x",
+      "verySlow": "0.5x (Muy Lento)",
+      "slow": "0.75x (Lento)",
+      "normal": "1.0x (Normal)",
+      "fast": "1.5x (Rápido)",
+      "veryFast": "2.0x (Muy Rápido)"
+    },
+    "audioControls": {
+      "title": "🔊 Controles de Audio TEA",
+      "mode": "Modo de Audio",
+      "both": "🔊 Notas + Fondo",
+      "notesOnly": "🎵 Solo Notas",
+      "backgroundOnly": "🎼 Solo Fondo",
+      "noteVolume": "Volumen de Notas: {volume}%",
+      "backgroundVolume": "Volumen de Fondo: {volume}%",
+      "noteSounds": "Sonidos de Notas",
+      "backgroundMusic": "Música de Fondo"
+    },
+    "buttons": {
+      "initializeAudio": "🎵 Inicializar Audio",
+      "testAudio": "🔊 Probar Audio",
+      "testing": "🔊 Probando...",
+      "startGame": "🎮 Iniciar TEA-Hero"
+    },
+    "messages": {
+      "audioInitialized": "🎵 ¡Audio inicializado con éxito!",
+      "audioFailed": "❌ Error al inicializar el audio",
+      "audioTestOk": "🔊 ¡Prueba de audio OK!",
+      "audioTestWarning": "⚠️ El audio puede tener problemas",
+      "audioTestFailed": "❌ Prueba de audio fallida",
+      "gameStarted": "🎮 ¡Juego iniciado!",
+      "noAudio": "❌ No se puede iniciar sin audio funcionando",
+      "syncFailed": "❌ Fallo en la validación de sincronización",
+      "audioReady": "✅ Audio listo",
+      "initializeFirst": "⚠️ Haz clic para inicializar el audio",
+      "initializeAudioFirst": "⚠️ Inicializa el audio primero"
+    }
+  },
+  "boomwhackerHero": {
+    "title": "Boomwhacker Hero",
+    "subtitle": "¡Toca los tubos coloridos al ritmo!",
+    "description": "Juego musical con tubos percusivos Boomwhackers, explorando ritmo y coordinación motora.",
+    "difficulty": {
+      "label": "Dificultad",
+      "all": "Todos",
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "buttons": {
+      "play": "▶ Tocar",
+      "pause": "⏸ Pausar",
+      "stop": "⏹ Detener",
+      "backToMenu": "← Volver al Menú",
+      "watchVideo": "Ver Video MuseTera",
+      "playGame": "Jugar Ahora"
+    },
+    "stats": {
+      "score": "Puntuación",
+      "combo": "Combo",
+      "accuracy": "Precisión",
+      "hits": "Aciertos",
+      "misses": "Fallos"
+    },
+    "messages": {
+      "gameStarted": "🎮 ¡Juego iniciado!",
+      "gamePaused": "⏸ Juego pausado",
+      "gameResumed": "▶ Juego reanudado",
+      "gameStopped": "⏹ Juego detenido",
+      "songCompleted": "🎉 ¡Canción completada!",
+      "selectSong": "Selecciona una canción para comenzar"
+    },
+    "songInfo": {
+      "minutes": "min",
+      "notes": "notas",
+      "museteraContent": "Contenido Educativo Original",
+      "songs": "canciones"
+    }
+  },
+  "musicalBells": {
+    "title": "Campanas Musicales Coloridas",
+    "subtitle": "Sistema educativo de aprendizaje musical con colores y formas",
+    "description": "¡Aprende canciones populares tocando campanas coloridas sincronizadas!",
+    "selectSong": "Elige una Canción",
+    "currentSong": "Canción Actual:",
+    "buttons": {
+      "exportPDF": "📥 Descargar Partitura (PDF)",
+      "viewSheet": "📄 Ver Partitura",
+      "play": "▶ Tocar",
+      "pause": "⏸ Pausar",
+      "stop": "⏹ Detener",
+      "mute": "🔇 Silenciar",
+      "unmute": "🔊 Activar Sonido"
+    },
+    "messages": {
+      "exportSuccess": "✅ ¡Partitura exportada!",
+      "exportError": "❌ Error al exportar partitura",
+      "playbackStarted": "▶️ Reproducción iniciada",
+      "playbackStopped": "⏹️ Reproducción detenida"
+    }
+  },
+  "musicComposer": {
+    "title": "Compositor Musical Educativo",
+    "subtitle": "Crea, aprende y comparte música",
+    "tabs": {
+      "compose": "🎵 Componer",
+      "learn": "📚 Aprender",
+      "import": "📥 Importar"
+    },
+    "buttons": {
+      "play": "▶ Tocar",
+      "pause": "⏸ Pausar",
+      "stop": "⏹ Detener",
+      "clear": "🗑️ Limpiar",
+      "save": "💾 Guardar",
+      "export": "📤 Exportar",
+      "mute": "🔇 Silenciar",
+      "unmute": "🔊 Activar Sonido"
+    },
+    "controls": {
+      "volume": "Volumen: {volume}%",
+      "tempo": "Tempo: {tempo} BPM",
+      "timeSignature": "Compás"
+    },
+    "messages": {
+      "compositionSaved": "💾 ¡Composición guardada!",
+      "compositionCleared": "🗑️ ¡Composición limpiada!",
+      "playbackStarted": "▶️ Reproducción iniciada",
+      "playbackPaused": "⏸️ Reproducción pausada",
+      "playbackStopped": "⏹️ Reproducción detenida"
+    }
   }
 }
