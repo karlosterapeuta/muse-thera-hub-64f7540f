@@ -10,7 +10,7 @@ export default function AuthHeader({ title, description }: AuthHeaderProps) {
   return (
     <div className="text-center">
       <img
-        src="/lovable-uploads/ee49096e-05e2-47e5-9605-999a529e68b3.png"
+        src="/images/logo-musetera.png"
         alt="MuseTera Logo"
         className="mx-auto h-32 w-32 mb-4"
       />

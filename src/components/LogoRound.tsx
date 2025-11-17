@@ -21,7 +21,7 @@ const LogoRound = ({ className, size = "md" }: LogoRoundProps) => {
     )}>
       <div className="w-full h-full rounded-full overflow-hidden">
         <img
-          src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
+          src="/images/logo-musetera.png"
           alt="Musetera Logo"
           className="w-full h-full object-cover"
         />
