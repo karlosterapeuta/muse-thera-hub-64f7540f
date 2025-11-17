@@ -8,6 +8,7 @@ import { ptBR } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DayData } from "../types/dashboardTypes";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface UnifiedWeeklyScheduleProps {
   weekDays: DayData[];
@@ -15,13 +16,15 @@ interface UnifiedWeeklyScheduleProps {
 }
 
 export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklyScheduleProps) {
+  const { t } = useTranslation('financial');
+  
   if (isLoading) {
     return (
       <Card className="min-h-[500px] border-0 shadow-xl bg-white/80 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            Agenda Semanal
+            {t('dashboard.weeklySchedule.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -53,7 +56,7 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
         <CardTitle className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            Agenda Semanal
+            {t('dashboard.weeklySchedule.title')}
           </div>
           <Button variant="ghost" size="sm" onClick={() => window.location.reload()}>
             <RefreshCw className="h-4 w-4" />
@@ -158,7 +161,7 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
                             <div className="flex items-center gap-1 font-medium mb-1">
                               <User className="h-3 w-3 text-primary" />
                               <span className="truncate" title={session.patient_name}>
-                                {session.patient_name || 'Paciente não identificado'}
+                                {session.patient_name || t('dashboard.weeklySchedule.patientNotIdentified')}
                               </span>
                             </div>
                             {session.financial_amount && session.financial_amount > 0 && (

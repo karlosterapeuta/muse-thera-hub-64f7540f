@@ -4,12 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { format, subDays, startOfMonth, endOfMonth } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 interface DateRangeFilterProps {
   onFilter: (startDate: string, endDate: string) => void;
 }
 
 export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
+  const { t } = useTranslation('financial');
   const today = new Date();
   const [startDate, setStartDate] = useState(format(subDays(today, 30), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(today, "yyyy-MM-dd"));

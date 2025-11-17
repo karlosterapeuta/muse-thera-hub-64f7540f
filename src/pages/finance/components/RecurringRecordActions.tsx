@@ -23,6 +23,7 @@ import { FinancialRecord, SessionStatus } from "../types";
 import { useDeleteRecurringSeries, useUpdateRecurringSeries } from "../hooks/useRecurringFinancialRecords";
 import { useUpdateSessionStatus } from "../hooks/useUpdateSessionStatus";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface RecurringRecordActionsProps {
   record: FinancialRecord;
@@ -30,6 +31,7 @@ interface RecurringRecordActionsProps {
 }
 
 export function RecurringRecordActions({ record, onEdit }: RecurringRecordActionsProps) {
+  const { t } = useTranslation('financial');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteType, setDeleteType] = useState<'single' | 'all'>('single');
   const deleteRecurringSeries = useDeleteRecurringSeries();
@@ -59,12 +61,12 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
           setDeleteDialogOpen(false);
           toast.success(
             deleteType === 'all' 
-              ? "Série recorrente excluída com sucesso!" 
-              : "Registro excluído com sucesso!"
+              ? t('records.messages.deleted')
+              : t('records.messages.deleted')
           );
         },
         onError: () => {
-          toast.error("Erro ao excluir registro");
+          toast.error(t('records.messages.error'));
         }
       }
     );
@@ -83,7 +85,7 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuLabel>Status da Sessão</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('records.form.status')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           
           <DropdownMenuItem 
@@ -92,7 +94,7 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
             disabled={record.session_status === 'scheduled'}
           >
             <ClockIcon className="mr-2 h-4 w-4 text-blue-500" />
-            Marcar como Agendada
+            {t('records.status.scheduled')}
           </DropdownMenuItem>
           
           <DropdownMenuItem 
@@ -101,7 +103,7 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
             disabled={record.session_status === 'completed'}
           >
             <CheckCircleIcon className="mr-2 h-4 w-4 text-green-500" />
-            Marcar como Concluída
+            {t('records.status.completed')}
           </DropdownMenuItem>
           
           <DropdownMenuItem 

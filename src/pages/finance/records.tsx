@@ -36,8 +36,10 @@ import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator"
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
 import { SessionStatusBadge } from "./components/SessionStatusBadge";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 export default function FinancialRecords() {
+  const { t } = useTranslation('financial');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
