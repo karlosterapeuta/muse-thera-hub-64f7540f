@@ -1,5 +1,5 @@
-
 import React from "react";
+import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 type AuthHeaderProps = {
   title: string;
@@ -9,13 +9,10 @@ type AuthHeaderProps = {
 export default function AuthHeader({ title, description }: AuthHeaderProps) {
   return (
     <div className="text-center">
-      <img
-        src="/images/logo-musetera.png"
-        alt="MuseTera Logo"
-        className="mx-auto h-32 w-32 mb-4"
-      />
-      <h2 className="text-4xl font-bold text-primary mb-2">MuseTera</h2>
-      <h3 className="text-2xl text-muted-foreground">{title}</h3>
+      <div className="mx-auto mb-4">
+        <MuseteraLogo size={128} showText={true} />
+      </div>
+      <h3 className="text-2xl text-muted-foreground mt-4">{title}</h3>
       <p className="mt-2 text-lg text-muted-foreground">{description}</p>
     </div>
   );

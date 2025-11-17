@@ -1,5 +1,5 @@
-
 import { cn } from "@/lib/utils";
+import { MuseteraLogo } from "@/components/MuseteraLogo";
 
 interface LogoRoundProps {
   className?: string;
@@ -7,25 +7,18 @@ interface LogoRoundProps {
 }
 
 const LogoRound = ({ className, size = "md" }: LogoRoundProps) => {
-  const sizes = {
-    sm: "w-16 h-16",
-    md: "w-24 h-24",
-    lg: "w-32 h-32"
+  const sizeMap = {
+    sm: 64,
+    md: 96,
+    lg: 128
   };
 
   return (
     <div className={cn(
-      "rounded-full overflow-hidden p-2 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/20",
-      sizes[size],
+      "rounded-full overflow-hidden p-2 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/20 flex items-center justify-center",
       className
     )}>
-      <div className="w-full h-full rounded-full overflow-hidden">
-        <img
-          src="/images/logo-musetera.png"
-          alt="Musetera Logo"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      <MuseteraLogo size={sizeMap[size]} showText={false} />
     </div>
   );
 };
