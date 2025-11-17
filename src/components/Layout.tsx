@@ -89,7 +89,7 @@ function LayoutContent({ children }: LayoutProps) {
   }, [location.pathname, navigate, toast]);
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full bg-background">
       {/* Sidebar com push behavior */}
       <Sidebar />
       
@@ -134,12 +134,12 @@ function LayoutContent({ children }: LayoutProps) {
         </header>
         
         {/* Conteúdo principal */}
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-transparent">
           {children || <Outlet />}
         </main>
         
         {/* Footer */}
-        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-background/80">
+        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-transparent">
           <div className="w-full px-0">
             © 2025 MuseTera
           </div>
