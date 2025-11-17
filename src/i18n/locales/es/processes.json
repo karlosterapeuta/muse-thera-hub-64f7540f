@@ -1,0 +1,41 @@
+{
+  "title": "Procesos de Musicoterapia",
+  "description": "Gestione todo el ciclo terapéutico de su paciente",
+  "accessButton": "Acceder",
+  "newBadge": "NUEVO",
+  "footer": "Sistema integrado de gestión de musicoterapia",
+  "cards": {
+    "anamnesis": {
+      "title": "Anamnesis",
+      "description": "Recopilación inicial de información e historial del paciente"
+    },
+    "evaluation": {
+      "title": "Evaluación",
+      "description": "Evaluación de necesidades y potencialidades musicoterapéuticas"
+    },
+    "musicotherapyPlans": {
+      "title": "Planes de Musicoterapia",
+      "description": "Cree y gestione planes de tratamiento de musicoterapia personalizados"
+    },
+    "intervention": {
+      "title": "Intervención",
+      "description": "Aplicación de técnicas y actividades de musicoterapia"
+    },
+    "reevaluation": {
+      "title": "Reevaluación",
+      "description": "Análisis del progreso y ajustes en el tratamiento"
+    },
+    "museTeraTeaReport": {
+      "title": "Informe MuseTera TEA",
+      "description": "Informes especializados en Musicoterapia para TEA"
+    },
+    "evolutionReport": {
+      "title": "Informe de Evolución – MuseTera",
+      "description": "Informe detallado de la evolución del paciente en musicoterapia"
+    },
+    "devolutivaTea": {
+      "title": "Devolución Musicoterapia TEA",
+      "description": "Informe simplificado para familias de pacientes con TEA"
+    }
+  }
+}

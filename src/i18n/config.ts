@@ -18,6 +18,7 @@ import navigationPT from './locales/pt-BR/navigation.json';
 import pwaPT from './locales/pt-BR/pwa.json';
 import profilePT from './locales/pt-BR/profile.json';
 import digitalStampPT from './locales/pt-BR/digitalStamp.json';
+import processesPT from './locales/pt-BR/processes.json';
 
 // Importar traduções EN
 import commonEN from './locales/en/common.json';
@@ -35,6 +36,7 @@ import navigationEN from './locales/en/navigation.json';
 import pwaEN from './locales/en/pwa.json';
 import profileEN from './locales/en/profile.json';
 import digitalStampEN from './locales/en/digitalStamp.json';
+import processesEN from './locales/en/processes.json';
 
 // Importar traduções ES
 import commonES from './locales/es/common.json';
@@ -52,6 +54,7 @@ import navigationES from './locales/es/navigation.json';
 import pwaES from './locales/es/pwa.json';
 import profileES from './locales/es/profile.json';
 import digitalStampES from './locales/es/digitalStamp.json';
+import processesES from './locales/es/processes.json';
 
 i18n
   .use(LanguageDetector)
@@ -74,6 +77,7 @@ i18n
         pwa: pwaPT,
         profile: profilePT,
         digitalStamp: digitalStampPT,
+        processes: processesPT,
       },
       'en': {
         common: commonEN,
@@ -91,6 +95,7 @@ i18n
         pwa: pwaEN,
         profile: profileEN,
         digitalStamp: digitalStampEN,
+        processes: processesEN,
       },
       'es': {
         common: commonES,
@@ -108,11 +113,12 @@ i18n
         pwa: pwaES,
         profile: profileES,
         digitalStamp: digitalStampES,
+        processes: processesES,
       }
     },
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile', 'digitalStamp'],
+    ns: ['common', 'auth', 'sidebar', 'header', 'patients', 'clinical', 'phrases', 'anamnesis', 'reports', 'games', 'financial', 'navigation', 'pwa', 'profile', 'digitalStamp', 'processes'],
     
     interpolation: {
       escapeValue: false, // React já faz escape
