@@ -56,5 +56,212 @@
       "deleteErrorMessage": "No se pudo eliminar el plan. Inténtelo de nuevo."
     },
     "invalidDate": "Fecha inválida"
+  },
+  "form": {
+    "title": "Plan de Musicoterapia",
+    "newTitle": "Nuevo Plan de Musicoterapia",
+    "editTitle": "Editar Plan de Musicoterapia",
+    "backButton": "Volver",
+    "saveButton": "Guardar Plan",
+    "savingButton": "Guardando...",
+    "downloadPdfButton": "Descargar PDF",
+    "generatingPdfButton": "Generando PDF...",
+    "autoSaving": "Guardado automático",
+    "lastSaved": "Última actualización: {{time}}",
+    "unsavedChanges": "Tiene cambios sin guardar. ¿Está seguro de que desea salir?",
+    "previousButton": "Anterior",
+    "nextButton": "Siguiente",
+    "loadingPatients": "Cargando pacientes...",
+    "tabs": {
+      "identification": {
+        "label": "Identificación",
+        "title": "1. Identificación del Paciente"
+      },
+      "assessment": {
+        "label": "Evaluación",
+        "title": "2. Evaluación Inicial"
+      },
+      "generalObjectives": {
+        "label": "Objetivos Generales",
+        "title": "3. Objetivos Generales"
+      },
+      "specificObjectives": {
+        "label": "Objetivos Específicos",
+        "title": "4. Objetivos Específicos"
+      },
+      "resources": {
+        "label": "Recursos",
+        "title": "5. Recursos de Musicoterapia"
+      },
+      "strategies": {
+        "label": "Estrategias",
+        "title": "6. Estrategias y Técnicas de Musicoterapia"
+      },
+      "frequency": {
+        "label": "Frecuencia",
+        "title": "7. Frecuencia y Duración"
+      },
+      "evaluation": {
+        "label": "Evaluación",
+        "title": "8. Criterios de Evaluación"
+      },
+      "action": {
+        "label": "Plan en Acción",
+        "title": "9. Plan Terapéutico en Acción"
+      },
+      "reevaluation": {
+        "label": "Reevaluación",
+        "title": "10. Reevaluación y Evolución"
+      }
+    },
+    "fields": {
+      "patient": "Paciente",
+      "patientPlaceholder": "Seleccione un paciente",
+      "fullName": "Nombre completo *",
+      "fullNamePlaceholder": "Nombre completo del paciente",
+      "birthDate": "Fecha de nacimiento",
+      "age": "Edad",
+      "agePlaceholder": "Ej: 8 años",
+      "responsible": "Responsable",
+      "responsiblePlaceholder": "Nombre del responsable",
+      "planStartDate": "Fecha de inicio del plan *",
+      "clinicalHistory": "Historia clínica y familiar relevante",
+      "clinicalHistoryPlaceholder": "Describa condiciones clínicas, historia médica relevante...",
+      "physicalCognitive": "Condiciones físicas y cognitivas",
+      "physicalCognitivePlaceholder": "Describa aspectos físicos, motores y cognitivos relevantes...",
+      "interactionLevel": "Nivel de interacción y comunicación",
+      "interactionLevelPlaceholder": "Evalúe habilidades de comunicación verbal y no verbal...",
+      "musicalInterests": "Intereses musicales",
+      "musicalInterestsPlaceholder": "Preferencias musicales, instrumentos de interés...",
+      "behaviors": "Comportamientos observados",
+      "behaviorsPlaceholder": "Patrones de comportamiento relevantes para el tratamiento...",
+      "weeklySessionsLabel": "Sesiones semanales",
+      "sessionDurationLabel": "Duración de la sesión (minutos)",
+      "estimatedPeriodLabel": "Período estimado (meses)",
+      "sessionStructure": "Estructura de la sesión",
+      "sessionStructurePlaceholder": "Describa la organización típica de una sesión...",
+      "activitySequence": "Secuencia de actividades",
+      "activitySequencePlaceholder": "Describa el orden típico de las actividades...",
+      "flexibility": "Flexibilidad y ajustes",
+      "flexibilityPlaceholder": "Cómo se puede adaptar el plan según sea necesario...",
+      "reevaluationFrequency": "Frecuencia de reevaluación",
+      "reevaluationFrequencyPlaceholder": "Con qué frecuencia se evaluará el progreso...",
+      "evolutionRecording": "Registro de evolución",
+      "evolutionRecordingPlaceholder": "Cómo se documentará el progreso...",
+      "necessaryAdjustments": "Ajustes necesarios",
+      "necessaryAdjustmentsPlaceholder": "Modificaciones planificadas en el tratamiento..."
+    },
+    "weeklyOptions": {
+      "one": "1x por semana",
+      "two": "2x por semana",
+      "three": "3x por semana",
+      "four": "4x por semana",
+      "five": "5x por semana"
+    },
+    "durationOptions": {
+      "thirty": "30 minutos",
+      "forty": "40 minutos",
+      "fortyFive": "45 minutos",
+      "sixty": "60 minutos",
+      "ninety": "90 minutos"
+    },
+    "periodOptions": {
+      "three": "3 meses",
+      "six": "6 meses",
+      "nine": "9 meses",
+      "twelve": "12 meses",
+      "eighteen": "18 meses",
+      "twentyFour": "24 meses"
+    },
+    "validation": {
+      "allFieldsFilled": "Todos los campos obligatorios han sido completados. El plan se puede guardar.",
+      "missingFields": "Campos obligatorios no completados:",
+      "patientNameRequired": "El nombre del paciente es obligatorio para generar el PDF."
+    },
+    "toast": {
+      "saved": "Plan guardado",
+      "savedSuccess": "El plan de musicoterapia se guardó con éxito.",
+      "saveError": "Error al guardar",
+      "saveErrorMessage": "No se pudo guardar el plan. Inténtelo de nuevo.",
+      "loadError": "Error al cargar",
+      "loadErrorMessage": "Fallo al cargar pacientes.",
+      "pdfError": "Error al generar PDF",
+      "pdfErrorMessage": "No se pudo generar el PDF. Inténtelo de nuevo.",
+      "requiredField": "Campo obligatorio"
+    },
+    "prompts": {
+      "clinicalHistory": [
+        "TEA diagnosticado a los X años. Historia familiar sin otras condiciones neurológicas.",
+        "Retraso en el desarrollo del lenguaje. Los padres informan interés por la música desde temprana edad.",
+        "Diagnóstico de TDAH a los X años. Dificultad en actividades que requieren atención sostenida.",
+        "Síndrome de Down. Desarrollo motor retrasado, pero buena respuesta a estímulos musicales."
+      ],
+      "physicalCognitive": [
+        "Desarrollo motor apropiado para la edad. La coordinación fina necesita estimulación.",
+        "Hipotonía leve. Trabajo de fortalecimiento muscular a través de actividades rítmicas.",
+        "Atención dispersa, pero capaz de enfocarse en actividades musicales estructuradas.",
+        "Memoria auditiva preservada. Buena capacidad para repetir patrones melódicos."
+      ],
+      "interactionLevel": [
+        "Comunicación verbal limitada. Usa gestos y sonidos para expresar necesidades.",
+        "Buena comprensión de comandos simples. Responde mejor con apoyo visual.",
+        "Interacción social reducida. Mayor compromiso en actividades musicales.",
+        "Comunicación no verbal predominante. Expresión a través del cuerpo e instrumentos."
+      ],
+      "musicalInterests": [
+        "Interés en instrumentos de percusión. Le gusta explorar diferentes sonidos.",
+        "Preferencia por música infantil y canciones conocidas. Canta espontáneamente.",
+        "Curiosidad por instrumentos melódicos. Intenta reproducir melodías escuchadas.",
+        "Responde bien a ritmos marcados. Participa en actividades de movimiento con música."
+      ],
+      "behaviors": [
+        "Períodos de agitación seguidos de mayor tranquilidad. La música ayuda en la regulación.",
+        "Evita el contacto visual, pero muestra interés por estímulos auditivos.",
+        "Comportamientos repetitivos que pueden canalizarse en patrones musicales.",
+        "Dificultad en las transiciones. La música puede facilitar cambios de actividad."
+      ],
+      "sessionStructure": [
+        "Inicio con canción de bienvenida. Actividad principal. Relajación y cierre.",
+        "Calentamiento corporal y vocal. Exploración instrumental. Actividad dirigida. Cierre.",
+        "Ritual de entrada. Actividades variadas según objetivos. Canción de despedida.",
+        "Momento de acogida. Propuestas musicales diversificadas. Integración y finalización."
+      ],
+      "activitySequence": [
+        "Canción inicial → Exploración libre → Actividad dirigida → Relajación → Despedida",
+        "Calentamiento → Improvisación → Recreación → Composición → Cierre",
+        "Ritual de entrada → Actividades temáticas → Momentos de integración → Cierre",
+        "Bienvenida musical → Propuestas variadas → Momento de compartir → Finalización"
+      ],
+      "flexibility": [
+        "El plan se ajustará según las respuestas del paciente y la evolución terapéutica.",
+        "Las actividades pueden modificarse para satisfacer necesidades emergentes.",
+        "Estructura flexible que permite adaptaciones según el estado emocional del día.",
+        "Objetivos revisados periódicamente para garantizar relevancia y progreso."
+      ],
+      "reevaluationFrequency": [
+        "Evaluación mensual del progreso con registro de evolución.",
+        "Reevaluación trimestral con ajustes en los objetivos terapéuticos.",
+        "Evaluación continua en cada sesión con revisión formal semestral.",
+        "Monitoreo semanal con informe de progreso mensual."
+      ],
+      "evolutionRecording": [
+        "Registro en historia clínica después de cada sesión con observaciones relevantes.",
+        "Notas detalladas sobre respuestas y logros observados.",
+        "Documentación de progresos y desafíos para ajuste del plan.",
+        "Informe de evolución con descripción de cambios significativos."
+      ],
+      "necessaryAdjustments": [
+        "Aumentar el tiempo de actividades a medida que mejore la atención sostenida.",
+        "Introducir nuevos instrumentos gradualmente según interés y habilidad.",
+        "Modificar el nivel de complejidad de las actividades según evolución.",
+        "Ajustar estrategias según respuesta y retroalimentación del paciente y familia."
+      ],
+      "receptiveListening": [
+        "Música seleccionada para relajación y regulación emocional. Escucha activa con movimientos corporales. Asociación de música con imágenes e historias.",
+        "Selección de repertorio para diferentes estados emocionales. Escucha dirigida para estimulación cognitiva. Trabajo de memoria auditiva.",
+        "Música para inducir estados de calma. Escucha con visualización dirigida. Trabajo de identificación de emociones a través de la música.",
+        "Repertorio adaptado para diferentes objetivos terapéuticos. Escucha con propuesta de movimiento expresivo. Estimulación sensorial a través de la música."
+      ]
+    }
   }
 }

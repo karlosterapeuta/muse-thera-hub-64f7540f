@@ -26,6 +26,7 @@ import {
   X
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from 'react-i18next';
 import { useMusicotherapyTreatmentPlan } from '@/hooks/useMusicotherapyTreatmentPlan';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
@@ -50,6 +51,7 @@ export default function MusicotherapyTreatmentPlanPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation('musicotherapy');
   const { data: professionalData } = useProfessionalData();
   const { 
     planData, 
@@ -75,14 +77,14 @@ export default function MusicotherapyTreatmentPlanPage() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
-        e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?';
+        e.returnValue = t('form.unsavedChanges');
         return e.returnValue;
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges]);
+  }, [hasUnsavedChanges, t]);
 
   // Fetch patients
   useEffect(() => {
@@ -98,8 +100,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         console.error("Error fetching patients:", error);
         toast({
           variant: "destructive",
-          title: "Erro",
-          description: "Falha ao carregar pacientes.",
+          title: t('form.toast.loadError'),
+          description: t('form.toast.loadErrorMessage'),
         });
       } finally {
         setIsLoadingPatients(false);
@@ -107,7 +109,7 @@ export default function MusicotherapyTreatmentPlanPage() {
     };
 
     fetchPatients();
-  }, [toast]);
+  }, [toast, t]);
 
   // Auto-fill therapist name when professional data loads
   useEffect(() => {
@@ -224,8 +226,8 @@ export default function MusicotherapyTreatmentPlanPage() {
     if (!planData.patient_full_name) {
       toast({
         variant: "destructive",
-        title: "Campo obrigatório",
-        description: "Nome do paciente é obrigatório para gerar o PDF.",
+        title: t('form.toast.requiredField'),
+        description: t('form.validation.patientNameRequired'),
       });
       return;
     }
