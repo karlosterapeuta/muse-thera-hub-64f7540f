@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nome é obrigatório" }),
@@ -39,6 +40,7 @@ const WEEKDAYS = [
 ];
 
 export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
+  const { t } = useTranslation('financial');
   const isUpdating = !!clinic;
   const addClinic = useAddClinic();
   const updateClinic = useUpdateClinic();

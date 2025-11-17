@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, User, Calendar, Plus, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface UpcomingSession {
   id: string;
@@ -19,13 +20,15 @@ interface UpcomingSessionsProps {
 }
 
 export function UpcomingSessions({ upcomingSessions, isLoading }: UpcomingSessionsProps) {
+  const { t } = useTranslation('financial');
+  
   if (isLoading) {
     return (
       <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            Próximas Sessões
+            {t('dashboard.upcomingSessions.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -53,7 +56,7 @@ export function UpcomingSessions({ upcomingSessions, isLoading }: UpcomingSessio
         <CardTitle className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            Próximas Sessões
+            {t('dashboard.upcomingSessions.title')}
           </div>
           <Button variant="ghost" size="sm" onClick={() => window.location.reload()}>
             <RefreshCw className="h-4 w-4" />
@@ -77,19 +80,19 @@ export function UpcomingSessions({ upcomingSessions, isLoading }: UpcomingSessio
                 </div>
                 <div className="flex-1">
                   <h4 className="font-semibold text-foreground leading-tight">
-                    {session.name || 'Paciente não informado'}
+                    {session.name || t('dashboard.upcomingSessions.patientNotInformed')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    {session.type || 'Sessão regular'}
+                    {session.type || t('dashboard.upcomingSessions.regularSession')}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant="outline" className="text-xs">
                       <Calendar className="h-3 w-3 mr-1" />
-                      {session.date || 'Data não informada'}
+                      {session.date || t('dashboard.upcomingSessions.dateNotInformed')}
                     </Badge>
                     <Badge variant="secondary" className="text-xs">
                       <Clock className="h-3 w-3 mr-1" />
-                      {session.time || 'Horário não informado'}
+                      {session.time || t('dashboard.upcomingSessions.timeNotInformed')}
                     </Badge>
                   </div>
                 </div>
@@ -101,14 +104,14 @@ export function UpcomingSessions({ upcomingSessions, isLoading }: UpcomingSessio
             <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
               <Calendar className="h-10 w-10 text-blue-500 dark:text-blue-400" />
             </div>
-            <h4 className="text-xl font-semibold text-foreground mb-3">Agenda livre!</h4>
+            <h4 className="text-xl font-semibold text-foreground mb-3">{t('dashboard.upcomingSessions.noSessions')}</h4>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
-              Você não tem sessões agendadas para os próximos dias. É um ótimo momento para planejar novos atendimentos.
+              {t('dashboard.financialAgenda.emptyDescription')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Agendar Sessão
+                {t('dashboard.upcomingSessions.scheduleFirst')}
               </Button>
               <Button variant="outline">
                 <Calendar className="h-4 w-4 mr-2" />
