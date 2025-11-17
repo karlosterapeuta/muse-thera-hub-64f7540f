@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download, User } from 'lucide-react';
+import { Download, User, Camera, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
@@ -273,14 +273,77 @@ export default function DigitalStamp() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="therapistPhotoUpload">Sua Foto ou Logo</Label>
-                <Input
-                  id="therapistPhotoUpload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                />
+              <div className="space-y-2">
+                <Label className="text-base font-semibold flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-teal-600" />
+                  Adicione sua Foto ou Logo
+                </Label>
+                
+                <Card className="relative overflow-hidden border-2 border-dashed hover:border-solid border-teal-300 dark:border-teal-600 bg-teal-50/30 dark:bg-teal-950/20 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 transition-all cursor-pointer group">
+                  <label htmlFor="therapistPhotoUpload" className="cursor-pointer block p-6">
+                    
+                    {photoUrl ? (
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          <img 
+                            src={photoUrl} 
+                            alt="Preview" 
+                            className="h-20 w-20 rounded-full object-cover border-4 border-teal-500"
+                          />
+                          <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
+                            <Check className="h-4 w-4 text-white" />
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1">
+                          <p className="font-semibold text-teal-900 dark:text-teal-100">
+                            Imagem carregada!
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Essa imagem aparecerá no seu carimbo e assinatura
+                          </p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPhotoUrl('');
+                            }}
+                          >
+                            Alterar imagem
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-center space-y-3">
+                        <div className="bg-teal-100 dark:bg-teal-900/50 rounded-full p-4 group-hover:scale-110 transition-transform">
+                          <User className="h-12 w-12 text-teal-600 dark:text-teal-400" />
+                        </div>
+                        
+                        <div>
+                          <p className="font-semibold text-base text-teal-900 dark:text-teal-100">
+                            Clique para selecionar sua foto ou logo
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Essa imagem aparecerá no seu <strong>carimbo</strong> e <strong>assinatura digital</strong>
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Formatos aceitos: JPG, PNG • Tamanho máximo: 5MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <Input
+                      id="therapistPhotoUpload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </Card>
               </div>
             </div>
 
