@@ -781,7 +781,7 @@ export default function Evaluation() {
           </CardContent>
         </Card>
         
-        <Card className="backdrop-blur-sm bg-white/95 dark:bg-gray-900/95 border-0 dark:border dark:border-gray-800 shadow-2xl shadow-blue-500/10 dark:shadow-purple-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950 border-blue-200 dark:border-blue-800 shadow-2xl shadow-blue-500/10 dark:shadow-purple-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
