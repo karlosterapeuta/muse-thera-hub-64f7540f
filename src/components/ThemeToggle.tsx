@@ -1,28 +1,32 @@
 
 import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
-    <div className="relative group">
-      {/* Glow effect no hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
-      
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleTheme}
-        className="relative rounded-full w-10 h-10 sm:w-11 sm:h-11 hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 dark:hover:from-purple-950/50 dark:hover:to-blue-950/50 transition-all duration-300 hover:scale-110 hover:shadow-lg group"
+    <button
+      onClick={toggleTheme}
+      className="relative w-14 h-7 rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 shadow-lg hover:shadow-xl"
+      style={{
+        backgroundColor: isDark ? 'rgb(30, 58, 138)' : 'rgb(37, 99, 235)',
+      }}
+      aria-label="Toggle theme"
+    >
+      {/* Círculo deslizante com ícone */}
+      <div
+        className={`absolute top-0.5 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow-md transition-all duration-300 ease-in-out transform ${
+          isDark ? 'translate-x-7' : 'translate-x-0.5'
+        }`}
       >
-        {theme === 'dark' ? (
-          <Sun className="h-5 w-5 text-amber-500 group-hover:rotate-90 transition-transform duration-300" />
+        {isDark ? (
+          <Moon className="h-4 w-4 text-blue-900" />
         ) : (
-          <Moon className="h-5 w-5 text-indigo-600 group-hover:-rotate-12 transition-transform duration-300" />
+          <Sun className="h-4 w-4 text-amber-500" />
         )}
-      </Button>
-    </div>
+      </div>
+    </button>
   );
 }
