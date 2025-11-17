@@ -243,8 +243,8 @@ const MusicComposer = () => {
   const handleMute = () => {
     setIsMuted(!isMuted);
     toast({
-      title: isMuted ? "🔊 Som ativado" : "🔇 Som desativado",
-      description: isMuted ? "Agora você pode ouvir as notas!" : "Som silenciado.",
+      title: isMuted ? t('musicComposer.messages.unmuted') : t('musicComposer.messages.muted'),
+      description: isMuted ? t('musicComposer.messages.soundEnabled') : t('musicComposer.messages.soundDisabled'),
     });
   };
 

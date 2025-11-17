@@ -186,7 +186,7 @@ const TeaHero = () => {
           <Badge variant="secondary" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-400/50">{t('teaHeroFull.badges.authenticMelodies')}</Badge>
           <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">{t('teaHeroFull.badges.musetera')}</Badge>
           <Badge variant="secondary" className="bg-gradient-to-r from-violet-600 to-purple-500 text-white border-violet-400/50">{t('teaHeroFull.badges.validatedSongs')}</Badge>
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-600 to-violet-500 text-white border-purple-400/50">🎵 Zero Dessincronia</Badge>
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-600 to-violet-500 text-white border-purple-400/50">{t('teaHeroFull.badges.zeroDesync')}</Badge>
         </div>
       </div>
 
