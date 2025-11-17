@@ -240,19 +240,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col xl:flex-row relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col lg:flex-row relative overflow-hidden">
       {/* Animated Particles Background */}
       <AnimatedParticles />
 
       {/* Left side - Login Form */}
-      <div className="w-full xl:w-1/2 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 xl:p-8 relative z-10 min-h-screen xl:min-h-auto">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 relative z-10 min-h-screen lg:min-h-auto">
         <div className="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
           {renderForm()}
         </div>
       </div>
 
       {/* Right side - Video Background Section (Desktop Only) */}
-      <div className="relative hidden xl:flex xl:w-1/2 overflow-hidden">
+      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden">
         <VideoBackground />
       </div>
     </div>
