@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useTranslation } from "react-i18next";
 import {
   Form,
   FormControl,
@@ -29,31 +30,33 @@ type Patient = {
   contact: string | null;
 };
 
-const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Nome deve ter pelo menos 2 caracteres.",
-  }),
-  birth_date: z.string().min(1, {
-    message: "Data de nascimento é obrigatória.",
-  }),
-  responsible: z.string().min(2, {
-    message: "Nome do responsável deve ter pelo menos 2 caracteres.",
-  }),
-  contact: z.string().min(10, {
-    message: "Número de contato deve ter pelo menos 10 caracteres.",
-  }).max(15, {
-    message: "Número de contato deve ter no máximo 15 caracteres.",
-  }),
-});
-
 interface AddPatientDialogProps {
   loadPatients: () => void;
   closeModal: () => void;
 }
 
 export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
+  const { t } = useTranslation('patients');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Zod schema inside component to access t()
+  const FormSchema = z.object({
+    name: z.string().min(2, {
+      message: t('form.validation.nameMin'),
+    }),
+    birth_date: z.string().min(1, {
+      message: t('form.validation.birthDateRequired'),
+    }),
+    responsible: z.string().min(2, {
+      message: t('form.validation.responsibleMin'),
+    }),
+    contact: z.string().min(10, {
+      message: t('form.validation.contactMin'),
+    }).max(15, {
+      message: t('form.validation.contactMax'),
+    }),
+  });
   
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -73,8 +76,8 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       if (!user) {
         toast({
           variant: "destructive",
-          title: "Erro",
-          description: "Usuário não encontrado",
+          title: t('toast.error'),
+          description: t('toast.userNotFound'),
         });
         return;
       }
@@ -103,16 +106,16 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       console.log("Dados retornados após inserção:", data);
 
       toast({
-        title: "Sucesso",
-        description: "Paciente criado com sucesso",
+        title: t('toast.success'),
+        description: t('toast.addSuccess'),
       });
       loadPatients();
     } catch (error) {
       console.error("Erro ao criar paciente:", error);
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível criar o paciente",
+        title: t('toast.error'),
+        description: t('toast.createError'),
       });
     } finally {
       setIsSubmitting(false);
@@ -128,9 +131,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>{t('form.name')}</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do paciente" {...field} />
+                <Input placeholder={t('form.namePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -141,11 +144,11 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           name="birth_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Data de Nascimento</FormLabel>
+              <FormLabel>{t('form.birthDate')}</FormLabel>
               <FormControl>
                 <Input 
                   type="date" 
-                  placeholder="Data de nascimento do paciente" 
+                  placeholder={t('form.birthDatePlaceholder')} 
                   {...field} 
                 />
               </FormControl>
@@ -158,9 +161,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           name="responsible"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Responsável</FormLabel>
+              <FormLabel>{t('form.responsible')}</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do responsável" {...field} />
+                <Input placeholder={t('form.responsiblePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -171,9 +174,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           name="contact"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contato</FormLabel>
+              <FormLabel>{t('form.contact')}</FormLabel>
               <FormControl>
-                <Input placeholder="(99) 99999-9999" {...field} />
+                <Input placeholder={t('form.contactPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -181,7 +184,7 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         />
         <DialogFooter>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Criando..." : "Criar Paciente"}
+            {isSubmitting ? t('buttons.creating') : t('buttons.create')}
           </Button>
         </DialogFooter>
       </form>
@@ -196,23 +199,25 @@ interface EditPatientDialogProps {
 }
 
 export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPatientDialogProps) {
+  const { t } = useTranslation('patients');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Zod schema inside component to access t()
   const EditFormSchema = z.object({
     name: z.string().min(2, {
-      message: "Nome deve ter pelo menos 2 caracteres.",
+      message: t('form.validation.nameMin'),
     }),
     birth_date: z.string().min(1, {
-      message: "Data de nascimento é obrigatória.",
+      message: t('form.validation.birthDateRequired'),
     }),
     responsible: z.string().min(2, {
-      message: "Nome do responsável deve ter pelo menos 2 caracteres.",
+      message: t('form.validation.responsibleMin'),
     }),
     contact: z.string().min(10, {
-      message: "Número de contato deve ter pelo menos 10 caracteres.",
+      message: t('form.validation.contactMin'),
     }).max(15, {
-      message: "Número de contato deve ter no máximo 15 caracteres.",
+      message: t('form.validation.contactMax'),
     }),
   });
 
@@ -253,16 +258,16 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
       console.log("Dados retornados após atualização:", data);
 
       toast({
-        title: "Sucesso",
-        description: "Paciente atualizado com sucesso",
+        title: t('toast.success'),
+        description: t('toast.editSuccess'),
       });
       loadPatients();
     } catch (error) {
       console.error("Erro ao atualizar paciente:", error);
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível atualizar o paciente",
+        title: t('toast.error'),
+        description: t('toast.updateError'),
       });
     } finally {
       setIsSubmitting(false);
@@ -278,9 +283,9 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>{t('form.name')}</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do paciente" {...field} />
+                <Input placeholder={t('form.namePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -291,11 +296,11 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           name="birth_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Data de Nascimento</FormLabel>
+              <FormLabel>{t('form.birthDate')}</FormLabel>
               <FormControl>
                 <Input 
                   type="date" 
-                  placeholder="Data de nascimento do paciente" 
+                  placeholder={t('form.birthDatePlaceholder')} 
                   {...field} 
                 />
               </FormControl>
@@ -308,9 +313,9 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           name="responsible"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Responsável</FormLabel>
+              <FormLabel>{t('form.responsible')}</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do responsável" {...field} />
+                <Input placeholder={t('form.responsiblePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -321,9 +326,9 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           name="contact"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contato</FormLabel>
+              <FormLabel>{t('form.contact')}</FormLabel>
               <FormControl>
-                <Input placeholder="(99) 99999-9999" {...field} />
+                <Input placeholder={t('form.contactPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -331,7 +336,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
         />
         <DialogFooter>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+            {isSubmitting ? t('buttons.updating') : t('buttons.update')}
           </Button>
         </DialogFooter>
       </form>
