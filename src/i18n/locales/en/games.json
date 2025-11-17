@@ -1,0 +1,300 @@
+{
+  "common": {
+    "start": "Start Game",
+    "stop": "Stop",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart",
+    "repeat": "Repeat",
+    "score": "Score",
+    "time": "Time",
+    "speed": "Speed",
+    "level": "Level",
+    "hit": "Hit!",
+    "miss": "Miss!",
+    "combo": "Combo",
+    "perfect": "Perfect!",
+    "great": "Great!",
+    "good": "Good!",
+    "paused": "PAUSED",
+    "gameOver": "Game Over",
+    "finalScore": "Final Score",
+    "playAgain": "Play Again",
+    "backToMenu": "Back to Menu",
+    "loading": "Loading...",
+    "instructions": "Instructions",
+    "settings": "Settings",
+    "syncSystem": "Synchronized System",
+    "practiceMode": "Practice Mode",
+    "authenticMelody": "100% Authentic Melody",
+    "useKeys": "Use keys {{keys}} to play notes",
+    "teaOptimized": "TEA Optimized",
+    "selectSong": "Select Song",
+    "randomMode": "Random Mode",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "expert": "Expert"
+    }
+  },
+  "guitarHero": {
+    "title": "Guitar Hero",
+    "subtitle": "Strum the strings on beat!",
+    "description": "Rhythm game where you need to press keys at the right moment when notes reach the hit zone.",
+    "instructions": {
+      "title": "How to Play",
+      "step1": "Use keys 1-8 to play corresponding notes",
+      "step2": "Press the key when the colored note reaches the hit zone",
+      "step3": "Accumulate points by playing notes at the right moment",
+      "step4": "Practice to improve your accuracy and speed"
+    },
+    "feedback": {
+      "hitZone": "Hit Zone",
+      "notesPassed": "notes played",
+      "accuracy": "Accuracy"
+    }
+  },
+  "bellHero": {
+    "title": "Bell Hero",
+    "subtitle": "Play the magical bells!",
+    "description": "Rhythm game with bell sounds optimized for ASD, offering a smooth and engaging sensory experience.",
+    "instructions": {
+      "title": "How to Play",
+      "step1": "Use keys 1-8 to play MuseTera bells",
+      "step2": "Each bell has a specific frequency optimized for ASD",
+      "step3": "Play the bells when notes reach the hit zone",
+      "step4": "Real bell sounds amplified for therapeutic stimulation"
+    },
+    "teaFeatures": {
+      "title": "ASD Features",
+      "realSamples": "Real bell samples",
+      "enhancedSynthesis": "Enhanced synthesis",
+      "therapeuticFeedback": "Amplified therapeutic feedback"
+    }
+  },
+  "teaHero": {
+    "title": "ASD-Hero MuseTera",
+    "subtitle": "Musical therapeutic game for ASD",
+    "description": "Specialized musical game system with MuseTera synchronized frequencies, specifically developed for ASD therapy.",
+    "instructions": {
+      "title": "How to Play",
+      "step1": "Select a therapeutic instrument (bell, xylophone, or keyboard)",
+      "step2": "Choose a song or MuseTera practice mode",
+      "step3": "Use keys 1-8 to play synchronized notes",
+      "step4": "All frequencies are optimized for therapeutic stimulation"
+    },
+    "features": {
+      "synchronizedFrequencies": "Synchronized Frequencies",
+      "therapeuticInstruments": "Therapeutic Instruments",
+      "museTeraSystem": "MuseTera System",
+      "realTimeFeedback": "Real-Time Feedback",
+      "visualSupport": "Visual Support"
+    },
+    "instruments": {
+      "bell": "Bell",
+      "xylophone": "Xylophone",
+      "keyboard": "Keyboard"
+    }
+  },
+  "xylophoneHero": {
+    "title": "Xylophone Hero",
+    "subtitle": "Play the colorful xylophone!",
+    "description": "Rhythm game with vibrant xylophone sounds, offering coordinated visual and auditory stimulation.",
+    "instructions": {
+      "title": "How to Play",
+      "step1": "Use keys 1-8 to play xylophone notes",
+      "step2": "Each key corresponds to a colored xylophone bar",
+      "step3": "Play in rhythm to create harmonious melodies",
+      "step4": "Real xylophone sounds for authentic experience"
+    },
+    "features": {
+      "colorCoding": "Color Coding",
+      "vibrantSounds": "Vibrant Sounds",
+      "visualFeedback": "Intense Visual Feedback"
+    }
+  },
+  "boomwhackerHero": {
+    "title": "Boomwhacker Hero",
+    "subtitle": "Play the musical tubes!",
+    "description": "Rhythm game with boomwhacker sounds, colorful musical tubes that offer a fun and educational experience.",
+    "instructions": {
+      "title": "How to Play",
+      "step1": "Use keys 1-8 to play boomwhackers",
+      "step2": "Each tube has a specific color and tone",
+      "step3": "Play along with the music rhythm",
+      "step4": "Authentic musical tube sounds"
+    },
+    "features": {
+      "authenticTubeSounds": "Authentic Tube Sounds",
+      "colorfulExperience": "Colorful Experience",
+      "rhythmicPlay": "Rhythmic Play"
+    }
+  },
+  "musicalBells": {
+    "title": "Musical Bells",
+    "subtitle": "Create melodies with bells!",
+    "description": "Virtual musical bells instrument for free exploration and creation of therapeutic melodies.",
+    "instructions": {
+      "title": "How to Use",
+      "step1": "Click on bells or use keys 1-8",
+      "step2": "Explore different sound combinations",
+      "step3": "Create your own melodies",
+      "step4": "Free mode without time pressure"
+    },
+    "modes": {
+      "freePlay": "Free Play",
+      "guided": "Guided",
+      "recording": "Recording"
+    },
+    "features": {
+      "freeExploration": "Free Exploration",
+      "noTimePressure": "No Time Pressure",
+      "therapeuticSounds": "Therapeutic Sounds",
+      "creativeFreedom": "Creative Freedom"
+    }
+  },
+  "musicComposer": {
+    "title": "Music Composer",
+    "subtitle": "Compose your own songs!",
+    "description": "Musical composition tool that allows you to create, edit, and play your own therapeutic melodies.",
+    "instructions": {
+      "title": "How to Compose",
+      "step1": "Select an instrument from the palette",
+      "step2": "Click on the grid to add notes",
+      "step3": "Adjust note duration and intensity",
+      "step4": "Play your composition and share"
+    },
+    "tools": {
+      "addNote": "Add Note",
+      "removeNote": "Remove Note",
+      "selectInstrument": "Select Instrument",
+      "adjustTempo": "Adjust Tempo",
+      "adjustVolume": "Adjust Volume",
+      "play": "Play",
+      "stop": "Stop",
+      "clear": "Clear",
+      "save": "Save",
+      "load": "Load"
+    },
+    "features": {
+      "visualEditor": "Visual Editor",
+      "multipleInstruments": "Multiple Instruments",
+      "tempoControl": "Tempo Control",
+      "saveLoad": "Save and Load",
+      "export": "Export"
+    },
+    "panels": {
+      "timeline": "Timeline",
+      "instruments": "Instruments",
+      "properties": "Properties",
+      "preview": "Preview"
+    }
+  },
+  "musicogram": {
+    "title": "Musicogram",
+    "subtitle": "Visualize and play music!",
+    "description": "Visual representation of songs that helps understand musical structure and facilitates therapeutic learning.",
+    "instructions": {
+      "title": "How to Use",
+      "step1": "Select a song from the library",
+      "step2": "Observe the visual representation of the musical structure",
+      "step3": "Follow the symbols as the music plays",
+      "step4": "Interact with visual elements to control playback"
+    },
+    "elements": {
+      "intro": "Introduction",
+      "verse": "Verse",
+      "chorus": "Chorus",
+      "bridge": "Bridge",
+      "outro": "Outro",
+      "instrumental": "Instrumental",
+      "repetition": "Repetition"
+    },
+    "features": {
+      "visualRepresentation": "Visual Representation",
+      "structureMapping": "Structure Mapping",
+      "interactivePlayback": "Interactive Playback",
+      "learningSupport": "Learning Support",
+      "therapeuticVisualization": "Therapeutic Visualization"
+    },
+    "controls": {
+      "playPause": "Play/Pause",
+      "rewind": "Rewind",
+      "forward": "Forward",
+      "repeat": "Repeat Section",
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out"
+    }
+  },
+  "settings": {
+    "title": "Game Settings",
+    "audio": {
+      "title": "Audio",
+      "masterVolume": "Master Volume",
+      "musicVolume": "Music Volume",
+      "effectsVolume": "Effects Volume",
+      "noteVolume": "Note Volume"
+    },
+    "visual": {
+      "title": "Visual",
+      "brightness": "Brightness",
+      "contrast": "Contrast",
+      "colorBlindMode": "Color Blind Mode",
+      "highContrast": "High Contrast",
+      "reducedMotion": "Reduced Motion",
+      "largeText": "Large Text"
+    },
+    "gameplay": {
+      "title": "Gameplay",
+      "scrollSpeed": "Scroll Speed",
+      "noteSize": "Note Size",
+      "hitWindow": "Hit Window",
+      "showHints": "Show Hints",
+      "autoPlay": "Auto Play"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "teaMode": "ASD Mode",
+      "simplifiedInterface": "Simplified Interface",
+      "audioDescription": "Audio Description",
+      "keyboardOnly": "Keyboard Only",
+      "screenReader": "Screen Reader"
+    }
+  },
+  "achievements": {
+    "title": "Achievements",
+    "unlocked": "Unlocked!",
+    "locked": "Locked",
+    "progress": "Progress",
+    "firstNote": {
+      "title": "First Note",
+      "description": "Successfully play your first note"
+    },
+    "perfectScore": {
+      "title": "Perfect Score",
+      "description": "Complete a song without missing any notes"
+    },
+    "speedDemon": {
+      "title": "Speed Demon",
+      "description": "Complete a song at 2x speed"
+    },
+    "therapeutic": {
+      "title": "Music Therapist",
+      "description": "Play 10 sessions in ASD mode"
+    }
+  },
+  "messages": {
+    "gameStarted": "Game started! Good luck!",
+    "gamePaused": "Game paused",
+    "gameResumed": "Game resumed",
+    "gameStopped": "Game stopped",
+    "songCompleted": "Song completed!",
+    "newHighScore": "New high score!",
+    "loadingSong": "Loading song...",
+    "audioInitializing": "Initializing audio system...",
+    "audioReady": "Audio system ready!",
+    "noSongSelected": "No song selected",
+    "selectSongFirst": "Please select a song first"
+  }
+}
