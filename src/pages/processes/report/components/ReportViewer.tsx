@@ -84,16 +84,16 @@ export function ReportViewer({ report }: ReportViewerProps) {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl">
-                {reportTypeLabels[report.type] || report.type}
+                {t(`reports:types.${report.type}`) || report.type}
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                Paciente: {report.patient?.name || 'N/A'}
+                {t('reports:list.table.headers.patient')}: {report.patient?.name || 'N/A'}
               </p>
               <p className="text-muted-foreground">
-                Profissional: {report.professional?.name || 'N/A'}
+                {t('reports:list.table.headers.professional')}: {report.professional?.name || 'N/A'}
               </p>
               <p className="text-muted-foreground">
-                Data: {format(new Date(report.date), "dd/MM/yyyy")}
+                {t('reports:list.table.headers.date')}: {format(new Date(report.date), "P", { locale: getLocale() })}
               </p>
             </div>
             <Badge variant={report.status === 'finalized' ? 'default' : 'secondary'}>

@@ -39,8 +39,13 @@
     "confirmDelete": "¿Está seguro de que desea eliminar?",
     "languageChanged": "Idioma cambiado",
     "nowUsing": "Ahora usando",
-    "tryAgain": "Intentar de Nuevo"
+    "tryAgain": "Intentar de Nuevo",
+    "warning": "Advertencia",
+    "error": "Error"
   },
   "selectLanguage": "Seleccionar idioma",
-  "active": "Activo"
+  "active": "Activo",
+  "documentInfo": "Información del Documento",
+  "generatedAt": "Generado el",
+  "digitalSignature": "Firma Digital"
 }

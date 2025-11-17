@@ -1,8 +1,9 @@
 
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR, enUS, es } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
 import type { Database } from "@/integrations/supabase/types";
+import i18n from '@/i18n/config';
 
 type ReportType = Database["public"]["Enums"]["report_type"];
 
@@ -17,6 +18,26 @@ type ProfessionalData = {
   name: string;
   phone: string;
   email: string;
+};
+
+const getLocale = () => {
+  switch (i18n.language) {
+    case 'en': return enUS;
+    case 'es': return es;
+    default: return ptBR;
+  }
+};
+
+const getReportTypeTitle = (type: ReportType) => {
+  const typeKey = `reports:types.${type}`;
+  const translated = i18n.t(typeKey);
+  return translated !== typeKey ? translated : type;
+};
+
+const getContentLabel = (type: ReportType, key: string) => {
+  const labelKey = `reports:content.${type}.${key}`;
+  const translated = i18n.t(labelKey);
+  return translated !== labelKey ? translated : key.replace(/_/g, ' ');
 };
 
 const generateContentHTML = (content: Record<string, any>, type: ReportType) => {
@@ -67,61 +88,61 @@ const generateContentHTML = (content: Record<string, any>, type: ReportType) => 
 
   if (type === "daily_evolution") {
     return `
-      ${createSection("Estado Inicial", content.initial_state, "initial_state")}
-      ${createSection("Atividades Realizadas", content.activities, "activities")}
-      ${createSection("Respostas Observadas", content.responses, "responses")}
-      ${createSection("Observações", content.observations, "observations")}
+      ${createSection(getContentLabel(type, 'initial_state'), content.initial_state, "initial_state")}
+      ${createSection(getContentLabel(type, 'activities'), content.activities, "activities")}
+      ${createSection(getContentLabel(type, 'responses'), content.responses, "responses")}
+      ${createSection(getContentLabel(type, 'observations'), content.observations, "observations")}
     `;
   } else if (type === "monthly_evolution") {
     return `
-      ${createSection("Objetivos Terapêuticos", content.therapeutic_objectives, "therapeutic_objectives")}
-      ${createSection("Conquistas", content.achievements, "achievements")}
-      ${createSection("Desafios", content.challenges, "challenges")}
-      ${createSection("Ajustes Necessários", content.adjustments, "adjustments")}
-      ${createSection("Próximos Passos", content.next_steps, "next_steps")}
+      ${createSection(getContentLabel(type, 'therapeutic_objectives'), content.therapeutic_objectives, "therapeutic_objectives")}
+      ${createSection(getContentLabel(type, 'achievements'), content.achievements, "achievements")}
+      ${createSection(getContentLabel(type, 'challenges'), content.challenges, "challenges")}
+      ${createSection(getContentLabel(type, 'adjustments'), content.adjustments, "adjustments")}
+      ${createSection(getContentLabel(type, 'next_steps'), content.next_steps, "next_steps")}
     `;
   } else if (type === "semester_evolution") {
     return `
-      ${createSection("Avaliação Inicial", content.initial_evaluation, "initial_evaluation")}
-      ${createSection("Processo Terapêutico", content.therapeutic_process, "therapeutic_process")}
-      ${createSection("Áreas de Evolução", content.evolution_areas, "evolution_areas")}
-      ${createSection("Envolvimento Familiar", content.family_involvement, "family_involvement")}
-      ${createSection("Conclusões", content.conclusions, "conclusions")}
-      ${createSection("Recomendações", content.recommendations, "recommendations")}
+      ${createSection(getContentLabel(type, 'initial_evaluation'), content.initial_evaluation, "initial_evaluation")}
+      ${createSection(getContentLabel(type, 'therapeutic_process'), content.therapeutic_process, "therapeutic_process")}
+      ${createSection(getContentLabel(type, 'evolution_areas'), content.evolution_areas, "evolution_areas")}
+      ${createSection(getContentLabel(type, 'family_involvement'), content.family_involvement, "family_involvement")}
+      ${createSection(getContentLabel(type, 'conclusions'), content.conclusions, "conclusions")}
+      ${createSection(getContentLabel(type, 'recommendations'), content.recommendations, "recommendations")}
     `;
   } else if (type === "therapeutic_discharge") {
     return `
-      ${createSection("Resumo do Tratamento", content.treatment_summary, "treatment_summary")}
-      ${createSection("Objetivos Alcançados", content.achieved_goals, "achieved_goals")}
-      ${createSection("Recomendações", content.recommendations, "recommendations")}
+      ${createSection(getContentLabel(type, 'treatment_summary'), content.treatment_summary, "treatment_summary")}
+      ${createSection(getContentLabel(type, 'achieved_goals'), content.achieved_goals, "achieved_goals")}
+      ${createSection(getContentLabel(type, 'recommendations'), content.recommendations, "recommendations")}
     `;
   } else if (type === "individual_session") {
     return `
-      ${createSection("Objetivos", content.objectives, "objectives")}
-      ${createSection("Atividades Realizadas", content.activities, "activities")}
-      ${createSection("Resposta do Paciente", content.patient_response, "patient_response")}
-      ${createSection("Observações", content.observations, "observations")}
-      ${createSection("Próximos Passos", content.next_steps, "next_steps")}
+      ${createSection(getContentLabel(type, 'objectives'), content.objectives, "objectives")}
+      ${createSection(getContentLabel(type, 'activities'), content.activities, "activities")}
+      ${createSection(getContentLabel(type, 'patient_response'), content.patient_response, "patient_response")}
+      ${createSection(getContentLabel(type, 'observations'), content.observations, "observations")}
+      ${createSection(getContentLabel(type, 'next_steps'), content.next_steps, "next_steps")}
     `;
   } else if (type === "group_session") {
     return `
       <div style="margin-bottom: 25px;">
         <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; border-left: 4px solid #007bff; border-radius: 5px;">
           <h3 style="color: #2c3e50; font-size: 18px; font-weight: bold; margin: 0;">
-            Dados da Sessão em Grupo
+            ${getContentLabel(type, 'participants')}
           </h3>
         </div>
         <div style="background-color: #ffffff; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px;">
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="width: 50%; vertical-align: top; padding-right: 15px;">
-                <strong style="color: #2c3e50;">Participantes:</strong><br>
+                <strong style="color: #2c3e50;">${getContentLabel(type, 'participants')}:</strong><br>
                 <div style="margin-top: 8px; padding: 10px; background-color: #f8f9fa; border-radius: 3px;">
                   ${String(content.participants || '').replace(/\n/g, '<br>')}
                 </div>
               </td>
               <td style="width: 50%; vertical-align: top; padding-left: 15px;">
-                <strong style="color: #2c3e50;">Tema:</strong><br>
+                <strong style="color: #2c3e50;">${getContentLabel(type, 'theme')}:</strong><br>
                 <div style="margin-top: 8px; padding: 10px; background-color: #f8f9fa; border-radius: 3px;">
                   ${String(content.theme || '').replace(/\n/g, '<br>')}
                 </div>
@@ -131,25 +152,13 @@ const generateContentHTML = (content: Record<string, any>, type: ReportType) => 
         </div>
       </div>
 
-      ${createSection("Dinâmica do Grupo", content.group_dynamics, "group_dynamics")}
-      ${createSection("Atividades Realizadas", content.activities, "activities")}
-      ${createSection("Resposta do Grupo", content.group_response, "group_response")}
-      ${createSection("Observações", content.observations, "observations")}
+      ${createSection(getContentLabel(type, 'group_dynamics'), content.group_dynamics, "group_dynamics")}
+      ${createSection(getContentLabel(type, 'activities'), content.activities, "activities")}
+      ${createSection(getContentLabel(type, 'group_response'), content.group_response, "group_response")}
+      ${createSection(getContentLabel(type, 'observations'), content.observations, "observations")}
     `;
   }
   return '';
-};
-
-const getReportTypeTitle = (type: ReportType) => {
-  const titles = {
-    monthly_evolution: "Evolução Mensal",
-    daily_evolution: "Evolução Diária", 
-    therapeutic_discharge: "Alta Terapêutica",
-    individual_session: "Relatório de Sessão Individual",
-    group_session: "Relatório de Sessão em Grupo",
-    semester_evolution: "Evolução Semestral"
-  };
-  return titles[type] || "Relatório Musicoterapêutico";
 };
 
 export async function generatePDF(
@@ -164,11 +173,12 @@ export async function generatePDF(
     
     const element = document.createElement('div');
     
-    // Formatação da data do relatório com destaque especial
-    const reportDate = format(formValues.date, 'PPP', { locale: ptBR });
-    const reportDateShort = format(formValues.date, "dd/MM/yyyy", { locale: ptBR });
-    const currentDateTime = format(new Date(), 'PPP', { locale: ptBR });
-    const currentTime = new Date().toLocaleTimeString('pt-BR');
+    // Formatação da data do relatório com locale dinâmico
+    const locale = getLocale();
+    const reportDate = format(formValues.date, 'PPP', { locale });
+    const reportDateShort = format(formValues.date, "P", { locale });
+    const currentDateTime = format(new Date(), 'PPP', { locale });
+    const currentTime = new Date().toLocaleTimeString(i18n.language === 'en' ? 'en-US' : i18n.language === 'es' ? 'es-ES' : 'pt-BR');
     
     element.innerHTML = `
       <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background: #ffffff; color: #333333;">
@@ -190,7 +200,7 @@ export async function generatePDF(
           </h1>
           <div style="height: 3px; background-color: #3498db; margin: 0 auto; width: 100px;"></div>
           
-          <div style="margin-top: 25px; padding: 20px; background-color: rgba(255,255,255,0.1); border-radius: 8px;">
+            <div style="margin-top: 25px; padding: 20px; background-color: rgba(255,255,255,0.1); border-radius: 8px;">
             <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 15px 0; font-weight: bold;">
               ${patientName}
             </h2>
@@ -199,7 +209,7 @@ export async function generatePDF(
             <div style="background-color: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.3);">
               <div style="color: #ffffff; font-size: 14px; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 18px; margin-right: 10px;">📅</span>
-                <span>DATA DO RELATÓRIO</span>
+                <span>${i18n.t('reports:list.table.headers.date').toUpperCase()}</span>
               </div>
               <div style="color: #ecf0f1; font-size: 20px; font-weight: bold; text-align: center;">
                 ${reportDate}
@@ -213,13 +223,13 @@ export async function generatePDF(
           <div style="background-color: #f8f9fa; padding: 25px; border: 2px solid #007bff; border-radius: 8px; margin-bottom: 30px;">
             <h3 style="color: #2c3e50; font-size: 20px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center;">
               <span style="margin-right: 10px; font-size: 24px;">📋</span>
-              Informações do Documento
+              ${i18n.t('reports:list.table.headers.date')}
             </h3>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
               <div>
                 <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
-                  Paciente
+                  ${i18n.t('reports:list.table.headers.patient')}
                 </div>
                 <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
                   ${patientName}
@@ -227,7 +237,7 @@ export async function generatePDF(
               </div>
               <div>
                 <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
-                  Tipo de Relatório
+                  ${i18n.t('reports:list.table.headers.type')}
                 </div>
                 <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
                   ${getReportTypeTitle(formValues.type)}
@@ -239,7 +249,7 @@ export async function generatePDF(
             <div style="background-color: #007bff; color: white; padding: 15px; border-radius: 6px; margin: 20px 0; text-align: center;">
               <div style="font-size: 14px; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 18px; margin-right: 8px;">📅</span>
-                <span>DATA DO RELATÓRIO</span>
+                <span>${i18n.t('reports:list.table.headers.date').toUpperCase()}</span>
               </div>
               <div style="font-size: 18px; font-weight: bold;">
                 ${reportDate}
@@ -249,7 +259,7 @@ export async function generatePDF(
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
               <div>
                 <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
-                  Profissional Responsável
+                  ${i18n.t('reports:list.table.headers.professional')}
                 </div>
                 <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
                   ${userName || 'N/A'}
@@ -260,7 +270,7 @@ export async function generatePDF(
               </div>
               <div>
                 <div style="color: #6c757d; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
-                  Data de Geração
+                  ${i18n.t('common:generatedAt', { defaultValue: 'Data de Geração' })}
                 </div>
                 <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">
                   ${currentDateTime}
@@ -294,7 +304,7 @@ export async function generatePDF(
             <!-- Data do Relatório no Resumo -->
             <div style="margin-top: 15px; padding: 12px; background-color: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
               <div style="font-size: 13px; color: #1976d2; font-weight: bold;">
-                📅 Data do Relatório: ${reportDate}
+                📅 ${i18n.t('reports:list.table.headers.date')}: ${reportDate}
               </div>
             </div>
           </div>
@@ -307,7 +317,7 @@ export async function generatePDF(
             <div style="background-color: #007bff; color: white; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
               <div style="font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
                 <span style="margin-right: 8px;">📅</span>
-                <span>RELATÓRIO DE ${reportDateShort}</span>
+                <span>${i18n.t('reports:list.table.headers.date').toUpperCase()} ${reportDateShort}</span>
               </div>
             </div>
             
@@ -324,7 +334,7 @@ export async function generatePDF(
               <tr>
                 <td style="padding: 15px; text-align: left; border-right: 1px solid #dee2e6;">
                   <div style="color: #2c3e50; font-size: 14px; font-weight: bold; margin-bottom: 5px;">
-                    Musicoterapeuta Responsável:
+                    ${i18n.t('reports:list.table.headers.professional')}:
                   </div>
                   <div style="color: #6c757d; font-size: 13px; font-weight: 500;">
                     ${userName || 'N/A'}
@@ -334,11 +344,11 @@ export async function generatePDF(
                   </div>
                 </td>
                 <td style="padding: 15px; text-align: right;">
-                  <div style="color: #6c757d; font-size: 11px; margin-bottom: 8px;">Assinatura Digital</div>
+                  <div style="color: #6c757d; font-size: 11px; margin-bottom: 8px;">${i18n.t('common:digitalSignature', { defaultValue: 'Assinatura Digital' })}</div>
                   <div style="width: 120px; height: 2px; background-color: #3498db; margin-left: auto;"></div>
                   <!-- Data do Relatório na Assinatura -->
                   <div style="color: #6c757d; font-size: 10px; margin-top: 5px;">
-                    Relatório de ${reportDateShort}
+                    ${i18n.t('reports:list.table.headers.date')} ${reportDateShort}
                   </div>
                 </td>
               </tr>
@@ -358,7 +368,7 @@ export async function generatePDF(
             <!-- Data Final no Rodapé -->
             <div style="margin-top: 15px; padding: 10px; background-color: #e8f5e8; border: 1px solid #4caf50; border-radius: 6px;">
               <div style="color: #2e7d32; font-size: 12px; font-weight: bold; text-align: center;">
-                📅 Data do Relatório: ${reportDate} | Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                📅 ${i18n.t('reports:list.table.headers.date')}: ${reportDate} | ${i18n.t('common:generatedAt', { defaultValue: 'Gerado em' })}: ${format(new Date(), "P 'às' p", { locale: getLocale() })}
               </div>
             </div>
           </div>
