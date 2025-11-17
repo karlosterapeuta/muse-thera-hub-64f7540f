@@ -20,9 +20,9 @@ export function ProfessionalAvatar({ size = "md", editable = false }: Profession
   const queryClient = useQueryClient();
 
   const sizeClasses = {
-    sm: "h-8 w-8",
-    md: "h-12 w-12",
-    lg: "h-20 w-20"
+    sm: "h-10 w-10",
+    md: "h-14 w-14",
+    lg: "h-24 w-24"
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -20,8 +20,8 @@ export function HeaderTime() {
   };
 
   return (
-    <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border border-border/50 hover:border-border transition-colors">
-      <Clock className="h-4 w-4 text-muted-foreground" />
+    <div className="hidden sm:flex items-center gap-2 px-3 py-2.5 bg-muted/50 rounded-lg border border-border/50 hover:border-border transition-colors">
+      <Clock className="h-5 w-5 text-muted-foreground" />
       <span className="text-sm font-medium text-foreground tabular-nums">{getCurrentTime()}</span>
     </div>
   );
