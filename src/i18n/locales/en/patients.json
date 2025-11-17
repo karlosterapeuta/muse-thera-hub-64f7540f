@@ -12,7 +12,11 @@
     "delete": "Delete",
     "viewAnamnesis": "View Anamnesis",
     "editAnamnesis": "Edit Anamnesis",
-    "createAnamnesis": "Create Anamnesis"
+    "createAnamnesis": "Create Anamnesis",
+    "creating": "Creating...",
+    "create": "Create Patient",
+    "updating": "Updating...",
+    "update": "Update Patient"
   },
   "loading": {
     "title": "Loading patients...",
@@ -66,7 +70,15 @@
     "contact": "Contact",
     "namePlaceholder": "Enter full name",
     "responsiblePlaceholder": "Guardian's name",
-    "contactPlaceholder": "Phone or email"
+    "contactPlaceholder": "Phone or email",
+    "birthDatePlaceholder": "Select date of birth",
+    "validation": {
+      "nameMin": "Name must be at least 2 characters.",
+      "birthDateRequired": "Date of birth is required.",
+      "responsibleMin": "Guardian name must be at least 2 characters.",
+      "contactMin": "Contact number must be at least 10 characters.",
+      "contactMax": "Contact number must be at most 15 characters."
+    }
   },
   "table": {
     "name": "Name",
@@ -106,6 +118,10 @@
     "deleteSuccess": "Patient deleted successfully!",
     "deleteAllSuccess": "All patients have been deleted!",
     "error": "Error processing operation",
-    "loadError": "Error loading patients"
+    "loadError": "Error loading patients",
+    "userNotFound": "User not found",
+    "createError": "Could not create patient",
+    "updateError": "Could not update patient",
+    "success": "Success"
   }
 }

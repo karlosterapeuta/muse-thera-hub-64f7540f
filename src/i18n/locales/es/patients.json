@@ -12,7 +12,11 @@
     "delete": "Eliminar",
     "viewAnamnesis": "Ver Anamnesis",
     "editAnamnesis": "Editar Anamnesis",
-    "createAnamnesis": "Crear Anamnesis"
+    "createAnamnesis": "Crear Anamnesis",
+    "creating": "Creando...",
+    "create": "Crear Paciente",
+    "updating": "Actualizando...",
+    "update": "Actualizar Paciente"
   },
   "loading": {
     "title": "Cargando pacientes...",
@@ -66,7 +70,15 @@
     "contact": "Contacto",
     "namePlaceholder": "Ingrese el nombre completo",
     "responsiblePlaceholder": "Nombre del responsable",
-    "contactPlaceholder": "Teléfono o correo electrónico"
+    "contactPlaceholder": "Teléfono o correo electrónico",
+    "birthDatePlaceholder": "Seleccione la fecha de nacimiento",
+    "validation": {
+      "nameMin": "El nombre debe tener al menos 2 caracteres.",
+      "birthDateRequired": "La fecha de nacimiento es obligatoria.",
+      "responsibleMin": "El nombre del responsable debe tener al menos 2 caracteres.",
+      "contactMin": "El número de contacto debe tener al menos 10 caracteres.",
+      "contactMax": "El número de contacto debe tener como máximo 15 caracteres."
+    }
   },
   "table": {
     "name": "Nombre",
@@ -106,6 +118,10 @@
     "deleteSuccess": "¡Paciente eliminado con éxito!",
     "deleteAllSuccess": "¡Todos los pacientes han sido eliminados!",
     "error": "Error al procesar la operación",
-    "loadError": "Error al cargar pacientes"
+    "loadError": "Error al cargar pacientes",
+    "userNotFound": "Usuario no encontrado",
+    "createError": "No se pudo crear el paciente",
+    "updateError": "No se pudo actualizar el paciente",
+    "success": "Éxito"
   }
 }
