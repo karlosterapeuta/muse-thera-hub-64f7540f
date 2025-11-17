@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, X, Target } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ObjectivesSelectorProps {
   label: string;
@@ -15,30 +16,6 @@ interface ObjectivesSelectorProps {
   type: 'general' | 'specific';
 }
 
-const generalObjectives = [
-  "Promover a comunicação verbal e não verbal",
-  "Favorecer a autorregulação emocional",
-  "Estimular habilidades cognitivas (atenção, memória, concentração)",
-  "Melhorar habilidades motoras finas e grossas",
-  "Incentivar a socialização e interação",
-  "Desenvolver expressão criativa e emocional",
-  "Reduzir comportamentos disruptivos",
-  "Estimular desenvolvimento da linguagem"
-];
-
-const specificObjectives = [
-  "Ampliar o tempo de atenção sustentada em atividades musicais para até [X] minutos",
-  "Favorecer a iniciação de turnos musicais em atividades rítmicas",
-  "Desenvolver a expressão vocal através de canções dirigidas",
-  "Estimular movimentos coordenados ao acompanhar pulso musical",
-  "Incentivar interação em grupo através de improvisações coletivas",
-  "Promover imitação de gestos e movimentos musicais",
-  "Desenvolver discriminação auditiva de timbres e intensidades",
-  "Aumentar vocabulário funcional através de canções temáticas",
-  "Melhorar coordenação bilateral através de instrumentos de percussão",
-  "Desenvolver controle respiratório através de exercícios vocais"
-];
-
 export function ObjectivesSelector({ 
   label, 
   objectives, 
@@ -46,10 +23,13 @@ export function ObjectivesSelector({
   onRemove, 
   type 
 }: ObjectivesSelectorProps) {
+  const { t } = useTranslation('musicotherapy');
   const [inputValue, setInputValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  const suggestions = type === 'general' ? generalObjectives : specificObjectives;
+  const suggestions = type === 'general' 
+    ? t('objectives.general.suggestions', { returnObjects: true }) as string[]
+    : t('objectives.specific.suggestions', { returnObjects: true }) as string[];
 
   const handleAdd = () => {
     if (inputValue.trim()) {
@@ -77,7 +57,7 @@ export function ObjectivesSelector({
           className="text-xs"
         >
           <Target className="h-3 w-3 mr-1" />
-          {showSuggestions ? 'Ocultar' : 'Sugestões'}
+          {showSuggestions ? t('objectives.general.buttonHide') : t('objectives.general.buttonShow')}
         </Button>
       </div>
 
@@ -86,7 +66,7 @@ export function ObjectivesSelector({
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-green-800 flex items-center gap-2">
               <Target className="h-4 w-4" />
-              Objetivos Sugeridos
+              {t('objectives.general.suggestionsTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 pt-0">
@@ -111,7 +91,7 @@ export function ObjectivesSelector({
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder={`Digite um ${type === 'general' ? 'objetivo geral' : 'objetivo específico'} ou escolha das sugestões`}
+          placeholder={t('objectives.general.placeholder')}
           onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
           className="flex-1"
         />

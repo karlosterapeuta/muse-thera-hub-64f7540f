@@ -263,6 +263,14 @@
         "Repertorio adaptado para diferentes objetivos terapéuticos. Escucha con propuesta de movimiento expresivo. Estimulación sensorial a través de la música."
       ]
     },
+    "clinicalFamilyHistory": "Historia clínica y familiar relevante",
+    "clinicalFamilyHistoryPlaceholder": "Describir condiciones clínicas, historial médico relevante...",
+    "physicalCognitiveConditions": "Condiciones físicas, cognitivas, emocionales y sociales",
+    "physicalCognitiveConditionsPlaceholder": "Describir condiciones actuales del paciente...",
+    "interactionCommunicationLevel": "Nivel de interacción y comunicación",
+    "interactionCommunicationLevelPlaceholder": "Describir cómo el paciente se comunica e interactúa...",
+    "musicalInterestsLabel": "Intereses musicales",
+    "musicalInterestsPlaceholder": "Instrumentos preferidos, estilos musicales, preferencias sonoras...",
     "strategies": {
       "musicalImprovisation": {
         "label": "Improvisación musical",
