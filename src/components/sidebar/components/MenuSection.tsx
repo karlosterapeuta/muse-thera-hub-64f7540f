@@ -9,7 +9,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
   
   const getItemText = (item: any) => {
     if (item.textKey) {
-      return t(item.textKey);
+      return t(item.textKey) || item.textKey;
     }
     return item.text || "";
   };
@@ -103,13 +103,13 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                         ? "text-white" 
                         : "text-foreground group-hover:text-foreground"
                     )}>
-                      {itemText.includes("em construção") ? (
+                      {itemText?.includes("em construção") ? (
                         <>
                           {itemText.split(" - em construção")[0]}
                           <span className="text-red-500 font-bold ml-1">- em construção</span>
                         </>
                       ) : (
-                        itemText
+                        itemText || ""
                       )}
                     </span>
                     {item.isNew && (
