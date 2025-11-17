@@ -1,0 +1,41 @@
+{
+  "title": "Music Therapy Processes",
+  "description": "Manage the entire therapeutic cycle of your patient",
+  "accessButton": "Access",
+  "newBadge": "NEW",
+  "footer": "Integrated music therapy management system",
+  "cards": {
+    "anamnesis": {
+      "title": "Anamnesis",
+      "description": "Initial collection of patient information and history"
+    },
+    "evaluation": {
+      "title": "Evaluation",
+      "description": "Assessment of music therapy needs and potential"
+    },
+    "musicotherapyPlans": {
+      "title": "Music Therapy Plans",
+      "description": "Create and manage personalized music therapy treatment plans"
+    },
+    "intervention": {
+      "title": "Intervention",
+      "description": "Application of music therapy techniques and activities"
+    },
+    "reevaluation": {
+      "title": "Reevaluation",
+      "description": "Progress analysis and treatment adjustments"
+    },
+    "museTeraTeaReport": {
+      "title": "MuseTera ASD Report",
+      "description": "Specialized reports in Music Therapy for ASD"
+    },
+    "evolutionReport": {
+      "title": "Evolution Report – MuseTera",
+      "description": "Detailed report on patient evolution in music therapy"
+    },
+    "devolutivaTea": {
+      "title": "ASD Music Therapy Feedback",
+      "description": "Simplified report for families of patients with ASD"
+    }
+  }
+}
