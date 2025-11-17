@@ -134,9 +134,40 @@
       "sessionsCount": "{count} sesiones",
       "financial": "Financiero",
       "sessions": "Sesiones",
-      "noTime": "Sin hora",
+      "noTime": "Sin horario",
       "patientNotIdentified": "Paciente no identificado",
-      "scheduleFirst": "Programar Primera Sesión"
+      "scheduleFirst": "Programar Primera Sesión",
+      "errorLoading": "Error al cargar agenda",
+      "errorLoadingDescription": "No se pudieron cargar los datos de la agenda. Verifique su conexión.",
+      "tryAgain": "Intentar de Nuevo",
+      "freeWeek": "¡Semana libre para crecer!",
+      "freeWeekDescription": "Su agenda de esta semana está libre. Es el momento perfecto para planificar nuevas actividades, organizar informes o enfocarse en el desarrollo profesional.",
+      "registerActivity": "Registrar Actividad",
+      "organizeTip": "Use este tiempo para organizar su consultorio y preparar materiales",
+      "freeDayFocus": "Día libre\npara enfocarse",
+      "free": "Libre"
+    },
+    "stats": {
+      "patientsRegistered": "Pacientes Registrados",
+      "totalPatients": "Total de pacientes",
+      "registerFirstPatient": "Registrar Primer Paciente",
+      "patientsActive": "pacientes activos",
+      "anamnesisCompleted": "Anamnesis Realizadas",
+      "completeEvaluations": "Evaluaciones completas",
+      "performFirstAnamnesis": "Realizar Primera Anamnesis",
+      "anamnesisRegistered": "anamnesis registradas",
+      "interventionsCreated": "Intervenciones Creadas",
+      "therapeuticPlans": "Planes terapéuticos",
+      "createFirstIntervention": "Crear Primera Intervención",
+      "plansActive": "planes activos",
+      "reportsGenerated": "Informes Generados",
+      "documentsProduced": "Documentos producidos",
+      "generateFirstReport": "Generar Primer Informe",
+      "reportsCreated": "informes creados"
+    },
+    "upcomingSessionsExtra": {
+      "viewFullAgenda": "Ver Agenda Completa",
+      "tip": "Consejo: Use la sección \"Pacientes\" para gestionar sus citas"
     }
   },
   "reports": {

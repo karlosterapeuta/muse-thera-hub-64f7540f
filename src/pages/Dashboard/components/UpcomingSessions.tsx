@@ -115,11 +115,11 @@ export function UpcomingSessions({ upcomingSessions, isLoading }: UpcomingSessio
               </Button>
               <Button variant="outline">
                 <Calendar className="h-4 w-4 mr-2" />
-                Ver Agenda Completa
+                {t('dashboard.upcomingSessionsExtra.viewFullAgenda')}
               </Button>
             </div>
             <p className="text-xs text-muted-foreground/80 mt-4">
-              Dica: Use a seção "Pacientes" para gerenciar seus atendimentos
+              {t('dashboard.upcomingSessionsExtra.tip')}
             </p>
           </div>
         )}
