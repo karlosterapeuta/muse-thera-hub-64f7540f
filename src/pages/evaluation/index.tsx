@@ -701,7 +701,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
   };
 
   const getScoreBgColor = (score: number, isSelected: boolean) => {
-    if (!isSelected) return "bg-white";
+    if (!isSelected) return "bg-background";
     
     switch(score) {
       case 0: return "bg-red-500";      // Não Observado
@@ -710,7 +710,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
       case 60: return "bg-blue-500";    // Moderado
       case 80: return "bg-green-500";   // Consistente
       case 100: return "bg-green-500";  // Excepcional
-      default: return "bg-white";
+      default: return "bg-background";
     }
   };
 
@@ -741,11 +741,11 @@ const [activeTab, setActiveTab] = useState("evaluation");
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-white/95 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
-                <div className="bg-white rounded-xl p-4 shadow-sm">
+                <div className="bg-background rounded-xl p-4 shadow-sm">
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
@@ -864,7 +864,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-white/90 backdrop-blur-sm p-1 rounded-2xl h-14 border border-blue-200/50 dark:border-blue-800/50 shadow-md">
+            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 rounded-2xl h-14 border border-blue-200/50 dark:border-blue-800/50 shadow-md">
               <TabsTrigger 
                 value="evaluation" 
                 className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
@@ -949,7 +949,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                         <TooltipProvider>
                           <TooltipComponent>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background/50 rounded-full">
                                 <HelpCircle className="h-5 w-5 text-gray-600" />
                               </Button>
                             </TooltipTrigger>
@@ -963,7 +963,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className="border-l-4 border-l-purple-400 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                        <Card className="border-l-4 border-l-purple-400 bg-background/60 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
                               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
@@ -1051,7 +1051,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                                                className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelToScore(level))} ${
                                                  selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
                                                    ? getScoreBgColor(levelToScore(level), true)
-                                                   : "bg-white"
+                                                   : "bg-background"
                                                }`}
                                             />
                                           </div>
@@ -1163,7 +1163,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                       <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
+                       <div className="text-center mt-4 p-4 bg-background rounded-xl shadow-inner">
                          <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
                          <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
                          {overallScore.evaluatedDomains && overallScore.totalDomains && (
@@ -1204,7 +1204,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                              <div className="bg-white p-4 border-0 rounded-xl shadow-xl">
+                              <div className="bg-background p-4 border-0 rounded-xl shadow-xl">
                                 <p className="text-sm font-semibold text-gray-800">{data.name}</p>
                                 <p className="text-sm text-blue-600">Domínio: {data.domain}</p>
                                 <p className="text-sm font-bold text-green-600">Pontuação: {data.value}%</p>
