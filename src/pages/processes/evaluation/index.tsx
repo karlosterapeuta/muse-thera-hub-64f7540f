@@ -785,7 +785,7 @@ export default function Evaluation() {
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
-                <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
+                <div className="bg-transparent rounded-xl p-4">
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
