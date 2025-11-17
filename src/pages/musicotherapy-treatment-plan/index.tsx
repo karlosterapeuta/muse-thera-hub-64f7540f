@@ -39,6 +39,7 @@ import { ObjectivesSelector } from '@/components/musicotherapy/ObjectivesSelecto
 import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector';
 import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 type Patient = {
   id: string;
@@ -249,22 +250,22 @@ export default function MusicotherapyTreatmentPlanPage() {
 
       if (success) {
         toast({
-          title: "PDF gerado com sucesso!",
-          description: "O plano musicoterapêutico foi baixado.",
+          title: t('form.toast.pdfSuccess'),
+          description: t('form.toast.pdfDownloaded'),
         });
       } else {
         toast({
           variant: "destructive",
-          title: "Erro ao gerar PDF",
-          description: "Não foi possível gerar o arquivo PDF.",
+          title: t('form.toast.pdfError'),
+          description: t('form.toast.pdfGenerationError'),
         });
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Erro inesperado ao gerar o PDF.",
+        title: t('form.toast.pdfError'),
+        description: t('form.toast.unexpectedError'),
       });
     } finally {
       setIsGeneratingPDF(false);
@@ -272,16 +273,16 @@ export default function MusicotherapyTreatmentPlanPage() {
   };
 
   const tabSections = [
-    { id: "identification", label: "1. Identificação", icon: User },
-    { id: "assessment", label: "2. Avaliação", icon: FileText },
-    { id: "general-objectives", label: "3. Obj. Gerais", icon: Target },
-    { id: "specific-objectives", label: "4. Obj. Específicos", icon: CheckCircle },
-    { id: "resources", label: "5. Recursos", icon: Music },
-    { id: "strategies", label: "6. Estratégias", icon: Activity },
-    { id: "frequency", label: "7. Frequência", icon: Clock },
-    { id: "evaluation", label: "8. Avaliação", icon: BarChart },
-    { id: "action-plan", label: "9. Plano Ação", icon: Users },
-    { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
+    { id: 'identification', label: t('form.tabs.identification.label'), icon: User },
+    { id: 'assessment', label: t('form.tabs.assessment.label'), icon: FileText },
+    { id: 'general-objectives', label: t('form.tabs.generalObjectives.label'), icon: Target },
+    { id: 'specific-objectives', label: t('form.tabs.specificObjectives.label'), icon: CheckCircle },
+    { id: 'resources', label: t('form.tabs.resources.label'), icon: Music },
+    { id: 'strategies', label: t('form.tabs.strategies.label'), icon: Activity },
+    { id: 'frequency', label: t('form.tabs.frequency.label'), icon: Clock },
+    { id: 'evaluation', label: t('form.tabs.evaluation.label'), icon: BarChart },
+    { id: 'action-plan', label: t('form.tabs.action.label'), icon: Users },
+    { id: 're-evaluation', label: t('form.tabs.reevaluation.label'), icon: RefreshCw }
   ];
 
   if (isLoading && id) {
@@ -290,8 +291,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
           <div>
-            <p className="text-xl font-semibold">Carregando plano...</p>
-            <p className="text-sm text-muted-foreground">Aguarde enquanto buscamos os dados</p>
+            <p className="text-xl font-semibold">{t('form.loadingPlan')}</p>
+            <p className="text-sm text-muted-foreground">{t('form.loadingMessage')}</p>
           </div>
         </div>
       </div>
@@ -313,13 +314,15 @@ export default function MusicotherapyTreatmentPlanPage() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {id ? 'Editar' : 'Novo'} Plano Musicoterapêutico
+                {id ? t('form.editTitle') : t('form.newTitle')}
               </h1>
               <p className="text-muted-foreground">
-                Modelo profissional completo em 10 seções
+                {t('form.subtitle')}
               </p>
             </div>
           </div>
+          
+          <LanguageSelector />
           
           <div className="flex gap-2 items-center">
             {/* Save status indicator */}
@@ -327,19 +330,19 @@ export default function MusicotherapyTreatmentPlanPage() {
               {isAutoSaving && (
                 <div className="flex items-center gap-1">
                   <RefreshCw className="h-3 w-3 animate-spin" />
-                  <span>Salvando automaticamente...</span>
+                  <span>{t('form.autoSaving')}</span>
                 </div>
               )}
               {hasUnsavedChanges && !isAutoSaving && (
                 <div className="flex items-center gap-1 text-amber-600">
                   <div className="h-2 w-2 rounded-full bg-amber-600" />
-                  <span>Alterações não salvas</span>
+                  <span>{t('form.unsavedChanges')}</span>
                 </div>
               )}
               {lastSaved && !hasUnsavedChanges && !isAutoSaving && (
                 <div className="flex items-center gap-1 text-green-600">
                   <CheckCircle className="h-3 w-3" />
-                  <span>Salvo às {lastSaved.toLocaleTimeString()}</span>
+                  <span>{t('form.lastSaved', { time: lastSaved.toLocaleTimeString() })}</span>
                 </div>
               )}
             </div>
@@ -350,7 +353,7 @@ export default function MusicotherapyTreatmentPlanPage() {
               className="bg-green-600 hover:bg-green-700"
             >
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Salvando...' : 'Salvar Plano'}
+              {isSaving ? t('form.savingButton') : t('form.saveButton')}
             </Button>
             <Button
               onClick={handleDownloadPDF}
@@ -358,7 +361,7 @@ export default function MusicotherapyTreatmentPlanPage() {
               disabled={!planData.patient_full_name || isGeneratingPDF}
             >
               <Download className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? 'Gerando PDF...' : 'Baixar PDF'}
+              {isGeneratingPDF ? t('form.generatingPdfButton') : t('form.downloadPdfButton')}
             </Button>
           </div>
         </div>
@@ -396,19 +399,19 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    1. Identificação do Paciente
+                    {t('form.tabs.identification.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label>Paciente</Label>
+                      <Label>{t('form.fields.patient')}</Label>
                       {isLoadingPatients ? (
-                        <div className="text-sm text-muted-foreground">Carregando pacientes...</div>
+                        <div className="text-sm text-muted-foreground">{t('form.loadingPatients')}</div>
                       ) : (
                         <Select value={selectedPatient} onValueChange={handlePatientSelect}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione um paciente" />
+                            <SelectValue placeholder={t('form.fields.patientPlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
                             {patients.map(patient => (
@@ -422,16 +425,16 @@ export default function MusicotherapyTreatmentPlanPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Nome completo *</Label>
+                      <Label>{t('form.fields.fullName')}</Label>
                       <Input
                         value={planData.patient_full_name || ''}
                         onChange={(e) => updatePlanData({ patient_full_name: e.target.value })}
-                        placeholder="Nome completo do paciente"
+                        placeholder={t('form.fields.fullNamePlaceholder')}
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Data de nascimento</Label>
+                      <Label>{t('form.fields.birthDate')}</Label>
                       <Input
                         type="date"
                         value={planData.patient_birth_date || ''}
@@ -440,11 +443,11 @@ export default function MusicotherapyTreatmentPlanPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Idade</Label>
+                      <Label>{t('form.fields.age')}</Label>
                       <Input
                         value={planData.patient_age || ''}
                         onChange={(e) => updatePlanData({ patient_age: e.target.value })}
-                        placeholder="Ex: 8 anos"
+                        placeholder={t('form.fields.agePlaceholder')}
                       />
                     </div>
                     
@@ -454,16 +457,16 @@ export default function MusicotherapyTreatmentPlanPage() {
                     />
                     
                     <div className="space-y-2">
-                      <Label>Responsável</Label>
+                      <Label>{t('form.fields.responsible')}</Label>
                       <Input
                         value={planData.responsible_person || ''}
                         onChange={(e) => updatePlanData({ responsible_person: e.target.value })}
-                        placeholder="Nome do responsável"
+                        placeholder={t('form.fields.responsiblePlaceholder')}
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Data de início do plano *</Label>
+                      <Label>{t('form.fields.planStartDate')}</Label>
                       <Input
                         type="date"
                         value={planData.plan_start_date || ''}
@@ -556,7 +559,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5" />
-                    3. Objetivos Gerais
+                    {t('form.tabs.generalObjectives.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -578,7 +581,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5" />
-                    4. Objetivos Específicos
+                    {t('form.tabs.specificObjectives.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -600,7 +603,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Music className="h-5 w-5" />
-                    5. Recursos Musicoterapêuticos
+                    {t('form.tabs.resources.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -805,7 +808,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart className="h-5 w-5" />
-                    8. Critérios de Avaliação
+                    {t('form.tabs.evaluation.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
