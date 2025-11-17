@@ -3,6 +3,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { FileText, UserCheck, Plus, ClipboardList, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface DashboardStatsProps {
   totalPatients: number;
@@ -19,6 +20,8 @@ export function DashboardStats({
   totalInterventions,
   isLoading
 }: DashboardStatsProps) {
+  const { t } = useTranslation('financial');
+  
   console.log("🎯 DashboardStats recebeu os dados:", {
     totalPatients,
     totalReports,
@@ -29,39 +32,39 @@ export function DashboardStats({
 
   const stats = [
     {
-      title: "Pacientes Cadastrados",
+      title: t('dashboard.stats.patientsRegistered'),
       value: totalPatients || 0,
-      subtitle: "Total de pacientes",
+      subtitle: t('dashboard.stats.totalPatients'),
       icon: UserCheck,
       gradient: "from-emerald-500 via-emerald-600 to-green-700",
-      actionText: totalPatients === 0 ? "Cadastrar Primeiro Paciente" : `${totalPatients} pacientes ativos`,
+      actionText: totalPatients === 0 ? t('dashboard.stats.registerFirstPatient') : `${totalPatients} ${t('dashboard.stats.patientsActive')}`,
       isEmpty: totalPatients === 0
     },
     {
-      title: "Anamneses Realizadas",
+      title: t('dashboard.stats.anamnesisCompleted'),
       value: totalAnamnesis || 0,
-      subtitle: "Avaliações completas",
+      subtitle: t('dashboard.stats.completeEvaluations'),
       icon: ClipboardList,
       gradient: "from-blue-500 via-blue-600 to-indigo-700",
-      actionText: totalAnamnesis === 0 ? "Realizar Primeira Anamnese" : `${totalAnamnesis} anamneses registradas`,
+      actionText: totalAnamnesis === 0 ? t('dashboard.stats.performFirstAnamnesis') : `${totalAnamnesis} ${t('dashboard.stats.anamnesisRegistered')}`,
       isEmpty: totalAnamnesis === 0
     },
     {
-      title: "Intervenções Criadas",
+      title: t('dashboard.stats.interventionsCreated'),
       value: totalInterventions || 0,
-      subtitle: "Planos terapêuticos",
+      subtitle: t('dashboard.stats.therapeuticPlans'),
       icon: Target,
       gradient: "from-amber-500 via-orange-600 to-red-700",
-      actionText: totalInterventions === 0 ? "Criar Primeira Intervenção" : `${totalInterventions} planos ativos`,
+      actionText: totalInterventions === 0 ? t('dashboard.stats.createFirstIntervention') : `${totalInterventions} ${t('dashboard.stats.plansActive')}`,
       isEmpty: totalInterventions === 0
     },
     {
-      title: "Relatórios Gerados",
+      title: t('dashboard.stats.reportsGenerated'),
       value: totalReports || 0,
-      subtitle: "Documentos produzidos",
+      subtitle: t('dashboard.stats.documentsProduced'),
       icon: FileText,
       gradient: "from-violet-500 via-violet-600 to-purple-700",
-      actionText: totalReports === 0 ? "Gerar Primeiro Relatório" : `${totalReports} relatórios criados`,
+      actionText: totalReports === 0 ? t('dashboard.stats.generateFirstReport') : `${totalReports} ${t('dashboard.stats.reportsCreated')}`,
       isEmpty: totalReports === 0
     }
   ];

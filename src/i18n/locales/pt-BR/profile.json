@@ -1,0 +1,35 @@
+{
+  "loading": "Carregando perfil profissional...",
+  "error": {
+    "loadData": "Não foi possível carregar os dados do profissional.",
+    "unauthenticated": "Usuário não autenticado.",
+    "updateAvatar": "Não foi possível atualizar a imagem.",
+    "saveChanges": "Não foi possível salvar as alterações.",
+    "loadingError": "Erro ao carregar dados profissionais"
+  },
+  "success": {
+    "title": "Sucesso!",
+    "avatarUpdated": "Imagem atualizada com sucesso.",
+    "dataUpdated": "Dados atualizados com sucesso."
+  },
+  "actions": {
+    "tryAgain": "Tentar novamente"
+  },
+  "associations": {
+    "AMT-PR": "Associação de Musicoterapia do Paraná (AMT-PR)",
+    "AMT-RS": "Associação de Musicoterapia do Rio Grande do Sul (AMT-RS)",
+    "APEMESP": "Associação de Profissionais e Estudantes de Musicoterapia do Estado de São Paulo (APEMESP)",
+    "APEMEMG": "Associação de Profissionais e Estudantes de Musicoterapia do Estado de Minas Gerais (APEMEMG)",
+    "AMT-RJ": "Associação de Musicoterapia do Estado do Rio de Janeiro (AMT-RJ)",
+    "AMT-PB": "Associação de Musicoterapia da Paraíba (AMT-PB)",
+    "AMT-PE": "Associação de Musicoterapia de Pernambuco (AMT-PE)",
+    "APEMTEPA": "Associação de Profissionais e Estudantes de Musicoterapia do Estado do Pará (APEMTEPA)",
+    "ASBAMT": "Associação Baiana de Musicoterapia (ASBAMT)",
+    "AMTES": "Associação de Musicoterapeutas do Espírito Santo (AMTES)",
+    "AGMT": "Associação Goiana de Musicoterapia (AGMT)",
+    "AMT-DF": "Associação de Musicoterapia do Distrito Federal (AMT-DF)",
+    "ACAMT": "Associação Catarinense de Musicoterapeutas (ACAMT)",
+    "ABMT": "Associação Brasileira de Musicoterapeutas (ABMT)",
+    "AMT-CE": "Associação Cearense de Musicoterapia (AMT-CE)"
+  }
+}

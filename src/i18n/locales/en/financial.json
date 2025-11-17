@@ -136,7 +136,38 @@
       "sessions": "Sessions",
       "noTime": "No time",
       "patientNotIdentified": "Patient not identified",
-      "scheduleFirst": "Schedule First Session"
+      "scheduleFirst": "Schedule First Session",
+      "errorLoading": "Error loading schedule",
+      "errorLoadingDescription": "Could not load schedule data. Please check your connection.",
+      "tryAgain": "Try Again",
+      "freeWeek": "Free week to grow!",
+      "freeWeekDescription": "Your schedule this week is free. This is the perfect time to plan new activities, organize reports or focus on professional development.",
+      "registerActivity": "Register Activity",
+      "organizeTip": "Use this time to organize your office and prepare materials",
+      "freeDayFocus": "Free day\nto focus",
+      "free": "Free"
+    },
+    "stats": {
+      "patientsRegistered": "Registered Patients",
+      "totalPatients": "Total patients",
+      "registerFirstPatient": "Register First Patient",
+      "patientsActive": "active patients",
+      "anamnesisCompleted": "Anamnesis Completed",
+      "completeEvaluations": "Complete evaluations",
+      "performFirstAnamnesis": "Perform First Anamnesis",
+      "anamnesisRegistered": "anamnesis registered",
+      "interventionsCreated": "Interventions Created",
+      "therapeuticPlans": "Therapeutic plans",
+      "createFirstIntervention": "Create First Intervention",
+      "plansActive": "active plans",
+      "reportsGenerated": "Reports Generated",
+      "documentsProduced": "Documents produced",
+      "generateFirstReport": "Generate First Report",
+      "reportsCreated": "reports created"
+    },
+    "upcomingSessionsExtra": {
+      "viewFullAgenda": "View Full Schedule",
+      "tip": "Tip: Use the \"Patients\" section to manage your appointments"
     }
   },
   "reports": {

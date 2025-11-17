@@ -69,12 +69,12 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
             <div className="bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-6 mb-6">
               <Calendar className="h-12 w-12 text-red-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">Erro ao carregar agenda</h3>
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">{t('dashboard.weeklySchedule.errorLoading')}</h3>
             <p className="text-gray-500 text-center mb-4">
-              Não foi possível carregar os dados da agenda. Verifique sua conexão.
+              {t('dashboard.weeklySchedule.errorLoadingDescription')}
             </p>
             <Button variant="outline" onClick={() => window.location.reload()}>
-              Tentar Novamente
+              {t('dashboard.weeklySchedule.tryAgain')}
             </Button>
           </div>
         ) : !hasAnyActivity ? (
@@ -82,23 +82,22 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
             <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-full p-6 mb-6">
               <Target className="h-12 w-12 text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Semana livre para crescer!</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('dashboard.weeklySchedule.freeWeek')}</h3>
             <p className="text-gray-500 text-center mb-6 max-w-md leading-relaxed">
-              Sua agenda desta semana está livre. É o momento perfeito para planejar novas atividades, 
-              organizar relatórios ou focar no desenvolvimento profissional.
+              {t('dashboard.weeklySchedule.freeWeekDescription')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Agendar Primeira Sessão
+                {t('dashboard.weeklySchedule.scheduleFirst')}
               </Button>
               <Button variant="outline">
                 <DollarSign className="h-4 w-4 mr-2" />
-                Registrar Atividade
+                {t('dashboard.weeklySchedule.registerActivity')}
               </Button>
             </div>
             <p className="text-xs text-gray-400 mt-4 text-center">
-              Use este tempo para organizar seu consultório e preparar materiais
+              {t('dashboard.weeklySchedule.organizeTip')}
             </p>
           </div>
         ) : (
@@ -156,7 +155,7 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
                           <div key={session.id} className="bg-card p-2 rounded-md border text-xs hover:shadow-sm transition-shadow">
                             <div className="flex items-center gap-1 text-muted-foreground mb-1">
                               <Clock className="h-3 w-3" />
-                              <span>{session.formatted_time || 'Sem horário'}</span>
+                              <span>{session.formatted_time || t('dashboard.weeklySchedule.noTime')}</span>
                             </div>
                             <div className="flex items-center gap-1 font-medium mb-1">
                               <User className="h-3 w-3 text-primary" />
@@ -183,14 +182,12 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
                         {isToday(day.date) ? (
                           <div className="text-center">
                             <div className="text-primary mb-1">🎯</div>
-                            <span className="text-primary font-medium">
-                              Dia livre<br />para focar
-                            </span>
+                            <span className="text-primary font-medium" dangerouslySetInnerHTML={{ __html: t('dashboard.weeklySchedule.freeDayFocus').replace('\n', '<br />') }} />
                           </div>
                         ) : (
                           <div className="text-center">
                             <div className="text-gray-300 mb-1">✨</div>
-                            <span>Livre</span>
+                            <span>{t('dashboard.weeklySchedule.free')}</span>
                           </div>
                         )}
                       </div>

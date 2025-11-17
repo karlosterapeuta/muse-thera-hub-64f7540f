@@ -136,7 +136,38 @@
       "sessions": "Sessões",
       "noTime": "Sem horário",
       "patientNotIdentified": "Paciente não identificado",
-      "scheduleFirst": "Agendar Primeira Sessão"
+      "scheduleFirst": "Agendar Primeira Sessão",
+      "errorLoading": "Erro ao carregar agenda",
+      "errorLoadingDescription": "Não foi possível carregar os dados da agenda. Verifique sua conexão.",
+      "tryAgain": "Tentar Novamente",
+      "freeWeek": "Semana livre para crescer!",
+      "freeWeekDescription": "Sua agenda desta semana está livre. É o momento perfeito para planejar novas atividades, organizar relatórios ou focar no desenvolvimento profissional.",
+      "registerActivity": "Registrar Atividade",
+      "organizeTip": "Use este tempo para organizar seu consultório e preparar materiais",
+      "freeDayFocus": "Dia livre\npara focar",
+      "free": "Livre"
+    },
+    "stats": {
+      "patientsRegistered": "Pacientes Cadastrados",
+      "totalPatients": "Total de pacientes",
+      "registerFirstPatient": "Cadastrar Primeiro Paciente",
+      "patientsActive": "pacientes ativos",
+      "anamnesisCompleted": "Anamneses Realizadas",
+      "completeEvaluations": "Avaliações completas",
+      "performFirstAnamnesis": "Realizar Primeira Anamnese",
+      "anamnesisRegistered": "anamneses registradas",
+      "interventionsCreated": "Intervenções Criadas",
+      "therapeuticPlans": "Planos terapêuticos",
+      "createFirstIntervention": "Criar Primeira Intervenção",
+      "plansActive": "planos ativos",
+      "reportsGenerated": "Relatórios Gerados",
+      "documentsProduced": "Documentos produzidos",
+      "generateFirstReport": "Gerar Primeiro Relatório",
+      "reportsCreated": "relatórios criados"
+    },
+    "upcomingSessionsExtra": {
+      "viewFullAgenda": "Ver Agenda Completa",
+      "tip": "Dica: Use a seção \"Pacientes\" para gerenciar seus atendimentos"
     }
   },
   "reports": {
