@@ -1,11 +1,11 @@
+
 export interface SidebarProps {
   onNavigate?: () => void;
 }
 
 export interface MenuItem {
   icon: any;
-  text?: string;
-  textKey?: string;
+  text: string;
   path: string;
   gradient: string;
   external?: boolean;

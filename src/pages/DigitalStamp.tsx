@@ -7,11 +7,8 @@ import { Download, User } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function DigitalStamp() {
-  const { t } = useTranslation('digitalStamp');
   const [formData, setFormData] = useState({
     name: '',
     title: '',
@@ -28,11 +25,11 @@ export default function DigitalStamp() {
   const [isGeneratingStamp, setIsGeneratingStamp] = useState(false);
 
   const defaultTexts = {
-    name: t('defaultTexts.name'),
-    title: t('defaultTexts.title'),
-    registration: t('defaultTexts.registration'),
-    email: t('defaultTexts.email'),
-    phone: t('defaultTexts.phone'),
+    name: 'Nome do Profissional',
+    title: 'Título Profissional',
+    registration: 'Nº de Registro',
+    email: 'email@dominio.com',
+    phone: '(00) 12345-6789',
   };
 
   useEffect(() => {
@@ -55,7 +52,7 @@ export default function DigitalStamp() {
         setSignatureQrDataUrl(signatureQr);
         setStampQrDataUrl(stampQr);
       } catch (error) {
-        console.error(t('messages.qrCodeError'), error);
+        console.error('Erro ao gerar QR Code:', error);
       }
     } else {
       setSignatureQrDataUrl('');
@@ -103,12 +100,12 @@ export default function DigitalStamp() {
           link.href = url;
           link.click();
           URL.revokeObjectURL(url);
-          toast.success(t('messages.downloadSuccess'));
+          toast.success('Download realizado com sucesso!');
         }
       }, 'image/png');
     } catch (error) {
-      console.error(t('messages.qrCodeError'), error);
-      toast.error(t('messages.downloadError'));
+      console.error('Erro ao gerar imagem:', error);
+      toast.error('Erro ao gerar a imagem. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -116,15 +113,12 @@ export default function DigitalStamp() {
 
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl">
-      <header className="text-center mb-6 sm:mb-8 relative">
-        <div className="absolute top-0 right-0">
-          <LanguageSelector />
-        </div>
+      <header className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground px-2">
-          {t('title')}
+          Assinatura e Carimbo Digital MuseTera
         </h1>
         <p className="text-muted-foreground mt-2 text-sm sm:text-base px-2">
-          {t('subtitle')}
+          Gerador de Assinatura e Carimbo Digital personalizado do sistema MuseTera.
         </p>
       </header>
 
@@ -134,7 +128,7 @@ export default function DigitalStamp() {
           {/* Signature Preview */}
           <div className="w-full max-w-md px-2 sm:px-0">
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
-              {t('signaturePreview')}
+              Pré-visualização da Assinatura
             </h2>
             <Card
               id="signaturePreview"
@@ -173,7 +167,7 @@ export default function DigitalStamp() {
           {/* Stamp Preview */}
           <div className="w-full max-w-xs mx-auto px-2 sm:px-0">
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
-              {t('stampPreview')}
+              Pré-visualização do Carimbo
             </h2>
             <Card
               id="stampPreview"
@@ -209,22 +203,22 @@ export default function DigitalStamp() {
           <Card className="p-4 sm:p-6 lg:p-8">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="therapistName">{t('form.fullName')}</Label>
+                <Label htmlFor="therapistName">Nome Completo</Label>
                 <Input
                   id="therapistName"
                   type="text"
-                  placeholder={t('form.placeholders.fullName')}
+                  placeholder="Ex: Ana de Souza"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="therapistTitle">{t('form.professionalTitle')}</Label>
+                <Label htmlFor="therapistTitle">Título Profissional</Label>
                 <Input
                   id="therapistTitle"
                   type="text"
-                  placeholder={t('form.placeholders.professionalTitle')}
+                  placeholder="Ex: Musicoterapeuta"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
                 />
@@ -232,12 +226,12 @@ export default function DigitalStamp() {
 
               <div>
                 <Label htmlFor="registrationNumber">
-                  {t('form.registration')}
+                  Nº de Registro (Associação/Conselho)
                 </Label>
                 <Input
                   id="registrationNumber"
                   type="text"
-                  placeholder={t('form.placeholders.registration')}
+                  placeholder="Ex: AMT-PR 1234"
                   value={formData.registration}
                   onChange={(e) => handleInputChange('registration', e.target.value)}
                 />
@@ -245,22 +239,22 @@ export default function DigitalStamp() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label htmlFor="therapistEmail" className="text-sm">{t('form.email')}</Label>
+                  <Label htmlFor="therapistEmail" className="text-sm">Email</Label>
                   <Input
                     id="therapistEmail"
                     type="email"
-                    placeholder={t('form.placeholders.email')}
+                    placeholder="seu@email.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className="text-sm"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="therapistPhone" className="text-sm">{t('form.phone')}</Label>
+                  <Label htmlFor="therapistPhone" className="text-sm">Telefone</Label>
                   <Input
                     id="therapistPhone"
                     type="tel"
-                    placeholder={t('form.placeholders.phone')}
+                    placeholder="(41) 99999-8888"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     className="text-sm"
@@ -269,18 +263,18 @@ export default function DigitalStamp() {
               </div>
 
               <div>
-                <Label htmlFor="qrLink">{t('form.qrLink')}</Label>
+                <Label htmlFor="qrLink">Link para QR Code (opcional)</Label>
                 <Input
                   id="qrLink"
                   type="url"
-                  placeholder={t('form.placeholders.qrLink')}
+                  placeholder="https://seusite.com ou perfil"
                   value={formData.qrLink}
                   onChange={(e) => handleInputChange('qrLink', e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="therapistPhotoUpload">{t('form.uploadPhoto')}</Label>
+                <Label htmlFor="therapistPhotoUpload">Sua Foto ou Logo</Label>
                 <Input
                   id="therapistPhotoUpload"
                   type="file"
@@ -303,7 +297,7 @@ export default function DigitalStamp() {
                 className="w-full bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
               >
                 <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                {isGeneratingSignature ? t('buttons.downloading') : t('buttons.downloadSignature')}
+                {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura (PNG)'}
               </Button>
               <Button
                 onClick={() =>
@@ -314,7 +308,7 @@ export default function DigitalStamp() {
                 className="w-full h-10 sm:h-11 text-sm sm:text-base"
               >
                 <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                {isGeneratingStamp ? t('buttons.downloading') : t('buttons.downloadStamp')}
+                {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo (PNG)'}
               </Button>
             </div>
           </Card>

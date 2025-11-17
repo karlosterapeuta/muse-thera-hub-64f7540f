@@ -1,3 +1,4 @@
+
 import { FormSection } from "./FormSection";
 import { CheckboxSection } from "./CheckboxSection";
 import {
@@ -7,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTranslation } from "react-i18next";
 
 type FormProps = {
   content: Record<string, any>;
@@ -15,8 +15,6 @@ type FormProps = {
 };
 
 export function InitialEvaluationForm({ content, onChange }: FormProps) {
-  const { t } = useTranslation('anamnesis');
-  
   // Ensuring the updateField function properly handles boolean values
   const updateField = (field: string, value: any) => {
     onChange({ ...content, [field]: value });
@@ -34,33 +32,33 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
   return (
     <div className="space-y-8">
       <FormSection
-        title={t('form.sections.personalData.title')}
+        title="Dados Pessoais e Familiares"
         fields={[
           {
             key: "legal_guardian",
-            label: t('form.sections.personalData.legalGuardian.label'),
-            placeholder: t('form.sections.personalData.legalGuardian.placeholder'),
+            label: "Responsável Legal",
+            placeholder: "Nome do responsável legal",
             value: content.legal_guardian || "",
             onChange: (value) => updateField("legal_guardian", value),
           },
           {
             key: "family_relationship",
-            label: t('form.sections.personalData.familyRelationship.label'),
-            placeholder: t('form.sections.personalData.familyRelationship.placeholder'),
+            label: "Parentesco",
+            placeholder: "Grau de parentesco com o paciente",
             value: content.family_relationship || "",
             onChange: (value) => updateField("family_relationship", value),
           },
           {
             key: "referral_professional",
-            label: t('form.sections.personalData.referralProfessional.label'),
-            placeholder: t('form.sections.personalData.referralProfessional.placeholder'),
+            label: "Profissional que Encaminhou",
+            placeholder: "Nome do profissional",
             value: content.referral_professional || "",
             onChange: (value) => updateField("referral_professional", value),
           },
           {
             key: "main_clinical_demand",
-            label: t('form.sections.personalData.mainClinicalDemand.label'),
-            placeholder: t('form.sections.personalData.mainClinicalDemand.placeholder'),
+            label: "Demanda Clínica Principal",
+            placeholder: "Descreva a demanda clínica principal",
             value: content.main_clinical_demand || "",
             onChange: (value) => updateField("main_clinical_demand", value),
           },
@@ -68,41 +66,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.musicalHistory.title')}
+        title="Histórico Musical"
         fields={[
           {
             id: "musical_education",
-            label: t('form.sections.musicalHistory.musicalEducation'),
+            label: "Educação Musical",
             checked: content.musical_education || false,
             onChange: (value) => updateField("musical_education", value),
           },
           {
             id: "instrumental_practice",
-            label: t('form.sections.musicalHistory.instrumentalPractice'),
+            label: "Prática Instrumental",
             checked: content.instrumental_practice || false,
             onChange: (value) => updateField("instrumental_practice", value),
           },
           {
             id: "body_musical_expression",
-            label: t('form.sections.musicalHistory.bodyMusicalExpression'),
+            label: "Expressão Corporal Musical",
             checked: content.body_musical_expression || false,
             onChange: (value) => updateField("body_musical_expression", value),
           },
           {
             id: "vocal_expression",
-            label: t('form.sections.musicalHistory.vocalExpression'),
+            label: "Expressão Vocal",
             checked: content.vocal_expression || false,
             onChange: (value) => updateField("vocal_expression", value),
           },
           {
             id: "choral_activities",
-            label: t('form.sections.musicalHistory.choralActivities'),
+            label: "Atividades Corais",
             checked: content.choral_activities || false,
             onChange: (value) => updateField("choral_activities", value),
           },
           {
             id: "no_musical_experience",
-            label: t('form.sections.musicalHistory.noMusicalExperience'),
+            label: "Sem Experiência Musical",
             checked: content.no_musical_experience || false,
             onChange: (value) => updateField("no_musical_experience", value),
           },
@@ -110,61 +108,61 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <FormSection
-        title={t('form.sections.soundHistory.title')}
+        title="História Sonora e Musical Detalhada"
         fields={[
           {
             key: "pregnancy_sound_experiences",
-            label: t('form.sections.soundHistory.pregnancySoundExperiences.label'),
-            placeholder: t('form.sections.soundHistory.pregnancySoundExperiences.placeholder'),
+            label: "Vivências sonoras durante a gravidez",
+            placeholder: "Descreva as vivências sonoras durante a gravidez",
             value: content.pregnancy_sound_experiences || "",
             onChange: (value) => updateField("pregnancy_sound_experiences", value),
           },
           {
             key: "mother_movements_songs",
-            label: t('form.sections.soundHistory.motherMovementsSongs.label'),
-            placeholder: t('form.sections.soundHistory.motherMovementsSongs.placeholder'),
+            label: "Movimentos corporais e canções da mãe",
+            placeholder: "Descreva os movimentos corporais e canções da mãe",
             value: content.mother_movements_songs || "",
             onChange: (value) => updateField("mother_movements_songs", value),
           },
           {
             key: "childhood_sound_environment",
-            label: t('form.sections.soundHistory.childhoodSoundEnvironment.label'),
-            placeholder: t('form.sections.soundHistory.childhoodSoundEnvironment.placeholder'),
+            label: "Ambiente sonoro durante a infância",
+            placeholder: "Descreva o ambiente sonoro durante a infância",
             value: content.childhood_sound_environment || "",
             onChange: (value) => updateField("childhood_sound_environment", value),
           },
           {
             key: "parents_sound_reactions",
-            label: t('form.sections.soundHistory.parentsSoundReactions.label'),
-            placeholder: t('form.sections.soundHistory.parentsSoundReactions.placeholder'),
+            label: "Reações dos pais aos sons e aos ruídos",
+            placeholder: "Descreva as reações dos pais aos sons e ruídos",
             value: content.parents_sound_reactions || "",
             onChange: (value) => updateField("parents_sound_reactions", value),
           },
           {
             key: "typical_house_sounds",
-            label: t('form.sections.soundHistory.typicalHouseSounds.label'),
-            placeholder: t('form.sections.soundHistory.typicalHouseSounds.placeholder'),
+            label: "Os sons típicos da casa (bater de portas, gritos, prantos, ruídos de mastigar, tiques com sons, murmúrios, assobios, etc...)",
+            placeholder: "Descreva os sons típicos da casa",
             value: content.typical_house_sounds || "",
             onChange: (value) => updateField("typical_house_sounds", value),
           },
           {
             key: "night_body_sounds",
-            label: t('form.sections.soundHistory.nightBodySounds.label'),
-            placeholder: t('form.sections.soundHistory.nightBodySounds.placeholder'),
+            label: "Sons durante a noite e sons corporais",
+            placeholder: "Descreva os sons durante a noite e sons corporais",
             value: content.night_body_sounds || "",
             onChange: (value) => updateField("night_body_sounds", value),
           },
           {
             key: "family_musical_history",
-            label: t('form.sections.soundHistory.familyMusicalHistory.label'),
-            placeholder: t('form.sections.soundHistory.familyMusicalHistory.placeholder'),
+            label: "História Musical da família",
+            placeholder: "Descreva a história musical da família",
             value: content.family_musical_history || "",
             onChange: (value) => updateField("family_musical_history", value),
           },
           {
             key: "patient_musical_history",
-            label: t('form.sections.soundHistory.patientMusicalHistory.label'),
-            placeholder: t('form.sections.soundHistory.patientMusicalHistory.placeholder'),
+            label: "História musical do paciente",
+            placeholder: "Descreva a história musical do paciente",
             value: content.patient_musical_history || "",
             onChange: (value) => updateField("patient_musical_history", value),
           },
@@ -172,41 +170,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.musicalBehavior.title')}
+        title="Comportamento Musical"
         fields={[
           {
             id: "active_musical_listening",
-            label: t('form.sections.musicalBehavior.activeMusicalListening'),
+            label: "Escuta Musical Ativa",
             checked: content.active_musical_listening || false,
             onChange: (value) => updateField("active_musical_listening", value),
           },
           {
             id: "body_expression",
-            label: t('form.sections.musicalBehavior.bodyExpression'),
+            label: "Expressão Corporal",
             checked: content.body_expression || false,
             onChange: (value) => updateField("body_expression", value),
           },
           {
             id: "sound_responsiveness",
-            label: t('form.sections.musicalBehavior.soundResponsiveness'),
+            label: "Responsividade Sonora",
             checked: content.sound_responsiveness || false,
             onChange: (value) => updateField("sound_responsiveness", value),
           },
           {
             id: "spontaneous_vocal",
-            label: t('form.sections.musicalBehavior.spontaneousVocal'),
+            label: "Emissões Vocais Espontâneas",
             checked: content.spontaneous_vocal || false,
             onChange: (value) => updateField("spontaneous_vocal", value),
           },
           {
             id: "instrumental_exploration",
-            label: t('form.sections.musicalBehavior.instrumentalExploration'),
+            label: "Exploração Instrumental",
             checked: content.instrumental_exploration || false,
             onChange: (value) => updateField("instrumental_exploration", value),
           },
           {
             id: "adverse_sound_reactivity",
-            label: t('form.sections.musicalBehavior.adverseSoundReactivity'),
+            label: "Reatividade Sonora Adversa",
             checked: content.adverse_sound_reactivity || false,
             onChange: (value) => updateField("adverse_sound_reactivity", value),
           },
@@ -214,41 +212,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.soundProcessing.title')}
+        title="Processamento Sonoro"
         fields={[
           {
             id: "auditory_hypersensitivity",
-            label: t('form.sections.musicalBehavior.auditoryHypersensitivity'),
+            label: "Hipersensibilidade Auditiva",
             checked: content.auditory_hypersensitivity || false,
             onChange: (value) => updateField("auditory_hypersensitivity", value),
           },
           {
             id: "positive_musical_response",
-            label: t('form.sections.musicalBehavior.positiveMusicalResponse'),
+            label: "Resposta Musical Positiva",
             checked: content.positive_musical_response || false,
             onChange: (value) => updateField("positive_musical_response", value),
           },
           {
             id: "nominal_call_response",
-            label: t('form.sections.emotionalRegulation.nominalCallResponse'),
+            label: "Resposta ao Chamado Nominal",
             checked: content.nominal_call_response || false,
             onChange: (value) => updateField("nominal_call_response", value),
           },
           {
             id: "active_sound_search",
-            label: t('form.sections.musicalBehavior.activeSoundSearch'),
+            label: "Busca Ativa por Sons",
             checked: content.active_sound_search || false,
             onChange: (value) => updateField("active_sound_search", value),
           },
           {
             id: "specific_sound_aversion",
-            label: t('form.sections.musicalBehavior.specificSoundAversion'),
+            label: "Aversão a Sons Específicos",
             checked: content.specific_sound_aversion || false,
             onChange: (value) => updateField("specific_sound_aversion", value),
           },
           {
             id: "sound_source_location",
-            label: t('form.sections.musicalBehavior.soundSourceLocation'),
+            label: "Localização de Fonte Sonora",
             checked: content.sound_source_location || false,
             onChange: (value) => updateField("sound_source_location", value),
           },
@@ -256,47 +254,47 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.musicalPreferences.title')}
+        title="Preferências Musicais"
         fields={[
           {
             id: "children_repertoire",
-            label: t('form.sections.musicalPreferences.childrenRepertoire'),
+            label: "Repertório Infantil",
             checked: content.children_repertoire || false,
             onChange: (value) => updateField("children_repertoire", value),
           },
           {
             id: "rock_genre",
-            label: t('form.sections.musicalPreferences.rockGenre'),
+            label: "Rock",
             checked: content.rock_genre || false,
             onChange: (value) => updateField("rock_genre", value),
           },
           {
             id: "sacred_gospel",
-            label: t('form.sections.musicalPreferences.sacredGospel'),
+            label: "Sacra/Gospel",
             checked: content.sacred_gospel || false,
             onChange: (value) => updateField("sacred_gospel", value),
           },
           {
             id: "brazilian_popular",
-            label: t('form.sections.musicalPreferences.brazilianPopular'),
+            label: "MPB",
             checked: content.brazilian_popular || false,
             onChange: (value) => updateField("brazilian_popular", value),
           },
           {
             id: "country_music",
-            label: t('form.sections.musicalPreferences.countryMusic'),
+            label: "Sertanejo",
             checked: content.country_music || false,
             onChange: (value) => updateField("country_music", value),
           },
           {
             id: "classical_music",
-            label: t('form.sections.musicalPreferences.classicalMusic'),
+            label: "Música Clássica",
             checked: content.classical_music || false,
             onChange: (value) => updateField("classical_music", value),
           },
           {
             id: "other_musical_genres",
-            label: t('form.sections.musicalPreferences.otherMusicalGenres'),
+            label: "Outros Gêneros",
             checked: content.other_musical_genres || false,
             onChange: (value) => updateField("other_musical_genres", value),
           },
@@ -304,41 +302,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.development.title')}
+        title="Desenvolvimento"
         fields={[
           {
             id: "cervical_control",
-            label: t('form.sections.development.cervicalControl'),
+            label: "Controle Cervical",
             checked: content.cervical_control || false,
             onChange: (value) => updateField("cervical_control", value),
           },
           {
             id: "crawling_pattern",
-            label: t('form.sections.development.crawlingPattern'),
+            label: "Padrão de Engatinhar",
             checked: content.crawling_pattern || false,
             onChange: (value) => updateField("crawling_pattern", value),
           },
           {
             id: "fine_motor_dev",
-            label: t('form.sections.development.fineMotorDev'),
+            label: "Desenvolvimento Motor Fino",
             checked: content.fine_motor_dev || false,
             onChange: (value) => updateField("fine_motor_dev", value),
           },
           {
             id: "independent_sitting",
-            label: t('form.sections.development.independentSitting'),
+            label: "Sentar Independente",
             checked: content.independent_sitting || false,
             onChange: (value) => updateField("independent_sitting", value),
           },
           {
             id: "autonomous_walking",
-            label: t('form.sections.development.autonomousWalking'),
+            label: "Marcha Autônoma",
             checked: content.autonomous_walking || false,
             onChange: (value) => updateField("autonomous_walking", value),
           },
           {
             id: "broad_motor_dev",
-            label: t('form.sections.development.broadMotorDev'),
+            label: "Desenvolvimento Motor Amplo",
             checked: content.broad_motor_dev || false,
             onChange: (value) => updateField("broad_motor_dev", value),
           },
@@ -346,41 +344,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.languageDevelopment.title')}
+        title="Desenvolvimento da Linguagem"
         fields={[
           {
             id: "babbling",
-            label: t('form.sections.languageDevelopment.babbling'),
+            label: "Balbucios",
             checked: content.babbling || false,
             onChange: (value) => updateField("babbling", value),
           },
           {
             id: "simple_phrases",
-            label: t('form.sections.languageDevelopment.simplePhrases'),
+            label: "Frases Simples",
             checked: content.simple_phrases || false,
             onChange: (value) => updateField("simple_phrases", value),
           },
           {
             id: "echolalia",
-            label: t('form.sections.languageDevelopment.echolalia'),
+            label: "Ecolalia",
             checked: content.echolalia || false,
             onChange: (value) => updateField("echolalia", value),
           },
           {
             id: "first_words",
-            label: t('form.sections.languageDevelopment.firstWords'),
+            label: "Primeiras Palavras",
             checked: content.first_words || false,
             onChange: (value) => updateField("first_words", value),
           },
           {
             id: "nonverbal_communication",
-            label: t('form.sections.languageDevelopment.nonverbalCommunication'),
+            label: "Comunicação Não-verbal",
             checked: content.nonverbal_communication || false,
             onChange: (value) => updateField("nonverbal_communication", value),
           },
           {
             id: "verbal_language_absence",
-            label: t('form.sections.languageDevelopment.verbalLanguageAbsence'),
+            label: "Ausência de Linguagem Verbal",
             checked: content.verbal_language_absence || false,
             onChange: (value) => updateField("verbal_language_absence", value),
           },
@@ -388,41 +386,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.behavior.title')}
+        title="Comportamento"
         fields={[
           {
             id: "visual_contact",
-            label: t('form.sections.emotionalRegulation.visualContact'),
+            label: "Contato Visual",
             checked: content.visual_contact || false,
             onChange: (value) => updateField("visual_contact", value),
           },
           {
             id: "shared_play",
-            label: t('form.sections.emotionalRegulation.sharedPlay'),
+            label: "Brincadeira Compartilhada",
             checked: content.shared_play || false,
             onChange: (value) => updateField("shared_play", value),
           },
           {
             id: "stereotyped_behavior",
-            label: t('form.sections.behavior.stereotypedBehavior'),
+            label: "Comportamentos Estereotipados",
             checked: content.stereotyped_behavior || false,
             onChange: (value) => updateField("stereotyped_behavior", value),
           },
           {
             id: "peer_interaction",
-            label: t('form.sections.emotionalRegulation.peerInteraction'),
+            label: "Interação com Pares",
             checked: content.peer_interaction || false,
             onChange: (value) => updateField("peer_interaction", value),
           },
           {
             id: "social_isolation",
-            label: t('form.sections.otherConditions.socialIsolation'),
+            label: "Isolamento Social",
             checked: content.social_isolation || false,
             onChange: (value) => updateField("social_isolation", value),
           },
           {
             id: "restricted_interests",
-            label: t('form.sections.behavior.restrictedInterests'),
+            label: "Interesses Restritos",
             checked: content.restricted_interests || false,
             onChange: (value) => updateField("restricted_interests", value),
           },
@@ -430,41 +428,41 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.emotionalRegulation.title')}
+        title="Regulação Emocional"
         fields={[
           {
             id: "irritability",
-            label: t('form.sections.behavior.irritability'),
+            label: "Irritabilidade",
             checked: content.irritability || false,
             onChange: (value) => updateField("irritability", value),
           },
           {
             id: "heteroaggressive",
-            label: t('form.sections.behavior.heteroaggressive'),
+            label: "Heteroagressividade",
             checked: content.heteroaggressive || false,
             onChange: (value) => updateField("heteroaggressive", value),
           },
           {
             id: "emotional_ability",
-            label: t('form.sections.emotionalRegulation.emotionalAbility'),
+            label: "Capacidade Emocional",
             checked: content.emotional_ability || false,
             onChange: (value) => updateField("emotional_ability", value),
           },
           {
             id: "anxiety",
-            label: t('form.sections.emotionalRegulation.anxiety'),
+            label: "Ansiedade",
             checked: content.anxiety || false,
             onChange: (value) => updateField("anxiety", value),
           },
           {
             id: "frequent_crying",
-            label: t('form.sections.behavior.frequentCrying'),
+            label: "Choro Frequente",
             checked: content.frequent_crying || false,
             onChange: (value) => updateField("frequent_crying", value),
           },
           {
             id: "low_frustration_tolerance",
-            label: t('form.sections.behavior.lowFrustrationTolerance'),
+            label: "Baixa Tolerância à Frustração",
             checked: content.low_frustration_tolerance || false,
             onChange: (value) => updateField("low_frustration_tolerance", value),
           },
@@ -472,134 +470,220 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
       />
 
       <CheckboxSection
-        title={t('form.sections.mentalDisorders.title')}
+        title="Transtornos Mentais"
         fields={[
           {
             id: "autism_spectrum",
-            label: t('form.sections.mentalDisorders.autismSpectrum'),
+            label: "Transtornos do espectro autista",
             checked: getBooleanValue("autism_spectrum"),
             onChange: (value) => updateField("autism_spectrum", value),
           },
           {
             id: "adhd",
-            label: t('form.sections.mentalDisorders.adhd'),
+            label: "TDAH",
             checked: getBooleanValue("adhd"),
             onChange: (value) => updateField("adhd", value),
           },
           {
             id: "anxiety_disorders",
-            label: t('form.sections.mentalDisorders.anxietyDisorders'),
+            label: "Transtornos de Ansiedade",
             checked: getBooleanValue("anxiety_disorders"),
             onChange: (value) => updateField("anxiety_disorders", value),
           },
           {
-            id: "intellectual_disability",
-            label: t('form.sections.mentalDisorders.intellectualDisability'),
-            checked: getBooleanValue("intellectual_disability"),
-            onChange: (value) => updateField("intellectual_disability", value),
+            id: "depression",
+            label: "Depressão",
+            checked: getBooleanValue("depression"),
+            onChange: (value) => updateField("depression", value),
           },
           {
+            id: "bipolar_disorder",
+            label: "Transtorno Bipolar",
+            checked: getBooleanValue("bipolar_disorder"),
+            onChange: (value) => updateField("bipolar_disorder", value),
+          },
+          {
+            id: "alzheimer",
+            label: "Alzheimer",
+            checked: getBooleanValue("alzheimer"),
+            onChange: (value) => updateField("alzheimer", value),
+          },
+        ]}
+      />
+
+      <CheckboxSection
+        title="Outras Condições"
+        fields={[
+          {
             id: "down_syndrome",
-            label: t('form.sections.mentalDisorders.downSyndrome'),
+            label: "Síndrome de Down",
             checked: getBooleanValue("down_syndrome"),
             onChange: (value) => updateField("down_syndrome", value),
           },
           {
+            id: "intellectual_disability",
+            label: "Deficiência Intelectual",
+            checked: getBooleanValue("intellectual_disability"),
+            onChange: (value) => updateField("intellectual_disability", value),
+          },
+          {
             id: "chronic_encephalopathy",
-            label: t('form.sections.mentalDisorders.chronicEncephalopathy'),
+            label: "Encefalopatia Crônica",
             checked: getBooleanValue("chronic_encephalopathy"),
             onChange: (value) => updateField("chronic_encephalopathy", value),
           },
           {
+            id: "cerebral_palsy",
+            label: "Paralisia Cerebral",
+            checked: getBooleanValue("cerebral_palsy"),
+            onChange: (value) => updateField("cerebral_palsy", value),
+          },
+          {
+            id: "epilepsy",
+            label: "Epilepsia",
+            checked: getBooleanValue("epilepsy"),
+            onChange: (value) => updateField("epilepsy", value),
+          },
+          {
+            id: "williams_syndrome",
+            label: "Síndrome de Williams",
+            checked: getBooleanValue("williams_syndrome"),
+            onChange: (value) => updateField("williams_syndrome", value),
+          },
+          {
+            id: "fragile_x_syndrome",
+            label: "Síndrome do X Frágil",
+            checked: getBooleanValue("fragile_x_syndrome"),
+            onChange: (value) => updateField("fragile_x_syndrome", value),
+          },
+          {
+            id: "rett_syndrome",
+            label: "Síndrome de Rett",
+            checked: getBooleanValue("rett_syndrome"),
+            onChange: (value) => updateField("rett_syndrome", value),
+          },
+          {
             id: "other_diagnoses",
-            label: t('form.sections.mentalDisorders.otherDiagnoses'),
+            label: "Outros Diagnósticos",
             checked: getBooleanValue("other_diagnoses"),
             onChange: (value) => updateField("other_diagnoses", value),
           },
         ]}
       />
 
+      <CheckboxSection
+        title="Medicação e Terapias"
+        fields={[
+          {
+            id: "speech_therapy",
+            label: "Fonoaudiologia",
+            checked: getBooleanValue("speech_therapy"),
+            onChange: (value) => updateField("speech_therapy", value),
+          },
+          {
+            id: "psychological_support",
+            label: "Acompanhamento Psicológico",
+            checked: getBooleanValue("psychological_support"),
+            onChange: (value) => updateField("psychological_support", value),
+          },
+          {
+            id: "psychopedagogical",
+            label: "Psicopedagogia",
+            checked: getBooleanValue("psychopedagogical"),
+            onChange: (value) => updateField("psychopedagogical", value),
+          },
+          {
+            id: "occupational_therapy",
+            label: "Terapia Ocupacional",
+            checked: getBooleanValue("occupational_therapy"),
+            onChange: (value) => updateField("occupational_therapy", value),
+          },
+          {
+            id: "physiotherapy",
+            label: "Fisioterapia",
+            checked: getBooleanValue("physiotherapy"),
+            onChange: (value) => updateField("physiotherapy", value),
+          },
+          {
+            id: "equine_therapy",
+            label: "Equoterapia",
+            checked: getBooleanValue("equine_therapy"),
+            onChange: (value) => updateField("equine_therapy", value),
+          },
+          {
+            id: "aba_therapy",
+            label: "Terapia ABA",
+            checked: getBooleanValue("aba_therapy"),
+            onChange: (value) => updateField("aba_therapy", value),
+          },
+          {
+            id: "sensory_integration",
+            label: "Integração Sensorial",
+            checked: getBooleanValue("sensory_integration"),
+            onChange: (value) => updateField("sensory_integration", value),
+          },
+          {
+            id: "psychomotricity",
+            label: "Psicomotricidade",
+            checked: getBooleanValue("psychomotricity"),
+            onChange: (value) => updateField("psychomotricity", value),
+          },
+          {
+            id: "music_therapy",
+            label: "Musicoterapia",
+            checked: getBooleanValue("music_therapy"),
+            onChange: (value) => updateField("music_therapy", value),
+          },
+          {
+            id: "nutrition",
+            label: "Nutrição",
+            checked: getBooleanValue("nutrition"),
+            onChange: (value) => updateField("nutrition", value),
+          },
+        ]}
+      />
+
       <FormSection
-        title={t('form.sections.medication.title')}
+        title="Medicação"
         fields={[
           {
             key: "current_medication",
-            label: t('form.sections.medication.currentMedication.label'),
-            placeholder: t('form.sections.medication.currentMedication.placeholder'),
+            label: "Medicação Atual",
+            placeholder: "Liste as medicações em uso",
             value: content.current_medication || "",
             onChange: (value) => updateField("current_medication", value),
           },
         ]}
       />
 
-      <CheckboxSection
-        title={t('form.sections.therapies.title')}
-        fields={[
-          {
-            id: "speech_therapy",
-            label: t('form.sections.therapies.speechTherapy'),
-            checked: content.speech_therapy || false,
-            onChange: (value) => updateField("speech_therapy", value),
-          },
-          {
-            id: "occupational_therapy",
-            label: t('form.sections.therapies.occupationalTherapy'),
-            checked: content.occupational_therapy || false,
-            onChange: (value) => updateField("occupational_therapy", value),
-          },
-          {
-            id: "physiotherapy",
-            label: t('form.sections.therapies.physiotherapy'),
-            checked: content.physiotherapy || false,
-            onChange: (value) => updateField("physiotherapy", value),
-          },
-          {
-            id: "psychological_support",
-            label: t('form.sections.therapies.psychologicalSupport'),
-            checked: content.psychological_support || false,
-            onChange: (value) => updateField("psychological_support", value),
-          },
-          {
-            id: "psychopedagogical",
-            label: t('form.sections.therapies.psychopedagogical'),
-            checked: content.psychopedagogical || false,
-            onChange: (value) => updateField("psychopedagogical", value),
-          },
-          {
-            id: "equine_therapy",
-            label: t('form.sections.therapies.equineTherapy'),
-            checked: content.equine_therapy || false,
-            onChange: (value) => updateField("equine_therapy", value),
-          },
-        ]}
-      />
-
       <FormSection
-        title={t('form.sections.socialAspects.title')}
+        title="Aspectos Sociais"
         fields={[
           {
             key: "school_enrollment",
-            label: t('form.sections.socialAspects.schoolEnrollment.label'),
-            placeholder: t('form.sections.socialAspects.schoolEnrollment.placeholder'),
+            label: "Matrícula Escolar",
+            placeholder: "Informações sobre matrícula escolar",
             value: content.school_enrollment || "",
             onChange: (value) => updateField("school_enrollment", value),
           },
           {
             key: "school_adaptation",
-            label: t('form.sections.socialAspects.schoolAdaptation.label'),
-            placeholder: t('form.sections.socialAspects.schoolAdaptation.placeholder'),
+            label: "Adaptação Escolar",
+            placeholder: "Como tem sido a adaptação escolar",
             value: content.school_adaptation || "",
             onChange: (value) => updateField("school_adaptation", value),
           },
           {
             key: "extracurricular_activities",
-            label: t('form.sections.socialAspects.extracurricularActivities.label'),
-            placeholder: t('form.sections.socialAspects.extracurricularActivities.placeholder'),
+            label: "Atividades Extracurriculares",
+            placeholder: "Liste as atividades extracurriculares",
             value: content.extracurricular_activities || "",
             onChange: (value) => updateField("extracurricular_activities", value),
           },
         ]}
       />
+
+      {/* História Sonora e Musical Detalhada */}
     </div>
   );
 }

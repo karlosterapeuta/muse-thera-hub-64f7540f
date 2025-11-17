@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, X, BarChart } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface EvaluationCriteriaSelectorProps {
   criteria: string[];
@@ -13,12 +12,24 @@ interface EvaluationCriteriaSelectorProps {
   onRemove: (index: number) => void;
 }
 
+const evaluationSuggestions = [
+  "Aumento do tempo de engajamento na atividade musical",
+  "Participação espontânea em turnos musicais",
+  "Maior variedade de respostas vocais ou gestuais",
+  "Redução de comportamentos disruptivos durante sessão",
+  "Evidências de transferência para outros contextos",
+  "Melhoria na interação social com pares",
+  "Desenvolvimento de preferências musicais expressas",
+  "Aumento da iniciativa comunicativa",
+  "Melhoria na coordenação motora durante atividades rítmicas",
+  "Expressão emocional mais adequada",
+  "Aumento da tolerância a diferentes estímulos sonoros",
+  "Desenvolvimento de habilidades de escuta ativa"
+];
+
 export function EvaluationCriteriaSelector({ criteria, onAdd, onRemove }: EvaluationCriteriaSelectorProps) {
-  const { t } = useTranslation('musicotherapy');
   const [inputValue, setInputValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  
-  const evaluationSuggestions = t('evaluationCriteria.suggestions', { returnObjects: true }) as string[];
 
   const handleAdd = () => {
     if (inputValue.trim()) {
@@ -35,7 +46,7 @@ export function EvaluationCriteriaSelector({ criteria, onAdd, onRemove }: Evalua
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label className="text-base font-medium text-foreground">
-          {t('evaluationCriteria.title')}
+          Critérios de Avaliação
         </Label>
         <Button
           type="button"
@@ -45,7 +56,7 @@ export function EvaluationCriteriaSelector({ criteria, onAdd, onRemove }: Evalua
           className="text-xs"
         >
           <BarChart className="h-3 w-3 mr-1" />
-          {showSuggestions ? t('evaluationCriteria.buttonHide') : t('evaluationCriteria.buttonShow')}
+          {showSuggestions ? 'Ocultar' : 'Exemplos'}
         </Button>
       </div>
 
@@ -54,7 +65,7 @@ export function EvaluationCriteriaSelector({ criteria, onAdd, onRemove }: Evalua
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-orange-800 flex items-center gap-2">
               <BarChart className="h-4 w-4" />
-              {t('evaluationCriteria.suggestionsTitle')}
+              Critérios Sugeridos
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -79,7 +90,7 @@ export function EvaluationCriteriaSelector({ criteria, onAdd, onRemove }: Evalua
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder={t('evaluationCriteria.placeholder')}
+          placeholder="Digite um critério de avaliação ou escolha das sugestões"
           onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
           className="flex-1"
         />

@@ -36,10 +36,8 @@ import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator"
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
 import { SessionStatusBadge } from "./components/SessionStatusBadge";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
-import { useTranslation } from "react-i18next";
 
 export default function FinancialRecords() {
-  const { t } = useTranslation('financial');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -253,13 +251,13 @@ export default function FinancialRecords() {
       await clearAllRecords.mutateAsync();
       
       toast({
-        title: t('records.messages.deleted'),
-        description: t('records.messages.deleted'),
+        title: "Registros excluídos",
+        description: "Todos os registros financeiros foram excluídos com sucesso.",
       });
     } catch (error: any) {
       toast({
-        title: t('common.error'),
-        description: error.message || t('records.messages.error'),
+        title: "Erro ao excluir",
+        description: error.message || "Não foi possível excluir os registros.",
         variant: "destructive",
       });
     }
@@ -274,8 +272,8 @@ export default function FinancialRecords() {
     setSelectedRecord(undefined);
     refetch();
     toast({
-      title: t('common.success'),
-      description: t('records.messages.created'),
+      title: "Registro salvo",
+      description: "O registro financeiro foi salvo com sucesso.",
       variant: "default",
     });
   };
@@ -420,8 +418,8 @@ export default function FinancialRecords() {
   const handleClinicFormSuccess = () => {
     setClinicFormOpen(false);
     toast({
-      title: t('common.success'),
-      description: t('clinics.messages.created'),
+      title: "Clínica adicionada",
+      description: "A clínica foi adicionada com sucesso.",
       variant: "default",
     });
   };
@@ -429,7 +427,7 @@ export default function FinancialRecords() {
   return (
     <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary">{t('records.title')}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">Registros Financeiros</h1>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
           <Button
             onClick={() => navigate("/finance")}
@@ -448,8 +446,8 @@ export default function FinancialRecords() {
             className="shadow-sm hover:shadow-md transition-all"
           >
             <BuildingIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#D946EF]" />
-            {isMobile && <span className="ml-1 text-xs">{t('clinics.add')}</span>}
-            {!isMobile && <span className="inline">{t('clinics.new')}</span>}
+            {isMobile && <span className="ml-1 text-xs">Clínica</span>}
+            {!isMobile && <span className="inline">Nova Clínica</span>}
           </Button>
           <Button
             onClick={() => {
@@ -460,8 +458,8 @@ export default function FinancialRecords() {
             className="shadow-sm hover:shadow-md transition-all"
           >
             <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-            {isMobile && <span className="ml-1 text-xs">{t('records.new')}</span>}
-            {!isMobile && <span className="inline">{t('records.new')}</span>}
+            {isMobile && <span className="ml-1 text-xs">Novo</span>}
+            {!isMobile && <span className="inline">Novo Registro</span>}
           </Button>
           {records.length > 0 && (
             <Button
@@ -471,8 +469,8 @@ export default function FinancialRecords() {
               className="shadow-sm hover:shadow-md transition-all"
             >
               <Trash2Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-              {isMobile && <span className="ml-1 text-xs">{t('common.delete')}</span>}
-              {!isMobile && <span className="inline">{t('common.delete')}</span>}
+              {isMobile && <span className="ml-1 text-xs">Limpar</span>}
+              {!isMobile && <span className="inline">Limpar Tudo</span>}
             </Button>
           )}
         </div>
@@ -487,7 +485,7 @@ export default function FinancialRecords() {
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             className="pl-9"
-            placeholder={t('records.search')}
+            placeholder="Pesquisar registros..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -616,48 +614,48 @@ export default function FinancialRecords() {
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            {t('common.date')}
+                            Data
                           </div>
                         </TableHead>
                         {!isMobile && (
-                          <TableHead className="whitespace-nowrap">{t('clinics.form.serviceDays')}</TableHead>
+                          <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
                         )}
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            {t('dashboard.weeklySchedule.noTime')}
+                            Horário
                           </div>
                         </TableHead>
                         {!isMobile && (
-                          <TableHead className="whitespace-nowrap">{t('records.form.recurrencePattern')}</TableHead>
+                          <TableHead className="whitespace-nowrap">Duração</TableHead>
                         )}
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            {t('records.form.clinic')}
+                            Clínica
                           </div>
                         </TableHead>
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            {t('records.form.patient')}
+                            Paciente
                           </div>
                         </TableHead>
                         <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            {t('common.amount')}
+                            Valor
                           </div>
                         </TableHead>
                         {!isMobile && (
                           <TableHead className="whitespace-nowrap">
                             <div className="flex items-center">
                               <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                              {t('common.description')}
+                              Descrição
                             </div>
                           </TableHead>
                         )}
-                        <TableHead className="w-[80px]">{t('common.actions')}</TableHead>
+                        <TableHead className="w-[80px]">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -705,22 +703,22 @@ export default function FinancialRecords() {
                                   <span className="sr-only">Abrir menu</span>
                                 </Button>
                               </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[160px]">
-                                <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+                              <DropdownMenuContent align="end" className="w-[160px]">
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem 
                                   className="flex items-center cursor-pointer"
                                   onClick={() => handleEditRecord(record)}
                                 >
                                   <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                                  {t('common.edit')}
+                                  Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   className="flex items-center text-destructive focus:text-destructive cursor-pointer"
                                   onClick={() => handleDeleteClick(record.id)}
                                 >
                                   <TrashIcon className="mr-2 h-4 w-4" />
-                                  {t('common.delete')}
+                                  Excluir
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -737,7 +735,7 @@ export default function FinancialRecords() {
               <div className="rounded-full bg-primary/10 p-4 inline-block mb-3">
                 <DollarSignIcon className="h-6 w-6 text-primary" />
               </div>
-              <p className="text-muted-foreground">{t('records.noResults')}</p>
+              <p className="text-muted-foreground">Nenhum registro encontrado.</p>
               <Button 
                 variant="link" 
                 className="mt-2 text-primary"
@@ -746,7 +744,7 @@ export default function FinancialRecords() {
                   setFormOpen(true);
                 }}
               >
-                {t('records.new')}
+                Adicionar registro
               </Button>
             </div>
           )}
@@ -757,7 +755,7 @@ export default function FinancialRecords() {
         <Sheet open={formOpen} onOpenChange={setFormOpen}>
           <SheetContent className="w-full p-0 pt-6 overflow-y-auto">
             <SheetHeader className="px-4 mb-2">
-              <SheetTitle>{selectedRecord ? t('records.edit') : t('records.new')}</SheetTitle>
+              <SheetTitle>{selectedRecord ? "Editar Registro" : "Novo Registro"}</SheetTitle>
             </SheetHeader>
             <div className="px-0 pb-0">
               <FinancialRecordForm 
@@ -771,8 +769,8 @@ export default function FinancialRecords() {
       ) : (
         <Dialog open={formOpen} onOpenChange={setFormOpen}>
           <DialogContent className={isTablet ? "sm:max-w-md" : "sm:max-w-lg"}>
-            <DialogTitle className="sr-only">{selectedRecord ? t('records.edit') : t('records.new')}</DialogTitle>
-            <DialogDescription className="sr-only">{t('records.title')}</DialogDescription>
+            <DialogTitle className="sr-only">{selectedRecord ? "Editar Registro" : "Novo Registro"}</DialogTitle>
+            <DialogDescription className="sr-only">Formulário de registro financeiro</DialogDescription>
             <FinancialRecordForm 
               record={selectedRecord}
               onSuccess={handleFormSuccess}
@@ -786,7 +784,7 @@ export default function FinancialRecords() {
         <Sheet open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
           <SheetContent className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col h-full">
             <SheetHeader className="px-4 py-4 shrink-0">
-              <SheetTitle>{t('clinics.new')}</SheetTitle>
+              <SheetTitle>Nova Clínica</SheetTitle>
             </SheetHeader>
             <ScrollArea className="flex-1 overflow-y-auto">
               <div className="px-0 pb-0">
@@ -800,8 +798,8 @@ export default function FinancialRecords() {
       ) : (
         <Dialog open={clinicFormOpen} onOpenChange={setClinicFormOpen}>
           <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
-            <DialogTitle className="px-6 py-4">{t('clinics.new')}</DialogTitle>
-            <DialogDescription className="sr-only">{t('clinics.form.name')}</DialogDescription>
+            <DialogTitle className="px-6 py-4">Nova Clínica</DialogTitle>
+            <DialogDescription className="sr-only">Preencha os dados da clínica</DialogDescription>
             <ScrollArea className="flex-1 overflow-y-auto">
               <ClinicForm 
                 onSuccess={handleClinicFormSuccess}
@@ -814,8 +812,8 @@ export default function FinancialRecords() {
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
-            <DialogTitle>{t('common.confirm')}</DialogTitle>
-            <DialogDescription>{t('clinics.confirmDelete')}</DialogDescription>
+            <DialogTitle>Confirmar exclusão</DialogTitle>
+            <DialogDescription>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</DialogDescription>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <TrashIcon className="h-5 w-5 text-destructive" />
@@ -827,7 +825,7 @@ export default function FinancialRecords() {
                 onClick={() => setConfirmDialogOpen(false)}
                 disabled={deleteRecord.isPending}
               >
-                {t('common.cancel')}
+                Cancelar
               </Button>
               <Button
                 variant="destructive"
@@ -838,10 +836,10 @@ export default function FinancialRecords() {
                 {deleteRecord.isPending ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    {t('common.loading')}
+                    Excluindo...
                   </>
                 ) : (
-                  t('common.delete')
+                  "Excluir"
                 )}
               </Button>
             </div>
@@ -852,8 +850,8 @@ export default function FinancialRecords() {
       <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
         <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
           <div className="space-y-4">
-            <DialogTitle>{t('common.confirm')}</DialogTitle>
-            <DialogDescription>{t('clinics.confirmDelete')}</DialogDescription>
+            <DialogTitle>Confirmar exclusão total</DialogTitle>
+            <DialogDescription>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</DialogDescription>
             <div className="flex items-center space-x-3">
               <div className="bg-destructive/10 p-2 rounded-full">
                 <Trash2Icon className="h-5 w-5 text-destructive" />

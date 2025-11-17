@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -81,7 +80,6 @@ interface Particle {
 }
 
 const BoomwhackerHero: React.FC = () => {
-  const { t } = useTranslation('games');
   const { toast } = useToast();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [volume, setVolume] = useState(0.7);
@@ -254,9 +252,9 @@ const BoomwhackerHero: React.FC = () => {
 
         <div className="pt-20 px-4 max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">{t('boomwhackerHero.hero.title')}</h1>
+            <h1 className="text-4xl font-bold mb-4">🇧🇷 GUITAR HERO BRASILEIRO</h1>
             <p className="text-xl text-purple-200">
-              {t('boomwhackerHero.hero.subtitle')}
+              Toque as clássicas músicas tradicionais do Brasil!
             </p>
             <div className="mt-4 p-3 bg-green-900 bg-opacity-50 rounded-lg">
               <p className="text-sm text-green-200">

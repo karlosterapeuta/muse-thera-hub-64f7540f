@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Music2, Download, FileText, Volume2, VolumeX, StopCircle } from "lucide-react";

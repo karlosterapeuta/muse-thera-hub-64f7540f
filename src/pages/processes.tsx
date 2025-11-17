@@ -13,17 +13,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function Processes() {
-  const { t } = useTranslation('processes');
   const isMobile = useIsMobile();
   
   const processes = [
     {
-      titleKey: "cards.anamnesis.title",
-      descriptionKey: "cards.anamnesis.description",
+      title: "Anamnese",
+      description: "Coleta inicial de informações e histórico do paciente",
       icon: ClipboardList,
       path: "/anamnesis",
       gradient: "from-blue-500 to-cyan-500",
@@ -31,8 +28,8 @@ export default function Processes() {
       bgGradientDark: "dark:from-blue-950/30 dark:to-cyan-950/30"
     },
     {
-      titleKey: "cards.evaluation.title",
-      descriptionKey: "cards.evaluation.description",
+      title: "Avaliação",
+      description: "Avaliação das necessidades e potencialidades musicoterapêuticas",
       icon: FileText,
       path: "/evaluation",
       gradient: "from-purple-500 to-pink-500",
@@ -40,8 +37,8 @@ export default function Processes() {
       bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
     },
     {
-      titleKey: "cards.musicotherapyPlans.title",
-      descriptionKey: "cards.musicotherapyPlans.description",
+      title: "Planos Musicoterapêuticos",
+      description: "Crie e gerencie planos de tratamento musicoterapêutico personalizados",
       icon: ClipboardList,
       path: "/musicotherapy-treatment-plans",
       gradient: "from-emerald-500 to-teal-500",
@@ -50,8 +47,8 @@ export default function Processes() {
       isNew: true
     },
     {
-      titleKey: "cards.intervention.title",
-      descriptionKey: "cards.intervention.description",
+      title: "Intervenção",
+      description: "Aplicação das técnicas e atividades musicoterapêuticas",
       icon: Users,
       path: "/intervention",
       gradient: "from-orange-500 to-red-500",
@@ -60,8 +57,8 @@ export default function Processes() {
       isNew: true
     },
     {
-      titleKey: "cards.reevaluation.title",
-      descriptionKey: "cards.reevaluation.description",
+      title: "Reavaliação",
+      description: "Análise do progresso e ajustes no tratamento",
       icon: ChartBar,
       path: "/reevaluation",
       gradient: "from-indigo-500 to-purple-500",
@@ -69,8 +66,8 @@ export default function Processes() {
       bgGradientDark: "dark:from-indigo-950/30 dark:to-purple-950/30"
     },
     {
-      titleKey: "cards.museTeraTeaReport.title",
-      descriptionKey: "cards.museTeraTeaReport.description",
+      title: "Relatório MuseTera TEA",
+      description: "Relatórios especializados em Musicoterapia para TEA",
       icon: Music,
       path: "/processes/musicoterapia",
       gradient: "from-purple-500 to-pink-500",
@@ -78,8 +75,8 @@ export default function Processes() {
       bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
     },
     {
-      titleKey: "cards.evolutionReport.title",
-      descriptionKey: "cards.evolutionReport.description",
+      title: "Relatório de Evolução – MuseTera",
+      description: "Relatório detalhado de evolução do paciente em musicoterapia",
       icon: TrendingUp,
       path: "/processes/evolution",
       gradient: "from-green-500 to-blue-500",
@@ -88,8 +85,8 @@ export default function Processes() {
       isNew: true
     },
     {
-      titleKey: "cards.devolutivaTea.title",
-      descriptionKey: "cards.devolutivaTea.description",
+      title: "Devolutiva Musicoterapia TEA",
+      description: "Relatório simplificado para famílias de pacientes com TEA",
       icon: Heart,
       path: "/processes/devolutiva-tea",
       gradient: "from-pink-500 to-rose-500",
@@ -103,20 +100,15 @@ export default function Processes() {
     <div className="min-h-screen bg-background">
       <div className="w-full px-0 py-4 sm:py-6 lg:py-8">
         {/* Header Section */}
-        <div className="text-center mb-12 lg:mb-16 px-2 sm:px-3 relative">
-          {/* Language Selector - Positioned at top right */}
-          <div className="absolute top-0 right-2 sm:right-4 md:right-8">
-            <LanguageSelector />
-          </div>
-          
+        <div className="text-center mb-12 lg:mb-16 px-2 sm:px-3">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-purple-600 rounded-full mb-6 shadow-lg">
             <Users className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            {t('title')}
+            Processos Musicoterapêuticos
           </h1>
-          <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {t('description')}
+          <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Gerencie todo o ciclo terapêutico com ferramentas especializadas para cada etapa do tratamento
           </p>
         </div>
         
@@ -132,7 +124,7 @@ export default function Processes() {
                 {/* NEW Badge */}
                 {process.isNew && (
                   <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-2 py-1 animate-pulse shadow-lg">
-                    {t('newBadge')}
+                    NOVO
                   </Badge>
                 )}
                 
@@ -150,17 +142,17 @@ export default function Processes() {
                   
                   {/* Title */}
                   <h2 className="text-xl lg:text-2xl font-bold text-foreground mb-3 transition-colors">
-                    {t(process.titleKey)}
+                    {process.title}
                   </h2>
                   
                   {/* Description */}
                   <p className="text-muted-foreground text-base lg:text-lg leading-relaxed flex-grow mb-4">
-                    {t(process.descriptionKey)}
+                    {process.description}
                   </p>
                   
                   {/* Arrow */}
                   <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
-                    <span className="text-sm font-medium mr-2">{t('accessButton')}</span>
+                    <span className="text-sm font-medium mr-2">Acessar</span>
                     <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </div>
@@ -176,7 +168,7 @@ export default function Processes() {
         <div className="mt-16 text-center px-2 sm:px-3">
           <div className="inline-flex items-center justify-center space-x-2 text-sm text-muted-foreground bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>{t('footer')}</span>
+            <span>Sistema integrado de gestão musicoterapêutica</span>
           </div>
         </div>
       </div>

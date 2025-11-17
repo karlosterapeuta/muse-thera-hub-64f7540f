@@ -1,9 +1,9 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Camera, Shield, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
 
 interface ProfessionalHeaderProps {
   avatarUrl: string | null;
@@ -22,8 +22,6 @@ export function ProfessionalHeader({
   association,
   onAvatarChange 
 }: ProfessionalHeaderProps) {
-  const { t } = useTranslation('profile');
-
   const getInitials = () => {
     if (!name) return "MT";
     return name
@@ -42,7 +40,7 @@ export function ProfessionalHeader({
           <div className="relative group">
             <div className="relative">
               <Avatar className="h-32 w-32 border-4 border-white/30 shadow-2xl">
-                <AvatarImage src={avatarUrl || ""} alt={t('header.avatarAlt')} />
+                <AvatarImage src={avatarUrl || ""} alt="Foto do Profissional" />
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold">
                   {getInitials()}
                 </AvatarFallback>
@@ -83,14 +81,14 @@ export function ProfessionalHeader({
               <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                 <Star className="h-5 w-5 text-yellow-400" />
                 <span className="text-sm font-semibold uppercase tracking-wider opacity-90">
-                  {t('header.professionalTitle')}
+                  Musicoterapeuta Profissional
                 </span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                {name || t('header.defaultName')}
+                {name || "Nome do Profissional"}
               </h1>
               <p className="text-lg opacity-90 mb-4">
-                {specialty || t('header.defaultSpecialty')}
+                {specialty || "Especialidade em Musicoterapia"}
               </p>
             </div>
 
@@ -101,10 +99,10 @@ export function ProfessionalHeader({
                 </Badge>
               )}
               <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-                {t('header.verified')}
+                Verificado
               </Badge>
               <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-                {t('header.active')}
+                Ativo
               </Badge>
             </div>
           </div>

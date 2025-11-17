@@ -1,8 +1,7 @@
 
 import React from "react";
-import { useTranslation } from 'react-i18next';
 import { format } from "date-fns";
-import { ptBR, enUS, es } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -43,16 +42,6 @@ interface ReportFormFieldsProps {
 }
 
 export function ReportFormFields({ control, patients, isLoadingPatients }: ReportFormFieldsProps) {
-  const { t, i18n } = useTranslation(['reports', 'common']);
-
-  const getLocale = () => {
-    switch (i18n.language) {
-      case 'en': return enUS;
-      case 'es': return es;
-      default: return ptBR;
-    }
-  };
-
   const calculateAge = (birthDate: string | null): number | null => {
     if (!birthDate) return null;
     
@@ -73,9 +62,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
 
   const formatPatientDisplay = (patient: Patient): string => {
     const age = patient.age || calculateAge(patient.birth_date);
-    return age !== null && age !== undefined 
-      ? t('reports:form.fields.patient.ageFormat', { name: patient.name, age })
-      : patient.name;
+    return age !== null && age !== undefined ? `${patient.name} (${age} anos)` : patient.name;
   };
 
   return (
@@ -85,14 +72,14 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
         name="patient_id"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('reports:form.fields.patient.label')}</FormLabel>
+            <FormLabel>Paciente</FormLabel>
             <Select
               onValueChange={field.onChange}
               defaultValue={field.value}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={isLoadingPatients ? t('reports:form.fields.patient.loading') : t('reports:form.fields.patient.placeholder')} />
+                  <SelectValue placeholder={isLoadingPatients ? "Carregando pacientes..." : "Selecione um paciente"} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -104,7 +91,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
                   ))
                 ) : (
                   <SelectItem value="no-patients" disabled>
-                    {isLoadingPatients ? t('reports:form.fields.patient.loading') : t('reports:form.fields.patient.empty')}
+                    {isLoadingPatients ? "Carregando pacientes..." : "Nenhum paciente encontrado"}
                   </SelectItem>
                 )}
               </SelectContent>
@@ -119,7 +106,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
         name="date"
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>{t('reports:form.fields.date.label')}</FormLabel>
+            <FormLabel>Data do Relatório</FormLabel>
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -131,9 +118,9 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
                     )}
                   >
                     {field.value ? (
-                      format(field.value, "P", { locale: getLocale() })
+                      format(field.value, "dd/MM/yyyy", { locale: ptBR })
                     ) : (
-                      <span>{t('reports:form.fields.date.placeholder')}</span>
+                      <span>Selecione uma data</span>
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
@@ -145,7 +132,7 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
                   selected={field.value}
                   onSelect={field.onChange}
                   initialFocus
-                  locale={getLocale()}
+                  locale={ptBR}
                   captionLayout="dropdown-buttons"
                   fromYear={1900}
                   toYear={new Date().getFullYear()}
@@ -169,34 +156,34 @@ export function ReportFormFields({ control, patients, isLoadingPatients }: Repor
         name="type"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('reports:form.fields.type.label')}</FormLabel>
+            <FormLabel>Tipo de Relatório</FormLabel>
             <Select
               onValueChange={field.onChange}
               defaultValue={field.value}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t('reports:form.fields.type.placeholder')} />
+                  <SelectValue placeholder="Selecione o tipo de relatório" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 <SelectItem value="individual_session">
-                  {t('reports:types.individual_session')}
+                  Sessão Individual
                 </SelectItem>
                 <SelectItem value="group_session">
-                  {t('reports:types.group_session')}
+                  Sessão em Grupo
                 </SelectItem>
                 <SelectItem value="daily_evolution">
-                  {t('reports:types.daily_evolution')}
+                  Evolução Diária
                 </SelectItem>
                 <SelectItem value="monthly_evolution">
-                  {t('reports:types.monthly_evolution')}
+                  Evolução Mensal
                 </SelectItem>
                 <SelectItem value="semester_evolution">
-                  {t('reports:types.semester_evolution')}
+                  Evolução Semestral
                 </SelectItem>
                 <SelectItem value="therapeutic_discharge">
-                  {t('reports:types.therapeutic_discharge')}
+                  Alta Terapêutica
                 </SelectItem>
               </SelectContent>
             </Select>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +25,6 @@ export function PhraseSelector({
   customText,
   onCustomTextChange
 }: PhraseSelectorProps) {
-  const { t } = useTranslation('clinical');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,7 +54,7 @@ export function PhraseSelector({
               <h3 className="font-semibold text-foreground">{title}</h3>
               {selectedPhrases.length > 0 && (
                 <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                  {selectedPhrases.length} {t('devolutiva.selected', { count: selectedPhrases.length })}
+                  {selectedPhrases.length} selecionada{selectedPhrases.length > 1 ? 's' : ''}
                 </span>
               )}
             </div>

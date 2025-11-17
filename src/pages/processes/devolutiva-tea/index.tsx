@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Heart, Save, FileDown, History } from "lucide-react";
-import { useDevolutivaPhrases } from "@/hooks/useDevolutivaPhrases";
+import { devolutivaPhrases } from "@/data/devolutivaPhrases";
 import { PhraseSelector } from "@/components/devolutiva/PhraseSelector";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 import { DevolutivaHistory } from "@/components/devolutiva/DevolutivaHistory";
@@ -16,10 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DevolutivaTea() {
-  const { t } = useTranslation('clinical');
   const { toast } = useToast();
   const { saveReport, generatePDF, isSaving, isGeneratingPDF, customTexts, setCustomTexts } = useDevolutivaReport();
-  const devolutivaPhrases = useDevolutivaPhrases();
   
   const [activeTab, setActiveTab] = useState("form");
   const [patients, setPatients] = useState<any[]>([]);
@@ -80,8 +77,8 @@ export default function DevolutivaTea() {
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
-        title: t('devolutiva.toast.loadError'),
-        description: t('devolutiva.toast.error'),
+        title: "Erro ao carregar dados",
+        description: "Não foi possível carregar as informações.",
         variant: "destructive"
       });
     } finally {
@@ -111,8 +108,8 @@ export default function DevolutivaTea() {
   const handleSave = async () => {
     if (!formData.patient_id) {
       toast({
-        title: t('devolutiva.messages.noPatientSelected'),
-        description: t('devolutiva.toast.selectPatient'),
+        title: "Paciente não selecionado",
+        description: "Por favor, selecione um paciente.",
         variant: "destructive"
       });
       return;
@@ -120,8 +117,8 @@ export default function DevolutivaTea() {
 
     if (!professionalData?.id) {
       toast({
-        title: t('devolutiva.toast.error'),
-        description: t('devolutiva.toast.loadError'),
+        title: "Erro",
+        description: "Dados do profissional não encontrados.",
         variant: "destructive"
       });
       return;
@@ -136,8 +133,8 @@ export default function DevolutivaTea() {
   const handleGeneratePDF = () => {
     if (!formData.patient_id) {
       toast({
-        title: t('devolutiva.messages.noPatientSelected'),
-        description: t('devolutiva.toast.selectPatient'),
+        title: "Paciente não selecionado",
+        description: "Por favor, selecione um paciente.",
         variant: "destructive"
       });
       return;
@@ -175,19 +172,19 @@ export default function DevolutivaTea() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              {t('devolutiva.title')}
+              Devolutiva Musicoterapia TEA
             </h1>
             <p className="text-muted-foreground">
-              {t('devolutiva.description')}
+              Relatório simplificado para famílias de pacientes com TEA
             </p>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="form">📝 {t('devolutiva.tabs.form')}</TabsTrigger>
-            <TabsTrigger value="preview">👁️ {t('devolutiva.tabs.preview')}</TabsTrigger>
-            <TabsTrigger value="history">📚 {t('devolutiva.tabs.history')}</TabsTrigger>
+            <TabsTrigger value="form">📝 Formulário</TabsTrigger>
+            <TabsTrigger value="preview">👁️ Preview</TabsTrigger>
+            <TabsTrigger value="history">📚 Histórico</TabsTrigger>
           </TabsList>
 
           <TabsContent value="form" className="space-y-6 mt-6">
@@ -195,51 +192,29 @@ export default function DevolutivaTea() {
               <CardContent className="pt-6 space-y-6">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>{t('devolutiva.fields.patient')} *</Label>
+                    <Label>Paciente *</Label>
                     <PatientSelect
                       patients={patients}
                       selectedPatient={formData.patient_id}
                       onSelect={handlePatientSelect}
                       isLoading={isLoadingPatients}
-                      emptyMessage={t('devolutiva.fields.selectPatient')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('devolutiva.fields.sessionDate')}</Label>
+                    <Label>Data da Sessão *</Label>
                     <Input
                       type="date"
                       value={formData.session_date}
                       onChange={(e) => setFormData(prev => ({ ...prev, session_date: e.target.value }))}
-                      className="w-full"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('devolutiva.fields.sessionNumber')}</Label>
+                    <Label>Número da Sessão</Label>
                     <Input
                       type="number"
                       min="1"
                       value={formData.session_number}
                       onChange={(e) => setFormData(prev => ({ ...prev, session_number: parseInt(e.target.value) || 1 }))}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t('devolutiva.fields.professionalName')}</Label>
-                    <Input
-                      value={formData.professional_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, professional_name: e.target.value }))}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('devolutiva.fields.professionalRegistry')}</Label>
-                    <Input
-                      value={formData.professional_registry}
-                      onChange={(e) => setFormData(prev => ({ ...prev, professional_registry: e.target.value }))}
-                      className="w-full"
                     />
                   </div>
                 </div>

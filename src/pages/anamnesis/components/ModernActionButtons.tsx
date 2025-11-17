@@ -1,6 +1,6 @@
+
 import { Button } from "@/components/ui/button";
 import { Save, ArrowLeft, Download, Loader2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 interface ModernActionButtonsProps {
   onSave?: () => void;
@@ -19,8 +19,6 @@ export function ModernActionButtons({
   isExportingPDF = false,
   showBack = false
 }: ModernActionButtonsProps) {
-  const { t } = useTranslation('anamnesis');
-  
   return (
     <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
       <div className="flex flex-col sm:flex-row gap-4">
@@ -32,7 +30,7 @@ export function ModernActionButtons({
             className="flex items-center gap-2 px-6 py-3 hover:bg-gray-50 transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('form.actions.back')}
+            Voltar
           </Button>
         )}
         
@@ -43,7 +41,7 @@ export function ModernActionButtons({
             onClick={onCancel}
             className="px-6 py-3 hover:bg-gray-50 transition-all duration-200"
           >
-            {t('form.actions.cancel')}
+            Cancelar
           </Button>
         )}
         
@@ -60,7 +58,7 @@ export function ModernActionButtons({
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSaving ? t('form.actions.saving') : t('form.actions.save')}
+            {isSaving ? "Salvando..." : "Salvar Anamnese"}
           </Button>
         )}
         
@@ -76,7 +74,7 @@ export function ModernActionButtons({
             ) : (
               <Download className="h-4 w-4" />
             )}
-            {isExportingPDF ? t('form.actions.exporting') : t('form.actions.exportPDF')}
+            {isExportingPDF ? "Exportando..." : "Exportar PDF"}
           </Button>
         )}
       </div>

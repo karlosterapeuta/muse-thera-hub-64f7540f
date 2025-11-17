@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import {
   UserCircle,
   AudioWaveform
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 interface ModernTabsNavigationProps {
   children: React.ReactNode;
@@ -24,7 +24,6 @@ export function ModernTabsNavigation({
   activeTab = "personal",
   onTabChange 
 }: ModernTabsNavigationProps) {
-  const { t } = useTranslation('anamnesis');
   const [currentTab, setCurrentTab] = useState(activeTab);
 
   const handleTabChange = (tab: string) => {
@@ -35,38 +34,38 @@ export function ModernTabsNavigation({
   const tabs = [
     {
       id: "personal",
-      labelKey: "form.tabs.personal.label",
-      descriptionKey: "form.tabs.personal.description",
+      label: "Dados Pessoais",
       icon: UserCircle,
-      gradient: "from-blue-500 to-blue-600"
+      gradient: "from-blue-500 to-blue-600",
+      description: "Informações básicas do paciente"
     },
     {
       id: "musical",
-      labelKey: "form.tabs.musical.label",
-      descriptionKey: "form.tabs.musical.description",
+      label: "Histórico Musical",
       icon: AudioWaveform,
-      gradient: "from-purple-500 to-purple-600"
+      gradient: "from-purple-500 to-purple-600",
+      description: "Experiências e preferências musicais"
     },
     {
       id: "clinical",
-      labelKey: "form.tabs.clinical.label",
-      descriptionKey: "form.tabs.clinical.description",
+      label: "Avaliação Clínica",
       icon: Stethoscope,
-      gradient: "from-emerald-500 to-emerald-600"
+      gradient: "from-emerald-500 to-emerald-600",
+      description: "Diagnósticos e tratamentos atuais"
     },
     {
       id: "development",
-      labelKey: "form.tabs.development.label",
-      descriptionKey: "form.tabs.development.description",
+      label: "Desenvolvimento",
       icon: Activity,
-      gradient: "from-amber-500 to-amber-600"
+      gradient: "from-amber-500 to-amber-600",
+      description: "Marcos do desenvolvimento"
     },
     {
       id: "behavioral",
-      labelKey: "form.tabs.behavioral.label",
-      descriptionKey: "form.tabs.behavioral.description",
+      label: "Comportamental",
       icon: Brain,
-      gradient: "from-rose-500 to-rose-600"
+      gradient: "from-rose-500 to-rose-600",
+      description: "Aspectos comportamentais e sociais"
     }
   ];
 
@@ -87,9 +86,9 @@ export function ModernTabsNavigation({
                   <tab.icon className="h-4 w-4 text-white" />
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold text-sm">{t(tab.labelKey)}</div>
+                  <div className="font-semibold text-sm">{tab.label}</div>
                   <div className="text-xs text-muted-foreground mt-1 hidden md:block">
-                    {t(tab.descriptionKey)}
+                    {tab.description}
                   </div>
                 </div>
               </TabsTrigger>

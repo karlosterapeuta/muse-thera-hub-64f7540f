@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, X, Music, Mic, Smartphone, Heart } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface ResourcesSelectorProps {
   resources: string[];
@@ -14,33 +13,48 @@ interface ResourcesSelectorProps {
   onRemove: (index: number) => void;
 }
 
+const resourceCategories = {
+  instruments: {
+    icon: Music,
+    label: "Instrumentos",
+    items: [
+      "Violão", "Teclado", "Bateria infantil", "Pandeiro", "Chocalho", 
+      "Metalofone", "Sinos", "Tambor", "Flauta doce", "Ukulele",
+      "Xilofone", "Maracas", "Triângulo", "Pau de chuva", "Clavas"
+    ]
+  },
+  technology: {
+    icon: Smartphone,
+    label: "Tecnológicos",
+    items: [
+      "Aplicativos musicais", "Músicas gravadas", "Sistema de som",
+      "Microfone", "Tablet com jogos musicais", "Metrônomo digital",
+      "Gravador digital", "Caixas de som bluetooth", "Fones de ouvido"
+    ]
+  },
+  voice: {
+    icon: Mic,
+    label: "Voz/Corpo",
+    items: [
+      "Canto livre", "Canções dirigidas", "Percussão corporal",
+      "Movimento e dança", "Respiração musical", "Vocalizes",
+      "Improvisação vocal", "Jogos rítmicos corporais"
+    ]
+  },
+  complementary: {
+    icon: Heart,
+    label: "Complementares",
+    items: [
+      "Imagens temáticas", "Cartões musicais", "Objetos sonoros",
+      "Fantoches musicais", "Tecidos e lenços", "Bolas sensoriais",
+      "Balões", "Pompons", "Elásticos coloridos", "Bambolês"
+    ]
+  }
+};
+
 export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelectorProps) {
-  const { t } = useTranslation('musicotherapy');
   const [inputValue, setInputValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  const resourceCategories = {
-    instruments: {
-      icon: Music,
-      label: t('resources.categories.instruments.label'),
-      items: t('resources.categories.instruments.items', { returnObjects: true }) as string[]
-    },
-    technology: {
-      icon: Smartphone,
-      label: t('resources.categories.technology.label'),
-      items: t('resources.categories.technology.items', { returnObjects: true }) as string[]
-    },
-    voice: {
-      icon: Mic,
-      label: t('resources.categories.voice.label'),
-      items: t('resources.categories.voice.items', { returnObjects: true }) as string[]
-    },
-    complementary: {
-      icon: Heart,
-      label: t('resources.categories.complementary.label'),
-      items: t('resources.categories.complementary.items', { returnObjects: true }) as string[]
-    }
-  };
 
   const handleAdd = () => {
     if (inputValue.trim()) {
@@ -57,7 +71,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label className="text-base font-medium text-foreground">
-          {t('resources.title')}
+          Recursos Musicoterapêuticos
         </Label>
         <Button
           type="button"
@@ -67,7 +81,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
           className="text-xs"
         >
           <Music className="h-3 w-3 mr-1" />
-          {showSuggestions ? t('resources.buttonHide') : t('resources.buttonShow')}
+          {showSuggestions ? 'Ocultar' : 'Catálogo'}
         </Button>
       </div>
 
@@ -75,7 +89,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
         <Card className="border-purple-200 bg-purple-50/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-purple-800">
-              {t('resources.catalogTitle')}
+              Catálogo de Recursos
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -118,7 +132,7 @@ export function ResourcesSelector({ resources, onAdd, onRemove }: ResourcesSelec
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder={t('resources.placeholder')}
+          placeholder="Digite um recurso ou escolha do catálogo"
           onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
           className="flex-1"
         />

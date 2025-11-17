@@ -1,13 +1,12 @@
+
 import { Music, Users, Brain, Activity, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
 
 interface ModernAnamnesisHeaderProps {
   editMode?: boolean;
 }
 
 export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeaderProps) {
-  const { t } = useTranslation('anamnesis');
   return (
     <div className="relative overflow-hidden">
       {/* Gradient background */}
@@ -28,28 +27,28 @@ export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeade
             <Music className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-            {editMode ? t('form.header.editTitle') : t('form.header.newTitle')}
+            {editMode ? "Editar Anamnese" : "Nova Anamnese Musicoterapêutica"}
           </h1>
         </div>
         
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          {t('form.header.description')}
+          Avaliação completa do paciente através de uma abordagem musicoterapêutica integral
         </p>
         
         {/* Progress indicators */}
         <div className="flex justify-center mt-6 gap-2">
           {[
-            { icon: Users, labelKey: "form.header.indicators.personal", color: "from-blue-500 to-blue-600" },
-            { icon: Music, labelKey: "form.header.indicators.musical", color: "from-purple-500 to-purple-600" },
-            { icon: Activity, labelKey: "form.header.indicators.clinical", color: "from-emerald-500 to-emerald-600" },
-            { icon: Brain, labelKey: "form.header.indicators.cognitive", color: "from-amber-500 to-amber-600" },
-            { icon: Heart, labelKey: "form.header.indicators.emotional", color: "from-rose-500 to-rose-600" }
+            { icon: Users, label: "Pessoal", color: "from-blue-500 to-blue-600" },
+            { icon: Music, label: "Musical", color: "from-purple-500 to-purple-600" },
+            { icon: Activity, label: "Clínico", color: "from-emerald-500 to-emerald-600" },
+            { icon: Brain, label: "Cognitivo", color: "from-amber-500 to-amber-600" },
+            { icon: Heart, label: "Emocional", color: "from-rose-500 to-rose-600" }
           ].map((item, index) => (
             <div key={index} className="flex flex-col items-center group">
               <div className={`p-2 bg-gradient-to-r ${item.color} rounded-full mb-1 transition-transform group-hover:scale-110`}>
                 <item.icon className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xs text-muted-foreground font-medium">{t(item.labelKey)}</span>
+              <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
             </div>
           ))}
         </div>

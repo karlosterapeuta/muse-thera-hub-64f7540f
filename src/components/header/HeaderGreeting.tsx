@@ -1,36 +1,29 @@
-import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import { ptBR, enUS, es } from 'date-fns/locale';
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 
 export function HeaderGreeting() {
-  const { t, i18n } = useTranslation('header');
   const { data: professional } = useProfessionalData();
-
-  const localeMap = {
-    'pt-BR': ptBR,
-    'en': enUS,
-    'es': es
-  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return t('greeting.morning');
-    if (hour < 18) return t('greeting.afternoon');
-    return t('greeting.evening');
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
   };
 
   const getCurrentDate = () => {
-    const locale = localeMap[i18n.language as keyof typeof localeMap] || ptBR;
-    return format(new Date(), 'PPPP', { locale });
+    return new Date().toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
   };
 
   return (
     <div className="hidden lg:flex flex-col items-center text-center">
       <span className="text-sm font-semibold text-foreground">
-        {getGreeting()}, {professional?.name?.split(' ')[0] || t('defaultName')}
+        {getGreeting()}, {professional?.name?.split(' ')[0] || 'Profissional'}
       </span>
-      <span className="text-xs text-muted-foreground capitalize">{getCurrentDate()}</span>
+      <span className="text-xs text-muted-foreground">{getCurrentDate()}</span>
     </div>
   );
 }

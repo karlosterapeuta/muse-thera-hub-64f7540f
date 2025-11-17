@@ -13,7 +13,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nome é obrigatório" }),
@@ -40,7 +39,6 @@ const WEEKDAYS = [
 ];
 
 export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
-  const { t } = useTranslation('financial');
   const isUpdating = !!clinic;
   const addClinic = useAddClinic();
   const updateClinic = useUpdateClinic();
@@ -138,7 +136,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
   return (
     <div className="w-full">
       <CardHeader className={isMobile ? "p-4" : "p-6"}>
-        <CardTitle className="text-xl md:text-2xl">{isUpdating ? t('clinics.edit') : t('clinics.new')}</CardTitle>
+        <CardTitle className="text-xl md:text-2xl">{isUpdating ? "Editar Clínica" : "Nova Clínica"}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -148,10 +146,10 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('clinics.form.name')}</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('clinics.form.name')}
+                      placeholder="Nome da clínica"
                       {...field}
                     />
                   </FormControl>
@@ -165,10 +163,10 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('clinics.form.address')} ({t('common.optional')})</FormLabel>
+                  <FormLabel>Endereço (opcional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t('clinics.form.address')}
+                      placeholder="Endereço da clínica"
                       {...field}
                       value={field.value || ""}
                     />
@@ -183,7 +181,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="service_days"
               render={() => (
                 <FormItem>
-                  <FormLabel>{t('clinics.form.serviceDays')}</FormLabel>
+                  <FormLabel>Dias de Atendimento</FormLabel>
                   <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-2"} gap-2`}>
                     {WEEKDAYS.map((day) => (
                       <div key={day.value} className="flex items-center space-x-2">
@@ -206,7 +204,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                           htmlFor={`day-${day.value}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          {t(`clinics.weekdays.${day.value}`)}
+                          {day.label}
                         </label>
                       </div>
                     ))}
@@ -221,11 +219,11 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               name="patient_ids"
               render={() => (
                 <FormItem>
-                  <FormLabel>{t('clinics.form.patients')}</FormLabel>
+                  <FormLabel>Pacientes</FormLabel>
                   <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
                     {isLoading ? (
                       <div className="text-sm text-muted-foreground py-2 text-center">
-                        {t('clinics.loading')}
+                        Carregando pacientes...
                       </div>
                     ) : patients.length > 0 ? (
                       patients.map((patient) => (
@@ -255,7 +253,7 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
                       ))
                     ) : (
                       <div className="text-sm text-muted-foreground py-2 text-center">
-                        {t('clinics.noResults')}
+                        Nenhum paciente cadastrado no seu perfil
                       </div>
                     )}
                   </div>
@@ -272,14 +270,14 @@ export function ClinicForm({ onSuccess, clinic }: ClinicFormProps) {
               onClick={() => onSuccess?.()}
               className={isMobile ? "w-full" : ""}
             >
-              {t('common.cancel')}
+              Cancelar
             </Button>
             <Button
               type="submit"
               disabled={addClinic.isPending || updateClinic.isPending}
               className={isMobile ? "w-full" : ""}
             >
-              {isUpdating ? t('common.edit') : t('common.save')}
+              {isUpdating ? "Atualizar" : "Salvar"}
             </Button>
           </CardFooter>
         </form>

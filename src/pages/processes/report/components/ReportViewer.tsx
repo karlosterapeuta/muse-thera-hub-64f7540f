@@ -1,8 +1,6 @@
 
 import React from "react";
-import { useTranslation } from 'react-i18next';
 import { format } from "date-fns";
-import { ptBR, enUS, es } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -44,19 +42,9 @@ const statusLabels: Record<string, string> = {
 };
 
 export function ReportViewer({ report }: ReportViewerProps) {
-  const { t, i18n } = useTranslation(['reports', 'common']);
-
-  const getLocale = () => {
-    switch (i18n.language) {
-      case 'en': return enUS;
-      case 'es': return es;
-      default: return ptBR;
-    }
-  };
-
   const renderContent = () => {
     if (!report.content || Object.keys(report.content).length === 0) {
-      return <p className="text-muted-foreground">{t('reports:list.empty.description')}</p>;
+      return <p className="text-muted-foreground">Nenhum conteúdo disponível.</p>;
     }
 
     return Object.entries(report.content).map(([key, value]) => {
@@ -84,16 +72,16 @@ export function ReportViewer({ report }: ReportViewerProps) {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl">
-                {t(`reports:types.${report.type}`) || report.type}
+                {reportTypeLabels[report.type] || report.type}
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                {t('reports:list.table.headers.patient')}: {report.patient?.name || 'N/A'}
+                Paciente: {report.patient?.name || 'N/A'}
               </p>
               <p className="text-muted-foreground">
-                {t('reports:list.table.headers.professional')}: {report.professional?.name || 'N/A'}
+                Profissional: {report.professional?.name || 'N/A'}
               </p>
               <p className="text-muted-foreground">
-                {t('reports:list.table.headers.date')}: {format(new Date(report.date), "P", { locale: getLocale() })}
+                Data: {format(new Date(report.date), "dd/MM/yyyy")}
               </p>
             </div>
             <Badge variant={report.status === 'finalized' ? 'default' : 'secondary'}>

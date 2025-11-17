@@ -1,6 +1,6 @@
+
 import { Button } from "@/components/ui/button";
 import { Pen, Save, X, Loader2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 interface ActionButtonsProps {
   isEditing: boolean;
@@ -17,8 +17,6 @@ export function ActionButtons({
   onSave, 
   onCancel 
 }: ActionButtonsProps) {
-  const { t } = useTranslation('profile');
-
   if (!isEditing) {
     return (
       <div className="flex justify-center">
@@ -28,7 +26,7 @@ export function ActionButtons({
           size="lg"
         >
           <Pen className="h-4 w-4 mr-2" />
-          {t('actions.edit')}
+          Editar Perfil
         </Button>
       </div>
     );
@@ -45,12 +43,12 @@ export function ActionButtons({
         {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            {t('actions.saving')}
+            Salvando...
           </>
         ) : (
           <>
             <Save className="h-4 w-4 mr-2" />
-            {t('actions.save')}
+            Salvar Alterações
           </>
         )}
       </Button>
@@ -63,7 +61,7 @@ export function ActionButtons({
         size="lg"
       >
         <X className="h-4 w-4 mr-2" />
-        {t('actions.cancel')}
+        Cancelar
       </Button>
     </div>
   );

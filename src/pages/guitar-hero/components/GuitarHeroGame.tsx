@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { playNoteSound } from '@/utils/audioUtils';
-import { useTranslation } from 'react-i18next';
 import { getAuthenticMusicalSequence } from '@/data/authenticMusicalSequences';
 import { TEA_MASTER_FREQUENCIES, getLaneConfig, NOTE_TO_LANE_MAP } from '@/constants/teaFrequencies';
 import { teaHeroAudio } from '@/pages/tea-hero/utils/teaHeroAudioManager';
@@ -104,7 +103,6 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
   selectedSong,
   gameSpeed = 1.0
 }) => {
-  const { t } = useTranslation('games');
   const [notes, setNotes] = useState<Note[]>([]);
   const [pressedLanes, setPressedLanes] = useState<boolean[]>(new Array(8).fill(false));
   const [score, setScore] = useState(0);
@@ -335,11 +333,11 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
           <div className="flex items-center gap-2">
             <div className="text-2xl">🎵</div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-              {t('teaHero.title')}
+              TEA-Hero MuseTera
             </h1>
           </div>
           <div className="text-sm bg-gradient-to-r from-violet-500 to-purple-600 px-3 py-1 rounded-full">
-            {t('teaHero.subtitle')}
+            Sistema Sincronizado
           </div>
         </div>
       </div>
@@ -352,7 +350,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
             <h2 className={`font-bold bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent ${
               isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
             }`}>
-              🎵 {t('teaHero.title')}: {instrumentType.toUpperCase()}
+              🎵 TEA-Hero MuseTera: {instrumentType.toUpperCase()}
             </h2>
             {selectedSong ? (
               <div className="space-y-2">
@@ -360,19 +358,19 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                   🎼 {selectedSong.title}
                 </Badge>
                 <p className={`text-violet-200 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                  {t('teaHero.description')}
+                  Melodia 100% MuseTera sincronizada!
                 </p>
               </div>
             ) : (
               <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-violet-600 text-white border-purple-400/50">
-                🎲 {t('teaHero.practiceMode')}
+                🎲 Modo Prática MuseTera
               </Badge>
             )}
             <p className={`text-violet-200 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-              {t('teaHero.instructions')}
+              Use as teclas 1-8 para tocar as notas MuseTera
             </p>
             <p className={`text-violet-300 font-semibold ${isMobile ? 'text-xs' : 'text-sm'}`}>
-              {t('common.speed')}: {gameSpeed}x
+              Velocidade MuseTera: {gameSpeed}x
             </p>
             <Button 
               onClick={startGame} 
@@ -380,7 +378,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
                 isMobile ? 'text-sm px-4 py-2' : 'text-base'
               }`}
             >
-              {t('common.start')}
+              ▶️ Iniciar Jogo
             </Button>
           </Card>
         </div>
@@ -392,12 +390,12 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
         <div className={`font-bold text-violet-100 ${
           isMobile ? 'text-sm' : isTablet ? 'text-lg' : 'text-xl'
         }`}>
-          🏆 {t('common.score')}: {score}
+          🏆 Pontuação: {score}
         </div>
         <div className={`text-violet-200 ${
           isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
         }`}>
-          ⏱️ {t('common.time')}: {Math.floor(gameTime / 1000)}s {isPaused ? `⏸️ ${t('common.paused')}` : ''}
+          ⏱️ Tempo: {Math.floor(gameTime / 1000)}s {isPaused ? '⏸️ PAUSADO' : ''}
         </div>
         {selectedSong && (
           <Badge 
@@ -434,7 +432,7 @@ const GuitarHeroGame: React.FC<GuitarHeroGameProps> = ({
             className="px-4 py-2 rounded text-white font-bold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-xl border border-red-400/50 backdrop-blur-sm transform hover:scale-105 transition-all duration-200"
             style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
-            {t('common.stop')}
+            ⏹️ Parar MuseTera
           </button>
         </div>
       )}

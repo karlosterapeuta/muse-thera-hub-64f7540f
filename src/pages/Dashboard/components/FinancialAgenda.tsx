@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { DollarSign, CalendarDays, TrendingUp, Plus } from "lucide-react";
 import { FinancialAgendaItem } from "../types/dashboardTypes";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
 
 interface FinancialAgendaProps {
   financialSchedule: FinancialAgendaItem[];
@@ -12,8 +11,6 @@ interface FinancialAgendaProps {
 }
 
 export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgendaProps) {
-  const { t } = useTranslation('financial');
-  
   if (isLoading) {
     return (
       <Card className="border border-border shadow-lg rounded-xl bg-card hover:shadow-xl transition-all duration-300">
@@ -23,13 +20,13 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground">
-              {t('dashboard.financialAgenda.title')}
+              Agenda Financeira
             </h3>
           </div>
           <div className="flex items-center justify-center h-32">
             <div className="space-y-4 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-              <p className="text-muted-foreground">{t('dashboard.financialAgenda.loading')}</p>
+              <p className="text-muted-foreground">Carregando registros financeiros...</p>
             </div>
           </div>
         </div>
@@ -48,12 +45,12 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground">
-              {t('dashboard.financialAgenda.title')}
+              Agenda Financeira
             </h3>
           </div>
           <Button variant="outline" size="sm" className="text-xs">
             <Plus className="h-3 w-3 mr-1" />
-            {t('dashboard.financialAgenda.addFirst')}
+            Adicionar
           </Button>
         </div>
         
@@ -74,15 +71,15 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground text-base leading-tight">
-                      {record.patient_name && record.patient_name !== t('dashboard.upcomingSessions.patientNotInformed')
+                      {record.patient_name && record.patient_name !== 'Paciente não informado' 
                         ? record.patient_name 
-                        : t('dashboard.financialAgenda.financialRecord')
+                        : 'Registro Financeiro'
                       }
                     </h4>
                     <p className="text-muted-foreground text-sm">
-                      {record.clinic_name && record.clinic_name !== t('dashboard.financialAgenda.clinicNotInformed')
+                      {record.clinic_name && record.clinic_name !== 'Clínica não informada' 
                         ? record.clinic_name 
-                        : t('dashboard.financialAgenda.clinicNotInformed')
+                        : 'Atividade profissional'
                       }
                     </p>
                     {record.description && record.description.trim() && (
@@ -117,22 +114,22 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
             <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <DollarSign className="h-10 w-10 text-green-500" />
             </div>
-            <h4 className="text-xl font-semibold text-foreground mb-3">{t('dashboard.financialAgenda.emptyTitle')}</h4>
+            <h4 className="text-xl font-semibold text-foreground mb-3">Comece seus registros financeiros</h4>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
-              {t('dashboard.financialAgenda.emptyDescription')}
+              Ainda não há registros financeiros recentes. Adicione seus primeiros dados para acompanhar sua evolução profissional.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
-                {t('dashboard.financialAgenda.addFirst')}
+                Adicionar Primeiro Registro
               </Button>
               <Button variant="outline">
                 <CalendarDays className="h-4 w-4 mr-2" />
-                {t('dashboard.financialAgenda.viewMore', { count: 0 })}
+                Ver Histórico
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              {t('dashboard.financialAgenda.tipTitle')}: {t('dashboard.financialAgenda.tipDescription')}
+              Dica: Use a seção "Financeiro" para gerenciar suas receitas
             </p>
           </div>
         )}

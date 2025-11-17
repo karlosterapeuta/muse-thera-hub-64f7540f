@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import EducationalKeyboard from "./components/EducationalKeyboard";
 import EducationalStaff from "./components/EducationalStaff";
@@ -31,7 +30,6 @@ interface Composition {
 }
 
 const MusicComposer = () => {
-  const { t } = useTranslation('games');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -243,8 +241,8 @@ const MusicComposer = () => {
   const handleMute = () => {
     setIsMuted(!isMuted);
     toast({
-      title: isMuted ? t('musicComposer.messages.unmuted') : t('musicComposer.messages.muted'),
-      description: isMuted ? t('musicComposer.messages.soundEnabled') : t('musicComposer.messages.soundDisabled'),
+      title: isMuted ? "🔊 Som ativado" : "🔇 Som desativado",
+      description: isMuted ? "Agora você pode ouvir as notas!" : "Som silenciado.",
     });
   };
 

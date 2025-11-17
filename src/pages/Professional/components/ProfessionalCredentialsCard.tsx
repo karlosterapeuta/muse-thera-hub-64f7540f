@@ -1,10 +1,10 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Award, FileText, Building } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 interface ProfessionalCredentialsCardProps {
   formData: {
@@ -23,12 +23,10 @@ export function ProfessionalCredentialsCard({
   isEditing, 
   associations 
 }: ProfessionalCredentialsCardProps) {
-  const { t } = useTranslation('profile');
-  
   // Enhanced associations list including the new one
   const enhancedAssociations = [
     ...associations,
-    t('associations.AMPT-PI')
+    "Associação de Musicoterapia do Piauí (AMPT-PI)"
   ].filter((association, index, arr) => arr.indexOf(association) === index); // Remove duplicates
 
   return (
@@ -36,14 +34,14 @@ export function ProfessionalCredentialsCard({
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl">
           <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-          {t('credentials.title')}
+          Credenciais Profissionais
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="specialty" className="flex items-center gap-2 text-sm font-medium">
             <Award className="h-4 w-4 text-muted-foreground" />
-            {t('credentials.specialty')}
+            Especialidade
           </Label>
           <Input
             id="specialty"
@@ -51,14 +49,14 @@ export function ProfessionalCredentialsCard({
             onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
             disabled={!isEditing}
             className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
-            placeholder={t('credentials.placeholders.specialty')}
+            placeholder="Ex: Musicoterapia Neurológica"
           />
         </div>
 
         <div className="space-y-4">
           <Label className="flex items-center gap-2 text-sm font-medium">
             <Building className="h-4 w-4 text-muted-foreground" />
-            {t('credentials.association')}
+            Associação Profissional
           </Label>
           
           <Select
@@ -67,7 +65,7 @@ export function ProfessionalCredentialsCard({
             onValueChange={(value) => setFormData({ ...formData, association: value })}
           >
             <SelectTrigger className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}>
-              <SelectValue placeholder={t('credentials.placeholders.association')} />
+              <SelectValue placeholder="Selecione uma associação" />
             </SelectTrigger>
             <SelectContent className="max-h-60">
               {enhancedAssociations.map((association) => (
@@ -81,7 +79,7 @@ export function ProfessionalCredentialsCard({
           <div className="space-y-2">
             <Label htmlFor="register" className="flex items-center gap-2 text-sm font-medium">
               <FileText className="h-4 w-4 text-muted-foreground" />
-              {t('credentials.register')}
+              Número de Registro
             </Label>
             <Input
               id="register"
@@ -89,20 +87,22 @@ export function ProfessionalCredentialsCard({
               onChange={(e) => setFormData({ ...formData, register: e.target.value })}
               disabled={!isEditing}
               className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
-              placeholder={t('credentials.placeholders.register')}
+              placeholder="Informe seu número de registro"
             />
           </div>
 
           {formData.association && formData.register && !isEditing && (
             <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-700">
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-white">
-                  {t('credentials.verified')}
-                </Badge>
+                <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-medium text-green-800 dark:text-green-300">Credenciais Verificadas</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('credentials.validRegistration')}
-              </p>
+              <div className="space-y-1">
+                <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600">
+                  {formData.association.split('(')[0].trim()}
+                </Badge>
+                <p className="text-xs text-green-700 dark:text-green-400">Registro: {formData.register}</p>
+              </div>
             </div>
           )}
         </div>

@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import { ProfessionalHeader } from "./Professional/components/ProfessionalHeader";
 import { PersonalInfoCard } from "./Professional/components/PersonalInfoCard";
 import { ProfessionalCredentialsCard } from "./Professional/components/ProfessionalCredentialsCard";
@@ -42,24 +41,23 @@ export default function Professional() {
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const { data: professional, isLoading, error, refetch } = useProfessionalData();
-  const { t } = useTranslation('profile');
 
   const associations = [
-    t('associations.AMT-PR'),
-    t('associations.AMT-RS'),
-    t('associations.APEMESP'),
-    t('associations.APEMEMG'),
-    t('associations.AMT-RJ'),
-    t('associations.AMT-PB'),
-    t('associations.AMT-PE'),
-    t('associations.APEMTEPA'),
-    t('associations.ASBAMT'),
-    t('associations.AMTES'),
-    t('associations.AGMT'),
-    t('associations.AMT-DF'),
-    t('associations.ACAMT'),
-    t('associations.ABMT'),
-    t('associations.AMT-CE'),
+    "Associação de Musicoterapia do Paraná (AMT-PR)",
+    "Associação de Musicoterapia do Rio Grande do Sul (AMT-RS)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado de São Paulo (APEMESP)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado de Minas Gerais (APEMEMG)",
+    "Associação de Musicoterapia do Estado do Rio de Janeiro (AMT-RJ)",
+    "Associação de Musicoterapia da Paraíba (AMT-PB)",
+    "Associação de Musicoterapia de Pernambuco (AMT-PE)",
+    "Associação de Profissionais e Estudantes de Musicoterapia do Estado do Pará (APEMTEPA)",
+    "Associação Baiana de Musicoterapia (ASBAMT)",
+    "Associação de Musicoterapeutas do Espírito Santo (AMTES)",
+    "Associação Goiana de Musicoterapia (AGMT)",
+    "Associação de Musicoterapia do Distrito Federal (AMT-DF)",
+    "Associação Catarinense de Musicoterapeutas (ACAMT)",
+    "Associação Brasileira de Musicoterapeutas (ABMT)",
+    "Associação cearense de Musicoterapia AMT -CE",
   ];
 
   // Initialize form data when professional data is loaded
@@ -84,12 +82,12 @@ export default function Professional() {
     if (error) {
       console.error('Erro ao carregar dados profissionais:', error);
       toast({
-        title: t('common:messages.error'),
-        description: t('error.loadData'),
+        title: "Erro",
+        description: "Não foi possível carregar os dados do profissional.",
         variant: "destructive",
       });
     }
-  }, [error, toast, t]);
+  }, [error, toast]);
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -99,8 +97,8 @@ export default function Professional() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
-          title: t('common:messages.error'),
-          description: t('error.unauthenticated'),
+          title: "Erro",
+          description: "Usuário não autenticado.",
           variant: "destructive",
         });
         return;
@@ -134,14 +132,14 @@ export default function Professional() {
       queryClient.invalidateQueries({ queryKey: ["professional-data"] });
       
       toast({
-        title: t('success.title'),
-        description: t('success.avatarUpdated'),
+        title: "Sucesso!",
+        description: "Imagem atualizada com sucesso.",
       });
     } catch (error) {
       console.error('Erro ao atualizar avatar:', error);
       toast({
-        title: t('common:messages.error'),
-        description: t('error.updateAvatar'),
+        title: "Erro",
+        description: "Não foi possível atualizar a imagem.",
         variant: "destructive",
       });
     }
@@ -153,8 +151,8 @@ export default function Professional() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
-          title: t('common:messages.error'),
-          description: t('error.unauthenticated'),
+          title: "Erro",
+          description: "Usuário não autenticado.",
           variant: "destructive",
         });
         return;
@@ -179,15 +177,15 @@ export default function Professional() {
       queryClient.invalidateQueries({ queryKey: ["professional-data"] });
       
       toast({
-        title: t('success.title'),
-        description: t('success.dataUpdated'),
+        title: "Sucesso!",
+        description: "Dados atualizados com sucesso.",
       });
       setIsEditing(false);
     } catch (error) {
       console.error('Erro ao salvar:', error);
       toast({
-        title: t('common:messages.error'),
-        description: t('error.saveChanges'),
+        title: "Erro",
+        description: "Não foi possível salvar as alterações.",
         variant: "destructive",
       });
     } finally {
@@ -207,7 +205,7 @@ export default function Professional() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="text-gray-600">{t('loading')}</p>
+          <p className="text-gray-600">Carregando perfil profissional...</p>
         </div>
       </div>
     );
@@ -217,12 +215,12 @@ export default function Professional() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
-          <p className="text-red-600">{t('error.loadingError')}</p>
+          <p className="text-red-600">Erro ao carregar dados profissionais</p>
           <button 
             onClick={() => refetch()} 
             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
           >
-            {t('actions.tryAgain')}
+            Tentar novamente
           </button>
         </div>
       </div>

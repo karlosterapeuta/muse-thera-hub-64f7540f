@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useTranslation } from "react-i18next";
 
 export type Patient = {
   id: string;
@@ -78,7 +77,6 @@ export const usePatientsData = () => {
 export const useDeletePatient = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { t } = useTranslation('patients');
 
   return useMutation({
     mutationFn: async (patientId: string) => {
@@ -95,14 +93,16 @@ export const useDeletePatient = () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       toast({
-        title: t('toast.deleteSuccess'),
+        title: "Sucesso",
+        description: "Paciente excluído com sucesso",
       });
     },
     onError: (error: Error) => {
       console.error("Erro ao excluir paciente:", error);
       toast({
         variant: "destructive",
-        title: t('toast.error'),
+        title: "Erro",
+        description: "Não foi possível excluir o paciente",
       });
     }
   });
@@ -111,7 +111,6 @@ export const useDeletePatient = () => {
 export const useDeleteAllPatients = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { t } = useTranslation('patients');
 
   return useMutation({
     mutationFn: async () => {
@@ -133,14 +132,16 @@ export const useDeleteAllPatients = () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       toast({
-        title: t('toast.deleteAllSuccess'),
+        title: "Sucesso",
+        description: "Todos os pacientes foram excluídos",
       });
     },
     onError: (error: Error) => {
       console.error("Erro ao excluir pacientes:", error);
       toast({
         variant: "destructive",
-        title: t('toast.error'),
+        title: "Erro",
+        description: "Não foi possível excluir os pacientes",
       });
     }
   });

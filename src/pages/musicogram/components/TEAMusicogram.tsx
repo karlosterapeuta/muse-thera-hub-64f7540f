@@ -9,7 +9,6 @@ import TEAControls from './TEAControls';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Volume2, Loader2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 // Grid menor e mais gerenciável para crianças TEA
 const STAGE_ROWS = 4;
@@ -17,7 +16,6 @@ const STAGE_COLS = 8;
 
 const TEAMusicogram: React.FC = () => {
   const { toast } = useToast();
-  const { t } = useTranslation('games');
   const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentColumn, setCurrentColumn] = useState(-1);
@@ -58,8 +56,8 @@ const TEAMusicogram: React.FC = () => {
       
       if (success) {
         toast({
-          title: t('musicogram.audioReady'),
-          description: t('musicogram.audioReadyDesc'),
+          title: "🎵 Áudio Funcionando!",
+          description: "Agora você pode ouvir os sons dos animais!",
         });
       }
     } catch (error) {
@@ -104,8 +102,8 @@ const TEAMusicogram: React.FC = () => {
         setIsPlaying(false);
         setCurrentColumn(-1);
         toast({
-          title: t('musicogram.showComplete'),
-          description: t('musicogram.showCompleteDesc'),
+          title: "🎉 Show Finalizado!",
+          description: "Que apresentação incrível!",
         });
         return;
       }
@@ -189,13 +187,13 @@ const TEAMusicogram: React.FC = () => {
       localStorage.setItem('tea-musicogram-compositions', JSON.stringify(compositions));
       
       toast({
-        title: t('musicogram.savedSuccess'),
-        description: `"${composition.name}" ${t('musicogram.savedSuccessDesc')}`,
+        title: "🎉 Música Salva!",
+        description: `"${composition.name}" foi salva com sucesso!`,
       });
     } catch (error) {
       toast({
-        title: t('messages.errorSaving'),
-        description: t('messages.tryAgain'),
+        title: "❌ Erro ao salvar",
+        description: "Tente novamente em alguns segundos",
         variant: "destructive"
       });
     }
@@ -220,8 +218,8 @@ const TEAMusicogram: React.FC = () => {
       teaAudio.setCalmMode(newCalmMode);
       
       toast({
-        title: newCalmMode ? t('musicogram.calmMode') : t('musicogram.normalMode'),
-        description: newCalmMode ? t('musicogram.calmModeDesc') : t('musicogram.normalModeDesc'),
+        title: newCalmMode ? "🌙 Modo Calmo" : "☀️ Modo Normal",
+        description: newCalmMode ? "Sons mais suaves" : "Todos os efeitos ativos",
       });
       
       return newCalmMode;
@@ -243,14 +241,14 @@ const TEAMusicogram: React.FC = () => {
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 text-white p-4 sm:p-6 shadow-xl">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-2xl sm:text-4xl font-bold mb-2">
-            🎭 {t('musicogram.title')}
+            🎭 Musicograma dos Animais TEA
           </h1>
           <p className="text-sm sm:text-lg opacity-90 mb-2">
-            {t('musicogram.subtitle')}
+            Um palco musical especial para crianças do espectro autista
           </p>
           <div className="inline-flex items-center gap-2 bg-white/20 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm backdrop-blur-sm">
             <span className={`w-2 h-2 rounded-full animate-pulse ${audioInitialized ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-            {audioInitialized ? t('musicogram.audioActive') : t('musicogram.clickToActivate')} • Grid 4x8 • {t('musicogram.simplifiedInterface')}
+            {audioInitialized ? 'Áudio Ativo' : 'Clique para ativar áudio'} • Grid 4x8 • Interface simplificada
           </div>
         </div>
       </div>

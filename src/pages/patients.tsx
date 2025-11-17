@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,7 +33,6 @@ import {
   Users,
   Sparkles
 } from "lucide-react";
-import { LanguageSelector } from "@/components/LanguageSelector";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,7 +57,6 @@ type Anamnesis = {
 };
 
 export default function PatientsPage() {
-  const { t } = useTranslation('patients');
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -142,28 +139,23 @@ export default function PatientsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-4 md:py-8 space-y-8 animate-fadeIn">
-      {/* Hero Section */}
-      <div className="text-center space-y-6 mb-12 relative">
-        {/* Language Selector */}
-        <div className="absolute top-0 right-0 md:right-4">
-          <LanguageSelector />
-        </div>
-        
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-3xl rounded-full"></div>
-          <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-2xl">
-            <Users className="h-10 w-10 text-white" />
+        {/* Hero Section */}
+        <div className="text-center space-y-6 mb-12">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-3xl rounded-full"></div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-2xl">
+              <Users className="h-10 w-10 text-white" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Pacientes
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Gerencie seus pacientes com facilidade e organize todo o processo terapêutico
+            </p>
           </div>
         </div>
-        <div className="space-y-3">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {t('title')}
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {t('description')}
-          </p>
-        </div>
-      </div>
 
         {/* Main Card */}
         <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 overflow-hidden">
@@ -176,10 +168,10 @@ export default function PatientsPage() {
                 </div>
                 <div>
                   <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
-                    {t('title')}
+                    Gerenciar Pacientes
                   </CardTitle>
                   <CardDescription className="text-base md:text-lg text-muted-foreground">
-                    {t('description')}
+                    Organize e acompanhe seus pacientes
                   </CardDescription>
                 </div>
               </div>
@@ -190,7 +182,7 @@ export default function PatientsPage() {
               >
                 <UserRoundPlus className="h-5 w-5 mr-2" />
                 <Sparkles className="h-4 w-4 mr-1" />
-                {isMobile ? t('buttons.newPatient') : t('buttons.addPatient')}
+                {isMobile ? "Novo Paciente" : "Adicionar Paciente"}
               </Button>
             </div>
           </CardHeader>
@@ -204,7 +196,7 @@ export default function PatientsPage() {
                   <Search className="h-5 w-5 text-muted-foreground mr-3" />
                   <Input
                     type="search"
-                    placeholder={t('search.placeholder')}
+                    placeholder="Buscar paciente por nome ou responsável..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                     className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground text-base"
@@ -221,8 +213,8 @@ export default function PatientsPage() {
                   <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/30 border-t-primary shadow-lg"></div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">{t('loading.title')}</h3>
-                  <p className="text-muted-foreground">{t('loading.message')}</p>
+                  <h3 className="text-xl font-semibold text-foreground">Carregando pacientes...</h3>
+                  <p className="text-muted-foreground">Aguarde um momento</p>
                 </div>
               </div>
             ) : (
@@ -251,8 +243,8 @@ export default function PatientsPage() {
                           <Users className="h-12 w-12 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="text-xl font-semibold text-foreground">{t('empty.title')}</h3>
-                          <p className="text-muted-foreground">{t('empty.description')}</p>
+                          <h3 className="text-xl font-semibold text-foreground">Nenhum paciente encontrado</h3>
+                          <p className="text-muted-foreground">Comece adicionando seu primeiro paciente</p>
                         </div>
                       </div>
                     )}
@@ -283,23 +275,24 @@ export default function PatientsPage() {
                     disabled={patients.length === 0}
                     className="w-full md:w-auto bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    {t('dialog.deleteAll.button')}
+                    Excluir Todos os Pacientes
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="border-0 shadow-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-xl font-bold text-foreground">{t('dialog.deleteAll.title')}</AlertDialogTitle>
+                    <AlertDialogTitle className="text-xl font-bold text-foreground">Tem certeza?</AlertDialogTitle>
                     <AlertDialogDescription className="text-muted-foreground text-base">
-                      {t('dialog.deleteAll.description')}
+                      Esta ação irá excluir todos os pacientes permanentemente e não
+                      poderá ser desfeita.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="hover:bg-gray-100">{t('dialog.deleteAll.cancel')}</AlertDialogCancel>
+                    <AlertDialogCancel className="hover:bg-gray-100">Cancelar</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteAllPatients}
                       className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
                     >
-                      {t('dialog.deleteAll.confirm')}
+                      Excluir Todos
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -309,7 +302,7 @@ export default function PatientsPage() {
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-gradient-to-r from-primary to-purple-600 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium">
-                    {t('counter.registered', { count: patients.length })}
+                    {patients.length} paciente{patients.length !== 1 ? 's' : ''} cadastrado{patients.length !== 1 ? 's' : ''}
                   </span>
                 </div>
               </div>
@@ -322,10 +315,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                {t('dialog.add.title')}
+                Adicionar Paciente
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {t('dialog.add.description')}
+                Crie um novo paciente para iniciar o processo terapêutico.
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">
@@ -338,10 +331,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[425px] p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                {t('dialog.edit.title')}
+                Editar Paciente
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {t('dialog.edit.description')}
+                Atualize as informações do paciente.
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">
@@ -360,10 +353,10 @@ export default function PatientsPage() {
           <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 sm:p-6 border-0 shadow-2xl">
             <DialogHeader className="p-4 sm:p-0">
               <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                {t('dialog.viewAnamnesis.title')}
+                Anamnese
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {t('dialog.viewAnamnesis.description')}
+                Visualize a anamnese do paciente.
               </DialogDescription>
             </DialogHeader>
             <div className="px-4 pb-4 sm:p-0">

@@ -23,7 +23,6 @@ import { CalendarIcon, RepeatIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { useTranslation } from "react-i18next";
 
 const weekdayOptions = [
   { label: "Segunda-feira", value: "segunda" },
@@ -87,7 +86,6 @@ interface FinancialRecordFormProps {
 }
 
 export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRecordFormProps) {
-  const { t } = useTranslation('financial');
   const isUpdating = !!record;
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -364,7 +362,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   return (
     <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none h-screen flex flex-col' : 'max-h-[85vh] flex flex-col'}`}>
       <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0`}>
-        <CardTitle>{isUpdating ? t('records.edit') : t('records.new')}</CardTitle>
+        <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
@@ -374,14 +372,14 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               name="clinic_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('records.form.clinic')}</FormLabel>
+                  <FormLabel>Clínica</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('records.form.clinic')} />
+                        <SelectValue placeholder="Selecione uma clínica" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -402,23 +400,23 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               name="patient_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('records.form.patient')} ({t('common.optional')})</FormLabel>
+                  <FormLabel>Paciente (opcional)</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('records.form.patient')} />
+                        <SelectValue placeholder="Selecione um paciente" />
                       </SelectTrigger>
                     </FormControl>
                      <SelectContent className="max-h-[200px] overflow-y-auto z-50 bg-background">
                        <SelectItem key="no-patient" value="no-patient">
-                         {t('dashboard.upcomingSessions.noSessions')}
+                         Nenhum paciente
                        </SelectItem>
                        {patientsLoading ? (
                          <SelectItem key="loading" value="loading" disabled>
-                           {t('common.loading')}
+                           Carregando pacientes...
                          </SelectItem>
                        ) : patients.length > 0 ? (
                          patients.map((patient) => (
@@ -428,7 +426,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                          ))
                        ) : (
                          <SelectItem key="no-patients" value="no-patients" disabled>
-                           {t('clinics.noResults')}
+                           Nenhum paciente encontrado
                          </SelectItem>
                        )}
                      </SelectContent>
@@ -443,7 +441,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('records.form.amount')} (R$)</FormLabel>
+                  <FormLabel>Valor (R$)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -468,7 +466,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               name="session_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>{t('records.form.sessionDate')}</FormLabel>
+                  <FormLabel>Data do Agendamento</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -482,7 +480,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                           {field.value ? (
                             format(field.value, "dd/MM/yyyy")
                           ) : (
-                            <span>{t('records.form.sessionDate')}</span>
+                            <span>Selecione a data</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -506,8 +504,8 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                           formatYearCaption: (date) => format(date, "yyyy", { locale: ptBR }),
                         }}
                         labels={{
-                          labelMonthDropdown: () => t('common.date'),
-                          labelYearDropdown: () => t('common.date'),
+                          labelMonthDropdown: () => "Mês",
+                          labelYearDropdown: () => "Ano",
                         }}
                         className={cn("p-3 pointer-events-auto")}
                       />
@@ -609,10 +607,10 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('records.form.description')} ({t('common.optional')})</FormLabel>
+                  <FormLabel>Descrição (opcional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t('records.form.description')}
+                      placeholder="Detalhes sobre o atendimento"
                       {...field}
                       className={isMobile ? 'min-h-[80px]' : 'min-h-[100px]'}
                     />
@@ -629,7 +627,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <RepeatIcon className="h-5 w-5 text-primary" />
-                    <h4 className="text-sm font-medium">{t('records.form.recurrencePattern')}</h4>
+                    <h4 className="text-sm font-medium">Configurações de Recorrência</h4>
                   </div>
                   
                   <FormField
@@ -645,10 +643,10 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>
-                            {t('records.form.isRecurring')}
+                            Tornar este registro recorrente
                           </FormLabel>
                           <p className="text-xs text-muted-foreground">
-                            {t('records.form.recurrencePattern')}
+                            Gera automaticamente registros futuros baseados na frequência selecionada
                           </p>
                         </div>
                       </FormItem>
@@ -662,19 +660,20 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                         name="recurrence_type"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('records.form.recurrenceType')}</FormLabel>
+                            <FormLabel>Frequência</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={t('records.form.recurrenceType')} />
+                                  <SelectValue placeholder="Selecione a frequência" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="weekly">{t('records.recurrence.weekly')}</SelectItem>
-                                <SelectItem value="monthly">{t('records.recurrence.monthly')}</SelectItem>
+                                <SelectItem value="weekly">Semanal</SelectItem>
+                                <SelectItem value="monthly">Mensal</SelectItem>
+                                <SelectItem value="yearly">Anual</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -687,7 +686,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
                         name="recurrence_end_date"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>{t('records.form.recurrenceEndDate')} ({t('common.optional')})</FormLabel>
+                            <FormLabel>Data final da recorrência (opcional)</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
@@ -745,7 +744,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               onClick={handleCancel}
               className={isMobile ? 'w-full' : ''}
             >
-              {t('common.cancel')}
+              Cancelar
             </Button>
             <Button
               type="submit"
@@ -755,10 +754,10 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
               {addRecord.isPending || updateRecord.isPending ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                  {isUpdating ? t('common.loading') : t('common.loading')}
+                  {isUpdating ? "Atualizando..." : "Salvando..."}
                 </>
               ) : (
-                isUpdating ? t('common.edit') : t('common.save')
+                isUpdating ? "Atualizar" : "Salvar"
               )}
             </Button>
           </CardFooter>

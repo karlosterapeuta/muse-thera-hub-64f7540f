@@ -26,7 +26,6 @@ import {
   X
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { useTranslation } from 'react-i18next';
 import { useMusicotherapyTreatmentPlan } from '@/hooks/useMusicotherapyTreatmentPlan';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
@@ -39,7 +38,6 @@ import { ObjectivesSelector } from '@/components/musicotherapy/ObjectivesSelecto
 import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector';
 import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 type Patient = {
   id: string;
@@ -52,7 +50,6 @@ export default function MusicotherapyTreatmentPlanPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('musicotherapy');
   const { data: professionalData } = useProfessionalData();
   const { 
     planData, 
@@ -78,14 +75,14 @@ export default function MusicotherapyTreatmentPlanPage() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
-        e.returnValue = t('form.unsavedChanges');
+        e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?';
         return e.returnValue;
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges, t]);
+  }, [hasUnsavedChanges]);
 
   // Fetch patients
   useEffect(() => {
@@ -101,8 +98,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         console.error("Error fetching patients:", error);
         toast({
           variant: "destructive",
-          title: t('form.toast.loadError'),
-          description: t('form.toast.loadErrorMessage'),
+          title: "Erro",
+          description: "Falha ao carregar pacientes.",
         });
       } finally {
         setIsLoadingPatients(false);
@@ -110,7 +107,7 @@ export default function MusicotherapyTreatmentPlanPage() {
     };
 
     fetchPatients();
-  }, [toast, t]);
+  }, [toast]);
 
   // Auto-fill therapist name when professional data loads
   useEffect(() => {
@@ -227,8 +224,8 @@ export default function MusicotherapyTreatmentPlanPage() {
     if (!planData.patient_full_name) {
       toast({
         variant: "destructive",
-        title: t('form.toast.requiredField'),
-        description: t('form.validation.patientNameRequired'),
+        title: "Campo obrigatório",
+        description: "Nome do paciente é obrigatório para gerar o PDF.",
       });
       return;
     }
@@ -250,22 +247,22 @@ export default function MusicotherapyTreatmentPlanPage() {
 
       if (success) {
         toast({
-          title: t('form.toast.pdfSuccess'),
-          description: t('form.toast.pdfDownloaded'),
+          title: "PDF gerado com sucesso!",
+          description: "O plano musicoterapêutico foi baixado.",
         });
       } else {
         toast({
           variant: "destructive",
-          title: t('form.toast.pdfError'),
-          description: t('form.toast.pdfGenerationError'),
+          title: "Erro ao gerar PDF",
+          description: "Não foi possível gerar o arquivo PDF.",
         });
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast({
         variant: "destructive",
-        title: t('form.toast.pdfError'),
-        description: t('form.toast.unexpectedError'),
+        title: "Erro ao gerar PDF",
+        description: "Erro inesperado ao gerar o PDF.",
       });
     } finally {
       setIsGeneratingPDF(false);
@@ -273,16 +270,16 @@ export default function MusicotherapyTreatmentPlanPage() {
   };
 
   const tabSections = [
-    { id: 'identification', label: t('form.tabs.identification.label'), icon: User },
-    { id: 'assessment', label: t('form.tabs.assessment.label'), icon: FileText },
-    { id: 'general-objectives', label: t('form.tabs.generalObjectives.label'), icon: Target },
-    { id: 'specific-objectives', label: t('form.tabs.specificObjectives.label'), icon: CheckCircle },
-    { id: 'resources', label: t('form.tabs.resources.label'), icon: Music },
-    { id: 'strategies', label: t('form.tabs.strategies.label'), icon: Activity },
-    { id: 'frequency', label: t('form.tabs.frequency.label'), icon: Clock },
-    { id: 'evaluation', label: t('form.tabs.evaluation.label'), icon: BarChart },
-    { id: 'action-plan', label: t('form.tabs.action.label'), icon: Users },
-    { id: 're-evaluation', label: t('form.tabs.reevaluation.label'), icon: RefreshCw }
+    { id: "identification", label: "1. Identificação", icon: User },
+    { id: "assessment", label: "2. Avaliação", icon: FileText },
+    { id: "general-objectives", label: "3. Obj. Gerais", icon: Target },
+    { id: "specific-objectives", label: "4. Obj. Específicos", icon: CheckCircle },
+    { id: "resources", label: "5. Recursos", icon: Music },
+    { id: "strategies", label: "6. Estratégias", icon: Activity },
+    { id: "frequency", label: "7. Frequência", icon: Clock },
+    { id: "evaluation", label: "8. Avaliação", icon: BarChart },
+    { id: "action-plan", label: "9. Plano Ação", icon: Users },
+    { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
   ];
 
   if (isLoading && id) {
@@ -291,8 +288,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
           <div>
-            <p className="text-xl font-semibold">{t('form.loadingPlan')}</p>
-            <p className="text-sm text-muted-foreground">{t('form.loadingMessage')}</p>
+            <p className="text-xl font-semibold">Carregando plano...</p>
+            <p className="text-sm text-muted-foreground">Aguarde enquanto buscamos os dados</p>
           </div>
         </div>
       </div>
@@ -314,15 +311,13 @@ export default function MusicotherapyTreatmentPlanPage() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {id ? t('form.editTitle') : t('form.newTitle')}
+                {id ? 'Editar' : 'Novo'} Plano Musicoterapêutico
               </h1>
               <p className="text-muted-foreground">
-                {t('form.subtitle')}
+                Modelo profissional completo em 10 seções
               </p>
             </div>
           </div>
-          
-          <LanguageSelector />
           
           <div className="flex gap-2 items-center">
             {/* Save status indicator */}
@@ -330,19 +325,19 @@ export default function MusicotherapyTreatmentPlanPage() {
               {isAutoSaving && (
                 <div className="flex items-center gap-1">
                   <RefreshCw className="h-3 w-3 animate-spin" />
-                  <span>{t('form.autoSaving')}</span>
+                  <span>Salvando automaticamente...</span>
                 </div>
               )}
               {hasUnsavedChanges && !isAutoSaving && (
                 <div className="flex items-center gap-1 text-amber-600">
                   <div className="h-2 w-2 rounded-full bg-amber-600" />
-                  <span>{t('form.unsavedChanges')}</span>
+                  <span>Alterações não salvas</span>
                 </div>
               )}
               {lastSaved && !hasUnsavedChanges && !isAutoSaving && (
                 <div className="flex items-center gap-1 text-green-600">
                   <CheckCircle className="h-3 w-3" />
-                  <span>{t('form.lastSaved', { time: lastSaved.toLocaleTimeString() })}</span>
+                  <span>Salvo às {lastSaved.toLocaleTimeString()}</span>
                 </div>
               )}
             </div>
@@ -353,7 +348,7 @@ export default function MusicotherapyTreatmentPlanPage() {
               className="bg-green-600 hover:bg-green-700"
             >
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? t('form.savingButton') : t('form.saveButton')}
+              {isSaving ? 'Salvando...' : 'Salvar Plano'}
             </Button>
             <Button
               onClick={handleDownloadPDF}
@@ -361,7 +356,7 @@ export default function MusicotherapyTreatmentPlanPage() {
               disabled={!planData.patient_full_name || isGeneratingPDF}
             >
               <Download className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? t('form.generatingPdfButton') : t('form.downloadPdfButton')}
+              {isGeneratingPDF ? 'Gerando PDF...' : 'Baixar PDF'}
             </Button>
           </div>
         </div>
@@ -399,19 +394,19 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    {t('form.tabs.identification.title')}
+                    1. Identificação do Paciente
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label>{t('form.fields.patient')}</Label>
+                      <Label>Paciente</Label>
                       {isLoadingPatients ? (
-                        <div className="text-sm text-muted-foreground">{t('form.loadingPatients')}</div>
+                        <div className="text-sm text-muted-foreground">Carregando pacientes...</div>
                       ) : (
                         <Select value={selectedPatient} onValueChange={handlePatientSelect}>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('form.fields.patientPlaceholder')} />
+                            <SelectValue placeholder="Selecione um paciente" />
                           </SelectTrigger>
                           <SelectContent>
                             {patients.map(patient => (
@@ -425,16 +420,16 @@ export default function MusicotherapyTreatmentPlanPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('form.fields.fullName')}</Label>
+                      <Label>Nome completo *</Label>
                       <Input
                         value={planData.patient_full_name || ''}
                         onChange={(e) => updatePlanData({ patient_full_name: e.target.value })}
-                        placeholder={t('form.fields.fullNamePlaceholder')}
+                        placeholder="Nome completo do paciente"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('form.fields.birthDate')}</Label>
+                      <Label>Data de nascimento</Label>
                       <Input
                         type="date"
                         value={planData.patient_birth_date || ''}
@@ -443,11 +438,11 @@ export default function MusicotherapyTreatmentPlanPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('form.fields.age')}</Label>
+                      <Label>Idade</Label>
                       <Input
                         value={planData.patient_age || ''}
                         onChange={(e) => updatePlanData({ patient_age: e.target.value })}
-                        placeholder={t('form.fields.agePlaceholder')}
+                        placeholder="Ex: 8 anos"
                       />
                     </div>
                     
@@ -457,16 +452,16 @@ export default function MusicotherapyTreatmentPlanPage() {
                     />
                     
                     <div className="space-y-2">
-                      <Label>{t('form.fields.responsible')}</Label>
+                      <Label>Responsável</Label>
                       <Input
                         value={planData.responsible_person || ''}
                         onChange={(e) => updatePlanData({ responsible_person: e.target.value })}
-                        placeholder={t('form.fields.responsiblePlaceholder')}
+                        placeholder="Nome do responsável"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('form.fields.planStartDate')}</Label>
+                      <Label>Data de início do plano *</Label>
                       <Input
                         type="date"
                         value={planData.plan_start_date || ''}
@@ -478,51 +473,67 @@ export default function MusicotherapyTreatmentPlanPage() {
               </Card>
             </TabsContent>
 
+            {/* 2. Initial Assessment */}
             <TabsContent value="assessment" className="mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    {t('form.tabs.assessment.title')}
+                    2. Avaliação Inicial
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                <PromptSelector
-                  label={t('form.fields.clinicalHistory')}
-                  prompts={t('prompts.clinicalFamilyHistory', { returnObjects: true }) as string[]}
-                  value={planData.clinical_family_history || ''}
-                  onChange={(value) => updatePlanData({ clinical_family_history: value })}
-                  placeholder={t('form.fields.clinicalHistoryPlaceholder')}
-                  rows={4}
-                />
-                
-                <PromptSelector
-                  label={t('form.fields.physicalCognitive')}
-                  prompts={t('prompts.physicalCognitiveConditions', { returnObjects: true }) as string[]}
-                  value={planData.physical_cognitive_conditions || ''}
-                  onChange={(value) => updatePlanData({ physical_cognitive_conditions: value })}
-                  placeholder={t('form.fields.physicalCognitivePlaceholder')}
-                  rows={4}
-                />
-                
-                <PromptSelector
-                  label={t('form.fields.interactionLevel')}
-                  prompts={t('prompts.interactionCommunicationLevel', { returnObjects: true }) as string[]}
-                  value={planData.interaction_communication_level || ''}
-                  onChange={(value) => updatePlanData({ interaction_communication_level: value })}
-                  placeholder={t('form.fields.interactionLevelPlaceholder')}
-                  rows={3}
-                />
-                
-                <div className="space-y-2">
-                  <Label>{t('form.fields.musicalInterests')}</Label>
-                  <Textarea
-                    value={planData.musical_interests || ''}
-                    onChange={(e) => updatePlanData({ musical_interests: e.target.value })}
-                    placeholder={t('form.fields.musicalInterestsPlaceholder')}
+                  <PromptSelector
+                    label="Histórico clínico e familiar relevante"
+                    prompts={[
+                      "Diagnóstico aos [idade] anos. Histórico de [condições]. Medicações em uso: [medicamentos]. Terapias complementares: [terapias].",
+                      "Desenvolvimento típico até [idade]. Primeira manifestação dos sintomas em [período]. Família com histórico de [condições].",
+                      "Parto sem intercorrências. Marco do desenvolvimento dentro da normalidade até [idade]. Histórico familiar sem relevância clínica.",
+                      "Nascimento prematuro com [complicações]. Acompanhamento médico desde [idade]. Família com suporte adequado."
+                    ]}
+                    value={planData.clinical_family_history || ''}
+                    onChange={(value) => updatePlanData({ clinical_family_history: value })}
+                    placeholder="Descreva o histórico clínico e familiar relevante..."
+                    rows={4}
+                  />
+                  
+                  <PromptSelector
+                    label="Condições físicas, cognitivas, emocionais e sociais"
+                    prompts={[
+                      "Desenvolvimento motor: [típico/atípico]. Coordenação: [preservada/comprometida]. Atenção sustentada: [tempo]. Memória: [preservada/dificuldades].",
+                      "Comunicação verbal: [presente/ausente/limitada]. Compreensão: [adequada para idade/comprometida]. Aspectos sensoriais: [hiper/hipossensibilidade].",
+                      "Estado emocional estável. Comportamentos adaptativos adequados. Interação social apropriada para faixa etária.",
+                      "Ansiedade moderada em situações novas. Dificuldades de autorregulação emocional. Preferência por rotinas estruturadas."
+                    ]}
+                    value={planData.physical_cognitive_conditions || ''}
+                    onChange={(value) => updatePlanData({ physical_cognitive_conditions: value })}
+                    placeholder="Descreva as condições atuais do paciente..."
+                    rows={4}
+                  />
+                  
+                  <PromptSelector
+                    label="Nível de interação e comunicação"
+                    prompts={[
+                      "Contato visual: [mantém/evita/eventual]. Iniciativa comunicativa: [presente/ausente]. Responde ao chamado pelo nome: [sim/não/às vezes].",
+                      "Interação social: [busca/evita/indiferente]. Brincadeiras: [solitárias/paralelas/cooperativas]. Turnos de comunicação: [compreende/não compreende].",
+                      "Comunicação funcional presente. Busca interação com adultos de referência. Compreende comandos simples.",
+                      "Comunicação não verbal predominante. Utiliza gestos para expressar necessidades. Preferência por interação individual."
+                    ]}
+                    value={planData.interaction_communication_level || ''}
+                    onChange={(value) => updatePlanData({ interaction_communication_level: value })}
+                    placeholder="Descreva como o paciente se comunica e interage..."
                     rows={3}
                   />
-                </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Interesses musicais</Label>
+                    <Textarea
+                      value={planData.musical_interests || ''}
+                      onChange={(e) => updatePlanData({ musical_interests: e.target.value })}
+                      placeholder="Instrumentos preferidos, estilos musicais, preferências sonoras..."
+                      rows={3}
+                    />
+                  </div>
                   
                   <div className="space-y-2">
                     <Label>Comportamentos observados durante avaliação inicial</Label>
@@ -543,12 +554,12 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5" />
-                    {t('form.tabs.generalObjectives.title')}
+                    3. Objetivos Gerais
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
-                    label={t('objectives.general.label')}
+                    label="Propósitos amplos da musicoterapia"
                     objectives={planData.general_objectives || []}
                     onAdd={(objective) => addArrayItem('general_objectives', objective)}
                     onRemove={(index) => removeArrayItem('general_objectives', index)}
@@ -565,12 +576,12 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5" />
-                    {t('form.tabs.specificObjectives.title')}
+                    4. Objetivos Específicos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
-                    label={t('objectives.specific.label')}
+                    label="Objetivos mensuráveis e específicos"
                     objectives={planData.specific_objectives || []}
                     onAdd={(objective) => addArrayItem('specific_objectives', objective)}
                     onRemove={(index) => removeArrayItem('specific_objectives', index)}
@@ -587,7 +598,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Music className="h-5 w-5" />
-                    {t('form.tabs.resources.title')}
+                    5. Recursos Musicoterapêuticos
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -641,52 +652,72 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-5 w-5" />
-                    {t('form.tabs.strategies.title')}
+                    6. Estratégias e Técnicas
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
-                    label={t('form.strategies.musicalImprovisation.label')}
-                    prompts={t('form.strategies.musicalImprovisation.prompts', { returnObjects: true }) as string[]}
+                    label="Improvisação musical"
+                    prompts={[
+                      "Exploração livre de instrumentos seguida de estruturação gradual. Diálogos musicais entre terapeuta e paciente. Criação de 'conversas' rítmicas.",
+                      "Interação espontânea com instrumentos melódicos. Desenvolvimento de temas musicais improvisados. Jogos de pergunta e resposta musical.",
+                      "Criação livre com instrumentos de percussão. Expressão emocional através da improvisação. Exploração de texturas sonoras.",
+                      "Improvisação vocal livre seguida de estruturação rítmica. Diálogos sonoros não verbais. Expressão criativa sem julgamento."
+                    ]}
                     value={planData.musical_improvisation || ''}
                     onChange={(value) => updatePlanData({ musical_improvisation: value })}
-                    placeholder={t('form.strategies.musicalImprovisation.placeholder')}
+                    placeholder="Interação livre ou dirigida com instrumentos..."
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label={t('form.strategies.musicalRecreation.label')}
-                    prompts={t('form.strategies.musicalRecreation.prompts', { returnObjects: true }) as string[]}
+                    label="Recriação musical"
+                    prompts={[
+                      "Canções conhecidas adaptadas às necessidades terapêuticas. Modificação de letras para trabalhar objetivos específicos. Acompanhamento instrumental de repertório familiar.",
+                      "Reprodução de canções infantis com gestos corporais. Adaptação do tempo e ritmo conforme capacidade do paciente. Inclusão de instrumentos simples.",
+                      "Interpretação de músicas preferidas do paciente. Trabalho de memória através do repertório conhecido. Estímulo à participação vocal.",
+                      "Recriação de trilhas sonoras familiares. Associação de músicas a atividades cotidianas. Desenvolvimento de repertório terapêutico personalizado."
+                    ]}
                     value={planData.musical_recreation || ''}
                     onChange={(value) => updatePlanData({ musical_recreation: value })}
-                    placeholder={t('form.strategies.musicalRecreation.placeholder')}
+                    placeholder="Cantar ou tocar músicas conhecidas..."
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label={t('form.strategies.composition.label')}
-                    prompts={t('form.strategies.composition.prompts', { returnObjects: true }) as string[]}
+                    label="Composição"
+                    prompts={[
+                      "Criação de pequenas melodias sobre temas do interesse do paciente. Composição de letras expressando sentimentos. Construção coletiva de canções simples.",
+                      "Desenvolvimento de sons e ritmos personalizados. Criação de histórias musicais. Composição colaborativa entre terapeuta e paciente.",
+                      "Invenção de canções temáticas para rotinas diárias. Criação de jingles musicais. Desenvolvimento de identidade sonora pessoal.",
+                      "Composição de músicas para expressar emoções específicas. Criação de trilhas para atividades favoritas. Desenvolvimento de repertório autoral."
+                    ]}
                     value={planData.musical_composition || ''}
                     onChange={(value) => updatePlanData({ musical_composition: value })}
-                    placeholder={t('form.strategies.composition.placeholder')}
+                    placeholder="Criar músicas, letras ou sons em conjunto..."
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label={t('form.strategies.receptiveListening.label')}
-                    prompts={t('form.strategies.receptiveListening.prompts', { returnObjects: true }) as string[]}
+                    label="Escuta receptiva"
+                    prompts={[
+                      "Músicas selecionadas para relaxamento e regulação emocional. Escuta ativa com movimentos corporais. Associação de músicas a imagens e histórias.",
+                      "Seleção de repertório para diferentes estados emocionais. Escuta direcionada para estimulação cognitiva. Trabalho de memória auditiva.",
+                      "Músicas para indução de estados de calma. Escuta com visualização dirigida. Trabalho de identificação de emoções através da música.",
+                      "Repertório adaptado para diferentes objetivos terapêuticos. Escuta com proposta de movimento expressivo. Estimulação sensorial através da música."
+                    ]}
                     value={planData.receptive_listening || ''}
                     onChange={(value) => updatePlanData({ receptive_listening: value })}
-                    placeholder={t('form.strategies.receptiveListening.placeholder')}
+                    placeholder="Ouvir músicas para estimular resposta emocional ou cognitiva..."
                     rows={3}
                   />
                   
                   <div className="space-y-2">
-                    <Label>{t('form.strategies.rhythmicDynamics.label')}</Label>
+                    <Label>Dinâmicas rítmicas</Label>
                     <Textarea
                       value={planData.rhythmic_dynamics || ''}
                       onChange={(e) => updatePlanData({ rhythmic_dynamics: e.target.value })}
-                      placeholder={t('form.strategies.rhythmicDynamics.placeholder')}
+                      placeholder="Jogos de pulsação e coordenação motora..."
                       rows={3}
                     />
                   </div>
@@ -700,13 +731,13 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    {t('form.tabs.frequency.title')}
+                    7. Frequência e Duração
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                      <Label>{t('frequency.weeklySessionsLabel')}</Label>
+                      <Label>Sessões semanais</Label>
                       <Select 
                         value={String(planData.weekly_sessions || 1)} 
                         onValueChange={(value) => updatePlanData({ weekly_sessions: Number(value) })}
@@ -717,7 +748,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                         <SelectContent>
                           {[1, 2, 3, 4, 5].map(num => (
                             <SelectItem key={num} value={String(num)}>
-                              {num}x {t('frequency.perWeek')}
+                              {num}x por semana
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -725,7 +756,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('frequency.sessionDurationLabel')}</Label>
+                      <Label>Duração da sessão (minutos)</Label>
                       <Select 
                         value={String(planData.session_duration_minutes || 45)} 
                         onValueChange={(value) => updatePlanData({ session_duration_minutes: Number(value) })}
@@ -734,17 +765,17 @@ export default function MusicotherapyTreatmentPlanPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="30">{t('frequency.options.duration.thirty')}</SelectItem>
-                          <SelectItem value="40">{t('frequency.options.duration.forty')}</SelectItem>
-                          <SelectItem value="45">{t('frequency.options.duration.fortyfive')}</SelectItem>
-                          <SelectItem value="60">{t('frequency.options.duration.sixty')}</SelectItem>
-                          <SelectItem value="90">{t('frequency.options.duration.ninety')}</SelectItem>
+                          <SelectItem value="30">30 minutos</SelectItem>
+                          <SelectItem value="40">40 minutos</SelectItem>
+                          <SelectItem value="45">45 minutos</SelectItem>
+                          <SelectItem value="60">60 minutos</SelectItem>
+                          <SelectItem value="90">90 minutos</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>{t('frequency.estimatedPeriodLabel')}</Label>
+                      <Label>Período estimado (meses)</Label>
                       <Select 
                         value={String(planData.estimated_period_months || 3)} 
                         onValueChange={(value) => updatePlanData({ estimated_period_months: Number(value) })}
@@ -755,7 +786,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                         <SelectContent>
                           {[1, 2, 3, 6, 9, 12, 18, 24].map(num => (
                             <SelectItem key={num} value={String(num)}>
-                              {num} {num === 1 ? t('frequency.month') : t('frequency.months')}
+                              {num} {num === 1 ? 'mês' : 'meses'}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -772,7 +803,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart className="h-5 w-5" />
-                    {t('form.tabs.evaluation.title')}
+                    8. Critérios de Avaliação
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -791,34 +822,49 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    {t('form.tabs.action.title')}
+                    9. Plano Terapêutico em Ação
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
-                    label={t('form.fields.sessionStructure')}
-                    prompts={t('form.prompts.sessionStructure', { returnObjects: true }) as string[]}
+                    label="Estrutura das sessões"
+                    prompts={[
+                      "Ritual de chegada (5 min) → Aquecimento musical (10 min) → Atividade principal (25 min) → Relaxamento/fechamento (5 min)",
+                      "Acolhimento musical (5 min) → Exploração instrumental (15 min) → Atividades dirigidas (20 min) → Momento criativo (15 min) → Despedida musical (5 min)",
+                      "Canção de boas-vindas → Aquecimento corporal com música → Atividades principais conforme objetivos → Momento de expressão livre → Ritual de encerramento",
+                      "Início com música familiar → Atividades de maior demanda cognitiva → Pausa para regulação → Atividades expressivas → Fechamento relaxante"
+                    ]}
                     value={planData.session_structure || ''}
                     onChange={(value) => updatePlanData({ session_structure: value })}
-                    placeholder={t('form.fields.sessionStructurePlaceholder')}
+                    placeholder="Descreva a estrutura típica das sessões (início, desenvolvimento, fechamento)..."
                     rows={4}
                   />
                   
                   <PromptSelector
-                    label={t('form.fields.activitySequence')}
-                    prompts={t('form.prompts.activitySequence', { returnObjects: true }) as string[]}
+                    label="Sequência das atividades musicais propostas"
+                    prompts={[
+                      "1. Canção de boas-vindas; 2. Exploração instrumental livre; 3. Atividade dirigida conforme objetivo; 4. Momento criativo/expressivo; 5. Canção de despedida",
+                      "Início com música preferida → Atividades rítmicas corporais → Trabalho vocal/instrumental → Improvisação livre → Relaxamento musical",
+                      "Aquecimento vocal → Percussão corporal → Instrumentos melódicos → Criação musical → Escuta receptiva para fechamento",
+                      "Ritual musical inicial → Atividades de coordenação → Trabalho de objetivos específicos → Expressão criativa → Momento de integração final"
+                    ]}
                     value={planData.activity_sequence || ''}
                     onChange={(value) => updatePlanData({ activity_sequence: value })}
-                    placeholder={t('form.fields.activitySequencePlaceholder')}
+                    placeholder="Descreva a ordem e progressão das atividades musicais..."
                     rows={4}
                   />
                   
                   <PromptSelector
-                    label={t('form.fields.flexibility')}
-                    prompts={t('form.prompts.flexibility', { returnObjects: true }) as string[]}
+                    label="Flexibilidade para ajustes"
+                    prompts={[
+                      "Ajustes conforme estado emocional e engajamento do paciente. Alternância entre atividades ativas e receptivas conforme necessidade de regulação.",
+                      "Adaptação do tempo e intensidade das atividades conforme resposta do paciente. Modificação de instrumentos e repertório conforme interesse demonstrado.",
+                      "Flexibilidade para interromper atividades que causem desconforto. Inclusão de pausas para autorregulação quando necessário.",
+                      "Possibilidade de modificar objetivos da sessão conforme demandas emergentes. Adaptação de recursos conforme disponibilidade e interesse."
+                    ]}
                     value={planData.flexibility_adjustments || ''}
                     onChange={(value) => updatePlanData({ flexibility_adjustments: value })}
-                    placeholder={t('form.fields.flexibilityPlaceholder')}
+                    placeholder="Como o plano pode ser ajustado de acordo com as respostas do paciente..."
                     rows={3}
                   />
                 </CardContent>
@@ -831,45 +877,45 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <RefreshCw className="h-5 w-5" />
-                    {t('form.tabs.reevaluation.title')}
+                    10. Reavaliação e Evolução
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label>{t('form.fields.reevaluationFrequency')}</Label>
+                    <Label>Frequência da reavaliação</Label>
                     <Select 
-                      value={planData.reevaluation_frequency || 'monthly'} 
+                      value={planData.reevaluation_frequency || 'mensal'} 
                       onValueChange={(value) => updatePlanData({ reevaluation_frequency: value })}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="biweekly">{t('form.reevaluationOptions.biweekly')}</SelectItem>
-                        <SelectItem value="monthly">{t('form.reevaluationOptions.monthly')}</SelectItem>
-                        <SelectItem value="bimonthly">{t('form.reevaluationOptions.bimonthly')}</SelectItem>
-                        <SelectItem value="quarterly">{t('form.reevaluationOptions.quarterly')}</SelectItem>
-                        <SelectItem value="semiannual">{t('form.reevaluationOptions.semiannual')}</SelectItem>
+                        <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                        <SelectItem value="mensal">Mensal</SelectItem>
+                        <SelectItem value="bimestral">Bimestral</SelectItem>
+                        <SelectItem value="trimestral">Trimestral</SelectItem>
+                        <SelectItem value="semestral">Semestral</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>{t('form.fields.evolutionRecording')}</Label>
+                    <Label>Registro da evolução em prontuário musicoterapêutico</Label>
                     <Textarea
                       value={planData.evolution_recording || ''}
                       onChange={(e) => updatePlanData({ evolution_recording: e.target.value })}
-                      placeholder={t('form.fields.evolutionRecordingPlaceholder')}
+                      placeholder="Descreva como será feito o registro da evolução..."
                       rows={4}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>{t('form.fields.necessaryAdjustments')}</Label>
+                    <Label>Ajustes necessários nos objetivos e técnicas</Label>
                     <Textarea
                       value={planData.necessary_adjustments || ''}
                       onChange={(e) => updatePlanData({ necessary_adjustments: e.target.value })}
-                      placeholder={t('form.fields.necessaryAdjustmentsPlaceholder')}
+                      placeholder="Que tipo de ajustes podem ser necessários durante o tratamento..."
                       rows={4}
                     />
                   </div>

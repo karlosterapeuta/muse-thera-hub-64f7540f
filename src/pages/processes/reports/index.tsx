@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -39,7 +38,6 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { ReportViewer } from "../report/components/ReportViewer";
 import { DeleteReportDialog } from "./components/DeleteReportDialog";
-import { ptBR, enUS, es } from "date-fns/locale";
 
 type DatabaseReport = {
   id: string;
@@ -120,17 +118,8 @@ const reportTypeColors: Record<string, string> = {
 };
 
 export default function ReportsPage() {
-  const { t, i18n } = useTranslation(['reports', 'common']);
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const getLocale = () => {
-    switch (i18n.language) {
-      case 'en': return enUS;
-      case 'es': return es;
-      default: return ptBR;
-    }
-  };
   const [searchParams] = useSearchParams();
   const [reports, setReports] = useState<Report[]>([]);
   const [filteredReports, setFilteredReports] = useState<Report[]>([]);
@@ -228,8 +217,8 @@ export default function ReportsPage() {
           setReports([]);
           setFilteredReports([]);
           toast({
-            title: t('common:warning'),
-            description: t('reports:toast.error.load'),
+            title: "Aviso",
+            description: "Você ainda não possui um registro de profissional. Crie um relatório primeiro.",
           });
           return;
         }
@@ -264,8 +253,8 @@ export default function ReportsPage() {
         console.error("Erro ao carregar relatórios:", error);
         toast({
           variant: "destructive",
-          title: t('common:error'),
-          description: t('reports:toast.error.load'),
+          title: "Erro ao carregar relatórios",
+          description: "Não foi possível carregar a lista de relatórios",
         });
       } finally {
         setIsLoading(false);
@@ -281,7 +270,7 @@ export default function ReportsPage() {
     if (searchTerm) {
       filtered = filtered.filter(report => 
         report.patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t(`reports:types.${report.type}`)?.toLowerCase().includes(searchTerm.toLowerCase())
+        reportTypeLabels[report.type]?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -322,7 +311,7 @@ export default function ReportsPage() {
     setDeleteDialog({
       isOpen: true,
       reportId: report.id,
-      reportType: t(`reports:types.${report.type}`) || report.type,
+      reportType: reportTypeLabels[report.type] || report.type,
       patientName: report.patient?.name || 'N/A',
     });
   };
@@ -389,12 +378,12 @@ export default function ReportsPage() {
                 {report.patient?.name || 'N/A'}
               </CardTitle>
               <p className="text-xs text-gray-500 mt-1">
-                {format(new Date(report.created_at), "P", { locale: getLocale() })} • {format(new Date(report.created_at), "HH:mm")}
+                {format(new Date(report.created_at), "dd/MM/yyyy")} • {format(new Date(report.created_at), "HH:mm")}
               </p>
             </div>
           </div>
           <Badge variant="secondary" className="text-xs font-medium">
-            {t(`reports:types.${report.type}`) || report.type}
+            {reportTypeLabels[report.type] || report.type}
           </Badge>
         </div>
       </CardHeader>
@@ -444,10 +433,10 @@ export default function ReportsPage() {
             <div className="flex items-center gap-3 mb-6">
               <FileText className="h-8 w-8" />
               <h1 className="text-3xl font-bold">
-                {t('reports:list.title')}
+                Meus Relatórios
                 {selectedTypeFilter !== 'all' && (
                   <span className="text-xl font-normal ml-2 opacity-90">
-                    • {t(`reports:types.${selectedTypeFilter}`)}
+                    • {reportTypeLabels[selectedTypeFilter]}
                   </span>
                 )}
               </h1>
@@ -462,7 +451,7 @@ export default function ReportsPage() {
                       <FileText className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-sm opacity-90">{t('reports:list.stats.total')}</p>
+                      <p className="text-sm opacity-90">Total de Relatórios</p>
                       <p className="text-2xl font-bold">{stats.totalReports}</p>
                     </div>
                   </div>
@@ -476,7 +465,7 @@ export default function ReportsPage() {
                       <Calendar className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-sm opacity-90">{t('reports:list.stats.thisMonth')}</p>
+                      <p className="text-sm opacity-90">Este Mês</p>
                       <p className="text-2xl font-bold">{stats.thisMonth}</p>
                     </div>
                   </div>
@@ -490,7 +479,7 @@ export default function ReportsPage() {
                       <Users className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-sm opacity-90">{t('reports:list.stats.patients')}</p>
+                      <p className="text-sm opacity-90">Pacientes Únicos</p>
                       <p className="text-2xl font-bold">{stats.uniquePatients}</p>
                     </div>
                   </div>
@@ -511,7 +500,7 @@ export default function ReportsPage() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder={t('reports:list.search')}
+                    placeholder="Buscar por paciente ou tipo..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 border-gray-200 focus:border-blue-500 bg-white"
@@ -523,10 +512,10 @@ export default function ReportsPage() {
                   onChange={(e) => setSelectedTypeFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-200 rounded-lg bg-white focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="all">{t('reports:list.filter')}</option>
+                  <option value="all">Todos os tipos</option>
                   {uniqueTypes.map(type => (
                     <option key={type} value={type}>
-                      {t(`reports:types.${type}`) || type}
+                      {reportTypeLabels[type] || type}
                     </option>
                   ))}
                 </select>
@@ -562,7 +551,7 @@ export default function ReportsPage() {
                 <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto"></div>
                 <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
               </div>
-              <p className="text-gray-500 mt-4">{t('reports:list.loading')}</p>
+              <p className="text-gray-500 mt-4">Carregando relatórios...</p>
             </CardContent>
           </Card>
         ) : !professionalId ? (
@@ -582,12 +571,12 @@ export default function ReportsPage() {
             <CardContent className="p-12 text-center">
               <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                {t('reports:list.empty.title')}
+                {searchTerm || selectedTypeFilter !== 'all' ? 'Nenhum resultado encontrado' : 'Nenhum relatório criado'}
               </h3>
               <p className="text-gray-500 mb-6">
                 {searchTerm || selectedTypeFilter !== 'all' 
-                  ? t('reports:list.empty.noResults')
-                  : t('reports:list.empty.description')}
+                  ? 'Tente ajustar os filtros de busca.'
+                  : 'Comece criando seu primeiro relatório.'}
               </p>
             </CardContent>
           </Card>
@@ -603,23 +592,23 @@ export default function ReportsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold">{t('reports:list.table.headers.date')}</TableHead>
-                    <TableHead className="font-semibold">{t('reports:list.table.headers.patient')}</TableHead>
-                    <TableHead className="font-semibold">{t('reports:list.table.headers.type')}</TableHead>
-                    <TableHead className="font-semibold">{t('reports:list.table.headers.professional')}</TableHead>
-                    <TableHead className="text-right font-semibold">{t('reports:list.table.headers.actions')}</TableHead>
+                    <TableHead className="font-semibold">Data</TableHead>
+                    <TableHead className="font-semibold">Paciente</TableHead>
+                    <TableHead className="font-semibold">Tipo</TableHead>
+                    <TableHead className="font-semibold">Profissional</TableHead>
+                    <TableHead className="text-right font-semibold">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReports.map((report) => (
                     <TableRow key={report.id} className="hover:bg-gray-50/50">
                       <TableCell className="font-medium">
-                        {format(new Date(report.created_at), "Pp", { locale: getLocale() })}
+                        {format(new Date(report.created_at), "dd/MM/yyyy HH:mm")}
                       </TableCell>
                       <TableCell>{report.patient?.name || 'N/A'}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-medium">
-                          {t(`reports:types.${report.type}`) || report.type}
+                          {reportTypeLabels[report.type] || report.type}
                         </Badge>
                       </TableCell>
                       <TableCell>{report.professional?.name || 'N/A'}</TableCell>
@@ -664,7 +653,7 @@ export default function ReportsPage() {
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t('reports:dialog.view.title')}</DialogTitle>
+            <DialogTitle>Visualizar Relatório</DialogTitle>
           </DialogHeader>
           {selectedReport && <ReportViewer report={selectedReport} />}
         </DialogContent>
