@@ -194,7 +194,7 @@ export default function EvolutionReport() {
       {/* Enhanced Organized Header */}
       <div className="relative mb-6 lg:mb-10 overflow-hidden">
         {/* Main Header Container */}
-        <div className="relative rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100/60 shadow-xl">
+        <div className="relative rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-blue-100/60 dark:border-gray-700 shadow-xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-grid-blue-100/20 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
@@ -226,15 +226,15 @@ export default function EvolutionReport() {
                     {/* Subtitle with decorative line */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
-                      <span className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
-                        Relatório de Evolução MuseTera
-                      </span>
+                  <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+                    Relatório de Evolução MuseTera
+                  </span>
                       <div className="hidden sm:block h-1 w-8 sm:w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
                     </div>
                   </div>
                   
                   {/* Description */}
-                  <p className="text-muted-foreground text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
+                  <p className="text-gray-700 dark:text-gray-200 text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
                     Sistema profissional para documentação detalhada da evolução do paciente durante sessões de musicoterapia, 
                     registrando progressos, comportamentos e interações terapêuticas de forma estruturada.
                   </p>
