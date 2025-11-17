@@ -657,72 +657,52 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-5 w-5" />
-                    6. Estratégias e Técnicas
+                    {t('form.tabs.strategies.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
-                    label="Improvisação musical"
-                    prompts={[
-                      "Exploração livre de instrumentos seguida de estruturação gradual. Diálogos musicais entre terapeuta e paciente. Criação de 'conversas' rítmicas.",
-                      "Interação espontânea com instrumentos melódicos. Desenvolvimento de temas musicais improvisados. Jogos de pergunta e resposta musical.",
-                      "Criação livre com instrumentos de percussão. Expressão emocional através da improvisação. Exploração de texturas sonoras.",
-                      "Improvisação vocal livre seguida de estruturação rítmica. Diálogos sonoros não verbais. Expressão criativa sem julgamento."
-                    ]}
+                    label={t('form.strategies.musicalImprovisation.label')}
+                    prompts={t('form.strategies.musicalImprovisation.prompts', { returnObjects: true }) as string[]}
                     value={planData.musical_improvisation || ''}
                     onChange={(value) => updatePlanData({ musical_improvisation: value })}
-                    placeholder="Interação livre ou dirigida com instrumentos..."
+                    placeholder={t('form.strategies.musicalImprovisation.placeholder')}
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label="Recriação musical"
-                    prompts={[
-                      "Canções conhecidas adaptadas às necessidades terapêuticas. Modificação de letras para trabalhar objetivos específicos. Acompanhamento instrumental de repertório familiar.",
-                      "Reprodução de canções infantis com gestos corporais. Adaptação do tempo e ritmo conforme capacidade do paciente. Inclusão de instrumentos simples.",
-                      "Interpretação de músicas preferidas do paciente. Trabalho de memória através do repertório conhecido. Estímulo à participação vocal.",
-                      "Recriação de trilhas sonoras familiares. Associação de músicas a atividades cotidianas. Desenvolvimento de repertório terapêutico personalizado."
-                    ]}
+                    label={t('form.strategies.musicalRecreation.label')}
+                    prompts={t('form.strategies.musicalRecreation.prompts', { returnObjects: true }) as string[]}
                     value={planData.musical_recreation || ''}
                     onChange={(value) => updatePlanData({ musical_recreation: value })}
-                    placeholder="Cantar ou tocar músicas conhecidas..."
+                    placeholder={t('form.strategies.musicalRecreation.placeholder')}
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label="Composição"
-                    prompts={[
-                      "Criação de pequenas melodias sobre temas do interesse do paciente. Composição de letras expressando sentimentos. Construção coletiva de canções simples.",
-                      "Desenvolvimento de sons e ritmos personalizados. Criação de histórias musicais. Composição colaborativa entre terapeuta e paciente.",
-                      "Invenção de canções temáticas para rotinas diárias. Criação de jingles musicais. Desenvolvimento de identidade sonora pessoal.",
-                      "Composição de músicas para expressar emoções específicas. Criação de trilhas para atividades favoritas. Desenvolvimento de repertório autoral."
-                    ]}
+                    label={t('form.strategies.composition.label')}
+                    prompts={t('form.strategies.composition.prompts', { returnObjects: true }) as string[]}
                     value={planData.musical_composition || ''}
                     onChange={(value) => updatePlanData({ musical_composition: value })}
-                    placeholder="Criar músicas, letras ou sons em conjunto..."
+                    placeholder={t('form.strategies.composition.placeholder')}
                     rows={3}
                   />
                   
                   <PromptSelector
-                    label="Escuta receptiva"
-                    prompts={[
-                      "Músicas selecionadas para relaxamento e regulação emocional. Escuta ativa com movimentos corporais. Associação de músicas a imagens e histórias.",
-                      "Seleção de repertório para diferentes estados emocionais. Escuta direcionada para estimulação cognitiva. Trabalho de memória auditiva.",
-                      "Músicas para indução de estados de calma. Escuta com visualização dirigida. Trabalho de identificação de emoções através da música.",
-                      "Repertório adaptado para diferentes objetivos terapêuticos. Escuta com proposta de movimento expressivo. Estimulação sensorial através da música."
-                    ]}
+                    label={t('form.strategies.receptiveListening.label')}
+                    prompts={t('form.strategies.receptiveListening.prompts', { returnObjects: true }) as string[]}
                     value={planData.receptive_listening || ''}
                     onChange={(value) => updatePlanData({ receptive_listening: value })}
-                    placeholder="Ouvir músicas para estimular resposta emocional ou cognitiva..."
+                    placeholder={t('form.strategies.receptiveListening.placeholder')}
                     rows={3}
                   />
                   
                   <div className="space-y-2">
-                    <Label>Dinâmicas rítmicas</Label>
+                    <Label>{t('form.strategies.rhythmicDynamics.label')}</Label>
                     <Textarea
                       value={planData.rhythmic_dynamics || ''}
                       onChange={(e) => updatePlanData({ rhythmic_dynamics: e.target.value })}
-                      placeholder="Jogos de pulsação e coordenação motora..."
+                      placeholder={t('form.strategies.rhythmicDynamics.placeholder')}
                       rows={3}
                     />
                   </div>
@@ -827,49 +807,34 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    9. Plano Terapêutico em Ação
+                    {t('form.tabs.action.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
-                    label="Estrutura das sessões"
-                    prompts={[
-                      "Ritual de chegada (5 min) → Aquecimento musical (10 min) → Atividade principal (25 min) → Relaxamento/fechamento (5 min)",
-                      "Acolhimento musical (5 min) → Exploração instrumental (15 min) → Atividades dirigidas (20 min) → Momento criativo (15 min) → Despedida musical (5 min)",
-                      "Canção de boas-vindas → Aquecimento corporal com música → Atividades principais conforme objetivos → Momento de expressão livre → Ritual de encerramento",
-                      "Início com música familiar → Atividades de maior demanda cognitiva → Pausa para regulação → Atividades expressivas → Fechamento relaxante"
-                    ]}
+                    label={t('form.fields.sessionStructure')}
+                    prompts={t('form.prompts.sessionStructure', { returnObjects: true }) as string[]}
                     value={planData.session_structure || ''}
                     onChange={(value) => updatePlanData({ session_structure: value })}
-                    placeholder="Descreva a estrutura típica das sessões (início, desenvolvimento, fechamento)..."
+                    placeholder={t('form.fields.sessionStructurePlaceholder')}
                     rows={4}
                   />
                   
                   <PromptSelector
-                    label="Sequência das atividades musicais propostas"
-                    prompts={[
-                      "1. Canção de boas-vindas; 2. Exploração instrumental livre; 3. Atividade dirigida conforme objetivo; 4. Momento criativo/expressivo; 5. Canção de despedida",
-                      "Início com música preferida → Atividades rítmicas corporais → Trabalho vocal/instrumental → Improvisação livre → Relaxamento musical",
-                      "Aquecimento vocal → Percussão corporal → Instrumentos melódicos → Criação musical → Escuta receptiva para fechamento",
-                      "Ritual musical inicial → Atividades de coordenação → Trabalho de objetivos específicos → Expressão criativa → Momento de integração final"
-                    ]}
+                    label={t('form.fields.activitySequence')}
+                    prompts={t('form.prompts.activitySequence', { returnObjects: true }) as string[]}
                     value={planData.activity_sequence || ''}
                     onChange={(value) => updatePlanData({ activity_sequence: value })}
-                    placeholder="Descreva a ordem e progressão das atividades musicais..."
+                    placeholder={t('form.fields.activitySequencePlaceholder')}
                     rows={4}
                   />
                   
                   <PromptSelector
-                    label="Flexibilidade para ajustes"
-                    prompts={[
-                      "Ajustes conforme estado emocional e engajamento do paciente. Alternância entre atividades ativas e receptivas conforme necessidade de regulação.",
-                      "Adaptação do tempo e intensidade das atividades conforme resposta do paciente. Modificação de instrumentos e repertório conforme interesse demonstrado.",
-                      "Flexibilidade para interromper atividades que causem desconforto. Inclusão de pausas para autorregulação quando necessário.",
-                      "Possibilidade de modificar objetivos da sessão conforme demandas emergentes. Adaptação de recursos conforme disponibilidade e interesse."
-                    ]}
+                    label={t('form.fields.flexibility')}
+                    prompts={t('form.prompts.flexibility', { returnObjects: true }) as string[]}
                     value={planData.flexibility_adjustments || ''}
                     onChange={(value) => updatePlanData({ flexibility_adjustments: value })}
-                    placeholder="Como o plano pode ser ajustado de acordo com as respostas do paciente..."
+                    placeholder={t('form.fields.flexibilityPlaceholder')}
                     rows={3}
                   />
                 </CardContent>
@@ -882,45 +847,45 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <RefreshCw className="h-5 w-5" />
-                    10. Reavaliação e Evolução
+                    {t('form.tabs.reevaluation.title')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label>Frequência da reavaliação</Label>
+                    <Label>{t('form.fields.reevaluationFrequency')}</Label>
                     <Select 
-                      value={planData.reevaluation_frequency || 'mensal'} 
+                      value={planData.reevaluation_frequency || 'monthly'} 
                       onValueChange={(value) => updatePlanData({ reevaluation_frequency: value })}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="quinzenal">Quinzenal</SelectItem>
-                        <SelectItem value="mensal">Mensal</SelectItem>
-                        <SelectItem value="bimestral">Bimestral</SelectItem>
-                        <SelectItem value="trimestral">Trimestral</SelectItem>
-                        <SelectItem value="semestral">Semestral</SelectItem>
+                        <SelectItem value="biweekly">{t('form.reevaluationOptions.biweekly')}</SelectItem>
+                        <SelectItem value="monthly">{t('form.reevaluationOptions.monthly')}</SelectItem>
+                        <SelectItem value="bimonthly">{t('form.reevaluationOptions.bimonthly')}</SelectItem>
+                        <SelectItem value="quarterly">{t('form.reevaluationOptions.quarterly')}</SelectItem>
+                        <SelectItem value="semiannual">{t('form.reevaluationOptions.semiannual')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>Registro da evolução em prontuário musicoterapêutico</Label>
+                    <Label>{t('form.fields.evolutionRecording')}</Label>
                     <Textarea
                       value={planData.evolution_recording || ''}
                       onChange={(e) => updatePlanData({ evolution_recording: e.target.value })}
-                      placeholder="Descreva como será feito o registro da evolução..."
+                      placeholder={t('form.fields.evolutionRecordingPlaceholder')}
                       rows={4}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>Ajustes necessários nos objetivos e técnicas</Label>
+                    <Label>{t('form.fields.necessaryAdjustments')}</Label>
                     <Textarea
                       value={planData.necessary_adjustments || ''}
                       onChange={(e) => updatePlanData({ necessary_adjustments: e.target.value })}
-                      placeholder="Que tipo de ajustes podem ser necessários durante o tratamento..."
+                      placeholder={t('form.fields.necessaryAdjustmentsPlaceholder')}
                       rows={4}
                     />
                   </div>
