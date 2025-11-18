@@ -45,13 +45,13 @@ export function PatientSelect({
 
   return (
     <div>
-      <Label>{label}</Label>
+      <Label className="font-bold text-gray-900 dark:text-white">{label}</Label>
       <Select 
         value={selectedPatient} 
         onValueChange={onSelect}
         disabled={disabled || isLoading || !hasPatients}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full bg-white text-gray-900 font-medium border-blue-300">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent className="z-[9999] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg">

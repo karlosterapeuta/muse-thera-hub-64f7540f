@@ -765,21 +765,21 @@ const [activeTab, setActiveTab] = useState("evaluation");
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-foreground">Data da Avaliação</label>
+                <label className="text-sm font-bold text-gray-900 dark:text-white">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[220px] justify-start text-left font-normal bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300",
-                        !evaluationDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
-                      {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
-                    </Button>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[220px] justify-start text-left font-normal bg-white border-blue-300 hover:bg-blue-50 transition-all duration-300 text-gray-900 font-medium",
+                    !evaluationDate && "text-gray-500"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
+                  {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
+                </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 border-0 shadow-xl" align="start">
+                  <PopoverContent className="w-auto p-0 bg-white border-2 border-blue-300 shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={evaluationDate}
@@ -798,7 +798,7 @@ const [activeTab, setActiveTab] = useState("evaluation");
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
               >
-                <SelectTrigger className="w-full sm:w-[200px] bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100 transition-all duration-300">
+                <SelectTrigger className="w-full sm:w-[200px] bg-white text-gray-900 font-medium border-blue-300 hover:bg-blue-50 transition-all duration-300">
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
