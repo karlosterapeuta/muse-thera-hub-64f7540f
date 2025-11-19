@@ -13,8 +13,6 @@ export interface ProfessionalData {
   license_number?: string;
   association?: string;
   avatar_url?: string;
-  digital_signature_url?: string;
-  digital_stamp_url?: string;
 }
 
 export function useProfessionalData() {

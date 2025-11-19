@@ -619,59 +619,6 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
               </div>
             </div>
             
-            {/* Seção de Assinatura e Carimbo Digital */}
-            {(professionalData?.digital_signature_url || professionalData?.digital_stamp_url) && (
-              <div style={{ 
-                marginTop: '32px', 
-                paddingTop: '24px',
-                borderTop: '2px solid #E5E7EB',
-                display: 'flex',
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                gap: '24px'
-              }}>
-                {professionalData?.digital_signature_url && (
-                  <div style={{ textAlign: 'center', flex: '1' }}>
-                    <img 
-                      src={professionalData.digital_signature_url} 
-                      alt="Assinatura Digital" 
-                      style={{ 
-                        maxWidth: '200px', 
-                        maxHeight: '80px', 
-                        marginBottom: '8px',
-                        display: 'block',
-                        marginLeft: 'auto',
-                        marginRight: 'auto'
-                      }} 
-                    />
-                    <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
-                      Assinatura Digital
-                    </p>
-                  </div>
-                )}
-                
-                {professionalData?.digital_stamp_url && (
-                  <div style={{ textAlign: 'center', flex: '1' }}>
-                    <img 
-                      src={professionalData.digital_stamp_url} 
-                      alt="Carimbo Digital" 
-                      style={{ 
-                        maxWidth: '120px', 
-                        maxHeight: '120px', 
-                        marginBottom: '8px',
-                        display: 'block',
-                        marginLeft: 'auto',
-                        marginRight: 'auto'
-                      }} 
-                    />
-                    <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
-                      Carimbo Digital
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-            
             <div style={{ textAlign: 'right' }}>
               <div style={{ 
                 backgroundColor: '#FFFFFF',

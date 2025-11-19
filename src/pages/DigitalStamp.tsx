@@ -7,9 +7,6 @@ import { Download, User, Camera, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useProfessionalData } from '@/hooks/useProfessionalData';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function DigitalStamp() {
   const [formData, setFormData] = useState({
@@ -26,12 +23,6 @@ export default function DigitalStamp() {
   const [stampQrDataUrl, setStampQrDataUrl] = useState<string>('');
   const [isGeneratingSignature, setIsGeneratingSignature] = useState(false);
   const [isGeneratingStamp, setIsGeneratingStamp] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasSignatureSaved, setHasSignatureSaved] = useState(false);
-  const [hasStampSaved, setHasStampSaved] = useState(false);
-  
-  const { data: professionalData } = useProfessionalData();
-  const queryClient = useQueryClient();
 
   const defaultTexts = {
     name: 'Nome do Profissional',
@@ -44,13 +35,6 @@ export default function DigitalStamp() {
   useEffect(() => {
     generateQrCodes();
   }, [formData.qrLink]);
-
-  useEffect(() => {
-    if (professionalData) {
-      setHasSignatureSaved(!!professionalData.digital_signature_url);
-      setHasStampSaved(!!professionalData.digital_stamp_url);
-    }
-  }, [professionalData]);
 
   const generateQrCodes = async () => {
     if (formData.qrLink) {
@@ -127,68 +111,6 @@ export default function DigitalStamp() {
     }
   };
 
-  const saveToStorageAndDatabase = async (
-    elementId: string, 
-    type: 'signature' | 'stamp'
-  ) => {
-    setIsSaving(true);
-    try {
-      const element = document.getElementById(elementId);
-      if (!element || !professionalData?.id) {
-        toast.error('Erro ao salvar. Dados incompletos.');
-        return;
-      }
-
-      // 1. Capturar como blob
-      const canvas = await html2canvas(element, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((b) => resolve(b!), 'image/png');
-      });
-
-      // 2. Upload para Supabase Storage
-      const fileName = `${type}-${professionalData.id}-${Date.now()}.png`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('digital-signatures')
-        .upload(fileName, blob, {
-          contentType: 'image/png',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      // 3. Obter URL pública
-      const { data: { publicUrl } } = supabase.storage
-        .from('digital-signatures')
-        .getPublicUrl(fileName);
-
-      // 4. Atualizar tabela professionals
-      const fieldName = type === 'signature' ? 'digital_signature_url' : 'digital_stamp_url';
-      const { error: dbError } = await supabase
-        .from('professionals')
-        .update({ [fieldName]: publicUrl })
-        .eq('id', professionalData.id);
-
-      if (dbError) throw dbError;
-
-      toast.success(`${type === 'signature' ? 'Assinatura' : 'Carimbo'} salvo com sucesso! Será usado automaticamente nos relatórios.`);
-      
-      // Invalidar cache do hook useProfessionalData
-      queryClient.invalidateQueries({ queryKey: ['professional-data'] });
-      
-    } catch (error) {
-      console.error('Erro ao salvar:', error);
-      toast.error('Erro ao salvar. Tente novamente.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl">
       <header className="text-center mb-6 sm:mb-8">
@@ -205,12 +127,6 @@ export default function DigitalStamp() {
         <div className="w-full xl:w-auto flex flex-col items-center gap-6 sm:gap-8 xl:sticky xl:top-8">
           {/* Signature Preview */}
           <div className="w-full max-w-md px-2 sm:px-0">
-            {hasSignatureSaved && (
-              <div className="mb-2 flex items-center justify-center gap-2 text-green-600">
-                <Check className="w-4 h-4" />
-                <span className="text-sm font-medium">Assinatura sincronizada com relatórios</span>
-              </div>
-            )}
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
               Pré-visualização da Assinatura
             </h2>
@@ -250,12 +166,6 @@ export default function DigitalStamp() {
 
           {/* Stamp Preview */}
           <div className="w-full max-w-xs mx-auto px-2 sm:px-0">
-            {hasStampSaved && (
-              <div className="mb-2 flex items-center justify-center gap-2 text-green-600">
-                <Check className="w-4 h-4" />
-                <span className="text-sm font-medium">Carimbo sincronizado com relatórios</span>
-              </div>
-            )}
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2 text-center">
               Pré-visualização do Carimbo
             </h2>
@@ -438,59 +348,31 @@ export default function DigitalStamp() {
             </div>
 
             <div className="mt-6 sm:mt-8 space-y-2 sm:space-y-3">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-foreground text-center">Assinatura Digital</p>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() =>
-                      downloadElementAsPng(
-                        'signaturePreview',
-                        'assinatura-digital.png',
-                        setIsGeneratingSignature
-                      )
-                    }
-                    disabled={isGeneratingSignature || isSaving}
-                    variant="outline"
-                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
-                  >
-                    <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Baixar PNG
-                  </Button>
-                  <Button
-                    onClick={() => saveToStorageAndDatabase('signaturePreview', 'signature')}
-                    disabled={isGeneratingSignature || isSaving}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
-                  >
-                    <Check className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    {isSaving ? 'Salvando...' : 'Salvar nos Relatórios'}
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-foreground text-center">Carimbo Digital</p>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() =>
-                      downloadElementAsPng('stampPreview', 'carimbo-digital.png', setIsGeneratingStamp)
-                    }
-                    disabled={isGeneratingStamp || isSaving}
-                    variant="outline"
-                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
-                  >
-                    <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Baixar PNG
-                  </Button>
-                  <Button
-                    onClick={() => saveToStorageAndDatabase('stampPreview', 'stamp')}
-                    disabled={isGeneratingStamp || isSaving}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
-                  >
-                    <Check className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    {isSaving ? 'Salvando...' : 'Salvar nos Relatórios'}
-                  </Button>
-                </div>
-              </div>
+              <Button
+                onClick={() =>
+                  downloadElementAsPng(
+                    'signaturePreview',
+                    'assinatura-digital.png',
+                    setIsGeneratingSignature
+                  )
+                }
+                disabled={isGeneratingSignature}
+                className="w-full bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
+              >
+                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura (PNG)'}
+              </Button>
+              <Button
+                onClick={() =>
+                  downloadElementAsPng('stampPreview', 'carimbo-digital.png', setIsGeneratingStamp)
+                }
+                disabled={isGeneratingStamp}
+                variant="secondary"
+                className="w-full h-10 sm:h-11 text-sm sm:text-base"
+              >
+                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo (PNG)'}
+              </Button>
             </div>
           </Card>
         </div>

@@ -249,75 +249,20 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
         </div>
 
         {/* Footer Final */}
-        <div className="border-t-2 border-gray-200 mt-6 pt-4">
-          {/* Seção de Assinatura e Carimbo Digital */}
-          {(professionalData?.digital_signature_url || professionalData?.digital_stamp_url) && (
-            <div style={{ 
-              marginBottom: '24px',
-              paddingBottom: '24px',
-              borderBottom: '2px solid #E5E7EB',
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              gap: '24px'
-            }}>
-              {professionalData?.digital_signature_url && (
-                <div style={{ textAlign: 'center', flex: '1' }}>
-                  <img 
-                    src={professionalData.digital_signature_url} 
-                    alt="Assinatura Digital" 
-                    style={{ 
-                      maxWidth: '200px', 
-                      maxHeight: '80px', 
-                      marginBottom: '8px',
-                      display: 'block',
-                      marginLeft: 'auto',
-                      marginRight: 'auto'
-                    }} 
-                  />
-                  <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
-                    Assinatura Digital
-                  </p>
-                </div>
-              )}
-              
-              {professionalData?.digital_stamp_url && (
-                <div style={{ textAlign: 'center', flex: '1' }}>
-                  <img 
-                    src={professionalData.digital_stamp_url} 
-                    alt="Carimbo Digital" 
-                    style={{ 
-                      maxWidth: '120px', 
-                      maxHeight: '120px', 
-                      marginBottom: '8px',
-                      display: 'block',
-                      marginLeft: 'auto',
-                      marginRight: 'auto'
-                    }} 
-                  />
-                  <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
-                    Carimbo Digital
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-          
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-1">
-              Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-            </p>
-            <p className="text-xs text-gray-500 mb-1">
-              Musetera - Sistema de Gestão para Musicoterapia
-            </p>
-            <p className="text-xs text-gray-500 mb-1">
-              Musicoterapeuta: {professionalData?.name || 'Não informado'}
-            </p>
-            <p className="text-xs text-gray-500">
-              Email: {professionalData?.email || 'Não informado'}
-            </p>
-            <p className="text-sm text-gray-500 mt-2">Página 3/3</p>
-          </div>
+        <div className="border-t-2 border-gray-200 mt-6 pt-4 text-center">
+          <p className="text-xs text-gray-500 mb-1">
+            Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          <p className="text-xs text-gray-500 mb-1">
+            Musetera - Sistema de Gestão para Musicoterapia
+          </p>
+          <p className="text-xs text-gray-500 mb-1">
+            Musicoterapeuta: {professionalData?.name || 'Não informado'}
+          </p>
+          <p className="text-xs text-gray-500">
+            Email: {professionalData?.email || 'Não informado'}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">Página 3/3</p>
         </div>
       </div>
     </div>
