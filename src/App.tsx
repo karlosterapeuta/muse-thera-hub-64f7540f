@@ -26,6 +26,7 @@ import TreatmentPlan from "./pages/treatment-plan";
 import MusicotherapyTreatmentPlan from "./pages/musicotherapy-treatment-plan";
 import MusicotherapyTreatmentPlans from "./pages/musicotherapy-treatment-plans";
 import Intervention from "./pages/intervention";
+import InterventionPlans from "./pages/intervention-plans";
 import Evaluation from "./pages/evaluation";
 import Reevaluation from "./pages/reevaluation";
 import Finance from "./pages/finance";
@@ -140,6 +141,7 @@ const App = () => {
             <Route path="musicotherapy-treatment-plan" element={<MusicotherapyTreatmentPlan />} />
             <Route path="musicotherapy-treatment-plan/:id" element={<MusicotherapyTreatmentPlan />} />
             <Route path="intervention" element={<Intervention />} />
+            <Route path="intervention-plans" element={<InterventionPlans />} />
             <Route path="evaluation" element={<Evaluation />} />
             <Route path="reevaluation" element={<Reevaluation />} />
             <Route path="finance" element={<Finance />} />
