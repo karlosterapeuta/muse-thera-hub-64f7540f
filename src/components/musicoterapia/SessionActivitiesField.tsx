@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Info, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SessionActivitiesFieldProps {
   value: string[];
@@ -51,6 +52,7 @@ const CATEGORY_FILTERS = [
 export function SessionActivitiesField({ value, onChange }: SessionActivitiesFieldProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas as Categorias');
+  const [customActivity, setCustomActivity] = useState<string>('');
 
   const filteredData = useMemo(() => {
     let data: Record<string, string[]> = SESSION_ACTIVITIES_DATA;
@@ -87,6 +89,32 @@ export function SessionActivitiesField({ value, onChange }: SessionActivitiesFie
 
   const removeActivity = (activity: string) => {
     onChange(value.filter(v => v !== activity));
+  };
+
+  const handleAddCustomActivity = () => {
+    const trimmedActivity = customActivity.trim();
+    
+    // Validar que não está vazio
+    if (!trimmedActivity) {
+      return;
+    }
+    
+    // Validar que não é duplicado
+    if (value.includes(trimmedActivity)) {
+      return;
+    }
+    
+    // Adicionar à lista de atividades
+    onChange([...value, trimmedActivity]);
+    
+    // Limpar o campo
+    setCustomActivity('');
+  };
+
+  const isPreDefinedActivity = (activity: string) => {
+    return Object.values(SESSION_ACTIVITIES_DATA)
+      .flat()
+      .includes(activity);
   };
 
   const selectedCount = value.length;
@@ -232,6 +260,85 @@ export function SessionActivitiesField({ value, onChange }: SessionActivitiesFie
           <p>Nenhuma atividade encontrada para "{searchTerm}"</p>
         </div>
       )}
+
+      {/* Seção de Atividades Personalizadas */}
+      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+            <span className="text-xl">✏️</span>
+            Adicionar Atividade Personalizada
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Card de orientações */}
+          <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
+                  Como descrever atividades musicoterapêuticas eficazes:
+                </p>
+                <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
+                  <li>Especifique as técnicas musicais utilizadas</li>
+                  <li>Mencione os instrumentos e recursos empregados</li>
+                  <li>Descreva o tipo de interação (individual, grupo, dirigida, livre)</li>
+                  <li>Relate os objetivos práticos da atividade</li>
+                  <li>Inclua informações sobre duração ou intensidade quando relevante</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Campo de entrada */}
+          <div className="space-y-2">
+            <Label htmlFor="custom-activity" className="text-purple-700 dark:text-purple-300 font-medium">
+              Digite a descrição da atividade:
+            </Label>
+            <Textarea
+              id="custom-activity"
+              value={customActivity}
+              onChange={(e) => setCustomActivity(e.target.value)}
+              placeholder="Ex: Realizou-se sessão de improvisação rítmica com instrumentos de percussão variados (djembê, bongôs, chocalhos) para promover expressão corporal e coordenação motora, com duração de 20 minutos..."
+              className="min-h-[120px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
+              onKeyDown={(e) => {
+                // Adicionar com Ctrl+Enter ou Cmd+Enter
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleAddCustomActivity();
+                }
+              }}
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-purple-600 dark:text-purple-400">
+                {customActivity.length > 0 && `${customActivity.length} caracteres`}
+                {customActivity.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
+              </p>
+              <Button
+                type="button"
+                onClick={handleAddCustomActivity}
+                disabled={!customActivity.trim()}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+              >
+                <span className="mr-2">➕</span>
+                Adicionar Atividade
+              </Button>
+            </div>
+          </div>
+
+          {/* Exemplos inspiradores */}
+          <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+            <p className="text-xs text-purple-700 dark:text-purple-300 font-medium mb-2">
+              💡 Exemplos de descrições personalizadas:
+            </p>
+            <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1 ml-4 list-disc">
+              <li>"Aplicação de técnica de recriação musical com canções escolhidas pelo paciente, favorecendo reminiscência e expressão de memórias afetivas"</li>
+              <li>"Exercícios de movimento e dança livre ao som de diferentes ritmos brasileiros (samba, forró, maracatu) para estimulação sensório-motora"</li>
+              <li>"Uso de aplicativos de composição musical digital (GarageBand) para criação colaborativa e desenvolvimento de autonomia criativa"</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
