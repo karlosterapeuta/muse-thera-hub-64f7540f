@@ -26,14 +26,14 @@ export const generateReactPDFPreview = async (
     // Criar container VISÍVEL mas "invisível" ao usuário
     container = document.createElement('div');
     container.style.position = 'fixed';
-    container.style.left = '0';
+    container.style.left = '-10000px'; // Move para fora da tela
     container.style.top = '0';
     container.style.width = '210mm';
     container.style.minHeight = '297mm';
     container.style.backgroundColor = '#ffffff';
     container.style.padding = '20px';
     container.style.overflow = 'visible';
-    container.style.opacity = '0';
+    container.style.visibility = 'visible'; // Explicitamente visível para html2canvas
     container.style.pointerEvents = 'none';
     container.style.zIndex = '-9999';
     document.body.appendChild(container);

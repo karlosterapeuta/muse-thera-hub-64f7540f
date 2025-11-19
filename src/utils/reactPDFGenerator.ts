@@ -29,17 +29,16 @@ export const generateReactPDF = async (
     // Criar container VISÍVEL mas "invisível" ao usuário
     container = document.createElement('div');
     container.style.position = 'fixed';
-    container.style.left = '0';
+    container.style.left = '-10000px'; // Move para fora da tela
     container.style.top = '0';
     container.style.width = '210mm';
     container.style.minHeight = '297mm';
     container.style.backgroundColor = '#ffffff';
     container.style.padding = '20px';
     container.style.overflow = 'visible';
-    container.style.opacity = '0'; // Mantém renderizado mas invisível
+    container.style.visibility = 'visible'; // Explicitamente visível para html2canvas
     container.style.pointerEvents = 'none';
     container.style.zIndex = '-9999';
-    container.style.transform = 'translateX(-9999px)'; // Move para fora da tela
     document.body.appendChild(container);
 
     console.log('📦 Container criado e anexado ao DOM');
@@ -114,6 +113,21 @@ export const generateReactPDF = async (
     }
 
     console.log('🖨️ Gerando PDF...');
+    
+    // Verificar se canvas tem conteúdo visível (não totalmente branco)
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const imageData = ctx.getImageData(0, 0, Math.min(canvas.width, 100), Math.min(canvas.height, 100));
+      const hasColor = imageData.data.some((value, index) => {
+        // Verificar se há pixels não-brancos (RGB diferente de 255)
+        if (index % 4 < 3) return value < 255;
+        return false;
+      });
+      console.log('🎨 Canvas tem conteúdo colorido:', hasColor);
+      if (!hasColor) {
+        console.warn('⚠️ Canvas parece estar totalmente branco - possível problema na captura');
+      }
+    }
     
     // Criar PDF
     const imgData = canvas.toDataURL('image/jpeg', 0.98);
