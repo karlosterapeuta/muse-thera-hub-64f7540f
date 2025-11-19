@@ -71,26 +71,78 @@ serve(async (req) => {
 
     const totalDemands = specificDemands.length;
 
+    // SEMPRE gerar 10 atividades no total
+    const TOTAL_ACTIVITIES = 10;
+
+    // Calcular quantas atividades por demanda
+    let activitiesPerDemand: number[];
+    let demandsToUse: string[];
+
+    if (totalDemands === 1) {
+      // Se apenas 1 demanda: todas as 10 atividades para ela
+      activitiesPerDemand = [10];
+      demandsToUse = specificDemands;
+    } else if (totalDemands <= 10) {
+      // Se 2-10 demandas: dividir as 10 atividades entre elas
+      const baseCount = Math.floor(TOTAL_ACTIVITIES / totalDemands);
+      const remainder = TOTAL_ACTIVITIES % totalDemands;
+      
+      activitiesPerDemand = specificDemands.map((_, index) => 
+        baseCount + (index < remainder ? 1 : 0)
+      );
+      demandsToUse = specificDemands;
+    } else {
+      // Se mais de 10 demandas: usar apenas as 10 primeiras (1 atividade cada)
+      activitiesPerDemand = Array(10).fill(1);
+      demandsToUse = specificDemands.slice(0, 10);
+    }
+
+    console.log('📊 Distribuição de atividades:', {
+      totalDemands,
+      demandsToUse: demandsToUse.length,
+      activitiesPerDemand,
+      totalActivities: activitiesPerDemand.reduce((sum, count) => sum + count, 0)
+    });
+
+    // Construir texto formatado das demandas específicas com distribuição
+    const demandsText = demandsToUse
+      .map((demand, index) => {
+        const count = activitiesPerDemand[index];
+        return `${index + 1}. ${demand} (${count} ${count === 1 ? 'atividade' : 'atividades'})`;
+      })
+      .join('\n');
+
     const prompt = `Você é um especialista em Musicoterapia clínica com amplo conhecimento em transtornos do neurodesenvolvimento.
 
 CONTEXTO DO PACIENTE:
 - Nome: ${patientName}
-- Total de demandas específicas identificadas: ${totalDemands}
-- Demandas selecionadas:
+- Total de demandas específicas selecionadas: ${totalDemands}
+- Demandas para gerar atividades: ${demandsToUse.length}
+
+LISTA DE DEMANDAS E QUANTIDADE DE ATIVIDADES:
 ${demandsText}
 
 TAREFA CRÍTICA:
-Crie EXATAMENTE ${Math.min(10, totalDemands)} atividades musicoterapêuticas práticas e específicas.
+Crie EXATAMENTE ${TOTAL_ACTIVITIES} atividades musicoterapêuticas práticas e específicas.
 
-⚠️ REGRA FUNDAMENTAL: Cada atividade deve focar em UMA e APENAS UMA das demandas específicas listadas acima.
-⚠️ NÃO crie atividades genéricas ou para outras demandas não listadas.
-⚠️ Use a numeração exata das demandas acima para referência.
-
-${totalDemands < 10 ? `
-OBSERVAÇÃO: Como apenas ${totalDemands} demandas foram selecionadas, crie ${totalDemands} atividades (uma para cada demanda).
+⚠️ REGRA FUNDAMENTAL DE DISTRIBUIÇÃO:
+${demandsToUse.length === 1 ? `
+- Como apenas 1 demanda foi selecionada, crie 10 atividades DIFERENTES focadas nesta mesma demanda
+- Varie as técnicas, instrumentos, abordagens e objetivos específicos
+- Cada atividade deve ser única e complementar às outras
 ` : `
-OBSERVAÇÃO: Como mais de 10 demandas foram selecionadas, priorize as 10 primeiras da lista.
+- Respeite EXATAMENTE a quantidade de atividades indicada para cada demanda
+- Demanda 1: ${activitiesPerDemand[0]} ${activitiesPerDemand[0] === 1 ? 'atividade' : 'atividades'}
+${demandsToUse.length > 1 ? `- Demanda 2: ${activitiesPerDemand[1]} ${activitiesPerDemand[1] === 1 ? 'atividade' : 'atividades'}` : ''}
+${demandsToUse.length > 2 ? `- Demanda 3: ${activitiesPerDemand[2]} ${activitiesPerDemand[2] === 1 ? 'atividade' : 'atividades'}` : ''}
+${demandsToUse.length > 3 ? `- E assim por diante para todas as ${demandsToUse.length} demandas` : ''}
+- Total: ${TOTAL_ACTIVITIES} atividades
 `}
+
+⚠️ IMPORTANTE:
+- NÃO crie atividades genéricas ou para demandas não listadas
+- Use a numeração exata das demandas acima para referência
+- Cada atividade deve ter foco claro e específico
 
 FORMATO PARA CADA ATIVIDADE (responda em JSON válido):
 {
@@ -112,16 +164,16 @@ FORMATO PARA CADA ATIVIDADE (responda em JSON válido):
   ]
 }
 
-IMPORTANTE:
-- Retorne EXATAMENTE ${Math.min(10, totalDemands)} atividades
-- Cada atividade deve corresponder a UMA demanda específica da lista numerada
-- Inclua o campo "demandNumber" com o número da demanda da lista (1, 2, 3, etc.)
-- Use linguagem técnica mas clara
-- Atividades devem ser práticas, executáveis e ESPECÍFICAS para a demanda indicada
-- Varie os níveis de complexidade conforme apropriado para cada demanda
-- Cada atividade deve ter ID único (ativ-001 até ativ-0${String(Math.min(10, totalDemands)).padStart(2, '0')})
-- NÃO repita demandas - uma atividade por demanda
-- Responda APENAS com o JSON, sem texto adicional`;
+CHECKLIST FINAL:
+✓ Total de ${TOTAL_ACTIVITIES} atividades
+✓ Distribuição correta: ${activitiesPerDemand.join(' + ')} = ${TOTAL_ACTIVITIES}
+✓ Cada atividade focada especificamente em sua demanda
+✓ IDs sequenciais de ativ-001 até ativ-010
+✓ Campo "demandNumber" preenchido corretamente
+✓ Linguagem técnica mas clara
+✓ Atividades práticas e executáveis
+
+Responda APENAS com o JSON, sem texto adicional.`;
 
     const startTime = Date.now();
     console.log(`⏱️ [${new Date().toISOString()}] 🚀 Iniciando geração de atividades...`);
@@ -186,20 +238,25 @@ IMPORTANTE:
             if (parsed.activities && Array.isArray(parsed.activities) && parsed.activities.length > 0) {
               console.log(`✅ ${parsed.activities.length} atividades geradas via Lovable AI em ${elapsedTime}s`);
               
-              // Validar que cada atividade corresponde a uma demanda selecionada
-              const expectedCount = Math.min(10, specificDemands.length);
-
-              if (parsed.activities.length !== expectedCount) {
-                console.warn(`⚠️ Esperado ${expectedCount} atividades, recebido ${parsed.activities.length}`);
+              // Validar que temos exatamente 10 atividades
+              if (parsed.activities.length !== TOTAL_ACTIVITIES) {
+                console.warn(`⚠️ Esperado ${TOTAL_ACTIVITIES} atividades, recebido ${parsed.activities.length}`);
               }
 
-              // Log de correspondência (para debugging)
-              parsed.activities.forEach((activity: any, index: number) => {
-                console.log(`✓ Atividade ${index + 1}:`, {
-                  id: activity.id,
-                  demandNumber: activity.demandNumber,
-                  demand: activity.demand?.substring(0, 50) + '...'
-                });
+              // Validar distribuição por demanda
+              const activitiesByDemand = new Map<number, number>();
+              parsed.activities.forEach((activity: any) => {
+                const demandNum = activity.demandNumber;
+                activitiesByDemand.set(demandNum, (activitiesByDemand.get(demandNum) || 0) + 1);
+              });
+
+              console.log('📊 Atividades geradas por demanda:');
+              demandsToUse.forEach((demand, index) => {
+                const demandNum = index + 1;
+                const expected = activitiesPerDemand[index];
+                const actual = activitiesByDemand.get(demandNum) || 0;
+                const status = expected === actual ? '✓' : '✗';
+                console.log(`${status} Demanda ${demandNum}: ${actual}/${expected} atividades - ${demand.substring(0, 50)}...`);
               });
               
               return new Response(
@@ -282,20 +339,25 @@ IMPORTANTE:
 
       console.log(`✅ ${parsedData.activities.length} atividades geradas via Google Gemini em ${elapsedTime}s`);
 
-      // Validar que cada atividade corresponde a uma demanda selecionada
-      const expectedCount = Math.min(10, specificDemands.length);
-
-      if (parsedData.activities.length !== expectedCount) {
-        console.warn(`⚠️ Esperado ${expectedCount} atividades, recebido ${parsedData.activities.length}`);
+      // Validar que temos exatamente 10 atividades
+      if (parsedData.activities.length !== TOTAL_ACTIVITIES) {
+        console.warn(`⚠️ Esperado ${TOTAL_ACTIVITIES} atividades, recebido ${parsedData.activities.length}`);
       }
 
-      // Log de correspondência (para debugging)
-      parsedData.activities.forEach((activity: any, index: number) => {
-        console.log(`✓ Atividade ${index + 1}:`, {
-          id: activity.id,
-          demandNumber: activity.demandNumber,
-          demand: activity.demand?.substring(0, 50) + '...'
-        });
+      // Validar distribuição por demanda
+      const activitiesByDemand = new Map<number, number>();
+      parsedData.activities.forEach((activity: any) => {
+        const demandNum = activity.demandNumber;
+        activitiesByDemand.set(demandNum, (activitiesByDemand.get(demandNum) || 0) + 1);
+      });
+
+      console.log('📊 Atividades geradas por demanda:');
+      demandsToUse.forEach((demand, index) => {
+        const demandNum = index + 1;
+        const expected = activitiesPerDemand[index];
+        const actual = activitiesByDemand.get(demandNum) || 0;
+        const status = expected === actual ? '✓' : '✗';
+        console.log(`${status} Demanda ${demandNum}: ${actual}/${expected} atividades - ${demand.substring(0, 50)}...`);
       });
 
       return new Response(
