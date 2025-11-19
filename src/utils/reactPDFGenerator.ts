@@ -26,111 +26,63 @@ export const generateReactPDF = async (
   try {
     console.log('🔄 Iniciando geração de PDF...', { filename });
     
-    // Criar container VISÍVEL mas fora da tela
+    // Criar container VISÍVEL mas "invisível" ao usuário
     container = document.createElement('div');
     container.style.position = 'fixed';
-    container.style.left = '-9999px'; // Fora da tela - NÃO usar opacity:0!
+    container.style.left = '0';
     container.style.top = '0';
     container.style.width = '210mm';
     container.style.minHeight = '297mm';
     container.style.backgroundColor = '#ffffff';
     container.style.padding = '20px';
     container.style.overflow = 'visible';
+    container.style.opacity = '0';
+    container.style.pointerEvents = 'none';
+    container.style.zIndex = '-9999';
     document.body.appendChild(container);
 
-    // Copiar todos os estilos da página para o container
-    console.log('📋 Injetando estilos CSS...');
-    const styleSheets = Array.from(document.styleSheets);
-    const styleContainer = document.createElement('div');
-
-    styleSheets.forEach((sheet) => {
-      try {
-        // Tentar clonar folhas de estilo inline
-        if (sheet.href === null) {
-          const rules = Array.from(sheet.cssRules);
-          const style = document.createElement('style');
-          rules.forEach(rule => {
-            style.appendChild(document.createTextNode(rule.cssText));
-          });
-          styleContainer.appendChild(style);
-        } else {
-          // Adicionar link para folhas de estilo externas
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = sheet.href;
-          styleContainer.appendChild(link);
-        }
-      } catch (e) {
-        console.warn('Não foi possível clonar stylesheet:', e);
-      }
-    });
-
-    container.prepend(styleContainer);
-    console.log('📋 Estilos injetados no container');
-
-    // Aguardar carregamento de estilos externos
-    await new Promise<void>((resolve) => {
-      const links = styleContainer.querySelectorAll('link[rel="stylesheet"]');
-      if (links.length === 0) {
-        resolve();
-        return;
-      }
-      
-      let loadedCount = 0;
-      links.forEach(link => {
-        link.addEventListener('load', () => {
-          loadedCount++;
-          if (loadedCount === links.length) {
-            resolve();
-          }
-        });
-        link.addEventListener('error', () => {
-          loadedCount++;
-          if (loadedCount === links.length) {
-            resolve();
-          }
-        });
-      });
-      
-      // Timeout de segurança
-      setTimeout(() => resolve(), 1000);
-    });
-
-    console.log('✅ Estilos carregados');
+    console.log('📦 Container criado e anexado ao DOM');
 
     // Renderizar com React 18 de forma SÍNCRONA
     console.log('🔄 Renderizando componente...');
     reactRoot = createRoot(container);
     
-    // flushSync garante renderização síncrona e imediata
+    // flushSync garante renderização síncrona do DOM
     flushSync(() => {
       reactRoot.render(component);
     });
 
-    console.log('✅ Componente renderizado sincronamente');
+    console.log('✅ Componente renderizado no DOM');
 
-    console.log('📄 Conteúdo renderizado:', container.innerHTML.length, 'caracteres');
+    // CRÍTICO: Aguardar carregamento de fontes e recursos CSS
+    console.log('⏳ Aguardando carregamento de recursos (fontes, imagens)...');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    console.log('✅ Recursos carregados');
+
+    // Verificar se há conteúdo no container
+    const contentLength = container.innerHTML.length;
+    console.log('📄 Conteúdo renderizado:', contentLength, 'caracteres');
     
-    if (container.innerHTML.length < 100) {
-      throw new Error('Conteúdo insuficiente para gerar PDF');
+    if (contentLength < 500) {
+      console.error('❌ Conteúdo insuficiente:', container.innerHTML.substring(0, 200));
+      throw new Error('Componente não renderizou corretamente - conteúdo muito pequeno');
     }
 
     // Capturar com html2canvas
-    console.log('📸 Capturando conteúdo com html2canvas...');
+    console.log('📸 Iniciando captura com html2canvas...');
     const canvas = await html2canvas(container, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: true, // Ativar logs para debug
-      windowWidth: 794, // A4 width em pixels (210mm)
-      windowHeight: 1123 // A4 height em pixels (297mm)
-    });
-
-    console.log('🖼️ Canvas capturado:', {
-      width: canvas.width,
-      height: canvas.height,
-      isEmpty: canvas.width === 0 || canvas.height === 0
+      logging: false,
+      windowWidth: container.offsetWidth,
+      windowHeight: container.offsetHeight,
+      scrollX: 0,
+      scrollY: 0,
+      x: 0,
+      y: 0
     });
 
     console.log('🖼️ Canvas capturado:', {
