@@ -36,7 +36,7 @@ export const generateReactPDF = async (
     container.style.backgroundColor = '#ffffff';
     container.style.padding = '20px';
     container.style.overflow = 'visible';
-    container.style.opacity = '0';
+    container.style.visibility = 'hidden'; // Mais eficiente que opacity
     container.style.pointerEvents = 'none';
     container.style.zIndex = '-9999';
     document.body.appendChild(container);
@@ -63,6 +63,14 @@ export const generateReactPDF = async (
     // Verificar se há conteúdo no container
     const contentLength = container.innerHTML.length;
     console.log('📄 Conteúdo renderizado:', contentLength, 'caracteres');
+    
+    // Verificar se estilos foram aplicados
+    const hasStyles = container.querySelector('[style]') !== null;
+    console.log('🎨 Estilos inline detectados:', hasStyles);
+    
+    if (!hasStyles) {
+      console.warn('⚠️ Nenhum estilo inline encontrado - PDF pode estar sem formatação');
+    }
     
     if (contentLength < 500) {
       console.error('❌ Conteúdo insuficiente:', container.innerHTML.substring(0, 200));
