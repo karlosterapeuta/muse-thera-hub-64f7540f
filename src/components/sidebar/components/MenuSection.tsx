@@ -52,6 +52,8 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
           );
         }
         
+        const isProcessesItem = item.path === "/processes";
+        
         return (
           <NavLink
             key={item.path}
@@ -63,34 +65,43 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 collapsed && "justify-center px-2",
                 isActive 
                   ? `bg-gradient-to-r ${item.gradient} text-white shadow-md shadow-${item.gradient.split('-')[1]}-500/25`
-                  : "text-foreground hover:bg-muted/50 hover:shadow-sm hover:text-foreground"
+                  : "text-foreground hover:bg-muted/50 hover:shadow-sm hover:text-foreground",
+                isProcessesItem && !isActive && "ring-2 ring-purple-500/30 hover:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-950/30 dark:to-pink-950/30",
+                isProcessesItem && "font-bold"
               )
             }
           >
             {({ isActive }) => (
               <>
+                {isProcessesItem && !isActive && (
+                  <div className="absolute inset-0 rounded-xl animate-pulse bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10" />
+                )}
+                
                 <div className={cn(
                   "relative transition-all duration-200",
-                  isActive && "drop-shadow-sm"
+                  isActive && "drop-shadow-sm",
+                  isProcessesItem && "scale-110"
                 )}>
                   <item.icon 
-                    size={18} 
+                    size={isProcessesItem ? 20 : 18} 
                     className={cn(
                       "transition-all duration-200",
                       isActive 
                         ? "text-white" 
-                        : "text-muted-foreground group-hover:text-foreground"
+                        : "text-muted-foreground group-hover:text-foreground",
+                      isProcessesItem && !isActive && "text-purple-600 dark:text-purple-400"
                     )} 
                   />
                 </div>
                 
                 {!collapsed && (
-                  <div className="flex items-center gap-2 flex-1">
+                  <div className="flex items-center gap-2 flex-1 relative z-10">
                     <span className={cn(
-                      "font-medium transition-all duration-200 text-sm",
+                      "font-medium transition-all duration-200",
                       isActive 
                         ? "text-white" 
-                        : "text-foreground group-hover:text-foreground"
+                        : "text-foreground group-hover:text-foreground",
+                      isProcessesItem ? "text-base" : "text-sm"
                     )}>
                       {item.text.includes("em construção") ? (
                         <>
