@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createElement } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { FileText, Download, Search, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { DevolutivaPreviewPDF } from "./DevolutivaPreviewPDF";
+import { generateReactPDF } from "@/utils/reactPDFGenerator";
 
 interface DevolutivaRecord {
   id: string;
@@ -14,6 +16,19 @@ interface DevolutivaRecord {
     patient_name: string;
     session_date: string;
     session_number: number;
+    communication?: string;
+    emotional_regulation?: string;
+    motor_development?: string;
+    sensory_aspects?: string;
+    musical_participation?: string;
+    achievements?: string;
+    family_guidelines?: string;
+    next_steps?: string;
+    general_observations?: string;
+    challenges_resistance?: string;
+    professional_name: string;
+    professional_registry: string;
+    report_subtype?: string;
   };
 }
 
@@ -67,11 +82,57 @@ export function DevolutivaHistory() {
     }
   };
 
-  const handleDownload = (record: DevolutivaRecord) => {
-    toast({
-      title: "Download iniciado",
-      description: "O PDF da devolutiva está sendo preparado."
-    });
+  const handleDownload = async (record: DevolutivaRecord) => {
+    try {
+      toast({
+        title: "Gerando PDF",
+        description: "Aguarde enquanto o documento é preparado..."
+      });
+
+      // Preparar dados para o PDF
+      const pdfData = {
+        patient_name: record.content.patient_name,
+        session_date: record.content.session_date,
+        session_number: record.content.session_number,
+        communication: record.content.communication || '',
+        emotional_regulation: record.content.emotional_regulation || '',
+        motor_development: record.content.motor_development || '',
+        sensory_aspects: record.content.sensory_aspects || '',
+        musical_participation: record.content.musical_participation || '',
+        achievements: record.content.achievements || '',
+        family_guidelines: record.content.family_guidelines || '',
+        next_steps: record.content.next_steps || '',
+        general_observations: record.content.general_observations || '',
+        challenges_resistance: record.content.challenges_resistance || '',
+        professional_name: record.content.professional_name,
+        professional_registry: record.content.professional_registry
+      };
+
+      // Gerar PDF usando o componente com estilos inline
+      const component = createElement(DevolutivaPreviewPDF, { data: pdfData });
+      
+      const success = await generateReactPDF(component, {
+        filename: `Devolutiva_${record.content.patient_name}_Sessao_${record.content.session_number}.pdf`,
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      if (success) {
+        toast({
+          title: "PDF gerado com sucesso!",
+          description: "O arquivo foi baixado para seu computador."
+        });
+      } else {
+        throw new Error('Falha na geração do PDF');
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível gerar o documento. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   const filteredRecords = records.filter(record =>
