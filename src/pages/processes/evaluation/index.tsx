@@ -740,27 +740,39 @@ export default function Evaluation() {
 
   const getScoreColor = (score: number) => {
     switch(score) {
-      case 0: return "border-red-500";
-      case 1: return "border-orange-400";
-      case 2: return "border-yellow-400";
-      case 3: return "border-blue-500";
-      case 4: return "border-green-500";
-      case 5: return "border-green-500";
-      default: return "border-red-500";
+      case 0: return "border-red-500 dark:border-red-400";
+      case 1: return "border-orange-500 dark:border-orange-400";
+      case 2: return "border-yellow-500 dark:border-yellow-400";
+      case 3: return "border-blue-500 dark:border-blue-400";
+      case 4: return "border-green-500 dark:border-green-400";
+      case 5: return "border-emerald-500 dark:border-emerald-400";
+      default: return "border-red-500 dark:border-red-400";
     }
   };
 
   const getScoreBgColor = (score: number, isSelected: boolean) => {
-    if (!isSelected) return "bg-white";
+    if (!isSelected) return "bg-transparent dark:bg-transparent";
     
     switch(score) {
-      case 0: return "bg-red-500";
-      case 1: return "bg-orange-400";
-      case 2: return "bg-yellow-400";
-      case 3: return "bg-blue-500";
-      case 4: return "bg-green-500";
-      case 5: return "bg-green-500";
-      default: return "bg-white";
+      case 0: return "bg-red-500 dark:bg-red-400";
+      case 1: return "bg-orange-500 dark:bg-orange-400";
+      case 2: return "bg-yellow-500 dark:bg-yellow-400";
+      case 3: return "bg-blue-500 dark:bg-blue-400";
+      case 4: return "bg-green-500 dark:bg-green-400";
+      case 5: return "bg-emerald-500 dark:bg-emerald-400";
+      default: return "bg-red-500 dark:bg-red-400";
+    }
+  };
+
+  const getRingColor = (score: number) => {
+    switch(score) {
+      case 0: return "ring-red-500/50 dark:ring-red-400/50";
+      case 1: return "ring-orange-500/50 dark:ring-orange-400/50";
+      case 2: return "ring-yellow-500/50 dark:ring-yellow-400/50";
+      case 3: return "ring-blue-500/50 dark:ring-blue-400/50";
+      case 4: return "ring-green-500/50 dark:ring-green-400/50";
+      case 5: return "ring-emerald-500/50 dark:ring-emerald-400/50";
+      default: return "ring-red-500/50 dark:ring-red-400/50";
     }
   };
 
@@ -1017,10 +1029,10 @@ export default function Evaluation() {
                                             />
                                             <label
                                               htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                              className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelIndex)} ${
+                                              className={`block w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-[3px] transition-all duration-200 ${getScoreColor(levelIndex)} ${
                                                 selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                                  ? getScoreBgColor(levelIndex, true)
-                                                  : "bg-white"
+                                                  ? `${getScoreBgColor(levelIndex, true)} shadow-lg scale-110 ring-2 ring-offset-2 dark:ring-offset-background ${getRingColor(levelIndex)}`
+                                                  : `${getScoreBgColor(levelIndex, false)} hover:scale-105 hover:shadow-md`
                                               }`}
                                             />
                                           </div>
