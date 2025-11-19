@@ -40,15 +40,35 @@ serve(async (req) => {
     // Extrair todas as subdemandas específicas selecionadas
     const specificDemands: string[] = [];
 
-    // Iterar pelos transtornos (TEA, TDAH, TOD, DI)
-    Object.entries(selectedSubDemands || {}).forEach(([disorder, categoryDemands]) => {
-      // categoryDemands é um objeto como { "Comunicação e Linguagem": ["Ausência na fala", ...] }
-      Object.entries(categoryDemands as Record<string, string[]>).forEach(([category, subDemands]) => {
-        (subDemands as string[]).forEach(subDemand => {
+    // selectedSubDemands vem do frontend como: { "Categoria": ["subdemanda1", "subdemanda2"] }
+    Object.entries(selectedSubDemands || {}).forEach(([category, subDemands]) => {
+      // Verificar se subDemands é um array com elementos
+      if (Array.isArray(subDemands) && subDemands.length > 0) {
+        subDemands.forEach(subDemand => {
+          // Tentar determinar o transtorno pela categoria ou usar "Geral"
+          const disorder = determineDisorderFromCategory(category);
           specificDemands.push(`${disorder} - ${category}: ${subDemand}`);
         });
-      });
+      }
     });
+
+    // Função auxiliar para determinar transtorno pela categoria
+    function determineDisorderFromCategory(category: string): string {
+      // Categorias conhecidas por transtorno
+      const teaCategories = ["Comunicação e Linguagem", "Interação Social", "Comportamento e Sensorial"];
+      const tdahCategories = ["Atenção e Concentração", "Hiperatividade e Impulsividade", "Funções Executivas"];
+      const todCategories = ["Controle de Raiva e Irritabilidade", "Comportamento Opositor", "Regulação Emocional"];
+      const diCategories = ["Cognitivo e Aprendizagem", "Sensorial e Motor", "Autonomia e Vida Diária"];
+      
+      if (teaCategories.includes(category)) return "TEA";
+      if (tdahCategories.includes(category)) return "TDAH";
+      if (todCategories.includes(category)) return "TOD";
+      if (diCategories.includes(category)) return "DI";
+      
+      // Se não identificar, usar os transtornos selecionados ou "Geral"
+      const selectedDisorders = Object.keys(selectedDemands).filter(d => selectedDemands[d]?.length > 0);
+      return selectedDisorders.length > 0 ? selectedDisorders[0] : "Geral";
+    }
 
     console.log('🎯 Demandas específicas selecionadas:', specificDemands);
 
