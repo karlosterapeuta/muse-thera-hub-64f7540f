@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Info, Music } from 'lucide-react';
+import { Search, Info, Music, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 
 interface PatientEvolutionFieldProps {
   value: string[];
@@ -73,6 +74,7 @@ const CATEGORY_FILTERS = [
 export function PatientEvolutionField({ value, onChange }: PatientEvolutionFieldProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas as Categorias');
+  const [customEvolution, setCustomEvolution] = useState<string>('');
 
   const filteredData = useMemo(() => {
     let data: Record<string, string[]> = PATIENT_EVOLUTION_DATA;
@@ -109,6 +111,32 @@ export function PatientEvolutionField({ value, onChange }: PatientEvolutionField
 
   const removeEvolution = (evolution: string) => {
     onChange(value.filter(v => v !== evolution));
+  };
+
+  const handleAddCustomEvolution = () => {
+    const trimmedEvolution = customEvolution.trim();
+    
+    // Validar que não está vazio
+    if (!trimmedEvolution) {
+      return;
+    }
+    
+    // Validar que não é duplicado
+    if (value.includes(trimmedEvolution)) {
+      return;
+    }
+    
+    // Adicionar à lista de evoluções
+    onChange([...value, trimmedEvolution]);
+    
+    // Limpar o campo
+    setCustomEvolution('');
+  };
+
+  const isPreDefinedEvolution = (evolution: string) => {
+    return Object.values(PATIENT_EVOLUTION_DATA)
+      .flat()
+      .includes(evolution);
   };
 
   const selectedCount = value.length;
@@ -150,30 +178,58 @@ export function PatientEvolutionField({ value, onChange }: PatientEvolutionField
 
       {/* Selected Evolutions */}
       {selectedCount > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Evoluções Selecionadas ({selectedCount})
-          </Label>
-          <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
-            {value.map((evolution) => (
-              <Badge
-                key={evolution}
-                variant="secondary"
-                className="text-xs py-1 px-2 leading-relaxed"
-              >
-                {evolution.length > 100 ? `${evolution.substring(0, 100)}...` : evolution}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                  onClick={() => removeEvolution(evolution)}
-                >
-                  ×
-                </Button>
-              </Badge>
-            ))}
-          </div>
-        </div>
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-950/30 dark:to-emerald-950/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
+                <span className="text-xl">✅</span>
+                Evoluções Selecionadas ({selectedCount})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {value.map((evolution, index) => {
+                const isPredefined = isPreDefinedEvolution(evolution);
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                      isPredefined
+                        ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                        : 'bg-purple-100 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2 flex-1">
+                      <span className={`mt-1 ${isPredefined ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400'}`}>
+                        {isPredefined ? '📈' : '✏️'}
+                      </span>
+                      <p className={`text-sm leading-relaxed ${
+                        isPredefined
+                          ? 'text-green-700 dark:text-green-300'
+                          : 'text-purple-700 dark:text-purple-300'
+                      }`}>
+                        {evolution}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeEvolution(evolution)}
+                      className={`flex-shrink-0 h-8 w-8 p-0 ${
+                        isPredefined
+                          ? 'hover:bg-green-200 dark:hover:bg-green-800 text-green-600 dark:text-green-400'
+                          : 'hover:bg-purple-200 dark:hover:bg-purple-800 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Search */}
@@ -256,6 +312,86 @@ export function PatientEvolutionField({ value, onChange }: PatientEvolutionField
           <p>Nenhuma evolução encontrada para "{searchTerm}"</p>
         </div>
       )}
+
+      {/* Seção de Observações Personalizadas */}
+      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+            <span className="text-xl">✏️</span>
+            Adicionar Observação Personalizada
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Card de orientações */}
+          <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
+                  Como documentar a evolução do paciente de forma eficaz:
+                </p>
+                <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
+                  <li>Descreva mudanças observáveis e mensuráveis no comportamento</li>
+                  <li>Compare o estado atual com sessões anteriores</li>
+                  <li>Relate progressos específicos relacionados aos objetivos terapêuticos</li>
+                  <li>Mencione habilidades desenvolvidas ou aprimoradas</li>
+                  <li>Inclua aspectos qualitativos da resposta às intervenções musicais</li>
+                  <li>Documente também desafios ou áreas que necessitam maior atenção</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Campo de entrada */}
+          <div className="space-y-2">
+            <Label htmlFor="custom-evolution" className="text-purple-700 dark:text-purple-300 font-medium">
+              Digite sua observação sobre a evolução:
+            </Label>
+            <Textarea
+              id="custom-evolution"
+              value={customEvolution}
+              onChange={(e) => setCustomEvolution(e.target.value)}
+              placeholder="Ex: Durante o período avaliado, o paciente demonstrou notável evolução na capacidade de sustentar atenção compartilhada durante atividades musicais em grupo, passando de participações breves (2-3 minutos) para engajamento prolongado (15-20 minutos). Observa-se também maior iniciativa em propor trocas musicais, evidenciando progressos significativos na comunicação não-verbal e na reciprocidade social..."
+              className="min-h-[140px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
+              onKeyDown={(e) => {
+                // Adicionar com Ctrl+Enter ou Cmd+Enter
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleAddCustomEvolution();
+                }
+              }}
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-purple-600 dark:text-purple-400">
+                {customEvolution.length > 0 && `${customEvolution.length} caracteres`}
+                {customEvolution.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
+              </p>
+              <Button
+                type="button"
+                onClick={handleAddCustomEvolution}
+                disabled={!customEvolution.trim()}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+              >
+                <span className="mr-2">➕</span>
+                Adicionar Observação
+              </Button>
+            </div>
+          </div>
+
+          {/* Exemplos inspiradores */}
+          <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+            <p className="text-xs text-purple-700 dark:text-purple-300 font-medium mb-2">
+              💡 Exemplos de observações bem documentadas:
+            </p>
+            <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1 ml-4 list-disc">
+              <li>"Apresenta progressos consistentes na autorregulação emocional através de técnicas de respiração musical, reduzindo episódios de desorganização comportamental de 5-6 por sessão para 1-2 nas últimas quatro semanas."</li>
+              <li>"Evolução positiva na coordenação motora fina observada através da manipulação de instrumentos melódicos (metalofone, xilofone), com aumento na precisão das baquetadas e redução de movimentos descoordenados."</li>
+              <li>"Demonstra ampliação significativa do repertório comunicativo musical, incorporando espontaneamente variações de dinâmica (forte/piano) e andamento para expressar diferentes estados emocionais nas improvisações."</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
