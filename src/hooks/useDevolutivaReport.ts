@@ -1,7 +1,7 @@
 import { useState, createElement } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { generateReactPDF } from "@/utils/reactPDFGenerator";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 
 export interface DevolutivaFormData {
@@ -136,10 +136,10 @@ export function useDevolutivaReport() {
       const component = createElement(DevolutivaPreview, { data: previewData });
       const fileName = `Devolutiva_${formData.patient_name}_${new Date().toISOString().split('T')[0]}.pdf`;
 
-      const success = await generateStaticPDF(component, { 
+      const success = await generateReactPDF(component, { 
         filename: fileName,
-        waitTime: 5000, // Aumentado para 5 segundos
-        quality: 2.5 // Aumentada a qualidade
+        format: 'a4',
+        orientation: 'portrait'
       });
 
       if (success) {
