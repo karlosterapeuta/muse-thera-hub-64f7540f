@@ -4,11 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Heart, Save, FileDown, History } from "lucide-react";
+import { Heart, Save, FileDown, History, Eye } from "lucide-react";
 import { devolutivaPhrases } from "@/data/devolutivaPhrases";
 import { PhraseSelector } from "@/components/devolutiva/PhraseSelector";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 import { DevolutivaHistory } from "@/components/devolutiva/DevolutivaHistory";
+import { PDFPreviewModal } from "@/components/devolutiva/PDFPreviewModal";
 import { useDevolutivaReport, DevolutivaFormData } from "@/hooks/useDevolutivaReport";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,12 +17,24 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function DevolutivaTea() {
   const { toast } = useToast();
-  const { saveReport, generatePDF, isSaving, isGeneratingPDF, customTexts, setCustomTexts } = useDevolutivaReport();
+  const { 
+    saveReport, 
+    generatePDF, 
+    previewPDF,
+    clearPreview,
+    isSaving, 
+    isGeneratingPDF,
+    isGeneratingPreview,
+    pdfPreviewUrl,
+    customTexts, 
+    setCustomTexts 
+  } = useDevolutivaReport();
   
   const [activeTab, setActiveTab] = useState("form");
   const [patients, setPatients] = useState<any[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [professionalData, setProfessionalData] = useState<any>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   
   const [formData, setFormData] = useState<DevolutivaFormData>({
     patient_id: '',
@@ -139,6 +152,32 @@ export default function DevolutivaTea() {
       return;
     }
     generatePDF(formData);
+  };
+
+  const handlePreview = async () => {
+    if (!formData.patient_id) {
+      toast({
+        title: "Paciente não selecionado",
+        description: "Por favor, selecione um paciente.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const url = await previewPDF(formData);
+    if (url) {
+      setShowPreviewModal(true);
+    }
+  };
+
+  const handleClosePreview = () => {
+    setShowPreviewModal(false);
+    clearPreview();
+  };
+
+  const handleDownloadFromPreview = async () => {
+    setShowPreviewModal(false);
+    await generatePDF(formData);
+    clearPreview();
   };
 
   const getPreviewData = () => {
@@ -267,6 +306,15 @@ export default function DevolutivaTea() {
                   Voltar ao Formulário
                 </Button>
                 <Button
+                  onClick={handlePreview}
+                  disabled={isGeneratingPreview}
+                  variant="outline"
+                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  {isGeneratingPreview ? 'Gerando Preview...' : 'Preview do PDF'}
+                </Button>
+                <Button
                   onClick={handleGeneratePDF}
                   disabled={isGeneratingPDF}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
@@ -282,6 +330,14 @@ export default function DevolutivaTea() {
             <DevolutivaHistory />
           </TabsContent>
         </Tabs>
+
+        <PDFPreviewModal
+          open={showPreviewModal}
+          onOpenChange={handleClosePreview}
+          pdfUrl={pdfPreviewUrl}
+          onDownload={handleDownloadFromPreview}
+          isDownloading={isGeneratingPDF}
+        />
       </div>
     </div>
   );

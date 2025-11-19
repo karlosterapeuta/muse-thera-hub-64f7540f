@@ -2,6 +2,7 @@ import { useState, createElement } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { generateReactPDF } from "@/utils/reactPDFGenerator";
+import { generateReactPDFPreview } from "@/utils/reactPDFPreview";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 
 export interface DevolutivaFormData {
@@ -27,6 +28,8 @@ export function useDevolutivaReport() {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   const [customTexts, setCustomTexts] = useState<Record<string, string>>({
     communication: '',
@@ -160,11 +163,79 @@ export function useDevolutivaReport() {
     }
   };
 
+  const previewPDF = async (formData: DevolutivaFormData) => {
+    try {
+      setIsGeneratingPreview(true);
+
+      // Validar dados essenciais
+      if (!formData.patient_name) {
+        throw new Error('Nome do paciente é obrigatório');
+      }
+
+      const previewData = {
+        patient_name: formData.patient_name,
+        session_date: formData.session_date,
+        session_number: formData.session_number,
+        communication: combineText(formData.communication, customTexts.communication),
+        emotional_regulation: combineText(formData.emotional_regulation, customTexts.emotional_regulation),
+        motor_development: combineText(formData.motor_development, customTexts.motor_development),
+        sensory_aspects: combineText(formData.sensory_aspects, customTexts.sensory_aspects),
+        musical_participation: combineText(formData.musical_participation, customTexts.musical_participation),
+        achievements: combineText(formData.achievements, customTexts.achievements),
+        family_guidelines: combineText(formData.family_guidelines, customTexts.family_guidelines),
+        next_steps: combineText(formData.next_steps, customTexts.next_steps),
+        general_observations: combineText(formData.general_observations, customTexts.general_observations),
+        challenges_resistance: combineText(formData.challenges_resistance, customTexts.challenges_resistance),
+        professional_name: formData.professional_name,
+        professional_registry: formData.professional_registry
+      };
+
+      const component = createElement(DevolutivaPreview, { data: previewData });
+      const pdfUrl = await generateReactPDFPreview(component, {
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      if (pdfUrl) {
+        setPdfPreviewUrl(pdfUrl);
+        return pdfUrl;
+      } else {
+        toast({
+          title: "Erro ao gerar preview",
+          description: "Não foi possível gerar o preview do PDF.",
+          variant: "destructive"
+        });
+        return null;
+      }
+    } catch (error) {
+      console.error('Error generating PDF preview:', error);
+      toast({
+        title: "Erro ao gerar preview",
+        description: "Não foi possível gerar o preview do PDF.",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setIsGeneratingPreview(false);
+    }
+  };
+
+  const clearPreview = () => {
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl);
+      setPdfPreviewUrl(null);
+    }
+  };
+
   return {
     saveReport,
     generatePDF,
+    previewPDF,
+    clearPreview,
     isSaving,
     isGeneratingPDF,
+    isGeneratingPreview,
+    pdfPreviewUrl,
     customTexts,
     setCustomTexts
   };
