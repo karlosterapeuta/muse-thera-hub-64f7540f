@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateReactPDF } from "@/utils/reactPDFGenerator";
 import { generateReactPDFPreview } from "@/utils/reactPDFPreview";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
+import { DevolutivaPreviewPDF } from "@/components/devolutiva/DevolutivaPreviewPDF";
 
 export interface DevolutivaFormData {
   patient_id: string;
@@ -136,7 +137,8 @@ export function useDevolutivaReport() {
         professional_registry: formData.professional_registry
       };
 
-      const component = createElement(DevolutivaPreview, { data: previewData });
+      // Usar componente PDF-específico com estilos inline
+      const component = createElement(DevolutivaPreviewPDF, { data: previewData });
       const fileName = `Devolutiva_${formData.patient_name}_${new Date().toISOString().split('T')[0]}.pdf`;
 
       const success = await generateReactPDF(component, { 
