@@ -33,9 +33,29 @@ serve(async (req) => {
     }
 
     // 2. Receber dados
-    const { patientName, selectedDemands } = await req.json();
+    const { patientName, selectedDemands, selectedSubDemands } = await req.json();
     
-    console.log('📋 Gerando atividades para:', { patientName, selectedDemands });
+    console.log('📋 Gerando atividades para:', { patientName, selectedDemands, selectedSubDemands });
+
+    // Extrair todas as subdemandas específicas selecionadas
+    const specificDemands: string[] = [];
+
+    // Iterar pelos transtornos (TEA, TDAH, TOD, DI)
+    Object.entries(selectedSubDemands || {}).forEach(([disorder, categoryDemands]) => {
+      // categoryDemands é um objeto como { "Comunicação e Linguagem": ["Ausência na fala", ...] }
+      Object.entries(categoryDemands as Record<string, string[]>).forEach(([category, subDemands]) => {
+        (subDemands as string[]).forEach(subDemand => {
+          specificDemands.push(`${disorder} - ${category}: ${subDemand}`);
+        });
+      });
+    });
+
+    console.log('🎯 Demandas específicas selecionadas:', specificDemands);
+
+    // Validar que existem demandas selecionadas
+    if (specificDemands.length === 0) {
+      throw new Error('Nenhuma demanda específica foi selecionada');
+    }
     
     // 3. Buscar chave da API
     const geminiApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
@@ -44,19 +64,33 @@ serve(async (req) => {
     }
 
     // 4. Construir prompt especializado
-    const demandsText = Object.entries(selectedDemands)
-      .map(([disorder, demands]) => `${disorder}: ${(demands as string[]).join(', ')}`)
+    // Construir texto formatado das demandas específicas
+    const demandsText = specificDemands
+      .map((demand, index) => `${index + 1}. ${demand}`)
       .join('\n');
-    
+
+    const totalDemands = specificDemands.length;
+
     const prompt = `Você é um especialista em Musicoterapia clínica com amplo conhecimento em transtornos do neurodesenvolvimento.
 
 CONTEXTO DO PACIENTE:
 - Nome: ${patientName}
-- Demandas identificadas:
+- Total de demandas específicas identificadas: ${totalDemands}
+- Demandas selecionadas:
 ${demandsText}
 
-TAREFA:
-Crie EXATAMENTE 10 atividades musicoterapêuticas práticas e específicas, cada uma focada em uma das demandas identificadas.
+TAREFA CRÍTICA:
+Crie EXATAMENTE ${Math.min(10, totalDemands)} atividades musicoterapêuticas práticas e específicas.
+
+⚠️ REGRA FUNDAMENTAL: Cada atividade deve focar em UMA e APENAS UMA das demandas específicas listadas acima.
+⚠️ NÃO crie atividades genéricas ou para outras demandas não listadas.
+⚠️ Use a numeração exata das demandas acima para referência.
+
+${totalDemands < 10 ? `
+OBSERVAÇÃO: Como apenas ${totalDemands} demandas foram selecionadas, crie ${totalDemands} atividades (uma para cada demanda).
+` : `
+OBSERVAÇÃO: Como mais de 10 demandas foram selecionadas, priorize as 10 primeiras da lista.
+`}
 
 FORMATO PARA CADA ATIVIDADE (responda em JSON válido):
 {
@@ -64,25 +98,29 @@ FORMATO PARA CADA ATIVIDADE (responda em JSON válido):
     {
       "id": "ativ-001",
       "disorder": "TEA" | "TDAH" | "TOD" | "DI",
-      "demand": "nome exato da demanda",
+      "demand": "nome EXATO da demanda conforme listado acima (incluindo transtorno e categoria)",
+      "demandNumber": 1,
       "specialty": "Musicoterapia",
-      "generalObjective": "objetivo terapêutico amplo",
-      "specificObjective": "comportamento esperado observável e mensurável",
-      "activityDescription": "descrição detalhada da execução passo a passo",
+      "generalObjective": "objetivo terapêutico amplo focado ESPECIFICAMENTE nesta demanda",
+      "specificObjective": "comportamento esperado observável e mensurável relacionado à demanda",
+      "activityDescription": "descrição detalhada da execução passo a passo, adaptada para esta demanda específica",
       "materials": ["material1", "material2"],
       "estimatedTime": "20-30 minutos",
-      "evaluationCriteria": ["critério1", "critério2"],
+      "evaluationCriteria": ["critério1 específico para esta demanda", "critério2"],
       "complexityLevel": "Leve" | "Moderado" | "Severo"
     }
   ]
 }
 
 IMPORTANTE:
-- Retorne EXATAMENTE 10 atividades
+- Retorne EXATAMENTE ${Math.min(10, totalDemands)} atividades
+- Cada atividade deve corresponder a UMA demanda específica da lista numerada
+- Inclua o campo "demandNumber" com o número da demanda da lista (1, 2, 3, etc.)
 - Use linguagem técnica mas clara
-- Atividades devem ser práticas e executáveis
-- Varie os níveis de complexidade
-- Cada atividade deve ter ID único (ativ-001 até ativ-010)
+- Atividades devem ser práticas, executáveis e ESPECÍFICAS para a demanda indicada
+- Varie os níveis de complexidade conforme apropriado para cada demanda
+- Cada atividade deve ter ID único (ativ-001 até ativ-0${String(Math.min(10, totalDemands)).padStart(2, '0')})
+- NÃO repita demandas - uma atividade por demanda
 - Responda APENAS com o JSON, sem texto adicional`;
 
     const startTime = Date.now();
@@ -147,6 +185,23 @@ IMPORTANTE:
             
             if (parsed.activities && Array.isArray(parsed.activities) && parsed.activities.length > 0) {
               console.log(`✅ ${parsed.activities.length} atividades geradas via Lovable AI em ${elapsedTime}s`);
+              
+              // Validar que cada atividade corresponde a uma demanda selecionada
+              const expectedCount = Math.min(10, specificDemands.length);
+
+              if (parsed.activities.length !== expectedCount) {
+                console.warn(`⚠️ Esperado ${expectedCount} atividades, recebido ${parsed.activities.length}`);
+              }
+
+              // Log de correspondência (para debugging)
+              parsed.activities.forEach((activity: any, index: number) => {
+                console.log(`✓ Atividade ${index + 1}:`, {
+                  id: activity.id,
+                  demandNumber: activity.demandNumber,
+                  demand: activity.demand?.substring(0, 50) + '...'
+                });
+              });
+              
               return new Response(
                 JSON.stringify({ activities: parsed.activities }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -226,6 +281,22 @@ IMPORTANTE:
       }
 
       console.log(`✅ ${parsedData.activities.length} atividades geradas via Google Gemini em ${elapsedTime}s`);
+
+      // Validar que cada atividade corresponde a uma demanda selecionada
+      const expectedCount = Math.min(10, specificDemands.length);
+
+      if (parsedData.activities.length !== expectedCount) {
+        console.warn(`⚠️ Esperado ${expectedCount} atividades, recebido ${parsedData.activities.length}`);
+      }
+
+      // Log de correspondência (para debugging)
+      parsedData.activities.forEach((activity: any, index: number) => {
+        console.log(`✓ Atividade ${index + 1}:`, {
+          id: activity.id,
+          demandNumber: activity.demandNumber,
+          demand: activity.demand?.substring(0, 50) + '...'
+        });
+      });
 
       return new Response(
         JSON.stringify({ activities: parsedData.activities }),
