@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Info, ArrowRight } from 'lucide-react';
+import { Search, Info, ArrowRight, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 
 interface RecommendationsFieldProps {
   value: string[];
@@ -50,6 +51,7 @@ const CATEGORY_FILTERS = [
 export function RecommendationsField({ value, onChange }: RecommendationsFieldProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas as Categorias');
+  const [customRecommendation, setCustomRecommendation] = useState<string>('');
 
   const filteredData = useMemo(() => {
     let data: Record<string, string[]> = RECOMMENDATIONS_DATA;
@@ -88,6 +90,32 @@ export function RecommendationsField({ value, onChange }: RecommendationsFieldPr
     onChange(value.filter(v => v !== recommendation));
   };
 
+  const handleAddCustomRecommendation = () => {
+    const trimmedRecommendation = customRecommendation.trim();
+    
+    // Validar que não está vazio
+    if (!trimmedRecommendation) {
+      return;
+    }
+    
+    // Validar que não é duplicado
+    if (value.includes(trimmedRecommendation)) {
+      return;
+    }
+    
+    // Adicionar à lista de recomendações
+    onChange([...value, trimmedRecommendation]);
+    
+    // Limpar o campo
+    setCustomRecommendation('');
+  };
+
+  const isPreDefinedRecommendation = (recommendation: string) => {
+    return Object.values(RECOMMENDATIONS_DATA)
+      .flat()
+      .includes(recommendation);
+  };
+
   const selectedCount = value.length;
 
   return (
@@ -114,30 +142,58 @@ export function RecommendationsField({ value, onChange }: RecommendationsFieldPr
 
       {/* Selected Recommendations */}
       {selectedCount > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Recomendações Selecionadas ({selectedCount})
-          </Label>
-          <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
-            {value.map((recommendation) => (
-              <Badge
-                key={recommendation}
-                variant="secondary"
-                className="text-xs py-1 px-2 leading-relaxed"
-              >
-                {recommendation.length > 100 ? `${recommendation.substring(0, 100)}...` : recommendation}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                  onClick={() => removeRecommendation(recommendation)}
-                >
-                  ×
-                </Button>
-              </Badge>
-            ))}
-          </div>
-        </div>
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-950/30 dark:to-emerald-950/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
+                <span className="text-xl">✅</span>
+                Recomendações Selecionadas ({selectedCount})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {value.map((recommendation, index) => {
+                const isPredefined = isPreDefinedRecommendation(recommendation);
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                      isPredefined
+                        ? 'bg-orange-100 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+                        : 'bg-purple-100 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2 flex-1">
+                      <span className={`mt-1 ${isPredefined ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'}`}>
+                        {isPredefined ? '💡' : '✏️'}
+                      </span>
+                      <p className={`text-sm leading-relaxed ${
+                        isPredefined
+                          ? 'text-orange-700 dark:text-orange-300'
+                          : 'text-purple-700 dark:text-purple-300'
+                      }`}>
+                        {recommendation}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeRecommendation(recommendation)}
+                      className={`flex-shrink-0 h-8 w-8 p-0 ${
+                        isPredefined
+                          ? 'hover:bg-orange-200 dark:hover:bg-orange-800 text-orange-600 dark:text-orange-400'
+                          : 'hover:bg-purple-200 dark:hover:bg-purple-800 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Category Filters */}
@@ -231,6 +287,86 @@ export function RecommendationsField({ value, onChange }: RecommendationsFieldPr
           <p>Nenhuma recomendação encontrada para "{searchTerm}"</p>
         </div>
       )}
+
+      {/* Seção de Recomendações Personalizadas */}
+      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+            <span className="text-xl">✏️</span>
+            Adicionar Recomendação Personalizada
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Card de orientações */}
+          <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
+                  Como elaborar recomendações terapêuticas eficazes:
+                </p>
+                <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
+                  <li>Seja específico sobre frequência e duração das atividades sugeridas</li>
+                  <li>Inclua orientações práticas para família ou equipe multidisciplinar</li>
+                  <li>Relacione recomendações aos objetivos terapêuticos estabelecidos</li>
+                  <li>Sugira recursos musicais acessíveis e aplicáveis no contexto domiciliar</li>
+                  <li>Mencione encaminhamentos para profissionais complementares quando indicado</li>
+                  <li>Especifique prazos para reavaliação ou retorno terapêutico</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Campo de entrada */}
+          <div className="space-y-2">
+            <Label htmlFor="custom-recommendation" className="text-purple-700 dark:text-purple-300 font-medium">
+              Digite sua recomendação personalizada:
+            </Label>
+            <Textarea
+              id="custom-recommendation"
+              value={customRecommendation}
+              onChange={(e) => setCustomRecommendation(e.target.value)}
+              placeholder="Ex: Recomenda-se aos familiares a implementação de rotina diária de 15 minutos de atividades musicais estruturadas, utilizando o repertório de canções trabalhadas em sessão. Sugere-se especial atenção à manutenção do andamento regular durante as canções de ninar para favorecimento da autorregulação emocional no período noturno. Orientamos retorno para reavaliação em 3 meses..."
+              className="min-h-[140px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
+              onKeyDown={(e) => {
+                // Adicionar com Ctrl+Enter ou Cmd+Enter
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleAddCustomRecommendation();
+                }
+              }}
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-purple-600 dark:text-purple-400">
+                {customRecommendation.length > 0 && `${customRecommendation.length} caracteres`}
+                {customRecommendation.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
+              </p>
+              <Button
+                type="button"
+                onClick={handleAddCustomRecommendation}
+                disabled={!customRecommendation.trim()}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+              >
+                <span className="mr-2">➕</span>
+                Adicionar Recomendação
+              </Button>
+            </div>
+          </div>
+
+          {/* Exemplos inspiradores */}
+          <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+            <p className="text-xs text-purple-700 dark:text-purple-300 font-medium mb-2">
+              💡 Exemplos de recomendações bem estruturadas:
+            </p>
+            <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1 ml-4 list-disc">
+              <li>"Sugere-se encaminhamento para avaliação neuropsicológica especializada para investigação aprofundada das funções executivas e sua relação com o processamento musical observado durante as intervenções. Recomenda-se retorno em 60 dias."</li>
+              <li>"Orienta-se aos responsáveis a criação de 'momento musical familiar' três vezes por semana (20 minutos cada), utilizando os instrumentos trabalhados em sessão para fortalecimento de vínculos e generalização das estratégias de comunicação não-verbal."</li>
+              <li>"Recomenda-se aos educadores a implementação de transições entre atividades mediadas por sinais musicais específicos (melodias de 'início' e 'finalização'), visando redução de comportamentos disruptivos e favorecimento da organização temporal no ambiente escolar."</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
