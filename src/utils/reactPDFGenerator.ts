@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import { toast } from 'sonner';
 
 interface PDFOptions {
@@ -37,23 +38,76 @@ export const generateReactPDF = async (
     container.style.overflow = 'visible';
     document.body.appendChild(container);
 
-    // Renderizar com React 18
-    reactRoot = createRoot(container);
-    
-    // Usar Promise para aguardar renderização
+    // Copiar todos os estilos da página para o container
+    console.log('📋 Injetando estilos CSS...');
+    const styleSheets = Array.from(document.styleSheets);
+    const styleContainer = document.createElement('div');
+
+    styleSheets.forEach((sheet) => {
+      try {
+        // Tentar clonar folhas de estilo inline
+        if (sheet.href === null) {
+          const rules = Array.from(sheet.cssRules);
+          const style = document.createElement('style');
+          rules.forEach(rule => {
+            style.appendChild(document.createTextNode(rule.cssText));
+          });
+          styleContainer.appendChild(style);
+        } else {
+          // Adicionar link para folhas de estilo externas
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = sheet.href;
+          styleContainer.appendChild(link);
+        }
+      } catch (e) {
+        console.warn('Não foi possível clonar stylesheet:', e);
+      }
+    });
+
+    container.prepend(styleContainer);
+    console.log('📋 Estilos injetados no container');
+
+    // Aguardar carregamento de estilos externos
     await new Promise<void>((resolve) => {
-      reactRoot.render(component);
+      const links = styleContainer.querySelectorAll('link[rel="stylesheet"]');
+      if (links.length === 0) {
+        resolve();
+        return;
+      }
       
-      // Aguardar múltiplos frames para garantir renderização completa
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            console.log('⏱️ Tempo de espera concluído');
+      let loadedCount = 0;
+      links.forEach(link => {
+        link.addEventListener('load', () => {
+          loadedCount++;
+          if (loadedCount === links.length) {
             resolve();
-          }, 3000); // Aumentado para 3 segundos
+          }
+        });
+        link.addEventListener('error', () => {
+          loadedCount++;
+          if (loadedCount === links.length) {
+            resolve();
+          }
         });
       });
+      
+      // Timeout de segurança
+      setTimeout(() => resolve(), 1000);
     });
+
+    console.log('✅ Estilos carregados');
+
+    // Renderizar com React 18 de forma SÍNCRONA
+    console.log('🔄 Renderizando componente...');
+    reactRoot = createRoot(container);
+    
+    // flushSync garante renderização síncrona e imediata
+    flushSync(() => {
+      reactRoot.render(component);
+    });
+
+    console.log('✅ Componente renderizado sincronamente');
 
     console.log('📄 Conteúdo renderizado:', container.innerHTML.length, 'caracteres');
     
