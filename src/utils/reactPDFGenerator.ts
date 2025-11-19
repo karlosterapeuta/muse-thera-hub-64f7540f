@@ -25,17 +25,16 @@ export const generateReactPDF = async (
   try {
     console.log('🔄 Iniciando geração de PDF...', { filename });
     
-    // Criar container VISÍVEL temporariamente
+    // Criar container VISÍVEL mas fora da tela
     container = document.createElement('div');
     container.style.position = 'fixed';
-    container.style.left = '0';
+    container.style.left = '-9999px'; // Fora da tela - NÃO usar opacity:0!
     container.style.top = '0';
     container.style.width = '210mm';
     container.style.minHeight = '297mm';
     container.style.backgroundColor = '#ffffff';
-    container.style.zIndex = '-9999';
-    container.style.opacity = '0';
-    container.style.pointerEvents = 'none';
+    container.style.padding = '20px';
+    container.style.overflow = 'visible';
     document.body.appendChild(container);
 
     // Renderizar com React 18
@@ -48,7 +47,10 @@ export const generateReactPDF = async (
       // Aguardar múltiplos frames para garantir renderização completa
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          setTimeout(() => resolve(), 2000);
+          setTimeout(() => {
+            console.log('⏱️ Tempo de espera concluído');
+            resolve();
+          }, 3000); // Aumentado para 3 segundos
         });
       });
     });
@@ -60,16 +62,32 @@ export const generateReactPDF = async (
     }
 
     // Capturar com html2canvas
-    console.log('📸 Capturando conteúdo...');
+    console.log('📸 Capturando conteúdo com html2canvas...');
     const canvas = await html2canvas(container, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: false,
+      logging: true, // Ativar logs para debug
       windowWidth: 794, // A4 width em pixels (210mm)
       windowHeight: 1123 // A4 height em pixels (297mm)
     });
+
+    console.log('🖼️ Canvas capturado:', {
+      width: canvas.width,
+      height: canvas.height,
+      isEmpty: canvas.width === 0 || canvas.height === 0
+    });
+
+    console.log('🖼️ Canvas capturado:', {
+      width: canvas.width,
+      height: canvas.height,
+      isEmpty: canvas.width === 0 || canvas.height === 0
+    });
+
+    if (canvas.width === 0 || canvas.height === 0) {
+      throw new Error('Canvas vazio - falha na captura do conteúdo');
+    }
 
     console.log('🖨️ Gerando PDF...');
     
@@ -102,7 +120,11 @@ export const generateReactPDF = async (
     // Salvar PDF
     pdf.save(filename);
     
-    console.log('✅ PDF gerado com sucesso!');
+    console.log('✅ PDF gerado e baixado com sucesso!', {
+      filename,
+      pages: pdf.getNumberOfPages(),
+      fileSize: `${(imgData.length / 1024).toFixed(2)} KB`
+    });
     return true;
     
   } catch (error) {
