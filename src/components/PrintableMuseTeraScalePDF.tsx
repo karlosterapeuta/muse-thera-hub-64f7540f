@@ -1,9 +1,11 @@
 import React from 'react';
 import { museteraStructure } from "@/data/museteraStructure";
+import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface PrintableMuseTeraScalePDFProps {
   patientName?: string;
   professionalName?: string;
+  professionalData?: ProfessionalData | null;
   evaluationDate?: Date;
 }
 
@@ -181,6 +183,7 @@ function DomainSection({ title, subdomains, pageBreakBefore = false }: { title: 
 export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps> = ({
   patientName,
   professionalName,
+  professionalData,
   evaluationDate,
 }) => {
   const formatDate = (d?: Date) => {
@@ -600,26 +603,80 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
       <footer style={{ 
         marginTop: '32px',
         padding: '20px',
-        textAlign: 'center',
         borderTop: '2px solid #E5E7EB',
         backgroundColor: '#F9FAFB',
         borderRadius: '0 0 8px 8px'
       }}>
-        <p style={{ 
-          margin: '0 0 4px 0',
-          fontSize: '11px',
-          color: '#6B7280',
-          fontWeight: '500'
-        }}>
-          📄 Documento gerado pela plataforma MuseTera
-        </p>
-        <p style={{ 
-          margin: '0',
-          fontSize: '10px',
-          color: '#9CA3AF'
-        }}>
-          Escala desenvolvida para avaliação musicoterapêutica profissional
-        </p>
+        {/* Seção de Assinatura e Carimbo Digital */}
+        {(professionalData?.digital_signature_url || professionalData?.digital_stamp_url) && (
+          <div style={{ 
+            marginBottom: '24px',
+            paddingBottom: '24px',
+            borderBottom: '2px solid #E5E7EB',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            gap: '24px'
+          }}>
+            {professionalData?.digital_signature_url && (
+              <div style={{ textAlign: 'center', flex: '1' }}>
+                <img 
+                  src={professionalData.digital_signature_url} 
+                  alt="Assinatura Digital" 
+                  style={{ 
+                    maxWidth: '200px', 
+                    maxHeight: '80px', 
+                    marginBottom: '8px',
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
+                  }} 
+                />
+                <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
+                  Assinatura Digital
+                </p>
+              </div>
+            )}
+            
+            {professionalData?.digital_stamp_url && (
+              <div style={{ textAlign: 'center', flex: '1' }}>
+                <img 
+                  src={professionalData.digital_stamp_url} 
+                  alt="Carimbo Digital" 
+                  style={{ 
+                    maxWidth: '120px', 
+                    maxHeight: '120px', 
+                    marginBottom: '8px',
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
+                  }} 
+                />
+                <p style={{ fontSize: '12px', color: '#6B7280', margin: 0, fontWeight: '500' }}>
+                  Carimbo Digital
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+        
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ 
+            margin: '0 0 4px 0',
+            fontSize: '11px',
+            color: '#6B7280',
+            fontWeight: '500'
+          }}>
+            📄 Documento gerado pela plataforma MuseTera
+          </p>
+          <p style={{ 
+            margin: '0',
+            fontSize: '10px',
+            color: '#9CA3AF'
+          }}>
+            Escala desenvolvida para avaliação musicoterapêutica profissional
+          </p>
+        </div>
       </footer>
     </div>
   );
