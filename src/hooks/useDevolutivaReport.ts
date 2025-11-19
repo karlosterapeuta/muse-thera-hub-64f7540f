@@ -109,6 +109,11 @@ export function useDevolutivaReport() {
       }
       
       console.log('📋 Iniciando geração de PDF para:', formData.patient_name);
+      console.log('📋 Dados completos para PDF:', {
+        patient_name: formData.patient_name,
+        session_date: formData.session_date,
+        hasCustomTexts: Object.keys(customTexts).filter(k => customTexts[k]).length,
+      });
 
       const previewData = {
         patient_name: formData.patient_name,
@@ -133,8 +138,8 @@ export function useDevolutivaReport() {
 
       const success = await generateStaticPDF(component, { 
         filename: fileName,
-        waitTime: 3000,
-        quality: 2.0
+        waitTime: 5000, // Aumentado para 5 segundos
+        quality: 2.5 // Aumentada a qualidade
       });
 
       if (success) {

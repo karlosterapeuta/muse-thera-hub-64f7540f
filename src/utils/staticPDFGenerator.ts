@@ -54,6 +54,9 @@ export const generateStaticPDF = async (
     // Aguardar renderização completa
     await new Promise(resolve => setTimeout(resolve, waitTime));
     
+    // Aguardar um frame adicional para garantir renderização
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+    
     // Verificar se o conteúdo foi renderizado
     console.log('📄 Conteúdo renderizado:', root.innerHTML.length, 'caracteres');
     if (root.innerHTML.length < 100) {
