@@ -29,7 +29,7 @@ export const mainMenuItems = [
 ];
 
 export const clinicalMenuItems = [
-  { icon: FileText, text: "📋 Processos Musicoterapia", path: "/processes", gradient: "from-orange-500 to-red-600" },
+  { icon: ClipboardList, text: "⭐ Processos Musicoterapia", path: "/processes", gradient: "from-purple-600 via-pink-600 to-red-600", isNew: true },
   { icon: ListChecks, text: "🎯 Atividades Terapêuticas", path: "/activities", gradient: "from-cyan-500 to-blue-600", isNew: true },
 ];
 
