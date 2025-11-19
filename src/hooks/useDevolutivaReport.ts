@@ -103,6 +103,13 @@ export function useDevolutivaReport() {
     try {
       setIsGeneratingPDF(true);
 
+      // Validar dados essenciais
+      if (!formData.patient_name) {
+        throw new Error('Nome do paciente é obrigatório');
+      }
+      
+      console.log('📋 Iniciando geração de PDF para:', formData.patient_name);
+
       const previewData = {
         patient_name: formData.patient_name,
         session_date: formData.session_date,
@@ -124,12 +131,18 @@ export function useDevolutivaReport() {
       const component = createElement(DevolutivaPreview, { data: previewData });
       const fileName = `Devolutiva_${formData.patient_name}_${new Date().toISOString().split('T')[0]}.pdf`;
 
-      await generateStaticPDF(component, { filename: fileName });
-
-      toast({
-        title: "PDF gerado!",
-        description: "O PDF da devolutiva foi gerado com sucesso."
+      const success = await generateStaticPDF(component, { 
+        filename: fileName,
+        waitTime: 3000,
+        quality: 2.0
       });
+
+      if (success) {
+        toast({
+          title: "PDF gerado!",
+          description: "O PDF da devolutiva foi gerado com sucesso."
+        });
+      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast({
