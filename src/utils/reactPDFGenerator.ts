@@ -36,9 +36,10 @@ export const generateReactPDF = async (
     container.style.backgroundColor = '#ffffff';
     container.style.padding = '20px';
     container.style.overflow = 'visible';
-    container.style.visibility = 'hidden'; // Mais eficiente que opacity
+    container.style.opacity = '0'; // Mantém renderizado mas invisível
     container.style.pointerEvents = 'none';
     container.style.zIndex = '-9999';
+    container.style.transform = 'translateX(-9999px)'; // Move para fora da tela
     document.body.appendChild(container);
 
     console.log('📦 Container criado e anexado ao DOM');
@@ -67,6 +68,15 @@ export const generateReactPDF = async (
     // Verificar se estilos foram aplicados
     const hasStyles = container.querySelector('[style]') !== null;
     console.log('🎨 Estilos inline detectados:', hasStyles);
+    
+    // Debug detalhado do container
+    console.log('🔍 Debug do container:', {
+      innerHTML: container.innerHTML.substring(0, 500),
+      childNodes: container.childNodes.length,
+      hasContent: container.textContent ? container.textContent.length : 0,
+      opacity: window.getComputedStyle(container).opacity,
+      display: window.getComputedStyle(container).display
+    });
     
     if (!hasStyles) {
       console.warn('⚠️ Nenhum estilo inline encontrado - PDF pode estar sem formatação');
