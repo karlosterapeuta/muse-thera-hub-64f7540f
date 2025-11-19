@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Info, X } from 'lucide-react';
 
 interface TherapeuticObjectivesFieldProps {
   value: string[];
@@ -54,6 +56,7 @@ const THERAPEUTIC_CATEGORIES = {
 
 export function TherapeuticObjectivesField({ value = [], onChange }: TherapeuticObjectivesFieldProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [customObjective, setCustomObjective] = useState<string>('');
 
   const handleOptionToggle = (option: string) => {
     const newValue = value.includes(option)
@@ -71,6 +74,31 @@ export function TherapeuticObjectivesField({ value = [], onChange }: Therapeutic
 
   const getCategoryOptions = (categoryKey: string) => {
     return THERAPEUTIC_CATEGORIES[categoryKey as keyof typeof THERAPEUTIC_CATEGORIES]?.options || [];
+  };
+
+  const handleAddCustomObjective = () => {
+    const trimmedObjective = customObjective.trim();
+    
+    if (!trimmedObjective) {
+      return;
+    }
+    
+    if (value.includes(trimmedObjective)) {
+      return;
+    }
+    
+    onChange([...value, trimmedObjective]);
+    setCustomObjective('');
+  };
+
+  const handleRemoveObjective = (objective: string) => {
+    onChange(value.filter(v => v !== objective));
+  };
+
+  const isPreDefinedObjective = (objective: string) => {
+    return Object.values(THERAPEUTIC_CATEGORIES)
+      .flatMap(cat => cat.options)
+      .includes(objective);
   };
 
   return (
@@ -215,20 +243,124 @@ export function TherapeuticObjectivesField({ value = [], onChange }: Therapeutic
             )
           )}
 
-          {value.length > 0 && (
-            <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-green-800 font-medium mb-2">
-                Objetivos Selecionados ({value.length})
-              </p>
-              <div className="space-y-2">
-                {value.map((objective, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <span className="text-green-600 mt-1">•</span>
-                    <p className="text-green-700 text-sm">{objective}</p>
+          {/* Seção de Objetivos Personalizados */}
+          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                <span className="text-xl">✏️</span>
+                Adicionar Objetivo Personalizado
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Card de orientações */}
+              <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
+                      Como escrever objetivos terapêuticos eficazes:
+                    </p>
+                    <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
+                      <li>Seja específico e mensurável</li>
+                      <li>Use verbos de ação (desenvolver, promover, estimular, fortalecer)</li>
+                      <li>Foque em comportamentos observáveis</li>
+                      <li>Relacione com a música como ferramenta terapêutica</li>
+                    </ul>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+
+              {/* Campo de entrada */}
+              <div className="space-y-2">
+                <Label htmlFor="custom-objective" className="text-purple-700 dark:text-purple-300 font-medium">
+                  Digite seu objetivo personalizado:
+                </Label>
+                <Textarea
+                  id="custom-objective"
+                  value={customObjective}
+                  onChange={(e) => setCustomObjective(e.target.value)}
+                  placeholder="Ex: Desenvolver controle respiratório através de exercícios de sopro em instrumentos de vento..."
+                  className="min-h-[100px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                      e.preventDefault();
+                      handleAddCustomObjective();
+                    }
+                  }}
+                />
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-purple-600 dark:text-purple-400">
+                    {customObjective.length > 0 && `${customObjective.length} caracteres`}
+                    {customObjective.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={handleAddCustomObjective}
+                    disabled={!customObjective.trim()}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <span className="mr-2">➕</span>
+                    Adicionar Objetivo
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {value.length > 0 && (
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-950/30 dark:to-emerald-950/30">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
+                    <span className="text-xl">✅</span>
+                    Objetivos Selecionados ({value.length})
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {value.map((objective, index) => {
+                    const isPredefined = isPreDefinedObjective(objective);
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                          isPredefined
+                            ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                            : 'bg-purple-100 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2 flex-1">
+                          <span className={`mt-1 ${isPredefined ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400'}`}>
+                            {isPredefined ? '📋' : '✏️'}
+                          </span>
+                          <p className={`text-sm leading-relaxed ${
+                            isPredefined
+                              ? 'text-green-700 dark:text-green-300'
+                              : 'text-purple-700 dark:text-purple-300'
+                          }`}>
+                            {objective}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveObjective(objective)}
+                          className={`flex-shrink-0 h-8 w-8 p-0 ${
+                            isPredefined
+                              ? 'hover:bg-green-200 dark:hover:bg-green-800 text-green-600 dark:text-green-400'
+                              : 'hover:bg-purple-200 dark:hover:bg-purple-800 text-purple-600 dark:text-purple-400'
+                          }`}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
           )}
         </CardContent>
       </Card>
