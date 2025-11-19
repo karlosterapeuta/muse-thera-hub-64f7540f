@@ -715,7 +715,7 @@ export default function InterventionForm() {
             </p>
           ) : (
             <div className="space-y-3 sm:space-y-4">
-              {savedPlans.map((plan) => (
+              {savedPlans.slice(0, 3).map((plan) => (
                 <Card key={plan.id} className="border-border/50">
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -760,6 +760,15 @@ export default function InterventionForm() {
                   </CardContent>
                 </Card>
               ))}
+              {savedPlans.length > 3 && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate('/intervention-plans')}
+                >
+                  Ver Todos os Planos ({savedPlans.length})
+                </Button>
+              )}
             </div>
           )}
         </CardContent>
