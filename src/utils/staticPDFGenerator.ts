@@ -1,6 +1,6 @@
 
 import html2pdf from 'html2pdf.js';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { toast } from 'sonner';
 
 interface PDFOptions {
@@ -17,13 +17,15 @@ export const generateStaticPDF = async (
 ): Promise<boolean> => {
   const {
     filename = 'documento.pdf',
-    waitTime = 2000,
+    waitTime = 3000,
     quality = 1.2,
     format = 'a4',
     orientation = 'portrait'
   } = options;
 
   try {
+    console.log('🔄 Iniciando geração de PDF...', { filename, waitTime, quality });
+    
     // Criar container temporário com estilos específicos para PDF
     const container = document.createElement('div');
     container.style.position = 'absolute';
@@ -45,11 +47,18 @@ export const generateStaticPDF = async (
     root.style.minHeight = '100%';
     container.appendChild(root);
 
-    // Renderizar componente
-    ReactDOM.render(component, root);
+    // Renderizar componente com React 18
+    const reactRoot = createRoot(root);
+    reactRoot.render(component);
 
     // Aguardar renderização completa
     await new Promise(resolve => setTimeout(resolve, waitTime));
+    
+    // Verificar se o conteúdo foi renderizado
+    console.log('📄 Conteúdo renderizado:', root.innerHTML.length, 'caracteres');
+    if (root.innerHTML.length < 100) {
+      throw new Error('Conteúdo insuficiente para gerar PDF');
+    }
 
     // Configurações otimizadas do PDF para artigos acadêmicos
     const opt = {
@@ -86,15 +95,19 @@ export const generateStaticPDF = async (
     };
 
     // Gerar PDF
+    console.log('🖨️ Gerando arquivo PDF...');
     await html2pdf().set(opt).from(root).save();
     
-    // Limpar container
+    // Limpar container e root do React
+    reactRoot.unmount();
     document.body.removeChild(container);
     
+    console.log('✅ PDF gerado com sucesso!');
     return true;
     
   } catch (error) {
-    console.error('Erro ao gerar PDF:', error);
+    console.error('❌ Erro ao gerar PDF:', error);
+    console.error('Stack trace:', (error as Error).stack);
     toast.error('Erro ao gerar PDF. Por favor, tente novamente.');
     return false;
   }
