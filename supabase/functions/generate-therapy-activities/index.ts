@@ -64,11 +64,6 @@ serve(async (req) => {
     }
 
     // 4. Construir prompt especializado
-    // Construir texto formatado das demandas específicas
-    const demandsText = specificDemands
-      .map((demand, index) => `${index + 1}. ${demand}`)
-      .join('\n');
-
     const totalDemands = specificDemands.length;
 
     // SEMPRE gerar 10 atividades no total
