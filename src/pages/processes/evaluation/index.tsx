@@ -935,7 +935,7 @@ export default function Evaluation() {
 
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
-                  <Card className={`border-2 border-gray-100 dark:border-gray-700 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 dark:bg-opacity-20 group-hover:bg-opacity-10 dark:group-hover:bg-opacity-30`}>
+                  <Card className={`border-2 border-gray-100 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 dark:bg-opacity-15 group-hover:bg-opacity-10 dark:group-hover:bg-opacity-20`}>
                     <div className="flex items-center mb-6 gap-3">
                       <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20 dark:bg-opacity-50 shadow-lg`}>
                         {domain.icon}
@@ -957,7 +957,7 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className="border-l-4 border-l-purple-400 dark:border-l-purple-500 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                        <Card className="border-l-4 border-l-purple-400 dark:border-l-purple-500 bg-white/50 dark:bg-gray-800/30 p-6 rounded-2xl shadow-sm">
                           <div className="flex items-center mb-4">
                             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-50">{subdomain.title}</h3>
                             <TooltipProvider>
