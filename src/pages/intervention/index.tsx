@@ -15,7 +15,8 @@ import {
   AlertCircle,
   Loader2,
   Trash2,
-  Eye
+  Eye,
+  Info
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -778,9 +779,24 @@ export default function InterventionForm() {
       <Card className="mx-1 sm:mx-2 border-primary/20">
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Selecione o paciente e as demandas para gerar sugestões de atividades para a sua especialidade: <span className="text-primary font-semibold">Musicoterapia</span>.
-          </CardDescription>
+          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 sm:p-6 mt-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Info className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                  Como funciona
+                </h3>
+                <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">
+                  Selecione o <span className="font-semibold text-primary">paciente</span> e as{" "}
+                  <span className="font-semibold text-primary">demandas</span> para gerar sugestões 
+                  de atividades personalizadas para a sua especialidade:{" "}
+                  <span className="font-bold text-primary">Musicoterapia</span>.
+                </p>
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           {/* Patient Selection */}
