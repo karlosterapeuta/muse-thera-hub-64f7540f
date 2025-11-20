@@ -43,6 +43,9 @@ import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 type Patient = {
   id: string;
@@ -68,6 +71,7 @@ export default function InterventionForm() {
   const [savedPlans, setSavedPlans] = useState<any[]>([]);
   const [isLoadingSavedPlans, setIsLoadingSavedPlans] = useState(false);
   const [viewingPlan, setViewingPlan] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("criar");
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -385,6 +389,9 @@ export default function InterventionForm() {
         title: "Plano salvo com sucesso!",
         description: "O Plano de Intervenção foi registrado.",
       });
+
+      // Mudar para a aba de planos salvos
+      setActiveTab("salvos");
     } catch (error: any) {
       console.error("Erro ao salvar plano:", error);
       toast({
@@ -691,98 +698,131 @@ export default function InterventionForm() {
   };
 
   return (
-    <div className="w-full px-0 py-2 sm:py-4 space-y-3 sm:space-y-4">
-      {/* Saved Plans Section */}
-      <Card className="mx-1 sm:mx-2 border-primary/20">
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
-            <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            Planos de Intervenção Salvos
-          </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Visualize, baixe ou exclua os planos gerados.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-          {isLoadingSavedPlans ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
-              <span className="ml-2 text-sm sm:text-base text-muted-foreground">Carregando planos...</span>
-            </div>
-          ) : savedPlans.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8 text-sm sm:text-base">
-              Nenhum plano de atividades salvo ainda.
-            </p>
-          ) : (
-            <div className="space-y-3 sm:space-y-4">
-              {savedPlans.slice(0, 3).map((plan) => (
-                <Card key={plan.id} className="border-border/50">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-base sm:text-lg truncate">{plan.patient_name}</h4>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Criado em {format(new Date(plan.created_at), "PPP", { locale: ptBR })}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {plan.complementary_materials?.activities?.length || 0} atividades
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setViewingPlan(plan)}
-                          className="flex-1 sm:flex-none text-xs sm:text-sm"
-                        >
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Visualizar</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => downloadPlanPDF(plan)}
-                          className="flex-1 sm:flex-none text-xs sm:text-sm"
-                        >
-                          <Download className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">PDF</span>
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={(e) => deletePlan(plan.id, e)}
-                          className="text-xs sm:text-sm"
-                        >
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {savedPlans.length > 3 && (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => navigate('/intervention-plans')}
-                >
-                  Ver Todos os Planos ({savedPlans.length})
-                </Button>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+    <div className="w-full px-0 py-2 sm:py-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Lista de Abas */}
+        <TabsList className="grid w-full grid-cols-2 mb-4 mx-1 sm:mx-2">
+          <TabsTrigger value="criar" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            <span className="hidden sm:inline">Criar Plano</span>
+            <span className="sm:hidden">Criar</span>
+          </TabsTrigger>
+          <TabsTrigger value="salvos" className="flex items-center gap-2">
+            <Music2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Planos Salvos</span>
+            <span className="sm:hidden">Salvos</span>
+            {savedPlans.length > 0 && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {savedPlans.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Create New Plan Section */}
-      <Card className="mx-1 sm:mx-2 border-primary/20">
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Selecione o paciente e as demandas para gerar sugestões de atividades para a sua especialidade: <span className="text-primary font-semibold">Musicoterapia</span>.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        {/* Conteúdo Aba 1: Criar Plano */}
+        <TabsContent value="criar" className="space-y-4">
+          <Card className="mx-1 sm:mx-2 border-primary/20">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Selecione o paciente e as demandas para gerar sugestões de atividades para a sua especialidade: <span className="text-primary font-semibold">Musicoterapia</span>.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+      </Card>
+        </TabsContent>
+
+        {/* Conteúdo Aba 2: Planos Salvos */}
+        <TabsContent value="salvos" className="space-y-4">
+          <Card className="mx-1 sm:mx-2 border-primary/20">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
+                <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                Planos de Intervenção Salvos
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Visualize, baixe ou exclua os planos gerados.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              {isLoadingSavedPlans ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
+                  <span className="ml-2 text-sm sm:text-base text-muted-foreground">Carregando planos...</span>
+                </div>
+              ) : savedPlans.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Music2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm sm:text-base">Nenhum plano de atividades salvo ainda.</p>
+                  <p className="text-xs sm:text-sm mt-1">Crie seu primeiro plano na aba "Criar Plano"!</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3 sm:space-y-4">
+                    {savedPlans.map((plan) => (
+                      <Card key={plan.id} className="border-border/50">
+                        <CardContent className="p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-base sm:text-lg truncate">{plan.patient_name}</h4>
+                              <p className="text-xs sm:text-sm text-muted-foreground">
+                                Criado em {format(new Date(plan.created_at), "PPP", { locale: ptBR })}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {plan.complementary_materials?.activities?.length || 0} atividades
+                              </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewingPlan(plan)}
+                                className="flex-1 sm:flex-none text-xs sm:text-sm"
+                              >
+                                <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Visualizar</span>
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadPlanPDF(plan)}
+                                className="flex-1 sm:flex-none text-xs sm:text-sm"
+                              >
+                                <Download className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">PDF</span>
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={(e) => deletePlan(plan.id, e)}
+                                className="text-xs sm:text-sm"
+                              >
+                                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Excluir</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t">
+                    <Link to="/intervention-plans">
+                      <Button variant="outline" className="w-full">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Ver Página Completa de Planos
+                      </Button>
+                    </Link>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+      </Tabs>
+
+      {/* Dialog para visualizar plano completo */}
+      <Dialog open={!!viewingPlan} onOpenChange={(open) => !open && setViewingPlan(null)}>
           {/* Patient Selection */}
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3">1. Nome do Paciente</h3>
