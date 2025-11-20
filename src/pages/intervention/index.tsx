@@ -44,7 +44,12 @@ export default function InterventionForm() {
       } else {
         professionalId = professional.id;
       }
-      const { error } = await supabase.from('treatment_plans').insert([{ professional_id: professionalId, patient_id: formState.selectedPatient, patient_full_name: selectedPatient.name, complementary_materials: { activities: activityState.suggestedActivities } }]);
+      const { error } = await supabase.from('treatment_plans').insert([{ 
+        professional_id: professionalId, 
+        patient_id: formState.selectedPatient, 
+        patient_full_name: selectedPatient.name, 
+        complementary_materials: { activities: activityState.suggestedActivities } as any 
+      }]);
       if (error) throw error;
       toast({ title: "Plano salvo com sucesso!", description: "O plano de intervenção foi salvo." });
       activityState.clearActivities();
