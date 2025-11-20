@@ -40,29 +40,13 @@ export function useActivityGeneration() {
 
       setGenerationProgress("Preparando informações das demandas...");
       
-      const demandsInfo: any[] = [];
-      Object.entries(selectedDemands).forEach(([disorder, demands]) => {
-        demands.forEach(demand => {
-          demandsInfo.push({ disorder, demand });
-        });
-      });
-
-      Object.entries(selectedSubDemands).forEach(([category, subDemands]) => {
-        subDemands.forEach(subDemand => {
-          demandsInfo.push({ 
-            disorder: category.split(' - ')[0] || category,
-            demand: subDemand,
-            category 
-          });
-        });
-      });
-
       setGenerationProgress("Gerando atividades personalizadas com IA...");
       
       const { data, error } = await supabase.functions.invoke('generate-therapy-activities', {
         body: {
           patientName: patient.name,
-          demands: demandsInfo
+          selectedDemands,
+          selectedSubDemands
         }
       });
 
