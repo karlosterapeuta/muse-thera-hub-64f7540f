@@ -935,12 +935,12 @@ export default function Evaluation() {
 
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
-                  <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 dark:bg-opacity-10 group-hover:bg-opacity-10 dark:group-hover:bg-opacity-20`}>
+                  <Card className={`border-2 border-gray-100 dark:border-gray-700 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 dark:bg-opacity-20 group-hover:bg-opacity-10 dark:group-hover:bg-opacity-30`}>
                     <div className="flex items-center mb-6 gap-3">
-                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20 dark:bg-opacity-30`}>
+                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20 dark:bg-opacity-50 shadow-lg`}>
                         {domain.icon}
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{domain.title}</h2>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-50">{domain.title}</h2>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -959,7 +959,7 @@ export default function Evaluation() {
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
                         <Card className="border-l-4 border-l-purple-400 dark:border-l-purple-500 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
                           <div className="flex items-center mb-4">
-                            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100">{subdomain.title}</h3>
+                            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-50">{subdomain.title}</h3>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -978,37 +978,37 @@ export default function Evaluation() {
                             <Table className="min-w-full">
                               <TableHeader>
                                 <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 dark:from-gray-800 dark:to-slate-800 dark:hover:from-gray-700 dark:hover:to-slate-700">
-                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 dark:text-gray-100 text-base">Parâmetros Avaliados</TableHead>
+                                  <TableHead className="min-w-[200px] font-semibold text-gray-900 dark:text-gray-50 text-base">Parâmetros Avaliados</TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Não Obs.</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(0)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Não Obs.</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(0)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Emergente</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(1)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Emergente</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(1)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Inconsist.</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(2)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Inconsist.</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(2)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Moderado</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(3)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Moderado</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(3)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Consistente</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(4)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Consistente</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(4)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Excepcional</span>
-                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(5)</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">Excepcional</span>
+                                    <span className="block text-xs font-normal text-gray-800 dark:text-gray-200">(5)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {subdomain.parameters.map((parameter, paramIndex) => (
-                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors duration-200">
-                                    <TableCell className="text-sm sm:text-base font-medium text-gray-800 dark:text-gray-100 py-4">{parameter}</TableCell>
+                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-colors duration-200">
+                                    <TableCell className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-50 py-4">{parameter}</TableCell>
                                     {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
                                       <TableCell key={level} className="text-center p-2 sm:p-4">
                                         <RadioGroup
