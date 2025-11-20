@@ -935,16 +935,16 @@ export default function Evaluation() {
 
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
-                  <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 group-hover:bg-opacity-10`}>
+                  <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 dark:bg-opacity-10 group-hover:bg-opacity-10 dark:group-hover:bg-opacity-20`}>
                     <div className="flex items-center mb-6 gap-3">
-                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
+                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20 dark:bg-opacity-30`}>
                         {domain.icon}
                       </div>
                       <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{domain.title}</h2>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-full">
                               <HelpCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                             </Button>
                           </TooltipTrigger>
@@ -963,8 +963,8 @@ export default function Evaluation() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 rounded-full">
-                                    <Info className="h-4 w-4 text-purple-600" />
+                    <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-full">
+                      <Info className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
@@ -1007,7 +1007,7 @@ export default function Evaluation() {
                               </TableHeader>
                               <TableBody>
                                 {subdomain.parameters.map((parameter, paramIndex) => (
-                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
+                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors duration-200">
                                     <TableCell className="text-sm sm:text-base font-medium text-gray-800 dark:text-gray-100 py-4">{parameter}</TableCell>
                                     {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
                                       <TableCell key={level} className="text-center p-2 sm:p-4">
