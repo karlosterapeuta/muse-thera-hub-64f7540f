@@ -940,12 +940,12 @@ export default function Evaluation() {
                       <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
                         {domain.icon}
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{domain.title}</h2>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{domain.title}</h2>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/50 rounded-full">
-                              <HelpCircle className="h-5 w-5 text-gray-600" />
+                              <HelpCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
@@ -957,9 +957,9 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className="border-l-4 border-l-purple-400 bg-transparent backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                        <Card className="border-l-4 border-l-purple-400 dark:border-l-purple-500 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
                           <div className="flex items-center mb-4">
-                            <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
+                            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100">{subdomain.title}</h3>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -977,38 +977,38 @@ export default function Evaluation() {
                           <div className="overflow-x-auto rounded-xl shadow-inner">
                             <Table className="min-w-full">
                               <TableHeader>
-                                <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100">
-                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 text-base">Parâmetros Avaliados</TableHead>
+                                <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 dark:from-gray-800 dark:to-slate-800 dark:hover:from-gray-700 dark:hover:to-slate-700">
+                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 dark:text-gray-100 text-base">Parâmetros Avaliados</TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Não Obs.</span>
-                                    <span className="block text-xs font-normal">(0)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Não Obs.</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(0)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Emergente</span>
-                                    <span className="block text-xs font-normal">(1)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Emergente</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(1)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Inconsist.</span>
-                                    <span className="block text-xs font-normal">(2)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Inconsist.</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(2)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Moderado</span>
-                                    <span className="block text-xs font-normal">(3)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Moderado</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(3)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Consistente</span>
-                                    <span className="block text-xs font-normal">(4)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Consistente</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(4)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Excepcional</span>
-                                    <span className="block text-xs font-normal">(5)</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">Excepcional</span>
+                                    <span className="block text-xs font-normal text-gray-700 dark:text-gray-300">(5)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {subdomain.parameters.map((parameter, paramIndex) => (
                                   <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
-                                    <TableCell className="text-sm sm:text-base font-medium text-gray-800 py-4">{parameter}</TableCell>
+                                    <TableCell className="text-sm sm:text-base font-medium text-gray-800 dark:text-gray-100 py-4">{parameter}</TableCell>
                                     {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
                                       <TableCell key={level} className="text-center p-2 sm:p-4">
                                         <RadioGroup
@@ -1046,7 +1046,7 @@ export default function Evaluation() {
                           </div>
 
                           <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                               Observações Qualitativas - {subdomain.title}
                             </label>
                             <Textarea
@@ -1074,16 +1074,16 @@ export default function Evaluation() {
                 </h2>
                 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800 dark:text-purple-200">
                       Perfil Musicoterapêutico
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={domainScores}>
                           <PolarGrid stroke="#e0e7ff" />
-                          <PolarAngleAxis dataKey="name" tick={{ fontSize: 12, fill: '#6366f1' }} />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10, fill: '#6366f1' }} />
+                          <PolarAngleAxis dataKey="name" tick={{ fontSize: 12 }} className="fill-indigo-600 dark:fill-indigo-300" />
+                          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} className="fill-indigo-600 dark:fill-indigo-300" />
                           <Radar name="Perfil" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} strokeWidth={3} />
                           <Legend />
                         </RadarChart>
@@ -1091,8 +1091,8 @@ export default function Evaluation() {
                     </div>
                   </Card>
 
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800 dark:text-emerald-200">
                       Desenvolvimento Global
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
@@ -1117,16 +1117,16 @@ export default function Evaluation() {
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="text-center mt-4 p-4 bg-white rounded-xl shadow-inner">
-                        <p className="text-lg font-bold text-gray-800">{overallScore.raw} pontos (de {overallScore.max} possíveis)</p>
-                        <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                      <div className="text-center mt-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-inner">
+                        <p className="text-lg font-bold text-gray-800 dark:text-gray-100">{overallScore.raw} pontos (de {overallScore.max} possíveis)</p>
+                        <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
                       </div>
                     </div>
                   </Card>
                 </div>
                 
-                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50">
-                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800">
+                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50">
+                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800 dark:text-blue-200">
                     Análise Detalhada por Subdomínios
                   </h3>
                   <div className="h-[450px] sm:h-[500px]">
@@ -1141,9 +1141,10 @@ export default function Evaluation() {
                           angle={-45} 
                           textAnchor="end" 
                           height={100}
-                          tick={{ fontSize: 11, fill: '#0369a1' }}
+                          tick={{ fontSize: 11 }}
+                          className="fill-sky-700 dark:fill-sky-300"
                         />
-                        <YAxis domain={[0, 100]} tick={{ fill: '#0369a1' }} />
+                        <YAxis domain={[0, 100]} tick={{}} className="fill-sky-700 dark:fill-sky-300" />
                         <RechartsTooltip content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
