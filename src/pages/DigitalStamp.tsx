@@ -40,13 +40,15 @@ export default function DigitalStamp() {
     if (formData.qrLink) {
       try {
         const signatureQr = await QRCode.toDataURL(formData.qrLink, {
-          width: 80,
+          width: 300,
           margin: 1,
+          errorCorrectionLevel: 'H',
           color: { dark: '#0f766e', light: '#ffffff' }
         });
         const stampQr = await QRCode.toDataURL(formData.qrLink, {
-          width: 64,
+          width: 250,
           margin: 1,
+          errorCorrectionLevel: 'H',
           color: { dark: '#0f766e', light: '#ffffff' }
         });
         setSignatureQrDataUrl(signatureQr);
@@ -87,9 +89,12 @@ export default function DigitalStamp() {
     try {
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
-        scale: 2,
+        scale: 4,
         useCORS: true,
         logging: false,
+        allowTaint: true,
+        imageTimeout: 0,
+        removeContainer: true,
       });
       
       canvas.toBlob((blob) => {
@@ -102,7 +107,7 @@ export default function DigitalStamp() {
           URL.revokeObjectURL(url);
           toast.success('Download realizado com sucesso!');
         }
-      }, 'image/png');
+      }, 'image/png', 1.0);
     } catch (error) {
       console.error('Erro ao gerar imagem:', error);
       toast.error('Erro ao gerar a imagem. Tente novamente.');
