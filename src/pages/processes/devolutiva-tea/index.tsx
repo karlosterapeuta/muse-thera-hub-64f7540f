@@ -341,15 +341,6 @@ export default function DevolutivaTea() {
                   Voltar ao Formulário
                 </Button>
                 <Button
-                  onClick={handlePreview}
-                  disabled={isGeneratingPreview}
-                  variant="outline"
-                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  {isGeneratingPreview ? 'Gerando Preview...' : 'Preview do PDF'}
-                </Button>
-                <Button
                   onClick={handleGenerateAIPDF}
                   disabled={isGeneratingAIText}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
