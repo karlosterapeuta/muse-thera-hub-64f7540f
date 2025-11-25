@@ -350,27 +350,19 @@ export default function DevolutivaTea() {
                   {isGeneratingPreview ? 'Gerando Preview...' : 'Preview do PDF'}
                 </Button>
                 <Button
-                  onClick={handleGeneratePDF}
-                  disabled={isGeneratingPDF}
-                  variant="outline"
-                >
-                  <FileDown className="h-4 w-4 mr-2" />
-                  {isGeneratingPDF ? 'Gerando...' : 'PDF Simples'}
-                </Button>
-                <Button
                   onClick={handleGenerateAIPDF}
                   disabled={isGeneratingAIText}
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
                 >
                   {isGeneratingAIText ? (
                     <>
                       <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Gerando Texto Profissional...
+                      Gerando PDF...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      PDF com Texto IA
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Baixar PDF
                     </>
                   )}
                 </Button>
