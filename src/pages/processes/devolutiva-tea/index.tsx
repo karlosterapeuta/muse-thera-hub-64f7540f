@@ -340,23 +340,6 @@ export default function DevolutivaTea() {
                 >
                   Voltar ao Formulário
                 </Button>
-                <Button
-                  onClick={handleGenerateAIPDF}
-                  disabled={isGeneratingAIText}
-                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-                >
-                  {isGeneratingAIText ? (
-                    <>
-                      <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Gerando PDF...
-                    </>
-                  ) : (
-                    <>
-                      <FileDown className="h-4 w-4 mr-2" />
-                      Baixar PDF
-                    </>
-                  )}
-                </Button>
               </div>
             </div>
           </TabsContent>
