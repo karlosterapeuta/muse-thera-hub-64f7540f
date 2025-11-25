@@ -181,7 +181,7 @@ export function DevolutivaHistory() {
           {filteredRecords.map((record) => (
             <Card key={record.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle>
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-primary" />
                     <div>
@@ -191,14 +191,6 @@ export function DevolutivaHistory() {
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownload(record)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    PDF
-                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
