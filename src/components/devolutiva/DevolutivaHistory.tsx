@@ -7,6 +7,7 @@ import { FileText, Download, Search, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { DevolutivaPreviewPDF } from "./DevolutivaPreviewPDF";
+import { DevolutivaTextPDF } from "./DevolutivaTextPDF";
 import { generateReactPDF } from "@/utils/reactPDFGenerator";
 
 interface DevolutivaRecord {
@@ -36,6 +37,7 @@ export function DevolutivaHistory() {
   const [records, setRecords] = useState<DevolutivaRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,32 +86,71 @@ export function DevolutivaHistory() {
 
   const handleDownload = async (record: DevolutivaRecord) => {
     try {
+      setGeneratingAI(record.id);
+      
       toast({
-        title: "Gerando PDF",
-        description: "Aguarde enquanto o documento é preparado..."
+        title: "Gerando PDF Profissional",
+        description: "Aguarde enquanto o texto é processado pela IA..."
       });
 
-      // Preparar dados para o PDF
+      // Extrair frases do record e classificar
+      const extractPhrases = (text: string) => 
+        text ? text.split('. ').filter(p => p.trim()) : [];
+      
+      const negativeKeywords = [
+        'não', 'dificuldade', 'resistência', 'evitou', 'recusou', 
+        'baixa', 'regressão', 'desregulação', 'hipersensibilidade',
+        'ausente', 'limitado', 'inconsistente', 'pouca', 'pouco'
+      ];
+      
+      const allPhrases = [
+        ...extractPhrases(record.content.communication || ''),
+        ...extractPhrases(record.content.emotional_regulation || ''),
+        ...extractPhrases(record.content.motor_development || ''),
+        ...extractPhrases(record.content.sensory_aspects || ''),
+        ...extractPhrases(record.content.musical_participation || ''),
+        ...extractPhrases(record.content.achievements || '')
+      ];
+      
+      const challenges = extractPhrases(record.content.challenges_resistance || '');
+      const positives: string[] = [];
+      
+      allPhrases.forEach(phrase => {
+        const isNegative = negativeKeywords.some(kw => 
+          phrase.toLowerCase().includes(kw)
+        );
+        if (isNegative) {
+          challenges.push(phrase);
+        } else {
+          positives.push(phrase);
+        }
+      });
+      
+      // Chamar edge function para gerar texto IA
+      const { data, error } = await supabase.functions.invoke('generate-devolutiva-text', {
+        body: {
+          patientName: record.content.patient_name,
+          sessionDate: record.content.session_date,
+          sessionNumber: record.content.session_number,
+          positives,
+          challenges,
+          familyGuidelines: extractPhrases(record.content.family_guidelines || '')
+        }
+      });
+
+      if (error) throw error;
+
+      // Gerar PDF com texto IA
       const pdfData = {
         patient_name: record.content.patient_name,
         session_date: record.content.session_date,
         session_number: record.content.session_number,
-        communication: record.content.communication || '',
-        emotional_regulation: record.content.emotional_regulation || '',
-        motor_development: record.content.motor_development || '',
-        sensory_aspects: record.content.sensory_aspects || '',
-        musical_participation: record.content.musical_participation || '',
-        achievements: record.content.achievements || '',
-        family_guidelines: record.content.family_guidelines || '',
-        next_steps: record.content.next_steps || '',
-        general_observations: record.content.general_observations || '',
-        challenges_resistance: record.content.challenges_resistance || '',
         professional_name: record.content.professional_name,
-        professional_registry: record.content.professional_registry
+        professional_registry: record.content.professional_registry,
+        aiContent: data.content
       };
 
-      // Gerar PDF usando o componente com estilos inline
-      const component = createElement(DevolutivaPreviewPDF, { data: pdfData });
+      const component = createElement(DevolutivaTextPDF, { data: pdfData });
       
       const success = await generateReactPDF(component, {
         filename: `Devolutiva_${record.content.patient_name}_Sessao_${record.content.session_number}.pdf`,
@@ -119,19 +160,19 @@ export function DevolutivaHistory() {
 
       if (success) {
         toast({
-          title: "PDF gerado com sucesso!",
-          description: "O arquivo foi baixado para seu computador."
+          title: "PDF profissional gerado!",
+          description: "O relatório com linguagem técnica foi baixado."
         });
-      } else {
-        throw new Error('Falha na geração do PDF');
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Error generating AI PDF:', error);
       toast({
         title: "Erro ao gerar PDF",
         description: "Não foi possível gerar o documento. Tente novamente.",
         variant: "destructive"
       });
+    } finally {
+      setGeneratingAI(null);
     }
   };
 
@@ -193,10 +234,20 @@ export function DevolutivaHistory() {
                   </div>
                   <Button
                     onClick={() => handleDownload(record)}
+                    disabled={generatingAI === record.id}
                     className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    Baixar PDF
+                    {generatingAI === record.id ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        Gerando...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        Baixar PDF
+                      </>
+                    )}
                   </Button>
                 </CardTitle>
               </CardHeader>
