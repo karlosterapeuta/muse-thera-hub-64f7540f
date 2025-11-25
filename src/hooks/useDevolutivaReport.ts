@@ -5,6 +5,7 @@ import { generateReactPDF } from "@/utils/reactPDFGenerator";
 import { generateReactPDFPreview } from "@/utils/reactPDFPreview";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 import { DevolutivaPreviewPDF } from "@/components/devolutiva/DevolutivaPreviewPDF";
+import { DevolutivaTextPDF } from "@/components/devolutiva/DevolutivaTextPDF";
 
 export interface DevolutivaFormData {
   patient_id: string;
@@ -30,6 +31,7 @@ export function useDevolutivaReport() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+  const [isGeneratingAIText, setIsGeneratingAIText] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   const [customTexts, setCustomTexts] = useState<Record<string, string>>({
@@ -229,13 +231,139 @@ export function useDevolutivaReport() {
     }
   };
 
+  const classifyPhrases = (formData: DevolutivaFormData) => {
+    const positives: string[] = [];
+    const challenges: string[] = [];
+    
+    // Palavras-chave que indicam desafios/negativos
+    const negativeKeywords = [
+      'não', 'dificuldade', 'resistência', 'evitou', 'recusou', 
+      'baixa', 'regressão', 'desregulação', 'hipersensibilidade',
+      'ausente', 'limitado', 'inconsistente', 'pouca', 'pouco'
+    ];
+    
+    // Challenges/Resistance são sempre negativos
+    challenges.push(...formData.challenges_resistance);
+    
+    // Analisar outras categorias
+    const categoriesToAnalyze = [
+      { key: 'communication' as keyof DevolutivaFormData, phrases: formData.communication },
+      { key: 'emotional_regulation' as keyof DevolutivaFormData, phrases: formData.emotional_regulation },
+      { key: 'motor_development' as keyof DevolutivaFormData, phrases: formData.motor_development },
+      { key: 'sensory_aspects' as keyof DevolutivaFormData, phrases: formData.sensory_aspects },
+      { key: 'musical_participation' as keyof DevolutivaFormData, phrases: formData.musical_participation },
+      { key: 'achievements' as keyof DevolutivaFormData, phrases: formData.achievements }
+    ];
+    
+    categoriesToAnalyze.forEach(({ phrases }) => {
+      phrases.forEach((phrase: string) => {
+        const isNegative = negativeKeywords.some(kw => 
+          phrase.toLowerCase().includes(kw)
+        );
+        if (isNegative) {
+          challenges.push(phrase);
+        } else {
+          positives.push(phrase);
+        }
+      });
+    });
+    
+    return { positives, challenges };
+  };
+
+  const generateAIPDF = async (formData: DevolutivaFormData) => {
+    try {
+      setIsGeneratingAIText(true);
+
+      if (!formData.patient_name) {
+        throw new Error('Nome do paciente é obrigatório');
+      }
+
+      console.log('🤖 Iniciando geração de texto via IA...');
+
+      // Classificar frases
+      const { positives, challenges } = classifyPhrases(formData);
+      
+      console.log('📊 Classificação:', {
+        positives: positives.length,
+        challenges: challenges.length
+      });
+
+      // Chamar edge function
+      const { data, error } = await supabase.functions.invoke('generate-devolutiva-text', {
+        body: {
+          patientName: formData.patient_name,
+          sessionDate: formData.session_date,
+          sessionNumber: formData.session_number,
+          positives,
+          challenges,
+          familyGuidelines: formData.family_guidelines
+        }
+      });
+
+      if (error) {
+        console.error('❌ Erro ao chamar edge function:', error);
+        throw error;
+      }
+
+      console.log('✅ Texto gerado com sucesso pela IA');
+
+      // Preparar dados para o PDF
+      const pdfData = {
+        patient_name: formData.patient_name,
+        session_date: formData.session_date,
+        session_number: formData.session_number,
+        professional_name: formData.professional_name,
+        professional_registry: formData.professional_registry,
+        aiContent: data.content
+      };
+
+      // Gerar PDF
+      const component = createElement(DevolutivaTextPDF, { data: pdfData });
+      const fileName = `Devolutiva_IA_${formData.patient_name}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      const success = await generateReactPDF(component, { 
+        filename: fileName,
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      if (success) {
+        toast({
+          title: "PDF com IA gerado!",
+          description: "O PDF profissional foi gerado com sucesso."
+        });
+      }
+    } catch (error: any) {
+      console.error('❌ Error generating AI PDF:', error);
+      
+      let errorMessage = "Não foi possível gerar o PDF com IA.";
+      
+      if (error.message?.includes('Rate limit')) {
+        errorMessage = "Rate limit excedido. Por favor, aguarde alguns instantes e tente novamente.";
+      } else if (error.message?.includes('Créditos insuficientes')) {
+        errorMessage = "Créditos insuficientes. Por favor, adicione créditos à sua conta Lovable AI.";
+      }
+      
+      toast({
+        title: "Erro ao gerar PDF com IA",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingAIText(false);
+    }
+  };
+
   return {
     saveReport,
     generatePDF,
+    generateAIPDF,
     previewPDF,
     clearPreview,
     isSaving,
     isGeneratingPDF,
+    isGeneratingAIText,
     isGeneratingPreview,
     pdfPreviewUrl,
     customTexts,

@@ -1,0 +1,281 @@
+import React from "react";
+
+interface DevolutivaTextPDFProps {
+  data: {
+    patient_name: string;
+    session_date: string;
+    session_number: number;
+    professional_name: string;
+    professional_registry: string;
+    aiContent: {
+      synthesis: string;
+      achievements: string;
+      attentionAreas: string;
+      recommendations: string;
+      familyGuidelines: string;
+    };
+  };
+}
+
+export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('pt-BR', { 
+      day: '2-digit', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
+
+  // Split paragraphs for better formatting
+  const splitParagraphs = (text: string) => {
+    return text.split('\n').filter(p => p.trim().length > 0);
+  };
+
+  return (
+    <div style={{ 
+      fontFamily: 'Arial, sans-serif', 
+      padding: '40px', 
+      maxWidth: '800px', 
+      margin: '0 auto',
+      backgroundColor: '#ffffff',
+      color: '#1f2937',
+      lineHeight: '1.6'
+    }}>
+      {/* Header */}
+      <div style={{ 
+        textAlign: 'center', 
+        marginBottom: '40px',
+        paddingBottom: '20px',
+        borderBottom: '3px solid #ec4899'
+      }}>
+        <div style={{ 
+          fontSize: '28px', 
+          fontWeight: 'bold',
+          color: '#ec4899',
+          marginBottom: '8px'
+        }}>
+          Devolutiva Musicoterapia TEA
+        </div>
+        <div style={{ 
+          fontSize: '16px',
+          color: '#6b7280',
+          fontStyle: 'italic'
+        }}>
+          Relatório Profissional de Sessão
+        </div>
+      </div>
+
+      {/* Patient Info */}
+      <div style={{ 
+        backgroundColor: '#fdf2f8',
+        padding: '20px',
+        borderRadius: '8px',
+        marginBottom: '30px',
+        border: '1px solid #fbcfe8'
+      }}>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '15px'
+        }}>
+          <div>
+            <strong style={{ color: '#ec4899' }}>Paciente:</strong>
+            <div style={{ fontSize: '18px', fontWeight: '600' }}>{data.patient_name}</div>
+          </div>
+          <div>
+            <strong style={{ color: '#ec4899' }}>Data da Sessão:</strong>
+            <div style={{ fontSize: '18px', fontWeight: '600' }}>{formatDate(data.session_date)}</div>
+          </div>
+          <div>
+            <strong style={{ color: '#ec4899' }}>Sessão:</strong>
+            <div style={{ fontSize: '18px', fontWeight: '600' }}>#{data.session_number}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Synthesis Section */}
+      <div style={{ marginBottom: '30px' }}>
+        <div style={{
+          fontSize: '20px',
+          fontWeight: 'bold',
+          color: '#ec4899',
+          marginBottom: '15px',
+          paddingBottom: '8px',
+          borderBottom: '2px solid #fbcfe8'
+        }}>
+          📊 Síntese do Desempenho na Sessão
+        </div>
+        <div style={{ 
+          fontSize: '14px',
+          textAlign: 'justify',
+          color: '#374151'
+        }}>
+          {splitParagraphs(data.aiContent.synthesis).map((paragraph, idx) => (
+            <p key={idx} style={{ marginBottom: '12px' }}>{paragraph}</p>
+          ))}
+        </div>
+      </div>
+
+      {/* Achievements Section */}
+      {data.aiContent.achievements && (
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#10b981',
+            marginBottom: '15px',
+            paddingBottom: '8px',
+            borderBottom: '2px solid #d1fae5'
+          }}>
+            ✅ Conquistas Identificadas
+          </div>
+          <div style={{ 
+            backgroundColor: '#f0fdf4',
+            padding: '20px',
+            borderRadius: '8px',
+            border: '1px solid #86efac'
+          }}>
+            <div style={{ 
+              fontSize: '14px',
+              textAlign: 'justify',
+              color: '#374151'
+            }}>
+              {splitParagraphs(data.aiContent.achievements).map((paragraph, idx) => (
+                <p key={idx} style={{ marginBottom: '12px' }}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Attention Areas Section */}
+      {data.aiContent.attentionAreas && (
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#f59e0b',
+            marginBottom: '15px',
+            paddingBottom: '8px',
+            borderBottom: '2px solid #fed7aa'
+          }}>
+            ⚠️ Áreas que Necessitam Atenção
+          </div>
+          <div style={{ 
+            backgroundColor: '#fffbeb',
+            padding: '20px',
+            borderRadius: '8px',
+            border: '1px solid #fde68a'
+          }}>
+            <div style={{ 
+              fontSize: '14px',
+              textAlign: 'justify',
+              color: '#374151'
+            }}>
+              {splitParagraphs(data.aiContent.attentionAreas).map((paragraph, idx) => (
+                <p key={idx} style={{ marginBottom: '12px' }}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recommendations Section */}
+      {data.aiContent.recommendations && (
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#3b82f6',
+            marginBottom: '15px',
+            paddingBottom: '8px',
+            borderBottom: '2px solid #bfdbfe'
+          }}>
+            💡 Recomendações Terapêuticas
+          </div>
+          <div style={{ 
+            backgroundColor: '#eff6ff',
+            padding: '20px',
+            borderRadius: '8px',
+            border: '1px solid #93c5fd'
+          }}>
+            <div style={{ 
+              fontSize: '14px',
+              textAlign: 'justify',
+              color: '#374151'
+            }}>
+              {splitParagraphs(data.aiContent.recommendations).map((paragraph, idx) => (
+                <p key={idx} style={{ marginBottom: '12px' }}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Family Guidelines Section */}
+      {data.aiContent.familyGuidelines && (
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#8b5cf6',
+            marginBottom: '15px',
+            paddingBottom: '8px',
+            borderBottom: '2px solid #ddd6fe'
+          }}>
+            👨‍👩‍👧‍👦 Orientações para a Família
+          </div>
+          <div style={{ 
+            backgroundColor: '#faf5ff',
+            padding: '20px',
+            borderRadius: '8px',
+            border: '1px solid #c4b5fd'
+          }}>
+            <div style={{ 
+              fontSize: '14px',
+              textAlign: 'justify',
+              color: '#374151'
+            }}>
+              {splitParagraphs(data.aiContent.familyGuidelines).map((paragraph, idx) => (
+                <p key={idx} style={{ marginBottom: '12px' }}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{ 
+        marginTop: '50px',
+        paddingTop: '20px',
+        borderTop: '2px solid #e5e7eb',
+        textAlign: 'center'
+      }}>
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
+            Relatório gerado em: {new Date().toLocaleDateString('pt-BR')}
+          </div>
+        </div>
+        <div style={{ marginTop: '40px' }}>
+          <div style={{ 
+            borderTop: '1px solid #374151',
+            width: '300px',
+            margin: '0 auto',
+            paddingTop: '10px'
+          }}>
+            <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
+              {data.professional_name}
+            </div>
+            <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              {data.professional_registry}
+            </div>
+            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '5px' }}>
+              Musicoterapeuta
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

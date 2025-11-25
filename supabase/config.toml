@@ -19,6 +19,9 @@ verify_jwt = true
 [functions.generate-evaluation-text]
 verify_jwt = true
 
+[functions.generate-devolutiva-text]
+verify_jwt = true
+
 # Add rate limiting and other security settings for edge functions
 [functions]
 timeout = 60

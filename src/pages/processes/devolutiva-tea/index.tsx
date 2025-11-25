@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Heart, Save, FileDown, History, Eye } from "lucide-react";
+import { Heart, Save, FileDown, History, Eye, Sparkles } from "lucide-react";
 import { devolutivaPhrases } from "@/data/devolutivaPhrases";
 import { PhraseSelector } from "@/components/devolutiva/PhraseSelector";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
@@ -19,11 +19,13 @@ export default function DevolutivaTea() {
   const { toast } = useToast();
   const { 
     saveReport, 
-    generatePDF, 
+    generatePDF,
+    generateAIPDF,
     previewPDF,
     clearPreview,
     isSaving, 
     isGeneratingPDF,
+    isGeneratingAIText,
     isGeneratingPreview,
     pdfPreviewUrl,
     customTexts, 
@@ -180,6 +182,39 @@ export default function DevolutivaTea() {
     clearPreview();
   };
 
+  const handleGenerateAIPDF = () => {
+    if (!formData.patient_id) {
+      toast({
+        title: "Paciente não selecionado",
+        description: "Por favor, selecione um paciente.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Verificar se há frases selecionadas
+    const totalPhrases = [
+      ...formData.communication,
+      ...formData.emotional_regulation,
+      ...formData.motor_development,
+      ...formData.sensory_aspects,
+      ...formData.musical_participation,
+      ...formData.achievements,
+      ...formData.challenges_resistance
+    ].length;
+
+    if (totalPhrases === 0) {
+      toast({
+        title: "Nenhuma observação selecionada",
+        description: "Por favor, selecione algumas frases nas categorias antes de gerar o relatório com IA.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    generateAIPDF(formData);
+  };
+
   const getPreviewData = () => {
     return {
       patient_name: formData.patient_name,
@@ -298,7 +333,7 @@ export default function DevolutivaTea() {
           <TabsContent value="preview" className="mt-6">
             <div className="space-y-4">
               <DevolutivaPreview data={getPreviewData()} />
-              <div className="flex gap-4 justify-end">
+              <div className="flex gap-4 justify-end flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setActiveTab("form")}
@@ -317,10 +352,27 @@ export default function DevolutivaTea() {
                 <Button
                   onClick={handleGeneratePDF}
                   disabled={isGeneratingPDF}
-                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
+                  variant="outline"
                 >
                   <FileDown className="h-4 w-4 mr-2" />
-                  {isGeneratingPDF ? 'Gerando...' : 'Baixar PDF'}
+                  {isGeneratingPDF ? 'Gerando...' : 'PDF Simples'}
+                </Button>
+                <Button
+                  onClick={handleGenerateAIPDF}
+                  disabled={isGeneratingAIText}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                >
+                  {isGeneratingAIText ? (
+                    <>
+                      <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Gerando Texto Profissional...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      PDF com Texto IA
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
