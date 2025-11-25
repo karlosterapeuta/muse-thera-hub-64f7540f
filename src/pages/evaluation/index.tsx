@@ -13,13 +13,14 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2 } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
 import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
+import { EvaluationTextPDF } from "@/components/EvaluationTextPDF";
 import ReactDOM from 'react-dom';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
@@ -62,7 +63,8 @@ export default function Evaluation() {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [observations, setObservations] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-const [activeTab, setActiveTab] = useState("evaluation");
+  const [isGeneratingText, setIsGeneratingText] = useState(false);
+  const [activeTab, setActiveTab] = useState("evaluation");
 
   const { generateBlankScalePDF } = useEvaluationPDF();
 
@@ -675,6 +677,153 @@ const [activeTab, setActiveTab] = useState("evaluation");
     }
   };
 
+  const categorizeEvaluationData = () => {
+    const achievements: any[] = [];      // score >= 60 (Moderado, Consistente, Excepcional)
+    const developmentAreas: any[] = [];  // score < 60 (Não Observado, Emergente, Inconsistente)
+
+    evaluationDomains.forEach(domain => {
+      domain.subdomains.forEach(subdomain => {
+        subdomain.parameters.forEach(param => {
+          const key = `${domain.title}-${subdomain.title}-${param}`;
+          const selection = selections[key];
+          const score = calculateScore(domain.title, subdomain.title, param);
+          
+          if (selection && selection !== 'nao_observado') {
+            const paramData = {
+              domain: domain.title,
+              subdomain: subdomain.title,
+              parameter: param,
+              score,
+              level: selection
+            };
+            
+            if (score >= 60) {
+              achievements.push(paramData);
+            } else {
+              developmentAreas.push(paramData);
+            }
+          }
+        });
+      });
+    });
+
+    return { achievements, developmentAreas };
+  };
+
+  const handleGenerateEvaluationText = async () => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente primeiro");
+      return;
+    }
+    
+    // Verificar se há parâmetros avaliados
+    if (overallScore.evaluatedParameters === 0) {
+      toast.error("Avalie pelo menos alguns parâmetros primeiro");
+      return;
+    }
+
+    setIsGeneratingText(true);
+    toast.loading("Analisando avaliação e gerando texto profissional com IA...");
+
+    try {
+      // Organizar dados por categoria
+      const { achievements, developmentAreas } = categorizeEvaluationData();
+      
+      // Chamar edge function
+      const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
+        body: {
+          patientName: selectedPatientData?.name,
+          patientAge: selectedPatientData?.age,
+          evaluationDate: format(evaluationDate, 'dd/MM/yyyy'),
+          achievements,
+          developmentAreas,
+          overallScore,
+          evaluatedDomains: domainScores
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (!data || !data.content) {
+        throw new Error('Resposta inválida da IA');
+      }
+
+      toast.dismiss();
+      toast.loading("Gerando PDF do relatório...");
+
+      // Gerar PDF com o texto retornado
+      const pdfContent = (
+        <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
+          <EvaluationTextPDF
+            content={data.content}
+            patientName={selectedPatientData?.name || 'Paciente'}
+            patientAge={selectedPatientData?.age || null}
+            evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
+            professionalName={professionalData?.name || 'Profissional'}
+            professionalRegister={professionalData?.register || undefined}
+            overallScore={overallScore}
+          />
+        </div>
+      );
+
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const opt = {
+        margin: [10, 10],
+        filename: `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      await html2pdf().set(opt).from(root).save();
+      
+      document.body.removeChild(container);
+      
+      toast.dismiss();
+      toast.success("Texto de Avaliação gerado com sucesso!");
+    } catch (error: any) {
+      console.error("Erro ao gerar texto:", error);
+      toast.dismiss();
+      
+      if (error.message?.includes('429') || error.status === 429) {
+        toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
+      } else if (error.message?.includes('402') || error.status === 402) {
+        toast.error("Créditos insuficientes. Adicione créditos à sua conta Lovable AI.");
+      } else {
+        toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
+      }
+    } finally {
+      setIsGeneratingText(false);
+    }
+  };
+
   const getScoreLabel = (score: number) => {
     // Mapeia diretamente os valores corretos
     switch(score) {
@@ -823,6 +972,28 @@ const [activeTab, setActiveTab] = useState("evaluation");
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera PDF com gráficos e dados quantitativos</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleGenerateEvaluationText}
+                      disabled={isGeneratingText}
+                      className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isGeneratingText ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
+                      Texto Avaliação
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>

@@ -16,6 +16,9 @@ verify_jwt = true
 [functions.organize-evolution-report]
 verify_jwt = true
 
+[functions.generate-evaluation-text]
+verify_jwt = true
+
 # Add rate limiting and other security settings for edge functions
 [functions]
 timeout = 60
