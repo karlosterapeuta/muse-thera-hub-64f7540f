@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useProfessionalData } from '@/hooks/useProfessionalData';
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { 
   Download,
   Music2,
@@ -53,6 +55,7 @@ type Patient = {
 export default function InterventionForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { data: professionalData } = useProfessionalData();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
@@ -406,6 +409,17 @@ export default function InterventionForm() {
     }
 
     try {
+      // Convert professional images to Base64
+      let signatureBase64: string | null = null;
+      let photoBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      }
+
       const patient = patients.find(p => p.id === selectedPatient);
       if (!patient) throw new Error("Paciente não encontrado");
 
@@ -475,16 +489,122 @@ export default function InterventionForm() {
             ${activitiesHTML}
           </div>
 
-          <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB;">
-            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
-              Documento gerado em ${format(new Date(), "PPP", { locale: ptBR })} às ${new Date().toLocaleTimeString('pt-BR')}
-            </p>
-            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
-              Musetera - Sistema de Gestão para Musicoterapia
-            </p>
-            <p style="color: #6B7280; font-size: 11px; margin-bottom: 4px; text-align: center;">
-              Musicoterapeuta: ${userName} | Email: ${userEmail}
-            </p>
+          <!-- Footer - Digital Signature & Stamp (TEAL Design) -->
+          <div style="margin-top: 60px; padding: 24px; border: 2px solid #14b8a6; border-radius: 12px;">
+            <!-- Decorative TEAL gradient bar -->
+            <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4); border-radius: 4px 4px 0 0; margin-bottom: 24px;"></div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+              <!-- Left Side: Signature Card -->
+              <div>
+                <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
+                  <!-- Professional Photo with blur effect -->
+                  <div style="position: relative;">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; filter: blur(40px); opacity: 0.5; background: radial-gradient(circle, #14b8a6, #22d3ee, #0d9488);"></div>
+                    <img 
+                      src="${photoBase64 || '/placeholder.svg'}" 
+                      alt="Professional" 
+                      style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6;"
+                    />
+                  </div>
+                  
+                  <!-- Professional Info -->
+                  <div style="flex: 1;">
+                    <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #0f766e;">
+                      ${professionalData?.name || userName || 'Musicoterapeuta'}
+                    </h3>
+                    ${professionalData?.specialty ? `
+                      <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
+                        🎵 ${professionalData.specialty}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div style="margin-bottom: 16px; font-size: 14px; color: #0f766e;">
+                  ${professionalData?.register || professionalData?.license_number ? `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                      <span>📋</span>
+                      <span>${professionalData.register || professionalData.license_number}</span>
+                    </div>
+                  ` : ''}
+                  ${professionalData?.email || userEmail ? `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                      <span>📧</span>
+                      <span style="word-break: break-all;">${professionalData?.email || userEmail}</span>
+                    </div>
+                  ` : ''}
+                  ${professionalData?.phone ? `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span>📞</span>
+                      <span>${professionalData.phone}</span>
+                    </div>
+                  ` : ''}
+                </div>
+                
+                <!-- Digital Signature Image -->
+                ${signatureBase64 ? `
+                  <div style="margin-bottom: 16px;">
+                    <img 
+                      src="${signatureBase64}" 
+                      alt="Digital Signature" 
+                      style="max-height: 80px; object-fit: contain;"
+                    />
+                  </div>
+                ` : ''}
+                
+                <!-- Verification Footer -->
+                <div style="padding-top: 12px; border-top: 1px solid #99f6e4; text-align: center; font-size: 12px; font-weight: 500; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); color: #0f766e;">
+                  ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
+                </div>
+              </div>
+
+              <!-- Right Side: Circular Digital Stamp -->
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <!-- Outer decorative dashed circle -->
+                <div style="position: relative; width: 224px; height: 224px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
+                  <!-- Main stamp circle -->
+                  <div style="width: 192px; height: 192px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6;">
+                    <!-- Professional Photo inside stamp -->
+                    ${photoBase64 ? `
+                      <img 
+                        src="${photoBase64}" 
+                        alt="Stamp" 
+                        style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #0d9488;"
+                      />
+                    ` : ''}
+                    
+                    <!-- Professional Name -->
+                    <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
+                      ${professionalData?.name || userName || 'Musicoterapeuta'}
+                    </div>
+                    
+                    <!-- Decorative line -->
+                    <div style="width: 80px; height: 1px; margin-bottom: 8px; background: linear-gradient(to right, transparent, #14b8a6, transparent);"></div>
+                    
+                    <!-- Specialty Badge -->
+                    ${professionalData?.specialty ? `
+                      <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
+                        🎵 ${professionalData.specialty}
+                      </div>
+                    ` : ''}
+                    
+                    <!-- Registry -->
+                    ${professionalData?.register || professionalData?.license_number ? `
+                      <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
+                        📋 ${professionalData.register || professionalData.license_number}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+                
+                <!-- MuseTera Verified Badge -->
+                <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
+                  ✓ MuseTera Verified 🎵
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       `;
