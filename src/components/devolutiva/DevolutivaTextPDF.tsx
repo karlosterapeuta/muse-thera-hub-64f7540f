@@ -523,29 +523,6 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
                       </div>
                     )}
 
-                    {/* Actual Stamp Image Overlay */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '0',
-                      left: '0',
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      opacity: 0.15,
-                      pointerEvents: 'none'
-                    }}>
-                      <img 
-                        src={stamp}
-                        alt="Carimbo Digital"
-                        style={{
-                          maxWidth: '90%',
-                          maxHeight: '90%',
-                          objectFit: 'contain'
-                        }}
-                      />
-                    </div>
                   </div>
                 </div>
 
