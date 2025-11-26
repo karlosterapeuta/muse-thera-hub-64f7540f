@@ -6,6 +6,7 @@ import { generateReactPDFPreview } from "@/utils/reactPDFPreview";
 import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 import { DevolutivaPreviewPDF } from "@/components/devolutiva/DevolutivaPreviewPDF";
 import { DevolutivaTextPDF } from "@/components/devolutiva/DevolutivaTextPDF";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
 
 export interface DevolutivaFormData {
   patient_id: string;
@@ -28,6 +29,7 @@ export interface DevolutivaFormData {
 
 export function useDevolutivaReport() {
   const { toast } = useToast();
+  const { data: professionalData } = useProfessionalData();
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
@@ -136,7 +138,9 @@ export function useDevolutivaReport() {
         general_observations: combineText(formData.general_observations, customTexts.general_observations),
         challenges_resistance: combineText(formData.challenges_resistance, customTexts.challenges_resistance),
         professional_name: formData.professional_name,
-        professional_registry: formData.professional_registry
+        professional_registry: formData.professional_registry,
+        digital_signature_url: professionalData?.digital_signature_url,
+        digital_stamp_url: professionalData?.digital_stamp_url
       };
 
       // Usar componente PDF-específico com estilos inline
@@ -315,6 +319,8 @@ export function useDevolutivaReport() {
         session_number: formData.session_number,
         professional_name: formData.professional_name,
         professional_registry: formData.professional_registry,
+        digital_signature_url: professionalData?.digital_signature_url,
+        digital_stamp_url: professionalData?.digital_stamp_url,
         aiContent: data.content
       };
 

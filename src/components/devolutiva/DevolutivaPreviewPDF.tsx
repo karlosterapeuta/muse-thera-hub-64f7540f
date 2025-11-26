@@ -15,6 +15,8 @@ interface DevolutivaPreviewPDFProps {
     challenges_resistance: string;
     professional_name: string;
     professional_registry: string;
+    digital_signature_url?: string;
+    digital_stamp_url?: string;
   };
 }
 
@@ -122,12 +124,64 @@ export function DevolutivaPreviewPDF({ data }: DevolutivaPreviewPDFProps) {
 
       {/* Footer */}
       <div style={footerStyle}>
-        <p><strong>Profissional:</strong> {data.professional_name}</p>
-        <p><strong>Registro:</strong> {data.professional_registry}</p>
-        <div style={{ paddingTop: '32px', borderTop: '2px solid #e5e7eb', marginTop: '16px' }}>
-          <p style={{ textAlign: 'center' }}>
-            Assinatura: _________________________________
-          </p>
+        <div style={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          gap: '40px',
+          marginTop: '20px'
+        }}>
+          {/* Assinatura */}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            {data.digital_signature_url ? (
+              <img 
+                src={data.digital_signature_url} 
+                alt="Assinatura Digital" 
+                style={{ 
+                  maxHeight: '80px',
+                  maxWidth: '200px',
+                  objectFit: 'contain',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            ) : (
+              <div style={{ 
+                borderTop: '1px solid #000',
+                paddingTop: '8px',
+                marginTop: '50px'
+              }}>
+                <span style={{ fontSize: '11px', color: '#666' }}>
+                  Assinatura
+                </span>
+              </div>
+            )}
+            <div style={{ marginTop: '8px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
+                {data.professional_name}
+              </div>
+              <div style={{ fontSize: '11px', color: '#666' }}>
+                {data.professional_registry}
+              </div>
+            </div>
+          </div>
+
+          {/* Carimbo */}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            {data.digital_stamp_url ? (
+              <img 
+                src={data.digital_stamp_url} 
+                alt="Carimbo Digital" 
+                style={{ 
+                  maxHeight: '120px',
+                  maxWidth: '200px',
+                  objectFit: 'contain',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            ) : null}
+          </div>
         </div>
       </div>
 
