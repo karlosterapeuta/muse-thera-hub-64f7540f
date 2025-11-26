@@ -39,6 +39,11 @@ export default function DigitalStamp() {
     phone: '(00) 12345-6789',
   };
 
+  // Force cache refresh on mount to always load fresh data
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["professional-data"] });
+  }, []);
+
   useEffect(() => {
     generateQrCodes();
   }, [formData.qrLink]);
@@ -46,6 +51,11 @@ export default function DigitalStamp() {
   // Load existing data from professional profile
   useEffect(() => {
     if (professionalData) {
+      console.log('🔍 Professional Data carregado:', {
+        stamp_photo_url: professionalData.stamp_photo_url,
+        avatar_url: professionalData.avatar_url
+      });
+
       setFormData({
         name: professionalData.name || '',
         title: professionalData.specialty || 'Musicoterapeuta',
@@ -57,9 +67,13 @@ export default function DigitalStamp() {
       
       // Priorizar foto específica do carimbo, depois avatar como fallback
       if (professionalData.stamp_photo_url) {
+        console.log('✅ Usando stamp_photo_url:', professionalData.stamp_photo_url);
         setPhotoUrl(professionalData.stamp_photo_url);
       } else if (professionalData.avatar_url) {
+        console.log('⚠️ Usando fallback avatar_url:', professionalData.avatar_url);
         setPhotoUrl(professionalData.avatar_url);
+      } else {
+        console.log('❌ Nenhuma foto disponível');
       }
     }
   }, [professionalData]);
