@@ -7,6 +7,12 @@ interface DevolutivaTextPDFProps {
     session_number: number;
     professional_name: string;
     professional_registry: string;
+    professional_email?: string;
+    professional_phone?: string;
+    professional_specialty?: string;
+    professional_photo_url?: string | null;
+    digital_signature?: string | null;
+    digital_stamp?: string | null;
     digital_signature_url?: string;
     digital_stamp_url?: string;
     aiContent: {
@@ -28,6 +34,10 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
       year: 'numeric' 
     });
   };
+
+  // Helper to get signature/stamp with backward compatibility
+  const signature = data.digital_signature || data.digital_signature_url;
+  const stamp = data.digital_stamp || data.digital_stamp_url;
 
   // Split paragraphs for better formatting
   const splitParagraphs = (text: string) => {
@@ -249,13 +259,12 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
 
       {/* Footer */}
       <div style={{ 
-        marginTop: '50px',
-        background: 'linear-gradient(to bottom, #ffffff, #f8fafc)',
+        marginTop: '40px',
+        padding: '24px',
+        background: 'linear-gradient(to bottom, #f0fdfa, #ccfbf1)',
         borderRadius: '16px',
-        boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
-        padding: '30px',
-        borderTop: '4px solid transparent',
-        backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #ec4899, #14b8a6)',
+        border: '3px solid transparent',
+        backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4)',
         backgroundOrigin: 'border-box',
         backgroundClip: 'padding-box, border-box'
       }}>
@@ -264,181 +273,334 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
         <div style={{ 
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
+          gap: '30px',
           alignItems: 'start'
         }}>
           
-          {/* Assinatura Section (Left) */}
-          <div style={{ textAlign: 'center' }}>
+          {/* Signature Section (Left) */}
+          <div>
+            {/* Signature Card */}
             <div style={{
-              backgroundColor: '#ffffff',
+              background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
+              border: '2px solid #14b8a6',
               borderRadius: '12px',
               padding: '20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-              borderBottom: '3px solid transparent',
-              backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #ec4899, #14b8a6)',
-              backgroundOrigin: 'border-box',
-              backgroundClip: 'padding-box, border-box'
+              boxShadow: '0 4px 12px rgba(20,184,166,0.15)'
             }}>
-              {data.digital_signature_url ? (
-                <img 
-                  src={data.digital_signature_url} 
-                  alt="Assinatura Digital" 
-                  style={{ 
-                    maxHeight: '80px',
-                    maxWidth: '100%',
-                    objectFit: 'contain',
-                    margin: '0 auto 10px',
-                    display: 'block'
-                  }}
-                />
-              ) : (
+              {/* Horizontal layout: Photo + Info */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                {/* Professional Photo */}
+                {data.professional_photo_url && (
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    border: '3px solid transparent',
+                    backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box',
+                    flexShrink: 0
+                  }}>
+                    <img 
+                      src={data.professional_photo_url} 
+                      alt="Professional"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Professional Info */}
+                <div style={{ flex: 1 }}>
+                  <div style={{ 
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#0f766e',
+                    marginBottom: '8px',
+                    lineHeight: '1.3'
+                  }}>
+                    {data.professional_name}
+                  </div>
+                  
+                  <div style={{
+                    backgroundColor: '#ccfbf1',
+                    border: '1px solid #99f6e4',
+                    borderRadius: '20px',
+                    padding: '4px 12px',
+                    display: 'inline-block',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ fontSize: '11px', color: '#0f766e', fontWeight: '600' }}>
+                      🎵 {data.professional_specialty || 'Musicoterapeuta'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div style={{ fontSize: '12px', color: '#374151', lineHeight: '1.6' }}>
+                {data.professional_registry && (
+                  <div style={{ marginBottom: '4px' }}>
+                    <span style={{ marginRight: '4px' }}>📋</span>
+                    {data.professional_registry}
+                  </div>
+                )}
+                {data.professional_email && (
+                  <div style={{ marginBottom: '4px' }}>
+                    <span style={{ marginRight: '4px' }}>📧</span>
+                    {data.professional_email}
+                  </div>
+                )}
+                {data.professional_phone && (
+                  <div>
+                    <span style={{ marginRight: '4px' }}>📞</span>
+                    {data.professional_phone}
+                  </div>
+                )}
+              </div>
+
+              {/* Signature Image */}
+              {signature && (
                 <div style={{ 
-                  height: '80px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '10px'
+                  marginTop: '16px',
+                  paddingTop: '16px',
+                  borderTop: '2px solid #99f6e4'
                 }}>
-                  <div style={{ fontSize: '14px', color: '#9ca3af', fontStyle: 'italic' }}>
-                    Assinatura Digital
+                  <img 
+                    src={signature}
+                    alt="Assinatura Digital"
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                      maxHeight: '80px',
+                      display: 'block',
+                      margin: '0 auto'
+                    }}
+                  />
+                  <div style={{
+                    textAlign: 'center',
+                    marginTop: '8px',
+                    fontSize: '10px',
+                    color: '#0d9488',
+                    fontWeight: '600'
+                  }}>
+                    ──────────────────
                   </div>
                 </div>
               )}
+
+              {/* Verified Badge */}
               <div style={{
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '10px',
-                fontSize: '11px',
-                color: '#10b981',
-                fontWeight: '600'
+                marginTop: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '10px'
               }}>
-                ✓ Assinatura Digital Verificada
+                <div style={{ 
+                  color: '#059669',
+                  fontWeight: '600'
+                }}>
+                  ✓ Assinatura Digital Verificada
+                </div>
+                <div style={{ 
+                  color: '#6b7280'
+                }}>
+                  🎵 Sistema MuseTera
+                </div>
               </div>
-            </div>
-            <div style={{ 
-              marginTop: '12px',
-              fontSize: '10px',
-              color: '#6b7280'
-            }}>
-              🎵 Sistema MuseTera
             </div>
           </div>
 
           {/* Stamp Section (Right) */}
-          <div style={{ textAlign: 'center' }}>
-            {data.digital_stamp_url ? (
-              <div style={{ position: 'relative' }}>
-                {/* Outer decorative border */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {stamp ? (
+              <>
+                {/* Circular Stamp Container */}
                 <div style={{
-                  width: '160px',
-                  height: '160px',
-                  margin: '0 auto',
-                  borderRadius: '50%',
-                  border: '3px dashed #ec4899',
-                  padding: '8px',
-                  background: 'linear-gradient(135deg, #fdf2f8, #f3e8ff)'
+                  width: '280px',
+                  height: '280px',
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  {/* Inner solid border */}
+                  {/* Dashed Border Circle */}
                   <div style={{
+                    position: 'absolute',
                     width: '100%',
                     height: '100%',
                     borderRadius: '50%',
-                    border: '4px solid transparent',
-                    backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #ec4899, #a855f7)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box',
-                    padding: '4px',
-                    boxShadow: '0 4px 16px rgba(236,72,153,0.3)'
-                  }}>
-                    <img 
-                      src={data.digital_stamp_url} 
-                      alt="Carimbo Digital" 
-                      style={{ 
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        borderRadius: '50%'
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Verified badge */}
-                <div style={{
-                  marginTop: '10px',
-                  backgroundColor: '#14b8a6',
-                  color: '#ffffff',
-                  fontSize: '9px',
-                  fontWeight: '700',
-                  padding: '4px 10px',
-                  borderRadius: '12px',
-                  display: 'inline-block',
-                  letterSpacing: '0.5px'
-                }}>
-                  🎵 MUSTETERA VERIFIED ✓
-                </div>
-              </div>
-            ) : (
-              <div style={{ position: 'relative' }}>
-                {/* Outer decorative border */}
-                <div style={{
-                  width: '160px',
-                  height: '160px',
-                  margin: '0 auto',
-                  borderRadius: '50%',
-                  border: '3px dashed #ec4899',
-                  padding: '8px',
-                  background: 'linear-gradient(135deg, #fdf2f8, #f3e8ff)'
-                }}>
-                  {/* Inner solid border */}
+                    border: '3px dashed #14b8a6',
+                    opacity: 0.3
+                  }} />
+                  
+                  {/* Main Stamp Circle */}
                   <div style={{
-                    width: '100%',
-                    height: '100%',
+                    width: '240px',
+                    height: '240px',
                     borderRadius: '50%',
-                    border: '4px solid transparent',
-                    backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #ec4899, #a855f7)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box',
+                    background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
+                    border: '4px solid #14b8a6',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 16px rgba(236,72,153,0.3)'
+                    padding: '20px',
+                    boxShadow: '0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1)',
+                    position: 'relative'
                   }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎵</div>
-                      <div style={{ fontSize: '10px', color: '#ec4899', fontWeight: 'bold' }}>
-                        MUSICOTERAPIA
+                    {/* Professional Photo in Stamp */}
+                    {data.professional_photo_url && (
+                      <div style={{
+                        width: '70px',
+                        height: '70px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '3px solid transparent',
+                        backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6)',
+                        backgroundOrigin: 'border-box',
+                        backgroundClip: 'padding-box, border-box',
+                        marginBottom: '12px'
+                      }}>
+                        <img 
+                          src={data.professional_photo_url} 
+                          alt="Professional"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
                       </div>
+                    )}
+                    
+                    {/* Professional Name */}
+                    <div style={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      color: '#0f766e',
+                      textAlign: 'center',
+                      marginBottom: '8px',
+                      lineHeight: '1.2'
+                    }}>
+                      {data.professional_name}
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{
+                      width: '80px',
+                      height: '2px',
+                      background: 'linear-gradient(to right, transparent, #14b8a6, transparent)',
+                      marginBottom: '8px'
+                    }} />
+
+                    {/* Specialty Badge */}
+                    <div style={{
+                      backgroundColor: '#ccfbf1',
+                      border: '1px solid #99f6e4',
+                      borderRadius: '16px',
+                      padding: '4px 12px',
+                      marginBottom: '6px'
+                    }}>
+                      <span style={{ fontSize: '10px', color: '#0f766e', fontWeight: '600' }}>
+                        🎵 {data.professional_specialty || 'Musicoterapeuta'}
+                      </span>
+                    </div>
+
+                    {/* Registry */}
+                    {data.professional_registry && (
+                      <div style={{
+                        fontSize: '11px',
+                        color: '#374151',
+                        fontWeight: '600'
+                      }}>
+                        {data.professional_registry}
+                      </div>
+                    )}
+
+                    {/* Actual Stamp Image Overlay */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '0',
+                      left: '0',
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: 0.15,
+                      pointerEvents: 'none'
+                    }}>
+                      <img 
+                        src={stamp}
+                        alt="Carimbo Digital"
+                        style={{
+                          maxWidth: '90%',
+                          maxHeight: '90%',
+                          objectFit: 'contain'
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
+
+                {/* Verified Badge Below Stamp */}
+                <div style={{
+                  marginTop: '16px',
+                  background: 'linear-gradient(135deg, #0d9488, #0891b2)',
+                  color: 'white',
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 4px 12px rgba(13,148,136,0.3)'
+                }}>
+                  <span>✓</span>
+                  <span>MuseTera Verified</span>
+                  <span>🎵</span>
+                </div>
+              </>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px 20px',
+                color: '#9ca3af',
+                fontSize: '14px'
+              }}>
+                Carimbo Digital não disponível
               </div>
             )}
           </div>
         </div>
 
-        {/* Final Footer */}
+        {/* Final Footer Bar */}
         <div style={{
-          marginTop: '30px',
-          paddingTop: '20px',
-          borderTop: '2px solid transparent',
-          backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #ec4899, #8b5cf6, #14b8a6)',
-          backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
+          marginTop: '24px',
+          paddingTop: '16px',
+          borderTop: '2px solid #99f6e4',
           textAlign: 'center'
         }}>
           <div style={{
-            fontSize: '12px',
+            fontSize: '11px',
             color: '#6b7280',
-            marginBottom: '8px'
+            fontWeight: '600'
           }}>
-            <span style={{ fontWeight: '600', color: '#ec4899' }}>🎵 MuseTera</span> - Sistema de Musicoterapia
+            🎵 MuseTera - Sistema de Musicoterapia
           </div>
-          <div style={{ fontSize: '11px', color: '#9ca3af', fontStyle: 'italic' }}>
-            Relatório gerado em: {new Date().toLocaleDateString('pt-BR', { 
-              day: '2-digit', 
-              month: 'long', 
-              year: 'numeric' 
-            })}
+          <div style={{
+            fontSize: '10px',
+            color: '#9ca3af',
+            marginTop: '4px'
+          }}>
+            Gerado em: {formatDate(new Date().toISOString())}
           </div>
         </div>
       </div>
