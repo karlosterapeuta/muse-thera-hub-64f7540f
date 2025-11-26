@@ -1167,31 +1167,31 @@ export default function Evaluation() {
                           <div className="overflow-x-auto rounded-xl shadow-inner">
                             <Table className="min-w-full">
                               <TableHeader>
-                                <TableRow className="bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100">
-                                  <TableHead className="min-w-[200px] font-semibold text-gray-800 text-base">Parâmetros Avaliados</TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Não Obs.</span>
-                                    <span className="block text-xs font-normal">(0)</span>
+                                <TableRow className="bg-gradient-to-r from-purple-600 to-purple-700">
+                                  <TableHead className="min-w-[200px] font-bold text-white text-base">Parâmetros Avaliados</TableHead>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Não Obs.</span>
+                                    <span className="block text-xs font-medium text-purple-200">(0)</span>
                                   </TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Emergente</span>
-                                    <span className="block text-xs font-normal">(1)</span>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Emergente</span>
+                                    <span className="block text-xs font-medium text-purple-200">(1)</span>
                                   </TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Inconsist.</span>
-                                    <span className="block text-xs font-normal">(2)</span>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Inconsist.</span>
+                                    <span className="block text-xs font-medium text-purple-200">(2)</span>
                                   </TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Moderado</span>
-                                    <span className="block text-xs font-normal">(3)</span>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Moderado</span>
+                                    <span className="block text-xs font-medium text-purple-200">(3)</span>
                                   </TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Consistente</span>
-                                    <span className="block text-xs font-normal">(4)</span>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Consistente</span>
+                                    <span className="block text-xs font-medium text-purple-200">(4)</span>
                                   </TableHead>
-                                  <TableHead className="w-16 text-center">
-                                    <span className="block text-xs font-normal">Excepcional</span>
-                                    <span className="block text-xs font-normal">(5)</span>
+                                  <TableHead className="w-16 text-center text-white">
+                                    <span className="block text-sm font-semibold">Excepcional</span>
+                                    <span className="block text-xs font-medium text-purple-200">(5)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
