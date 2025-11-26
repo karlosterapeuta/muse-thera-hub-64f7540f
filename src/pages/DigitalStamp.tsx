@@ -281,14 +281,21 @@ export default function DigitalStamp() {
         .from('digital-signatures')
         .getPublicUrl(stampFileName);
 
-      // Update professional record with URLs
-      const { error: updateError } = await supabase
-        .from('professionals')
-        .update({
-          digital_signature_url: signatureUrlData.publicUrl,
-          digital_stamp_url: stampUrlData.publicUrl,
-        })
-        .eq('id', professionalData.id);
+    // Update professional record with URLs AND form data
+    const { error: updateError } = await supabase
+      .from('professionals')
+      .update({
+        // Dados do formulário
+        name: formData.name,
+        specialty: formData.title,
+        register: formData.registration,
+        email: formData.email,
+        phone: formData.phone,
+        // Imagens
+        digital_signature_url: signatureUrlData.publicUrl,
+        digital_stamp_url: stampUrlData.publicUrl,
+      })
+      .eq('id', professionalData.id);
 
       if (updateError) {
         console.error('Erro ao atualizar registro profissional:', updateError);
