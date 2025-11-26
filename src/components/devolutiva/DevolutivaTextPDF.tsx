@@ -284,35 +284,56 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
               background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
               border: '2px solid #14b8a6',
               borderRadius: '12px',
-              padding: '20px',
+              overflow: 'hidden',
               boxShadow: '0 4px 12px rgba(20,184,166,0.15)'
             }}>
-              {/* Horizontal layout: Photo + Info */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                {/* Professional Photo */}
-                {data.professional_photo_url && (
-                  <div style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    border: '3px solid transparent',
-                    backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box',
-                    flexShrink: 0
-                  }}>
-                    <img 
-                      src={data.professional_photo_url} 
-                      alt="Professional"
-                      style={{
+              {/* Decorative Top Bar */}
+              <div style={{
+                height: '8px',
+                background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)'
+              }} />
+              
+              <div style={{ padding: '20px' }}>
+                {/* Horizontal layout: Photo + Info */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                  {/* Professional Photo with Blur Effect */}
+                  {data.professional_photo_url && (
+                    <div style={{
+                      position: 'relative',
+                      width: '80px',
+                      height: '80px',
+                      flexShrink: 0
+                    }}>
+                      {/* Blur gradient background */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: '0',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488)',
+                        filter: 'blur(4px)',
+                        opacity: 0.75
+                      }} />
+                      {/* Circular Photo */}
+                      <div style={{
+                        position: 'relative',
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </div>
-                )}
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '3px solid #fff'
+                      }}>
+                        <img 
+                          src={data.professional_photo_url} 
+                          alt="Professional"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 
                 {/* Professional Info */}
                 <div style={{ flex: 1 }}>
@@ -363,54 +384,29 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
                 )}
               </div>
 
-              {/* Signature Image */}
-              {signature && (
-                <div style={{ 
-                  marginTop: '16px',
-                  paddingTop: '16px',
-                  borderTop: '2px solid #99f6e4'
-                }}>
-                  <img 
-                    src={signature}
-                    alt="Assinatura Digital"
-                    style={{
-                      maxWidth: '100%',
-                      height: 'auto',
-                      maxHeight: '80px',
-                      display: 'block',
-                      margin: '0 auto'
-                    }}
-                  />
-                  <div style={{
-                    textAlign: 'center',
-                    marginTop: '8px',
-                    fontSize: '10px',
-                    color: '#0d9488',
-                    fontWeight: '600'
-                  }}>
-                    ──────────────────
-                  </div>
-                </div>
-              )}
+              </div>
 
-              {/* Verified Badge */}
+              {/* Verification Footer */}
               <div style={{
-                marginTop: '12px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '10px'
+                borderTop: '1px solid #99f6e4',
+                background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
+                padding: '12px 16px',
+                marginTop: '16px'
               }}>
                 <div style={{ 
-                  color: '#059669',
-                  fontWeight: '600'
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '8px' 
                 }}>
-                  ✓ Assinatura Digital Verificada
-                </div>
-                <div style={{ 
-                  color: '#6b7280'
-                }}>
-                  🎵 Sistema MuseTera
+                  <span style={{ color: '#0d9488' }}>✓</span>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#0f766e' }}>
+                    Assinatura Digital Verificada
+                  </span>
+                  <span style={{ color: '#0d9488' }}>🎵</span>
+                  <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                    Sistema MuseTera
+                  </span>
                 </div>
               </div>
             </div>
