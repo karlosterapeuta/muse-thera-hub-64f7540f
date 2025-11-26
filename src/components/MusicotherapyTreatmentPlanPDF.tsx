@@ -5,11 +5,25 @@ import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
 interface MusicotherapyTreatmentPlanPDFProps {
   planData: MusicotherapyTreatmentPlan;
   therapistName?: string;
+  digitalSignatureUrl?: string;
+  digitalStampUrl?: string;
+  professionalPhotoUrl?: string;
+  professionalEmail?: string;
+  professionalPhone?: string;
+  professionalSpecialty?: string;
+  professionalRegistry?: string;
 }
 
 export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanPDFProps> = ({ 
   planData, 
-  therapistName 
+  therapistName,
+  digitalSignatureUrl,
+  digitalStampUrl,
+  professionalPhotoUrl,
+  professionalEmail,
+  professionalPhone,
+  professionalSpecialty,
+  professionalRegistry
 }) => {
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -232,30 +246,156 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
         </div>
       ), "bg-gray-50")}
 
-      {/* Footer */}
-      <div className="border-t-2 border-gray-300 pt-8 mt-12">
-        <div className="text-center">
-          <div className="mb-6">
-            <p className="text-lg font-semibold text-gray-800">Musicoterapeuta Responsável</p>
-            <p className="text-xl font-bold text-blue-600">{therapistName || 'Não informado'}</p>
-          </div>
-          
-          {/* Signature lines */}
-          <div className="flex justify-between items-end mb-8">
-            <div className="text-center">
-              <div className="border-b-2 border-gray-400 w-64 mb-2"></div>
-              <p className="text-sm text-gray-600">Assinatura do Musicoterapeuta</p>
+      {/* Footer - Digital Signature & Stamp (TEAL Design) */}
+      <div className="mt-16 p-6 border-2 rounded-xl" style={{ borderColor: '#14b8a6' }}>
+        {/* Decorative TEAL gradient bar */}
+        <div className="h-2 rounded-t-lg mb-6" style={{ background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)' }}></div>
+        
+        <div className="grid grid-cols-2 gap-8">
+          {/* Left Side: Signature Card */}
+          <div>
+            <div className="flex items-start gap-4 mb-6">
+              {/* Professional Photo with blur effect */}
+              <div className="relative">
+                <div 
+                  className="absolute inset-0 rounded-full blur-xl opacity-50"
+                  style={{ background: 'radial-gradient(circle, #14b8a6, #22d3ee, #0d9488)' }}
+                ></div>
+                <img 
+                  src={professionalPhotoUrl || '/placeholder.svg'} 
+                  alt="Professional" 
+                  className="relative w-20 h-20 rounded-full object-cover border-2"
+                  style={{ borderColor: '#14b8a6' }}
+                />
+              </div>
+              
+              {/* Professional Info */}
+              <div className="flex-1">
+                <h3 className="font-bold text-lg mb-2" style={{ color: '#0f766e' }}>
+                  {therapistName || 'Musicoterapeuta'}
+                </h3>
+                {professionalSpecialty && (
+                  <div 
+                    className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-3"
+                    style={{ backgroundColor: '#ccfbf1', color: '#0f766e', border: '1px solid #99f6e4' }}
+                  >
+                    🎵 {professionalSpecialty}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="text-center">
-              <div className="border-b-2 border-gray-400 w-64 mb-2"></div>
-              <p className="text-sm text-gray-600">Data e Carimbo</p>
+            
+            {/* Contact Information */}
+            <div className="space-y-2 text-sm mb-4" style={{ color: '#0f766e' }}>
+              {professionalRegistry && (
+                <div className="flex items-center gap-2">
+                  <span>📋</span>
+                  <span>{professionalRegistry}</span>
+                </div>
+              )}
+              {professionalEmail && (
+                <div className="flex items-center gap-2">
+                  <span>📧</span>
+                  <span className="break-all">{professionalEmail}</span>
+                </div>
+              )}
+              {professionalPhone && (
+                <div className="flex items-center gap-2">
+                  <span>📞</span>
+                  <span>{professionalPhone}</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Digital Signature Image */}
+            {digitalSignatureUrl && (
+              <div className="mb-4">
+                <img 
+                  src={digitalSignatureUrl} 
+                  alt="Digital Signature" 
+                  className="max-h-20 object-contain"
+                />
+              </div>
+            )}
+            
+            {/* Verification Footer */}
+            <div 
+              className="pt-3 border-t text-center text-xs font-medium"
+              style={{ 
+                borderColor: '#99f6e4',
+                background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
+                color: '#0f766e'
+              }}
+            >
+              ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
             </div>
           </div>
 
-          <div className="text-sm text-gray-600 space-y-1">
-            <p>Este documento foi gerado automaticamente pelo Sistema MuseTera</p>
-            <p>Data de geração: {currentDate}</p>
-            <p className="font-medium">© Sistema MuseTera - Musicoterapia Profissional</p>
+          {/* Right Side: Circular Digital Stamp */}
+          <div className="flex flex-col items-center justify-center">
+            {/* Outer decorative dashed circle */}
+            <div 
+              className="relative w-56 h-56 rounded-full flex items-center justify-center"
+              style={{ border: '3px dashed #99f6e4' }}
+            >
+              {/* Main stamp circle */}
+              <div 
+                className="w-48 h-48 rounded-full flex flex-col items-center justify-center p-6 relative overflow-hidden"
+                style={{ 
+                  background: 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%)',
+                  border: '3px solid #14b8a6'
+                }}
+              >
+                {/* Professional Photo inside stamp */}
+                {professionalPhotoUrl && (
+                  <img 
+                    src={professionalPhotoUrl} 
+                    alt="Stamp" 
+                    className="w-16 h-16 rounded-full object-cover mb-2 border-2"
+                    style={{ borderColor: '#0d9488' }}
+                  />
+                )}
+                
+                {/* Professional Name */}
+                <div className="text-center font-bold text-sm mb-1" style={{ color: '#0f766e' }}>
+                  {therapistName || 'Musicoterapeuta'}
+                </div>
+                
+                {/* Decorative line */}
+                <div 
+                  className="w-20 h-px mb-2"
+                  style={{ background: 'linear-gradient(to right, transparent, #14b8a6, transparent)' }}
+                ></div>
+                
+                {/* Specialty Badge */}
+                {professionalSpecialty && (
+                  <div 
+                    className="px-2 py-1 rounded-full text-xs font-medium mb-1"
+                    style={{ backgroundColor: '#0d9488', color: 'white' }}
+                  >
+                    🎵 {professionalSpecialty}
+                  </div>
+                )}
+                
+                {/* Registry */}
+                {professionalRegistry && (
+                  <div className="text-xs font-medium" style={{ color: '#0f766e' }}>
+                    📋 {professionalRegistry}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* MuseTera Verified Badge */}
+            <div 
+              className="mt-4 px-4 py-2 rounded-full text-xs font-bold"
+              style={{ 
+                background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
+                color: 'white'
+              }}
+            >
+              ✓ MuseTera Verified 🎵
+            </div>
           </div>
         </div>
       </div>

@@ -38,6 +38,7 @@ import { ObjectivesSelector } from '@/components/musicotherapy/ObjectivesSelecto
 import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector';
 import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 
 type Patient = {
   id: string;
@@ -232,9 +233,31 @@ export default function MusicotherapyTreatmentPlanPage() {
 
     setIsGeneratingPDF(true);
     try {
+      // Convert professional images to Base64
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      }
+
       const component = React.createElement(MusicotherapyTreatmentPlanPDF, { 
         planData: planData as MusicotherapyTreatmentPlan,
-        therapistName: professionalData?.name 
+        therapistName: professionalData?.name,
+        digitalSignatureUrl: signatureBase64 || undefined,
+        digitalStampUrl: stampBase64 || undefined,
+        professionalPhotoUrl: photoBase64 || undefined,
+        professionalEmail: professionalData?.email,
+        professionalPhone: professionalData?.phone,
+        professionalSpecialty: professionalData?.specialty,
+        professionalRegistry: professionalData?.register || professionalData?.license_number,
       });
 
       const success = await generateStaticPDF(component, {
