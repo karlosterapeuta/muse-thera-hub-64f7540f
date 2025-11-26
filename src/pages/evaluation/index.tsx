@@ -1198,7 +1198,7 @@ export default function Evaluation() {
                               <TableBody>
                                 {subdomain.parameters.map((parameter, paramIndex) => (
                                   <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
-                                    <TableCell className="text-sm sm:text-base font-medium text-gray-800 py-4">{parameter}</TableCell>
+                                    <TableCell className="text-sm sm:text-base font-semibold text-white py-4 bg-gradient-to-r from-gray-700 to-gray-600 rounded-l-lg">{parameter}</TableCell>
                                     {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
                                       <TableCell key={level} className="text-center p-2 sm:p-4">
                                         <RadioGroup
