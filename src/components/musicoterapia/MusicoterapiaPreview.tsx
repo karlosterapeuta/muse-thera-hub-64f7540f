@@ -340,35 +340,62 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           <Separator className="mb-6" />
           
           {/* Digital Signature and Stamp - Side by Side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start justify-center mb-6">
-            {reportData.signature && (
-              <div className="text-center space-y-3">
-                <div className="border-b-3 border-primary/30 pb-4 min-w-[300px]">
-                  <p className="text-xl font-bold text-primary">
-                    {reportData.signature}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center mb-6">
+            {/* Digital Signature */}
+            <div className="text-center space-y-3">
+              {professionalData?.digital_signature_url ? (
+                <div className="flex flex-col items-center space-y-2">
+                  <img 
+                    src={professionalData.digital_signature_url} 
+                    alt="Assinatura Digital" 
+                    className="h-24 w-auto object-contain"
+                  />
+                  <p className="text-base text-muted-foreground font-medium">
+                    Assinatura Digital do Profissional
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {professionalData?.register || reportData.professionalRegistry}
                   </p>
                 </div>
-                <p className="text-base text-muted-foreground font-medium">
-                  Assinatura Digital do Profissional
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {professionalData?.register || reportData.professionalRegistry}
-                </p>
-              </div>
-            )}
+              ) : reportData.signature ? (
+                <>
+                  <div className="border-b-3 border-primary/30 pb-4 min-w-[300px]">
+                    <p className="text-xl font-bold text-primary">
+                      {reportData.signature}
+                    </p>
+                  </div>
+                  <p className="text-base text-muted-foreground font-medium">
+                    Assinatura Digital do Profissional
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {professionalData?.register || reportData.professionalRegistry}
+                  </p>
+                </>
+              ) : null}
+            </div>
             
             {/* Digital Stamp/Seal */}
-            <div className="text-center border-3 border-primary/40 rounded-xl p-4 bg-primary/5">
-              <div className="flex items-center justify-center mb-2">
-                <Music className="h-6 w-6 text-primary mr-2" />
-                <span className="font-bold text-primary text-lg">MUSICOTERAPIA</span>
-              </div>
-              <p className="text-sm text-muted-foreground font-medium">
-                Relatório Técnico Especializado
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Sistema MuseTera® - {new Date().getFullYear()}
-              </p>
+            <div className="text-center flex items-center justify-center">
+              {professionalData?.digital_stamp_url ? (
+                <img 
+                  src={professionalData.digital_stamp_url} 
+                  alt="Carimbo Digital" 
+                  className="h-32 w-auto object-contain"
+                />
+              ) : (
+                <div className="border-3 border-primary/40 rounded-xl p-4 bg-primary/5">
+                  <div className="flex items-center justify-center mb-2">
+                    <Music className="h-6 w-6 text-primary mr-2" />
+                    <span className="font-bold text-primary text-lg">MUSICOTERAPIA</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Relatório Técnico Especializado
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Sistema MuseTera® - {new Date().getFullYear()}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
           

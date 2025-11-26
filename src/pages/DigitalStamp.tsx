@@ -3,12 +3,16 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download, User, Camera, Check } from 'lucide-react';
+import { Download, User, Camera, Check, Save } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useProfessionalData } from '@/hooks/useProfessionalData';
 
 export default function DigitalStamp() {
+  const { data: professionalData } = useProfessionalData();
+  
   const [formData, setFormData] = useState({
     name: '',
     title: '',
@@ -23,6 +27,7 @@ export default function DigitalStamp() {
   const [stampQrDataUrl, setStampQrDataUrl] = useState<string>('');
   const [isGeneratingSignature, setIsGeneratingSignature] = useState(false);
   const [isGeneratingStamp, setIsGeneratingStamp] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const defaultTexts = {
     name: 'Nome do Profissional',
@@ -35,6 +40,25 @@ export default function DigitalStamp() {
   useEffect(() => {
     generateQrCodes();
   }, [formData.qrLink]);
+
+  // Load existing data from professional profile
+  useEffect(() => {
+    if (professionalData) {
+      setFormData({
+        name: professionalData.name || '',
+        title: professionalData.specialty || 'Musicoterapeuta',
+        registration: professionalData.register || '',
+        email: professionalData.email || '',
+        phone: professionalData.phone || '',
+        qrLink: '',
+      });
+      
+      // Load existing signature/stamp if available
+      if (professionalData.avatar_url) {
+        setPhotoUrl(professionalData.avatar_url);
+      }
+    }
+  }, [professionalData]);
 
   const generateQrCodes = async () => {
     if (formData.qrLink) {
@@ -77,6 +101,32 @@ export default function DigitalStamp() {
     }
   };
 
+  const convertElementToBlob = async (elementId: string): Promise<Blob | null> => {
+    const element = document.getElementById(elementId);
+    if (!element) return null;
+
+    try {
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#ffffff',
+        scale: 4,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+        imageTimeout: 0,
+        removeContainer: true,
+      });
+      
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, 'image/png', 1.0);
+      });
+    } catch (error) {
+      console.error('Erro ao converter elemento para blob:', error);
+      return null;
+    }
+  };
+
   const downloadElementAsPng = async (
     elementId: string,
     filename: string,
@@ -113,6 +163,86 @@ export default function DigitalStamp() {
       toast.error('Erro ao gerar a imagem. Tente novamente.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveToDatabase = async () => {
+    if (!professionalData?.id) {
+      toast.error('Dados profissionais não encontrados');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // Convert signature and stamp to blobs
+      const signatureBlob = await convertElementToBlob('signaturePreview');
+      const stampBlob = await convertElementToBlob('stampPreview');
+
+      if (!signatureBlob || !stampBlob) {
+        toast.error('Erro ao gerar as imagens');
+        return;
+      }
+
+      // Upload signature to storage
+      const signatureFileName = `${professionalData.id}/signature_${Date.now()}.png`;
+      const { error: signatureUploadError, data: signatureData } = await supabase.storage
+        .from('digital-signatures')
+        .upload(signatureFileName, signatureBlob, {
+          contentType: 'image/png',
+          upsert: true,
+        });
+
+      if (signatureUploadError) {
+        console.error('Erro ao fazer upload da assinatura:', signatureUploadError);
+        toast.error('Erro ao salvar assinatura');
+        return;
+      }
+
+      // Upload stamp to storage
+      const stampFileName = `${professionalData.id}/stamp_${Date.now()}.png`;
+      const { error: stampUploadError, data: stampData } = await supabase.storage
+        .from('digital-signatures')
+        .upload(stampFileName, stampBlob, {
+          contentType: 'image/png',
+          upsert: true,
+        });
+
+      if (stampUploadError) {
+        console.error('Erro ao fazer upload do carimbo:', stampUploadError);
+        toast.error('Erro ao salvar carimbo');
+        return;
+      }
+
+      // Get public URLs
+      const { data: signatureUrlData } = supabase.storage
+        .from('digital-signatures')
+        .getPublicUrl(signatureFileName);
+
+      const { data: stampUrlData } = supabase.storage
+        .from('digital-signatures')
+        .getPublicUrl(stampFileName);
+
+      // Update professional record with URLs
+      const { error: updateError } = await supabase
+        .from('professionals')
+        .update({
+          digital_signature_url: signatureUrlData.publicUrl,
+          digital_stamp_url: stampUrlData.publicUrl,
+        })
+        .eq('id', professionalData.id);
+
+      if (updateError) {
+        console.error('Erro ao atualizar registro profissional:', updateError);
+        toast.error('Erro ao salvar no banco de dados');
+        return;
+      }
+
+      toast.success('Assinatura e carimbo salvos com sucesso! Agora serão usados automaticamente nos PDFs.');
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      toast.error('Erro inesperado ao salvar');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -354,30 +484,42 @@ export default function DigitalStamp() {
 
             <div className="mt-6 sm:mt-8 space-y-2 sm:space-y-3">
               <Button
-                onClick={() =>
-                  downloadElementAsPng(
-                    'signaturePreview',
-                    'assinatura-digital.png',
-                    setIsGeneratingSignature
-                  )
-                }
-                disabled={isGeneratingSignature}
-                className="w-full bg-teal-600 hover:bg-teal-700 h-10 sm:h-11 text-sm sm:text-base"
+                onClick={saveToDatabase}
+                disabled={isSaving || !formData.name}
+                className="w-full bg-primary hover:bg-primary/90 h-12 sm:h-13 text-sm sm:text-base font-semibold"
               >
-                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura (PNG)'}
+                <Save className="mr-2 h-5 w-5" />
+                {isSaving ? 'Salvando...' : 'Salvar Assinatura e Carimbo'}
               </Button>
-              <Button
-                onClick={() =>
-                  downloadElementAsPng('stampPreview', 'carimbo-digital.png', setIsGeneratingStamp)
-                }
-                disabled={isGeneratingStamp}
-                variant="secondary"
-                className="w-full h-10 sm:h-11 text-sm sm:text-base"
-              >
-                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo (PNG)'}
-              </Button>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={() =>
+                    downloadElementAsPng(
+                      'signaturePreview',
+                      'assinatura-digital.png',
+                      setIsGeneratingSignature
+                    )
+                  }
+                  disabled={isGeneratingSignature}
+                  variant="outline"
+                  className="w-full h-10 sm:h-11 text-sm sm:text-base"
+                >
+                  <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura'}
+                </Button>
+                <Button
+                  onClick={() =>
+                    downloadElementAsPng('stampPreview', 'carimbo-digital.png', setIsGeneratingStamp)
+                  }
+                  disabled={isGeneratingStamp}
+                  variant="outline"
+                  className="w-full h-10 sm:h-11 text-sm sm:text-base"
+                >
+                  <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo'}
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
