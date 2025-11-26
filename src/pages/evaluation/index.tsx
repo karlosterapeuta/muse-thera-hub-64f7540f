@@ -1018,7 +1018,7 @@ export default function Evaluation() {
                       ) : (
                         <FileText className="h-4 w-4" />
                       )}
-                      Texto Avaliação
+                      Exportar Avaliação
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
