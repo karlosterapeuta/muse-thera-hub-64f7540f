@@ -3,7 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileText, Download, Search, Calendar } from "lucide-react";
+import { FileText, Download, Search, Calendar, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { DevolutivaPreviewPDF } from "./DevolutivaPreviewPDF";
@@ -38,6 +49,7 @@ export function DevolutivaHistory() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,6 +93,35 @@ export function DevolutivaHistory() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (recordId: string, patientName: string) => {
+    try {
+      setDeletingId(recordId);
+      
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', recordId);
+
+      if (error) throw error;
+
+      setRecords(prev => prev.filter(r => r.id !== recordId));
+      
+      toast({
+        title: "Devolutiva excluída",
+        description: `O registro de ${patientName} foi removido com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir a devolutiva. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -232,23 +273,61 @@ export function DevolutivaHistory() {
                       </p>
                     </div>
                   </div>
-                  <Button
-                    onClick={() => handleDownload(record)}
-                    disabled={generatingAI === record.id}
-                    className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-                  >
-                    {generatingAI === record.id ? (
-                      <>
-                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        Gerando...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="h-4 w-4 mr-2" />
-                        Baixar PDF
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => handleDownload(record)}
+                      disabled={generatingAI === record.id}
+                      className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
+                    >
+                      {generatingAI === record.id ? (
+                        <>
+                          <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          Gerando...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4 mr-2" />
+                          Baixar PDF
+                        </>
+                      )}
+                    </Button>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          disabled={deletingId === record.id}
+                        >
+                          {deletingId === record.id ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-destructive border-t-transparent" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir devolutiva?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir a devolutiva de <strong>{record.content.patient_name}</strong> (Sessão #{record.content.session_number})?
+                            <br /><br />
+                            Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(record.id, record.content.patient_name)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
