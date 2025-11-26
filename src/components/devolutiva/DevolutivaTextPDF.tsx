@@ -260,10 +260,10 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
         backgroundClip: 'padding-box, border-box'
       }}>
         
-        {/* Three-column layout */}
+        {/* Two-column layout */}
         <div style={{ 
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateColumns: '1fr 1fr',
           gap: '20px',
           alignItems: 'start'
         }}>
@@ -321,45 +321,6 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
               color: '#6b7280'
             }}>
               🎵 Sistema MuseTera
-            </div>
-          </div>
-
-          {/* Professional Card (Center) */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
-              border: '2px solid #ec4899',
-              borderRadius: '12px',
-              padding: '20px',
-              boxShadow: '0 4px 12px rgba(236,72,153,0.15)'
-            }}>
-              <div style={{ 
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: '#ec4899',
-                marginBottom: '12px',
-                lineHeight: '1.3'
-              }}>
-                {data.professional_name}
-              </div>
-              
-              <div style={{
-                backgroundColor: '#fce7f3',
-                border: '1px solid #ec4899',
-                borderRadius: '20px',
-                padding: '6px 14px',
-                display: 'inline-block',
-                marginBottom: '12px'
-              }}>
-                <span style={{ fontSize: '11px', color: '#be185d', fontWeight: '600' }}>
-                  🎵 Musicoterapeuta
-                </span>
-              </div>
-
-              <div style={{ fontSize: '12px', color: '#374151', marginBottom: '6px' }}>
-                <span style={{ marginRight: '4px' }}>📋</span>
-                {data.professional_registry}
-              </div>
             </div>
           </div>
 
