@@ -1200,7 +1200,19 @@ export default function Evaluation() {
                                   <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
                                     <TableCell className="text-sm sm:text-base font-semibold text-white py-4 bg-gradient-to-r from-gray-700 to-gray-600 rounded-l-lg">{parameter}</TableCell>
                                     {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
-                                      <TableCell key={level} className="text-center p-2 sm:p-4">
+                                      <TableCell 
+                                        key={level} 
+                                        className={`text-center p-2 sm:p-4 transition-all duration-300 rounded-lg ${
+                                          selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
+                                            ? levelIndex === 0 ? 'bg-gray-200/70 dark:bg-gray-700/50'
+                                            : levelIndex === 1 ? 'bg-red-100/70 dark:bg-red-900/30'
+                                            : levelIndex === 2 ? 'bg-orange-100/70 dark:bg-orange-900/30'
+                                            : levelIndex === 3 ? 'bg-yellow-100/70 dark:bg-yellow-900/30'
+                                            : levelIndex === 4 ? 'bg-lime-100/70 dark:bg-lime-900/30'
+                                            : 'bg-green-100/70 dark:bg-green-900/30'
+                                            : ''
+                                        }`}
+                                      >
                                         <RadioGroup
                                           value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
                                           onValueChange={(value) => 
