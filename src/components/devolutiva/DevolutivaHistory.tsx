@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { DevolutivaPreviewPDF } from "./DevolutivaPreviewPDF";
 import { DevolutivaTextPDF } from "./DevolutivaTextPDF";
 import { generateReactPDF } from "@/utils/reactPDFGenerator";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 interface DevolutivaRecord {
   id: string;
@@ -134,6 +135,26 @@ export function DevolutivaHistory() {
         description: "Aguarde enquanto o texto é processado pela IA..."
       });
 
+      // Buscar dados completos do profissional (incluindo assinatura e carimbo)
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: professional } = await supabase
+        .from('professionals')
+        .select('digital_signature_url, digital_stamp_url')
+        .eq('user_id', user?.id)
+        .single();
+
+      // Converter imagens para base64 (necessário para html2canvas)
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+
+      if (professional?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professional.digital_signature_url);
+      }
+
+      if (professional?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professional.digital_stamp_url);
+      }
+
       // Extrair frases do record e classificar
       const extractPhrases = (text: string) => 
         text ? text.split('. ').filter(p => p.trim()) : [];
@@ -188,6 +209,8 @@ export function DevolutivaHistory() {
         session_number: record.content.session_number,
         professional_name: record.content.professional_name,
         professional_registry: record.content.professional_registry,
+        digital_signature_url: signatureBase64 || undefined,
+        digital_stamp_url: stampBase64 || undefined,
         aiContent: data.content
       };
 
