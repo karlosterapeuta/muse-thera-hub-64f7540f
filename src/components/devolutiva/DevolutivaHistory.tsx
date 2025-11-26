@@ -139,13 +139,14 @@ export function DevolutivaHistory() {
       const { data: { user } } = await supabase.auth.getUser();
       const { data: professional } = await supabase
         .from('professionals')
-        .select('digital_signature_url, digital_stamp_url')
+        .select('name, register, email, phone, specialty, stamp_photo_url, digital_signature_url, digital_stamp_url')
         .eq('user_id', user?.id)
         .single();
 
       // Converter imagens para base64 (necessário para html2canvas)
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
 
       if (professional?.digital_signature_url) {
         signatureBase64 = await imageUrlToBase64(professional.digital_signature_url);
@@ -153,6 +154,10 @@ export function DevolutivaHistory() {
 
       if (professional?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professional.digital_stamp_url);
+      }
+
+      if (professional?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professional.stamp_photo_url);
       }
 
       // Extrair frases do record e classificar
@@ -207,10 +212,14 @@ export function DevolutivaHistory() {
         patient_name: record.content.patient_name,
         session_date: record.content.session_date,
         session_number: record.content.session_number,
-        professional_name: record.content.professional_name,
-        professional_registry: record.content.professional_registry,
-        digital_signature_url: signatureBase64 || undefined,
-        digital_stamp_url: stampBase64 || undefined,
+        professional_name: professional?.name || record.content.professional_name,
+        professional_registry: professional?.register || record.content.professional_registry,
+        professional_email: professional?.email,
+        professional_phone: professional?.phone,
+        professional_specialty: professional?.specialty,
+        professional_photo_url: photoBase64,
+        digital_signature: signatureBase64,
+        digital_stamp: stampBase64,
         aiContent: data.content
       };
 
