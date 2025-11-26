@@ -7,6 +7,8 @@ interface DevolutivaTextPDFProps {
     session_number: number;
     professional_name: string;
     professional_registry: string;
+    digital_signature_url?: string;
+    digital_stamp_url?: string;
     aiContent: {
       synthesis: string;
       achievements: string;
@@ -249,30 +251,93 @@ export const DevolutivaTextPDF: React.FC<DevolutivaTextPDFProps> = ({ data }) =>
       <div style={{ 
         marginTop: '50px',
         paddingTop: '20px',
-        borderTop: '2px solid #e5e7eb',
-        textAlign: 'center'
+        borderTop: '2px solid #e5e7eb'
       }}>
-        <div style={{ marginBottom: '30px' }}>
+        <div style={{ marginBottom: '30px', textAlign: 'center' }}>
           <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
             Relatório gerado em: {new Date().toLocaleDateString('pt-BR')}
           </div>
         </div>
-        <div style={{ marginTop: '40px' }}>
-          <div style={{ 
-            borderTop: '1px solid #374151',
-            width: '300px',
-            margin: '0 auto',
-            paddingTop: '10px'
-          }}>
-            <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
-              {data.professional_name}
+        
+        <div style={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          gap: '40px',
+          marginTop: '40px'
+        }}>
+          {/* Assinatura */}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            {data.digital_signature_url ? (
+              <img 
+                src={data.digital_signature_url} 
+                alt="Assinatura Digital" 
+                style={{ 
+                  maxHeight: '100px',
+                  maxWidth: '250px',
+                  objectFit: 'contain',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            ) : (
+              <div style={{ 
+                borderTop: '1px solid #374151',
+                paddingTop: '10px',
+                marginTop: '60px'
+              }}>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                  Assinatura
+                </div>
+              </div>
+            )}
+            <div style={{ marginTop: '10px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                {data.professional_name}
+              </div>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                {data.professional_registry}
+              </div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '3px' }}>
+                Musicoterapeuta
+              </div>
             </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>
-              {data.professional_registry}
-            </div>
-            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '5px' }}>
-              Musicoterapeuta
-            </div>
+          </div>
+
+          {/* Carimbo */}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            {data.digital_stamp_url ? (
+              <img 
+                src={data.digital_stamp_url} 
+                alt="Carimbo Digital" 
+                style={{ 
+                  maxHeight: '140px',
+                  maxWidth: '250px',
+                  objectFit: 'contain',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            ) : (
+              <div style={{
+                width: '180px',
+                height: '140px',
+                border: '2px solid #ec4899',
+                borderRadius: '8px',
+                margin: '0 auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#fdf2f8'
+              }}>
+                <div style={{ textAlign: 'center', padding: '10px' }}>
+                  <div style={{ fontSize: '24px', marginBottom: '5px' }}>🎵</div>
+                  <div style={{ fontSize: '11px', color: '#ec4899', fontWeight: 'bold' }}>
+                    MUSICOTERAPIA
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
