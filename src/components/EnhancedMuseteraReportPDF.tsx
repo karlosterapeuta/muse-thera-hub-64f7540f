@@ -24,6 +24,8 @@ interface EnhancedMuseteraReportPDFProps {
   patientName?: string;
   professionalData?: ProfessionalData | null;
   evaluationDate?: Date;
+  digitalSignatureUrl?: string;
+  digitalStampUrl?: string;
   patientData?: {
     age?: number;
     birthDate?: string;
@@ -46,6 +48,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
   patientName = "Paciente",
   professionalData,
   evaluationDate = new Date(),
+  digitalSignatureUrl,
+  digitalStampUrl,
   patientData = {}
 }) => {
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', 'hsl(214 88% 52%)'];
@@ -572,8 +576,61 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
           padding: '24px',
           marginTop: '40px'
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'center' }}>
-            <div>
+          {/* Seção de Assinatura e Carimbo */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 2fr 1fr', 
+            gap: '24px', 
+            alignItems: 'center',
+            marginBottom: '24px',
+            paddingBottom: '24px',
+            borderBottom: '2px solid #E5E7EB'
+          }}>
+            {/* Assinatura Digital */}
+            <div style={{ textAlign: 'center' }}>
+              {digitalSignatureUrl ? (
+                <div>
+                  <img 
+                    src={digitalSignatureUrl} 
+                    alt="Assinatura Digital" 
+                    style={{ 
+                      maxWidth: '180px', 
+                      maxHeight: '90px', 
+                      margin: '0 auto',
+                      display: 'block'
+                    }} 
+                  />
+                  <div style={{ 
+                    borderTop: '1px solid #667eea', 
+                    marginTop: '8px', 
+                    paddingTop: '4px',
+                    fontSize: '11px',
+                    color: '#6B7280'
+                  }}>
+                    Assinatura Digital
+                  </div>
+                </div>
+              ) : (
+                <div style={{ 
+                  height: '90px',
+                  display: 'flex',
+                  alignItems: 'flex-end'
+                }}>
+                  <div style={{ 
+                    borderTop: '1px solid #667eea', 
+                    width: '100%',
+                    paddingTop: '4px',
+                    fontSize: '11px',
+                    color: '#6B7280'
+                  }}>
+                    Assinatura
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Informações do Profissional */}
+            <div style={{ textAlign: 'center' }}>
               <h3 style={{ 
                 margin: '0 0 12px 0', 
                 fontSize: '16px', 
@@ -582,13 +639,18 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
               }}>
                 👨‍⚕️ Profissional Responsável
               </h3>
-              <div className="text-sm text-gray-600 space-y-1">
+              <div>
                 <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>
                   {professionalData?.name || 'Não informado'}
                 </p>
                 {professionalData?.specialty && (
                   <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
                     <strong>Especialidade:</strong> {professionalData.specialty}
+                  </p>
+                )}
+                {professionalData?.register && (
+                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                    <strong>Registro:</strong> {professionalData.register}
                   </p>
                 )}
                 {professionalData?.email && (
@@ -601,41 +663,60 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
                     📞 {professionalData.phone}
                   </p>
                 )}
-                {professionalData?.register && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
-                    <strong>Registro:</strong> {professionalData.register}
-                  </p>
-                )}
-                {professionalData?.license_number && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
-                    <strong>Licença:</strong> {professionalData.license_number}
-                  </p>
-                )}
-                {professionalData?.association && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
-                    <strong>Associação:</strong> {professionalData.association}
-                  </p>
-                )}
               </div>
             </div>
-            
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ 
-                backgroundColor: '#FFFFFF',
-                border: '2px solid #E5E7EB',
-                borderRadius: '8px',
-                padding: '16px',
-                display: 'inline-block'
-              }}>
-                <div style={{ fontSize: '10px', color: '#9CA3AF', marginBottom: '4px' }}>
-                  RELATÓRIO GERADO EM
+
+            {/* Carimbo Digital */}
+            <div style={{ textAlign: 'center' }}>
+              {digitalStampUrl ? (
+                <div>
+                  <img 
+                    src={digitalStampUrl} 
+                    alt="Carimbo Digital" 
+                    style={{ 
+                      maxWidth: '180px', 
+                      maxHeight: '180px', 
+                      margin: '0 auto',
+                      display: 'block'
+                    }} 
+                  />
                 </div>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  {format(new Date(), 'dd/MM/yyyy \'às\' HH:mm', { locale: ptBR })}
+              ) : (
+                <div style={{ 
+                  width: '140px',
+                  height: '140px',
+                  border: '2px solid #667eea',
+                  borderRadius: '50%',
+                  margin: '0 auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '11px',
+                  color: '#6B7280'
+                }}>
+                  Carimbo
                 </div>
-                <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>
-                  🎵 Sistema MuseTera v2.0
-                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Data de geração */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              backgroundColor: '#FFFFFF',
+              border: '2px solid #E5E7EB',
+              borderRadius: '8px',
+              padding: '16px',
+              display: 'inline-block'
+            }}>
+              <div style={{ fontSize: '10px', color: '#9CA3AF', marginBottom: '4px' }}>
+                RELATÓRIO GERADO EM
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>
+                {format(new Date(), 'dd/MM/yyyy \'às\' HH:mm', { locale: ptBR })}
+              </div>
+              <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>
+                🎵 Sistema MuseTera v2.0
               </div>
             </div>
           </div>

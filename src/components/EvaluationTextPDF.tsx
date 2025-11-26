@@ -30,6 +30,8 @@ interface EvaluationTextPDFProps {
   evaluationDate: string;
   professionalName: string;
   professionalRegister?: string;
+  digitalSignatureUrl?: string;
+  digitalStampUrl?: string;
   overallScore: {
     percentage: number;
     evaluatedDomains: number;
@@ -45,6 +47,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   evaluationDate,
   professionalName,
   professionalRegister,
+  digitalSignatureUrl,
+  digitalStampUrl,
   overallScore,
 }) => {
   return (
@@ -314,14 +318,106 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
         paddingTop: '20px',
         borderTop: '2px solid #cbd5e1',
       }}>
-        <div style={{ marginBottom: '15px' }}>
-          <strong style={{ color: '#0f766e' }}>Profissional Responsável:</strong> {professionalName}
-        </div>
-        {professionalRegister && (
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#0f766e' }}>Registro Profissional:</strong> {professionalRegister}
+        {/* Seção de Assinatura e Carimbo */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 2fr 1fr', 
+          gap: '20px', 
+          alignItems: 'center',
+          marginBottom: '20px'
+        }}>
+          {/* Assinatura Digital */}
+          <div style={{ textAlign: 'center' }}>
+            {digitalSignatureUrl ? (
+              <div>
+                <img 
+                  src={digitalSignatureUrl} 
+                  alt="Assinatura Digital" 
+                  style={{ 
+                    maxWidth: '150px', 
+                    maxHeight: '80px', 
+                    margin: '0 auto',
+                    display: 'block'
+                  }} 
+                />
+                <div style={{ 
+                  borderTop: '1px solid #0f766e', 
+                  marginTop: '8px', 
+                  paddingTop: '4px',
+                  fontSize: '9pt',
+                  color: '#64748b'
+                }}>
+                  Assinatura Digital
+                </div>
+              </div>
+            ) : (
+              <div style={{ 
+                height: '80px',
+                display: 'flex',
+                alignItems: 'flex-end'
+              }}>
+                <div style={{ 
+                  borderTop: '1px solid #0f766e', 
+                  width: '100%',
+                  paddingTop: '4px',
+                  fontSize: '9pt',
+                  color: '#64748b'
+                }}>
+                  Assinatura
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Informações do Profissional */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ marginBottom: '8px' }}>
+              <strong style={{ color: '#0f766e', fontSize: '11pt' }}>{professionalName}</strong>
+            </div>
+            {professionalRegister && (
+              <div style={{ fontSize: '10pt', color: '#64748b', marginBottom: '4px' }}>
+                <strong>Registro:</strong> {professionalRegister}
+              </div>
+            )}
+            <div style={{ fontSize: '9pt', color: '#64748b', marginTop: '8px' }}>
+              Musicoterapeuta
+            </div>
+          </div>
+
+          {/* Carimbo Digital */}
+          <div style={{ textAlign: 'center' }}>
+            {digitalStampUrl ? (
+              <div>
+                <img 
+                  src={digitalStampUrl} 
+                  alt="Carimbo Digital" 
+                  style={{ 
+                    maxWidth: '150px', 
+                    maxHeight: '150px', 
+                    margin: '0 auto',
+                    display: 'block'
+                  }} 
+                />
+              </div>
+            ) : (
+              <div style={{ 
+                width: '120px',
+                height: '120px',
+                border: '2px solid #0f766e',
+                borderRadius: '50%',
+                margin: '0 auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '9pt',
+                color: '#64748b'
+              }}>
+                Carimbo
+              </div>
+            )}
+          </div>
+        </div>
+
         <div style={{ marginTop: '30px', textAlign: 'center', color: '#64748b', fontSize: '9pt' }}>
           <p style={{ margin: '0' }}>
             Relatório gerado pela Escala MuseTera de Avaliação Musicoterapêutica
