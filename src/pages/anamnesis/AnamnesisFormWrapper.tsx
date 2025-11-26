@@ -470,6 +470,7 @@ export default function AnamnesisFormWrapper({
           avatar_url: "",
           digital_signature_url: null,
           digital_stamp_url: null,
+          stamp_photo_url: "",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           user_id: professionalId

@@ -607,6 +607,7 @@ export type Database = {
           phone: string | null
           register: string | null
           specialty: string | null
+          stamp_photo_url: string | null
           updated_at: string
           user_id: string | null
         }
@@ -623,6 +624,7 @@ export type Database = {
           phone?: string | null
           register?: string | null
           specialty?: string | null
+          stamp_photo_url?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -639,6 +641,7 @@ export type Database = {
           phone?: string | null
           register?: string | null
           specialty?: string | null
+          stamp_photo_url?: string | null
           updated_at?: string
           user_id?: string | null
         }
