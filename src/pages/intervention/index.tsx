@@ -490,11 +490,11 @@ export default function InterventionForm() {
           </div>
 
           <!-- Footer - Digital Signature & Stamp (TEAL Design) -->
-          <div style="margin-top: 60px; padding: 24px; border: 2px solid #14b8a6; border-radius: 12px;">
+          <div style="margin-top: 60px; padding: 24px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
             <!-- Decorative TEAL gradient bar -->
             <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4); border-radius: 4px 4px 0 0; margin-bottom: 24px;"></div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
               <!-- Left Side: Signature Card -->
               <div>
                 <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
@@ -563,9 +563,9 @@ export default function InterventionForm() {
               <!-- Right Side: Circular Digital Stamp -->
               <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <!-- Outer decorative dashed circle -->
-                <div style="position: relative; width: 224px; height: 224px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
+                <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
                   <!-- Main stamp circle -->
-                  <div style="width: 192px; height: 192px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6;">
+                  <div style="width: 240px; height: 240px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
                     <!-- Professional Photo inside stamp -->
                     ${photoBase64 ? `
                       <img 
