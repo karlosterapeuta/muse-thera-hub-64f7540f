@@ -9,9 +9,11 @@ import QRCode from 'qrcode';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function DigitalStamp() {
   const { data: professionalData } = useProfessionalData();
+  const queryClient = useQueryClient();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -238,6 +240,9 @@ export default function DigitalStamp() {
       }
 
       toast.success('Assinatura e carimbo salvos com sucesso! Agora serão usados automaticamente nos PDFs.');
+      
+      // Invalidate professional data cache to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["professional-data"] });
     } catch (error) {
       console.error('Erro ao salvar:', error);
       toast.error('Erro inesperado ao salvar');
