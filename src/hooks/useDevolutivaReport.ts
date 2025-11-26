@@ -7,6 +7,7 @@ import { DevolutivaPreview } from "@/components/devolutiva/DevolutivaPreview";
 import { DevolutivaPreviewPDF } from "@/components/devolutiva/DevolutivaPreviewPDF";
 import { DevolutivaTextPDF } from "@/components/devolutiva/DevolutivaTextPDF";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 export interface DevolutivaFormData {
   patient_id: string;
@@ -123,6 +124,14 @@ export function useDevolutivaReport() {
         hasCustomTexts: Object.keys(customTexts).filter(k => customTexts[k]).length,
       });
 
+      // Converter imagens para base64 antes de passar para o PDF
+      const signatureBase64 = professionalData?.digital_signature_url 
+        ? await imageUrlToBase64(professionalData.digital_signature_url)
+        : null;
+      const stampBase64 = professionalData?.digital_stamp_url 
+        ? await imageUrlToBase64(professionalData.digital_stamp_url)
+        : null;
+
       const previewData = {
         patient_name: formData.patient_name,
         session_date: formData.session_date,
@@ -139,8 +148,8 @@ export function useDevolutivaReport() {
         challenges_resistance: combineText(formData.challenges_resistance, customTexts.challenges_resistance),
         professional_name: formData.professional_name,
         professional_registry: formData.professional_registry,
-        digital_signature_url: professionalData?.digital_signature_url,
-        digital_stamp_url: professionalData?.digital_stamp_url
+        digital_signature_url: signatureBase64 || undefined,
+        digital_stamp_url: stampBase64 || undefined
       };
 
       // Usar componente PDF-específico com estilos inline
@@ -312,6 +321,14 @@ export function useDevolutivaReport() {
 
       console.log('✅ Texto gerado com sucesso pela IA');
 
+      // Converter imagens para base64 antes de passar para o PDF
+      const signatureBase64 = professionalData?.digital_signature_url 
+        ? await imageUrlToBase64(professionalData.digital_signature_url)
+        : null;
+      const stampBase64 = professionalData?.digital_stamp_url 
+        ? await imageUrlToBase64(professionalData.digital_stamp_url)
+        : null;
+
       // Preparar dados para o PDF
       const pdfData = {
         patient_name: formData.patient_name,
@@ -319,8 +336,8 @@ export function useDevolutivaReport() {
         session_number: formData.session_number,
         professional_name: formData.professional_name,
         professional_registry: formData.professional_registry,
-        digital_signature_url: professionalData?.digital_signature_url,
-        digital_stamp_url: professionalData?.digital_stamp_url,
+        digital_signature_url: signatureBase64 || undefined,
+        digital_stamp_url: stampBase64 || undefined,
         aiContent: data.content
       };
 
