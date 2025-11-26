@@ -55,8 +55,10 @@ export default function DigitalStamp() {
         qrLink: '',
       });
       
-      // Load existing signature/stamp if available
-      if (professionalData.avatar_url) {
+      // Priorizar foto específica do carimbo, depois avatar como fallback
+      if (professionalData.stamp_photo_url) {
+        setPhotoUrl(professionalData.stamp_photo_url);
+      } else if (professionalData.avatar_url) {
         setPhotoUrl(professionalData.avatar_url);
       }
     }
@@ -92,14 +94,55 @@ export default function DigitalStamp() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file || !professionalData?.id) return;
+
+    // Mostrar preview local imediatamente
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhotoUrl(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      // Upload para storage
+      const fileName = `${professionalData.id}/stamp_photo_${Date.now()}.png`;
+      const { error: uploadError } = await supabase.storage
+        .from('digital-signatures')
+        .upload(fileName, file, { contentType: file.type, upsert: true });
+
+      if (uploadError) {
+        console.error('Erro ao fazer upload da foto:', uploadError);
+        toast.error('Erro ao salvar foto do carimbo');
+        return;
+      }
+
+      // Obter URL pública
+      const { data: urlData } = supabase.storage
+        .from('digital-signatures')
+        .getPublicUrl(fileName);
+
+      // Salvar URL no banco de dados
+      const { error: updateError } = await supabase
+        .from('professionals')
+        .update({ stamp_photo_url: urlData.publicUrl })
+        .eq('id', professionalData.id);
+
+      if (updateError) {
+        console.error('Erro ao atualizar banco:', updateError);
+        toast.error('Erro ao salvar foto do carimbo');
+        return;
+      }
+      
+      setPhotoUrl(urlData.publicUrl);
+      toast.success('Foto do carimbo salva com sucesso!');
+      
+      // Atualizar cache
+      queryClient.invalidateQueries({ queryKey: ["professional-data"] });
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+      toast.error('Erro ao processar foto do carimbo');
     }
   };
 

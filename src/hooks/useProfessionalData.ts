@@ -15,6 +15,7 @@ export interface ProfessionalData {
   avatar_url?: string;
   digital_signature_url?: string;
   digital_stamp_url?: string;
+  stamp_photo_url?: string;
 }
 
 export function useProfessionalData() {
