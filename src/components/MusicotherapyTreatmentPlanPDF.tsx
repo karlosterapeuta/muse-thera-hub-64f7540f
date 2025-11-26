@@ -247,38 +247,72 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
       ), "bg-gray-50")}
 
       {/* Footer - Digital Signature & Stamp (TEAL Design) */}
-      <div className="mt-16 p-6 border-2 rounded-xl" style={{ borderColor: '#14b8a6' }}>
+      <div style={{
+        marginTop: '64px',
+        padding: '24px',
+        background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
+        border: '2px solid #14b8a6',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(20,184,166,0.15)'
+      }}>
         {/* Decorative TEAL gradient bar */}
-        <div className="h-2 rounded-t-lg mb-6" style={{ background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)' }}></div>
+        <div style={{
+          height: '8px',
+          background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)',
+          borderRadius: '4px 4px 0 0',
+          marginBottom: '24px'
+        }}></div>
         
-        <div className="grid grid-cols-2 gap-8">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
           {/* Left Side: Signature Card */}
           <div>
-            <div className="flex items-start gap-4 mb-6">
+            <div style={{ display: 'flex', alignItems: 'start', gap: '16px', marginBottom: '24px' }}>
               {/* Professional Photo with blur effect */}
-              <div className="relative">
-                <div 
-                  className="absolute inset-0 rounded-full blur-xl opacity-50"
-                  style={{ background: 'radial-gradient(circle, #14b8a6, #22d3ee, #0d9488)' }}
-                ></div>
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  filter: 'blur(40px)',
+                  opacity: 0.5,
+                  background: 'radial-gradient(circle, #14b8a6, #22d3ee, #0d9488)'
+                }}></div>
                 <img 
                   src={professionalPhotoUrl || '/placeholder.svg'} 
                   alt="Professional" 
-                  className="relative w-20 h-20 rounded-full object-cover border-2"
-                  style={{ borderColor: '#14b8a6' }}
+                  style={{
+                    position: 'relative',
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #14b8a6'
+                  }}
                 />
               </div>
               
               {/* Professional Info */}
-              <div className="flex-1">
-                <h3 className="font-bold text-lg mb-2" style={{ color: '#0f766e' }}>
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  marginBottom: '8px',
+                  color: '#0f766e'
+                }}>
                   {therapistName || 'Musicoterapeuta'}
                 </h3>
                 {professionalSpecialty && (
-                  <div 
-                    className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-3"
-                    style={{ backgroundColor: '#ccfbf1', color: '#0f766e', border: '1px solid #99f6e4' }}
-                  >
+                  <div style={{
+                    display: 'inline-block',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    marginBottom: '12px',
+                    backgroundColor: '#ccfbf1',
+                    color: '#0f766e',
+                    border: '1px solid #99f6e4'
+                  }}>
                     🎵 {professionalSpecialty}
                   </div>
                 )}
@@ -286,21 +320,21 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
             </div>
             
             {/* Contact Information */}
-            <div className="space-y-2 text-sm mb-4" style={{ color: '#0f766e' }}>
+            <div style={{ marginBottom: '16px', fontSize: '14px', color: '#0f766e' }}>
               {professionalRegistry && (
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                   <span>📋</span>
                   <span>{professionalRegistry}</span>
                 </div>
               )}
               {professionalEmail && (
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                   <span>📧</span>
-                  <span className="break-all">{professionalEmail}</span>
+                  <span style={{ wordBreak: 'break-all' }}>{professionalEmail}</span>
                 </div>
               )}
               {professionalPhone && (
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span>📞</span>
                   <span>{professionalPhone}</span>
                 </div>
@@ -309,77 +343,115 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
             
             {/* Digital Signature Image */}
             {digitalSignatureUrl && (
-              <div className="mb-4">
+              <div style={{ marginBottom: '16px' }}>
                 <img 
                   src={digitalSignatureUrl} 
                   alt="Digital Signature" 
-                  className="max-h-20 object-contain"
+                  style={{ maxHeight: '80px', objectFit: 'contain' }}
                 />
               </div>
             )}
             
             {/* Verification Footer */}
-            <div 
-              className="pt-3 border-t text-center text-xs font-medium"
-              style={{ 
-                borderColor: '#99f6e4',
-                background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
-                color: '#0f766e'
-              }}
-            >
+            <div style={{
+              paddingTop: '12px',
+              borderTop: '1px solid #99f6e4',
+              textAlign: 'center',
+              fontSize: '12px',
+              fontWeight: '500',
+              background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
+              color: '#0f766e'
+            }}>
               ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
             </div>
           </div>
 
           {/* Right Side: Circular Digital Stamp */}
-          <div className="flex flex-col items-center justify-center">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             {/* Outer decorative dashed circle */}
-            <div 
-              className="relative w-56 h-56 rounded-full flex items-center justify-center"
-              style={{ border: '3px dashed #99f6e4' }}
-            >
+            <div style={{
+              position: 'relative',
+              width: '280px',
+              height: '280px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '3px dashed #99f6e4'
+            }}>
               {/* Main stamp circle */}
-              <div 
-                className="w-48 h-48 rounded-full flex flex-col items-center justify-center p-6 relative overflow-hidden"
-                style={{ 
-                  background: 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%)',
-                  border: '3px solid #14b8a6'
-                }}
-              >
+              <div style={{
+                width: '240px',
+                height: '240px',
+                borderRadius: '50%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
+                position: 'relative',
+                overflow: 'hidden',
+                background: 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%)',
+                border: '3px solid #14b8a6',
+                boxShadow: '0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1)'
+              }}>
                 {/* Professional Photo inside stamp */}
                 {professionalPhotoUrl && (
                   <img 
                     src={professionalPhotoUrl} 
                     alt="Stamp" 
-                    className="w-16 h-16 rounded-full object-cover mb-2 border-2"
-                    style={{ borderColor: '#0d9488' }}
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      marginBottom: '8px',
+                      border: '2px solid #0d9488'
+                    }}
                   />
                 )}
                 
                 {/* Professional Name */}
-                <div className="text-center font-bold text-sm mb-1" style={{ color: '#0f766e' }}>
+                <div style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  marginBottom: '4px',
+                  color: '#0f766e'
+                }}>
                   {therapistName || 'Musicoterapeuta'}
                 </div>
                 
                 {/* Decorative line */}
-                <div 
-                  className="w-20 h-px mb-2"
-                  style={{ background: 'linear-gradient(to right, transparent, #14b8a6, transparent)' }}
-                ></div>
+                <div style={{
+                  width: '80px',
+                  height: '1px',
+                  marginBottom: '8px',
+                  background: 'linear-gradient(to right, transparent, #14b8a6, transparent)'
+                }}></div>
                 
                 {/* Specialty Badge */}
                 {professionalSpecialty && (
-                  <div 
-                    className="px-2 py-1 rounded-full text-xs font-medium mb-1"
-                    style={{ backgroundColor: '#0d9488', color: 'white' }}
-                  >
+                  <div style={{
+                    padding: '4px 8px',
+                    borderRadius: '9999px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    marginBottom: '4px',
+                    backgroundColor: '#0d9488',
+                    color: 'white'
+                  }}>
                     🎵 {professionalSpecialty}
                   </div>
                 )}
                 
                 {/* Registry */}
                 {professionalRegistry && (
-                  <div className="text-xs font-medium" style={{ color: '#0f766e' }}>
+                  <div style={{
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    color: '#0f766e'
+                  }}>
                     📋 {professionalRegistry}
                   </div>
                 )}
@@ -387,13 +459,15 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
             </div>
             
             {/* MuseTera Verified Badge */}
-            <div 
-              className="mt-4 px-4 py-2 rounded-full text-xs font-bold"
-              style={{ 
-                background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
-                color: 'white'
-              }}
-            >
+            <div style={{
+              marginTop: '16px',
+              padding: '8px 16px',
+              borderRadius: '9999px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
+              color: 'white'
+            }}>
               ✓ MuseTera Verified 🎵
             </div>
           </div>
