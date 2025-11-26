@@ -293,20 +293,25 @@ export function DevolutivaHistory() {
                     </Button>
                     
                     <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          disabled={deletingId === record.id}
-                        >
-                          {deletingId === record.id ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-destructive border-t-transparent" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="bg-red-500 hover:bg-red-600"
+                  disabled={deletingId === record.id}
+                >
+                  {deletingId === record.id ? (
+                    <>
+                      <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Excluindo...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Excluir
+                    </>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Excluir devolutiva?</AlertDialogTitle>
