@@ -77,10 +77,10 @@ export function useProfessionalData() {
       }
     },
     retry: 1,
-    staleTime: 15 * 60 * 1000, // 15 minutes (increased)
+    staleTime: 5 * 60 * 1000, // 5 minutes (reduced for fresher data)
     gcTime: 30 * 60 * 1000, // 30 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: false, // Changed to false to reduce initial requests
+    refetchOnMount: "always", // Always fetch fresh data on mount
     refetchInterval: false,
   });
 
