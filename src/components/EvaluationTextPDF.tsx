@@ -312,56 +312,81 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
         </section>
       )}
 
-      {/* Rodapé */}
+      {/* Rodapé Profissional */}
       <div style={{
         marginTop: '50px',
-        paddingTop: '20px',
-        borderTop: '2px solid #cbd5e1',
+        background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07)',
       }}>
+        {/* Barra Decorativa Superior */}
+        <div style={{
+          height: '6px',
+          background: 'linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #0d9488 100%)',
+        }}></div>
+
         {/* Seção de Assinatura e Carimbo */}
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: '1fr 2fr 1fr', 
-          gap: '20px', 
+          gap: '28px', 
           alignItems: 'center',
-          marginBottom: '20px'
+          padding: '32px',
+          borderBottom: '1px solid #e2e8f0'
         }}>
           {/* Assinatura Digital */}
           <div style={{ textAlign: 'center' }}>
             {digitalSignatureUrl ? (
-              <div>
+              <div style={{
+                backgroundColor: '#ffffff',
+                padding: '16px',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #e5e7eb'
+              }}>
                 <img 
                   src={digitalSignatureUrl} 
                   alt="Assinatura Digital" 
                   style={{ 
-                    maxWidth: '150px', 
-                    maxHeight: '80px', 
+                    maxWidth: '160px', 
+                    maxHeight: '90px', 
                     margin: '0 auto',
-                    display: 'block'
+                    display: 'block',
+                    filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))'
                   }} 
                 />
                 <div style={{ 
-                  borderTop: '1px solid #0f766e', 
-                  marginTop: '8px', 
-                  paddingTop: '4px',
+                  borderTop: '2px solid #14b8a6', 
+                  marginTop: '12px', 
+                  paddingTop: '8px',
                   fontSize: '9pt',
-                  color: '#64748b'
+                  color: '#64748b',
+                  fontStyle: 'italic',
+                  fontWeight: '500'
                 }}>
-                  Assinatura Digital
+                  ✍️ Assinatura Digital
                 </div>
               </div>
             ) : (
               <div style={{ 
-                height: '80px',
+                height: '120px',
+                backgroundColor: '#ffffff',
+                padding: '16px',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #e5e7eb',
                 display: 'flex',
-                alignItems: 'flex-end'
+                alignItems: 'flex-end',
+                justifyContent: 'center'
               }}>
                 <div style={{ 
-                  borderTop: '1px solid #0f766e', 
-                  width: '100%',
-                  paddingTop: '4px',
+                  borderTop: '2px solid #14b8a6', 
+                  width: '80%',
+                  paddingTop: '8px',
                   fontSize: '9pt',
-                  color: '#64748b'
+                  color: '#64748b',
+                  fontStyle: 'italic'
                 }}>
                   Assinatura
                 </div>
@@ -370,61 +395,148 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           </div>
 
           {/* Informações do Profissional */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ marginBottom: '8px' }}>
-              <strong style={{ color: '#0f766e', fontSize: '11pt' }}>{professionalName}</strong>
+          <div style={{ 
+            textAlign: 'center',
+            backgroundColor: '#ffffff',
+            padding: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+            border: '2px solid #14b8a6'
+          }}>
+            <div style={{
+              fontSize: '12pt',
+              color: '#0d9488',
+              marginBottom: '12px',
+              fontWeight: '600'
+            }}>
+              👨‍⚕️ PROFISSIONAL RESPONSÁVEL
+            </div>
+            <div style={{ 
+              marginBottom: '8px',
+              fontSize: '12pt',
+              fontWeight: '700',
+              color: '#0f766e'
+            }}>
+              {professionalName}
             </div>
             {professionalRegister && (
-              <div style={{ fontSize: '10pt', color: '#64748b', marginBottom: '4px' }}>
-                <strong>Registro:</strong> {professionalRegister}
+              <div style={{ 
+                fontSize: '10pt', 
+                color: '#475569',
+                marginBottom: '6px',
+                padding: '6px 12px',
+                backgroundColor: '#f0fdfa',
+                borderRadius: '6px',
+                display: 'inline-block',
+                border: '1px solid #ccfbf1'
+              }}>
+                <strong style={{ color: '#0d9488' }}>📋 Registro:</strong> {professionalRegister}
               </div>
             )}
-            <div style={{ fontSize: '9pt', color: '#64748b', marginTop: '8px' }}>
-              Musicoterapeuta
+            <div style={{ 
+              fontSize: '10pt', 
+              color: '#64748b', 
+              marginTop: '12px',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              🎵 Musicoterapeuta
             </div>
           </div>
 
           {/* Carimbo Digital */}
           <div style={{ textAlign: 'center' }}>
             {digitalStampUrl ? (
-              <div>
-                <img 
-                  src={digitalStampUrl} 
-                  alt="Carimbo Digital" 
-                  style={{ 
-                    maxWidth: '150px', 
-                    maxHeight: '150px', 
-                    margin: '0 auto',
-                    display: 'block'
-                  }} 
-                />
+              <div style={{
+                position: 'relative',
+                display: 'inline-block'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: '-6px',
+                  background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #0d9488 100%)',
+                  borderRadius: '50%',
+                  opacity: '0.15',
+                  filter: 'blur(8px)'
+                }}></div>
+                <div style={{
+                  position: 'relative',
+                  padding: '8px',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '50%',
+                  border: '3px solid #14b8a6',
+                  boxShadow: '0 4px 12px rgba(13, 148, 136, 0.2)'
+                }}>
+                  <img 
+                    src={digitalStampUrl} 
+                    alt="Carimbo Digital" 
+                    style={{ 
+                      maxWidth: '150px', 
+                      maxHeight: '150px', 
+                      margin: '0 auto',
+                      display: 'block',
+                      borderRadius: '50%'
+                    }} 
+                  />
+                </div>
               </div>
             ) : (
               <div style={{ 
-                width: '120px',
-                height: '120px',
-                border: '2px solid #0f766e',
+                width: '140px',
+                height: '140px',
+                border: '3px dashed #14b8a6',
                 borderRadius: '50%',
                 margin: '0 auto',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '9pt',
-                color: '#64748b'
+                fontSize: '10pt',
+                color: '#64748b',
+                backgroundColor: '#f0fdfa',
+                fontWeight: '600',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
               }}>
-                Carimbo
+                🔖 Carimbo
               </div>
             )}
           </div>
         </div>
 
-        <div style={{ marginTop: '30px', textAlign: 'center', color: '#64748b', fontSize: '9pt' }}>
-          <p style={{ margin: '0' }}>
-            Relatório gerado pela Escala MuseTera de Avaliação Musicoterapêutica
-          </p>
-          <p style={{ margin: '5px 0 0 0' }}>
-            Data de emissão: {new Date().toLocaleDateString('pt-BR')}
-          </p>
+        {/* Rodapé Final */}
+        <div style={{ 
+          padding: '24px 32px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            display: 'inline-block',
+            backgroundColor: '#ffffff',
+            padding: '16px 28px',
+            borderRadius: '12px',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
+          }}>
+            <p style={{ 
+              margin: '0 0 8px 0',
+              color: '#0f766e',
+              fontSize: '10pt',
+              fontWeight: '600'
+            }}>
+              🎵 Relatório gerado pela Escala MuseTera
+            </p>
+            <p style={{ 
+              margin: '0',
+              color: '#94a3b8',
+              fontSize: '9pt',
+              fontStyle: 'italic'
+            }}>
+              📅 Emitido em {new Date().toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+              })}
+            </p>
+          </div>
         </div>
       </div>
     </div>

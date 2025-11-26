@@ -570,58 +570,79 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
 
         {/* Informações do Profissional */}
         <div style={{ 
-          backgroundColor: '#F8FAFC',
-          borderTop: '3px solid #667eea',
-          borderRadius: '8px',
-          padding: '24px',
-          marginTop: '40px'
+          background: 'linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%)',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          marginTop: '40px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07)'
         }}>
+          {/* Barra Decorativa Superior */}
+          <div style={{
+            height: '6px',
+            background: 'linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
+          }}></div>
+
           {/* Seção de Assinatura e Carimbo */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: '1fr 2fr 1fr', 
-            gap: '24px', 
+            gap: '32px', 
             alignItems: 'center',
-            marginBottom: '24px',
-            paddingBottom: '24px',
-            borderBottom: '2px solid #E5E7EB'
+            padding: '36px',
+            borderBottom: '1px solid #e2e8f0'
           }}>
             {/* Assinatura Digital */}
             <div style={{ textAlign: 'center' }}>
               {digitalSignatureUrl ? (
-                <div>
+                <div style={{
+                  backgroundColor: '#ffffff',
+                  padding: '18px',
+                  borderRadius: '12px',
+                  boxShadow: '0 3px 10px rgba(102, 126, 234, 0.15)',
+                  border: '1px solid #e0e7ff'
+                }}>
                   <img 
                     src={digitalSignatureUrl} 
                     alt="Assinatura Digital" 
                     style={{ 
                       maxWidth: '180px', 
-                      maxHeight: '90px', 
+                      maxHeight: '95px', 
                       margin: '0 auto',
-                      display: 'block'
+                      display: 'block',
+                      filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
                     }} 
                   />
                   <div style={{ 
-                    borderTop: '1px solid #667eea', 
-                    marginTop: '8px', 
-                    paddingTop: '4px',
+                    borderTop: '2px solid #667eea', 
+                    marginTop: '12px', 
+                    paddingTop: '8px',
                     fontSize: '11px',
-                    color: '#6B7280'
+                    color: '#6B7280',
+                    fontStyle: 'italic',
+                    fontWeight: '600'
                   }}>
-                    Assinatura Digital
+                    ✍️ Assinatura Digital
                   </div>
                 </div>
               ) : (
                 <div style={{ 
-                  height: '90px',
+                  height: '130px',
+                  backgroundColor: '#ffffff',
+                  padding: '18px',
+                  borderRadius: '12px',
+                  boxShadow: '0 3px 10px rgba(102, 126, 234, 0.15)',
+                  border: '1px solid #e0e7ff',
                   display: 'flex',
-                  alignItems: 'flex-end'
+                  alignItems: 'flex-end',
+                  justifyContent: 'center'
                 }}>
                   <div style={{ 
-                    borderTop: '1px solid #667eea', 
-                    width: '100%',
-                    paddingTop: '4px',
+                    borderTop: '2px solid #667eea', 
+                    width: '80%',
+                    paddingTop: '8px',
                     fontSize: '11px',
-                    color: '#6B7280'
+                    color: '#6B7280',
+                    fontStyle: 'italic'
                   }}>
                     Assinatura
                   </div>
@@ -630,38 +651,70 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
             </div>
 
             {/* Informações do Profissional */}
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ 
-                margin: '0 0 12px 0', 
-                fontSize: '16px', 
-                fontWeight: '600',
-                color: '#374151'
+            <div style={{ 
+              textAlign: 'center',
+              backgroundColor: '#ffffff',
+              padding: '28px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 16px rgba(102, 126, 234, 0.2)',
+              border: '2px solid #667eea'
+            }}>
+              <div style={{
+                fontSize: '13px',
+                color: '#667eea',
+                marginBottom: '14px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
               }}>
-                👨‍⚕️ Profissional Responsável
-              </h3>
-              <div>
-                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>
-                  {professionalData?.name || 'Não informado'}
-                </p>
-                {professionalData?.specialty && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
-                    <strong>Especialidade:</strong> {professionalData.specialty}
-                  </p>
-                )}
-                {professionalData?.register && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
-                    <strong>Registro:</strong> {professionalData.register}
-                  </p>
-                )}
+                👨‍⚕️ PROFISSIONAL RESPONSÁVEL
+              </div>
+              <div style={{ 
+                marginBottom: '10px',
+                fontSize: '16px',
+                fontWeight: '700',
+                color: '#4338ca'
+              }}>
+                {professionalData?.name || 'Não informado'}
+              </div>
+              {professionalData?.specialty && (
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: '#6B7280',
+                  marginBottom: '8px',
+                  padding: '6px 14px',
+                  backgroundColor: '#eef2ff',
+                  borderRadius: '6px',
+                  display: 'inline-block',
+                  border: '1px solid #c7d2fe'
+                }}>
+                  <strong style={{ color: '#667eea' }}>🎓 Especialidade:</strong> {professionalData.specialty}
+                </div>
+              )}
+              {professionalData?.register && (
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: '#475569',
+                  marginTop: '8px',
+                  padding: '6px 14px',
+                  backgroundColor: '#f0f9ff',
+                  borderRadius: '6px',
+                  display: 'inline-block',
+                  border: '1px solid #bae6fd'
+                }}>
+                  <strong style={{ color: '#0369a1' }}>📋 Registro:</strong> {professionalData.register}
+                </div>
+              )}
+              <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e0e7ff' }}>
                 {professionalData?.email && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                  <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>
                     📧 {professionalData.email}
-                  </p>
+                  </div>
                 )}
                 {professionalData?.phone && (
-                  <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
                     📞 {professionalData.phone}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -669,53 +722,97 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
             {/* Carimbo Digital */}
             <div style={{ textAlign: 'center' }}>
               {digitalStampUrl ? (
-                <div>
-                  <img 
-                    src={digitalStampUrl} 
-                    alt="Carimbo Digital" 
-                    style={{ 
-                      maxWidth: '180px', 
-                      maxHeight: '180px', 
-                      margin: '0 auto',
-                      display: 'block'
-                    }} 
-                  />
+                <div style={{
+                  position: 'relative',
+                  display: 'inline-block'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    inset: '-6px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
+                    borderRadius: '50%',
+                    opacity: '0.2',
+                    filter: 'blur(10px)'
+                  }}></div>
+                  <div style={{
+                    position: 'relative',
+                    padding: '10px',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '50%',
+                    border: '3px solid #667eea',
+                    boxShadow: '0 6px 16px rgba(102, 126, 234, 0.25)'
+                  }}>
+                    <img 
+                      src={digitalStampUrl} 
+                      alt="Carimbo Digital" 
+                      style={{ 
+                        maxWidth: '170px', 
+                        maxHeight: '170px', 
+                        margin: '0 auto',
+                        display: 'block',
+                        borderRadius: '50%'
+                      }} 
+                    />
+                  </div>
                 </div>
               ) : (
                 <div style={{ 
-                  width: '140px',
-                  height: '140px',
-                  border: '2px solid #667eea',
+                  width: '160px',
+                  height: '160px',
+                  border: '3px dashed #667eea',
                   borderRadius: '50%',
                   margin: '0 auto',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '11px',
-                  color: '#6B7280'
+                  fontSize: '12px',
+                  color: '#6B7280',
+                  backgroundColor: '#eef2ff',
+                  fontWeight: '600',
+                  boxShadow: '0 2px 8px rgba(102, 126, 234, 0.1)'
                 }}>
-                  Carimbo
+                  🔖 Carimbo
                 </div>
               )}
             </div>
           </div>
 
           {/* Data de geração */}
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            textAlign: 'center',
+            padding: '28px 36px'
+          }}>
             <div style={{ 
-              backgroundColor: '#FFFFFF',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              padding: '16px',
-              display: 'inline-block'
+              backgroundColor: '#ffffff',
+              border: '2px solid #e0e7ff',
+              borderRadius: '12px',
+              padding: '20px 32px',
+              display: 'inline-block',
+              boxShadow: '0 2px 8px rgba(102, 126, 234, 0.08)'
             }}>
-              <div style={{ fontSize: '10px', color: '#9CA3AF', marginBottom: '4px' }}>
-                RELATÓRIO GERADO EM
+              <div style={{ 
+                fontSize: '10px', 
+                color: '#667eea', 
+                marginBottom: '8px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                📅 RELATÓRIO GERADO EM
               </div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>
+              <div style={{ 
+                fontSize: '14px', 
+                fontWeight: '700', 
+                color: '#4338ca',
+                marginBottom: '8px'
+              }}>
                 {format(new Date(), 'dd/MM/yyyy \'às\' HH:mm', { locale: ptBR })}
               </div>
-              <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>
+              <div style={{ 
+                fontSize: '11px', 
+                color: '#94a3b8',
+                fontStyle: 'italic'
+              }}>
                 🎵 Sistema MuseTera v2.0
               </div>
             </div>
