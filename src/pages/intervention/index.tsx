@@ -543,17 +543,6 @@ export default function InterventionForm() {
                   ` : ''}
                 </div>
                 
-                <!-- Digital Signature Image -->
-                ${signatureBase64 ? `
-                  <div style="margin-bottom: 16px;">
-                    <img 
-                      src="${signatureBase64}" 
-                      alt="Digital Signature" 
-                      style="max-height: 80px; object-fit: contain;"
-                    />
-                  </div>
-                ` : ''}
-                
                 <!-- Verification Footer -->
                 <div style="padding-top: 12px; border-top: 1px solid #99f6e4; text-align: center; font-size: 12px; font-weight: 500; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); color: #0f766e;">
                   ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera

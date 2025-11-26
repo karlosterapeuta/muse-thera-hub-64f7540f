@@ -341,17 +341,6 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
               )}
             </div>
             
-            {/* Digital Signature Image */}
-            {digitalSignatureUrl && (
-              <div style={{ marginBottom: '16px' }}>
-                <img 
-                  src={digitalSignatureUrl} 
-                  alt="Digital Signature" 
-                  style={{ maxHeight: '80px', objectFit: 'contain' }}
-                />
-              </div>
-            )}
-            
             {/* Verification Footer */}
             <div style={{
               paddingTop: '12px',
