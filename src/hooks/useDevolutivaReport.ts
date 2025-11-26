@@ -125,12 +125,24 @@ export function useDevolutivaReport() {
       });
 
       // Converter imagens para base64 antes de passar para o PDF
+      console.log('👤 Dados profissionais:', {
+        hasSignature: !!professionalData?.digital_signature_url,
+        hasStamp: !!professionalData?.digital_stamp_url,
+        signatureUrl: professionalData?.digital_signature_url?.substring(0, 50) + '...',
+        stampUrl: professionalData?.digital_stamp_url?.substring(0, 50) + '...'
+      });
+
       const signatureBase64 = professionalData?.digital_signature_url 
         ? await imageUrlToBase64(professionalData.digital_signature_url)
         : null;
       const stampBase64 = professionalData?.digital_stamp_url 
         ? await imageUrlToBase64(professionalData.digital_stamp_url)
         : null;
+
+      console.log('🖼️ Resultado da conversão:', {
+        signatureBase64: signatureBase64 ? `✅ ${signatureBase64.length} chars` : '❌ null',
+        stampBase64: stampBase64 ? `✅ ${stampBase64.length} chars` : '❌ null'
+      });
 
       const previewData = {
         patient_name: formData.patient_name,
@@ -322,12 +334,24 @@ export function useDevolutivaReport() {
       console.log('✅ Texto gerado com sucesso pela IA');
 
       // Converter imagens para base64 antes de passar para o PDF
+      console.log('👤 Dados profissionais (AI PDF):', {
+        hasSignature: !!professionalData?.digital_signature_url,
+        hasStamp: !!professionalData?.digital_stamp_url,
+        signatureUrl: professionalData?.digital_signature_url?.substring(0, 50) + '...',
+        stampUrl: professionalData?.digital_stamp_url?.substring(0, 50) + '...'
+      });
+
       const signatureBase64 = professionalData?.digital_signature_url 
         ? await imageUrlToBase64(professionalData.digital_signature_url)
         : null;
       const stampBase64 = professionalData?.digital_stamp_url 
         ? await imageUrlToBase64(professionalData.digital_stamp_url)
         : null;
+
+      console.log('🖼️ Resultado da conversão (AI PDF):', {
+        signatureBase64: signatureBase64 ? `✅ ${signatureBase64.length} chars` : '❌ null',
+        stampBase64: stampBase64 ? `✅ ${stampBase64.length} chars` : '❌ null'
+      });
 
       // Preparar dados para o PDF
       const pdfData = {
