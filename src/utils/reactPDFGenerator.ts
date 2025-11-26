@@ -56,7 +56,7 @@ export const generateReactPDF = async (
 
     // CRÍTICO: Aguardar carregamento de fontes e recursos CSS
     console.log('⏳ Aguardando carregamento de recursos (fontes, imagens)...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     console.log('✅ Recursos carregados');
 
