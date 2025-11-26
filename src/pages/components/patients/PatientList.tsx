@@ -70,9 +70,18 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
           {patients.map((patient) => (
             <TableRow key={patient.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
               <TableCell className="font-medium">{patient.name}</TableCell>
-              <TableCell>
-                {patient.age !== null ? `${patient.age} anos` : "N/A"}
-              </TableCell>
+            <TableCell>
+              {patient.age !== null ? (
+                <div className="flex flex-col">
+                  <span>{patient.age} anos</span>
+                  {patient.birth_date && (
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(patient.birth_date).toLocaleDateString('pt-BR')}
+                    </span>
+                  )}
+                </div>
+              ) : "N/A"}
+            </TableCell>
               <TableCell>{patient.responsible || "N/A"}</TableCell>
               <TableCell>{patient.contact || "N/A"}</TableCell>
               <TableCell>

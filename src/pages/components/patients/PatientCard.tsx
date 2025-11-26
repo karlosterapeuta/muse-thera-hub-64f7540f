@@ -19,6 +19,7 @@ type Patient = {
   id: string;
   name: string;
   age: number | null;
+  birth_date: string | null;
   responsible: string | null;
   contact: string | null;
   has_anamnesis?: boolean;
@@ -40,7 +41,18 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
           <div className="flex-1">
             <h3 className="text-lg font-semibold truncate">{patient.name}</h3>
             <div className="space-y-1 mt-2 text-sm text-muted-foreground">
-              <p>Idade: {patient.age !== null ? `${patient.age} anos` : "N/A"}</p>
+              <p>
+                Idade: {patient.age !== null ? (
+                  <>
+                    {patient.age} anos
+                    {patient.birth_date && (
+                      <span className="text-xs ml-1 opacity-70">
+                        ({new Date(patient.birth_date).toLocaleDateString('pt-BR')})
+                      </span>
+                    )}
+                  </>
+                ) : "N/A"}
+              </p>
               <p className="truncate">Responsável: {patient.responsible || "N/A"}</p>
               <p className="truncate">Contato: {patient.contact || "N/A"}</p>
             </div>
