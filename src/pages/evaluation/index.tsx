@@ -616,6 +616,7 @@ export default function Evaluation() {
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
 
       if (professionalData?.digital_signature_url) {
         signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
@@ -623,6 +624,10 @@ export default function Evaluation() {
 
       if (professionalData?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
 
       const pdfContent = (
@@ -639,6 +644,10 @@ export default function Evaluation() {
             evaluationDate={evaluationDate}
             digitalSignatureUrl={signatureBase64 || undefined}
             digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
             patientData={{
               age: selectedPatientData?.age || undefined,
               birthDate: selectedPatientData?.birth_date || undefined
@@ -772,6 +781,7 @@ export default function Evaluation() {
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
 
       if (professionalData?.digital_signature_url) {
         signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
@@ -779,6 +789,10 @@ export default function Evaluation() {
 
       if (professionalData?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
 
       // Gerar PDF com o texto retornado
@@ -793,6 +807,10 @@ export default function Evaluation() {
             professionalRegister={professionalData?.register || undefined}
             digitalSignatureUrl={signatureBase64 || undefined}
             digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
             overallScore={overallScore}
           />
         </div>
