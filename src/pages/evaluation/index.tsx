@@ -47,6 +47,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useEvaluationPDF } from "@/hooks/useEvaluationPDF";
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 
 interface Patient {
   id: string;
@@ -612,6 +613,18 @@ export default function Evaluation() {
 
   const handleGenerateMuseteraPDF = async () => {
     try {
+      // Converter URLs para Base64
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <EnhancedMuseteraReportPDF
@@ -624,6 +637,8 @@ export default function Evaluation() {
             overallScore={overallScore}
             evaluationDomains={evaluationDomains}
             evaluationDate={evaluationDate}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
             patientData={{
               age: selectedPatientData?.age || undefined,
               birthDate: selectedPatientData?.birth_date || undefined
@@ -754,6 +769,18 @@ export default function Evaluation() {
       toast.dismiss();
       toast.loading("Gerando PDF do relatório...");
 
+      // Converter URLs para Base64
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
       // Gerar PDF com o texto retornado
       const pdfContent = (
         <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
@@ -764,6 +791,8 @@ export default function Evaluation() {
             evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
             overallScore={overallScore}
           />
         </div>
