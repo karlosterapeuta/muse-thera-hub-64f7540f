@@ -102,13 +102,15 @@ export default function EvolutionReport() {
     try {
       console.log("📄 Gerando PDF do relatório de evolução...");
       
-      // Converter imagens para Base64
+      // Converter imagens para Base64 - usar stamp_photo_url (foto do carimbo digital)
       let photoBase64 = null;
       let stampBase64 = null;
       
-      if (professionalData?.avatar_url) {
+      // Priorizar stamp_photo_url sobre avatar_url
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      if (photoUrl) {
         try {
-          photoBase64 = await imageUrlToBase64(professionalData.avatar_url);
+          photoBase64 = await imageUrlToBase64(photoUrl);
         } catch (e) {
           console.warn("Não foi possível converter foto para Base64");
         }
@@ -126,7 +128,7 @@ export default function EvolutionReport() {
         data: formData,
         professionalName: professionalData?.name || "Nome do Profissional",
         professionalRegister: professionalData?.register || "CRM/XXXX",
-        professionalPhotoUrl: photoBase64 || professionalData?.avatar_url,
+        professionalPhotoUrl: photoBase64 || photoUrl,
         professionalSpecialty: professionalData?.specialty || "Musicoterapeuta",
         professionalEmail: professionalData?.email,
         professionalPhone: professionalData?.phone,
@@ -161,13 +163,15 @@ export default function EvolutionReport() {
     }
 
     try {
-      // Converter imagens para Base64
+      // Converter imagens para Base64 - usar stamp_photo_url (foto do carimbo digital)
       let photoBase64 = null;
       let stampBase64 = null;
       
-      if (professionalData?.avatar_url) {
+      // Priorizar stamp_photo_url sobre avatar_url
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      if (photoUrl) {
         try {
-          photoBase64 = await imageUrlToBase64(professionalData.avatar_url);
+          photoBase64 = await imageUrlToBase64(photoUrl);
         } catch (e) {
           console.warn("Não foi possível converter foto para Base64");
         }
@@ -185,7 +189,7 @@ export default function EvolutionReport() {
         data: formData,
         professionalName: professionalData?.name || "Nome do Profissional",
         professionalRegister: professionalData?.register || "CRM/XXXX",
-        professionalPhotoUrl: photoBase64 || professionalData?.avatar_url,
+        professionalPhotoUrl: photoBase64 || photoUrl,
         professionalSpecialty: professionalData?.specialty || "Musicoterapeuta",
         professionalEmail: professionalData?.email,
         professionalPhone: professionalData?.phone,
@@ -623,6 +627,11 @@ export default function EvolutionReport() {
                   data={formData}
                   professionalName={professionalData?.name}
                   professionalRegister={professionalData?.register}
+                  professionalPhotoUrl={professionalData?.stamp_photo_url || professionalData?.avatar_url}
+                  professionalSpecialty={professionalData?.specialty}
+                  professionalEmail={professionalData?.email}
+                  professionalPhone={professionalData?.phone}
+                  digitalStampUrl={professionalData?.digital_stamp_url}
                 />
               </div>
             </CardContent>
