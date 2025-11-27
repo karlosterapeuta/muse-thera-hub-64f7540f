@@ -68,6 +68,11 @@ import FinanceClinics from "./pages/finance/clinics";
 import ActivityFavorites from "./pages/activities/favorites";
 import ActivityCategory from "./pages/activities/category";
 
+// Courses pages
+import CoursesPage from "./pages/courses";
+import CoursePlayerPage from "./pages/courses/[courseId]";
+import CourseAdminPage from "./pages/courses/admin";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -169,6 +174,9 @@ const App = () => {
             <Route path="invite-codes" element={<InviteCodes />} />
           <Route path="digital-stamp" element={<DigitalStamp />} />
             <Route path="install" element={<Install />} />
+            <Route path="courses" element={<CoursesPage />} />
+            <Route path="courses/:courseId" element={<CoursePlayerPage />} />
+            <Route path="courses/admin" element={<CourseAdminPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
