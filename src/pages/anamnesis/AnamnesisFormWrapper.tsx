@@ -449,15 +449,31 @@ export default function AnamnesisFormWrapper({
       const patientName = patient?.name || "Paciente";
 
       // Get professional data - use user_id since professionalId is the auth user ID
+      console.log("🔍 Buscando profissional com user_id:", professionalId);
+      
       const { data: professionalData, error: profError } = await supabase
         .from("professionals")
         .select("*")
         .eq("user_id", professionalId)
         .single();
 
+      // Debug logging para identificar o problema
+      console.log("📊 Query profissional resultado:", {
+        professionalId,
+        profError: profError?.message || null,
+        professionalData: professionalData ? {
+          id: professionalData.id,
+          name: professionalData.name,
+          stamp_photo_url: professionalData.stamp_photo_url,
+          avatar_url: professionalData.avatar_url,
+          digital_stamp_url: professionalData.digital_stamp_url,
+        } : null
+      });
+
       let professional = professionalData;
       
       if (profError || !professionalData) {
+        console.warn("⚠️ Usando fallback para dados do profissional:", profError?.message);
         // Fallback to user data
         professional = {
           id: professionalId,
@@ -476,20 +492,33 @@ export default function AnamnesisFormWrapper({
           updated_at: new Date().toISOString(),
           user_id: professionalId
         };
+      } else {
+        console.log("✅ Dados do profissional carregados com sucesso:", professional?.name);
       }
 
       // Converter imagens para Base64
       let professionalPhotoBase64: string | null = null;
       let digitalStampBase64: string | null = null;
 
+      // Debug logging antes da conversão
+      console.log("🔍 Professional object antes da conversão:", {
+        stamp_photo_url: professional?.stamp_photo_url,
+        avatar_url: professional?.avatar_url,
+        digital_stamp_url: professional?.digital_stamp_url,
+        isFallback: profError || !professionalData
+      });
+
       if (professional?.stamp_photo_url || professional?.avatar_url) {
         try {
           const photoUrl = professional.stamp_photo_url || professional.avatar_url;
           console.log("🖼️ Convertendo foto do profissional para Base64...", photoUrl);
           professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
+          console.log("✅ Foto convertida com sucesso:", professionalPhotoBase64 ? "OK" : "FALHOU");
         } catch (e) {
           console.warn("⚠️ Não foi possível converter foto para Base64:", e);
         }
+      } else {
+        console.log("⚠️ Nenhuma URL de foto encontrada para conversão");
       }
 
       if (professional?.digital_stamp_url) {
