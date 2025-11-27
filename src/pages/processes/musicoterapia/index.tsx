@@ -202,9 +202,9 @@ export default function MusicoterapiaPage() {
         <div style="margin-top: 60px; padding: 30px; background: white; border: 2px solid #14b8a6; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px;"></div>
           
-          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
             <!-- Assinatura Digital Card -->
-            <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); padding: 25px; border-radius: 12px; border: 2px solid #99f6e4; position: relative;">
+            <div style="flex: 1 1 320px; min-width: 280px; max-width: 450px; background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); padding: 25px; border-radius: 12px; border: 2px solid #99f6e4; position: relative;">
               <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -25px -25px 20px -25px;"></div>
               
               <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
@@ -250,7 +250,7 @@ export default function MusicoterapiaPage() {
 
             <!-- Carimbo Digital -->
             ${stampBase64 ? `
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+              <div style="flex: 1 1 200px; min-width: 180px; max-width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                 <div style="position: relative; width: 180px; height: 180px;">
                   <div style="position: absolute; inset: 0; border: 3px dashed #14b8a6; border-radius: 50%; opacity: 0.3;"></div>
                   <div style="position: absolute; inset: 8px; background: linear-gradient(135deg, #f0fdfa, #ecfeff); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border: 3px solid #5eead4; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
@@ -271,7 +271,7 @@ export default function MusicoterapiaPage() {
                 </div>
               </div>
             ` : `
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+              <div style="flex: 1 1 200px; min-width: 180px; max-width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                 <div style="width: 160px; height: 160px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
                   <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">🔖 Carimbo<br/>Digital</p>
                 </div>

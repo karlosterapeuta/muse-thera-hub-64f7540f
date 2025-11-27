@@ -238,10 +238,10 @@ export function FinalReviewSection({
           <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 4px; margin-bottom: 30px;"></div>
           
           <!-- Grid: Assinatura à esquerda, Carimbo à direita -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
             
             <!-- Coluna Esquerda: Card de Assinatura Digital Aninhado -->
-            <div style="background: white; border: 2px solid #99f6e4; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.15);">
+            <div style="flex: 1 1 320px; min-width: 280px; max-width: 450px; background: white; border: 2px solid #99f6e4; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.15);">
               <!-- Barra superior do card aninhado -->
               <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 4px; margin-bottom: 20px;"></div>
               
@@ -282,7 +282,7 @@ export function FinalReviewSection({
             </div>
             
             <!-- Coluna Direita: Carimbo Circular -->
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="flex: 1 1 200px; min-width: 180px; max-width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
               ${stampBase64 ? `
                 <!-- Carimbo Configurado: Design Circular -->
                 <div style="position: relative; width: 200px; height: 200px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 20px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);">
