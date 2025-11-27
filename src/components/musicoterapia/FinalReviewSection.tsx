@@ -232,23 +232,23 @@ export function FinalReviewSection({
         </div>
       ` : ''}
 
-      <!-- FOOTER TEAL - Design Idêntico ao /digital-stamp -->
-      <div style="margin-top: 50px; border: 3px solid transparent; border-radius: 20px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); background-origin: border-box; background-clip: padding-box, border-box;">
-        <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
+      <!-- FOOTER TEAL - Design 50% menor -->
+      <div style="margin-top: 25px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); background-origin: border-box; background-clip: padding-box, border-box;">
+        <div style="height: 4px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
         
-        <div style="padding: 32px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+        <div style="padding: 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
           
-            <!-- Card de Assinatura (Esquerda) - Idêntico ao Preview -->
-            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 16px; overflow: hidden;">
-              <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+            <!-- Card de Assinatura (Esquerda) - 50% menor -->
+            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #14b8a6; border-radius: 8px; overflow: hidden;">
+              <div style="height: 4px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
               
-              <div style="padding: 24px;">
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+              <div style="padding: 12px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                   ${photoBase64 ? `
                     <div style="position: relative;">
-                      <div style="position: absolute; width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(10px); top: -4px; left: -4px;"></div>
-                      <div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 3px;">
+                      <div style="position: absolute; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(5px); top: -2px; left: -2px;"></div>
+                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 2px;">
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
@@ -256,12 +256,12 @@ export function FinalReviewSection({
                     </div>
                   ` : ''}
                   <div style="text-align: center;">
-                    <div style="font-size: 18px; font-weight: bold; color: #0f766e; margin-bottom: 12px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                    <div style="display: inline-flex; align-items: center; gap: 6px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 20px; padding: 6px 14px; margin-bottom: 16px;">
-                      <span style="color: #0f766e; font-size: 14px;">&#9835;</span>
-                      <span style="font-size: 13px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                    <div style="display: inline-flex; align-items: center; gap: 3px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
+                      <span style="color: #0f766e; font-size: 7px;">&#9835;</span>
+                      <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
                     </div>
-                    <div style="font-size: 13px; color: #374151; line-height: 2;">
+                    <div style="font-size: 7px; color: #374151; line-height: 1.8;">
                       ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${professionalData.register}</div>` : ''}
                       ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
                       ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
@@ -270,47 +270,47 @@ export function FinalReviewSection({
                 </div>
               </div>
               
-              <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 14px;">
-                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                  <span style="color: #0d9488; font-size: 16px;">&#10004;</span>
-                  <span style="font-size: 13px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
-                  <span style="color: #0d9488; font-size: 14px;">&#9835;</span>
-                  <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
+              <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 7px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <span style="color: #0d9488; font-size: 8px;">&#10004;</span>
+                  <span style="font-size: 6px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                  <span style="color: #0d9488; font-size: 7px;">&#9835;</span>
+                  <span style="font-size: 6px; color: #6b7280;">Sistema MuseTera</span>
                 </div>
               </div>
             </div>
 
-            <!-- Carimbo Circular (Direita) - Idêntico ao Preview -->
+            <!-- Carimbo Circular (Direita) - 50% menor -->
             <div style="display: flex; flex-direction: column; align-items: center;">
               ${stampBase64 || photoBase64 ? `
-                <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
-                  <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 2px solid #14b8a6; opacity: 0.5;"></div>
-                  <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 6px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 8px 24px rgba(20,184,166,0.25);">
+                <div style="width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #14b8a6; opacity: 0.3;"></div>
+                  <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #14b8a6; opacity: 0.5;"></div>
+                  <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(20,184,166,0.25);">
                     ${photoBase64 ? `
-                      <div style="position: relative; margin-bottom: 10px;">
-                        <div style="position: absolute; width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(8px); top: -4px; left: -4px;"></div>
-                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative;">
+                      <div style="position: relative; margin-bottom: 5px;">
+                        <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(4px); top: -2px; left: -2px;"></div>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                       </div>
                     ` : ''}
-                    <div style="font-size: 13px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 6px; max-width: 180px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                    <div style="width: 60px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 6px;"></div>
-                    <div style="display: inline-flex; align-items: center; gap: 4px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 16px; padding: 3px 10px; margin-bottom: 4px;">
-                      <span style="font-size: 10px; color: #0f766e;">&#9835;</span>
-                      <span style="font-size: 10px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                    <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 3px;"></div>
+                    <div style="display: inline-flex; align-items: center; gap: 2px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
+                      <span style="font-size: 5px; color: #0f766e;">&#9835;</span>
+                      <span style="font-size: 5px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.3px;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
                     </div>
-                    ${professionalData?.register ? `<div style="font-size: 11px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
+                    ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
                   </div>
                 </div>
-                <div style="margin-top: 12px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
-                  <span style="font-size: 12px;">&#10004;</span>
-                  <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">MuseTera Verified</span>
-                  <span style="font-size: 12px;">&#9835;</span>
+                <div style="margin-top: 6px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(13,148,136,0.3);">
+                  <span style="font-size: 6px;">&#10004;</span>
+                  <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">MuseTera Verified</span>
+                  <span style="font-size: 6px;">&#9835;</span>
                 </div>
               ` : `
-                <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background: #f0fdfa;">
+                <div style="width: 120px; height: 120px; border: 2px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #6b7280; background: #f0fdfa;">
                   Carimbo Digital
                 </div>
               `}
