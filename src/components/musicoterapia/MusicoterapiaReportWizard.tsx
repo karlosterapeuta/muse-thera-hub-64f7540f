@@ -191,13 +191,14 @@ export function MusicoterapiaReportWizard({
     // Se for a última etapa (Revisão Final), renderizar o componente especial
     if (currentStep === STEPS.length - 1) {
       return (
-        <FinalReviewSection
-          reportData={reportData}
-          onOrganizeWithAI={handleAIGeneration}
-          isGeneratingWithAI={isGeneratingWithAI}
-          onSaveReport={onSaveReport}
-          isSaving={isSaving}
-        />
+      <FinalReviewSection
+        reportData={reportData}
+        onOrganizeWithAI={handleAIGeneration}
+        isGeneratingWithAI={isGeneratingWithAI}
+        onSaveReport={onSaveReport}
+        isSaving={isSaving}
+        professionalData={professionalData}
+      />
       );
     }
 

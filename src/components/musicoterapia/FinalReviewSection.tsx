@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import html2pdf from 'html2pdf.js';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -15,6 +16,7 @@ interface FinalReviewSectionProps {
   isGeneratingWithAI: boolean;
   onSaveReport: () => void;
   isSaving: boolean;
+  professionalData?: any;
 }
 
 export function FinalReviewSection({ 
@@ -22,7 +24,8 @@ export function FinalReviewSection({
   onOrganizeWithAI, 
   isGeneratingWithAI,
   onSaveReport,
-  isSaving
+  isSaving,
+  professionalData
 }: FinalReviewSectionProps) {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
@@ -33,14 +36,28 @@ export function FinalReviewSection({
 
   const handleExportPDF = async () => {
     setIsExporting(true);
+    
     try {
+      // Converter imagens para Base64
+      let photoBase64: string | null = null;
+      let stampBase64: string | null = null;
+
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      }
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
       // Criar um elemento HTML temporário com o conteúdo do relatório
       const tempDiv = document.createElement('div');
       tempDiv.style.padding = '40px';
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent();
+      tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
+      
+      document.body.appendChild(tempDiv);
       
       // Configurações do PDF
       const opt = {
@@ -53,6 +70,8 @@ export function FinalReviewSection({
 
       // Gerar e baixar o PDF
       await html2pdf().set(opt).from(tempDiv).save();
+      
+      document.body.removeChild(tempDiv);
       
       toast({
         title: "PDF Exportado com Sucesso!",
@@ -141,7 +160,7 @@ export function FinalReviewSection({
   };
 
 
-  const generatePDFContent = () => {
+  const generatePDFContent = (photoBase64?: string | null, stampBase64?: string | null) => {
     const fields = reportData.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
@@ -213,13 +232,93 @@ export function FinalReviewSection({
         </div>
       ` : ''}
 
-      <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
-        <p style="margin: 15px 0;"><strong>Profissional:</strong> ${reportData.professionalName || 'Não informado'}</p>
-        <p style="margin: 15px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Não informado'}</p>
-        <p style="color: #666; font-size: 12px; margin-top: 20px;">
-          Documento gerado eletronicamente pelo MuseTera em ${currentDate}
-        </p>
-      </div>
+        <!-- Footer com Assinatura e Carimbo Digital - Design TEAL -->
+        <div style="margin-top: 60px; padding: 30px; background: white; border: 2px solid #14b8a6; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <!-- Barra decorativa superior -->
+          <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 4px; margin-bottom: 30px;"></div>
+          
+          <!-- Grid: Assinatura à esquerda, Carimbo à direita -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            
+            <!-- Coluna Esquerda: Card de Assinatura Digital Aninhado -->
+            <div style="background: white; border: 2px solid #99f6e4; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.15);">
+              <!-- Barra superior do card aninhado -->
+              <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 4px; margin-bottom: 20px;"></div>
+              
+              <!-- Layout horizontal: Foto + Informações -->
+              <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                <!-- Container da foto com efeito blur atrás -->
+                <div style="position: relative; flex-shrink: 0;">
+                  <div style="position: absolute; width: 90px; height: 90px; background: radial-gradient(circle, rgba(20, 184, 166, 0.3), transparent); filter: blur(20px); top: 5px; left: 5px; z-index: 0;"></div>
+                  ${photoBase64 ? `
+                    <img src="${photoBase64}" alt="Foto Profissional" style="position: relative; z-index: 1; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #14b8a6; box-shadow: 0 4px 8px rgba(20, 184, 166, 0.3);" />
+                  ` : `
+                    <div style="position: relative; z-index: 1; width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #0d9488, #14b8a6); display: flex; align-items: center; justify-content: center; border: 3px solid #14b8a6; box-shadow: 0 4px 8px rgba(20, 184, 166, 0.3);">
+                      <span style="font-size: 32px; color: white; font-weight: bold;">${(professionalData?.name || reportData.professionalName || 'P')[0].toUpperCase()}</span>
+                    </div>
+                  `}
+                </div>
+                
+                <!-- Informações do Profissional -->
+                <div style="flex: 1;">
+                  <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: bold; color: #0d9488;">${professionalData?.name || reportData.professionalName || 'Profissional'}</h3>
+                  <div style="display: inline-block; background: #ccfbf1; color: #0d9488; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid #99f6e4; margin-bottom: 12px;">
+                    🎵 ${professionalData?.specialty || reportData.professionalSpecialty || 'MUSICOTERAPEUTA'}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Informações de Contato -->
+              <div style="border-top: 1px solid #ccfbf1; padding-top: 15px; font-size: 13px; color: #0f766e; line-height: 1.8;">
+                <div style="margin-bottom: 6px;"><strong>📋 Registro:</strong> ${professionalData?.register || professionalData?.license_number || reportData.professionalRegistry || 'Não informado'}</div>
+                ${professionalData?.email ? `<div style="margin-bottom: 6px;"><strong>📧 Email:</strong> ${professionalData.email}</div>` : ''}
+                ${professionalData?.phone ? `<div><strong>📞 Telefone:</strong> ${professionalData.phone}</div>` : ''}
+              </div>
+              
+              <!-- Footer do Card Aninhado -->
+              <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #99f6e4; background: linear-gradient(90deg, #f0fdfa, #ecfeff, #f0fdfa); text-align: center; border-radius: 6px; padding: 10px;">
+                <p style="margin: 0; font-size: 12px; color: #0d9488; font-weight: 600;">✓ Assinatura Digital Verificada 🎵 Sistema MuseTera</p>
+              </div>
+            </div>
+            
+            <!-- Coluna Direita: Carimbo Circular -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              ${stampBase64 ? `
+                <!-- Carimbo Configurado: Design Circular -->
+                <div style="position: relative; width: 200px; height: 200px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 20px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);">
+                  ${photoBase64 ? `
+                    <img src="${photoBase64}" alt="Foto" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6; margin-bottom: 8px;" />
+                  ` : `
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #0d9488, #14b8a6); display: flex; align-items: center; justify-content: center; border: 2px solid #14b8a6; margin-bottom: 8px;">
+                      <span style="font-size: 28px; color: white; font-weight: bold;">${(professionalData?.name || reportData.professionalName || 'P')[0].toUpperCase()}</span>
+                    </div>
+                  `}
+                  <p style="margin: 6px 0; font-size: 13px; font-weight: bold; color: #0d9488; text-align: center; line-height: 1.3;">${professionalData?.name || reportData.professionalName || 'Profissional'}</p>
+                  <div style="background: #ccfbf1; color: #0d9488; padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; border: 1px solid #99f6e4; margin: 4px 0;">
+                    🎵 ${(professionalData?.specialty || reportData.professionalSpecialty || 'MUSICOTERAPEUTA').substring(0, 20)}
+                  </div>
+                  <p style="margin: 4px 0 0 0; font-size: 11px; color: #0f766e; text-align: center;">📋 ${professionalData?.register || professionalData?.license_number || reportData.professionalRegistry || 'N/A'}</p>
+                </div>
+                <div style="margin-top: 15px; background: linear-gradient(90deg, #f0fdfa, #ecfeff); padding: 8px 20px; border-radius: 20px; border: 1px solid #99f6e4;">
+                  <p style="margin: 0; font-size: 11px; color: #0d9488; font-weight: 600; text-align: center;">✓ MuseTera Verified 🎵</p>
+                </div>
+              ` : `
+                <!-- Carimbo Não Configurado: Placeholder -->
+                <div style="width: 180px; height: 180px; border: 2px dashed #cbd5e1; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc;">
+                  <span style="font-size: 48px; margin-bottom: 10px;">🔖</span>
+                  <p style="margin: 0; font-size: 12px; color: #64748b; text-align: center; line-height: 1.4;">Carimbo Digital<br/>Não Configurado</p>
+                </div>
+              `}
+            </div>
+          </div>
+          
+          <!-- Rodapé Final -->
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ccfbf1; text-align: center;">
+            <p style="margin: 0; font-size: 11px; color: #0f766e;">
+              📄 Documento gerado eletronicamente pelo MuseTera em ${currentDate} | ✓ Autenticidade verificada
+            </p>
+          </div>
+        </div>
     `;
   };
 
