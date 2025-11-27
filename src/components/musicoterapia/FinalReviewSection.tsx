@@ -244,9 +244,9 @@ export function FinalReviewSection({
               <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
               
               <div style="padding: 24px;">
-                <div style="display: flex; align-items: flex-start; gap: 20px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
                   ${photoBase64 ? `
-                    <div style="position: relative; flex-shrink: 0;">
+                    <div style="position: relative;">
                       <div style="position: absolute; width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(10px); top: -4px; left: -4px;"></div>
                       <div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 3px;">
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
@@ -255,8 +255,8 @@ export function FinalReviewSection({
                       </div>
                     </div>
                   ` : ''}
-                  <div style="flex: 1;">
-                    <div style="font-size: 20px; font-weight: bold; color: #0f766e; margin-bottom: 12px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 18px; font-weight: bold; color: #0f766e; margin-bottom: 12px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
                     <div style="display: inline-flex; align-items: center; gap: 6px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 20px; padding: 6px 14px; margin-bottom: 16px;">
                       <span style="color: #0f766e; font-size: 14px;">&#9835;</span>
                       <span style="font-size: 13px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
