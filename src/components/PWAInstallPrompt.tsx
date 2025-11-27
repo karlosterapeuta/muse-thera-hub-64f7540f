@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
-import { X, Download, Smartphone, Monitor } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { useState, useEffect } from "react";
+import { X, Download, Smartphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 declare global {
@@ -18,244 +13,144 @@ declare global {
   }
 }
 
-export const PWAInstallPrompt = () => {
+const DISMISS_KEY = "pwa-banner-dismissed";
+const DISMISS_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [showManualInstructions, setShowManualInstructions] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
-    console.log('[PWA InstallPrompt] Componente montado');
-    
-    // Detectar iOS e Android
-    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-    const isChrome = /Chrome/.test(navigator.userAgent);
-    setIsIOS(iOS);
-    
-    // Verificar se já está instalado (múltiplas formas)
-    const standalone = window.matchMedia('(display-mode: standalone)').matches ||
-                      (window.navigator as any).standalone === true ||
-                      document.referrer.includes('android-app://');
-    setIsStandalone(standalone);
+    // Check if already installed as PWA
+    const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(isInstalled);
 
-    console.log('[PWA InstallPrompt] Detecção de plataforma:', {
-      iOS,
-      isAndroid,
-      isChrome,
-      standalone,
-      userAgent: navigator.userAgent,
-      displayMode: window.matchMedia('(display-mode: standalone)').matches,
-      navigatorStandalone: (window.navigator as any).standalone
-    });
+    if (isInstalled) return;
 
-    // Se já está instalado, não mostrar
-    if (standalone) {
-      console.log('[PWA InstallPrompt] App já instalado, não mostrando prompt');
-      return;
+    // Check if user dismissed the banner recently
+    const dismissedAt = localStorage.getItem(DISMISS_KEY);
+    if (dismissedAt) {
+      const dismissedTime = parseInt(dismissedAt, 10);
+      if (Date.now() - dismissedTime < DISMISS_DURATION) {
+        return; // Don't show banner if dismissed within 7 days
+      }
     }
 
-    // Capturar evento beforeinstallprompt
+    // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      console.log('[PWA InstallPrompt] beforeinstallprompt capturado!', e);
       e.preventDefault();
       setDeferredPrompt(e);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // Verificar se beforeinstallprompt já foi disparado
-    setTimeout(() => {
-      console.log('[PWA InstallPrompt] Verificando deferredPrompt após 1s:', !!deferredPrompt);
-    }, 1000);
-
-    // Mostrar popup após 3 segundos
+    // Show banner after 30 seconds delay
     const timer = setTimeout(() => {
-      console.log('[PWA InstallPrompt] Timer de 3s disparado');
-      console.log('[PWA InstallPrompt] Estado atual:', {
-        standalone,
-        iOS,
-        isAndroid,
-        isChrome,
-        deferredPromptExists: !!deferredPrompt
-      });
-      
-      // Mostrar prompt se não estiver instalado
-      if (!standalone) {
-        setShowPrompt(true);
-        console.log('[PWA InstallPrompt] Popup configurado para aparecer!');
+      // Don't show if on login, reset-password, or install page
+      const currentPath = window.location.pathname;
+      const excludedPaths = ["/login", "/reset-password", "/install"];
+      if (!excludedPaths.includes(currentPath)) {
+        setShowBanner(true);
       }
-    }, 3000);
+    }, 30000);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       clearTimeout(timer);
     };
   }, []);
 
   const handleInstallClick = async () => {
-    console.log('[PWA] Botão de instalação clicado');
-    console.log('[PWA] deferredPrompt disponível:', !!deferredPrompt);
-
     if (deferredPrompt) {
       try {
-        console.log('[PWA] Chamando deferredPrompt.prompt()');
         await deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log('[PWA] Escolha do usuário:', choiceResult.outcome);
-        
-        if (choiceResult.outcome === 'accepted') {
-          console.log('[PWA] Usuário aceitou a instalação');
-        } else {
-          console.log('[PWA] Usuário rejeitou a instalação');
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          setShowBanner(false);
+          setDeferredPrompt(null);
         }
-        
-        setDeferredPrompt(null);
-        setShowPrompt(false);
       } catch (error) {
-        console.error('[PWA] Erro ao tentar instalar:', error);
-        setShowManualInstructions(true);
+        console.error("Error installing PWA:", error);
+        // Redirect to install page for manual instructions
+        window.location.href = "/install";
+        setShowBanner(false);
       }
     } else {
-      console.log('[PWA] Sem deferredPrompt, mostrando instruções manuais');
-      setShowManualInstructions(true);
+      // No native prompt available, redirect to install page
+      window.location.href = "/install";
+      setShowBanner(false);
     }
   };
 
   const handleClose = () => {
-    console.log('[PWA] Popup fechado pelo usuário');
-    setShowPrompt(false);
-    setShowManualInstructions(false);
+    if (dontShowAgain) {
+      localStorage.setItem(DISMISS_KEY, Date.now().toString());
+    }
+    setShowBanner(false);
   };
 
-  // Não mostrar se já estiver instalado
-  if (isStandalone) {
-    console.log('[PWA] App já está instalado (standalone mode)');
-    return null;
-  }
-
-  if (!showPrompt) {
+  // Don't render anything if installed or banner shouldn't show
+  if (isStandalone || !showBanner) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <Card className="relative max-w-md w-full bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-2 border-primary/20 shadow-2xl animate-in zoom-in-95 duration-300">
-        <button
-          onClick={handleClose}
-          className="absolute right-3 top-3 p-2 rounded-full hover:bg-muted/50 transition-colors"
-          aria-label="Fechar"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="p-8 text-center space-y-6">
-          {/* Logo */}
-          <div className="flex justify-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary p-1 shadow-lg">
-              <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-                <img 
-                  src="/icon-original.png" 
-                  alt="Musetera" 
-                  className="w-20 h-20 rounded-full"
-                />
-              </div>
-            </div>
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 animate-in slide-in-from-bottom duration-300">
+      <div className="max-w-2xl mx-auto bg-gradient-to-r from-primary/95 to-primary/80 backdrop-blur-xl border border-primary/30 rounded-2xl shadow-2xl p-4 sm:p-5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Icon */}
+          <div className="hidden sm:flex p-3 bg-background/20 rounded-xl shrink-0">
+            <Smartphone className="w-6 h-6 text-primary-foreground" />
           </div>
 
-          {/* Título e descrição */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-foreground">
-              Instale o Musetera
-            </h2>
-            <p className="text-muted-foreground">
-              Tenha acesso rápido e fácil ao app, direto da sua tela inicial!
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm sm:text-base font-medium text-primary-foreground">
+              📱 Instale o <span className="font-bold">MuseTera</span> para acesso rápido!
             </p>
+            
+            {/* Don't show again checkbox */}
+            <label className="flex items-center gap-2 mt-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={dontShowAgain}
+                onChange={(e) => setDontShowAgain(e.target.checked)}
+                className="w-4 h-4 rounded border-primary-foreground/30 bg-background/20 text-primary focus:ring-primary/50"
+              />
+              <span className="text-xs text-primary-foreground/70">
+                Não mostrar novamente
+              </span>
+            </label>
           </div>
 
-          {/* Benefícios */}
-          <div className="space-y-3 text-left bg-muted/30 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Download className="w-3.5 h-3.5 text-primary" />
-              </div>
-              <p className="text-sm text-foreground">Acesso instantâneo sem abrir o navegador</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Smartphone className="w-3.5 h-3.5 text-primary" />
-              </div>
-              <p className="text-sm text-foreground">Funciona offline e carrega mais rápido</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Monitor className="w-3.5 h-3.5 text-primary" />
-              </div>
-              <p className="text-sm text-foreground">Experiência como app nativo</p>
-            </div>
-          </div>
-
-          {/* Instruções manuais */}
-          {showManualInstructions && (
-            <div className="bg-muted/50 rounded-lg p-4 text-left space-y-3 border border-border animate-in slide-in-from-top-2 duration-300">
-              <h3 className="font-semibold text-foreground text-sm">Como instalar:</h3>
-              
-              {isIOS ? (
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">1.</span>
-                    Toque no botão <span className="font-bold">Compartilhar</span> (ícone com seta para cima) na barra inferior do Safari
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">2.</span>
-                    Role para baixo e toque em <span className="font-bold">"Adicionar à Tela de Início"</span>
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">3.</span>
-                    Toque em <span className="font-bold">"Adicionar"</span> no canto superior direito
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">1.</span>
-                    Toque no menu do navegador (⋮) no canto superior direito
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">2.</span>
-                    Selecione <span className="font-bold">"Adicionar à tela inicial"</span> ou <span className="font-bold">"Instalar app"</span>
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="font-bold text-primary">3.</span>
-                    Confirme a instalação
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Botões */}
-          <div className="flex flex-col gap-3">
+          {/* Actions */}
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               onClick={handleInstallClick}
-              size="lg"
-              className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-lg"
+              size="sm"
+              className="bg-background text-foreground hover:bg-background/90 font-medium shadow-lg"
             >
-              <Download className="w-5 h-5 mr-2" />
-              {showManualInstructions ? 'Ver instruções acima' : 'Instalar Agora'}
+              <Download className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Instalar</span>
             </Button>
             
             <Button
               onClick={handleClose}
+              size="icon"
               variant="ghost"
-              className="w-full"
+              className="h-8 w-8 text-primary-foreground/70 hover:text-primary-foreground hover:bg-background/20"
             >
-              Agora não
+              <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
-};
+}
+
+// Keep the named export for backward compatibility
+export { PWAInstallPrompt as default };
