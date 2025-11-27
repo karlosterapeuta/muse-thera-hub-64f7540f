@@ -247,9 +247,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           {fields.map(field => {
             if (!anamnesisData[field]) return null;
             return (
-              <div key={field} className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-gray-800 dark:text-gray-200 font-medium">{labels[field] || field.replace(/_/g, ' ')}</span>
+              <div key={field} className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 border border-gray-700">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-white font-medium">{labels[field] || field.replace(/_/g, ' ')}</span>
               </div>
             );
           })}
@@ -268,12 +268,12 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             
             return (
               <div key={field.key}>
-                <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-2">{field.label}</h4>
-                <div className={`p-3 rounded-lg border-2 ${isEmpty ? 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600' : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600'}`}>
+                <h4 className="font-bold text-sm text-white mb-2">{field.label}</h4>
+                <div className={`p-3 rounded-lg border ${isEmpty ? 'bg-gray-800 border-gray-700' : 'bg-gray-800 border-gray-600'}`}>
                   {isEmpty ? (
-                    <p className="text-sm text-gray-600 dark:text-gray-300 italic">Campo disponível para preenchimento</p>
+                    <p className="text-sm text-gray-400 italic">Campo disponível para preenchimento</p>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">{value}</p>
+                    <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{value}</p>
                   )}
                 </div>
               </div>
@@ -295,19 +295,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const stats = getCompletionStats();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-950 p-6 rounded-xl">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 border-gray-700 text-white hover:bg-gray-800">
             <ArrowLeft size={16} />
             Voltar
           </Button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-white">
               Anamnese Detalhada
             </h1>
-            <p className="text-muted-foreground">Paciente: {anamnesis.patient_name}</p>
+            <p className="text-gray-400">Paciente: {anamnesis.patient_name}</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -341,48 +341,48 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Criado em</p>
-                <p className="font-semibold">{formatDate(anamnesis.created_at)}</p>
+                <p className="text-sm text-gray-400">Criado em</p>
+                <p className="font-semibold text-white">{formatDate(anamnesis.created_at)}</p>
               </div>
               <Calendar className="text-blue-500" size={20} />
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Atualizado em</p>
-                <p className="font-semibold">{formatDate(anamnesis.updated_at)}</p>
+                <p className="text-sm text-gray-400">Atualizado em</p>
+                <p className="font-semibold text-white">{formatDate(anamnesis.updated_at)}</p>
               </div>
               <Clock className="text-green-500" size={20} />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Completude</p>
-                <p className="font-semibold">{stats.overallCompletion}%</p>
+                <p className="text-sm text-gray-400">Completude</p>
+                <p className="font-semibold text-white">{stats.overallCompletion}%</p>
               </div>
               <Activity className="text-orange-500" size={20} />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aspectos Marcados</p>
-                <p className="font-semibold">{stats.checkedFields}</p>
+                <p className="text-sm text-gray-400">Aspectos Marcados</p>
+                <p className="font-semibold text-white">{stats.checkedFields}</p>
               </div>
               <CheckCircle2 className="text-purple-500" size={20} />
             </div>
@@ -397,27 +397,27 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {anamnesisData.legal_guardian && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Responsável Legal</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.legal_guardian}</p>
+                <p className="text-sm font-semibold text-gray-400">Responsável Legal</p>
+                <p className="font-medium text-white">{anamnesisData.legal_guardian}</p>
               </div>
             )}
             {anamnesisData.family_relationship && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Parentesco</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.family_relationship}</p>
+                <p className="text-sm font-semibold text-gray-400">Parentesco</p>
+                <p className="font-medium text-white">{anamnesisData.family_relationship}</p>
               </div>
             )}
             {anamnesisData.referral_professional && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Profissional que Encaminhou</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.referral_professional}</p>
+                <p className="text-sm font-semibold text-gray-400">Profissional que Encaminhou</p>
+                <p className="font-medium text-white">{anamnesisData.referral_professional}</p>
               </div>
             )}
             {anamnesisData.main_clinical_demand && (
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Demanda Clínica Principal</p>
-                <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 mt-1">
-                  <p className="text-gray-900 dark:text-gray-100 leading-relaxed">{anamnesisData.main_clinical_demand}</p>
+                <p className="text-sm font-semibold text-gray-400">Demanda Clínica Principal</p>
+                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
+                  <p className="text-white leading-relaxed">{anamnesisData.main_clinical_demand}</p>
                 </div>
               </div>
             )}
