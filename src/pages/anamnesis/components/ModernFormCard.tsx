@@ -21,7 +21,7 @@ export function ModernFormCard({
     <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
       {/* Gradient border */}
       <div className={`absolute inset-0 bg-gradient-to-r ${gradient} p-[1px] rounded-lg`}>
-        <div className="h-full w-full bg-white rounded-lg" />
+        <div className="h-full w-full bg-gray-900 rounded-lg" />
       </div>
       
       <div className="relative z-10">
@@ -30,7 +30,7 @@ export function ModernFormCard({
             <div className={`p-2 bg-gradient-to-r ${gradient} rounded-lg`}>
               <Icon className="h-5 w-5 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+            <span className="text-white font-semibold">
               {title}
             </span>
           </CardTitle>
