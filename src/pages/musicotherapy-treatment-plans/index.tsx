@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, User } from 'lucide-react';
+import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, User, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,16 +14,25 @@ import { useToast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast as sonnerToast } from 'sonner';
+import { TreatmentPlanViewModal } from './components/TreatmentPlanViewModal';
+import { MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDF';
+import { generateStaticPDF } from '@/utils/staticPDFGenerator';
+import { useProfessionalData } from '@/hooks/useProfessionalData';
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 
 export default function MusicotherapyTreatmentPlans() {
   const navigate = useNavigate();
   const { data: plans, isLoading } = useMusicotherapyTreatmentPlans();
+  const { data: professionalData } = useProfessionalData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('updated_at');
+  const [viewingPlanId, setViewingPlanId] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -102,6 +111,88 @@ export default function MusicotherapyTreatmentPlans() {
         description: 'Não foi possível excluir o plano. Tente novamente.',
         variant: 'destructive',
       });
+    }
+  };
+
+  const handleDownloadPDF = async (planId: string) => {
+    setIsDownloading(planId);
+    let loadingToast: string | number | undefined;
+    
+    try {
+      loadingToast = sonnerToast.loading("Gerando PDF do plano...");
+
+      // Fetch complete plan data
+      const { data: planData, error: planError } = await supabase
+        .from('treatment_plans')
+        .select('*')
+        .eq('id', planId)
+        .single();
+
+      if (planError || !planData) {
+        throw new Error('Plano não encontrado');
+      }
+
+      // Parse JSON fields
+      const parseJsonField = (field: any): string[] => {
+        if (!field) return [];
+        if (Array.isArray(field)) return field;
+        if (typeof field === 'string') {
+          try {
+            const parsed = JSON.parse(field);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        }
+        return [];
+      };
+
+      const parsedPlanData = {
+        ...planData,
+        general_objectives: parseJsonField(planData.general_objectives),
+        specific_objectives: parseJsonField(planData.specific_objectives),
+        musical_instruments: parseJsonField(planData.musical_instruments),
+        technological_resources: parseJsonField(planData.technological_resources),
+        voice_body_resources: parseJsonField(planData.voice_body_resources),
+        complementary_materials: parseJsonField(planData.complementary_materials),
+        evaluation_criteria_list: parseJsonField(planData.evaluation_criteria_list),
+      };
+
+      // Convert professional images to Base64
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      const professionalPhotoBase64 = photoUrl ? await imageUrlToBase64(photoUrl) : null;
+      const digitalStampBase64 = professionalData?.digital_stamp_url 
+        ? await imageUrlToBase64(professionalData.digital_stamp_url) 
+        : null;
+
+      // Generate PDF
+      const success = await generateStaticPDF(
+        <MusicotherapyTreatmentPlanPDF
+          planData={parsedPlanData}
+          therapistName={professionalData?.name}
+          professionalPhotoUrl={professionalPhotoBase64 || undefined}
+          digitalStampUrl={digitalStampBase64 || undefined}
+          professionalEmail={professionalData?.email || undefined}
+          professionalPhone={professionalData?.phone || undefined}
+          professionalSpecialty={professionalData?.specialty || undefined}
+          professionalRegistry={professionalData?.register || undefined}
+        />,
+        {
+          filename: `Plano_Musicoterapeutico_${planData.patient_full_name?.replace(/\s+/g, '_') || 'paciente'}.pdf`,
+          waitTime: 2000,
+        }
+      );
+
+      if (success) {
+        sonnerToast.success("PDF gerado com sucesso!", { id: loadingToast });
+      } else {
+        throw new Error('Falha ao gerar PDF');
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      sonnerToast.error("Erro ao gerar PDF. Tente novamente.", { id: loadingToast });
+    } finally {
+      setIsDownloading(null);
     }
   };
 
@@ -252,14 +343,30 @@ export default function MusicotherapyTreatmentPlans() {
                         {formatDate(plan.updated_at)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => {
-                              console.log('Navigating to edit plan:', plan.id);
-                              navigate(`/musicotherapy-treatment-plan/${plan.id}`);
-                            }}
+                            onClick={() => setViewingPlanId(plan.id)}
+                            className="gap-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Ver
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDownloadPDF(plan.id)}
+                            disabled={isDownloading === plan.id}
+                            className="gap-1"
+                          >
+                            <Download className="h-4 w-4" />
+                            {isDownloading === plan.id ? '...' : 'PDF'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/musicotherapy-treatment-plan/${plan.id}`)}
                             className="gap-1"
                           >
                             <Edit className="h-4 w-4" />
@@ -301,6 +408,15 @@ export default function MusicotherapyTreatmentPlans() {
           </CardContent>
         </Card>
       )}
+
+      {/* View Modal */}
+      <TreatmentPlanViewModal
+        planId={viewingPlanId}
+        open={!!viewingPlanId}
+        onClose={() => setViewingPlanId(null)}
+        onDownloadPDF={handleDownloadPDF}
+        isDownloading={isDownloading === viewingPlanId}
+      />
     </div>
   );
 }
