@@ -44,7 +44,7 @@ export const musicalGamesMenuItems = [
 
 export const toolsMenuItems = [
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
-  { icon: GraduationCap, text: "🎓 Cursos", path: "/courses", gradient: "from-indigo-500 to-purple-600", isNew: true },
+  { icon: GraduationCap, text: "🎓 Cursos (em construção)", path: "/courses", gradient: "from-indigo-500 to-purple-600", isNew: true },
 ];
 
 export const managementMenuItems = [
