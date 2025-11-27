@@ -112,22 +112,22 @@ export default function MusicoterapiaPage() {
     return `
       <div style="width: 210mm; min-height: 297mm; padding: 20mm; background-color: #ffffff; font-family: Arial, sans-serif; color: #1a1a1a; font-size: 11pt; line-height: 1.6;">
         <!-- Header -->
-        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #14b8a6;">
+        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #0f766e;">
           ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
-          <h1 style="color: #0d9488; margin: 0; font-size: 28px;">Relatorio MuseTera TEA</h1>
-          <p style="color: #666; margin: 5px 0 0 0;">Musicoterapia para Transtorno do Espectro Autista</p>
+          <h1 style="color: #0f766e; margin: 0 0 8px 0; font-size: 22pt; font-weight: bold;">Relatorio MuseTera TEA</h1>
+          <p style="color: #666; margin: 5px 0 0 0; font-size: 12pt;">Musicoterapia para Transtorno do Espectro Autista</p>
         </div>
 
         <!-- Patient and Professional Info Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; padding: 20px; background: #f0fdfa; border-radius: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px;">
           <div>
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">Dados do Paciente</h3>
+            <h3 style="color: #0f766e; margin: 0 0 10px 0; font-size: 14pt; font-weight: bold;">Dados do Paciente</h3>
             <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.patientName || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Idade:</strong> ${reportDataForPDF.patientAge || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Diagnostico:</strong> ${reportDataForPDF.patientDiagnosis || 'Nao informado'}</p>
           </div>
           <div>
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">Dados do Profissional</h3>
+            <h3 style="color: #0f766e; margin: 0 0 10px 0; font-size: 14pt; font-weight: bold;">Dados do Profissional</h3>
             <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.professionalName || professionalData?.name || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Registro:</strong> ${reportDataForPDF.professionalRegistry || professionalData?.register || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Data:</strong> ${reportDataForPDF.sessionDate || currentDate}</p>
@@ -137,7 +137,7 @@ export default function MusicoterapiaPage() {
         <!-- Report Sections -->
         ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Objetivos Terapeuticos</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Objetivos Terapeuticos</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 8px 0;">${obj}</li>`).join('')}
             </ul>
@@ -146,7 +146,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.musical_techniques && fields.musical_techniques.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Tecnicas Musicais Utilizadas</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Tecnicas Musicais Utilizadas</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.musical_techniques.map((tech: string) => `<li style="margin: 8px 0;">${tech}</li>`).join('')}
             </ul>
@@ -155,7 +155,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.instruments_used && fields.instruments_used.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Instrumentos Utilizados</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Instrumentos Utilizados</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.instruments_used.map((inst: string) => `<li style="margin: 8px 0;">${inst}</li>`).join('')}
             </ul>
@@ -164,7 +164,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.session_activities && fields.session_activities.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Atividades da Sessao</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Atividades da Sessao</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.session_activities.map((act: string) => `<li style="margin: 8px 0;">${act}</li>`).join('')}
             </ul>
@@ -173,7 +173,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.patient_evolution && fields.patient_evolution.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Evolucao do Paciente</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Evolucao do Paciente</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.patient_evolution.map((evol: string) => `<li style="margin: 8px 0;">${evol}</li>`).join('')}
             </ul>
@@ -182,7 +182,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.recommendations && fields.recommendations.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Recomendacoes</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Recomendacoes</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.recommendations.map((rec: string) => `<li style="margin: 8px 0;">${rec}</li>`).join('')}
             </ul>
@@ -191,7 +191,7 @@ export default function MusicoterapiaPage() {
 
         ${fields.conclusion && fields.conclusion.length > 0 ? `
           <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Conclusao</h3>
+            <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Conclusao</h3>
             <ul style="margin: 0; padding-left: 20px;">
               ${fields.conclusion.map((conc: string) => `<li style="margin: 8px 0;">${conc}</li>`).join('')}
             </ul>
