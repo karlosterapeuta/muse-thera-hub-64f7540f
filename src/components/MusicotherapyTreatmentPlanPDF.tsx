@@ -1,4 +1,5 @@
 import React from 'react';
+import { User, FileText, Target, Music, Users, Clock, CheckCircle, Activity, BarChart, RefreshCw } from 'lucide-react';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
 
 interface MusicotherapyTreatmentPlanPDFProps {
@@ -26,47 +27,13 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 }) => {
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  const bgColorMap: Record<string, string> = {
-    'bg-blue-50': '#eff6ff',
-    'bg-green-50': '#f0fdf4',
-    'bg-purple-50': '#faf5ff',
-    'bg-yellow-50': '#fefce8',
-    'bg-orange-50': '#fff7ed',
-    'bg-pink-50': '#fdf2f8',
-    'bg-indigo-50': '#eef2ff',
-    'bg-teal-50': '#f0fdfa',
-    'bg-red-50': '#fef2f2',
-    'bg-gray-50': '#f9fafb'
-  };
-
-  const iconEmojiMap: Record<string, string> = {
-    'User': '👤',
-    'FileText': '📄',
-    'Target': '🎯',
-    'Music': '🎵',
-    'Users': '👥',
-    'Clock': '⏰',
-    'CheckCircle': '✓',
-    'Activity': '📊',
-    'BarChart': '📈',
-    'RefreshCw': '🔄'
-  };
-
-  const renderSection = (title: string, iconName: string, children: React.ReactNode, bgColor = "bg-blue-50") => {
-    const emoji = iconEmojiMap[iconName] || '📌';
-    const backgroundColor = bgColorMap[bgColor] || '#eff6ff';
-    
+  const renderSection = (title: string, icon: React.ElementType, children: React.ReactNode, bgColor = "bg-blue-50") => {
+    const IconComponent = icon;
     return (
-      <div style={{
-        backgroundColor,
-        borderLeft: '4px solid #3b82f6',
-        padding: '24px',
-        marginBottom: '24px',
-        borderRadius: '0 8px 8px 0'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-          <span style={{ fontSize: '24px', marginRight: '12px' }}>{emoji}</span>
-          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>{title}</h2>
+      <div className={`${bgColor} border-l-4 border-blue-500 p-6 mb-6 rounded-r-lg`}>
+        <div className="flex items-center mb-4">
+          <IconComponent className="h-6 w-6 text-blue-600 mr-3" />
+          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
         </div>
         {children}
       </div>
@@ -74,221 +41,207 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
   };
 
   const renderListItems = (items: string[] | undefined, emptyText = "Não especificado") => {
-    if (!items || items.length === 0) return <p style={{ color: '#4b5563' }}>{emptyText}</p>;
+    if (!items || items.length === 0) return <p className="text-gray-600">{emptyText}</p>;
     return (
-      <ul style={{ listStyleType: 'disc', paddingLeft: '20px', margin: 0 }}>
+      <ul className="list-disc list-inside space-y-1">
         {items.map((item, index) => (
-          <li key={index} style={{ color: '#1f2937', marginBottom: '4px' }}>{item}</li>
+          <li key={index} className="text-gray-800">{item}</li>
         ))}
       </ul>
     );
   };
 
   return (
-    <div style={{ 
-      backgroundColor: '#ffffff', 
-      color: '#000000', 
-      fontFamily: 'Times New Roman, serif', 
-      lineHeight: '1.6',
-      maxWidth: '896px',
-      margin: '0 auto',
-      padding: '32px'
-    }}>
+    <div className="bg-white text-black font-serif leading-relaxed max-w-4xl mx-auto p-8" style={{ fontFamily: 'Times New Roman, serif', lineHeight: '1.6' }}>
       {/* Header */}
-      <div style={{
-        background: 'linear-gradient(to right, #2563eb, #7c3aed)',
-        color: '#ffffff',
-        padding: '32px',
-        marginBottom: '32px',
-        borderRadius: '8px'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', margin: 0 }}>Plano de Tratamento Musicoterapêutico</h1>
-          <p style={{ color: '#bfdbfe', fontSize: '18px', margin: '8px 0' }}>Modelo Profissional Completo</p>
-          <div style={{ marginTop: '16px', color: '#bfdbfe' }}>
-            <p style={{ fontSize: '14px', margin: 0 }}>Data de Emissão: {currentDate}</p>
+      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-8 mb-8 rounded-lg">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-2">Plano de Tratamento Musicoterapêutico</h1>
+          <p className="text-blue-100 text-lg">Modelo Profissional Completo</p>
+          <div className="mt-4 text-blue-100">
+            <p className="text-sm">Data de Emissão: {currentDate}</p>
           </div>
         </div>
       </div>
 
       {/* 1. Patient Identification */}
-      {renderSection("1. Identificação do Paciente", "User", (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      {renderSection("1. Identificação do Paciente", User, (
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Nome completo:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_full_name || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Nome completo:</p>
+            <p className="text-lg text-gray-800">{planData.patient_full_name || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Data de nascimento:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_birth_date ? new Date(planData.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Data de nascimento:</p>
+            <p className="text-lg text-gray-800">{planData.patient_birth_date ? new Date(planData.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Idade:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_age || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Idade:</p>
+            <p className="text-lg text-gray-800">{planData.patient_age || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Diagnóstico clínico:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.clinical_diagnosis || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Diagnóstico clínico:</p>
+            <p className="text-lg text-gray-800">{planData.clinical_diagnosis || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Responsável:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.responsible_person || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Responsável:</p>
+            <p className="text-lg text-gray-800">{planData.responsible_person || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Data de início do plano:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.plan_start_date ? new Date(planData.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium">Data de início do plano:</p>
+            <p className="text-lg text-gray-800">{planData.plan_start_date ? new Date(planData.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
           </div>
         </div>
       ), "bg-blue-50")}
 
       {/* 2. Initial Assessment */}
-      {renderSection("2. Avaliação Inicial", "FileText", (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {renderSection("2. Avaliação Inicial", FileText, (
+        <div className="space-y-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Histórico clínico e familiar relevante:</p>
-            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.clinical_family_history || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Histórico clínico e familiar relevante:</p>
+            <p className="text-gray-800 leading-relaxed">{planData.clinical_family_history || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Condições físicas, cognitivas, emocionais e sociais:</p>
-            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.physical_cognitive_conditions || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Condições físicas, cognitivas, emocionais e sociais:</p>
+            <p className="text-gray-800 leading-relaxed">{planData.physical_cognitive_conditions || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Nível de interação e comunicação:</p>
-            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.interaction_communication_level || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Nível de interação e comunicação:</p>
+            <p className="text-gray-800 leading-relaxed">{planData.interaction_communication_level || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Interesses musicais:</p>
-            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.musical_interests || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Interesses musicais:</p>
+            <p className="text-gray-800 leading-relaxed">{planData.musical_interests || 'Não informado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Comportamentos observados durante avaliação inicial:</p>
-            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.observed_behaviors || 'Não informado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Comportamentos observados durante avaliação inicial:</p>
+            <p className="text-gray-800 leading-relaxed">{planData.observed_behaviors || 'Não informado'}</p>
           </div>
         </div>
       ), "bg-green-50")}
 
       {/* 3. General Objectives */}
-      {renderSection("3. Objetivos Gerais", "Target", (
+      {renderSection("3. Objetivos Gerais", Target, (
         <div>
-          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Propósitos amplos da musicoterapia para este paciente:</p>
+          <p className="text-sm text-gray-600 font-medium mb-2">Propósitos amplos da musicoterapia para este paciente:</p>
           {renderListItems(planData.general_objectives, "Nenhum objetivo geral definido")}
         </div>
       ), "bg-purple-50")}
 
       {/* 4. Specific Objectives */}
-      {renderSection("4. Objetivos Específicos", "CheckCircle", (
+      {renderSection("4. Objetivos Específicos", CheckCircle, (
         <div>
-          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Objetivos mensuráveis e específicos:</p>
+          <p className="text-sm text-gray-600 font-medium mb-2">Objetivos mensuráveis e específicos:</p>
           {renderListItems(planData.specific_objectives, "Nenhum objetivo específico definido")}
         </div>
       ), "bg-yellow-50")}
 
       {/* 5. Musicotherapy Resources */}
-      {renderSection("5. Recursos Musicoterapêuticos", "Music", (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      {renderSection("5. Recursos Musicoterapêuticos", Music, (
+        <div className="grid grid-cols-2 gap-6">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Instrumentos musicais:</p>
+            <p className="text-sm text-gray-600 font-medium mb-2">Instrumentos musicais:</p>
             {renderListItems(planData.musical_instruments)}
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Recursos tecnológicos:</p>
+            <p className="text-sm text-gray-600 font-medium mb-2">Recursos tecnológicos:</p>
             {renderListItems(planData.technological_resources)}
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Voz e corpo:</p>
+            <p className="text-sm text-gray-600 font-medium mb-2">Voz e corpo:</p>
             {renderListItems(planData.voice_body_resources)}
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Materiais complementares:</p>
+            <p className="text-sm text-gray-600 font-medium mb-2">Materiais complementares:</p>
             {renderListItems(planData.complementary_materials)}
           </div>
         </div>
       ), "bg-orange-50")}
 
       {/* 6. Strategies and Techniques */}
-      {renderSection("6. Estratégias e Técnicas", "Activity", (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {renderSection("6. Estratégias e Técnicas", Activity, (
+        <div className="space-y-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Improvisação musical:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_improvisation || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Improvisação musical:</p>
+            <p className="text-gray-800">{planData.musical_improvisation || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Recriação musical:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_recreation || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Recriação musical:</p>
+            <p className="text-gray-800">{planData.musical_recreation || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Composição:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_composition || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Composição:</p>
+            <p className="text-gray-800">{planData.musical_composition || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Escuta receptiva:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.receptive_listening || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Escuta receptiva:</p>
+            <p className="text-gray-800">{planData.receptive_listening || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Dinâmicas rítmicas:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.rhythmic_dynamics || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Dinâmicas rítmicas:</p>
+            <p className="text-gray-800">{planData.rhythmic_dynamics || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-pink-50")}
 
       {/* 7. Frequency and Duration */}
-      {renderSection("7. Frequência e Duração", "Clock", (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+      {renderSection("7. Frequência e Duração", Clock, (
+        <div className="grid grid-cols-3 gap-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Sessões semanais:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.weekly_sessions || 0}x por semana</p>
+            <p className="text-sm text-gray-600 font-medium">Sessões semanais:</p>
+            <p className="text-lg text-gray-800">{planData.weekly_sessions || 0}x por semana</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Duração de cada sessão:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.session_duration_minutes || 0} minutos</p>
+            <p className="text-sm text-gray-600 font-medium">Duração de cada sessão:</p>
+            <p className="text-lg text-gray-800">{planData.session_duration_minutes || 0} minutos</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Período estimado:</p>
-            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.estimated_period_months || 0} meses</p>
+            <p className="text-sm text-gray-600 font-medium">Período estimado:</p>
+            <p className="text-lg text-gray-800">{planData.estimated_period_months || 0} meses</p>
           </div>
         </div>
       ), "bg-indigo-50")}
 
       {/* 8. Evaluation Criteria */}
-      {renderSection("8. Critérios de Avaliação", "BarChart", (
+      {renderSection("8. Critérios de Avaliação", BarChart, (
         <div>
-          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Parâmetros observáveis para medir evolução:</p>
+          <p className="text-sm text-gray-600 font-medium mb-2">Parâmetros observáveis para medir evolução:</p>
           {renderListItems(planData.evaluation_criteria_list, "Nenhum critério de avaliação definido")}
         </div>
       ), "bg-teal-50")}
 
       {/* 9. Therapeutic Plan in Action */}
-      {renderSection("9. Plano Terapêutico em Ação", "Users", (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {renderSection("9. Plano Terapêutico em Ação", Users, (
+        <div className="space-y-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Estrutura das sessões:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.session_structure || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Estrutura das sessões:</p>
+            <p className="text-gray-800">{planData.session_structure || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Sequência das atividades musicais propostas:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.activity_sequence || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Sequência das atividades musicais propostas:</p>
+            <p className="text-gray-800">{planData.activity_sequence || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Flexibilidade para ajustes:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.flexibility_adjustments || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Flexibilidade para ajustes:</p>
+            <p className="text-gray-800">{planData.flexibility_adjustments || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-red-50")}
 
       {/* 10. Re-evaluation and Evolution */}
-      {renderSection("10. Reavaliação e Evolução", "RefreshCw", (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {renderSection("10. Reavaliação e Evolução", RefreshCw, (
+        <div className="space-y-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Frequência da reavaliação:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.reevaluation_frequency || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Frequência da reavaliação:</p>
+            <p className="text-gray-800">{planData.reevaluation_frequency || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Registro da evolução em prontuário:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.evolution_recording || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Registro da evolução em prontuário:</p>
+            <p className="text-gray-800">{planData.evolution_recording || 'Não especificado'}</p>
           </div>
           <div>
-            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Ajustes necessários nos objetivos e técnicas:</p>
-            <p style={{ color: '#1f2937', margin: 0 }}>{planData.necessary_adjustments || 'Não especificado'}</p>
+            <p className="text-sm text-gray-600 font-medium mb-1">Ajustes necessários nos objetivos e técnicas:</p>
+            <p className="text-gray-800">{planData.necessary_adjustments || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-gray-50")}
@@ -303,18 +256,18 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
         background: '#ffffff',
         boxShadow: '0 8px 24px rgba(13, 148, 136, 0.15)'
       }}>
-        {/* Decorative 6px TEAL bar at top */}
+        {/* Decorative 8px TEAL bar at top */}
         <div style={{
-          height: '6px',
+          height: '8px',
           background: 'linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%)',
         }}></div>
 
         {/* Two-column grid with padding */}
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '32px' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '24px',
+            gap: '32px',
             alignItems: 'start'
           }}>
             
@@ -328,13 +281,13 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
             }}>
               {/* Decorative bar inside card */}
               <div style={{
-                height: '6px',
+                height: '8px',
                 background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)',
               }}></div>
 
-              <div style={{ padding: '12px' }}>
+              <div style={{ padding: '16px' }}>
                 {/* Horizontal Layout: Photo + Info */}
-                <div style={{ display: 'flex', alignItems: 'start', gap: '12px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '16px', marginBottom: '16px' }}>
                   {/* Professional Photo with blur effect */}
                   {professionalPhotoUrl && (
                     <div style={{ position: 'relative' }}>
@@ -342,17 +295,17 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                         position: 'absolute',
                         inset: 0,
                         borderRadius: '50%',
-                        filter: 'blur(4px)',
-                        opacity: 0.75,
-                        background: 'linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488)'
+                        filter: 'blur(40px)',
+                        opacity: 0.5,
+                        background: 'radial-gradient(circle, #14b8a6, #22d3ee, #0d9488)'
                       }}></div>
                       <img 
                         src={professionalPhotoUrl} 
                         alt="Professional" 
                         style={{
                           position: 'relative',
-                          width: '60px',
-                          height: '60px',
+                          width: '80px',
+                          height: '80px',
                           borderRadius: '50%',
                           objectFit: 'cover',
                           border: '3px solid #14b8a6'
@@ -364,10 +317,10 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                   {/* Professional Info */}
                   <div style={{ flex: 1 }}>
                     <div style={{ 
-                      fontSize: '14px',
+                      fontSize: '16px',
                       fontWeight: 'bold',
                       color: '#0f766e',
-                      marginBottom: '6px',
+                      marginBottom: '8px',
                       lineHeight: '1.3'
                     }}>
                       {therapistName || 'Musicoterapeuta'}
@@ -377,11 +330,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       backgroundColor: '#ccfbf1',
                       border: '1px solid #99f6e4',
                       borderRadius: '20px',
-                      padding: '3px 10px',
+                      padding: '4px 12px',
                       display: 'inline-block',
-                      marginBottom: '6px'
+                      marginBottom: '8px'
                     }}>
-                      <span style={{ fontSize: '10px', color: '#0f766e', fontWeight: '600' }}>
+                      <span style={{ fontSize: '11px', color: '#0f766e', fontWeight: '600' }}>
                         🎵 {professionalSpecialty || 'Musicoterapeuta'}
                       </span>
                     </div>
@@ -389,15 +342,15 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 </div>
 
                 {/* Contact Information */}
-                <div style={{ fontSize: '10px', color: '#374151', lineHeight: '1.6' }}>
+                <div style={{ fontSize: '12px', color: '#374151', lineHeight: '1.6' }}>
                   {professionalRegistry && (
-                    <div style={{ marginBottom: '3px' }}>
+                    <div style={{ marginBottom: '4px' }}>
                       <span style={{ marginRight: '4px' }}>📋</span>
                       {professionalRegistry}
                     </div>
                   )}
                   {professionalEmail && (
-                    <div style={{ marginBottom: '3px' }}>
+                    <div style={{ marginBottom: '4px' }}>
                       <span style={{ marginRight: '4px' }}>📧</span>
                       {professionalEmail}
                     </div>
@@ -415,8 +368,8 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
               <div style={{
                 borderTop: '1px solid #99f6e4',
                 background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
-                padding: '8px 12px',
-                marginTop: '12px'
+                padding: '12px 16px',
+                marginTop: '16px'
               }}>
                 <div style={{ 
                   display: 'flex', 
@@ -425,11 +378,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                   gap: '8px' 
                 }}>
                   <span style={{ color: '#0d9488' }}>✓</span>
-                  <span style={{ fontSize: '10px', fontWeight: '600', color: '#0f766e' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#0f766e' }}>
                     Assinatura Digital Verificada
                   </span>
                   <span style={{ color: '#0d9488' }}>🎵</span>
-                  <span style={{ fontSize: '10px', color: '#6b7280' }}>
+                  <span style={{ fontSize: '12px', color: '#6b7280' }}>
                     Sistema MuseTera
                   </span>
                 </div>
@@ -442,8 +395,8 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 <>
                   {/* Circular Stamp Container */}
                   <div style={{
-                    width: '200px',
-                    height: '200px',
+                    width: '280px',
+                    height: '280px',
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
@@ -461,31 +414,31 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                     
                     {/* Main Stamp Circle */}
                     <div style={{
-                      width: '160px',
-                      height: '160px',
+                      width: '240px',
+                      height: '240px',
                       borderRadius: '50%',
                       background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
-                      border: '3px solid #14b8a6',
+                      border: '4px solid #14b8a6',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '14px',
+                      padding: '20px',
                       boxShadow: '0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1)',
                       position: 'relative'
                     }}>
                       {/* Professional Photo in Stamp */}
                       {professionalPhotoUrl && (
                         <div style={{
-                          width: '50px',
-                          height: '50px',
+                          width: '70px',
+                          height: '70px',
                           borderRadius: '50%',
                           overflow: 'hidden',
-                          border: '2px solid transparent',
+                          border: '3px solid transparent',
                           backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6)',
                           backgroundOrigin: 'border-box',
                           backgroundClip: 'padding-box, border-box',
-                          marginBottom: '8px'
+                          marginBottom: '12px'
                         }}>
                           <img 
                             src={professionalPhotoUrl} 
@@ -501,11 +454,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       
                       {/* Professional Name */}
                       <div style={{
-                        fontSize: '12px',
+                        fontSize: '14px',
                         fontWeight: 'bold',
                         color: '#0f766e',
                         textAlign: 'center',
-                        marginBottom: '6px',
+                        marginBottom: '8px',
                         lineHeight: '1.2'
                       }}>
                         {therapistName || 'Musicoterapeuta'}
@@ -513,21 +466,21 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 
                       {/* Divider */}
                       <div style={{
-                        width: '60px',
+                        width: '80px',
                         height: '2px',
                         background: 'linear-gradient(to right, transparent, #14b8a6, transparent)',
-                        marginBottom: '6px'
+                        marginBottom: '8px'
                       }} />
 
                       {/* Specialty Badge */}
                       <div style={{
                         backgroundColor: '#ccfbf1',
                         border: '1px solid #99f6e4',
-                        borderRadius: '12px',
-                        padding: '3px 10px',
-                        marginBottom: '4px'
+                        borderRadius: '16px',
+                        padding: '4px 12px',
+                        marginBottom: '6px'
                       }}>
-                        <span style={{ fontSize: '9px', color: '#0f766e', fontWeight: '600' }}>
+                        <span style={{ fontSize: '10px', color: '#0f766e', fontWeight: '600' }}>
                           🎵 {professionalSpecialty || 'Musicoterapeuta'}
                         </span>
                       </div>
@@ -535,7 +488,7 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       {/* Registry */}
                       {professionalRegistry && (
                         <div style={{
-                          fontSize: '9px',
+                          fontSize: '11px',
                           color: '#374151',
                           fontWeight: '600'
                         }}>
@@ -547,16 +500,16 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 
                   {/* Verified Badge Below Stamp */}
                   <div style={{
-                    marginTop: '12px',
+                    marginTop: '16px',
                     background: 'linear-gradient(135deg, #0d9488, #0891b2)',
                     color: 'white',
-                    padding: '6px 16px',
+                    padding: '8px 20px',
                     borderRadius: '20px',
-                    fontSize: '10px',
+                    fontSize: '11px',
                     fontWeight: '600',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '6px',
                     boxShadow: '0 4px 12px rgba(13,148,136,0.3)'
                   }}>
                     <span>✓</span>
@@ -566,14 +519,14 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 </>
               ) : (
                 <div style={{ 
-                  width: '160px',
-                  height: '160px',
+                  width: '240px',
+                  height: '240px',
                   border: '3px dashed #14b8a6',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#6b7280',
                   backgroundColor: '#f0fdfa'
                 }}>
