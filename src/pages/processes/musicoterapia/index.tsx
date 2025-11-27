@@ -14,7 +14,8 @@ import { MusicoterapiaReportWizard } from '@/components/musicoterapia/Musicotera
 import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPreview';
 import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
 import { useReportData } from '../report/hooks/useReportData';
-import { generateStaticPDF } from '@/utils/staticPDFGenerator';
+import html2pdf from 'html2pdf.js';
+import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 
 export default function MusicoterapiaPage() {
@@ -98,6 +99,195 @@ export default function MusicoterapiaPage() {
       }
     }
   }, [patientIdFromQuery, patients, updateReportData]);
+
+  const generatePDFContent = (
+    reportDataForPDF: any, 
+    photoBase64?: string | null, 
+    stampBase64?: string | null,
+    logoUrl?: string | null
+  ) => {
+    const fields = reportDataForPDF.fieldValues || {};
+    const currentDate = new Date().toLocaleDateString('pt-BR');
+    
+    return `
+      <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; padding: 40px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #14b8a6;">
+          ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
+          <h1 style="color: #0d9488; margin: 0; font-size: 28px;">Relatório MuseTera TEA</h1>
+          <p style="color: #666; margin: 5px 0 0 0;">Musicoterapia para Transtorno do Espectro Autista</p>
+        </div>
+
+        <!-- Patient and Professional Info Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; padding: 20px; background: #f0fdfa; border-radius: 8px;">
+          <div>
+            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">📋 Dados do Paciente</h3>
+            <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.patientName || 'Não informado'}</p>
+            <p style="margin: 5px 0;"><strong>Idade:</strong> ${reportDataForPDF.patientAge || 'Não informado'}</p>
+            <p style="margin: 5px 0;"><strong>Diagnóstico:</strong> ${reportDataForPDF.patientDiagnosis || 'Não informado'}</p>
+          </div>
+          <div>
+            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">👨‍⚕️ Dados do Profissional</h3>
+            <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.professionalName || professionalData?.name || 'Não informado'}</p>
+            <p style="margin: 5px 0;"><strong>Registro:</strong> ${reportDataForPDF.professionalRegistry || professionalData?.register || 'Não informado'}</p>
+            <p style="margin: 5px 0;"><strong>Data:</strong> ${reportDataForPDF.sessionDate || currentDate}</p>
+          </div>
+        </div>
+
+        <!-- Report Sections -->
+        ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">🎯 Objetivos Terapêuticos</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 8px 0;">${obj}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.musical_techniques && fields.musical_techniques.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">🎵 Técnicas Musicais Utilizadas</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.musical_techniques.map((tech: string) => `<li style="margin: 8px 0;">${tech}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.instruments_used && fields.instruments_used.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">🎸 Instrumentos Utilizados</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.instruments_used.map((inst: string) => `<li style="margin: 8px 0;">${inst}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.session_activities && fields.session_activities.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">📝 Atividades da Sessão</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.session_activities.map((act: string) => `<li style="margin: 8px 0;">${act}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.patient_evolution && fields.patient_evolution.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">📈 Evolução do Paciente</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.patient_evolution.map((evol: string) => `<li style="margin: 8px 0;">${evol}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.recommendations && fields.recommendations.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">💡 Recomendações</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.recommendations.map((rec: string) => `<li style="margin: 8px 0;">${rec}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${fields.conclusion && fields.conclusion.length > 0 ? `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">✅ Conclusão</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${fields.conclusion.map((conc: string) => `<li style="margin: 8px 0;">${conc}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        <!-- FOOTER TEAL COM ASSINATURA E CARIMBO -->
+        <div style="margin-top: 60px; padding: 30px; background: white; border: 2px solid #14b8a6; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px;"></div>
+          
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+            <!-- Assinatura Digital Card -->
+            <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); padding: 25px; border-radius: 12px; border: 2px solid #99f6e4; position: relative;">
+              <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -25px -25px 20px -25px;"></div>
+              
+              <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
+                ${photoBase64 ? `
+                  <div style="position: relative;">
+                    <div style="position: absolute; inset: -4px; background: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); border-radius: 50%; filter: blur(8px); opacity: 0.6;"></div>
+                    <img src="${photoBase64}" alt="Foto Profissional" style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                  </div>
+                ` : ''}
+                
+                <div style="flex: 1;">
+                  <h3 style="margin: 0; color: #0d9488; font-size: 20px; font-weight: bold;">${professionalData?.name || 'Profissional'}</h3>
+                  <div style="margin-top: 8px; display: inline-block; padding: 4px 12px; background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 12px; font-size: 13px; color: #0d9488; font-weight: 600;">
+                    🎵 ${professionalData?.specialty || 'Musicoterapeuta'}
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #99f6e4;">
+                ${professionalData?.register ? `
+                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
+                    <span style="font-weight: 600;">📋 Registro:</span> ${professionalData.register}
+                  </p>
+                ` : ''}
+                ${professionalData?.email ? `
+                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
+                    <span style="font-weight: 600;">📧 Email:</span> ${professionalData.email}
+                  </p>
+                ` : ''}
+                ${professionalData?.phone ? `
+                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
+                    <span style="font-weight: 600;">📞 Telefone:</span> ${professionalData.phone}
+                  </p>
+                ` : ''}
+              </div>
+
+              <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #5eead4; text-align: center; background: linear-gradient(90deg, #f0fdfa 0%, #ecfeff 50%, #f0fdfa 100%); margin-left: -25px; margin-right: -25px; margin-bottom: -25px; padding-bottom: 15px; border-radius: 0 0 10px 10px;">
+                <p style="margin: 0; color: #0d9488; font-size: 13px; font-weight: 600;">
+                  ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
+                </p>
+              </div>
+            </div>
+
+            <!-- Carimbo Digital -->
+            ${stampBase64 ? `
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+                <div style="position: relative; width: 180px; height: 180px;">
+                  <div style="position: absolute; inset: 0; border: 3px dashed #14b8a6; border-radius: 50%; opacity: 0.3;"></div>
+                  <div style="position: absolute; inset: 8px; background: linear-gradient(135deg, #f0fdfa, #ecfeff); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border: 3px solid #5eead4; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
+                    ${photoBase64 ? `
+                      <img src="${photoBase64}" alt="Foto" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #0d9488; margin-bottom: 8px;" />
+                    ` : ''}
+                    <p style="margin: 4px 0; font-size: 12px; font-weight: bold; color: #0d9488; text-align: center; line-height: 1.2;">${professionalData?.name || ''}</p>
+                    <div style="margin: 6px 0; padding: 2px 8px; background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 8px; font-size: 9px; color: #0d9488; font-weight: 600; text-align: center;">
+                      🎵 ${professionalData?.specialty || 'Musicoterapeuta'}
+                    </div>
+                    ${professionalData?.register ? `
+                      <p style="margin: 4px 0; font-size: 9px; color: #0f766e; text-align: center;">📋 ${professionalData.register}</p>
+                    ` : ''}
+                  </div>
+                </div>
+                <div style="margin-top: 15px; padding: 6px 16px; background: linear-gradient(90deg, #f0fdfa, #ecfeff); border: 2px solid #5eead4; border-radius: 20px; font-size: 11px; color: #0d9488; font-weight: 600; text-align: center;">
+                  ✓ MuseTera Verified 🎵
+                </div>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+                <div style="width: 160px; height: 160px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+                  <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">🔖 Carimbo<br/>Digital</p>
+                </div>
+              </div>
+            `}
+          </div>
+
+          <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e0f2fe; text-align: center;">
+            <p style="margin: 0; color: #64748b; font-size: 12px;">
+              📄 Documento gerado eletronicamente pelo MuseTera em ${currentDate}
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  };
 
   const handleSaveReport = async () => {
     console.log('=== Iniciando salvamento do relatório ===');
@@ -253,25 +443,45 @@ export default function MusicoterapiaPage() {
 
     setIsExporting(true);
     try {
-      const success = await generateStaticPDF(
-        <MusicoterapiaPreview 
-          reportData={reportData as any} 
-          professionalData={professionalData} 
-        />,
-        {
-          filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 1.0
-        }
-      );
+      // Convert images to Base64
+      let photoBase64: string | null = null;
+      let stampBase64: string | null = null;
 
-      if (success) {
-        toast({
-          title: "PDF gerado!",
-          description: "Relatório exportado em PDF com sucesso.",
-        });
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      // Create temporary HTML element
+      const tempDiv = document.createElement('div');
+      tempDiv.style.padding = '40px';
+      tempDiv.style.fontFamily = 'Arial, sans-serif';
+      tempDiv.style.color = '#000';
+      tempDiv.style.backgroundColor = '#fff';
+      tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
+      
+      document.body.appendChild(tempDiv);
+
+      // PDF configuration
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Generate and download PDF
+      await html2pdf().set(opt).from(tempDiv).save();
+      
+      document.body.removeChild(tempDiv);
+
+      toast({
+        title: "PDF gerado!",
+        description: "Relatório exportado em PDF com sucesso.",
+      });
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast({
@@ -345,20 +555,19 @@ export default function MusicoterapiaPage() {
     try {
       setIsExporting(true);
       
-      // Reconstruct the data structure to match what MusicoterapiaPreview expects
+      // 1. Reconstruct report data
       const fieldValues = report.content?.field_values || {};
       
       const reportDataForPDF = {
         templateId: report.content?.template_id || 'musicoterapia-tea',
-        patientName: fieldValues.patient_name || report.content?.patient_name || '',
-        patientAge: fieldValues.patient_age || report.content?.patient_age || '',
-        patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_diagnosis || '',
+        patientName: fieldValues.patient_name || report.content?.patient_info?.name || '',
+        patientAge: fieldValues.patient_age || report.content?.patient_info?.age || '',
+        patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_info?.diagnosis || '',
         professionalName: fieldValues.professional_name || professionalData?.name || '',
         professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
-        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || '',
+        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
         sessionDate: fieldValues.session_date || report.content?.session_date || '',
         fieldValues: {
-          // Map all the field values from the saved report
           therapeutic_objectives: fieldValues.therapeutic_objectives || [],
           musical_techniques: fieldValues.musical_techniques || [],
           instruments_used: fieldValues.instruments_used || [],
@@ -378,34 +587,49 @@ export default function MusicoterapiaPage() {
           logo_url: fieldValues.logo_url || ''
         },
         additionalObservations: fieldValues.additional_observations || report.content?.additional_observations || '',
-        signature: fieldValues.digital_signature || fieldValues.professional_name || professionalData?.name || ''
+        signature: fieldValues.digital_signature || professionalData?.name || ''
       };
 
-      const success = await generateStaticPDF(
-        <MusicoterapiaPreview 
-          reportData={reportDataForPDF as any} 
-          professionalData={professionalData} 
-        />,
-        {
-          filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName.replace(/\s+/g, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 1.0
-        }
-      );
+      // 2. Convert images to Base64
+      let photoBase64: string | null = null;
+      let stampBase64: string | null = null;
 
-      if (success) {
-        toast({
-          title: "PDF gerado com sucesso!",
-          description: "O relatório foi baixado automaticamente.",
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro ao gerar PDF",
-          description: "Ocorreu um erro durante a geração do PDF.",
-        });
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      // 3. Create temporary HTML element
+      const tempDiv = document.createElement('div');
+      tempDiv.style.padding = '40px';
+      tempDiv.style.fontFamily = 'Arial, sans-serif';
+      tempDiv.style.color = '#000';
+      tempDiv.style.backgroundColor = '#fff';
+      tempDiv.innerHTML = generatePDFContent(reportDataForPDF, photoBase64, stampBase64);
+      
+      document.body.appendChild(tempDiv);
+
+      // 4. PDF configuration
+      const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName?.replace(/\s+/g, '_') || 'paciente'}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // 5. Generate and download PDF
+      await html2pdf().set(opt).from(tempDiv).save();
+      
+      document.body.removeChild(tempDiv);
+      
+      toast({
+        title: "PDF gerado com sucesso!",
+        description: "O relatório foi baixado automaticamente.",
+      });
+
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast({
