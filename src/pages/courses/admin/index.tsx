@@ -26,6 +26,26 @@ import {
 } from "@/hooks/useCourses";
 import { Course, CourseModule, CourseLesson } from "@/types/courses";
 import { toast } from "sonner";
+import { getYouTubeId } from "@/utils/youtubeUtils";
+
+// Convert YouTube URL to thumbnail URL
+const convertYouTubeUrlToThumbnail = (url: string | undefined): string | undefined => {
+  if (!url) return undefined;
+  
+  // If already a thumbnail URL, return as is
+  if (url.includes('img.youtube.com') || url.includes('i.ytimg.com')) {
+    return url;
+  }
+  
+  // Try to extract YouTube ID and convert to thumbnail
+  const youtubeId = getYouTubeId(url);
+  if (youtubeId) {
+    return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+  }
+  
+  // Return original if not a YouTube URL
+  return url;
+};
 
 export default function CourseAdminPage() {
   const navigate = useNavigate();
@@ -94,10 +114,16 @@ export default function CourseAdminPage() {
       return;
     }
 
+    // Auto-convert YouTube URL to thumbnail
+    const courseData = {
+      ...editingCourse,
+      thumbnail_url: convertYouTubeUrlToThumbnail(editingCourse.thumbnail_url)
+    };
+
     if (editingCourse.id) {
-      await updateCourse.mutateAsync(editingCourse as Course & { id: string });
+      await updateCourse.mutateAsync(courseData as Course & { id: string });
     } else {
-      const result = await createCourse.mutateAsync(editingCourse);
+      const result = await createCourse.mutateAsync(courseData);
       setSelectedCourseId(result.id);
     }
     setCourseDialogOpen(false);

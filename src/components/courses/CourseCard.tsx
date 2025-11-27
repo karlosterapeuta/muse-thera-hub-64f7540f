@@ -13,12 +13,13 @@ interface CourseCardProps {
 export function CourseCard({ course, onClick }: CourseCardProps) {
   const hasStarted = course.progressPercentage > 0;
   const isComplete = course.progressPercentage === 100;
+  const hasContent = course.totalLessons > 0;
 
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/30">
       <div 
         className="relative aspect-video overflow-hidden bg-muted"
-        onClick={onClick}
+        onClick={hasContent ? onClick : undefined}
       >
         {course.thumbnail_url ? (
           <img
@@ -40,16 +41,20 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
         </div>
 
         {/* Status Badge */}
-        {hasStarted && (
-          <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3">
+          {!hasContent ? (
+            <Badge variant="outline" className="bg-background/80 text-muted-foreground border-muted-foreground/30">
+              Sem conteúdo
+            </Badge>
+          ) : hasStarted ? (
             <Badge 
               variant={isComplete ? "default" : "secondary"}
               className={isComplete ? "bg-emerald-500 hover:bg-emerald-600" : "bg-amber-500 hover:bg-amber-600 text-white"}
             >
               {isComplete ? "Concluído" : "Em andamento"}
             </Badge>
-          </div>
-        )}
+          ) : null}
+        </div>
 
         {/* Progress bar at bottom */}
         {hasStarted && (
@@ -62,7 +67,7 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
         )}
       </div>
 
-      <CardContent className="p-4 space-y-3" onClick={onClick}>
+      <CardContent className="p-4 space-y-3" onClick={hasContent ? onClick : undefined}>
         <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
           {course.title}
         </h3>
@@ -111,13 +116,24 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
 
         {/* Action Button */}
         <div className="pt-2">
-          <Button 
-            className="w-full gap-2"
-            variant={hasStarted ? "default" : "outline"}
-          >
-            <Play className="h-4 w-4" />
-            {isComplete ? "Rever curso" : hasStarted ? "Continuar" : "Começar"}
-          </Button>
+          {hasContent ? (
+            <Button 
+              className="w-full gap-2"
+              variant={hasStarted ? "default" : "outline"}
+              onClick={onClick}
+            >
+              <Play className="h-4 w-4" />
+              {isComplete ? "Rever curso" : hasStarted ? "Continuar" : "Começar"}
+            </Button>
+          ) : (
+            <Button 
+              className="w-full gap-2"
+              variant="outline"
+              disabled
+            >
+              Em breve
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
