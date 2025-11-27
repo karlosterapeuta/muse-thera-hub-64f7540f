@@ -98,7 +98,7 @@ export default function AnamnesisFormWrapper({
     try {
       console.log("🔍 Verificando colunas disponíveis na tabela anamnesis...");
       
-      // Tentar consultar a estrutura da tabela diretamente
+      // Consultar um registro para obter as colunas reais
       const { data, error } = await supabase
         .from("anamnesis")
         .select("*")
@@ -111,11 +111,18 @@ export default function AnamnesisFormWrapper({
         return basicDatabaseFields;
       }
 
-      // Se a consulta funcionou, assumimos que todas as colunas estão disponíveis
-      const allFields = [...basicDatabaseFields, ...optionalDatabaseFields];
-      console.log("✅ Todas as colunas parecem estar disponíveis:", allFields.length);
-      columnCheckCache = allFields;
-      return allFields;
+      // CORREÇÃO: Se temos dados, extrair colunas do objeto retornado
+      if (data && data.length > 0) {
+        const actualColumns = Object.keys(data[0]);
+        console.log("✅ Colunas reais detectadas do banco:", actualColumns.length, actualColumns);
+        columnCheckCache = actualColumns;
+        return actualColumns;
+      }
+
+      // Se não há dados, usar apenas os campos básicos (que sabemos que existem)
+      console.log("ℹ️ Tabela vazia, usando campos básicos:", basicDatabaseFields.length);
+      columnCheckCache = basicDatabaseFields;
+      return basicDatabaseFields;
 
     } catch (error) {
       console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
