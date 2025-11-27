@@ -447,21 +447,28 @@ export default function MusicoterapiaPage() {
 
       // Create temporary HTML element
       const tempDiv = document.createElement('div');
-      tempDiv.style.padding = '40px';
-      tempDiv.style.fontFamily = 'Arial, sans-serif';
-      tempDiv.style.color = '#000';
-      tempDiv.style.backgroundColor = '#fff';
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
-      // PDF configuration
+      // PDF configuration - matching EvaluationTextPDF exactly
       const opt = {
-        margin: [20, 20, 20, 20],
+        margin: [10, 10],
         filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       // Generate and download PDF

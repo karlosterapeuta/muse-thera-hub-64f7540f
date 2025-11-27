@@ -51,25 +51,28 @@ export function FinalReviewSection({
 
       // Criar um elemento HTML temporário com o conteúdo do relatório
       const tempDiv = document.createElement('div');
-      tempDiv.style.width = '210mm';
-      tempDiv.style.minHeight = '297mm';
-      tempDiv.style.padding = '20mm';
-      tempDiv.style.fontFamily = 'Arial, sans-serif';
-      tempDiv.style.color = '#1a1a1a';
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
       tempDiv.style.backgroundColor = '#ffffff';
-      tempDiv.style.fontSize = '11pt';
-      tempDiv.style.lineHeight = '1.6';
       tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
       
-      // Configurações do PDF
+      // Configurações do PDF - matching EvaluationTextPDF exactly
       const opt = {
-        margin: [20, 20, 20, 20],
+        margin: [10, 10],
         filename: `relatorio-musicoterapia-${reportData.patientName?.replace(/\s+/g, '-').toLowerCase() || 'paciente'}-${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       // Gerar e baixar o PDF
@@ -169,11 +172,12 @@ export function FinalReviewSection({
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
     return `
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #0f766e; padding-bottom: 20px;">
-        ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
-        <h1 style="margin: 0 0 8px 0; color: #0f766e; font-size: 22pt; font-weight: bold;">Relatorio MuseTera TEA</h1>
-        <p style="margin: 5px 0 0 0; color: #666; font-size: 12pt;">Musicoterapia para Transtorno do Espectro Autista</p>
-      </div>
+      <div style="width: 210mm; min-height: 297mm; padding: 20mm; background-color: #ffffff; font-family: Arial, sans-serif; color: #1a1a1a; font-size: 11pt; line-height: 1.6;">
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #0f766e; padding-bottom: 20px;">
+          ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
+          <h1 style="margin: 0 0 8px 0; color: #0f766e; font-size: 22pt; font-weight: bold;">Relatorio MuseTera TEA</h1>
+          <p style="margin: 5px 0 0 0; color: #666; font-size: 12pt;">Musicoterapia para Transtorno do Espectro Autista</p>
+        </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px;">
         <div>
@@ -313,6 +317,7 @@ export function FinalReviewSection({
             </div>
           </div>
         </div>
+      </div>
       </div>
     `;
   };
