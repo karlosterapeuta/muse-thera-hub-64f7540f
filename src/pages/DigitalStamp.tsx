@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download, User, Camera, Check, Save, Music, FileText, Mail, Phone, CheckCircle2 } from 'lucide-react';
+import { User, Camera, Check, Save, Music, FileText, Mail, Phone, CheckCircle2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
@@ -27,8 +27,6 @@ export default function DigitalStamp() {
   const [photoUrl, setPhotoUrl] = useState<string>('');
   const [signatureQrDataUrl, setSignatureQrDataUrl] = useState<string>('');
   const [stampQrDataUrl, setStampQrDataUrl] = useState<string>('');
-  const [isGeneratingSignature, setIsGeneratingSignature] = useState(false);
-  const [isGeneratingStamp, setIsGeneratingStamp] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const defaultTexts = {
@@ -186,44 +184,6 @@ export default function DigitalStamp() {
     }
   };
 
-  const downloadElementAsPng = async (
-    elementId: string,
-    filename: string,
-    setLoading: (loading: boolean) => void
-  ) => {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-
-    setLoading(true);
-    try {
-      const canvas = await html2canvas(element, {
-        backgroundColor: '#ffffff',
-        scale: 4,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        imageTimeout: 0,
-        removeContainer: true,
-      });
-      
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.download = filename;
-          link.href = url;
-          link.click();
-          URL.revokeObjectURL(url);
-          toast.success('Download realizado com sucesso!');
-        }
-      }, 'image/png', 1.0);
-    } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-      toast.error('Erro ao gerar a imagem. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const saveToDatabase = async () => {
     if (!professionalData?.id) {
@@ -638,34 +598,6 @@ export default function DigitalStamp() {
                 {isSaving ? 'Salvando...' : 'Salvar Assinatura e Carimbo'}
               </Button>
               
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  onClick={() =>
-                    downloadElementAsPng(
-                      'signaturePreview',
-                      'assinatura-digital.png',
-                      setIsGeneratingSignature
-                    )
-                  }
-                  disabled={isGeneratingSignature}
-                  variant="outline"
-                  className="w-full h-10 sm:h-11 text-sm sm:text-base"
-                >
-                  <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  {isGeneratingSignature ? 'Gerando...' : 'Baixar Assinatura'}
-                </Button>
-                <Button
-                  onClick={() =>
-                    downloadElementAsPng('stampPreview', 'carimbo-digital.png', setIsGeneratingStamp)
-                  }
-                  disabled={isGeneratingStamp}
-                  variant="outline"
-                  className="w-full h-10 sm:h-11 text-sm sm:text-base"
-                >
-                  <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  {isGeneratingStamp ? 'Gerando...' : 'Baixar Carimbo'}
-                </Button>
-              </div>
             </div>
           </Card>
         </div>
