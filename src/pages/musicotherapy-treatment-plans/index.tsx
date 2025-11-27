@@ -414,8 +414,6 @@ export default function MusicotherapyTreatmentPlans() {
         planId={viewingPlanId}
         open={!!viewingPlanId}
         onClose={() => setViewingPlanId(null)}
-        onDownloadPDF={handleDownloadPDF}
-        isDownloading={isDownloading === viewingPlanId}
       />
     </div>
   );
