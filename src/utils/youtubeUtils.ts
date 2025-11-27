@@ -14,6 +14,7 @@ export const getYouTubeId = (url: string): string | null => {
     /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/, // youtube.com/watch?v= standard URL
     /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/, // youtube.com/v/ alternative format
     /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/, // youtube.com/embed/ embed format
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/, // youtube.com/shorts/ YouTube Shorts
     /[?&]v=([a-zA-Z0-9_-]{11})/ // More general pattern as fallback
   ];
   
