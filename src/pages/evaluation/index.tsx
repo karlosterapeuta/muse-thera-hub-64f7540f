@@ -553,6 +553,7 @@ export default function Evaluation() {
   };
 
   const handleGenerateParametersPDF = async () => {
+    let loadingToast: string | number | undefined;
     try {
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
@@ -580,7 +581,7 @@ export default function Evaluation() {
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      toast.loading("Gerando PDF de Parâmetros e Gráficos...");
+      loadingToast = toast.loading("Gerando PDF de Parâmetros e Gráficos...");
 
       const opt = {
         margin: [10, 10],
@@ -604,14 +605,15 @@ export default function Evaluation() {
       
       document.body.removeChild(container);
       
-      toast.success("PDF de Parâmetros e Gráficos gerado com sucesso!");
+      toast.success("PDF de Parâmetros e Gráficos gerado com sucesso!", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
     }
   };
 
   const handleGenerateMuseteraPDF = async () => {
+    let loadingToast: string | number | undefined;
     try {
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
@@ -668,7 +670,7 @@ export default function Evaluation() {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      toast.loading("Gerando Relatório MuseTera Aprimorado...");
+      loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
 
       const opt = {
         margin: [8, 8],
@@ -694,10 +696,10 @@ export default function Evaluation() {
       
       document.body.removeChild(container);
       
-      toast.success("Relatório MuseTera Aprimorado gerado com sucesso!");
+      toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
     }
   };
 
