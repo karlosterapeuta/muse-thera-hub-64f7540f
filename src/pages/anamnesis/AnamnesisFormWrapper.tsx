@@ -448,11 +448,11 @@ export default function AnamnesisFormWrapper({
       const patient = patients.find(p => p.id === selectedPatient);
       const patientName = patient?.name || "Paciente";
 
-      // Get professional data
+      // Get professional data - use user_id since professionalId is the auth user ID
       const { data: professionalData, error: profError } = await supabase
         .from("professionals")
         .select("*")
-        .eq("id", professionalId)
+        .eq("user_id", professionalId)
         .single();
 
       let professional = professionalData;
