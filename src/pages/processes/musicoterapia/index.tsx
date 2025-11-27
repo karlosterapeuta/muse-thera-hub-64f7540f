@@ -205,8 +205,8 @@ export default function MusicoterapiaPage() {
           
           <!-- Seção Principal - padding 32px -->
           <div style="padding: 32px;">
-            <!-- GRID 1fr 1fr -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+            <!-- GRID 1.5fr 1fr - Mais espaço para assinatura -->
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; align-items: start;">
               
               <!-- ESQUERDA: Card de Assinatura -->
               <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
@@ -227,29 +227,28 @@ export default function MusicoterapiaPage() {
                     ` : ''}
                     
                     <!-- Info do Profissional -->
-                    <div style="flex: 1;">
-                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3;">${professionalData?.name || 'Profissional'}</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
                       <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block;">
-                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">&#9835; ${professionalData?.specialty || 'Musicoterapeuta'}</span>
                       </div>
                     </div>
                   </div>
                   
                   <!-- Contatos -->
-                  <div style="font-size: 12px; color: #374151; line-height: 1.6;">
-                    ${professionalData?.register ? `<div style="margin-bottom: 4px;"><span>📋</span> ${professionalData.register}</div>` : ''}
-                    ${professionalData?.email ? `<div style="margin-bottom: 4px;"><span>📧</span> ${professionalData.email}</div>` : ''}
-                    ${professionalData?.phone ? `<div><span>📞</span> ${professionalData.phone}</div>` : ''}
+                  <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+                    ${professionalData?.register ? `<div style="margin-bottom: 6px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
+                    ${professionalData?.email ? `<div style="margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
+                    ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
                   </div>
                 </div>
                 
                 <!-- Verification Footer -->
                 <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px;">
                   <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span style="color: #0d9488;">✓</span>
+                    <span style="color: #0d9488; font-size: 14px;">&#10004;</span>
                     <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
-                    <span style="color: #0d9488;">🎵</span>
-                    <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
+                    <span style="font-size: 12px; color: #6b7280;">| Sistema MuseTera</span>
                   </div>
                 </div>
               </div>
@@ -278,14 +277,14 @@ export default function MusicoterapiaPage() {
                       ` : ''}
                       
                       <!-- Nome -->
-                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; max-width: 180px;">${professionalData?.name || 'Profissional'}</div>
                       
                       <!-- Divider 80px gradient -->
                       <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
                       
                       <!-- Specialty Badge -->
                       <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
-                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">&#9835; ${professionalData?.specialty || 'Musicoterapeuta'}</span>
                       </div>
                       
                       <!-- Registry -->
@@ -295,9 +294,8 @@ export default function MusicoterapiaPage() {
                   
                   <!-- Verified Badge GRADIENT -->
                   <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
-                    <span>✓</span>
+                    <span>&#10004;</span>
                     <span>MuseTera Verified</span>
-                    <span>🎵</span>
                   </div>
                 ` : `
                   <div style="width: 280px; height: 280px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
