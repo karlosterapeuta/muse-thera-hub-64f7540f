@@ -482,10 +482,11 @@ export default function AnamnesisFormWrapper({
       let professionalPhotoBase64: string | null = null;
       let digitalStampBase64: string | null = null;
 
-      if (professional?.avatar_url) {
+      if (professional?.stamp_photo_url || professional?.avatar_url) {
         try {
-          console.log("🖼️ Convertendo foto do profissional para Base64...");
-          professionalPhotoBase64 = await imageUrlToBase64(professional.avatar_url);
+          const photoUrl = professional.stamp_photo_url || professional.avatar_url;
+          console.log("🖼️ Convertendo foto do profissional para Base64...", photoUrl);
+          professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
         } catch (e) {
           console.warn("⚠️ Não foi possível converter foto para Base64:", e);
         }
