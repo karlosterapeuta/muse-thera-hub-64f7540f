@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Menu } from "lucide-react";
+import { ArrowLeft, Menu, BookOpen } from "lucide-react";
 import { CourseSidebar } from "@/components/courses/CourseSidebar";
 import { CoursePlayer } from "@/components/courses/CoursePlayer";
 import { useCourse } from "@/hooks/useCourses";
@@ -146,8 +146,19 @@ export default function CoursePlayerPage() {
             canNavigateNext={canNavigateNext}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground">Este curso ainda não tem aulas</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+              <BookOpen className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Curso sem conteúdo</h2>
+              <p className="text-muted-foreground max-w-md">
+                Este curso ainda não possui aulas disponíveis. Volte em breve!
+              </p>
+            </div>
+            <Button onClick={() => navigate("/courses")} variant="outline">
+              Voltar para Cursos
+            </Button>
           </div>
         )}
       </div>
