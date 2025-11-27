@@ -3,23 +3,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Download, X, User, FileText, Target, Music, Clock, CheckCircle, Activity, BarChart, Users, RefreshCw } from 'lucide-react';
+import { X, User, FileText, Target, Music, Clock, CheckCircle, Activity, BarChart, Users, RefreshCw } from 'lucide-react';
 import { useSingleTreatmentPlan } from '@/hooks/useSingleTreatmentPlan';
 
 interface TreatmentPlanViewModalProps {
   planId: string | null;
   open: boolean;
   onClose: () => void;
-  onDownloadPDF: (planId: string) => void;
-  isDownloading: boolean;
 }
 
 export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
   planId,
   open,
   onClose,
-  onDownloadPDF,
-  isDownloading
 }) => {
   const { data: plan, isLoading } = useSingleTreatmentPlan(planId);
 
@@ -65,8 +61,8 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
-        <DialogHeader className="flex-shrink-0">
+      <DialogContent className="w-full max-w-4xl h-[90vh] sm:h-[85vh] flex flex-col p-0">
+        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b">
           <div className="flex items-center justify-between">
             <div>
               <DialogTitle className="text-xl">
@@ -86,7 +82,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 overflow-y-auto px-4 sm:px-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -95,7 +91,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
             <div className="space-y-2 py-4">
               {/* 1. Patient Identification */}
               {renderSection("1. Identificação do Paciente", User, (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Nome completo:</p>
                     <p className="text-sm font-medium">{plan.patient_full_name || 'Não informado'}</p>
@@ -161,7 +157,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
 
               {/* 5. Musicotherapy Resources */}
               {renderSection("5. Recursos Musicoterapêuticos", Music, (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Instrumentos musicais:</p>
                     {renderListItems(plan.musical_instruments)}
@@ -205,7 +201,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
 
               {/* 7. Frequency and Duration */}
               {renderSection("7. Frequência e Duração", Clock, (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Sessões semanais:</p>
                     <p className="text-sm font-medium">{plan.weekly_sessions || 0}x por semana</p>
@@ -269,17 +265,10 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
           )}
         </ScrollArea>
 
-        <DialogFooter className="flex-shrink-0 gap-2">
-          <Button variant="outline" onClick={onClose}>
+        <DialogFooter className="flex-shrink-0 p-4 sm:p-6 border-t">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             <X className="h-4 w-4 mr-2" />
             Fechar
-          </Button>
-          <Button 
-            onClick={() => planId && onDownloadPDF(planId)}
-            disabled={isDownloading || !planId}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {isDownloading ? 'Gerando PDF...' : 'Baixar PDF'}
           </Button>
         </DialogFooter>
       </DialogContent>
