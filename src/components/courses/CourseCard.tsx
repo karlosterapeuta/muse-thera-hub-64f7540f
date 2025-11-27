@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Play, Clock, BookOpen } from "lucide-react";
-import { CourseWithProgress } from "@/types/courses";
+import { Play, Clock, BookOpen, Layers } from "lucide-react";
+import { CourseWithProgress, formatDuration } from "@/types/courses";
+import { Badge } from "@/components/ui/badge";
 
 interface CourseCardProps {
   course: CourseWithProgress;
@@ -11,6 +12,7 @@ interface CourseCardProps {
 
 export function CourseCard({ course, onClick }: CourseCardProps) {
   const hasStarted = course.progressPercentage > 0;
+  const isComplete = course.progressPercentage === 100;
 
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/30">
@@ -37,12 +39,24 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Status Badge */}
+        {hasStarted && (
+          <div className="absolute top-3 left-3">
+            <Badge 
+              variant={isComplete ? "default" : "secondary"}
+              className={isComplete ? "bg-emerald-500 hover:bg-emerald-600" : "bg-amber-500 hover:bg-amber-600 text-white"}
+            >
+              {isComplete ? "Concluído" : "Em andamento"}
+            </Badge>
+          </div>
+        )}
+
+        {/* Progress bar at bottom */}
         {hasStarted && (
           <div className="absolute bottom-0 left-0 right-0">
             <Progress 
               value={course.progressPercentage} 
-              className="h-1 rounded-none bg-black/30"
+              className="h-1.5 rounded-none bg-black/30"
             />
           </div>
         )}
@@ -59,45 +73,52 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
           </p>
         )}
 
-        {course.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {course.description}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        {/* Course Stats - Hotmart Style */}
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Layers className="h-4 w-4" />
+            {course.totalModules} {course.totalModules === 1 ? "módulo" : "módulos"}
+          </span>
+          <span className="flex items-center gap-1">
+            <BookOpen className="h-4 w-4" />
+            {course.totalLessons} {course.totalLessons === 1 ? "aula" : "aulas"}
+          </span>
+          {course.totalDurationMinutes > 0 && (
             <span className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              {course.totalLessons} aulas
+              <Clock className="h-4 w-4" />
+              {formatDuration(course.totalDurationMinutes)}
             </span>
-          </div>
-
-          <Button 
-            size="sm" 
-            variant={hasStarted ? "default" : "outline"}
-            className="gap-2"
-          >
-            {hasStarted ? (
-              <>
-                <Play className="h-4 w-4" />
-                Continuar
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                Começar
-              </>
-            )}
-          </Button>
+          )}
         </div>
 
-        {hasStarted && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Progresso:</span>
-            <span className="font-medium text-primary">{Math.round(course.progressPercentage)}%</span>
+        {/* Progress Section */}
+        {hasStarted ? (
+          <div className="space-y-2 pt-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                {course.completedLessons}/{course.totalLessons} aulas
+              </span>
+              <span className="font-medium text-primary">
+                {Math.round(course.progressPercentage)}%
+              </span>
+            </div>
+            <Progress 
+              value={course.progressPercentage} 
+              className="h-2"
+            />
           </div>
-        )}
+        ) : null}
+
+        {/* Action Button */}
+        <div className="pt-2">
+          <Button 
+            className="w-full gap-2"
+            variant={hasStarted ? "default" : "outline"}
+          >
+            <Play className="h-4 w-4" />
+            {isComplete ? "Rever curso" : hasStarted ? "Continuar" : "Começar"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
