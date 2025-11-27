@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,10 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, Plus, Pencil, Trash2, GripVertical, Video, BookOpen, Settings } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, GripVertical, Video, BookOpen, Settings, Loader2, ShieldAlert } from "lucide-react";
+import { useAdmin } from "@/hooks/use-admin";
 import { 
   useCourses, 
   useCreateCourse, 
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 
 export default function CourseAdminPage() {
   const navigate = useNavigate();
+  const { data: isAdmin, isLoading: isCheckingAdmin } = useAdmin();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [courseDialogOpen, setCourseDialogOpen] = useState(false);
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
@@ -48,6 +50,42 @@ export default function CourseAdminPage() {
   const createLesson = useCreateLesson();
   const updateLesson = useUpdateLesson();
   const deleteLesson = useDeleteLesson();
+
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!isCheckingAdmin && !isAdmin) {
+      toast.error("Acesso restrito a administradores");
+      navigate("/courses");
+    }
+  }, [isAdmin, isCheckingAdmin, navigate]);
+
+  // Show loading while checking admin status
+  if (isCheckingAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Verificando permissões...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <ShieldAlert className="h-16 w-16 text-destructive" />
+          <h2 className="text-xl font-semibold">Acesso Restrito</h2>
+          <p className="text-muted-foreground">Apenas administradores podem acessar esta página.</p>
+          <Button onClick={() => navigate("/courses")} variant="outline">
+            Voltar para Cursos
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Course handlers
   const handleSaveCourse = async () => {
