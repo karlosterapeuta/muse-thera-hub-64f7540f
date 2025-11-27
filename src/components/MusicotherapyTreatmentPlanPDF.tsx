@@ -256,18 +256,18 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
         background: '#ffffff',
         boxShadow: '0 8px 24px rgba(13, 148, 136, 0.15)'
       }}>
-        {/* Decorative 8px TEAL bar at top */}
+        {/* Decorative 6px TEAL bar at top */}
         <div style={{
-          height: '8px',
+          height: '6px',
           background: 'linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%)',
         }}></div>
 
         {/* Two-column grid with padding */}
-        <div style={{ padding: '32px' }}>
+        <div style={{ padding: '20px' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '32px',
+            gap: '24px',
             alignItems: 'start'
           }}>
             
@@ -281,13 +281,13 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
             }}>
               {/* Decorative bar inside card */}
               <div style={{
-                height: '8px',
+                height: '6px',
                 background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)',
               }}></div>
 
-              <div style={{ padding: '16px' }}>
+              <div style={{ padding: '12px' }}>
                 {/* Horizontal Layout: Photo + Info */}
-                <div style={{ display: 'flex', alignItems: 'start', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '12px', marginBottom: '12px' }}>
                   {/* Professional Photo with blur effect */}
                   {professionalPhotoUrl && (
                     <div style={{ position: 'relative' }}>
@@ -304,8 +304,8 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                         alt="Professional" 
                         style={{
                           position: 'relative',
-                          width: '80px',
-                          height: '80px',
+                          width: '60px',
+                          height: '60px',
                           borderRadius: '50%',
                           objectFit: 'cover',
                           border: '3px solid #14b8a6'
@@ -317,10 +317,10 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                   {/* Professional Info */}
                   <div style={{ flex: 1 }}>
                     <div style={{ 
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: 'bold',
                       color: '#0f766e',
-                      marginBottom: '8px',
+                      marginBottom: '6px',
                       lineHeight: '1.3'
                     }}>
                       {therapistName || 'Musicoterapeuta'}
@@ -330,11 +330,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       backgroundColor: '#ccfbf1',
                       border: '1px solid #99f6e4',
                       borderRadius: '20px',
-                      padding: '4px 12px',
+                      padding: '3px 10px',
                       display: 'inline-block',
-                      marginBottom: '8px'
+                      marginBottom: '6px'
                     }}>
-                      <span style={{ fontSize: '11px', color: '#0f766e', fontWeight: '600' }}>
+                      <span style={{ fontSize: '10px', color: '#0f766e', fontWeight: '600' }}>
                         🎵 {professionalSpecialty || 'Musicoterapeuta'}
                       </span>
                     </div>
@@ -342,15 +342,15 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 </div>
 
                 {/* Contact Information */}
-                <div style={{ fontSize: '12px', color: '#374151', lineHeight: '1.6' }}>
+                <div style={{ fontSize: '10px', color: '#374151', lineHeight: '1.6' }}>
                   {professionalRegistry && (
-                    <div style={{ marginBottom: '4px' }}>
+                    <div style={{ marginBottom: '3px' }}>
                       <span style={{ marginRight: '4px' }}>📋</span>
                       {professionalRegistry}
                     </div>
                   )}
                   {professionalEmail && (
-                    <div style={{ marginBottom: '4px' }}>
+                    <div style={{ marginBottom: '3px' }}>
                       <span style={{ marginRight: '4px' }}>📧</span>
                       {professionalEmail}
                     </div>
@@ -368,8 +368,8 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
               <div style={{
                 borderTop: '1px solid #99f6e4',
                 background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
-                padding: '12px 16px',
-                marginTop: '16px'
+                padding: '8px 12px',
+                marginTop: '12px'
               }}>
                 <div style={{ 
                   display: 'flex', 
@@ -378,11 +378,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                   gap: '8px' 
                 }}>
                   <span style={{ color: '#0d9488' }}>✓</span>
-                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#0f766e' }}>
+                  <span style={{ fontSize: '10px', fontWeight: '600', color: '#0f766e' }}>
                     Assinatura Digital Verificada
                   </span>
                   <span style={{ color: '#0d9488' }}>🎵</span>
-                  <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                  <span style={{ fontSize: '10px', color: '#6b7280' }}>
                     Sistema MuseTera
                   </span>
                 </div>
@@ -395,8 +395,8 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 <>
                   {/* Circular Stamp Container */}
                   <div style={{
-                    width: '280px',
-                    height: '280px',
+                    width: '200px',
+                    height: '200px',
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
@@ -414,31 +414,31 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                     
                     {/* Main Stamp Circle */}
                     <div style={{
-                      width: '240px',
-                      height: '240px',
+                      width: '160px',
+                      height: '160px',
                       borderRadius: '50%',
                       background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
-                      border: '4px solid #14b8a6',
+                      border: '3px solid #14b8a6',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '20px',
+                      padding: '14px',
                       boxShadow: '0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1)',
                       position: 'relative'
                     }}>
                       {/* Professional Photo in Stamp */}
                       {professionalPhotoUrl && (
                         <div style={{
-                          width: '70px',
-                          height: '70px',
+                          width: '50px',
+                          height: '50px',
                           borderRadius: '50%',
                           overflow: 'hidden',
-                          border: '3px solid transparent',
+                          border: '2px solid transparent',
                           backgroundImage: 'linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6)',
                           backgroundOrigin: 'border-box',
                           backgroundClip: 'padding-box, border-box',
-                          marginBottom: '12px'
+                          marginBottom: '8px'
                         }}>
                           <img 
                             src={professionalPhotoUrl} 
@@ -454,11 +454,11 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       
                       {/* Professional Name */}
                       <div style={{
-                        fontSize: '14px',
+                        fontSize: '12px',
                         fontWeight: 'bold',
                         color: '#0f766e',
                         textAlign: 'center',
-                        marginBottom: '8px',
+                        marginBottom: '6px',
                         lineHeight: '1.2'
                       }}>
                         {therapistName || 'Musicoterapeuta'}
@@ -466,21 +466,21 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 
                       {/* Divider */}
                       <div style={{
-                        width: '80px',
+                        width: '60px',
                         height: '2px',
                         background: 'linear-gradient(to right, transparent, #14b8a6, transparent)',
-                        marginBottom: '8px'
+                        marginBottom: '6px'
                       }} />
 
                       {/* Specialty Badge */}
                       <div style={{
                         backgroundColor: '#ccfbf1',
                         border: '1px solid #99f6e4',
-                        borderRadius: '16px',
-                        padding: '4px 12px',
-                        marginBottom: '6px'
+                        borderRadius: '12px',
+                        padding: '3px 10px',
+                        marginBottom: '4px'
                       }}>
-                        <span style={{ fontSize: '10px', color: '#0f766e', fontWeight: '600' }}>
+                        <span style={{ fontSize: '9px', color: '#0f766e', fontWeight: '600' }}>
                           🎵 {professionalSpecialty || 'Musicoterapeuta'}
                         </span>
                       </div>
@@ -488,7 +488,7 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                       {/* Registry */}
                       {professionalRegistry && (
                         <div style={{
-                          fontSize: '11px',
+                          fontSize: '9px',
                           color: '#374151',
                           fontWeight: '600'
                         }}>
@@ -500,16 +500,16 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 
                   {/* Verified Badge Below Stamp */}
                   <div style={{
-                    marginTop: '16px',
+                    marginTop: '12px',
                     background: 'linear-gradient(135deg, #0d9488, #0891b2)',
                     color: 'white',
-                    padding: '8px 20px',
+                    padding: '6px 16px',
                     borderRadius: '20px',
-                    fontSize: '11px',
+                    fontSize: '10px',
                     fontWeight: '600',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     boxShadow: '0 4px 12px rgba(13,148,136,0.3)'
                   }}>
                     <span>✓</span>
@@ -519,14 +519,14 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                 </>
               ) : (
                 <div style={{ 
-                  width: '240px',
-                  height: '240px',
+                  width: '160px',
+                  height: '160px',
                   border: '3px dashed #14b8a6',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '14px',
+                  fontSize: '12px',
                   color: '#6b7280',
                   backgroundColor: '#f0fdfa'
                 }}>
