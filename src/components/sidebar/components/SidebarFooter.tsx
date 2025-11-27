@@ -1,9 +1,11 @@
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { globalCacheManager } from "@/utils/cacheManager";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarFooterProps {
   collapsed: boolean;
@@ -11,6 +13,16 @@ interface SidebarFooterProps {
 }
 
 export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
+  const [isStandalone, setIsStandalone] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if app is installed as PWA
+    const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(isInstalled);
+  }, []);
+
   const handleLogout = async () => {
     try {
       console.log("Iniciando logout...");
@@ -56,8 +68,33 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
     }
   };
 
+  const handleInstallClick = () => {
+    onNavigate?.();
+    navigate("/install");
+  };
+
   return (
-    <div className="relative p-3 border-t border-border/50 bg-muted/20 backdrop-blur-sm">
+    <div className="relative p-3 border-t border-border/50 bg-muted/20 backdrop-blur-sm space-y-2">
+      {/* Install App Button - Only show if not installed */}
+      {!isStandalone && (
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-center text-foreground hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group",
+            !collapsed && "justify-start"
+          )}
+          onClick={handleInstallClick}
+        >
+          <Download size={16} className="group-hover:animate-bounce" />
+          {!collapsed && (
+            <span className="ml-2 font-medium text-sm">
+              Instalar App
+            </span>
+          )}
+        </Button>
+      )}
+
+      {/* Logout Button */}
       <Button
         variant="ghost"
         className={cn(
