@@ -216,9 +216,9 @@ export default function MusicoterapiaPage() {
                 <div style="padding: 20px;">
                   <!-- Layout horizontal: Foto + Info -->
                   <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                    <!-- Foto com Blur 80x80 -->
+                    <!-- Foto com Blur 96x96 -->
                     ${photoBase64 ? `
-                      <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                      <div style="position: relative; width: 96px; height: 96px; flex-shrink: 0;">
                         <div style="position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); filter: blur(4px); opacity: 0.75;"></div>
                         <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 3px solid #fff;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
@@ -262,11 +262,17 @@ export default function MusicoterapiaPage() {
                     <!-- Dashed Border Circle -->
                     <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
                     
+                    <!-- Segunda borda interna solid -->
+                    <div style="position: absolute; width: calc(100% - 32px); height: calc(100% - 32px); border-radius: 50%; border: 2px solid rgba(45, 212, 191, 0.5); left: 16px; top: 16px;"></div>
+                    
+                    <!-- Blur effect de fundo -->
+                    <div style="position: absolute; width: calc(100% - 24px); height: calc(100% - 24px); border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); opacity: 0.2; filter: blur(24px); left: 12px; top: 12px;"></div>
+                    
                     <!-- Main Stamp Circle 240x240 -->
-                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1); position: relative;">
-                      <!-- Foto no Carimbo 70x70 -->
+                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 6px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1); position: relative;">
+                      <!-- Foto no Carimbo 80x80 -->
                       ${photoBase64 ? `
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                       ` : ''}
@@ -279,7 +285,7 @@ export default function MusicoterapiaPage() {
                       
                       <!-- Specialty Badge -->
                       <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
-                        <span style="font-size: 10px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
                       </div>
                       
                       <!-- Registry -->
