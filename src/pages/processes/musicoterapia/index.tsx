@@ -206,8 +206,8 @@ export default function MusicoterapiaPage() {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
             
               <!-- Card de Assinatura (Esquerda) -->
-              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden;">
-                <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
+                <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
                 
                 <div style="padding: 20px;">
                   <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
