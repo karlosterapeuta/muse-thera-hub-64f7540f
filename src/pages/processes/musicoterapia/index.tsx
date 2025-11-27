@@ -198,57 +198,81 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        <!-- FOOTER TEAL - Layout Vertical -->
+        <!-- FOOTER TEAL - Layout Grid Lado a Lado -->
         <div style="margin-top: 50px; border: 3px solid #14b8a6; border-radius: 16px; overflow: hidden; background: #ffffff;">
           <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
           
-          <div style="padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 24px;">
+          <div style="padding: 32px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
             
-            <!-- Card de Assinatura -->
-            <div style="width: 100%; max-width: 450px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden;">
-              <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-              
-              <div style="padding: 20px; text-align: center;">
-                ${photoBase64 ? `
-                  <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 12px auto; border: 3px solid #14b8a6;">
-                    <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+              <!-- Card de Assinatura (Esquerda) -->
+              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden;">
+                <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+                
+                <div style="padding: 20px;">
+                  <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
+                    ${photoBase64 ? `
+                      <div style="position: relative;">
+                        <div style="position: absolute; width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.3), rgba(6,182,212,0.2)); filter: blur(8px); top: 5px; left: 5px;"></div>
+                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; position: relative;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      </div>
+                    ` : ''}
+                    <div style="flex: 1;">
+                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block; margin-bottom: 8px;">
+                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      </div>
+                    </div>
                   </div>
-                ` : ''}
-                <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
-                <div style="display: inline-block; background: #ccfbf1; color: #0f766e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                  ${professionalData?.specialty || 'Musicoterapeuta'}
+                  
+                  <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+                    ${professionalData?.register ? `<div style="margin-bottom: 4px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
+                    ${professionalData?.email ? `<div style="margin-bottom: 4px; word-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
+                    ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
+                  </div>
                 </div>
-                <div style="font-size: 11px; color: #374151; line-height: 1.8;">
-                  ${professionalData?.register ? `<div style="margin-bottom: 4px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
-                  ${professionalData?.email ? `<div style="margin-bottom: 4px; word-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
-                  ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
+                
+                <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; margin-top: 16px;">
+                  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="color: #0d9488;">&#10004;</span>
+                    <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                    <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
+                  </div>
                 </div>
               </div>
-              
-              <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 10px; text-align: center;">
-                <span style="color: #0d9488; font-size: 14px;">&#10004;</span>
-                <span style="font-size: 12px; font-weight: 600; color: #0f766e; margin-left: 6px;">Assinatura Digital Verificada</span>
+
+              <!-- Carimbo Circular (Direita) -->
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                ${stampBase64 || photoBase64 ? `
+                  <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
+                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
+                      ${photoBase64 ? `
+                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      ` : ''}
+                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2; word-wrap: break-word; max-width: 180px;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
+                      <div style="background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
+                        <span style="font-size: 10px; color: #0f766e; font-weight: 600;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      </div>
+                      ${professionalData?.register ? `<div style="font-size: 11px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
+                    </div>
+                  </div>
+                  <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
+                    <span>&#10004;</span>
+                    <span>MuseTera Verified</span>
+                  </div>
+                ` : `
+                  <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background: #f0fdfa;">
+                    Carimbo Digital
+                  </div>
+                `}
               </div>
             </div>
-
-            <!-- Carimbo Circular 200x200 -->
-            ${stampBase64 || photoBase64 ? `
-              <div style="width: 200px; height: 200px; position: relative; display: flex; align-items: center; justify-content: center;">
-                <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
-                <div style="width: 170px; height: 170px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px;">
-                  ${photoBase64 ? `
-                    <div style="width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; margin-bottom: 8px;">
-                      <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                    </div>
-                  ` : ''}
-                  <div style="font-size: 11px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 4px; word-wrap: break-word; max-width: 130px;">${professionalData?.name || 'Profissional'}</div>
-                  <div style="font-size: 9px; color: #0d9488; background: #ccfbf1; padding: 2px 8px; border-radius: 10px;">${professionalData?.specialty || 'Musicoterapeuta'}</div>
-                </div>
-              </div>
-              <div style="background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 6px 16px; border-radius: 16px; font-size: 10px; font-weight: 600;">
-                &#10004; MuseTera Verified
-              </div>
-            ` : ''}
           </div>
         </div>
       </div>
