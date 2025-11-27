@@ -110,7 +110,7 @@ export default function MusicoterapiaPage() {
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
     return `
-      <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; padding: 40px;">
+      <div style="width: 210mm; min-height: 297mm; padding: 20mm; background-color: #ffffff; font-family: Arial, sans-serif; color: #1a1a1a; font-size: 11pt; line-height: 1.6;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #14b8a6;">
           ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
