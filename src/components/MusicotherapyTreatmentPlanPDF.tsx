@@ -1,5 +1,4 @@
 import React from 'react';
-import { User, FileText, Target, Music, Users, Clock, CheckCircle, Activity, BarChart, RefreshCw } from 'lucide-react';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
 
 interface MusicotherapyTreatmentPlanPDFProps {
@@ -27,13 +26,47 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
 }) => {
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  const renderSection = (title: string, icon: React.ElementType, children: React.ReactNode, bgColor = "bg-blue-50") => {
-    const IconComponent = icon;
+  const bgColorMap: Record<string, string> = {
+    'bg-blue-50': '#eff6ff',
+    'bg-green-50': '#f0fdf4',
+    'bg-purple-50': '#faf5ff',
+    'bg-yellow-50': '#fefce8',
+    'bg-orange-50': '#fff7ed',
+    'bg-pink-50': '#fdf2f8',
+    'bg-indigo-50': '#eef2ff',
+    'bg-teal-50': '#f0fdfa',
+    'bg-red-50': '#fef2f2',
+    'bg-gray-50': '#f9fafb'
+  };
+
+  const iconEmojiMap: Record<string, string> = {
+    'User': '👤',
+    'FileText': '📄',
+    'Target': '🎯',
+    'Music': '🎵',
+    'Users': '👥',
+    'Clock': '⏰',
+    'CheckCircle': '✓',
+    'Activity': '📊',
+    'BarChart': '📈',
+    'RefreshCw': '🔄'
+  };
+
+  const renderSection = (title: string, iconName: string, children: React.ReactNode, bgColor = "bg-blue-50") => {
+    const emoji = iconEmojiMap[iconName] || '📌';
+    const backgroundColor = bgColorMap[bgColor] || '#eff6ff';
+    
     return (
-      <div className={`${bgColor} border-l-4 border-blue-500 p-6 mb-6 rounded-r-lg`}>
-        <div className="flex items-center mb-4">
-          <IconComponent className="h-6 w-6 text-blue-600 mr-3" />
-          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+      <div style={{
+        backgroundColor,
+        borderLeft: '4px solid #3b82f6',
+        padding: '24px',
+        marginBottom: '24px',
+        borderRadius: '0 8px 8px 0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+          <span style={{ fontSize: '24px', marginRight: '12px' }}>{emoji}</span>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>{title}</h2>
         </div>
         {children}
       </div>
@@ -41,207 +74,221 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
   };
 
   const renderListItems = (items: string[] | undefined, emptyText = "Não especificado") => {
-    if (!items || items.length === 0) return <p className="text-gray-600">{emptyText}</p>;
+    if (!items || items.length === 0) return <p style={{ color: '#4b5563' }}>{emptyText}</p>;
     return (
-      <ul className="list-disc list-inside space-y-1">
+      <ul style={{ listStyleType: 'disc', paddingLeft: '20px', margin: 0 }}>
         {items.map((item, index) => (
-          <li key={index} className="text-gray-800">{item}</li>
+          <li key={index} style={{ color: '#1f2937', marginBottom: '4px' }}>{item}</li>
         ))}
       </ul>
     );
   };
 
   return (
-    <div className="bg-white text-black font-serif leading-relaxed max-w-4xl mx-auto p-8" style={{ fontFamily: 'Times New Roman, serif', lineHeight: '1.6' }}>
+    <div style={{ 
+      backgroundColor: '#ffffff', 
+      color: '#000000', 
+      fontFamily: 'Times New Roman, serif', 
+      lineHeight: '1.6',
+      maxWidth: '896px',
+      margin: '0 auto',
+      padding: '32px'
+    }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-8 mb-8 rounded-lg">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">Plano de Tratamento Musicoterapêutico</h1>
-          <p className="text-blue-100 text-lg">Modelo Profissional Completo</p>
-          <div className="mt-4 text-blue-100">
-            <p className="text-sm">Data de Emissão: {currentDate}</p>
+      <div style={{
+        background: 'linear-gradient(to right, #2563eb, #7c3aed)',
+        color: '#ffffff',
+        padding: '32px',
+        marginBottom: '32px',
+        borderRadius: '8px'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', margin: 0 }}>Plano de Tratamento Musicoterapêutico</h1>
+          <p style={{ color: '#bfdbfe', fontSize: '18px', margin: '8px 0' }}>Modelo Profissional Completo</p>
+          <div style={{ marginTop: '16px', color: '#bfdbfe' }}>
+            <p style={{ fontSize: '14px', margin: 0 }}>Data de Emissão: {currentDate}</p>
           </div>
         </div>
       </div>
 
       {/* 1. Patient Identification */}
-      {renderSection("1. Identificação do Paciente", User, (
-        <div className="grid grid-cols-2 gap-4">
+      {renderSection("1. Identificação do Paciente", "User", (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Nome completo:</p>
-            <p className="text-lg text-gray-800">{planData.patient_full_name || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Nome completo:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_full_name || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Data de nascimento:</p>
-            <p className="text-lg text-gray-800">{planData.patient_birth_date ? new Date(planData.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Data de nascimento:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_birth_date ? new Date(planData.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Idade:</p>
-            <p className="text-lg text-gray-800">{planData.patient_age || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Idade:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.patient_age || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Diagnóstico clínico:</p>
-            <p className="text-lg text-gray-800">{planData.clinical_diagnosis || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Diagnóstico clínico:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.clinical_diagnosis || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Responsável:</p>
-            <p className="text-lg text-gray-800">{planData.responsible_person || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Responsável:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.responsible_person || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Data de início do plano:</p>
-            <p className="text-lg text-gray-800">{planData.plan_start_date ? new Date(planData.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Data de início do plano:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.plan_start_date ? new Date(planData.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
           </div>
         </div>
       ), "bg-blue-50")}
 
       {/* 2. Initial Assessment */}
-      {renderSection("2. Avaliação Inicial", FileText, (
-        <div className="space-y-4">
+      {renderSection("2. Avaliação Inicial", "FileText", (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Histórico clínico e familiar relevante:</p>
-            <p className="text-gray-800 leading-relaxed">{planData.clinical_family_history || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Histórico clínico e familiar relevante:</p>
+            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.clinical_family_history || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Condições físicas, cognitivas, emocionais e sociais:</p>
-            <p className="text-gray-800 leading-relaxed">{planData.physical_cognitive_conditions || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Condições físicas, cognitivas, emocionais e sociais:</p>
+            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.physical_cognitive_conditions || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Nível de interação e comunicação:</p>
-            <p className="text-gray-800 leading-relaxed">{planData.interaction_communication_level || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Nível de interação e comunicação:</p>
+            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.interaction_communication_level || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Interesses musicais:</p>
-            <p className="text-gray-800 leading-relaxed">{planData.musical_interests || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Interesses musicais:</p>
+            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.musical_interests || 'Não informado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Comportamentos observados durante avaliação inicial:</p>
-            <p className="text-gray-800 leading-relaxed">{planData.observed_behaviors || 'Não informado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Comportamentos observados durante avaliação inicial:</p>
+            <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>{planData.observed_behaviors || 'Não informado'}</p>
           </div>
         </div>
       ), "bg-green-50")}
 
       {/* 3. General Objectives */}
-      {renderSection("3. Objetivos Gerais", Target, (
+      {renderSection("3. Objetivos Gerais", "Target", (
         <div>
-          <p className="text-sm text-gray-600 font-medium mb-2">Propósitos amplos da musicoterapia para este paciente:</p>
+          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Propósitos amplos da musicoterapia para este paciente:</p>
           {renderListItems(planData.general_objectives, "Nenhum objetivo geral definido")}
         </div>
       ), "bg-purple-50")}
 
       {/* 4. Specific Objectives */}
-      {renderSection("4. Objetivos Específicos", CheckCircle, (
+      {renderSection("4. Objetivos Específicos", "CheckCircle", (
         <div>
-          <p className="text-sm text-gray-600 font-medium mb-2">Objetivos mensuráveis e específicos:</p>
+          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Objetivos mensuráveis e específicos:</p>
           {renderListItems(planData.specific_objectives, "Nenhum objetivo específico definido")}
         </div>
       ), "bg-yellow-50")}
 
       {/* 5. Musicotherapy Resources */}
-      {renderSection("5. Recursos Musicoterapêuticos", Music, (
-        <div className="grid grid-cols-2 gap-6">
+      {renderSection("5. Recursos Musicoterapêuticos", "Music", (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-2">Instrumentos musicais:</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Instrumentos musicais:</p>
             {renderListItems(planData.musical_instruments)}
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-2">Recursos tecnológicos:</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Recursos tecnológicos:</p>
             {renderListItems(planData.technological_resources)}
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-2">Voz e corpo:</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Voz e corpo:</p>
             {renderListItems(planData.voice_body_resources)}
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-2">Materiais complementares:</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Materiais complementares:</p>
             {renderListItems(planData.complementary_materials)}
           </div>
         </div>
       ), "bg-orange-50")}
 
       {/* 6. Strategies and Techniques */}
-      {renderSection("6. Estratégias e Técnicas", Activity, (
-        <div className="space-y-4">
+      {renderSection("6. Estratégias e Técnicas", "Activity", (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Improvisação musical:</p>
-            <p className="text-gray-800">{planData.musical_improvisation || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Improvisação musical:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_improvisation || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Recriação musical:</p>
-            <p className="text-gray-800">{planData.musical_recreation || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Recriação musical:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_recreation || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Composição:</p>
-            <p className="text-gray-800">{planData.musical_composition || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Composição:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.musical_composition || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Escuta receptiva:</p>
-            <p className="text-gray-800">{planData.receptive_listening || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Escuta receptiva:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.receptive_listening || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Dinâmicas rítmicas:</p>
-            <p className="text-gray-800">{planData.rhythmic_dynamics || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Dinâmicas rítmicas:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.rhythmic_dynamics || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-pink-50")}
 
       {/* 7. Frequency and Duration */}
-      {renderSection("7. Frequência e Duração", Clock, (
-        <div className="grid grid-cols-3 gap-4">
+      {renderSection("7. Frequência e Duração", "Clock", (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Sessões semanais:</p>
-            <p className="text-lg text-gray-800">{planData.weekly_sessions || 0}x por semana</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Sessões semanais:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.weekly_sessions || 0}x por semana</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Duração de cada sessão:</p>
-            <p className="text-lg text-gray-800">{planData.session_duration_minutes || 0} minutos</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Duração de cada sessão:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.session_duration_minutes || 0} minutos</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium">Período estimado:</p>
-            <p className="text-lg text-gray-800">{planData.estimated_period_months || 0} meses</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Período estimado:</p>
+            <p style={{ fontSize: '18px', color: '#1f2937', margin: 0 }}>{planData.estimated_period_months || 0} meses</p>
           </div>
         </div>
       ), "bg-indigo-50")}
 
       {/* 8. Evaluation Criteria */}
-      {renderSection("8. Critérios de Avaliação", BarChart, (
+      {renderSection("8. Critérios de Avaliação", "BarChart", (
         <div>
-          <p className="text-sm text-gray-600 font-medium mb-2">Parâmetros observáveis para medir evolução:</p>
+          <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '8px' }}>Parâmetros observáveis para medir evolução:</p>
           {renderListItems(planData.evaluation_criteria_list, "Nenhum critério de avaliação definido")}
         </div>
       ), "bg-teal-50")}
 
       {/* 9. Therapeutic Plan in Action */}
-      {renderSection("9. Plano Terapêutico em Ação", Users, (
-        <div className="space-y-4">
+      {renderSection("9. Plano Terapêutico em Ação", "Users", (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Estrutura das sessões:</p>
-            <p className="text-gray-800">{planData.session_structure || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Estrutura das sessões:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.session_structure || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Sequência das atividades musicais propostas:</p>
-            <p className="text-gray-800">{planData.activity_sequence || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Sequência das atividades musicais propostas:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.activity_sequence || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Flexibilidade para ajustes:</p>
-            <p className="text-gray-800">{planData.flexibility_adjustments || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Flexibilidade para ajustes:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.flexibility_adjustments || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-red-50")}
 
       {/* 10. Re-evaluation and Evolution */}
-      {renderSection("10. Reavaliação e Evolução", RefreshCw, (
-        <div className="space-y-4">
+      {renderSection("10. Reavaliação e Evolução", "RefreshCw", (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Frequência da reavaliação:</p>
-            <p className="text-gray-800">{planData.reevaluation_frequency || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Frequência da reavaliação:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.reevaluation_frequency || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Registro da evolução em prontuário:</p>
-            <p className="text-gray-800">{planData.evolution_recording || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Registro da evolução em prontuário:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.evolution_recording || 'Não especificado'}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Ajustes necessários nos objetivos e técnicas:</p>
-            <p className="text-gray-800">{planData.necessary_adjustments || 'Não especificado'}</p>
+            <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500', marginBottom: '4px' }}>Ajustes necessários nos objetivos e técnicas:</p>
+            <p style={{ color: '#1f2937', margin: 0 }}>{planData.necessary_adjustments || 'Não especificado'}</p>
           </div>
         </div>
       ), "bg-gray-50")}
