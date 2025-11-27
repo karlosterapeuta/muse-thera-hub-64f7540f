@@ -6,7 +6,7 @@ import { globalCacheManager } from "@/utils/cacheManager";
 
 // Cache for profile status to avoid repeated requests
 const profileStatusCache = new Map<string, { status: string; expires_at: string | null; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 1 * 60 * 1000; // 1 minuto - reduzido para detectar mudanças mais rápido
 
 export default function InstantAuthChecker() {
   const navigate = useNavigate();

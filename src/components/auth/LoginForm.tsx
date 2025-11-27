@@ -46,13 +46,19 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       if (profileError) throw profileError;
       
       if (profile.status !== 'active') {
+        // Fazer signOut e aguardar completar
         await supabase.auth.signOut();
         
+        // Aguardar um pouco para garantir que a sessão seja completamente encerrada
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
         toast({
-          title: "Acesso negado",
-          description: "Sua conta está desativa. Atualize seu pagamento.",
+          title: "Acesso bloqueado - Pagamento pendente",
+          description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
           variant: "destructive",
         });
+        
+        setIsLoading(false);
         return;
       }
       
