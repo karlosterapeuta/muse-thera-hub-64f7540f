@@ -268,10 +268,10 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             
             return (
               <div key={field.key}>
-                <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200 mb-2">{field.label}</h4>
-                <div className={`p-3 rounded-lg border-2 ${isEmpty ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600' : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600'}`}>
+                <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-2">{field.label}</h4>
+                <div className={`p-3 rounded-lg border-2 ${isEmpty ? 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600' : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600'}`}>
                   {isEmpty ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">Campo disponível para preenchimento</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 italic">Campo disponível para preenchimento</p>
                   ) : (
                     <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">{value}</p>
                   )}
