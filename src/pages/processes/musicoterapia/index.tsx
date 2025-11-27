@@ -449,10 +449,14 @@ export default function MusicoterapiaPage() {
       const tempDiv = document.createElement('div');
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
+      tempDiv.style.width = '210mm';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
+
+      // Aguardar renderização completa
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // PDF configuration - matching EvaluationTextPDF exactly
       const opt = {
@@ -603,12 +607,16 @@ export default function MusicoterapiaPage() {
       const tempDiv = document.createElement('div');
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
+      tempDiv.style.width = '210mm';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(reportDataForPDF, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
-      // 4. PDF configuration - matching EvaluationTextPDF exactly
+      // 4. Aguardar renderização completa
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 5. PDF configuration - matching EvaluationTextPDF exactly
       const opt = {
         margin: [10, 10],
         filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName?.replace(/\s+/g, '_') || 'paciente'}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
@@ -625,7 +633,7 @@ export default function MusicoterapiaPage() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      // 5. Generate and download PDF
+      // 6. Generate and download PDF
       await html2pdf().set(opt).from(tempDiv).save();
       
       document.body.removeChild(tempDiv);
