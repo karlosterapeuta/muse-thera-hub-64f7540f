@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useNavigate } from "react-router-dom";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 export default function EvolutionReport() {
   const navigate = useNavigate();
@@ -101,10 +102,35 @@ export default function EvolutionReport() {
     try {
       console.log("📄 Gerando PDF do relatório de evolução...");
       
+      // Converter imagens para Base64
+      let photoBase64 = null;
+      let stampBase64 = null;
+      
+      if (professionalData?.avatar_url) {
+        try {
+          photoBase64 = await imageUrlToBase64(professionalData.avatar_url);
+        } catch (e) {
+          console.warn("Não foi possível converter foto para Base64");
+        }
+      }
+      
+      if (professionalData?.digital_stamp_url) {
+        try {
+          stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+        } catch (e) {
+          console.warn("Não foi possível converter carimbo para Base64");
+        }
+      }
+      
       const component = React.createElement(EvolutionReportPreview, {
         data: formData,
         professionalName: professionalData?.name || "Nome do Profissional",
-        professionalRegister: professionalData?.register || "CRM/XXXX"
+        professionalRegister: professionalData?.register || "CRM/XXXX",
+        professionalPhotoUrl: photoBase64 || professionalData?.avatar_url,
+        professionalSpecialty: professionalData?.specialty || "Musicoterapeuta",
+        professionalEmail: professionalData?.email,
+        professionalPhone: professionalData?.phone,
+        digitalStampUrl: stampBase64 || professionalData?.digital_stamp_url
       });
 
       const filename = `Relatorio_Evolucao_MuseTera_${selectedPatient?.name?.replace(/\s+/g, '_') || 'Paciente'}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -135,10 +161,35 @@ export default function EvolutionReport() {
     }
 
     try {
+      // Converter imagens para Base64
+      let photoBase64 = null;
+      let stampBase64 = null;
+      
+      if (professionalData?.avatar_url) {
+        try {
+          photoBase64 = await imageUrlToBase64(professionalData.avatar_url);
+        } catch (e) {
+          console.warn("Não foi possível converter foto para Base64");
+        }
+      }
+      
+      if (professionalData?.digital_stamp_url) {
+        try {
+          stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+        } catch (e) {
+          console.warn("Não foi possível converter carimbo para Base64");
+        }
+      }
+      
       const component = React.createElement(EvolutionReportPreview, {
         data: formData,
         professionalName: professionalData?.name || "Nome do Profissional",
-        professionalRegister: professionalData?.register || "CRM/XXXX"
+        professionalRegister: professionalData?.register || "CRM/XXXX",
+        professionalPhotoUrl: photoBase64 || professionalData?.avatar_url,
+        professionalSpecialty: professionalData?.specialty || "Musicoterapeuta",
+        professionalEmail: professionalData?.email,
+        professionalPhone: professionalData?.phone,
+        digitalStampUrl: stampBase64 || professionalData?.digital_stamp_url
       });
 
       const filename = `Relatorio_Evolucao_MuseTera_${selectedPatient?.name?.replace(/\s+/g, '_') || 'Paciente'}_${new Date().toISOString().split('T')[0]}.pdf`;
