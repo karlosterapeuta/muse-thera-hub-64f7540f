@@ -169,22 +169,22 @@ export function FinalReviewSection({
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
     return `
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 20px;">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #0f766e; padding-bottom: 20px;">
         ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
-        <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatorio MuseTera TEA</h1>
-        <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
+        <h1 style="margin: 0 0 8px 0; color: #0f766e; font-size: 22pt; font-weight: bold;">Relatorio MuseTera TEA</h1>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 12pt;">Musicoterapia para Transtorno do Espectro Autista</p>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px;">
         <div>
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; margin: 0 0 10px 0;">Dados do Paciente</h3>
           <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.patientName || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Idade:</strong> ${reportData.patientAge || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Diagnostico:</strong> ${reportData.patientDiagnosis || 'Nao informado'}</p>
         </div>
         
         <div>
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; margin: 0 0 10px 0;">Dados do Profissional</h3>
           <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.professionalName || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Data da Sessao:</strong> ${reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Nao informado'}</p>
@@ -193,7 +193,7 @@ export function FinalReviewSection({
 
       ${fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Objetivos Terapeuticos</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Objetivos Terapeuticos</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">- ${obj}</p>`).join('')}
           </div>
@@ -202,7 +202,7 @@ export function FinalReviewSection({
 
       ${fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Atividades Realizadas</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.session_activities.map(act => `<p style="margin: 12px 0;">- ${act}</p>`).join('')}
           </div>
@@ -211,7 +211,7 @@ export function FinalReviewSection({
 
       ${fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Evolucao do Paciente</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Evolucao do Paciente</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">- ${evo}</p>`).join('')}
           </div>
@@ -220,7 +220,7 @@ export function FinalReviewSection({
 
       ${fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Recomendacoes</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Recomendacoes</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">- ${rec}</p>`).join('')}
           </div>
@@ -229,7 +229,7 @@ export function FinalReviewSection({
 
       ${fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Conclusao</h3>
+          <h3 style="color: #0f766e; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 12px;">Conclusao</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.conclusion.map(con => `<p style="margin: 12px 0;">- ${con}</p>`).join('')}
           </div>
