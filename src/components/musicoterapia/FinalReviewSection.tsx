@@ -54,13 +54,16 @@ export function FinalReviewSection({
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
       tempDiv.style.width = '210mm';
+      tempDiv.style.display = 'block';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
       
       // Aguardar renderização completa
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('PDF HTML Content (FinalReviewSection):', tempDiv.innerHTML.substring(0, 500));
       
       // Configurações do PDF - matching EvaluationTextPDF exactly
       const opt = {
