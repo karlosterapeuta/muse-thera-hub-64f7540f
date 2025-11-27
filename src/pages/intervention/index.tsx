@@ -420,6 +420,11 @@ export default function InterventionForm() {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
 
+      let stampBase64: string | null = null;
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
       const patient = patients.find(p => p.id === selectedPatient);
       if (!patient) throw new Error("Paciente não encontrado");
 
@@ -558,7 +563,7 @@ export default function InterventionForm() {
 
                 <!-- Right Side: Circular Digital Stamp (Conditional) -->
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                  ${photoBase64 ? `
+                  ${(stampBase64 || photoBase64) ? `
                     <!-- Outer decorative dashed circle -->
                     <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
                       <!-- Main stamp circle -->
