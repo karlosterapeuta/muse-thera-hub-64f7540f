@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 import { ModernFormCard } from "./ModernFormCard";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 type AnamnesisItem = {
   id: string;
@@ -113,16 +114,32 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         phone: '',
         register: '',
         license_number: '',
-        association: ''
+        association: '',
+        stamp_photo_url: '',
+        avatar_url: '',
+        digital_stamp_url: ''
       };
 
       if (user) {
         // Try to fetch professional data from the professionals table
+        console.log("🔍 [AnamnesisView] Buscando profissional com user_id:", user.id);
+        
         const { data: professional, error } = await supabase
           .from('professionals')
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
+
+        console.log("📊 [AnamnesisView] Query profissional resultado:", {
+          profError: error?.message || null,
+          professionalData: professional ? {
+            id: professional.id,
+            name: professional.name,
+            stamp_photo_url: professional.stamp_photo_url,
+            avatar_url: professional.avatar_url,
+            digital_stamp_url: professional.digital_stamp_url,
+          } : null
+        });
 
         if (professional && !error) {
           professionalData = {
@@ -132,12 +149,49 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             phone: professional.phone || '',
             register: professional.register || '',
             license_number: professional.license_number || '',
-            association: professional.association || ''
+            association: professional.association || '',
+            stamp_photo_url: professional.stamp_photo_url || '',
+            avatar_url: professional.avatar_url || '',
+            digital_stamp_url: professional.digital_stamp_url || ''
           };
+          console.log("✅ [AnamnesisView] Dados do profissional carregados com sucesso");
         } else {
-          // Fallback to user data if professional not found
+          console.warn("⚠️ [AnamnesisView] Usando fallback para dados do profissional:", error?.message);
           professionalData.name = formatNameFromEmail(user.email || '');
           professionalData.email = user.email || 'profissional@musetera.app';
+        }
+      }
+
+      // Converter imagens para Base64
+      let professionalPhotoBase64: string | null = null;
+      let digitalStampBase64: string | null = null;
+
+      console.log("🔍 [AnamnesisView] URLs de imagem antes da conversão:", {
+        stamp_photo_url: professionalData.stamp_photo_url,
+        avatar_url: professionalData.avatar_url,
+        digital_stamp_url: professionalData.digital_stamp_url
+      });
+
+      if (professionalData.stamp_photo_url || professionalData.avatar_url) {
+        try {
+          const photoUrl = professionalData.stamp_photo_url || professionalData.avatar_url;
+          console.log("🖼️ [AnamnesisView] Convertendo foto do profissional para Base64...", photoUrl);
+          professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
+          console.log("✅ [AnamnesisView] Foto convertida:", professionalPhotoBase64 ? "OK" : "FALHOU");
+        } catch (e) {
+          console.warn("⚠️ [AnamnesisView] Não foi possível converter foto para Base64:", e);
+        }
+      } else {
+        console.log("⚠️ [AnamnesisView] Nenhuma URL de foto encontrada para conversão");
+      }
+
+      if (professionalData.digital_stamp_url) {
+        try {
+          console.log("🖼️ [AnamnesisView] Convertendo carimbo digital para Base64...", professionalData.digital_stamp_url);
+          digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+          console.log("✅ [AnamnesisView] Carimbo convertido:", digitalStampBase64 ? "OK" : "FALHOU");
+        } catch (e) {
+          console.warn("⚠️ [AnamnesisView] Não foi possível converter carimbo para Base64:", e);
         }
       }
 
@@ -151,7 +205,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       const success = await generateProfessionalAnamnesePDF(
         formattedAnamnesisData,
         professionalData,
-        anamnesis.patient_name || 'Paciente'
+        anamnesis.patient_name || 'Paciente',
+        professionalPhotoBase64,
+        digitalStampBase64
       );
 
       if (success) {
