@@ -247,9 +247,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           {fields.map(field => {
             if (!anamnesisData[field]) return null;
             return (
-              <div key={field} className="flex items-center gap-2">
+              <div key={field} className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span className="text-sm">{labels[field] || field.replace(/_/g, ' ')}</span>
+                <span className="text-sm text-gray-800 dark:text-gray-200 font-medium">{labels[field] || field.replace(/_/g, ' ')}</span>
               </div>
             );
           })}
@@ -268,12 +268,12 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             
             return (
               <div key={field.key}>
-                <h4 className="font-medium text-sm text-muted-foreground mb-1">{field.label}</h4>
-                <div className={`p-3 rounded-md border ${isEmpty ? 'bg-muted/30' : 'bg-muted/50'}`}>
+                <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200 mb-2">{field.label}</h4>
+                <div className={`p-3 rounded-lg border-2 ${isEmpty ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600' : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600'}`}>
                   {isEmpty ? (
-                    <p className="text-sm text-muted-foreground italic">Campo disponível para preenchimento</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">Campo disponível para preenchimento</p>
                   ) : (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{value}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">{value}</p>
                   )}
                 </div>
               </div>
@@ -397,27 +397,27 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {anamnesisData.legal_guardian && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Responsável Legal</p>
-                <p className="font-medium">{anamnesisData.legal_guardian}</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Responsável Legal</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.legal_guardian}</p>
               </div>
             )}
             {anamnesisData.family_relationship && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Parentesco</p>
-                <p className="font-medium">{anamnesisData.family_relationship}</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Parentesco</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.family_relationship}</p>
               </div>
             )}
             {anamnesisData.referral_professional && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Profissional que Encaminhou</p>
-                <p className="font-medium">{anamnesisData.referral_professional}</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Profissional que Encaminhou</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{anamnesisData.referral_professional}</p>
               </div>
             )}
             {anamnesisData.main_clinical_demand && (
               <div className="md:col-span-2">
-                <p className="text-sm font-medium text-muted-foreground">Demanda Clínica Principal</p>
-                <div className="bg-muted/50 p-3 rounded-md border mt-1">
-                  <p className="leading-relaxed">{anamnesisData.main_clinical_demand}</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Demanda Clínica Principal</p>
+                <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 mt-1">
+                  <p className="text-gray-900 dark:text-gray-100 leading-relaxed">{anamnesisData.main_clinical_demand}</p>
                 </div>
               </div>
             )}
