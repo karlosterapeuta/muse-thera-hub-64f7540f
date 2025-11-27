@@ -2,22 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, BookOpen, Settings } from "lucide-react";
+import { Plus, Search, BookOpen, Settings, Layers, Clock } from "lucide-react";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { useCourses } from "@/hooks/useCourses";
-import { useAllCoursesProgress } from "@/hooks/useCourseProgress";
-import { CourseWithProgress } from "@/types/courses";
+import { useCoursesWithStats } from "@/hooks/useCoursesWithStats";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDuration } from "@/types/courses";
 
 export default function CoursesPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
-  const { data: courses, isLoading } = useCourses();
-  const { data: allProgress } = useAllCoursesProgress();
+  const { data: courses, isLoading } = useCoursesWithStats();
 
   useEffect(() => {
-    // Check if current user is admin or course creator
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -34,24 +31,18 @@ export default function CoursesPage() {
     checkAdmin();
   }, []);
 
-  // Calculate progress for each course
-  const coursesWithProgress: CourseWithProgress[] = (courses || [])
+  // Filter courses based on publish status and search
+  const filteredCourses = (courses || [])
     .filter(course => course.is_published || isAdmin)
-    .map(course => {
-      // For now, we don't have detailed progress calculation
-      // This would need to query lessons for each course
-      return {
-        ...course,
-        totalLessons: 0,
-        completedLessons: 0,
-        progressPercentage: 0,
-      };
-    });
+    .filter(course =>
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const filteredCourses = coursesWithProgress.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Calculate totals for header stats
+  const totalModules = filteredCourses.reduce((acc, c) => acc + c.totalModules, 0);
+  const totalLessons = filteredCourses.reduce((acc, c) => acc + c.totalLessons, 0);
+  const totalDuration = filteredCourses.reduce((acc, c) => acc + c.totalDurationMinutes, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,6 +58,30 @@ export default function CoursesPage() {
               <p className="text-muted-foreground mt-1">
                 Aprenda no seu ritmo com nossos cursos de musicoterapia
               </p>
+              
+              {/* Stats row - Hotmart style */}
+              {filteredCourses.length > 0 && (
+                <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4" />
+                    {filteredCourses.length} {filteredCourses.length === 1 ? "curso" : "cursos"}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Layers className="h-4 w-4" />
+                    {totalModules} {totalModules === 1 ? "módulo" : "módulos"}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4" />
+                    {totalLessons} {totalLessons === 1 ? "aula" : "aulas"}
+                  </span>
+                  {totalDuration > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {formatDuration(totalDuration)} de conteúdo
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {isAdmin && (

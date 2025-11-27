@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Check, Play, Lock } from "lucide-react";
+import { ChevronDown, ChevronRight, Check, Play, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Course, CourseLesson, UserCourseProgress } from "@/types/courses";
+import { Course, CourseLesson, UserCourseProgress, formatDuration } from "@/types/courses";
 
 interface CourseSidebarProps {
   course: Course;
@@ -23,6 +23,11 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
     (acc, module) => acc + (module.lessons?.length || 0), 
     0
   ) || 0;
+
+  const totalDuration = course.modules?.reduce(
+    (acc, module) => acc + (module.lessons?.reduce((a, l) => a + (l.duration_minutes || 0), 0) || 0),
+    0
+  ) || 0;
   
   const completedCount = completedLessonIds.length;
   const progressPercentage = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
@@ -36,6 +41,12 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
   };
 
   const isLessonCompleted = (lessonId: string) => completedLessonIds.includes(lessonId);
+
+  // Calculate module duration
+  const getModuleDuration = (lessons: CourseLesson[] | undefined) => {
+    if (!lessons) return 0;
+    return lessons.reduce((acc, l) => acc + (l.duration_minutes || 0), 0);
+  };
 
   return (
     <div className="w-80 bg-slate-900 text-white flex flex-col h-full">
@@ -52,9 +63,15 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
             value={progressPercentage} 
             className="h-2 bg-slate-700"
           />
-          <p className="text-xs text-slate-400">
-            {completedCount} de {totalLessons} aulas concluídas
-          </p>
+          <div className="flex justify-between text-xs text-slate-400">
+            <span>{completedCount} de {totalLessons} aulas concluídas</span>
+            {totalDuration > 0 && (
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {formatDuration(totalDuration)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -66,6 +83,10 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
             const moduleLessons = module.lessons || [];
             const moduleCompletedCount = moduleLessons.filter(l => isLessonCompleted(l.id)).length;
             const isModuleComplete = moduleLessons.length > 0 && moduleCompletedCount === moduleLessons.length;
+            const moduleDuration = getModuleDuration(moduleLessons);
+            const moduleProgress = moduleLessons.length > 0 
+              ? (moduleCompletedCount / moduleLessons.length) * 100 
+              : 0;
 
             return (
               <div key={module.id} className="mb-1">
@@ -86,9 +107,24 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
                   
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm line-clamp-1">{module.title}</p>
-                    <p className="text-xs text-slate-400">
-                      {moduleCompletedCount}/{moduleLessons.length} aulas
-                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                      <span>{moduleCompletedCount}/{moduleLessons.length} aulas</span>
+                      {moduleDuration > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>{formatDuration(moduleDuration)}</span>
+                        </>
+                      )}
+                    </div>
+                    {/* Module Progress Bar */}
+                    {moduleLessons.length > 0 && moduleProgress > 0 && moduleProgress < 100 && (
+                      <div className="mt-1.5">
+                        <Progress 
+                          value={moduleProgress} 
+                          className="h-1 bg-slate-700"
+                        />
+                      </div>
+                    )}
                   </div>
                   
                   {isExpanded ? (
@@ -143,9 +179,10 @@ export function CourseSidebar({ course, progress, currentLessonId, onSelectLesso
                             </p>
                             {lesson.duration_minutes > 0 && (
                               <p className={cn(
-                                "text-xs mt-0.5",
+                                "text-xs mt-0.5 flex items-center gap-1",
                                 isCurrent ? "text-primary-foreground/70" : "text-slate-500"
                               )}>
+                                <Clock className="h-3 w-3" />
                                 {lesson.duration_minutes} min
                               </p>
                             )}

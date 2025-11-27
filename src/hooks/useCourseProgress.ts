@@ -84,6 +84,8 @@ export function useCoursesWithProgress() {
       totalLessons: 0,
       completedLessons: 0,
       progressPercentage: 0,
+      totalModules: 0,
+      totalDurationMinutes: 0,
     };
   });
 
