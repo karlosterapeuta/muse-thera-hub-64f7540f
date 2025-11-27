@@ -198,73 +198,82 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        <!-- FOOTER TEAL - Layout Grid Lado a Lado -->
-        <div style="margin-top: 50px; border: 3px solid #14b8a6; border-radius: 16px; overflow: hidden; background: #ffffff;">
+        <!-- FOOTER TEAL - Design Idêntico ao /digital-stamp -->
+        <div style="margin-top: 50px; border: 3px solid transparent; border-radius: 20px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); background-origin: border-box; background-clip: padding-box, border-box;">
           <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
           
           <div style="padding: 32px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
             
-              <!-- Card de Assinatura (Esquerda) -->
-              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden;">
-                <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+              <!-- Card de Assinatura (Esquerda) - Idêntico ao Preview -->
+              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 16px; overflow: hidden;">
+                <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
                 
-                <div style="padding: 20px;">
-                  <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
+                <div style="padding: 24px;">
+                  <div style="display: flex; align-items: flex-start; gap: 20px;">
                     ${photoBase64 ? `
-                      <div style="position: relative;">
-                        <div style="position: absolute; width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.3), rgba(6,182,212,0.2)); filter: blur(8px); top: 5px; left: 5px;"></div>
-                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; position: relative;">
-                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                      <div style="position: relative; flex-shrink: 0;">
+                        <div style="position: absolute; width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(10px); top: -4px; left: -4px;"></div>
+                        <div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 3px;">
+                          <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                            <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                          </div>
                         </div>
                       </div>
                     ` : ''}
                     <div style="flex: 1;">
-                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
-                      <div style="background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block; margin-bottom: 8px;">
-                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      <div style="font-size: 20px; font-weight: bold; color: #0f766e; margin-bottom: 12px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="display: inline-flex; align-items: center; gap: 6px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 20px; padding: 6px 14px; margin-bottom: 16px;">
+                        <span style="color: #0f766e; font-size: 14px;">&#9835;</span>
+                        <span style="font-size: 13px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      </div>
+                      <div style="font-size: 13px; color: #374151; line-height: 2;">
+                        ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${professionalData.register}</div>` : ''}
+                        ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
+                        ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
                       </div>
                     </div>
                   </div>
-                  
-                  <div style="font-size: 12px; color: #374151; line-height: 1.6;">
-                    ${professionalData?.register ? `<div style="margin-bottom: 4px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
-                    ${professionalData?.email ? `<div style="margin-bottom: 4px; word-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
-                    ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
-                  </div>
                 </div>
                 
-                <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; margin-top: 16px;">
+                <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 14px;">
                   <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span style="color: #0d9488;">&#10004;</span>
-                    <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                    <span style="color: #0d9488; font-size: 16px;">&#10004;</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                    <span style="color: #0d9488; font-size: 14px;">&#9835;</span>
                     <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Carimbo Circular (Direita) -->
+              <!-- Carimbo Circular (Direita) - Idêntico ao Preview -->
               <div style="display: flex; flex-direction: column; align-items: center;">
                 ${stampBase64 || photoBase64 ? `
                   <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
                     <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
-                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
+                    <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 2px solid #14b8a6; opacity: 0.5;"></div>
+                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 6px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 8px 24px rgba(20,184,166,0.25);">
                       ${photoBase64 ? `
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
-                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        <div style="position: relative; margin-bottom: 10px;">
+                          <div style="position: absolute; width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(8px); top: -4px; left: -4px;"></div>
+                          <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative;">
+                            <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                          </div>
                         </div>
                       ` : ''}
-                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2; word-wrap: break-word; max-width: 180px;">${professionalData?.name || 'Profissional'}</div>
-                      <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
-                      <div style="background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
-                        <span style="font-size: 10px; color: #0f766e; font-weight: 600;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      <div style="font-size: 13px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 6px; max-width: 180px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="width: 60px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 6px;"></div>
+                      <div style="display: inline-flex; align-items: center; gap: 4px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 16px; padding: 3px 10px; margin-bottom: 4px;">
+                        <span style="font-size: 10px; color: #0f766e;">&#9835;</span>
+                        <span style="font-size: 10px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
                       </div>
                       ${professionalData?.register ? `<div style="font-size: 11px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
                     </div>
                   </div>
-                  <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
-                    <span>&#10004;</span>
-                    <span>MuseTera Verified</span>
+                  <div style="margin-top: 12px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
+                    <span style="font-size: 12px;">&#10004;</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">MuseTera Verified</span>
+                    <span style="font-size: 12px;">&#9835;</span>
                   </div>
                 ` : `
                   <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background: #f0fdfa;">
