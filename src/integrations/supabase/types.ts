@@ -605,6 +605,7 @@ export type Database = {
           license_number: string | null
           name: string
           phone: string | null
+          qr_link: string | null
           register: string | null
           specialty: string | null
           stamp_photo_url: string | null
@@ -622,6 +623,7 @@ export type Database = {
           license_number?: string | null
           name: string
           phone?: string | null
+          qr_link?: string | null
           register?: string | null
           specialty?: string | null
           stamp_photo_url?: string | null
@@ -639,6 +641,7 @@ export type Database = {
           license_number?: string | null
           name?: string
           phone?: string | null
+          qr_link?: string | null
           register?: string | null
           specialty?: string | null
           stamp_photo_url?: string | null

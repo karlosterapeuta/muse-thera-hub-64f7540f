@@ -60,7 +60,7 @@ export default function DigitalStamp() {
         registration: professionalData.register || '',
         email: professionalData.email || '',
         phone: professionalData.phone || '',
-        qrLink: '',
+        qrLink: (professionalData as any).qr_link || '',
       });
       
       // Priorizar foto específica do carimbo, depois avatar como fallback
@@ -251,10 +251,11 @@ export default function DigitalStamp() {
         register: formData.registration,
         email: formData.email,
         phone: formData.phone,
+        qr_link: formData.qrLink,
         // Imagens
         digital_signature_url: signatureUrlData.publicUrl,
         digital_stamp_url: stampUrlData.publicUrl,
-      })
+      } as any)
       .eq('id', professionalData.id);
 
       if (updateError) {
