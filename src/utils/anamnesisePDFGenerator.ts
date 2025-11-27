@@ -34,12 +34,16 @@ interface ProfessionalData {
   license_number?: string;
   register?: string;
   association?: string;
+  avatar_url?: string;
+  digital_stamp_url?: string;
 }
 
 export const generateProfessionalAnamnesePDF = async (
   anamnesisData: AnamnesisData,
   professional: ProfessionalData,
-  patientName: string
+  patientName: string,
+  professionalPhotoBase64?: string | null,
+  digitalStampBase64?: string | null
 ): Promise<boolean> => {
   try {
     // Debug log para verificar dados recebidos
@@ -427,27 +431,128 @@ export const generateProfessionalAnamnesePDF = async (
               ${renderSections()}
             </div>
 
-            <!-- Rodapé -->
-            <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-top: 2px solid #e2e8f0;">
-              <div style="text-align: center; margin-bottom: 16px;">
-                <div style="border-top: 1px solid #9ca3af; width: 200px; margin: 0 auto 8px auto;"></div>
-                <div style="font-size: 12px; color: #6b7280;">
-                  Assinatura do Musicoterapeuta Responsável
+            <!-- Rodapé TEAL Unificado -->
+            <div style="margin-top: 50px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
+              
+              <!-- Barra Decorativa Superior 8px -->
+              <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
+              
+              <!-- Seção Principal - padding 32px -->
+              <div style="padding: 32px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+                  
+                  <!-- ESQUERDA: Card de Assinatura -->
+                  <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
+                    
+                    <!-- Barra decorativa 8px -->
+                    <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+                    
+                    <div style="padding: 20px;">
+                      <!-- Layout horizontal: Foto + Info -->
+                      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                        
+                        ${professionalPhotoBase64 ? `
+                        <!-- Foto com Blur 80x80 -->
+                        <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                          <div style="position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); filter: blur(4px); opacity: 0.75;"></div>
+                          <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 3px solid #fff;">
+                            <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                          </div>
+                        </div>
+                        ` : ''}
+                        
+                        <!-- Info do Profissional -->
+                        <div style="flex: 1;">
+                          <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3;">
+                            ${professional.name || 'Nome do Profissional'}
+                          </div>
+                          <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block;">
+                            <span style="font-size: 11px; color: #0f766e; font-weight: 600;">🎵 ${professional.specialty || 'Musicoterapeuta'}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Contatos -->
+                      <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+                        ${professional.register || professional.license_number ? `<div style="margin-bottom: 4px;"><span>📋</span> ${professional.register || professional.license_number}</div>` : ''}
+                        ${professional.email ? `<div style="margin-bottom: 4px;"><span>📧</span> ${professional.email}</div>` : ''}
+                        ${professional.phone ? `<div><span>📞</span> ${professional.phone}</div>` : ''}
+                      </div>
+                    </div>
+                    
+                    <!-- Verification Footer -->
+                    <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px;">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span style="color: #0d9488;">✓</span>
+                        <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                        <span style="color: #0d9488;">🎵</span>
+                        <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- DIREITA: Carimbo Circular 280x280 -->
+                  <div style="display: flex; flex-direction: column; align-items: center;">
+                    ${professionalPhotoBase64 ? `
+                    <!-- Container Outer 280x280 -->
+                    <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
+                      <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
+                      
+                      <!-- Main Stamp Circle 240x240 -->
+                      <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1); position: relative;">
+                        
+                        <!-- Foto no Carimbo 70x70 -->
+                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid #14b8a6; margin-bottom: 12px;">
+                          <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                        
+                        <!-- Nome -->
+                        <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2;">
+                          ${professional.name || 'Nome do Profissional'}
+                        </div>
+                        
+                        <!-- Divider 80px -->
+                        <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
+                        
+                        <!-- Specialty Badge -->
+                        <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
+                          <span style="font-size: 10px; color: #0f766e; font-weight: 600;">🎵 ${professional.specialty || 'Musicoterapeuta'}</span>
+                        </div>
+                        
+                        <!-- Registry -->
+                        ${professional.register || professional.license_number ? `
+                        <div style="font-size: 11px; color: #374151; font-weight: 600;">
+                          ${professional.register || professional.license_number}
+                        </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                    
+                    <!-- Verified Badge GRADIENT -->
+                    <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
+                      <span>✓</span>
+                      <span>MuseTera Verified</span>
+                      <span>🎵</span>
+                    </div>
+                    ` : `
+                    <!-- Fallback sem foto -->
+                    <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background-color: #f0fdfa;">
+                      🔖 Carimbo Digital
+                    </div>
+                    `}
+                  </div>
+                  
                 </div>
               </div>
-              
-              <div style="font-size: 10px; color: #6b7280; text-align: center;">
-                <div style="margin-bottom: 8px;">
-                  <strong>Documento gerado em:</strong>
-                  ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-                </div>
-                <div style="margin-bottom: 8px;">
-                  <strong>Sistema:</strong>
-                  Musetera - Gestão para Musicoterapia
-                </div>
-                <div style="font-size: 9px; color: #9ca3af;">
-                  Este documento contém informações confidenciais protegidas pelo sigilo profissional
-                </div>
+            </div>
+
+            <!-- Informações do Documento -->
+            <div style="font-size: 10px; color: #6b7280; text-align: center; margin-top: 16px;">
+              <div style="margin-bottom: 4px;">
+                <strong>Documento gerado em:</strong> ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+              </div>
+              <div style="font-size: 9px; color: #9ca3af;">
+                Este documento contém informações confidenciais protegidas pelo sigilo profissional
               </div>
             </div>
           </div>

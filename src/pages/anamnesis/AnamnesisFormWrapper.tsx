@@ -9,6 +9,7 @@ import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
 import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
 import { ModernActionButtons } from "./components/ModernActionButtons";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 type Patient = {
   id: string;
@@ -477,6 +478,28 @@ export default function AnamnesisFormWrapper({
         };
       }
 
+      // Converter imagens para Base64
+      let professionalPhotoBase64: string | null = null;
+      let digitalStampBase64: string | null = null;
+
+      if (professional?.avatar_url) {
+        try {
+          console.log("🖼️ Convertendo foto do profissional para Base64...");
+          professionalPhotoBase64 = await imageUrlToBase64(professional.avatar_url);
+        } catch (e) {
+          console.warn("⚠️ Não foi possível converter foto para Base64:", e);
+        }
+      }
+
+      if (professional?.digital_stamp_url) {
+        try {
+          console.log("🔖 Convertendo carimbo digital para Base64...");
+          digitalStampBase64 = await imageUrlToBase64(professional.digital_stamp_url);
+        } catch (e) {
+          console.warn("⚠️ Não foi possível converter carimbo para Base64:", e);
+        }
+      }
+
       const anamnesisDataForPDF = {
         ...formData,
         id: currentAnamnesisId,
@@ -489,7 +512,9 @@ export default function AnamnesisFormWrapper({
       const success = await generateProfessionalAnamnesePDF(
         anamnesisDataForPDF,
         professional,
-        patientName
+        patientName,
+        professionalPhotoBase64,
+        digitalStampBase64
       );
 
       if (success) {
