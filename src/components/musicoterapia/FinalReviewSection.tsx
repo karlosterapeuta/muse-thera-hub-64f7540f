@@ -51,10 +51,14 @@ export function FinalReviewSection({
 
       // Criar um elemento HTML temporário com o conteúdo do relatório
       const tempDiv = document.createElement('div');
-      tempDiv.style.padding = '40px';
+      tempDiv.style.width = '210mm';
+      tempDiv.style.minHeight = '297mm';
+      tempDiv.style.padding = '20mm';
       tempDiv.style.fontFamily = 'Arial, sans-serif';
-      tempDiv.style.color = '#000';
-      tempDiv.style.backgroundColor = '#fff';
+      tempDiv.style.color = '#1a1a1a';
+      tempDiv.style.backgroundColor = '#ffffff';
+      tempDiv.style.fontSize = '11pt';
+      tempDiv.style.lineHeight = '1.6';
       tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
