@@ -490,107 +490,122 @@ export default function InterventionForm() {
           </div>
 
           <!-- Footer - Digital Signature & Stamp (TEAL Design) -->
-          <div style="margin-top: 60px; padding: 24px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
-            <!-- Decorative TEAL gradient bar -->
-            <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4); border-radius: 4px 4px 0 0; margin-bottom: 24px;"></div>
+          <div style="margin-top: 60px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
+            <!-- Decorative TEAL gradient bar (8px) at TOP -->
+            <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-              <!-- Left Side: Signature Card -->
-              <div>
-                <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
-                  <!-- Professional Photo with blur effect -->
-                  <div style="position: relative;">
-                    <div style="position: absolute; inset: 0; border-radius: 50%; filter: blur(40px); opacity: 0.5; background: radial-gradient(circle, #14b8a6, #22d3ee, #0d9488);"></div>
-                    <img 
-                      src="${photoBase64 || '/placeholder.svg'}" 
-                      alt="Professional" 
-                      style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6;"
-                    />
+            <!-- Padding wrapper -->
+            <div style="padding: 32px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+                <!-- Left Side: NESTED Signature Card -->
+                <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
+                  <!-- Decorative TEAL gradient bar INSIDE card -->
+                  <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+                  
+                  <div style="padding: 20px;">
+                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
+                      <!-- Professional Photo with blur effect -->
+                      <div style="position: relative;">
+                        <div style="position: absolute; inset: 0; border-radius: 50%; filter: blur(40px); opacity: 0.5; background: radial-gradient(circle, #14b8a6, #22d3ee, #0d9488);"></div>
+                        <img 
+                          src="${photoBase64 || '/placeholder.svg'}" 
+                          alt="Professional" 
+                          style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6;"
+                        />
+                      </div>
+                      
+                      <!-- Professional Info -->
+                      <div style="flex: 1;">
+                        <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #0f766e;">
+                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                        </h3>
+                        ${professionalData?.specialty ? `
+                          <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
+                            🎵 ${professionalData.specialty}
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div style="margin-bottom: 16px; font-size: 14px; color: #0f766e;">
+                      ${professionalData?.register || professionalData?.license_number ? `
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                          <span>📋</span>
+                          <span>${professionalData.register || professionalData.license_number}</span>
+                        </div>
+                      ` : ''}
+                      ${professionalData?.email || userEmail ? `
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                          <span>📧</span>
+                          <span style="word-break: break-all;">${professionalData?.email || userEmail}</span>
+                        </div>
+                      ` : ''}
+                      ${professionalData?.phone ? `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span>📞</span>
+                          <span>${professionalData.phone}</span>
+                        </div>
+                      ` : ''}
+                    </div>
                   </div>
                   
-                  <!-- Professional Info -->
-                  <div style="flex: 1;">
-                    <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #0f766e;">
-                      ${professionalData?.name || userName || 'Musicoterapeuta'}
-                    </h3>
-                    ${professionalData?.specialty ? `
-                      <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                        🎵 ${professionalData.specialty}
-                      </div>
-                    ` : ''}
+                  <!-- Verification Footer INSIDE card -->
+                  <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 500; color: #0f766e;">
+                    ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
                   </div>
                 </div>
-                
-                <!-- Contact Information -->
-                <div style="margin-bottom: 16px; font-size: 14px; color: #0f766e;">
-                  ${professionalData?.register || professionalData?.license_number ? `
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                      <span>📋</span>
-                      <span>${professionalData.register || professionalData.license_number}</span>
-                    </div>
-                  ` : ''}
-                  ${professionalData?.email || userEmail ? `
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                      <span>📧</span>
-                      <span style="word-break: break-all;">${professionalData?.email || userEmail}</span>
-                    </div>
-                  ` : ''}
-                  ${professionalData?.phone ? `
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span>📞</span>
-                      <span>${professionalData.phone}</span>
-                    </div>
-                  ` : ''}
-                </div>
-                
-                <!-- Verification Footer -->
-                <div style="padding-top: 12px; border-top: 1px solid #99f6e4; text-align: center; font-size: 12px; font-weight: 500; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); color: #0f766e;">
-                  ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
-                </div>
-              </div>
 
-              <!-- Right Side: Circular Digital Stamp -->
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <!-- Outer decorative dashed circle -->
-                <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
-                  <!-- Main stamp circle -->
-                  <div style="width: 240px; height: 240px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
-                    <!-- Professional Photo inside stamp -->
-                    ${photoBase64 ? `
-                      <img 
-                        src="${photoBase64}" 
-                        alt="Stamp" 
-                        style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #0d9488;"
-                      />
-                    ` : ''}
-                    
-                    <!-- Professional Name -->
-                    <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
-                      ${professionalData?.name || userName || 'Musicoterapeuta'}
+                <!-- Right Side: Circular Digital Stamp (Conditional) -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  ${photoBase64 ? `
+                    <!-- Outer decorative dashed circle -->
+                    <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
+                      <!-- Main stamp circle -->
+                      <div style="width: 240px; height: 240px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
+                        <!-- Professional Photo inside stamp -->
+                        ${photoBase64 ? `
+                          <img 
+                            src="${photoBase64}" 
+                            alt="Stamp" 
+                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #0d9488;"
+                          />
+                        ` : ''}
+                        
+                        <!-- Professional Name -->
+                        <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
+                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                        </div>
+                        
+                        <!-- Decorative line -->
+                        <div style="width: 80px; height: 1px; margin-bottom: 8px; background: linear-gradient(to right, transparent, #14b8a6, transparent);"></div>
+                        
+                        <!-- Specialty Badge -->
+                        ${professionalData?.specialty ? `
+                          <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
+                            🎵 ${professionalData.specialty}
+                          </div>
+                        ` : ''}
+                        
+                        <!-- Registry -->
+                        ${professionalData?.register || professionalData?.license_number ? `
+                          <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
+                            📋 ${professionalData.register || professionalData.license_number}
+                          </div>
+                        ` : ''}
+                      </div>
                     </div>
                     
-                    <!-- Decorative line -->
-                    <div style="width: 80px; height: 1px; margin-bottom: 8px; background: linear-gradient(to right, transparent, #14b8a6, transparent);"></div>
-                    
-                    <!-- Specialty Badge -->
-                    ${professionalData?.specialty ? `
-                      <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
-                        🎵 ${professionalData.specialty}
-                      </div>
-                    ` : ''}
-                    
-                    <!-- Registry -->
-                    ${professionalData?.register || professionalData?.license_number ? `
-                      <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
-                        📋 ${professionalData.register || professionalData.license_number}
-                      </div>
-                    ` : ''}
-                  </div>
-                </div>
-                
-                <!-- MuseTera Verified Badge -->
-                <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
-                  ✓ MuseTera Verified 🎵
+                    <!-- MuseTera Verified Badge -->
+                    <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
+                      ✓ MuseTera Verified 🎵
+                    </div>
+                  ` : `
+                    <!-- Placeholder when no stamp -->
+                    <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background-color: #f0fdfa;">
+                      🔖 Carimbo Digital
+                    </div>
+                  `}
                 </div>
               </div>
             </div>
