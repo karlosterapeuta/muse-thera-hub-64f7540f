@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, Music, Sparkles, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Music, Sparkles, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { GradientButton } from "./GradientButton";
 import { WelcomeToast } from "./WelcomeToast";
@@ -21,6 +21,7 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showBlockedMessage, setShowBlockedMessage] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: welcomeData } = useWelcomeMessage(userId);
@@ -52,12 +53,8 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
         // Aguardar um pouco para garantir que a sessão seja completamente encerrada
         await new Promise(resolve => setTimeout(resolve, 200));
         
-        toast({
-          title: "Acesso bloqueado - Pagamento pendente",
-          description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
-          variant: "destructive",
-        });
-        
+        // Mostrar card visual de bloqueio
+        setShowBlockedMessage(true);
         setIsLoading(false);
         return;
       }
@@ -138,6 +135,40 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
         </div>
       </div>
       
+      {/* Card de Bloqueio - Usuário Inativo */}
+      {showBlockedMessage && (
+        <div className="mb-6 p-6 bg-gradient-to-br from-amber-50 to-red-50 dark:from-amber-950/30 dark:to-red-950/30 border-2 border-amber-400 dark:border-amber-600 rounded-2xl shadow-lg animate-fade-in">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-full shrink-0">
+              <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-amber-800 dark:text-amber-200 mb-2">
+                Acesso Temporariamente Suspenso
+              </h3>
+              <p className="text-amber-700 dark:text-amber-300 mb-3">
+                Sua conta está <strong>inativa</strong> devido a um <strong>pagamento pendente</strong>.
+              </p>
+              <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 mb-3">
+                <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                  Para reativar seu acesso:
+                </p>
+                <ul className="text-sm text-amber-700 dark:text-amber-300 mt-2 space-y-1">
+                  <li>• Regularize seu pagamento</li>
+                  <li>• Entre em contato com o suporte se precisar de ajuda</li>
+                </ul>
+              </div>
+              <button
+                onClick={() => setShowBlockedMessage(false)}
+                className="text-sm text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 underline font-medium transition-colors"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Form Card with Glassmorphism */}
       <div className="relative bg-gradient-to-br from-background/60 via-background/50 to-background/60 backdrop-blur-2xl rounded-3xl md:rounded-[2rem] shadow-2xl border border-primary/20 p-6 sm:p-8 md:p-10 lg:p-12 animate-scale-in delay-300 overflow-hidden">
         {/* Enhanced Decorative Elements */}
