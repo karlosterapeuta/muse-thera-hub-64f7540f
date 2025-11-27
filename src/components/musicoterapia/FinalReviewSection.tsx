@@ -167,31 +167,31 @@ export function FinalReviewSection({
     return `
       <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 20px;">
         ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
-        <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatório MuseTera TEA</h1>
+        <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatorio MuseTera TEA</h1>
         <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
         <div>
           <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
-          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.patientName || 'Não informado'}</p>
-          <p style="margin: 8px 0;"><strong>Idade:</strong> ${reportData.patientAge || 'Não informado'}</p>
-          <p style="margin: 8px 0;"><strong>Diagnóstico:</strong> ${reportData.patientDiagnosis || 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.patientName || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Idade:</strong> ${reportData.patientAge || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Diagnostico:</strong> ${reportData.patientDiagnosis || 'Nao informado'}</p>
         </div>
         
         <div>
           <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
-          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.professionalName || 'Não informado'}</p>
-          <p style="margin: 8px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Não informado'}</p>
-          <p style="margin: 8px 0;"><strong>Data da Sessão:</strong> ${reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.professionalName || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Data da Sessao:</strong> ${reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Nao informado'}</p>
         </div>
       </div>
 
       ${fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Objetivos Terapêuticos</h3>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Objetivos Terapeuticos</h3>
           <div style="text-align: justify; line-height: 1.6;">
-            ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">• ${obj}</p>`).join('')}
+            ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">- ${obj}</p>`).join('')}
           </div>
         </div>
       ` : ''}
@@ -200,146 +200,91 @@ export function FinalReviewSection({
         <div style="margin-bottom: 25px;">
           <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
           <div style="text-align: justify; line-height: 1.6;">
-            ${fields.session_activities.map(act => `<p style="margin: 12px 0;">• ${act}</p>`).join('')}
+            ${fields.session_activities.map(act => `<p style="margin: 12px 0;">- ${act}</p>`).join('')}
           </div>
         </div>
       ` : ''}
 
       ${fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Evolução do Paciente</h3>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Evolucao do Paciente</h3>
           <div style="text-align: justify; line-height: 1.6;">
-            ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">• ${evo}</p>`).join('')}
+            ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">- ${evo}</p>`).join('')}
           </div>
         </div>
       ` : ''}
 
       ${fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Recomendações</h3>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Recomendacoes</h3>
           <div style="text-align: justify; line-height: 1.6;">
-            ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">• ${rec}</p>`).join('')}
+            ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">- ${rec}</p>`).join('')}
           </div>
         </div>
       ` : ''}
 
       ${fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Conclusão</h3>
+          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Conclusao</h3>
           <div style="text-align: justify; line-height: 1.6;">
-            ${fields.conclusion.map(con => `<p style="margin: 12px 0;">• ${con}</p>`).join('')}
+            ${fields.conclusion.map(con => `<p style="margin: 12px 0;">- ${con}</p>`).join('')}
           </div>
         </div>
       ` : ''}
 
-        <!-- Footer com Assinatura e Carimbo Digital - Design EvaluationTextPDF -->
-        <div style="margin-top: 50px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
-          <!-- Barra Decorativa Superior 8px -->
-          <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
+      <!-- FOOTER TEAL - Layout Vertical -->
+      <div style="margin-top: 50px; border: 3px solid #14b8a6; border-radius: 16px; overflow: hidden; background: #ffffff;">
+        <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
+        
+        <div style="padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 24px;">
           
-          <!-- Seção Principal - padding 32px -->
-          <div style="padding: 32px;">
-            <!-- GRID 1.5fr 1fr - Mais espaço para assinatura -->
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; align-items: start;">
-              
-              <!-- ESQUERDA: Card de Assinatura -->
-              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
-                <!-- Barra decorativa 8px -->
-                <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-                
-                <div style="padding: 20px;">
-                  <!-- Layout horizontal: Foto + Info -->
-                  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                    <!-- Foto com Blur 96x96 -->
-                    ${photoBase64 ? `
-                      <div style="position: relative; width: 96px; height: 96px; flex-shrink: 0;">
-                        <div style="position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); filter: blur(4px); opacity: 0.75;"></div>
-                        <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 3px solid #fff;">
-                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                        </div>
-                      </div>
-                    ` : ''}
-                    
-                    <!-- Info do Profissional -->
-                    <div style="flex: 1; min-width: 0;">
-                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                      <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block;">
-                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">&#9835; ${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Contatos -->
-                  <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-                    ${professionalData?.register ? `<div style="margin-bottom: 6px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
-                    ${professionalData?.email ? `<div style="margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
-                    ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
-                  </div>
+          <!-- Card de Assinatura -->
+          <div style="width: 100%; max-width: 450px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden;">
+            <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
+            
+            <div style="padding: 20px; text-align: center;">
+              ${photoBase64 ? `
+                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 12px auto; border: 3px solid #14b8a6;">
+                  <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                 </div>
-                
-                <!-- Verification Footer -->
-                <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px;">
-                  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span style="color: #0d9488; font-size: 14px;">&#10004;</span>
-                    <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
-                    <span style="font-size: 12px; color: #6b7280;">| Sistema MuseTera</span>
-                  </div>
-                </div>
+              ` : ''}
+              <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+              <div style="display: inline-block; background: #ccfbf1; color: #0f766e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid #99f6e4; margin-bottom: 12px;">
+                ${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}
               </div>
-              
-              <!-- DIREITA: Carimbo Circular 280x280 -->
-              <div style="display: flex; flex-direction: column; align-items: center;">
-                ${stampBase64 || photoBase64 ? `
-                  <!-- Container Outer 280x280 -->
-                  <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
-                    <!-- Dashed Border Circle -->
-                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
-                    
-                    <!-- Segunda borda interna solid -->
-                    <div style="position: absolute; width: calc(100% - 32px); height: calc(100% - 32px); border-radius: 50%; border: 2px solid rgba(45, 212, 191, 0.5); left: 16px; top: 16px;"></div>
-                    
-                    <!-- Blur effect de fundo -->
-                    <div style="position: absolute; width: calc(100% - 24px); height: calc(100% - 24px); border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); opacity: 0.2; filter: blur(24px); left: 12px; top: 12px;"></div>
-                    
-                    <!-- Main Stamp Circle 240x240 -->
-                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 6px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1); position: relative;">
-                      <!-- Foto no Carimbo 80x80 -->
-                      ${photoBase64 ? `
-                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
-                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                        </div>
-                      ` : ''}
-                      
-                      <!-- Nome -->
-                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; max-width: 180px;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                      
-                      <!-- Divider 80px gradient -->
-                      <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
-                      
-                      <!-- Specialty Badge -->
-                      <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
-                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">&#9835; ${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
-                      </div>
-                      
-                      <!-- Registry -->
-                      ${professionalData?.register ? `<div style="font-size: 11px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
-                    </div>
-                  </div>
-                  
-                  <!-- Verified Badge GRADIENT -->
-                  <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
-                    <span>&#10004;</span>
-                    <span>MuseTera Verified</span>
-                  </div>
-                ` : `
-                  <div style="width: 280px; height: 280px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
-                    <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">Carimbo<br/>Digital</p>
-                  </div>
-                `}
+              <div style="font-size: 11px; color: #374151; line-height: 1.8;">
+                ${professionalData?.register ? `<div style="margin-bottom: 4px;"><strong>Reg:</strong> ${professionalData.register}</div>` : ''}
+                ${professionalData?.email ? `<div style="margin-bottom: 4px; word-wrap: break-word;"><strong>Email:</strong> ${professionalData.email}</div>` : ''}
+                ${professionalData?.phone ? `<div><strong>Tel:</strong> ${professionalData.phone}</div>` : ''}
               </div>
             </div>
+            
+            <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 10px; text-align: center;">
+              <span style="color: #0d9488; font-size: 14px;">&#10004;</span>
+              <span style="font-size: 12px; font-weight: 600; color: #0f766e; margin-left: 6px;">Assinatura Digital Verificada</span>
+            </div>
           </div>
+
+          <!-- Carimbo Circular 200x200 -->
+          ${stampBase64 || photoBase64 ? `
+            <div style="width: 200px; height: 200px; position: relative; display: flex; align-items: center; justify-content: center;">
+              <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
+              <div style="width: 170px; height: 170px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px;">
+                ${photoBase64 ? `
+                  <div style="width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; margin-bottom: 8px;">
+                    <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                  </div>
+                ` : ''}
+                <div style="font-size: 11px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 4px; word-wrap: break-word; max-width: 130px;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                <div style="font-size: 9px; color: #0d9488; background: #ccfbf1; padding: 2px 8px; border-radius: 10px;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</div>
+              </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 6px 16px; border-radius: 16px; font-size: 10px; font-weight: 600;">
+              &#10004; MuseTera Verified
+            </div>
+          ` : ''}
         </div>
+      </div>
     `;
   };
 
