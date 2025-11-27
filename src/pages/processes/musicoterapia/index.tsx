@@ -198,91 +198,108 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        <!-- FOOTER TEAL COM ASSINATURA E CARIMBO -->
-        <div style="margin-top: 60px; padding: 30px; background: white; border: 2px solid #14b8a6; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px;"></div>
+        <!-- FOOTER TEAL COM ASSINATURA E CARIMBO - Design EvaluationTextPDF -->
+        <div style="margin-top: 50px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
+          <!-- Barra Decorativa Superior 8px -->
+          <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
           
-          <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
-            <!-- Assinatura Digital Card -->
-            <div style="flex: 1 1 320px; min-width: 280px; max-width: 450px; background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); padding: 25px; border-radius: 12px; border: 2px solid #99f6e4; position: relative;">
-              <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); border-radius: 8px 8px 0 0; margin: -25px -25px 20px -25px;"></div>
+          <!-- Seção Principal - padding 32px -->
+          <div style="padding: 32px;">
+            <!-- GRID 1fr 1fr -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
               
-              <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
-                ${photoBase64 ? `
-                  <div style="position: relative;">
-                    <div style="position: absolute; inset: -4px; background: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); border-radius: 50%; filter: blur(8px); opacity: 0.6;"></div>
-                    <img src="${photoBase64}" alt="Foto Profissional" style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                  </div>
-                ` : ''}
+              <!-- ESQUERDA: Card de Assinatura -->
+              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
+                <!-- Barra decorativa 8px -->
+                <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
                 
-                <div style="flex: 1;">
-                  <h3 style="margin: 0; color: #0d9488; font-size: 20px; font-weight: bold;">${professionalData?.name || 'Profissional'}</h3>
-                  <div style="margin-top: 8px; display: inline-block; padding: 4px 12px; background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 12px; font-size: 13px; color: #0d9488; font-weight: 600;">
-                    🎵 ${professionalData?.specialty || 'Musicoterapeuta'}
+                <div style="padding: 20px;">
+                  <!-- Layout horizontal: Foto + Info -->
+                  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <!-- Foto com Blur 80x80 -->
+                    ${photoBase64 ? `
+                      <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                        <div style="position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); filter: blur(4px); opacity: 0.75;"></div>
+                        <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 3px solid #fff;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      </div>
+                    ` : ''}
+                    
+                    <!-- Info do Profissional -->
+                    <div style="flex: 1;">
+                      <div style="font-size: 16px; font-weight: bold; color: #0f766e; margin-bottom: 8px; line-height: 1.3;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 20px; padding: 4px 12px; display: inline-block;">
+                        <span style="font-size: 11px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Contatos -->
+                  <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+                    ${professionalData?.register ? `<div style="margin-bottom: 4px;"><span>📋</span> ${professionalData.register}</div>` : ''}
+                    ${professionalData?.email ? `<div style="margin-bottom: 4px;"><span>📧</span> ${professionalData.email}</div>` : ''}
+                    ${professionalData?.phone ? `<div><span>📞</span> ${professionalData.phone}</div>` : ''}
+                  </div>
+                </div>
+                
+                <!-- Verification Footer -->
+                <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px;">
+                  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="color: #0d9488;">✓</span>
+                    <span style="font-size: 12px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                    <span style="color: #0d9488;">🎵</span>
+                    <span style="font-size: 12px; color: #6b7280;">Sistema MuseTera</span>
                   </div>
                 </div>
               </div>
-
-              <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #99f6e4;">
-                ${professionalData?.register ? `
-                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
-                    <span style="font-weight: 600;">📋 Registro:</span> ${professionalData.register}
-                  </p>
-                ` : ''}
-                ${professionalData?.email ? `
-                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
-                    <span style="font-weight: 600;">📧 Email:</span> ${professionalData.email}
-                  </p>
-                ` : ''}
-                ${professionalData?.phone ? `
-                  <p style="margin: 8px 0; color: #0f766e; font-size: 14px;">
-                    <span style="font-weight: 600;">📞 Telefone:</span> ${professionalData.phone}
-                  </p>
-                ` : ''}
-              </div>
-
-              <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #5eead4; text-align: center; background: linear-gradient(90deg, #f0fdfa 0%, #ecfeff 50%, #f0fdfa 100%); margin-left: -25px; margin-right: -25px; margin-bottom: -25px; padding-bottom: 15px; border-radius: 0 0 10px 10px;">
-                <p style="margin: 0; color: #0d9488; font-size: 13px; font-weight: 600;">
-                  ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
-                </p>
+              
+              <!-- DIREITA: Carimbo Circular 280x280 -->
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                ${stampBase64 || photoBase64 ? `
+                  <!-- Container Outer 280x280 -->
+                  <div style="width: 280px; height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <!-- Dashed Border Circle -->
+                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #14b8a6; opacity: 0.3;"></div>
+                    
+                    <!-- Main Stamp Circle 240x240 -->
+                    <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 4px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1); position: relative;">
+                      <!-- Foto no Carimbo 70x70 -->
+                      ${photoBase64 ? `
+                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6); background-origin: border-box; background-clip: padding-box, border-box; margin-bottom: 12px;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      ` : ''}
+                      
+                      <!-- Nome -->
+                      <div style="font-size: 14px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 8px; line-height: 1.2;">${professionalData?.name || 'Profissional'}</div>
+                      
+                      <!-- Divider 80px gradient -->
+                      <div style="width: 80px; height: 2px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 8px;"></div>
+                      
+                      <!-- Specialty Badge -->
+                      <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 4px 12px; margin-bottom: 6px;">
+                        <span style="font-size: 10px; color: #0f766e; font-weight: 600;">🎵 ${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                      </div>
+                      
+                      <!-- Registry -->
+                      ${professionalData?.register ? `<div style="font-size: 11px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
+                    </div>
+                  </div>
+                  
+                  <!-- Verified Badge GRADIENT -->
+                  <div style="margin-top: 16px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 8px 20px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(13,148,136,0.3);">
+                    <span>✓</span>
+                    <span>MuseTera Verified</span>
+                    <span>🎵</span>
+                  </div>
+                ` : `
+                  <div style="width: 280px; height: 280px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+                    <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">🔖 Carimbo<br/>Digital</p>
+                  </div>
+                `}
               </div>
             </div>
-
-            <!-- Carimbo Digital -->
-            ${stampBase64 ? `
-              <div style="flex: 1 1 200px; min-width: 180px; max-width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-                <div style="position: relative; width: 180px; height: 180px;">
-                  <div style="position: absolute; inset: 0; border: 3px dashed #14b8a6; border-radius: 50%; opacity: 0.3;"></div>
-                  <div style="position: absolute; inset: 8px; background: linear-gradient(135deg, #f0fdfa, #ecfeff); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border: 3px solid #5eead4; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
-                    ${photoBase64 ? `
-                      <img src="${photoBase64}" alt="Foto" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #0d9488; margin-bottom: 8px;" />
-                    ` : ''}
-                    <p style="margin: 4px 0; font-size: 12px; font-weight: bold; color: #0d9488; text-align: center; line-height: 1.2;">${professionalData?.name || ''}</p>
-                    <div style="margin: 6px 0; padding: 2px 8px; background: #ccfbf1; border: 1px solid #99f6e4; border-radius: 8px; font-size: 9px; color: #0d9488; font-weight: 600; text-align: center;">
-                      🎵 ${professionalData?.specialty || 'Musicoterapeuta'}
-                    </div>
-                    ${professionalData?.register ? `
-                      <p style="margin: 4px 0; font-size: 9px; color: #0f766e; text-align: center;">📋 ${professionalData.register}</p>
-                    ` : ''}
-                  </div>
-                </div>
-                <div style="margin-top: 15px; padding: 6px 16px; background: linear-gradient(90deg, #f0fdfa, #ecfeff); border: 2px solid #5eead4; border-radius: 20px; font-size: 11px; color: #0d9488; font-weight: 600; text-align: center;">
-                  ✓ MuseTera Verified 🎵
-                </div>
-              </div>
-            ` : `
-              <div style="flex: 1 1 200px; min-width: 180px; max-width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-                <div style="width: 160px; height: 160px; border: 3px dashed #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
-                  <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">🔖 Carimbo<br/>Digital</p>
-                </div>
-              </div>
-            `}
-          </div>
-
-          <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e0f2fe; text-align: center;">
-            <p style="margin: 0; color: #64748b; font-size: 12px;">
-              📄 Documento gerado eletronicamente pelo MuseTera em ${currentDate}
-            </p>
           </div>
         </div>
       </div>
