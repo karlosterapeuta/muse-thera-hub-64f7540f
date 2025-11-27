@@ -450,13 +450,16 @@ export default function MusicoterapiaPage() {
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
       tempDiv.style.width = '210mm';
+      tempDiv.style.display = 'block';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
       // Aguardar renderização completa
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('PDF HTML Content (handleExportPDF):', tempDiv.innerHTML.substring(0, 500));
 
       // PDF configuration - matching EvaluationTextPDF exactly
       const opt = {
@@ -608,13 +611,16 @@ export default function MusicoterapiaPage() {
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
       tempDiv.style.width = '210mm';
+      tempDiv.style.display = 'block';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.innerHTML = generatePDFContent(reportDataForPDF, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
       // 4. Aguardar renderização completa
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('PDF HTML Content (handleDownloadReportPDF):', tempDiv.innerHTML.substring(0, 500));
 
       // 5. PDF configuration - matching EvaluationTextPDF exactly
       const opt = {
