@@ -146,7 +146,7 @@ export default function InterventionForm() {
 
       if (!professional?.id) return;
 
-      // Buscar planos salvos
+      // Buscar planos salvos - filtrar apenas os que têm activities (planos de intervenção)
       const { data: plans, error } = await supabase
         .from('treatment_plans')
         .select(`
@@ -158,6 +158,8 @@ export default function InterventionForm() {
           complementary_materials
         `)
         .eq('professional_id', professional.id)
+        .not('complementary_materials', 'is', null)
+        .not('complementary_materials->activities', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -688,7 +690,10 @@ export default function InterventionForm() {
 
   const downloadPlanPDF = async (plan: any) => {
     try {
-      const activities = plan.complementary_materials?.activities || [];
+      // Verificar se complementary_materials é array (formato antigo) ou objeto (formato correto)
+      const cm = plan.complementary_materials;
+      const activities = Array.isArray(cm) ? [] : (cm?.activities || []);
+      
       if (activities.length === 0) {
         toast({
           variant: "destructive",
@@ -697,6 +702,11 @@ export default function InterventionForm() {
         });
         return;
       }
+      
+      toast({
+        title: "Gerando PDF...",
+        description: "Aguarde enquanto o PDF é preparado.",
+      });
 
       // Convert professional images to Base64
       let photoBase64: string | null = null;
