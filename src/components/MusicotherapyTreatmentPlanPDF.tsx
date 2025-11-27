@@ -295,9 +295,9 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
                         position: 'absolute',
                         inset: 0,
                         borderRadius: '50%',
-                        filter: 'blur(40px)',
-                        opacity: 0.5,
-                        background: 'radial-gradient(circle, #14b8a6, #22d3ee, #0d9488)'
+                        filter: 'blur(4px)',
+                        opacity: 0.75,
+                        background: 'linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488)'
                       }}></div>
                       <img 
                         src={professionalPhotoUrl} 
