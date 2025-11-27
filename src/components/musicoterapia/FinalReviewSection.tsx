@@ -29,13 +29,7 @@ export function FinalReviewSection({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [stampUrl, setStampUrl] = useState<string | null>(null);
-  const [isUploadingStamp, setIsUploadingStamp] = useState(false);
-  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
-  const [isUploadingSignature, setIsUploadingSignature] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const stampInputRef = useRef<HTMLInputElement>(null);
-  const signatureInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportPDF = async () => {
     setIsExporting(true);
@@ -146,145 +140,6 @@ export function FinalReviewSection({
     });
   };
 
-  const handleStampUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      toast({
-        variant: "destructive",
-        title: "Tipo de arquivo inválido",
-        description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
-      });
-      return;
-    }
-
-    // Validar tamanho do arquivo (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        variant: "destructive",
-        title: "Arquivo muito grande",
-        description: "A imagem deve ter no máximo 5MB",
-      });
-      return;
-    }
-
-    setIsUploadingStamp(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `stamp-${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('report-logos')
-        .upload(fileName, file);
-
-      if (error) throw error;
-
-      // Obter URL pública da imagem
-      const { data: { publicUrl } } = supabase.storage
-        .from('report-logos')
-        .getPublicUrl(fileName);
-
-      setStampUrl(publicUrl);
-      
-      toast({
-        title: "Carimbo enviado com sucesso!",
-        description: "O carimbo será incluído no PDF gerado.",
-      });
-      
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro no upload",
-        description: "Não foi possível enviar o carimbo. Tente novamente.",
-      });
-    } finally {
-      setIsUploadingStamp(false);
-    }
-  };
-
-  const removeStamp = () => {
-    setStampUrl(null);
-    if (stampInputRef.current) {
-      stampInputRef.current.value = '';
-    }
-    toast({
-      title: "Carimbo removido",
-      description: "O carimbo foi removido do relatório.",
-    });
-  };
-
-  const handleSignatureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      toast({
-        variant: "destructive",
-        title: "Tipo de arquivo inválido",
-        description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
-      });
-      return;
-    }
-
-    // Validar tamanho do arquivo (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        variant: "destructive",
-        title: "Arquivo muito grande",
-        description: "A imagem deve ter no máximo 5MB",
-      });
-      return;
-    }
-
-    setIsUploadingSignature(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `signature-${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('digital-signatures')
-        .upload(fileName, file);
-
-      if (error) throw error;
-
-      // Obter URL pública da imagem
-      const { data: { publicUrl } } = supabase.storage
-        .from('digital-signatures')
-        .getPublicUrl(fileName);
-
-      setSignatureUrl(publicUrl);
-      
-      toast({
-        title: "Assinatura enviada com sucesso!",
-        description: "A assinatura digital será incluída no PDF gerado.",
-      });
-      
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro no upload",
-        description: "Não foi possível enviar a assinatura. Tente novamente.",
-      });
-    } finally {
-      setIsUploadingSignature(false);
-    }
-  };
-
-  const removeSignature = () => {
-    setSignatureUrl(null);
-    if (signatureInputRef.current) {
-      signatureInputRef.current.value = '';
-    }
-    toast({
-      title: "Assinatura removida",
-      description: "A assinatura digital foi removida do relatório.",
-    });
-  };
 
   const generatePDFContent = () => {
     const fields = reportData.fieldValues || {};
@@ -359,27 +214,10 @@ export function FinalReviewSection({
       ` : ''}
 
       <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center;">
-        <p style="margin: 15px 0;"><strong>Assinatura:</strong> ${reportData.signature || reportData.professionalName || 'Não informado'}</p>
-        
-        ${signatureUrl || stampUrl ? `
-          <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin: 30px 0; flex-wrap: wrap;">
-            ${signatureUrl ? `
-              <div style="text-align: center;">
-                <img src="${signatureUrl}" style="max-width: 200px; max-height: 80px; display: block; margin: 0 auto;" alt="Assinatura Digital" />
-                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Assinatura Digital</p>
-              </div>
-            ` : ''}
-            ${stampUrl ? `
-              <div style="text-align: center;">
-                <img src="${stampUrl}" style="max-width: 120px; max-height: 60px; display: block; margin: 0 auto;" alt="Carimbo Digital" />
-                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Carimbo Digital</p>
-              </div>
-            ` : ''}
-          </div>
-        ` : ''}
-        
+        <p style="margin: 15px 0;"><strong>Profissional:</strong> ${reportData.professionalName || 'Não informado'}</p>
+        <p style="margin: 15px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Não informado'}</p>
         <p style="color: #666; font-size: 12px; margin-top: 20px;">
-          Documento gerado automaticamente pelo Relatório MuseTera TEA em ${currentDate}
+          Documento gerado eletronicamente pelo MuseTera em ${currentDate}
         </p>
       </div>
     `;
@@ -739,132 +577,6 @@ export function FinalReviewSection({
                     <>
                       <Upload className="h-4 w-4 mr-2" />
                       Enviar Logo
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Upload de Carimbo Digital */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
-              <Image className="h-6 w-6 text-orange-600" />
-            </div>
-            <CardTitle className="text-lg">Carimbo Digital</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Adicione seu carimbo ao PDF
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
-            {stampUrl ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <img 
-                    src={stampUrl} 
-                    alt="Carimbo" 
-                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
-                    onClick={removeStamp}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-                <p className="text-xs text-green-600 font-medium">Carimbo carregado!</p>
-              </div>
-            ) : (
-              <>
-                <input
-                  ref={stampInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleStampUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => stampInputRef.current?.click()}
-                  disabled={isUploadingStamp}
-                >
-                  {isUploadingStamp ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Enviar Carimbo
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Upload de Assinatura Digital */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-              <Upload className="h-6 w-6 text-indigo-600" />
-            </div>
-            <CardTitle className="text-lg">Assinatura Digital</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Adicione sua assinatura digital ao PDF
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
-            {signatureUrl ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <img 
-                    src={signatureUrl} 
-                    alt="Assinatura Digital" 
-                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
-                    onClick={removeSignature}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-                <p className="text-xs text-green-600 font-medium">Assinatura carregada!</p>
-              </div>
-            ) : (
-              <>
-                <input
-                  ref={signatureInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleSignatureUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => signatureInputRef.current?.click()}
-                  disabled={isUploadingSignature}
-                >
-                  {isUploadingSignature ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Enviar Assinatura
                     </>
                   )}
                 </Button>
