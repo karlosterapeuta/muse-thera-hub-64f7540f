@@ -13,7 +13,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2 } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
@@ -48,6 +48,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useEvaluationPDF } from "@/hooks/useEvaluationPDF";
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { useEvaluationStorage, SavedEvaluation } from "@/hooks/useEvaluationStorage";
+import { EvaluationHistory } from "@/pages/processes/evaluation/components/EvaluationHistory";
+import { EvaluationComparison } from "@/pages/processes/evaluation/components/EvaluationComparison";
 
 interface Patient {
   id: string;
@@ -66,8 +69,17 @@ export default function Evaluation() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [activeTab, setActiveTab] = useState("evaluation");
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
+  
+  const {
+    savedEvaluations,
+    isLoading: isLoadingEvaluations,
+    isSaving,
+    saveEvaluation,
+    deleteEvaluation,
+  } = useEvaluationStorage(selectedPatient || null);
 
   useEffect(() => {
     async function fetchPatients() {
@@ -531,6 +543,52 @@ export default function Evaluation() {
   ];
 
   const COLORS = ['#10b981', '#f97316'];
+
+  // Handler functions for evaluation storage
+  const handleSaveEvaluation = async () => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente primeiro");
+      return;
+    }
+    
+    const domainScoresData = evaluationDomains.map(domain => ({
+      domain: domain.title,
+      score: calculateDomainScore(domain).percentage,
+      subdomains: domain.subdomains.map(subdomain => ({
+        name: subdomain.title,
+        score: calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters).percentage
+      }))
+    }));
+
+    await saveEvaluation(
+      evaluationDate,
+      selectedEvaluation,
+      selections,
+      observations,
+      domainScoresData,
+      overallScore
+    );
+  };
+
+  const handleLoadEvaluation = (evaluation: SavedEvaluation) => {
+    if (evaluation.content) {
+      setSelections(evaluation.content.selections || {});
+      setObservations(evaluation.content.observations || {});
+      setEvaluationDate(new Date(evaluation.date));
+      if (evaluation.content.evaluationType) {
+        setSelectedEvaluation(evaluation.content.evaluationType);
+      }
+      toast.success("Avaliação carregada com sucesso!");
+    }
+  };
+
+  const handleToggleComparison = (id: string) => {
+    setSelectedForComparison(prev => 
+      prev.includes(id) 
+        ? prev.filter(i => i !== id)
+        : prev.length < 4 ? [...prev, id] : prev
+    );
+  };
 
   const { data: professionalData } = useProfessionalData();
 
@@ -1080,6 +1138,28 @@ export default function Evaluation() {
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleSaveEvaluation}
+                      disabled={isSaving || !selectedPatient}
+                      className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-teal-500 text-white border-0 hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                    >
+                      {isSaving ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                      {isSaving ? "Salvando..." : "Salvar Avaliação"}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Salva a avaliação atual para o paciente selecionado</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
             </div>
           </div>
 
@@ -1469,22 +1549,22 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              <Card className="border-0 shadow-2xl p-8 rounded-3xl bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50 border border-blue-200">
-                <div className="flex justify-center items-center h-[400px]">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <FileBarChart className="h-10 w-10 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4 text-gray-800">Comparação Evolutiva</h3>
-                    <p className="text-gray-600 mb-6 max-w-md">
-                      Realize múltiplas avaliações para visualizar a evolução do paciente ao longo do tempo.
-                    </p>
-                    <Button variant="outline" className="bg-gradient-to-r from-gray-100 to-slate-100 hover:from-gray-200 hover:to-slate-200 border-gray-300" disabled>
-                      Carregar Avaliações Anteriores
-                    </Button>
-                  </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <EvaluationHistory
+                  evaluations={savedEvaluations}
+                  isLoading={isLoadingEvaluations}
+                  selectedForComparison={selectedForComparison}
+                  onToggleComparison={handleToggleComparison}
+                  onLoadEvaluation={handleLoadEvaluation}
+                  onDeleteEvaluation={deleteEvaluation}
+                />
+                <div className="lg:col-span-2">
+                  <EvaluationComparison
+                    evaluations={savedEvaluations}
+                    selectedIds={selectedForComparison}
+                  />
                 </div>
-              </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </Card>
