@@ -51,6 +51,10 @@ import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { useEvaluationStorage, SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "@/pages/processes/evaluation/components/EvaluationHistory";
 import { EvaluationComparison } from "@/pages/processes/evaluation/components/EvaluationComparison";
+import { PatientEvolutionDashboard } from "@/pages/processes/evaluation/components/PatientEvolutionDashboard";
+import { EvolutionTimeline } from "@/pages/processes/evaluation/components/EvolutionTimeline";
+import { AreasAnalysis } from "@/pages/processes/evaluation/components/AreasAnalysis";
+import { TherapeuticSuggestions } from "@/pages/processes/evaluation/components/TherapeuticSuggestions";
 
 interface Patient {
   id: string;
@@ -71,6 +75,7 @@ export default function Evaluation() {
   const [activeTab, setActiveTab] = useState("evaluation");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
+  const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
   
@@ -1349,7 +1354,7 @@ export default function Evaluation() {
                 value="comparison" 
                 className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
               >
-                Comparação
+                Evolução do Paciente
               </TabsTrigger>
             </TabsList>
 
@@ -1745,46 +1750,53 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              {/* Header do profissional com estatísticas */}
-              <Card className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
-                      <Stethoscope className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100">
-                        Avaliações de {professionalData?.name || "Carregando..."}
-                      </h3>
-                      <p className="text-sm text-purple-700 dark:text-purple-300">
-                        {allEvaluations.length} avaliações realizadas • {new Set(allEvaluations.map(e => e.patient_id)).size} pacientes
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1.5 rounded-full text-sm font-medium">
-                    {professionalData?.specialty || "Musicoterapeuta"}
-                  </div>
-                </div>
-              </Card>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <EvaluationHistory
-                  evaluations={allEvaluations}
-                  isLoading={isLoadingAll}
-                  selectedForComparison={selectedForComparison}
-                  onToggleComparison={handleToggleComparison}
-                  onLoadEvaluation={handleLoadEvaluation}
-                  onDeleteEvaluation={deleteEvaluation}
-                  onDownloadEvaluation={handleDownloadSavedEvaluation}
-                  onEditEvaluation={handleEditEvaluation}
-                />
-                <div className="lg:col-span-2">
-                  <EvaluationComparison
-                    evaluations={allEvaluations}
-                    selectedIds={selectedForComparison}
+              {/* Dashboard de Evolução do Paciente */}
+              <PatientEvolutionDashboard
+                patients={patients}
+                selectedPatientId={evolutionPatientId}
+                onSelectPatient={setEvolutionPatientId}
+                evaluations={allEvaluations}
+                isLoading={isLoadingAll}
+              />
+
+              {/* Conteúdo condicional - apenas se paciente selecionado */}
+              {evolutionPatientId && (
+                <div className="mt-6 space-y-6">
+                  {/* Linha do Tempo de Evolução */}
+                  <EvolutionTimeline
+                    evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
+                    patientName={patients.find(p => p.id === evolutionPatientId)?.name || "Paciente"}
                   />
+
+                  {/* Análise de Áreas */}
+                  <AreasAnalysis
+                    evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
+                  />
+
+                  {/* Sugestões Terapêuticas */}
+                  <TherapeuticSuggestions
+                    evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
+                    patientId={evolutionPatientId}
+                  />
+
+                  {/* Histórico de Avaliações do Paciente */}
+                  <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                      📜 Histórico de Avaliações
+                    </h3>
+                    <EvaluationHistory
+                      evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
+                      isLoading={isLoadingAll}
+                      selectedForComparison={selectedForComparison}
+                      onToggleComparison={handleToggleComparison}
+                      onLoadEvaluation={handleLoadEvaluation}
+                      onDeleteEvaluation={deleteEvaluation}
+                      onDownloadEvaluation={handleDownloadSavedEvaluation}
+                      onEditEvaluation={handleEditEvaluation}
+                    />
+                  </Card>
                 </div>
-              </div>
+              )}
             </TabsContent>
           </Tabs>
         </Card>
