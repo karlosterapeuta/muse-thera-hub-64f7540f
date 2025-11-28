@@ -13,7 +13,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
@@ -1745,27 +1745,24 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              {/* Header geral com estatísticas */}
+              {/* Header do profissional com estatísticas */}
               <Card className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
-                    <FileBarChart className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100">
-                      Histórico Geral de Avaliações
-                    </h3>
-                    <p className="text-sm text-purple-700 dark:text-purple-300">
-                      Todas as avaliações salvas no sistema
-                    </p>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <div className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-medium">
-                      {allEvaluations.length} avaliações
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
+                      <Stethoscope className="h-6 w-6 text-purple-600 dark:text-purple-300" />
                     </div>
-                    <div className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 px-3 py-1 rounded-full text-sm font-medium">
-                      {new Set(allEvaluations.map(e => e.patient_id)).size} pacientes
+                    <div>
+                      <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100">
+                        Avaliações de {professionalData?.name || "Carregando..."}
+                      </h3>
+                      <p className="text-sm text-purple-700 dark:text-purple-300">
+                        {allEvaluations.length} avaliações realizadas • {new Set(allEvaluations.map(e => e.patient_id)).size} pacientes
+                      </p>
                     </div>
+                  </div>
+                  <div className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1.5 rounded-full text-sm font-medium">
+                    {professionalData?.specialty || "Musicoterapeuta"}
                   </div>
                 </div>
               </Card>
