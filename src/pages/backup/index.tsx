@@ -27,7 +27,7 @@ const ALL_CATEGORIES = [
 export default function BackupPage() {
   const navigate = useNavigate();
   const { data: statistics, isLoading: isLoadingStats } = useBackupStatistics();
-  const { data: isAdmin } = useAdmin();
+  const { data: isAdmin, isLoading: isLoadingAdmin } = useAdmin();
   const [isGeneratingFull, setIsGeneratingFull] = useState(false);
   const [isGeneratingSelective, setIsGeneratingSelective] = useState(false);
 
@@ -188,7 +188,7 @@ export default function BackupPage() {
         <BackupHistory />
 
         {/* System Backup - Admin Only */}
-        {isAdmin && <SystemBackup isAdmin={isAdmin} />}
+        {!isLoadingAdmin && isAdmin && <SystemBackup isAdmin={isAdmin} />}
 
         {/* Info Card */}
         <Card>
