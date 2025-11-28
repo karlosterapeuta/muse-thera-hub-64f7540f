@@ -967,6 +967,216 @@ export default function Evaluation() {
     return { achievements, developmentAreas };
   };
 
+  // Função para categorizar dados de uma avaliação SALVA
+  const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
+    const achievements: any[] = [];
+    const developmentAreas: any[] = [];
+    
+    const savedSelections = evaluation.content?.selections || {};
+    
+    // Função auxiliar para converter level em score
+    const levelToScoreValue = (level: string): number => {
+      switch(level) {
+        case '0': case 'nao_observado': return 0;
+        case '1': case 'emergente': return 20;
+        case '2': case 'inconsistente': return 40;
+        case '3': case 'moderado': return 60;
+        case '4': case 'consistente': return 80;
+        case '5': case 'excepcional': return 100;
+        default: return 0;
+      }
+    };
+    
+    // Iterar sobre as seleções salvas
+    Object.entries(savedSelections).forEach(([key, value]) => {
+      const parts = key.split('-');
+      if (parts.length >= 3) {
+        const domain = parts[0];
+        const subdomain = parts[1];
+        const parameter = parts.slice(2).join('-');
+        const score = levelToScoreValue(value as string);
+        
+        if (value && value !== 'nao_observado' && value !== '0') {
+          const paramData = {
+            domain,
+            subdomain,
+            parameter,
+            score,
+            level: value
+          };
+          
+          if (score >= 60) {
+            achievements.push(paramData);
+          } else {
+            developmentAreas.push(paramData);
+          }
+        }
+      }
+    });
+    
+    return { achievements, developmentAreas };
+  };
+
+  // Função para gerar texto de avaliação com IA a partir de uma avaliação SALVA
+  const handleGenerateEvaluationTextFromSaved = async (evaluation: SavedEvaluation) => {
+    // Buscar dados do paciente da avaliação salva
+    const patient = patients.find(p => p.id === evaluation.patient_id);
+    
+    if (!patient) {
+      toast.error("Paciente não encontrado");
+      return;
+    }
+
+    // Verificar se há parâmetros avaliados
+    const savedSelections = evaluation.content?.selections || {};
+    const evaluatedCount = Object.values(savedSelections).filter(v => v && v !== 'nao_observado' && v !== '0').length;
+    
+    if (evaluatedCount === 0) {
+      toast.error("Esta avaliação não possui parâmetros marcados");
+      return;
+    }
+
+    setIsGeneratingText(true);
+    toast.loading("Analisando avaliação e gerando texto profissional com IA...");
+
+    try {
+      // Categorizar dados da avaliação SALVA
+      const { achievements, developmentAreas } = categorizeEvaluationDataFromSaved(evaluation);
+      
+      // Preparar overallScore da avaliação salva com todas as propriedades necessárias
+      const rawOverallScore: any = evaluation.content?.overallScore || {};
+      const savedOverallScore = {
+        percentage: rawOverallScore.percentage || 0,
+        evaluatedDomains: rawOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
+        totalDomains: rawOverallScore.totalDomains || evaluationDomains.length,
+        evaluatedParameters: rawOverallScore.evaluatedParameters || 0
+      };
+      
+      // Preparar domainScores da avaliação salva
+      const savedDomainScores = evaluation.content?.domainScores?.map((d: any) => ({
+        name: d.domain?.replace("Domínio ", "") || "Domínio",
+        value: d.score || 0,
+        fullMark: 100
+      })) || [];
+      
+      // Chamar edge function com IA
+      const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
+        body: {
+          patientName: patient.name,
+          patientAge: patient.age,
+          evaluationDate: format(new Date(evaluation.date), 'dd/MM/yyyy'),
+          achievements,
+          developmentAreas,
+          overallScore: savedOverallScore,
+          evaluatedDomains: savedDomainScores
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (!data || !data.content) {
+        throw new Error('Resposta inválida da IA');
+      }
+
+      toast.dismiss();
+      toast.loading("Gerando PDF do relatório...");
+
+      // Converter URLs para Base64
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      }
+
+      // Gerar PDF com o texto retornado
+      const pdfContent = (
+        <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
+          <EvaluationTextPDF
+            content={data.content}
+            patientName={patient.name || 'Paciente'}
+            patientAge={patient.age || null}
+            evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
+            professionalName={professionalData?.name || 'Profissional'}
+            professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            overallScore={savedOverallScore}
+          />
+        </div>
+      );
+
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const opt = {
+        margin: [10, 10],
+        filename: `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      await html2pdf().set(opt).from(root).save();
+      
+      document.body.removeChild(container);
+      
+      toast.dismiss();
+      toast.success("Texto de Avaliação gerado com sucesso!");
+    } catch (error: any) {
+      console.error("Erro ao gerar texto:", error);
+      toast.dismiss();
+      
+      if (error.message?.includes('429') || error.status === 429) {
+        toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
+      } else if (error.message?.includes('402') || error.status === 402) {
+        toast.error("Créditos insuficientes. Adicione créditos à sua conta Lovable AI.");
+      } else {
+        toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
+      }
+    } finally {
+      setIsGeneratingText(false);
+    }
+  };
+
   const handleGenerateEvaluationText = async () => {
     if (!selectedPatient) {
       toast.error("Selecione um paciente primeiro");
@@ -1791,7 +2001,7 @@ export default function Evaluation() {
                       onToggleComparison={handleToggleComparison}
                       onLoadEvaluation={handleLoadEvaluation}
                       onDeleteEvaluation={deleteEvaluation}
-                      onDownloadEvaluation={handleDownloadSavedEvaluation}
+                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
                       onEditEvaluation={handleEditEvaluation}
                     />
                   </Card>
