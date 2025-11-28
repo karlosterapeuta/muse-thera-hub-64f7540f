@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil } from "lucide-react";
+import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil, User } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 
 interface EvaluationHistoryProps {
@@ -143,6 +143,19 @@ export function EvaluationHistory({
                     className="mt-1"
                   />
                   <div className="flex-1 min-w-0">
+                    {evaluation.patient_name && (
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <User className="h-3.5 w-3.5 text-purple-600" />
+                        <span className="font-medium text-purple-700 dark:text-purple-300 text-sm">
+                          {evaluation.patient_name}
+                        </span>
+                        {evaluation.patient_age && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            ({evaluation.patient_age} anos)
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="font-semibold text-gray-800 dark:text-gray-200">
                         {format(new Date(evaluation.date), "dd/MM/yyyy", { locale: ptBR })}
