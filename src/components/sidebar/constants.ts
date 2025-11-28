@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Stamp,
   GraduationCap,
+  Database,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -49,6 +50,7 @@ export const toolsMenuItems = [
 
 export const managementMenuItems = [
   { icon: DollarSign, text: "💰 Gestão Financeira", path: "/finance", gradient: "from-yellow-500 to-orange-600", isNew: true },
+  { icon: Database, text: "💾 Backup de Dados", path: "/backup", gradient: "from-slate-500 to-zinc-600", isNew: true },
 ];
 
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {

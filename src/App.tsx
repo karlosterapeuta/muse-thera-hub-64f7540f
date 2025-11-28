@@ -73,6 +73,9 @@ import CoursesPage from "./pages/courses";
 import CoursePlayerPage from "./pages/courses/[courseId]";
 import CourseAdminPage from "./pages/courses/admin";
 
+// Backup page
+import BackupPage from "./pages/backup";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -177,6 +180,7 @@ const App = () => {
             <Route path="courses" element={<CoursesPage />} />
             <Route path="courses/:courseId" element={<CoursePlayerPage />} />
             <Route path="courses/admin" element={<CourseAdminPage />} />
+            <Route path="backup" element={<BackupPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
