@@ -13,7 +13,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
@@ -591,6 +591,118 @@ export default function Evaluation() {
   };
 
   const { data: professionalData } = useProfessionalData();
+
+  const handleDownloadSavedEvaluation = async (evaluation: SavedEvaluation) => {
+    toast.loading("Gerando PDF da avaliação salva...");
+    
+    try {
+      // Converter URLs para Base64
+      let signatureBase64: string | null = null;
+      let stampBase64: string | null = null;
+      let photoBase64: string | null = null;
+
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      }
+
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      if (photoUrl) {
+        photoBase64 = await imageUrlToBase64(photoUrl);
+      }
+
+      const savedOverallScore: any = evaluation.content?.overallScore || {};
+      const fullOverallScore = {
+        raw: savedOverallScore.raw || 0,
+        max: savedOverallScore.max || 100,
+        percentage: savedOverallScore.percentage || 0,
+        completionPercentage: savedOverallScore.completionPercentage || savedOverallScore.percentage || 0,
+        evaluatedDomains: savedOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
+        totalDomains: savedOverallScore.totalDomains || evaluationDomains.length,
+        evaluatedParameters: savedOverallScore.evaluatedParameters || 0,
+        totalParameters: savedOverallScore.totalParameters || 0
+      };
+
+      const pdfContent = (
+        <div id="saved-evaluation-pdf-content" style={{ display: 'block' }}>
+          <EnhancedMuseteraReportPDF
+            patientName={selectedPatientData?.name || 'Paciente'}
+            professionalData={professionalData}
+            categoryData={[]}
+            pieData={[
+              { name: "Desenvolvido", value: fullOverallScore.percentage },
+              { name: "A desenvolver", value: 100 - fullOverallScore.percentage }
+            ]}
+            radarData={evaluation.content?.domainScores?.map((d: any) => ({
+              name: d.domain?.replace("Domínio ", "") || "Domínio",
+              value: d.score || 0,
+              fullMark: 100
+            })) || []}
+            selectedParameters={evaluation.content?.selections || {}}
+            overallScore={fullOverallScore}
+            evaluationDomains={evaluationDomains}
+            evaluationDate={new Date(evaluation.date)}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            patientData={{
+              age: selectedPatientData?.age || undefined,
+              birthDate: selectedPatientData?.birth_date || undefined
+            }}
+          />
+        </div>
+      );
+
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const opt = {
+        margin: [8, 8],
+        filename: `avaliacao-${selectedPatientData?.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 1.8,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
+
+      await html2pdf().set(opt).from(root).save();
+      
+      document.body.removeChild(container);
+      
+      toast.dismiss();
+      toast.success("PDF da avaliação baixado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast.dismiss();
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+    }
+  };
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -1531,6 +1643,36 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
+              {/* Header com informações do paciente */}
+              {selectedPatientData ? (
+                <Card className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
+                      <User className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100 truncate">
+                        {selectedPatientData.name}
+                      </h3>
+                      <p className="text-sm text-purple-700 dark:text-purple-300">
+                        {selectedPatientData.age ? `${selectedPatientData.age} anos` : ''}
+                        {selectedPatientData.birth_date && ` • Nascido em ${format(new Date(selectedPatientData.birth_date), 'dd/MM/yyyy')}`}
+                      </p>
+                    </div>
+                    <div className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-medium">
+                      {savedEvaluations.length} avaliações salvas
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                <Card className="mb-6 p-6 text-center bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
+                  <AlertTriangle className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mx-auto mb-2" />
+                  <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+                    Selecione um paciente para visualizar o histórico de avaliações
+                  </p>
+                </Card>
+              )}
+              
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <EvaluationHistory
                   evaluations={savedEvaluations}
@@ -1539,6 +1681,7 @@ export default function Evaluation() {
                   onToggleComparison={handleToggleComparison}
                   onLoadEvaluation={handleLoadEvaluation}
                   onDeleteEvaluation={deleteEvaluation}
+                  onDownloadEvaluation={handleDownloadSavedEvaluation}
                 />
                 <div className="lg:col-span-2">
                   <EvaluationComparison

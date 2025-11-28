@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Trash2, FileText, Loader2, History, CheckCircle2 } from "lucide-react";
+import { Trash2, FileText, Loader2, History, CheckCircle2, Download } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 
 interface EvaluationHistoryProps {
@@ -27,6 +27,7 @@ interface EvaluationHistoryProps {
   onToggleComparison: (id: string) => void;
   onLoadEvaluation: (evaluation: SavedEvaluation) => void;
   onDeleteEvaluation: (id: string) => void;
+  onDownloadEvaluation?: (evaluation: SavedEvaluation) => void;
   maxComparisons?: number;
 }
 
@@ -49,9 +50,18 @@ export function EvaluationHistory({
   onToggleComparison,
   onLoadEvaluation,
   onDeleteEvaluation,
+  onDownloadEvaluation,
   maxComparisons = 4,
 }: EvaluationHistoryProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (evaluation: SavedEvaluation) => {
+    if (!onDownloadEvaluation) return;
+    setDownloadingId(evaluation.id);
+    await onDownloadEvaluation(evaluation);
+    setDownloadingId(null);
+  };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
@@ -157,6 +167,22 @@ export function EvaluationHistory({
                         <FileText className="h-3 w-3 mr-1" />
                         Carregar
                       </Button>
+                      {onDownloadEvaluation && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDownload(evaluation)}
+                          disabled={downloadingId === evaluation.id}
+                          className="h-8 text-xs bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:hover:bg-green-900 dark:text-green-300 dark:border-green-800"
+                        >
+                          {downloadingId === evaluation.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                          ) : (
+                            <Download className="h-3 w-3 mr-1" />
+                          )}
+                          PDF
+                        </Button>
+                      )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
