@@ -663,41 +663,13 @@ export default function MusicoterapiaPage() {
       {/* Header */}
       <Card className="border-2 border-primary/20 rounded-none sm:rounded-lg">
         <CardHeader className="p-4 sm:p-6">
-          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-            {/* Left section: Back button + Title */}
-            <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/dashboard')}
-                className="w-fit"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-              
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 shrink-0">
-                  <Music className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <CardTitle className="text-lg sm:text-2xl flex flex-wrap items-center gap-2">
-                    <span>Relatório MuseTera TEA</span>
-                    <Badge variant="secondary" className="text-xs">TEA</Badge>
-                  </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">
-                    Relatórios clínicos especializados em Musicoterapia para TEA
-                  </CardDescription>
-                </div>
-              </div>
-            </div>
-
-            {/* Right section: Action buttons */}
-            <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0 w-full lg:w-auto">
+          <div className="flex flex-col space-y-4">
+            {/* MOBILE: Action buttons at TOP for visibility */}
+            <div className="flex flex-col space-y-2 sm:hidden">
               <Button
                 variant={viewMode === 'create' ? 'default' : 'outline'}
                 onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                className={`w-full sm:w-auto ${viewMode === 'create' ? 
+                className={`w-full ${viewMode === 'create' ? 
                   "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
                   "border-primary/30 hover:bg-primary/10"
                 }`}
@@ -705,12 +677,12 @@ export default function MusicoterapiaPage() {
                 {viewMode === 'create' ? (
                   <>
                     <List className="h-4 w-4 mr-2" />
-                    Ver Relatórios
+                    Ver Relatórios Salvos
                   </>
                 ) : (
                   <>
                     <Wand2 className="h-4 w-4 mr-2" />
-                    Criar Novo
+                    Criar Novo Relatório
                   </>
                 )}
               </Button>
@@ -720,7 +692,7 @@ export default function MusicoterapiaPage() {
                   variant="outline"
                   onClick={handleSaveReport}
                   disabled={isSaving}
-                  className="w-full sm:w-auto"
+                  className="w-full"
                 >
                   {isSaving ? (
                     <>
@@ -735,6 +707,81 @@ export default function MusicoterapiaPage() {
                   )}
                 </Button>
               )}
+            </div>
+
+            {/* Header with title and desktop buttons */}
+            <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+              {/* Left: Back button + Title */}
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/dashboard')}
+                  className="w-fit"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Voltar
+                </Button>
+                
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 shrink-0">
+                    <Music className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <CardTitle className="text-lg sm:text-2xl flex flex-wrap items-center gap-2">
+                      <span>Relatório MuseTera TEA</span>
+                      <Badge variant="secondary" className="text-xs">TEA</Badge>
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Relatórios clínicos especializados
+                    </CardDescription>
+                  </div>
+                </div>
+              </div>
+
+              {/* DESKTOP: Action buttons on right */}
+              <div className="hidden sm:flex sm:flex-row sm:space-x-2">
+                <Button
+                  variant={viewMode === 'create' ? 'default' : 'outline'}
+                  onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
+                  className={`${viewMode === 'create' ? 
+                    "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
+                    "border-primary/30 hover:bg-primary/10"
+                  }`}
+                >
+                  {viewMode === 'create' ? (
+                    <>
+                      <List className="h-4 w-4 mr-2" />
+                      Ver Relatórios
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="h-4 w-4 mr-2" />
+                      Criar Novo
+                    </>
+                  )}
+                </Button>
+
+                {viewMode === 'create' && (
+                  <Button
+                    variant="outline"
+                    onClick={handleSaveReport}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Salvar
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
