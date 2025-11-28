@@ -5,6 +5,9 @@ import { toast } from "sonner";
 export interface SavedEvaluation {
   id: string;
   patient_id: string;
+  patient_name?: string;
+  patient_age?: number;
+  patient_birth_date?: string;
   date: string;
   type: string;
   content: {
@@ -32,7 +35,9 @@ export interface SavedEvaluation {
 
 export function useEvaluationStorage(patientId: string | null) {
   const [savedEvaluations, setSavedEvaluations] = useState<SavedEvaluation[]>([]);
+  const [allEvaluations, setAllEvaluations] = useState<SavedEvaluation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const loadEvaluations = useCallback(async () => {
@@ -45,13 +50,21 @@ export function useEvaluationStorage(patientId: string | null) {
     try {
       const { data, error } = await supabase
         .from("assessments")
-        .select("*")
+        .select("*, patients(name, age, birth_date)")
         .eq("patient_id", patientId)
         .in("type", ["avaliacao_inicial", "avaliacao_progresso", "avaliacao_periodica", "avaliacao_final", "musetera_evaluation"])
         .order("date", { ascending: false });
 
       if (error) throw error;
-      setSavedEvaluations((data as unknown as SavedEvaluation[]) || []);
+      
+      const evaluationsWithPatient = (data || []).map((item: any) => ({
+        ...item,
+        patient_name: item.patients?.name,
+        patient_age: item.patients?.age,
+        patient_birth_date: item.patients?.birth_date,
+      }));
+      
+      setSavedEvaluations(evaluationsWithPatient as SavedEvaluation[]);
     } catch (error) {
       console.error("Erro ao carregar avaliações:", error);
       toast.error("Erro ao carregar avaliações salvas");
@@ -59,6 +72,33 @@ export function useEvaluationStorage(patientId: string | null) {
       setIsLoading(false);
     }
   }, [patientId]);
+
+  const loadAllEvaluations = useCallback(async () => {
+    setIsLoadingAll(true);
+    try {
+      const { data, error } = await supabase
+        .from("assessments")
+        .select("*, patients(name, age, birth_date)")
+        .in("type", ["avaliacao_inicial", "avaliacao_progresso", "avaliacao_periodica", "avaliacao_final", "musetera_evaluation"])
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+      
+      const evaluationsWithPatient = (data || []).map((item: any) => ({
+        ...item,
+        patient_name: item.patients?.name,
+        patient_age: item.patients?.age,
+        patient_birth_date: item.patients?.birth_date,
+      }));
+      
+      setAllEvaluations(evaluationsWithPatient as SavedEvaluation[]);
+    } catch (error) {
+      console.error("Erro ao carregar todas as avaliações:", error);
+      toast.error("Erro ao carregar avaliações");
+    } finally {
+      setIsLoadingAll(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadEvaluations();
@@ -183,11 +223,14 @@ export function useEvaluationStorage(patientId: string | null) {
 
   return {
     savedEvaluations,
+    allEvaluations,
     isLoading,
+    isLoadingAll,
     isSaving,
     saveEvaluation,
     updateEvaluation,
     deleteEvaluation,
     loadEvaluations,
+    loadAllEvaluations,
   };
 }

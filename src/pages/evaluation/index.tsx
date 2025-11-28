@@ -76,12 +76,20 @@ export default function Evaluation() {
   
   const {
     savedEvaluations,
+    allEvaluations,
     isLoading: isLoadingEvaluations,
+    isLoadingAll,
     isSaving,
     saveEvaluation,
     updateEvaluation,
     deleteEvaluation,
+    loadAllEvaluations,
   } = useEvaluationStorage(selectedPatient || null);
+
+  // Load all evaluations on mount for comparison tab
+  useEffect(() => {
+    loadAllEvaluations();
+  }, [loadAllEvaluations]);
 
   useEffect(() => {
     async function fetchPatients() {
@@ -604,6 +612,11 @@ export default function Evaluation() {
   };
 
   const handleEditEvaluation = (evaluation: SavedEvaluation) => {
+    // Select the correct patient if editing from another patient's evaluation
+    if (evaluation.patient_id && evaluation.patient_id !== selectedPatient) {
+      setSelectedPatient(evaluation.patient_id);
+    }
+    
     if (evaluation.content) {
       setSelections(evaluation.content.selections || {});
       setObservations(evaluation.content.observations || {});
@@ -1732,40 +1745,35 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              {/* Header com informações do paciente */}
-              {selectedPatientData ? (
-                <Card className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800">
-                  <div className="flex items-center gap-4 flex-wrap">
-                    <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
-                      <User className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100 truncate">
-                        {selectedPatientData.name}
-                      </h3>
-                      <p className="text-sm text-purple-700 dark:text-purple-300">
-                        {selectedPatientData.age ? `${selectedPatientData.age} anos` : ''}
-                        {selectedPatientData.birth_date && ` • Nascido em ${format(new Date(selectedPatientData.birth_date), 'dd/MM/yyyy')}`}
-                      </p>
-                    </div>
+              {/* Header geral com estatísticas */}
+              <Card className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
+                    <FileBarChart className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100">
+                      Histórico Geral de Avaliações
+                    </h3>
+                    <p className="text-sm text-purple-700 dark:text-purple-300">
+                      Todas as avaliações salvas no sistema
+                    </p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
                     <div className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-medium">
-                      {savedEvaluations.length} avaliações salvas
+                      {allEvaluations.length} avaliações
+                    </div>
+                    <div className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 px-3 py-1 rounded-full text-sm font-medium">
+                      {new Set(allEvaluations.map(e => e.patient_id)).size} pacientes
                     </div>
                   </div>
-                </Card>
-              ) : (
-                <Card className="mb-6 p-6 text-center bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
-                  <AlertTriangle className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mx-auto mb-2" />
-                  <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-                    Selecione um paciente para visualizar o histórico de avaliações
-                  </p>
-                </Card>
-              )}
+                </div>
+              </Card>
               
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <EvaluationHistory
-                  evaluations={savedEvaluations}
-                  isLoading={isLoadingEvaluations}
+                  evaluations={allEvaluations}
+                  isLoading={isLoadingAll}
                   selectedForComparison={selectedForComparison}
                   onToggleComparison={handleToggleComparison}
                   onLoadEvaluation={handleLoadEvaluation}
@@ -1775,7 +1783,7 @@ export default function Evaluation() {
                 />
                 <div className="lg:col-span-2">
                   <EvaluationComparison
-                    evaluations={savedEvaluations}
+                    evaluations={allEvaluations}
                     selectedIds={selectedForComparison}
                   />
                 </div>
