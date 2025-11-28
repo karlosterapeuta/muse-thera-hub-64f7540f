@@ -22,8 +22,11 @@ verify_jwt = true
 [functions.generate-devolutiva-text]
 verify_jwt = true
 
+[functions.backup-full-system]
+verify_jwt = true
+
 # Add rate limiting and other security settings for edge functions
 [functions]
-timeout = 60
+timeout = 120
 cpu_limit = 0.5
 memory_limit = 512
