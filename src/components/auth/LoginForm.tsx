@@ -104,7 +104,7 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
           <div className="absolute inset-2 md:inset-3 bg-gradient-to-br from-white/30 to-transparent rounded-full"></div>
           <div className="absolute -inset-1 md:-inset-2 bg-gradient-to-r from-primary to-secondary rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse-slow"></div>
           <img 
-            src="/lovable-uploads/6302f00d-e2bf-4d19-95f3-eb52823c19d8.png" 
+            src="/lovable-uploads/musetera-logo-new.png" 
             alt="MuseTera Logo" 
             className="relative w-full h-full object-cover filter drop-shadow-2xl z-10 rounded-full"
           />
