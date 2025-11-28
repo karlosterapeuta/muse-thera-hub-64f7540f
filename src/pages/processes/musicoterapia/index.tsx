@@ -662,52 +662,55 @@ export default function MusicoterapiaPage() {
     <div className="w-full max-w-full mx-auto px-0 py-0 space-y-6">
       {/* Header */}
       <Card className="border-2 border-primary/20 rounded-none sm:rounded-lg">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            {/* Left section: Back button + Title */}
+            <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/dashboard')}
+                className="w-fit"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Voltar
               </Button>
               
               <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
-                  <Music className="h-6 w-6 text-primary" />
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 shrink-0">
+                  <Music className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <div>
-                  <CardTitle className="text-2xl flex items-center space-x-2">
+                <div className="min-w-0">
+                  <CardTitle className="text-lg sm:text-2xl flex flex-wrap items-center gap-2">
                     <span>Relatório MuseTera TEA</span>
-                    <Badge variant="secondary">TEA Especializado</Badge>
+                    <Badge variant="secondary" className="text-xs">TEA</Badge>
                   </CardTitle>
-                  <CardDescription>
-                    Relatórios clínicos especializados em Musicoterapia para Transtorno do Espectro Autista
+                  <CardDescription className="text-xs sm:text-sm">
+                    Relatórios clínicos especializados em Musicoterapia para TEA
                   </CardDescription>
                 </div>
               </div>
             </div>
 
-            <div className="flex space-x-2">
+            {/* Right section: Action buttons */}
+            <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0 w-full lg:w-auto">
               <Button
                 variant={viewMode === 'create' ? 'default' : 'outline'}
                 onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                className={viewMode === 'create' ? 
+                className={`w-full sm:w-auto ${viewMode === 'create' ? 
                   "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
                   "border-primary/30 hover:bg-primary/10"
-                }
+                }`}
               >
                 {viewMode === 'create' ? (
                   <>
                     <List className="h-4 w-4 mr-2" />
-                    Ver Relatórios Salvos
+                    Ver Relatórios
                   </>
                 ) : (
                   <>
                     <Wand2 className="h-4 w-4 mr-2" />
-                    Criar Novo Relatório
+                    Criar Novo
                   </>
                 )}
               </Button>
@@ -717,6 +720,7 @@ export default function MusicoterapiaPage() {
                   variant="outline"
                   onClick={handleSaveReport}
                   disabled={isSaving}
+                  className="w-full sm:w-auto"
                 >
                   {isSaving ? (
                     <>
@@ -878,22 +882,24 @@ export default function MusicoterapiaPage() {
             <div className="grid gap-4">
               {filteredReports.map((report) => (
                 <Card key={report.id} className="hover:shadow-lg transition-shadow rounded-none sm:rounded-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Music className="h-5 w-5 text-primary" />
-                          <h3 className="font-semibold">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                      {/* Patient info */}
+                      <div className="space-y-2 min-w-0">
+                        <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                          <Music className="h-5 w-5 text-primary shrink-0" />
+                          <h3 className="font-semibold truncate">
                             {report.patient?.name || 'Paciente não identificado'}
                           </h3>
-                          <Badge variant="secondary">Musicoterapia</Badge>
+                          <Badge variant="secondary" className="text-xs shrink-0">Musicoterapia</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
                           Criado em {new Date(report.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
                       
-                      <div className="flex items-center space-x-2">
+                      {/* Action buttons - grid on mobile, flex on desktop */}
+                      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:space-x-2 sm:shrink-0">
                         <Button
                           variant="outline"
                           size="sm"
@@ -901,6 +907,7 @@ export default function MusicoterapiaPage() {
                             setSelectedReport(report);
                             setShowViewDialog(true);
                           }}
+                          className="text-xs sm:text-sm"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           Ver
@@ -909,6 +916,7 @@ export default function MusicoterapiaPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditReport(report)}
+                          className="text-xs sm:text-sm"
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Editar
@@ -918,18 +926,20 @@ export default function MusicoterapiaPage() {
                           size="sm"
                           onClick={() => handleDownloadReportPDF(report)}
                           disabled={isExporting}
+                          className="text-xs sm:text-sm"
                         >
                           {isExporting ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
                           ) : (
                             <Download className="h-4 w-4 mr-1" />
                           )}
-                          Baixar PDF
+                          PDF
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteClick(report)}
+                          className="text-xs sm:text-sm text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />
                           Excluir
