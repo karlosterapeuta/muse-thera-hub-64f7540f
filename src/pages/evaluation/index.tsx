@@ -13,7 +13,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
@@ -70,6 +70,7 @@ export default function Evaluation() {
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [activeTab, setActiveTab] = useState("evaluation");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
+  const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
   
@@ -78,6 +79,7 @@ export default function Evaluation() {
     isLoading: isLoadingEvaluations,
     isSaving,
     saveEvaluation,
+    updateEvaluation,
     deleteEvaluation,
   } = useEvaluationStorage(selectedPatient || null);
 
@@ -560,14 +562,33 @@ export default function Evaluation() {
       }))
     }));
 
-    await saveEvaluation(
-      evaluationDate,
-      selectedEvaluation,
-      selections,
-      observations,
-      domainScoresData,
-      overallScore
-    );
+    let success;
+    
+    if (editingEvaluationId) {
+      // Atualizar avaliação existente
+      success = await updateEvaluation(
+        editingEvaluationId,
+        evaluationDate,
+        selectedEvaluation,
+        selections,
+        observations,
+        domainScoresData,
+        overallScore
+      );
+      if (success) {
+        setEditingEvaluationId(null);
+      }
+    } else {
+      // Criar nova avaliação
+      success = await saveEvaluation(
+        evaluationDate,
+        selectedEvaluation,
+        selections,
+        observations,
+        domainScoresData,
+        overallScore
+      );
+    }
   };
 
   const handleLoadEvaluation = (evaluation: SavedEvaluation) => {
@@ -580,6 +601,28 @@ export default function Evaluation() {
       }
       toast.success("Avaliação carregada com sucesso!");
     }
+  };
+
+  const handleEditEvaluation = (evaluation: SavedEvaluation) => {
+    if (evaluation.content) {
+      setSelections(evaluation.content.selections || {});
+      setObservations(evaluation.content.observations || {});
+      setEvaluationDate(new Date(evaluation.date));
+      if (evaluation.content.evaluationType) {
+        setSelectedEvaluation(evaluation.content.evaluationType);
+      }
+    }
+    setEditingEvaluationId(evaluation.id);
+    setActiveTab("evaluation");
+    toast.info("Modo de edição ativado. Faça as alterações e clique em 'Atualizar Avaliação'.");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEvaluationId(null);
+    setSelections({});
+    setObservations({});
+    setEvaluationDate(new Date());
+    toast.info("Modo de edição cancelado");
   };
 
   const handleToggleComparison = (id: string) => {
@@ -1239,21 +1282,39 @@ export default function Evaluation() {
                     <Button
                       onClick={handleSaveEvaluation}
                       disabled={isSaving || !selectedPatient}
-                      className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-teal-500 text-white border-0 hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                      className={`flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
+                        editingEvaluationId 
+                          ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                          : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
+                      }`}
                     >
                       {isSaving ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Save className="h-4 w-4" />
                       )}
-                      {isSaving ? "Salvando..." : "Salvar Avaliação"}
+                      {isSaving 
+                        ? (editingEvaluationId ? "Atualizando..." : "Salvando...") 
+                        : (editingEvaluationId ? "Atualizar Avaliação" : "Salvar Avaliação")
+                      }
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Salva a avaliação atual para o paciente selecionado</p>
+                    <p>{editingEvaluationId ? "Atualiza a avaliação em edição" : "Salva a avaliação atual para o paciente selecionado"}</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
+
+              {editingEvaluationId && (
+                <Button
+                  variant="outline"
+                  onClick={handleCancelEdit}
+                  className="flex items-center gap-2 text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800"
+                >
+                  <X className="h-4 w-4" />
+                  Cancelar Edição
+                </Button>
+              )}
             </div>
           </div>
 
@@ -1280,6 +1341,34 @@ export default function Evaluation() {
             </TabsList>
 
             <TabsContent value="evaluation" className="space-y-8 mt-8">
+              {/* Banner de modo de edição */}
+              {editingEvaluationId && (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-4 mb-6 animate-pulse">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
+                        <Save className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-amber-800">Modo de Edição Ativado</h3>
+                        <p className="text-sm text-amber-700">
+                          Faça as alterações desejadas e clique em "Atualizar Avaliação" para salvar
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancelEdit}
+                      className="text-amber-700 border-amber-300 hover:bg-amber-100"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
                 <p className="text-blue-700 text-sm">
@@ -1682,6 +1771,7 @@ export default function Evaluation() {
                   onLoadEvaluation={handleLoadEvaluation}
                   onDeleteEvaluation={deleteEvaluation}
                   onDownloadEvaluation={handleDownloadSavedEvaluation}
+                  onEditEvaluation={handleEditEvaluation}
                 />
                 <div className="lg:col-span-2">
                   <EvaluationComparison

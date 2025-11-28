@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Trash2, FileText, Loader2, History, CheckCircle2, Download } from "lucide-react";
+import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 
 interface EvaluationHistoryProps {
@@ -28,6 +28,7 @@ interface EvaluationHistoryProps {
   onLoadEvaluation: (evaluation: SavedEvaluation) => void;
   onDeleteEvaluation: (id: string) => void;
   onDownloadEvaluation?: (evaluation: SavedEvaluation) => void;
+  onEditEvaluation?: (evaluation: SavedEvaluation) => void;
   maxComparisons?: number;
 }
 
@@ -51,6 +52,7 @@ export function EvaluationHistory({
   onLoadEvaluation,
   onDeleteEvaluation,
   onDownloadEvaluation,
+  onEditEvaluation,
   maxComparisons = 4,
 }: EvaluationHistoryProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -167,6 +169,17 @@ export function EvaluationHistory({
                         <FileText className="h-3 w-3 mr-1" />
                         Carregar
                       </Button>
+                      {onEditEvaluation && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onEditEvaluation(evaluation)}
+                          className="h-8 text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 dark:text-amber-300 dark:border-amber-800"
+                        >
+                          <Pencil className="h-3 w-3 mr-1" />
+                          Editar
+                        </Button>
+                      )}
                       {onDownloadEvaluation && (
                         <Button
                           size="sm"

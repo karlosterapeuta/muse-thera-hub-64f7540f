@@ -117,6 +117,51 @@ export function useEvaluationStorage(patientId: string | null) {
     }
   };
 
+  const updateEvaluation = async (
+    evaluationId: string,
+    date: Date,
+    evaluationType: string,
+    selections: Record<string, string>,
+    observations: Record<string, string>,
+    domainScores: SavedEvaluation["content"]["domainScores"],
+    overallScore: SavedEvaluation["content"]["overallScore"]
+  ) => {
+    if (!patientId) {
+      toast.error("Selecione um paciente antes de atualizar");
+      return false;
+    }
+
+    setIsSaving(true);
+    try {
+      const evaluationTypeMap: Record<string, string> = {
+        "1": "avaliacao_inicial",
+        "2": "avaliacao_progresso",
+        "3": "avaliacao_periodica",
+        "4": "avaliacao_final",
+      };
+
+      const type = evaluationTypeMap[evaluationType] || "musetera_evaluation";
+      const content = { selections, observations, domainScores, overallScore, evaluationType };
+
+      const { error } = await supabase
+        .from("assessments")
+        .update({ date: date.toISOString(), type, content })
+        .eq("id", evaluationId);
+
+      if (error) throw error;
+
+      toast.success("Avaliação atualizada com sucesso!");
+      await loadEvaluations();
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar avaliação:", error);
+      toast.error("Erro ao atualizar avaliação");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const deleteEvaluation = async (evaluationId: string) => {
     try {
       const { error } = await supabase
@@ -141,6 +186,7 @@ export function useEvaluationStorage(patientId: string | null) {
     isLoading,
     isSaving,
     saveEvaluation,
+    updateEvaluation,
     deleteEvaluation,
     loadEvaluations,
   };
