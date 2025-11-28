@@ -1064,24 +1064,6 @@ export default function Evaluation() {
                   <SelectItem value="4">Avaliação Final</SelectItem>
                 </SelectContent>
               </Select>
-              
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={handleGenerateParametersPDF}
-                      variant="outline"
-                      className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      <FileBarChart className="h-4 w-4" />
-                      Parâmetros
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Gera PDF com gráficos e dados quantitativos</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
 
               <TooltipProvider>
                 <TooltipComponent>
