@@ -12,6 +12,7 @@ import { ActivityHistoryTab } from "./ActivityHistoryTab";
 import { AccessManagementTab } from "./AccessManagementTab";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UserDetailsDialogProps {
   user: Profile | null;
@@ -58,72 +59,74 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
         </DialogHeader>
 
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="general" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
+            <TabsTrigger value="general" className="flex items-center gap-2 py-2">
               <User className="h-4 w-4" />
-              Informações Gerais
+              <span className="text-xs sm:text-sm">Informações Gerais</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
+            <TabsTrigger value="activity" className="flex items-center gap-2 py-2">
               <Activity className="h-4 w-4" />
-              Histórico
+              <span className="text-xs sm:text-sm">Histórico</span>
             </TabsTrigger>
-            <TabsTrigger value="access" className="flex items-center gap-2">
+            <TabsTrigger value="access" className="flex items-center gap-2 py-2">
               <Settings className="h-4 w-4" />
-              Gestão de Acesso
+              <span className="text-xs sm:text-sm">Gestão de Acesso</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general" className="mt-6">
-            <div className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">ID do Usuário</p>
-                  <p className="text-sm font-mono">{user.id}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Nome</p>
-                  <p className="text-sm">{user.name || "Não informado"}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
-                    {user.status === 'active' ? 'Ativo' : 'Inativo'}
-                  </Badge>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Função</p>
-                  <Badge variant="outline">
-                    {user.user_roles?.[0]?.role === 'admin' ? 'Administrador' : 'Profissional'}
-                  </Badge>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Data de Cadastro</p>
-                  <p className="text-sm">
-                    {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Expiração do Plano</p>
-                  <p className="text-sm">
-                    {user.expires_at 
-                      ? new Date(user.expires_at).toLocaleDateString('pt-BR')
-                      : 'Ilimitado'}
-                  </p>
+          <ScrollArea className="h-[50vh] sm:h-[40vh] mt-4">
+            <TabsContent value="general" className="mt-2">
+              <div className="space-y-4">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">ID do Usuário</p>
+                    <p className="text-xs sm:text-sm font-mono break-all">{user.id}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Nome</p>
+                    <p className="text-sm">{user.name || "Não informado"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Status</p>
+                    <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                      {user.status === 'active' ? 'Ativo' : 'Inativo'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Função</p>
+                    <Badge variant="outline">
+                      {user.user_roles?.[0]?.role === 'admin' ? 'Administrador' : 'Profissional'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Data de Cadastro</p>
+                    <p className="text-sm">
+                      {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Expiração do Plano</p>
+                    <p className="text-sm">
+                      {user.expires_at 
+                        ? new Date(user.expires_at).toLocaleDateString('pt-BR')
+                        : 'Ilimitado'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="activity" className="mt-6">
-            <ActivityHistoryTab user={user} />
-          </TabsContent>
+            <TabsContent value="activity" className="mt-2">
+              <ActivityHistoryTab user={user} />
+            </TabsContent>
 
-          <TabsContent value="access" className="mt-6">
-            <AccessManagementTab 
-              user={user} 
-              onClose={() => onOpenChange(false)}
-            />
-          </TabsContent>
+            <TabsContent value="access" className="mt-2">
+              <AccessManagementTab 
+                user={user} 
+                onClose={() => onOpenChange(false)}
+              />
+            </TabsContent>
+          </ScrollArea>
         </Tabs>
       </DialogContent>
     </Dialog>
