@@ -37,7 +37,7 @@ Olá! Suas credenciais de acesso ao MuseTera foram criadas:
 🔑 Senha: ${userData.password}
 👤 Perfil: ${userData.role === 'admin' ? 'Administrador' : 'Profissional'}
 ⏰ Limite de Acesso: ${formatAccessLimit(userData.accessLimit)}
-🌐 Link de Acesso: https://portal-musetera.netlify.app/login
+🌐 Link de Acesso: https://portal.musetera.com.br/login
 
 Bem-vindo(a) ao MuseTera! 🎼`;
   };
@@ -114,7 +114,7 @@ Bem-vindo(a) ao MuseTera! 🎼`;
                   <Globe className="h-4 w-4 text-primary" />
                   <div>
                     <span className="text-sm font-medium">Link de Acesso:</span>
-                    <p className="text-sm text-muted-foreground">https://portal-musetera.netlify.app/login</p>
+                    <p className="text-sm text-muted-foreground">https://portal.musetera.com.br/login</p>
                   </div>
                 </div>
               </div>
