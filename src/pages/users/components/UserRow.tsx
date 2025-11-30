@@ -9,6 +9,7 @@ import { ExpirationBadge } from "./ExpirationBadge";
 import { Profile } from "../types";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UserRowProps {
   user: Profile;
@@ -64,24 +65,28 @@ export function UserRow({
           )}
         </div>
       </TableCell>
-      <TableCell className="space-x-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onViewDetails(user)}
-          title="Ver detalhes"
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-        
-        <DeleteUserDialog onDelete={() => onDeleteUser(user.id)} />
-        
-        {user.status === 'active' && (
-          <ForceLogoutDialog 
-            onForceLogout={() => onForceLogout(user.id, user.name)} 
-            isLoading={isLogoutLoading}
-          />
-        )}
+      <TableCell>
+        <ScrollArea className="max-h-20 w-full">
+          <div className="flex flex-col sm:flex-row gap-1 items-start sm:items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onViewDetails(user)}
+              title="Ver detalhes"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            
+            <DeleteUserDialog onDelete={() => onDeleteUser(user.id)} />
+            
+            {user.status === 'active' && (
+              <ForceLogoutDialog 
+                onForceLogout={() => onForceLogout(user.id, user.name)} 
+                isLoading={isLogoutLoading}
+              />
+            )}
+          </div>
+        </ScrollArea>
       </TableCell>
     </TableRow>
   );
