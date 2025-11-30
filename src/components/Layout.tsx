@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -14,10 +14,13 @@ import { NotificationBell } from "./header/NotificationBell";
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
 import ThemeToggle from "./ThemeToggle";
 import { Separator } from "./ui/separator";
+import { logPageView } from "@/utils/activityLogger";
 
 interface LayoutProps {
   children?: React.ReactNode;
 }
+
+const publicRoutes = ["/", "/login", "/reset-password"];
 
 function LayoutContent({ children }: LayoutProps) {
   const location = useLocation();
@@ -25,6 +28,7 @@ function LayoutContent({ children }: LayoutProps) {
   const { toast } = useToast();
   const { toggleSidebar } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
+  const lastTrackedPath = useRef<string>("");
 
   // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
   useEffect(() => {
@@ -38,10 +42,35 @@ function LayoutContent({ children }: LayoutProps) {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [toggleSidebar]);
 
+  // Track page views
+  useEffect(() => {
+    const trackPageView = async () => {
+      // Skip public routes
+      if (publicRoutes.includes(location.pathname)) {
+        return;
+      }
+      
+      // Skip if same path (avoid duplicate tracking)
+      if (lastTrackedPath.current === location.pathname) {
+        return;
+      }
+      
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          lastTrackedPath.current = location.pathname;
+          await logPageView(session.user.id, location.pathname);
+        }
+      } catch (error) {
+        console.error("Error tracking page view:", error);
+      }
+    };
+    
+    trackPageView();
+  }, [location.pathname]);
+
   // Route guard: check authentication and profile status for protected routes
   useEffect(() => {
-    const publicRoutes = ["/", "/login", "/reset-password"];
-    
     // Skip validation for public routes
     if (publicRoutes.includes(location.pathname)) {
       return;
