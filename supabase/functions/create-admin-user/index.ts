@@ -78,7 +78,13 @@ serve(async (req) => {
     }
 
     // Calculate expiration date based on access limit
-    const calculateExpirationDate = (limit: string) => {
+    // IMPORTANT: Admins get unlimited access (null expires_at)
+    const calculateExpirationDate = (limit: string, userRole: string): Date | null => {
+      // Admins always have unlimited access
+      if (userRole === 'admin') {
+        return null;
+      }
+      
       const now = new Date();
       switch (limit) {
         case '30-minutes':
@@ -94,7 +100,7 @@ serve(async (req) => {
       }
     };
 
-    const expirationDate = calculateExpirationDate(accessLimit || '30-days');
+    const expirationDate = calculateExpirationDate(accessLimit || '30-days', role);
 
     // Admin client with service role key
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
@@ -117,11 +123,12 @@ serve(async (req) => {
     const newUserId = authData.user.id;
 
     // Update profile with expiration date (trigger may have already created it)
+    // For admins, expires_at will be null (unlimited access)
     const { error: updateError } = await adminClient
       .from("profiles")
       .update({ 
         name, 
-        expires_at: expirationDate.toISOString(),
+        expires_at: expirationDate ? expirationDate.toISOString() : null,
         status: 'active'
       })
       .eq('id', newUserId);
@@ -134,7 +141,7 @@ serve(async (req) => {
         .insert({ 
           id: newUserId, 
           name, 
-          expires_at: expirationDate.toISOString(),
+          expires_at: expirationDate ? expirationDate.toISOString() : null,
           status: 'active'
         });
       if (insertError) {
@@ -143,7 +150,7 @@ serve(async (req) => {
       }
     }
     
-    console.log("Profile updated/created successfully for user:", newUserId, "expires_at:", expirationDate.toISOString());
+    console.log("Profile updated/created successfully for user:", newUserId, "expires_at:", expirationDate ? expirationDate.toISOString() : 'UNLIMITED (admin)');
 
     // Assign role
     const { error: assignRoleError } = await adminClient

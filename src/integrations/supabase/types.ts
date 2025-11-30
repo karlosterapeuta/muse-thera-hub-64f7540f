@@ -1309,6 +1309,10 @@ export type Database = {
       }
       is_user_access_expired: { Args: { user_id: string }; Returns: boolean }
       is_valid_uuid: { Args: { input_text: string }; Returns: boolean }
+      set_default_expiration_for_users: {
+        Args: { default_days?: number }
+        Returns: number
+      }
       update_user_expiration: {
         Args: { new_expires_at: string; target_user_id: string }
         Returns: boolean
