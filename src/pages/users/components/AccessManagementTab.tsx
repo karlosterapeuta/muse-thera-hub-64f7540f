@@ -25,6 +25,9 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
   const [extendDate, setExtendDate] = useState<Date>();
   const [limitDate, setLimitDate] = useState<Date>();
 
+  // Check if user is admin - admins have permanent unlimited access
+  const isUserAdmin = user.user_roles?.some(r => r.role === 'admin');
+
   // Calculate days remaining
   const now = new Date();
   const expirationDate = user.expires_at ? new Date(user.expires_at) : null;
@@ -33,6 +36,39 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
     : null;
   const isExpired = daysRemaining !== null && daysRemaining < 0;
   const isExpiringSoon = daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 7;
+
+  // If user is admin, show special protected UI
+  if (isUserAdmin) {
+    return (
+      <div className="space-y-6">
+        <Card className="border-2 border-emerald-500/50 bg-emerald-50/50 dark:bg-emerald-950/20 relative overflow-hidden">
+          <div className="h-2 w-full absolute top-0 left-0 bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-500" />
+          <CardContent className="pt-10 pb-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/50 mb-4">
+              <Shield className="h-8 w-8 text-emerald-600" />
+            </div>
+            <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
+              Administrador do Sistema
+            </h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Este usuário é o administrador principal do sistema e possui <strong>acesso ilimitado permanente</strong>.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 text-sm font-medium">
+              <CheckCircle className="h-4 w-4" />
+              Acesso protegido - Não pode ser alterado
+            </div>
+          </CardContent>
+        </Card>
+
+        <Alert className="border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800 dark:text-amber-200">
+            Por segurança, o acesso do administrador do sistema não pode ser modificado através desta interface.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const handleQuickRenew = async (days: number) => {
     const success = await renewPlan(user.id, user.name, days);

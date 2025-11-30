@@ -7,7 +7,32 @@ export function useAccessManagement() {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Check if user is admin - admins cannot have their access modified
+  const checkIsAdmin = async (userId: string): Promise<boolean> => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+    
+    return !!data;
+  };
+
+  const blockAdminAction = () => {
+    toast({
+      variant: "destructive",
+      title: "Ação não permitida",
+      description: "Não é possível alterar o acesso do administrador do sistema.",
+    });
+    return false;
+  };
+
   const renewPlan = async (userId: string, userName: string | null, days: number) => {
+    // Check if user is admin first
+    if (await checkIsAdmin(userId)) {
+      return blockAdminAction();
+    }
     setIsLoading(true);
     try {
       // Get current expiration date
@@ -61,6 +86,11 @@ export function useAccessManagement() {
   };
 
   const extendAccess = async (userId: string, userName: string | null, newDate: Date) => {
+    // Check if user is admin first
+    if (await checkIsAdmin(userId)) {
+      return blockAdminAction();
+    }
+    
     setIsLoading(true);
     try {
       const { error } = await supabase.rpc('update_user_expiration', {
@@ -92,6 +122,11 @@ export function useAccessManagement() {
   };
 
   const makeUnlimited = async (userId: string, userName: string | null) => {
+    // Check if user is admin first
+    if (await checkIsAdmin(userId)) {
+      return blockAdminAction();
+    }
+    
     setIsLoading(true);
     try {
       const { error } = await supabase.rpc('update_user_expiration', {
@@ -123,6 +158,11 @@ export function useAccessManagement() {
   };
 
   const setLimit = async (userId: string, userName: string | null, expirationDate: Date) => {
+    // Check if user is admin first
+    if (await checkIsAdmin(userId)) {
+      return blockAdminAction();
+    }
+    
     setIsLoading(true);
     try {
       const { error } = await supabase.rpc('update_user_expiration', {
