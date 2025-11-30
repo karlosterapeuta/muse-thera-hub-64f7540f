@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock, Zap, AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock, Zap, AlertTriangle, Clock, CheckCircle, CalendarCheck, CalendarX, Shield } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -69,18 +69,29 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
     <div className="space-y-6">
       {/* Current Status with Visual Feedback */}
       <Card className={cn(
-        "border-2",
+        "border-2 relative overflow-hidden",
         isExpired && "border-destructive/50 bg-destructive/5",
         isExpiringSoon && "border-orange-500/50 bg-orange-500/5",
         !user.expires_at && "border-emerald-500/50 bg-emerald-500/5",
         !isExpired && !isExpiringSoon && user.expires_at && "border-primary/30"
       )}>
-        <CardHeader>
+        {/* Decorative top bar showing status */}
+        <div className={cn(
+          "h-2 w-full absolute top-0 left-0",
+          isExpired && "bg-destructive",
+          isExpiringSoon && "bg-orange-500",
+          !user.expires_at && "bg-emerald-500",
+          !isExpired && !isExpiringSoon && user.expires_at && "bg-primary"
+        )} />
+        
+        <CardHeader className="pt-6">
           <CardTitle className="flex items-center justify-between">
-            <span>Status Atual do Plano</span>
+            <span className="flex items-center gap-2">
+              📋 Status do Plano
+            </span>
             <ExpirationBadge expiresAt={user.expires_at} />
           </CardTitle>
-          <CardDescription>Informações do plano de acesso do usuário</CardDescription>
+          <CardDescription>O sistema bloqueia automaticamente quando o plano expira</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Status Alerts */}
@@ -109,17 +120,36 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
             </Alert>
           )}
 
-          {/* Info Grid */}
+          {/* Info Grid - Cards destacados para datas */}
           <div className="grid grid-cols-2 gap-4 pt-2">
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">Data de Início:</span>
-              <p className="font-semibold">
+            <div className="p-4 rounded-lg bg-muted/50 border">
+              <div className="flex items-center gap-2 mb-2">
+                <CalendarCheck className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-medium text-muted-foreground">Data de Início</span>
+              </div>
+              <p className="text-lg font-bold">
                 {new Date(user.created_at).toLocaleDateString('pt-BR')}
               </p>
             </div>
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">Expiração:</span>
-              <p className="font-semibold">
+            
+            <div className={cn(
+              "p-4 rounded-lg border",
+              isExpired && "bg-destructive/10 border-destructive/30",
+              isExpiringSoon && "bg-orange-500/10 border-orange-500/30",
+              !user.expires_at && "bg-emerald-500/10 border-emerald-500/30",
+              !isExpired && !isExpiringSoon && user.expires_at && "bg-blue-500/10 border-blue-500/30"
+            )}>
+              <div className="flex items-center gap-2 mb-2">
+                <CalendarX className={cn(
+                  "h-4 w-4",
+                  isExpired && "text-destructive",
+                  isExpiringSoon && "text-orange-600",
+                  !user.expires_at && "text-emerald-600",
+                  !isExpired && !isExpiringSoon && user.expires_at && "text-blue-600"
+                )} />
+                <span className="text-sm font-medium text-muted-foreground">Expira em</span>
+              </div>
+              <p className="text-lg font-bold">
                 {user.expires_at 
                   ? new Date(user.expires_at).toLocaleDateString('pt-BR')
                   : '♾️ Ilimitado'}
@@ -127,20 +157,26 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
             </div>
           </div>
 
-          {/* Days Remaining Badge */}
+          {/* Days Remaining Badge - mais destacado */}
           {daysRemaining !== null && !isExpired && (
             <div className="text-center pt-2">
-              <span className={cn(
-                "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium",
+              <div className={cn(
+                "inline-flex items-center gap-2 px-4 py-2 rounded-full text-base font-semibold",
                 daysRemaining <= 7 && "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
                 daysRemaining > 7 && daysRemaining <= 30 && "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
                 daysRemaining > 30 && "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
               )}>
-                <Clock className="h-3 w-3" />
+                <Clock className="h-4 w-4" />
                 {daysRemaining} dias restantes
-              </span>
+              </div>
             </div>
           )}
+
+          {/* Aviso de bloqueio automático */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg p-3 mt-2 border border-muted">
+            <Shield className="h-4 w-4 flex-shrink-0" />
+            <span>⚠️ Ao expirar o prazo, o acesso do usuário é bloqueado automaticamente até que seja feita a renovação.</span>
+          </div>
         </CardContent>
       </Card>
 
