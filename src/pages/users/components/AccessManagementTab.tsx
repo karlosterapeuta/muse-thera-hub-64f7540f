@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock } from "lucide-react";
+import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock, Zap, AlertTriangle, Clock, CheckCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ExpirationBadge } from "./ExpirationBadge";
 
 interface AccessManagementTabProps {
   user: Profile;
@@ -22,6 +24,20 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
   const [renewDays, setRenewDays] = useState("30");
   const [extendDate, setExtendDate] = useState<Date>();
   const [limitDate, setLimitDate] = useState<Date>();
+
+  // Calculate days remaining
+  const now = new Date();
+  const expirationDate = user.expires_at ? new Date(user.expires_at) : null;
+  const daysRemaining = expirationDate 
+    ? Math.ceil((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+  const isExpired = daysRemaining !== null && daysRemaining < 0;
+  const isExpiringSoon = daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 7;
+
+  const handleQuickRenew = async (days: number) => {
+    const success = await renewPlan(user.id, user.name, days);
+    if (success) onClose();
+  };
 
   const handleRenewPlan = async () => {
     const days = parseInt(renewDays);
@@ -51,36 +67,136 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
 
   return (
     <div className="space-y-6">
-      {/* Current Status */}
-      <Card>
+      {/* Current Status with Visual Feedback */}
+      <Card className={cn(
+        "border-2",
+        isExpired && "border-destructive/50 bg-destructive/5",
+        isExpiringSoon && "border-orange-500/50 bg-orange-500/5",
+        !user.expires_at && "border-emerald-500/50 bg-emerald-500/5",
+        !isExpired && !isExpiringSoon && user.expires_at && "border-primary/30"
+      )}>
         <CardHeader>
-          <CardTitle>Status Atual do Plano</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>Status Atual do Plano</span>
+            <ExpirationBadge expiresAt={user.expires_at} />
+          </CardTitle>
           <CardDescription>Informações do plano de acesso do usuário</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-sm font-medium">Data de Início:</span>
-            <span className="text-sm text-muted-foreground">
-              {new Date(user.created_at).toLocaleDateString('pt-BR')}
-            </span>
+        <CardContent className="space-y-4">
+          {/* Status Alerts */}
+          {isExpired && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Acesso expirado há {Math.abs(daysRemaining!)} dia(s)! Renove o plano para liberar o acesso.
+              </AlertDescription>
+            </Alert>
+          )}
+          {isExpiringSoon && (
+            <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
+              <Clock className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800 dark:text-orange-200">
+                Expira em {daysRemaining} dia(s)! Considere renovar.
+              </AlertDescription>
+            </Alert>
+          )}
+          {!user.expires_at && (
+            <Alert className="border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20">
+              <CheckCircle className="h-4 w-4 text-emerald-600" />
+              <AlertDescription className="text-emerald-800 dark:text-emerald-200">
+                Acesso ilimitado - sem data de expiração.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Info Grid */}
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">Data de Início:</span>
+              <p className="font-semibold">
+                {new Date(user.created_at).toLocaleDateString('pt-BR')}
+              </p>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">Expiração:</span>
+              <p className="font-semibold">
+                {user.expires_at 
+                  ? new Date(user.expires_at).toLocaleDateString('pt-BR')
+                  : '♾️ Ilimitado'}
+              </p>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm font-medium">Expiração:</span>
-            <span className="text-sm text-muted-foreground">
-              {user.expires_at 
-                ? new Date(user.expires_at).toLocaleDateString('pt-BR')
-                : 'Ilimitado'}
-            </span>
+
+          {/* Days Remaining Badge */}
+          {daysRemaining !== null && !isExpired && (
+            <div className="text-center pt-2">
+              <span className={cn(
+                "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium",
+                daysRemaining <= 7 && "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+                daysRemaining > 7 && daysRemaining <= 30 && "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+                daysRemaining > 30 && "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+              )}>
+                <Clock className="h-3 w-3" />
+                {daysRemaining} dias restantes
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Quick Renewal Section */}
+      <Card className="border-primary/30 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary" />
+            Renovação Rápida
+          </CardTitle>
+          <CardDescription>
+            Use para quando o cliente renovar o pagamento
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => handleQuickRenew(30)}
+              disabled={isLoading}
+              className="flex flex-col h-auto py-4 hover:bg-primary/10 hover:border-primary"
+            >
+              <CalendarIcon className="h-5 w-5 mb-1 text-muted-foreground" />
+              <span className="text-sm font-semibold">30 dias</span>
+              <span className="text-xs text-muted-foreground">1 mês</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => handleQuickRenew(180)}
+              disabled={isLoading}
+              className="flex flex-col h-auto py-4 hover:bg-primary/10 hover:border-primary"
+            >
+              <CalendarIcon className="h-5 w-5 mb-1 text-muted-foreground" />
+              <span className="text-sm font-semibold">180 dias</span>
+              <span className="text-xs text-muted-foreground">6 meses</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => handleQuickRenew(365)}
+              disabled={isLoading}
+              className="flex flex-col h-auto py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <CalendarIcon className="h-5 w-5 mb-1" />
+              <span className="text-sm font-semibold">365 dias</span>
+              <span className="text-xs">1 ano</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Renew Plan */}
+      {/* Renew Plan (Custom Days) */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RefreshCw className="h-5 w-5" />
-            Renovar Plano
+            Renovar Plano (Personalizado)
           </CardTitle>
           <CardDescription>
             Adiciona dias ao plano atual. Se expirado, começa a contar da data atual.

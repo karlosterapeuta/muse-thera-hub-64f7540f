@@ -116,19 +116,34 @@ serve(async (req) => {
 
     const newUserId = authData.user.id;
 
-    // Create profile with expiration date
-    const { error: profileError } = await adminClient
+    // Update profile with expiration date (trigger may have already created it)
+    const { error: updateError } = await adminClient
       .from("profiles")
-      .upsert(
-        { id: newUserId, name, expires_at: expirationDate.toISOString() },
-        { onConflict: "id", ignoreDuplicates: true }
-      );
-    if (profileError) {
-      console.error("Profile upsert failed:", profileError);
-      return jsonResponse({ error: "Erro ao criar perfil: " + profileError.message }, { status: 400 });
+      .update({ 
+        name, 
+        expires_at: expirationDate.toISOString(),
+        status: 'active'
+      })
+      .eq('id', newUserId);
+
+    // If update fails (profile doesn't exist), insert it
+    if (updateError) {
+      console.log("Profile update failed, attempting insert:", updateError.message);
+      const { error: insertError } = await adminClient
+        .from("profiles")
+        .insert({ 
+          id: newUserId, 
+          name, 
+          expires_at: expirationDate.toISOString(),
+          status: 'active'
+        });
+      if (insertError) {
+        console.error("Profile insert failed:", insertError);
+        return jsonResponse({ error: "Erro ao criar perfil: " + insertError.message }, { status: 400 });
+      }
     }
     
-    console.log("Profile created successfully for user:", newUserId);
+    console.log("Profile updated/created successfully for user:", newUserId, "expires_at:", expirationDate.toISOString());
 
     // Assign role
     const { error: assignRoleError } = await adminClient
