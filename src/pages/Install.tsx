@@ -16,11 +16,13 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usePWAInstall } from "@/contexts/PWAInstallContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Install() {
   const { deferredPrompt, isStandalone, triggerInstall } = usePWAInstall();
   const [platform, setPlatform] = useState<"ios" | "android" | "desktop">("desktop");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Detect platform
@@ -33,11 +35,42 @@ export default function Install() {
     else setPlatform("desktop");
   }, []);
 
-  const handleNativeInstall = async () => {
-    const success = await triggerInstall();
-    if (success) {
-      setTimeout(() => navigate("/dashboard"), 1500);
+  const handleInstallClick = async () => {
+    // Se tem prompt nativo disponível, usar
+    if (deferredPrompt) {
+      const success = await triggerInstall();
+      if (success) {
+        toast({
+          title: "✅ App instalado!",
+          description: "O MuseTera foi adicionado à sua tela inicial",
+        });
+        setTimeout(() => navigate("/dashboard"), 1500);
+      }
+      return;
     }
+
+    // iOS: scroll para instruções
+    if (platform === "ios") {
+      toast({
+        title: "📱 Instruções iOS",
+        description: "Use o Safari e siga os passos abaixo",
+      });
+      document.getElementById("ios-instructions")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    // Desktop/Android sem prompt: orientar via menu do navegador
+    toast({
+      title: "💡 Use o menu do navegador",
+      description: platform === "android"
+        ? "Toque nos 3 pontos (⋮) e selecione 'Instalar app'"
+        : "Clique no ícone de instalação (⊕) na barra de endereços ou no menu (⋮) → 'Instalar MuseTera'",
+      duration: 8000,
+    });
+    
+    // Scroll para instruções da plataforma
+    const instructionId = platform === "android" ? "android-instructions" : "desktop-instructions";
+    document.getElementById(instructionId)?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (isStandalone) {
@@ -80,23 +113,28 @@ export default function Install() {
           </p>
         </div>
 
-        {/* Native Install Button (if available) */}
-        {deferredPrompt && (
-          <Card className="mb-8 border-primary/30 bg-primary/5">
-            <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
-              <div className="flex-1 text-center sm:text-left">
-                <h3 className="font-semibold text-lg mb-1">Instalação Rápida</h3>
-                <p className="text-muted-foreground text-sm">
-                  Clique no botão para instalar instantaneamente
-                </p>
-              </div>
-              <Button onClick={handleNativeInstall} size="lg" className="w-full sm:w-auto">
-                <Download className="w-5 h-5 mr-2" />
-                Instalar Agora
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+        {/* Install Button */}
+        <Card className="mb-8 border-primary/30 bg-primary/5">
+          <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="font-semibold text-lg mb-1">
+                {deferredPrompt ? "Instalação Rápida" : "Instalar App"}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {deferredPrompt 
+                  ? "Clique no botão para instalar instantaneamente"
+                  : platform === "ios"
+                    ? "Siga as instruções abaixo para iOS"
+                    : "Use o menu do navegador ou clique para ver instruções"
+                }
+              </p>
+            </div>
+            <Button onClick={handleInstallClick} size="lg" className="w-full sm:w-auto">
+              <Download className="w-5 h-5 mr-2" />
+              {deferredPrompt ? "Instalar Agora" : "Como Instalar"}
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Platform Instructions */}
         <Tabs defaultValue={platform} className="w-full">
@@ -118,7 +156,7 @@ export default function Install() {
           </TabsList>
 
           {/* iOS Instructions */}
-          <TabsContent value="ios">
+          <TabsContent value="ios" id="ios-instructions">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -160,7 +198,7 @@ export default function Install() {
           </TabsContent>
 
           {/* Android Instructions */}
-          <TabsContent value="android">
+          <TabsContent value="android" id="android-instructions">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -202,7 +240,7 @@ export default function Install() {
           </TabsContent>
 
           {/* Desktop Instructions */}
-          <TabsContent value="desktop">
+          <TabsContent value="desktop" id="desktop-instructions">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
