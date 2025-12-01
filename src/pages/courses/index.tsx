@@ -1,35 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, BookOpen, Settings, Layers, Clock } from "lucide-react";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { useCoursesWithStats } from "@/hooks/useCoursesWithStats";
-import { supabase } from "@/integrations/supabase/client";
+import { useAdmin } from "@/hooks/use-admin";
+import { CourseAccessRestricted } from "@/components/courses/CourseAccessRestricted";
 import { formatDuration } from "@/types/courses";
 
 export default function CoursesPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { data: isAdmin, isLoading: adminLoading } = useAdmin();
   const { data: courses, isLoading } = useCoursesWithStats();
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        
-        setIsAdmin(!!roles);
-      }
-    };
-    checkAdmin();
-  }, []);
+  // Loading state
+  if (adminLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  // Block non-admin users
+  if (!isAdmin) {
+    return <CourseAccessRestricted />;
+  }
 
   // Filter courses based on publish status and search
   const filteredCourses = (courses || [])
@@ -115,7 +113,7 @@ export default function CoursesPage() {
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
-        {isLoading ? (
+        {false ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
               <div key={i} className="animate-pulse">

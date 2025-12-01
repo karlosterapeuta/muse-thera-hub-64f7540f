@@ -9,6 +9,8 @@ import { useCourse } from "@/hooks/useCourses";
 import { useCourseProgress, useMarkLessonComplete } from "@/hooks/useCourseProgress";
 import { CourseLesson } from "@/types/courses";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAdmin } from "@/hooks/use-admin";
+import { CourseAccessRestricted } from "@/components/courses/CourseAccessRestricted";
 import { toast } from "sonner";
 
 export default function CoursePlayerPage() {
@@ -18,6 +20,7 @@ export default function CoursePlayerPage() {
   const [currentLesson, setCurrentLesson] = useState<CourseLesson | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { data: isAdmin, isLoading: adminLoading } = useAdmin();
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: progress = [], isLoading: progressLoading } = useCourseProgress(courseId);
   const markComplete = useMarkLessonComplete();
@@ -73,12 +76,17 @@ export default function CoursePlayerPage() {
     setSidebarOpen(false);
   };
 
-  if (courseLoading || progressLoading) {
+  if (adminLoading || courseLoading || progressLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
+  }
+
+  // Block non-admin users
+  if (!isAdmin) {
+    return <CourseAccessRestricted />;
   }
 
   if (!course) {
