@@ -1,34 +1,18 @@
 import { useState, useEffect } from "react";
 import { X, Download, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-declare global {
-  interface WindowEventMap {
-    beforeinstallprompt: BeforeInstallPromptEvent;
-  }
-}
+import { usePWAInstall } from "@/contexts/PWAInstallContext";
 
 const DISMISS_KEY = "pwa-banner-dismissed";
 const DISMISS_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
 
 export function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const { deferredPrompt, isStandalone, triggerInstall } = usePWAInstall();
   const [showBanner, setShowBanner] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
-    // Check if already installed as PWA
-    const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-    setIsStandalone(isInstalled);
-
-    if (isInstalled) return;
+    if (isStandalone) return;
 
     // Check if user dismissed the banner recently
     const dismissedAt = localStorage.getItem(DISMISS_KEY);
@@ -38,14 +22,6 @@ export function PWAInstallPrompt() {
         return; // Don't show banner if dismissed within 7 days
       }
     }
-
-    // Listen for the beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // Show banner after 30 seconds delay
     const timer = setTimeout(() => {
@@ -57,25 +33,13 @@ export function PWAInstallPrompt() {
       }
     }, 30000);
 
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      clearTimeout(timer);
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [isStandalone]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
-      try {
-        await deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === "accepted") {
-          setShowBanner(false);
-          setDeferredPrompt(null);
-        }
-      } catch (error) {
-        console.error("Error installing PWA:", error);
-        // Redirect to install page for manual instructions
-        window.location.href = "/install";
+      const success = await triggerInstall();
+      if (success) {
         setShowBanner(false);
       }
     } else {
