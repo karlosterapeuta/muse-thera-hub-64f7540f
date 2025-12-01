@@ -15,15 +15,10 @@ import {
   Home
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+import { usePWAInstall } from "@/contexts/PWAInstallContext";
 
 export default function Install() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const { deferredPrompt, isStandalone, triggerInstall } = usePWAInstall();
   const [platform, setPlatform] = useState<"ios" | "android" | "desktop">("desktop");
   const navigate = useNavigate();
 
@@ -36,30 +31,12 @@ export default function Install() {
     if (isIOS) setPlatform("ios");
     else if (isAndroid) setPlatform("android");
     else setPlatform("desktop");
-
-    // Check if already installed
-    const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-    setIsStandalone(isInstalled);
-
-    // Listen for install prompt
-    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt as any);
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt as any);
   }, []);
 
   const handleNativeInstall = async () => {
-    if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        setIsStandalone(true);
-      }
-      setDeferredPrompt(null);
+    const success = await triggerInstall();
+    if (success) {
+      setTimeout(() => navigate("/dashboard"), 1500);
     }
   };
 
