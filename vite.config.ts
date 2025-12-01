@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: 'Musetera - Terapia Musical',
         short_name: 'Musetera',
+        description: 'Plataforma de Musicoterapia para profissionais',
         theme_color: '#4A90E2',
         background_color: '#0a0a0a',
         display: 'standalone',
@@ -28,6 +29,26 @@ export default defineConfig(({ mode }) => ({
         scope: '/',
         start_url: '/',
         id: '/',
+        categories: ['health', 'music', 'therapy'],
+        icons: [
+          {
+            src: '/icon-original.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/icon-original.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png'
+          }
+        ]
       },
       includeAssets: ['icon-original.png', 'apple-touch-icon.png', 'manifest.json'],
       workbox: {

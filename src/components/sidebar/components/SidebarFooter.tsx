@@ -1,11 +1,11 @@
-
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { globalCacheManager } from "@/utils/cacheManager";
 import { useNavigate } from "react-router-dom";
+import { usePWAInstall } from "@/contexts/PWAInstallContext";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarFooterProps {
   collapsed: boolean;
@@ -13,15 +13,10 @@ interface SidebarFooterProps {
 }
 
 export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
-  const [isStandalone, setIsStandalone] = useState(true);
+  const { deferredPrompt, isStandalone } = usePWAInstall();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if app is installed as PWA
-    const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-    setIsStandalone(isInstalled);
-  }, []);
+  
+  const canInstallNatively = !!deferredPrompt;
 
   const handleLogout = async () => {
     try {
@@ -80,16 +75,26 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-center text-foreground hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group",
+            "w-full justify-center text-foreground hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-600 hover:text-white hover:shadow-md transition-all duration-200 rounded-lg h-9 group relative",
             !collapsed && "justify-start"
           )}
           onClick={handleInstallClick}
         >
           <Download size={16} className="group-hover:animate-bounce" />
           {!collapsed && (
-            <span className="ml-2 font-medium text-sm">
-              Instalar App
-            </span>
+            <>
+              <span className="ml-2 font-medium text-sm">
+                Instalar App
+              </span>
+              {canInstallNatively && (
+                <Badge 
+                  variant="secondary" 
+                  className="ml-auto text-[10px] px-1.5 py-0.5 bg-green-500/20 text-green-700 dark:text-green-400"
+                >
+                  ✓
+                </Badge>
+              )}
+            </>
           )}
         </Button>
       )}
