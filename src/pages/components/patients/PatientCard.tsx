@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FileText } from "lucide-react";
+import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -31,9 +30,10 @@ interface PatientCardProps {
   onDelete: () => void;
   onViewAnamnesis: () => void;
   onEditAnamnesis?: () => void;
+  isLoadingAnamnesis?: boolean;
 }
 
-export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis }: PatientCardProps) {
+export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis, isLoadingAnamnesis }: PatientCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4">
@@ -84,9 +84,19 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
             </Button>
             
             {onEditAnamnesis && (
-              <Button variant="ghost" size="sm" onClick={onEditAnamnesis} className="h-8 px-2">
-                <Pencil className="h-3.5 w-3.5" />
-                <span className="ml-1 text-xs">Editar Anm.</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onEditAnamnesis} 
+                disabled={isLoadingAnamnesis}
+                className="h-8 px-2"
+              >
+                {isLoadingAnamnesis ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Pencil className="h-3.5 w-3.5" />
+                )}
+                <span className="ml-1 text-xs">{isLoadingAnamnesis ? "Carregando..." : "Editar Anm."}</span>
               </Button>
             )}
           </>
