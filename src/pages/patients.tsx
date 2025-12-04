@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,8 +66,10 @@ export default function PatientsPage() {
   const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);  
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
+  const [loadingAnamnesisPatientId, setLoadingAnamnesisPatientId] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Use React Query hooks
   const { data: patients = [], isLoading, error } = usePatientsData();
@@ -113,11 +116,11 @@ export default function PatientsPage() {
   };
 
   const handleEditAnamnesis = async (patient: Patient) => {
-    setSelectedPatient(patient);
+    setLoadingAnamnesisPatientId(patient.id);
     try {
       const { data, error } = await supabase
         .from("anamnesis")
-        .select("*")
+        .select("id")
         .eq("patient_id", patient.id)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -142,7 +145,7 @@ export default function PatientsPage() {
         return;
       }
 
-      window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
+      navigate(`/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`);
     } catch (error) {
       console.error("Erro ao carregar anamnese para edição:", error);
       toast({
@@ -150,12 +153,14 @@ export default function PatientsPage() {
         description: "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setLoadingAnamnesisPatientId(null);
     }
   };
 
   const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
     setIsViewAnamnesisOpen(false);
-    window.location.href = `/anamnesis?patient_id=${anamnesis.patient_id}&anamnesis_id=${anamnesis.id}&mode=edit`;
+    navigate(`/anamnesis?patient_id=${anamnesis.patient_id}&anamnesis_id=${anamnesis.id}&mode=edit`);
   };
 
   return (
@@ -256,6 +261,7 @@ export default function PatientsPage() {
                             onDelete={() => handleDeletePatient(patient.id)}
                             onViewAnamnesis={() => handleViewAnamnesis(patient)}
                             onEditAnamnesis={() => handleEditAnamnesis(patient)}
+                            isLoadingAnamnesis={loadingAnamnesisPatientId === patient.id}
                           />
                         </div>
                       ))
@@ -279,6 +285,7 @@ export default function PatientsPage() {
                       onDelete={(patient) => handleDeletePatient(patient.id)}
                       onViewAnamnesis={handleViewAnamnesis}
                       onEditAnamnesis={handleEditAnamnesis}
+                      loadingAnamnesisPatientId={loadingAnamnesisPatientId}
                     />
                   </div>
                 )}

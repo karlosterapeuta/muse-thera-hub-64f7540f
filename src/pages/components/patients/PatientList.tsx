@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -9,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FileText } from "lucide-react";
+import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,9 +41,10 @@ interface PatientListProps {
   onDelete: (patient: Patient) => void;
   onViewAnamnesis: (patient: Patient) => void;
   onEditAnamnesis?: (patient: Patient) => void;
+  loadingAnamnesisPatientId?: string | null;
 }
 
-export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis }: PatientListProps) {
+export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEditAnamnesis, loadingAnamnesisPatientId }: PatientListProps) {
   if (patients.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8 bg-muted/30 rounded-md">
@@ -123,10 +123,15 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                         variant="ghost"
                         size="sm"
                         onClick={() => onEditAnamnesis(patient)}
+                        disabled={loadingAnamnesisPatientId === patient.id}
                         className="text-muted-foreground hover:text-green-600 dark:hover:text-green-400 mr-1"
                       >
-                        <Pencil className="h-4 w-4 mr-1" />
-                        Editar Anamnese
+                        {loadingAnamnesisPatientId === patient.id ? (
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        ) : (
+                          <Pencil className="h-4 w-4 mr-1" />
+                        )}
+                        {loadingAnamnesisPatientId === patient.id ? "Carregando..." : "Editar Anamnese"}
                       </Button>
                     )}
                   </>
