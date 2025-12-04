@@ -130,10 +130,8 @@ export default function PatientsPage() {
   };
 
   const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
-    if (selectedPatient) {
-      window.location.href = `/anamnesis?patient_id=${selectedPatient.id}&anamnesis_id=${anamnesis.id}&mode=edit`;
-    }
     setIsViewAnamnesisOpen(false);
+    window.location.href = `/anamnesis?patient_id=${anamnesis.patient_id}&anamnesis_id=${anamnesis.id}&mode=edit`;
   };
 
   return (
