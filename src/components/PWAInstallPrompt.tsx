@@ -23,7 +23,7 @@ export function PWAInstallPrompt() {
       }
     }
 
-    // Show banner after 30 seconds delay
+    // Show banner after 5 seconds delay
     const timer = setTimeout(() => {
       // Don't show if on login, reset-password, or install page
       const currentPath = window.location.pathname;
@@ -31,7 +31,7 @@ export function PWAInstallPrompt() {
       if (!excludedPaths.includes(currentPath)) {
         setShowBanner(true);
       }
-    }, 30000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [isStandalone]);
