@@ -19,20 +19,33 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    console.log('[PWA] Iniciando contexto PWA...');
+    
     // Check if already installed
     const isInstalled = window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(isInstalled);
+    console.log('[PWA] Já instalado?', isInstalled);
 
     if (isInstalled) return;
 
+    // Verificar se evento já foi capturado anteriormente (armazenado em window)
+    const existingPrompt = (window as any).__pwaInstallPrompt;
+    if (existingPrompt) {
+      console.log('[PWA] Usando prompt existente do window');
+      setDeferredPrompt(existingPrompt);
+    }
+
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
-      console.log('[PWA] beforeinstallprompt capturado!');
+      console.log('[PWA] ✅ beforeinstallprompt capturado!');
       setDeferredPrompt(e);
+      // Salvar no window para reutilização
+      (window as any).__pwaInstallPrompt = e;
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt as any);
+    console.log('[PWA] Listener adicionado para beforeinstallprompt');
     
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt as any);
@@ -52,6 +65,8 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
       if (outcome === "accepted") {
         setIsStandalone(true);
         setDeferredPrompt(null);
+        // Limpar do window também
+        (window as any).__pwaInstallPrompt = null;
         return true;
       }
       return false;
@@ -61,7 +76,10 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const clearPrompt = () => setDeferredPrompt(null);
+  const clearPrompt = () => {
+    setDeferredPrompt(null);
+    (window as any).__pwaInstallPrompt = null;
+  };
 
   return (
     <PWAInstallContext.Provider value={{ 

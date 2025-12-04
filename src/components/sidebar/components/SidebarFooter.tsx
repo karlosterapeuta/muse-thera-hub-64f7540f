@@ -30,15 +30,6 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
       localStorage.clear();
       sessionStorage.clear();
       
-      // Unregister service worker to prevent cached content on next login
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          await registration.unregister();
-          console.log('[PWA] Service Worker desregistrado no logout');
-        }
-      }
-      
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
       
