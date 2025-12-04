@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -65,6 +66,7 @@ export default function PatientsPage() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   // Use React Query hooks
   const { data: patients = [], isLoading, error } = usePatientsData();
@@ -119,13 +121,35 @@ export default function PatientsPage() {
         .eq("patient_id", patient.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (data) {
-        window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
+      if (error) {
+        console.error("Erro ao carregar anamnese para edição:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a anamnese para edição.",
+          variant: "destructive",
+        });
+        return;
       }
+
+      if (!data) {
+        toast({
+          title: "Anamnese não encontrada",
+          description: "Este paciente não possui anamnese registrada.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      window.location.href = `/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`;
     } catch (error) {
       console.error("Erro ao carregar anamnese para edição:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
