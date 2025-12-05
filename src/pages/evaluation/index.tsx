@@ -919,6 +919,80 @@ export default function Evaluation() {
     }
   };
 
+  // Função para gerar PDF de gráficos a partir de avaliação salva
+  const handleGenerateParametersPDFFromSaved = async (evaluation: SavedEvaluation) => {
+    let loadingToast: string | number | undefined;
+    try {
+      loadingToast = toast.loading("Gerando PDF de Gráficos...");
+      
+      // Extrair dados dos gráficos da avaliação salva
+      const savedContent = evaluation.content as any || {};
+      const categoryData = savedContent.categoryData || [];
+      const savedPieData = savedContent.pieData || [];
+      const radarData = savedContent.radarData || [];
+      const savedOverallScore = savedContent.overallScore || {
+        raw: 0, max: 100, percentage: 0, completionPercentage: 0,
+        evaluatedDomains: 0, totalDomains: 0, evaluatedParameters: 0, totalParameters: 0
+      };
+      
+      const patientName = evaluation.patient_name || "Paciente";
+      const evalDate = new Date(evaluation.date);
+
+      const pdfContent = (
+        <div id="pdf-content" style={{ display: 'block' }}>
+          <ParametersGraphsPDF
+            categoryData={categoryData}
+            pieData={savedPieData}
+            patientName={patientName}
+            professionalData={professionalData}
+            radarData={radarData}
+            overallScore={savedOverallScore}
+            evaluationDate={evalDate}
+          />
+        </div>
+      );
+
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      const root = document.createElement('div');
+      container.appendChild(root);
+
+      ReactDOM.render(pdfContent, root);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const opt = {
+        margin: [10, 10],
+        filename: `graficos-${patientName}-${format(evalDate, 'yyyy-MM-dd')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
+
+      await html2pdf().set(opt).from(root).save();
+      
+      document.body.removeChild(container);
+      
+      toast.success("PDF de Gráficos gerado com sucesso!", { id: loadingToast });
+    } catch (error) {
+      console.error("Erro ao gerar PDF de gráficos:", error);
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
+    }
+  };
+
   const handleGenerateMuseteraPDF = async () => {
     // Verificar se há dados para gerar o PDF
     if (Object.keys(selections).length === 0) {
@@ -2080,13 +2154,13 @@ export default function Evaluation() {
                         onClick={() => {
                           const patientEvaluations = allEvaluations.filter(e => e.patient_id === evolutionPatientId);
                           if (patientEvaluations.length > 0) {
-                            handleGenerateEvaluationTextFromSaved(patientEvaluations[0]);
+                            handleGenerateParametersPDFFromSaved(patientEvaluations[0]);
                           }
                         }}
                         disabled={allEvaluations.filter(e => e.patient_id === evolutionPatientId).length === 0}
                         className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600"
                       >
-                        <FileText className="h-4 w-4" />
+                        <FileBarChart className="h-4 w-4" />
                         Baixar Gráfico
                       </Button>
                     </div>
