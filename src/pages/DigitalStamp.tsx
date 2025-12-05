@@ -393,54 +393,54 @@ export default function DigitalStamp() {
               <div className="absolute inset-3 rounded-full border-[6px] border-teal-600 dark:border-teal-500 shadow-lg" />
               
               {/* Content Container */}
-              <div className="relative h-full flex flex-col items-center justify-center text-center p-6 sm:p-8">
+              <div className="relative h-full flex flex-col items-center justify-center text-center p-4 sm:p-6 overflow-hidden">
                 {/* Professional Photo */}
-                <div className="relative mb-4">
+                <div className="relative mb-2">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-500 via-cyan-400 to-teal-600 blur-md opacity-75" />
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-background shadow-xl overflow-hidden flex items-center justify-center bg-muted">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-background shadow-xl overflow-hidden flex items-center justify-center bg-muted">
                     {photoUrl ? (
                       <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+                      <User className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" />
                     )}
                   </div>
                 </div>
 
                 {/* Professional Name */}
-                <h3 className="text-sm sm:text-base font-bold text-teal-700 dark:text-teal-400 leading-tight break-words px-2 mb-2">
+                <h3 className="text-xs sm:text-sm font-bold text-teal-700 dark:text-teal-400 leading-tight max-w-full line-clamp-2 mb-1">
                   {formData.name || defaultTexts.name}
                 </h3>
 
                 {/* Decorative Separator */}
-                <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-teal-500 to-transparent mb-2" />
+                <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-teal-500 to-transparent mb-1" />
 
                 {/* Specialty Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900/30 border border-teal-300 dark:border-teal-700 mb-2">
-                  <Music className="w-3 h-3 text-teal-700 dark:text-teal-400" />
-                  <span className="text-xs font-semibold text-teal-700 dark:text-teal-400 break-words uppercase tracking-wide">
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900/30 border border-teal-300 dark:border-teal-700 mb-1 max-w-full">
+                  <Music className="w-2.5 h-2.5 flex-shrink-0 text-teal-700 dark:text-teal-400" />
+                  <span className="text-[10px] font-semibold text-teal-700 dark:text-teal-400 truncate uppercase tracking-wide">
                     {formData.title || defaultTexts.title}
                   </span>
                 </div>
 
                 {/* Registration */}
-                <p className="text-xs font-medium text-muted-foreground mt-1 break-words px-2">
+                <p className="text-[10px] font-medium text-muted-foreground truncate max-w-full">
                   {formData.registration || defaultTexts.registration}
                 </p>
 
                 {/* QR Code */}
                 {stampQrDataUrl && (
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 mt-3 border-2 border-teal-300 dark:border-teal-700 rounded-md shadow-md bg-background p-1">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 mt-2 border border-teal-300 dark:border-teal-700 rounded-md shadow-md bg-background p-0.5">
                     <img src={stampQrDataUrl} alt="QR Code" className="w-full h-full" />
                   </div>
                 )}
 
                 {/* Verification Badge */}
-                <div className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-teal-600 to-cyan-600 shadow-md">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-teal-600 to-cyan-600 shadow-md">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                  <span className="text-[8px] font-bold text-white uppercase tracking-wider">
                     MuseTera Verified
                   </span>
-                  <Music className="w-3 h-3 text-white" />
+                  <Music className="w-2.5 h-2.5 text-white" />
                 </div>
               </div>
             </Card>
