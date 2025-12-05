@@ -920,7 +920,7 @@ export default function Evaluation() {
   };
 
   // Função para gerar PDF de gráficos a partir de avaliação salva
-  const handleGenerateParametersPDFFromSaved = async (evaluation: SavedEvaluation) => {
+  const handleGenerateParametersPDFFromSaved = async (evaluation: SavedEvaluation, patientAllEvaluations: SavedEvaluation[] = []) => {
     let loadingToast: string | number | undefined;
     try {
       loadingToast = toast.loading("Gerando PDF de Gráficos...");
@@ -971,6 +971,7 @@ export default function Evaluation() {
             radarData={radarData}
             overallScore={savedOverallScore}
             evaluationDate={evalDate}
+            allEvaluations={patientAllEvaluations}
           />
         </div>
       );
@@ -2177,7 +2178,8 @@ export default function Evaluation() {
                         onClick={() => {
                           const patientEvaluations = allEvaluations.filter(e => e.patient_id === evolutionPatientId);
                           if (patientEvaluations.length > 0) {
-                            handleGenerateParametersPDFFromSaved(patientEvaluations[0]);
+                            // Pass the most recent evaluation AND all patient evaluations for evolution analysis
+                            handleGenerateParametersPDFFromSaved(patientEvaluations[0], patientEvaluations);
                           }
                         }}
                         disabled={allEvaluations.filter(e => e.patient_id === evolutionPatientId).length === 0}
