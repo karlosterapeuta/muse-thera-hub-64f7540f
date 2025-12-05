@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
@@ -51,7 +51,7 @@ import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { useEvaluationStorage, SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "@/pages/processes/evaluation/components/EvaluationHistory";
 import { EvaluationComparison } from "@/pages/processes/evaluation/components/EvaluationComparison";
-import { PatientEvolutionDashboard } from "@/pages/processes/evaluation/components/PatientEvolutionDashboard";
+import { PatientEvaluationCards, PatientWithEvaluations } from "@/pages/processes/evaluation/components/PatientEvaluationCards";
 import { EvolutionTimeline } from "@/pages/processes/evaluation/components/EvolutionTimeline";
 import { AreasAnalysis } from "@/pages/processes/evaluation/components/AreasAnalysis";
 import { TherapeuticSuggestions } from "@/pages/processes/evaluation/components/TherapeuticSuggestions";
@@ -124,6 +124,53 @@ export default function Evaluation() {
       setEvaluationDate(new Date());
     }
   }, [savedEvaluations, selectedPatient, isLoadingEvaluations, editingEvaluationId]);
+
+  // Agrupar avaliações por paciente (apenas pacientes COM avaliações salvas)
+  const patientsWithEvaluations = useMemo<PatientWithEvaluations[]>(() => {
+    const grouped = new Map<string, SavedEvaluation[]>();
+    
+    allEvaluations.forEach(evaluation => {
+      const patientId = evaluation.patient_id;
+      if (!grouped.has(patientId)) {
+        grouped.set(patientId, []);
+      }
+      grouped.get(patientId)!.push(evaluation);
+    });
+    
+    return Array.from(grouped.entries()).map(([patientId, evals]) => {
+      const sortedEvals = [...evals].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      
+      // Extrair tipos únicos de avaliação
+      const uniqueTypes = [...new Set(evals.map(e => 
+        e.content?.evaluationType || e.type || "Avaliação"
+      ))];
+      
+      // Calcular score médio
+      const scoresWithValue = evals.filter(e => e.content?.overallScore?.percentage);
+      const avgScore = scoresWithValue.length > 0
+        ? scoresWithValue.reduce((sum, e) => 
+            sum + (e.content?.overallScore?.percentage || 0), 0
+          ) / scoresWithValue.length
+        : 0;
+      
+      // Buscar dados do paciente
+      const patient = patients.find(p => p.id === patientId);
+      
+      return {
+        patientId,
+        patientName: patient?.name || sortedEvals[0]?.patient_name || "Paciente",
+        patientAge: patient?.age || null,
+        totalEvaluations: evals.length,
+        evaluationTypes: uniqueTypes,
+        lastEvaluationDate: sortedEvals[0].date,
+        averageScore: Math.round(avgScore),
+      };
+    }).sort((a, b) => 
+      new Date(b.lastEvaluationDate).getTime() - new Date(a.lastEvaluationDate).getTime()
+    );
+  }, [allEvaluations, patients]);
 
   useEffect(() => {
     async function fetchPatients() {
@@ -1995,14 +2042,30 @@ export default function Evaluation() {
             </TabsContent>
             
             <TabsContent value="comparison" className="mt-8">
-              {/* Dashboard de Evolução do Paciente */}
-              <PatientEvolutionDashboard
-                patients={patients}
-                selectedPatientId={evolutionPatientId}
-                onSelectPatient={setEvolutionPatientId}
-                evaluations={allEvaluations}
-                isLoading={isLoadingAll}
-              />
+              {/* Header e Grid de Cards de Pacientes */}
+              <Card className="p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                    <FileBarChart className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                      Evolução dos Pacientes
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {patientsWithEvaluations.length} {patientsWithEvaluations.length === 1 ? "paciente" : "pacientes"} com avaliações salvas
+                    </p>
+                  </div>
+                </div>
+
+                {/* Grid de Cards */}
+                <PatientEvaluationCards
+                  patientsWithEvaluations={patientsWithEvaluations}
+                  selectedPatientId={evolutionPatientId}
+                  onSelectPatient={setEvolutionPatientId}
+                  isLoading={isLoadingAll}
+                />
+              </Card>
 
               {/* Conteúdo condicional - apenas se paciente selecionado */}
               {evolutionPatientId && (
