@@ -302,54 +302,61 @@ export default function DigitalStamp() {
               {/* Decorative Top Bar */}
               <div className="h-2 bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-500" />
               
-              <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                {/* Professional Photo with Gradient Border */}
-                <div className="flex-shrink-0 relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-500 via-cyan-400 to-teal-600 blur-sm opacity-75" />
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-background shadow-xl overflow-hidden flex items-center justify-center bg-muted">
-                    {photoUrl ? (
-                      <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground" />
-                    )}
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                  {/* Professional Photo with Gradient Border */}
+                  <div className="flex-shrink-0 relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-500 via-cyan-400 to-teal-600 blur-sm opacity-75" />
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-background shadow-xl overflow-hidden flex items-center justify-center bg-muted">
+                      {photoUrl ? (
+                        <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Professional Information + QR Code Container */}
+                  <div className="flex-grow w-full overflow-hidden">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                      {/* Info Section */}
+                      <div className="flex-grow text-center sm:text-left space-y-2 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-400 break-words leading-tight">
+                          {formData.name || defaultTexts.name}
+                        </h3>
+                        
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800">
+                          <Music className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                          <span className="text-xs sm:text-sm font-semibold text-teal-700 dark:text-teal-400 break-words">
+                            {formData.title || defaultTexts.title}
+                          </span>
+                        </div>
+
+                        <div className="mt-3 space-y-1.5 text-xs sm:text-sm">
+                          <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
+                            <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span className="break-words">{formData.registration || defaultTexts.registration}</span>
+                          </div>
+                          <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
+                            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span className="break-all">{formData.email || defaultTexts.email}</span>
+                          </div>
+                          <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
+                            <Phone className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span className="break-words">{formData.phone || defaultTexts.phone}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* QR Code - Now inside the info container */}
+                      {signatureQrDataUrl && (
+                        <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 border-2 border-teal-200 dark:border-teal-800 rounded-lg shadow-md bg-background p-1">
+                          <img src={signatureQrDataUrl} alt="QR Code" className="w-full h-full" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Professional Information */}
-                <div className="flex-grow text-center sm:text-left space-y-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-400 break-words leading-tight">
-                    {formData.name || defaultTexts.name}
-                  </h3>
-                  
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800">
-                    <Music className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
-                    <span className="text-xs sm:text-sm font-semibold text-teal-700 dark:text-teal-400 break-words">
-                      {formData.title || defaultTexts.title}
-                    </span>
-                  </div>
-
-                  <div className="mt-3 space-y-1.5 text-xs sm:text-sm">
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
-                      <FileText className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="break-words">{formData.registration || defaultTexts.registration}</span>
-                    </div>
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
-                      <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="break-all">{formData.email || defaultTexts.email}</span>
-                    </div>
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
-                      <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="break-words">{formData.phone || defaultTexts.phone}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* QR Code */}
-                {signatureQrDataUrl && (
-                  <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 border-2 border-teal-200 dark:border-teal-800 rounded-lg shadow-md bg-background p-1">
-                    <img src={signatureQrDataUrl} alt="QR Code" className="w-full h-full" />
-                  </div>
-                )}
               </div>
 
               {/* Verification Footer */}
