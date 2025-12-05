@@ -862,6 +862,11 @@ export default function Evaluation() {
   const handleGenerateParametersPDF = async () => {
     let loadingToast: string | number | undefined;
     try {
+      // Obter todas as avaliações do paciente selecionado
+      const patientAllEvaluations = selectedPatient 
+        ? allEvaluations.filter(e => e.patient_id === selectedPatient) 
+        : [];
+
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <ParametersGraphsPDF
@@ -872,6 +877,7 @@ export default function Evaluation() {
             radarData={domainScores}
             overallScore={overallScore}
             evaluationDate={evaluationDate}
+            allEvaluations={patientAllEvaluations}
           />
         </div>
       );
@@ -1671,7 +1677,7 @@ export default function Evaluation() {
                 <TooltipComponent>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={handleGenerateMuseteraPDF}
+                      onClick={handleGenerateParametersPDF}
                       className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <FileText className="h-4 w-4" />
