@@ -925,15 +925,38 @@ export default function Evaluation() {
     try {
       loadingToast = toast.loading("Gerando PDF de Gráficos...");
       
-      // Extrair dados dos gráficos da avaliação salva
+      // Extrair dados salvos da avaliação
       const savedContent = evaluation.content as any || {};
-      const categoryData = savedContent.categoryData || [];
-      const savedPieData = savedContent.pieData || [];
-      const radarData = savedContent.radarData || [];
+      
+      // Extrair overallScore dos dados salvos
       const savedOverallScore = savedContent.overallScore || {
         raw: 0, max: 100, percentage: 0, completionPercentage: 0,
         evaluatedDomains: 0, totalDomains: 0, evaluatedParameters: 0, totalParameters: 0
       };
+      
+      // RECONSTRUIR pieData a partir de overallScore.percentage
+      const savedPieData = [
+        { name: "Desenvolvido", value: savedOverallScore.percentage || 0 },
+        { name: "A desenvolver", value: 100 - (savedOverallScore.percentage || 0) }
+      ];
+      
+      // Extrair domainScores salvos
+      const domainScores = savedContent.domainScores || [];
+      
+      // RECONSTRUIR radarData a partir de domainScores
+      const radarData = domainScores.map((d: any) => ({
+        name: d.domain?.substring(0, 12) || "N/A",
+        value: d.score || 0
+      }));
+      
+      // RECONSTRUIR categoryData a partir dos subdomínios
+      const categoryData = domainScores.flatMap((d: any) => 
+        (d.subdomains || []).map((sub: any) => ({
+          name: sub.name?.substring(0, 20) || "N/A",
+          value: sub.score || 0,
+          domain: d.domain || "N/A"
+        }))
+      );
       
       const patientName = evaluation.patient_name || "Paciente";
       const evalDate = new Date(evaluation.date);
