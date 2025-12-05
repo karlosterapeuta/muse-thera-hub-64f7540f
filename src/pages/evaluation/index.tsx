@@ -2070,6 +2070,38 @@ export default function Evaluation() {
               {/* Conteúdo condicional - apenas se paciente selecionado */}
               {evolutionPatientId && (
                 <div className="mt-6 space-y-6">
+                  {/* Histórico de Avaliações do Paciente - PRIMEIRO */}
+                  <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                        📜 Histórico de Avaliações
+                      </h3>
+                      <Button
+                        onClick={() => {
+                          const patientEvaluations = allEvaluations.filter(e => e.patient_id === evolutionPatientId);
+                          if (patientEvaluations.length > 0) {
+                            handleGenerateEvaluationTextFromSaved(patientEvaluations[0]);
+                          }
+                        }}
+                        disabled={allEvaluations.filter(e => e.patient_id === evolutionPatientId).length === 0}
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600"
+                      >
+                        <FileText className="h-4 w-4" />
+                        Baixar Gráfico
+                      </Button>
+                    </div>
+                    <EvaluationHistory
+                      evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
+                      isLoading={isLoadingAll}
+                      selectedForComparison={selectedForComparison}
+                      onToggleComparison={handleToggleComparison}
+                      onLoadEvaluation={handleLoadEvaluation}
+                      onDeleteEvaluation={deleteEvaluation}
+                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
+                      onEditEvaluation={handleEditEvaluation}
+                    />
+                  </Card>
+
                   {/* Linha do Tempo de Evolução */}
                   <EvolutionTimeline
                     evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
@@ -2086,23 +2118,6 @@ export default function Evaluation() {
                     evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
                     patientId={evolutionPatientId}
                   />
-
-                  {/* Histórico de Avaliações do Paciente */}
-                  <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                      📜 Histórico de Avaliações
-                    </h3>
-                    <EvaluationHistory
-                      evaluations={allEvaluations.filter(e => e.patient_id === evolutionPatientId)}
-                      isLoading={isLoadingAll}
-                      selectedForComparison={selectedForComparison}
-                      onToggleComparison={handleToggleComparison}
-                      onLoadEvaluation={handleLoadEvaluation}
-                      onDeleteEvaluation={deleteEvaluation}
-                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
-                      onEditEvaluation={handleEditEvaluation}
-                    />
-                  </Card>
                 </div>
               )}
             </TabsContent>
