@@ -96,6 +96,35 @@ export default function Evaluation() {
     loadAllEvaluations();
   }, [loadAllEvaluations]);
 
+  // Auto-carregar a avaliação mais recente quando paciente é selecionado
+  useEffect(() => {
+    // Não auto-carregar se está editando ou se não há avaliações ou ainda carregando
+    if (editingEvaluationId || isLoadingEvaluations) {
+      return;
+    }
+    
+    if (savedEvaluations.length > 0) {
+      // Carregar a avaliação mais recente do paciente selecionado
+      const mostRecentEvaluation = savedEvaluations[0]; // Já ordenada por data desc
+      
+      if (mostRecentEvaluation && mostRecentEvaluation.content) {
+        setSelections(mostRecentEvaluation.content.selections || {});
+        setObservations(mostRecentEvaluation.content.observations || {});
+        setEvaluationDate(new Date(mostRecentEvaluation.date));
+        if (mostRecentEvaluation.content.evaluationType) {
+          setSelectedEvaluation(mostRecentEvaluation.content.evaluationType);
+        }
+        
+        toast.info(`Avaliação de ${format(new Date(mostRecentEvaluation.date), 'dd/MM/yyyy')} carregada automaticamente`);
+      }
+    } else if (selectedPatient) {
+      // Limpar dados se paciente não tem avaliações salvas
+      setSelections({});
+      setObservations({});
+      setEvaluationDate(new Date());
+    }
+  }, [savedEvaluations, selectedPatient, isLoadingEvaluations, editingEvaluationId]);
+
   useEffect(() => {
     async function fetchPatients() {
       setIsLoading(true);
@@ -844,6 +873,12 @@ export default function Evaluation() {
   };
 
   const handleGenerateMuseteraPDF = async () => {
+    // Verificar se há dados para gerar o PDF
+    if (Object.keys(selections).length === 0) {
+      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
+      return;
+    }
+    
     let loadingToast: string | number | undefined;
     try {
       // Converter URLs para Base64
