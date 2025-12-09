@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { analyzeAreas, DomainScore } from "../utils/suggestionEngine";
+import { analyzeAreas, DomainScore } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface AreasAnalysisProps {
   evaluations: SavedEvaluation[];

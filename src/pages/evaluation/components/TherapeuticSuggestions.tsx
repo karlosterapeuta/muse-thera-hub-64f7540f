@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { generateSuggestions, DomainSuggestion } from "../utils/suggestionEngine";
+import { generateSuggestions, DomainSuggestion } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface TherapeuticSuggestionsProps {
   evaluations: SavedEvaluation[];

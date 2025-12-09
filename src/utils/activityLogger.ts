@@ -26,8 +26,6 @@ const pageNameMap: Record<string, string> = {
   '/anamnesis': 'Nova Anamnese',
   '/anamnesis/list': 'Lista de Anamneses',
   '/processes': 'Processos',
-  '/processes/evaluation': 'Avaliação',
-  '/processes/intervention': 'Intervenção',
   '/processes/devolutiva-tea': 'Devolutiva TEA',
   '/processes/musicoterapia': 'Relatório MuseTera TEA',
   '/processes/evolution': 'Evolução Diária',

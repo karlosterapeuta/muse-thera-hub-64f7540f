@@ -21,7 +21,7 @@ import {
   CalendarClock
 } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { calculateEvolutionMetrics } from "../utils/suggestionEngine";
+import { calculateEvolutionMetrics } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface Patient {
   id: string;

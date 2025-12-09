@@ -53,9 +53,8 @@ import Install from "./pages/Install";
 // Process pages
 import MusicoterapiaReport from "./pages/processes/musicoterapia";
 import EvolutionReport from "./pages/processes/evolution";
-import EvaluationProcess from "./pages/processes/evaluation";
-import TeaArticle from "./pages/processes/evaluation/tea-article";
-import EvaluationArticle from "./pages/processes/evaluation/article";
+import TeaArticle from "./pages/evaluation/tea-article";
+import EvaluationArticle from "./pages/evaluation/article";
 import ProcessReport from "./pages/processes/report";
 import ProcessReports from "./pages/processes/reports";
 import DevolutivaTea from "./pages/processes/devolutiva-tea";
@@ -141,9 +140,7 @@ const App = () => {
             <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
             <Route path="processes/evolution" element={<EvolutionReport />} />
             <Route path="processes/devolutiva-tea" element={<DevolutivaTea />} />
-            <Route path="processes/evaluation" element={<EvaluationProcess />} />
-            <Route path="processes/evaluation/tea-article" element={<TeaArticle />} />
-            <Route path="processes/evaluation/article" element={<EvaluationArticle />} />
+            <Route path="processes/report" element={<ProcessReport />} />
             <Route path="processes/report" element={<ProcessReport />} />
             <Route path="processes/report/:id" element={<ProcessReport />} />
             <Route path="processes/reports" element={<ProcessReports />} />
