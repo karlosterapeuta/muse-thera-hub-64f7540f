@@ -862,10 +862,33 @@ export default function Evaluation() {
   const handleGenerateParametersPDF = async () => {
     let loadingToast: string | number | undefined;
     try {
+      loadingToast = toast.loading("Gerando PDF de Parâmetros e Gráficos...");
+      
       // Obter todas as avaliações do paciente selecionado
       const patientAllEvaluations = selectedPatient 
         ? allEvaluations.filter(e => e.patient_id === selectedPatient) 
         : [];
+
+      // Converter imagens para Base64
+      let professionalPhotoBase64: string | undefined;
+      let digitalStampBase64: string | undefined;
+
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      if (photoUrl) {
+        try {
+          professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
+        } catch (e) {
+          console.warn("Não foi possível converter foto do profissional:", e);
+        }
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        try {
+          digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+        } catch (e) {
+          console.warn("Não foi possível converter carimbo digital:", e);
+        }
+      }
 
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
@@ -878,6 +901,8 @@ export default function Evaluation() {
             overallScore={overallScore}
             evaluationDate={evaluationDate}
             allEvaluations={patientAllEvaluations}
+            professionalPhotoBase64={professionalPhotoBase64}
+            digitalStampBase64={digitalStampBase64}
           />
         </div>
       );
@@ -892,9 +917,7 @@ export default function Evaluation() {
 
       ReactDOM.render(pdfContent, root);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      loadingToast = toast.loading("Gerando PDF de Parâmetros e Gráficos...");
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const opt = {
         margin: [10, 10],
@@ -904,7 +927,9 @@ export default function Evaluation() {
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
         },
         jsPDF: { 
           unit: 'mm', 
@@ -930,6 +955,27 @@ export default function Evaluation() {
     let loadingToast: string | number | undefined;
     try {
       loadingToast = toast.loading("Gerando PDF de Gráficos...");
+      
+      // Converter imagens para Base64
+      let professionalPhotoBase64: string | undefined;
+      let digitalStampBase64: string | undefined;
+
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      if (photoUrl) {
+        try {
+          professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
+        } catch (e) {
+          console.warn("Não foi possível converter foto do profissional:", e);
+        }
+      }
+
+      if (professionalData?.digital_stamp_url) {
+        try {
+          digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+        } catch (e) {
+          console.warn("Não foi possível converter carimbo digital:", e);
+        }
+      }
       
       // Extrair dados salvos da avaliação
       const savedContent = evaluation.content as any || {};
@@ -978,6 +1024,8 @@ export default function Evaluation() {
             overallScore={savedOverallScore}
             evaluationDate={evalDate}
             allEvaluations={patientAllEvaluations}
+            professionalPhotoBase64={professionalPhotoBase64}
+            digitalStampBase64={digitalStampBase64}
           />
         </div>
       );
@@ -992,7 +1040,7 @@ export default function Evaluation() {
 
       ReactDOM.render(pdfContent, root);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const opt = {
         margin: [10, 10],

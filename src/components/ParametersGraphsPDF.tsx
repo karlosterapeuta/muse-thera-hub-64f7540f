@@ -18,6 +18,9 @@ interface ParametersGraphsPDFProps {
   };
   evaluationDate?: Date;
   allEvaluations?: SavedEvaluation[];
+  // Assinatura digital e carimbo
+  professionalPhotoBase64?: string;
+  digitalStampBase64?: string;
 }
 
 // Domain colors for line chart
@@ -37,7 +40,9 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   radarData,
   overallScore,
   evaluationDate,
-  allEvaluations = []
+  allEvaluations = [],
+  professionalPhotoBase64,
+  digitalStampBase64,
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
 
@@ -650,42 +655,233 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         )}
 
-        {/* Footer */}
-        <div style={{ 
-          borderTop: '2px solid #e5e7eb', 
-          paddingTop: '16px', 
-          textAlign: 'center' 
+        {/* Footer TEAL com Assinatura Digital e Carimbo */}
+        <div style={{
+          marginTop: '50px',
+          border: '3px solid transparent',
+          borderImage: 'linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff'
         }}>
-          <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>
-            Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>
-            MuseTera - Parâmetros e Gráficos
-          </p>
-          <div style={{ fontSize: '12px', color: '#6b7280' }}>
-            <p style={{ marginBottom: '4px' }}>
-              <strong>Musicoterapeuta:</strong> {professionalData?.name || 'Não informado'}
+          {/* Decorative Top Bar */}
+          <div style={{
+            height: '8px',
+            background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)'
+          }}></div>
+          
+          {/* Main Content Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: digitalStampBase64 ? '1fr 1fr' : '1fr',
+            gap: '32px',
+            padding: '32px'
+          }}>
+            {/* Left Column - Signature Card */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '16px'
+            }}>
+              {/* Professional Photo */}
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: '-10px',
+                  background: 'radial-gradient(circle, rgba(20, 184, 166, 0.3) 0%, transparent 70%)',
+                  filter: 'blur(8px)'
+                }}></div>
+                {professionalPhotoBase64 ? (
+                  <img
+                    src={professionalPhotoBase64}
+                    alt="Foto do profissional"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      position: 'relative',
+                      zIndex: 1
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: '#ccfbf1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                    color: '#0d9488',
+                    position: 'relative',
+                    zIndex: 1
+                  }}>
+                    {professionalData?.name?.charAt(0) || 'M'}
+                  </div>
+                )}
+              </div>
+              
+              {/* Professional Info */}
+              <div style={{ flex: 1 }}>
+                <p style={{
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  color: '#0d9488',
+                  marginBottom: '4px'
+                }}>
+                  {professionalData?.name || 'Musicoterapeuta'}
+                </p>
+                
+                {professionalData?.specialty && (
+                  <div style={{
+                    display: 'inline-block',
+                    backgroundColor: '#f0fdfa',
+                    border: '1px solid #99f6e4',
+                    borderRadius: '12px',
+                    padding: '2px 10px',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ fontSize: '11px', color: '#0d9488' }}>
+                      {professionalData.specialty}
+                    </span>
+                  </div>
+                )}
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {professionalData?.register && (
+                    <p style={{ fontSize: '11px', color: '#6b7280' }}>
+                      Reg: {professionalData.register}
+                    </p>
+                  )}
+                  {professionalData?.email && (
+                    <p style={{ fontSize: '11px', color: '#6b7280' }}>
+                      Email: {professionalData.email}
+                    </p>
+                  )}
+                  {professionalData?.phone && (
+                    <p style={{ fontSize: '11px', color: '#6b7280' }}>
+                      Tel: {professionalData.phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Column - Circular Stamp */}
+            {digitalStampBase64 && (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{
+                  width: '140px',
+                  height: '140px',
+                  borderRadius: '50%',
+                  border: '2px dashed #14b8a6',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <div style={{
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '50%',
+                    border: '3px solid #0d9488',
+                    backgroundColor: '#f0fdfa',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '8px',
+                    overflow: 'hidden'
+                  }}>
+                    <img
+                      src={digitalStampBase64}
+                      alt="Carimbo digital"
+                      style={{
+                        width: '35px',
+                        height: '35px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        marginBottom: '4px'
+                      }}
+                    />
+                    <p style={{
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      color: '#0d9488',
+                      textAlign: 'center',
+                      lineHeight: 1.1,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100px'
+                    }}>
+                      {professionalData?.name || 'Musicoterapeuta'}
+                    </p>
+                    {professionalData?.specialty && (
+                      <p style={{
+                        fontSize: '7px',
+                        color: '#14b8a6',
+                        textAlign: 'center',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '100px'
+                      }}>
+                        {professionalData.specialty}
+                      </p>
+                    )}
+                    {professionalData?.register && (
+                      <p style={{
+                        fontSize: '7px',
+                        color: '#6b7280',
+                        textAlign: 'center'
+                      }}>
+                        {professionalData.register}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div style={{
+                  marginTop: '8px',
+                  backgroundColor: '#f0fdfa',
+                  borderRadius: '12px',
+                  padding: '2px 8px'
+                }}>
+                  <span style={{ fontSize: '8px', color: '#0d9488' }}>
+                    ✔ MuseTera Verified ♪
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Verification Footer */}
+          <div style={{
+            borderTop: '1px solid #99f6e4',
+            background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
+            padding: '8px 16px',
+            textAlign: 'center'
+          }}>
+            <p style={{ fontSize: '10px', color: '#0d9488' }}>
+              ✔ Assinatura Digital Verificada ♪ Sistema MuseTera
             </p>
-            {professionalData?.specialty && (
-              <p style={{ marginBottom: '4px' }}>
-                <strong>Especialidade:</strong> {professionalData.specialty}
-              </p>
-            )}
-            {professionalData?.email && (
-              <p style={{ marginBottom: '4px' }}>
-                <strong>Email:</strong> {professionalData.email}
-              </p>
-            )}
-            {professionalData?.phone && (
-              <p style={{ marginBottom: '4px' }}>
-                <strong>Telefone:</strong> {professionalData.phone}
-              </p>
-            )}
-            {professionalData?.register && (
-              <p style={{ marginBottom: '4px' }}>
-                <strong>Registro:</strong> {professionalData.register}
-              </p>
-            )}
+            <p style={{ fontSize: '9px', color: '#6b7280', marginTop: '2px' }}>
+              Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+            </p>
           </div>
         </div>
       </div>
