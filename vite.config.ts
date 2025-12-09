@@ -96,11 +96,7 @@ export default defineConfig(({ mode }) => ({
           },
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkOnly',
-            options: {
-              cacheName: 'supabase-api',
-              networkTimeoutSeconds: 10
-            }
+            handler: 'NetworkOnly'
           },
           {
             urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/,
