@@ -1113,17 +1113,17 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         )}
 
-        {/* Footer TEAL com Assinatura Digital e Carimbo - Design Idêntico à Pré-visualização */}
+        {/* Footer TEAL com Assinatura Digital e Carimbo - Design Compacto (~40% menor) */}
         <div style={{
-          marginTop: '50px',
-          border: '3px solid #0d9488',
-          borderRadius: '12px',
+          marginTop: '32px',
+          border: '2px solid #0d9488',
+          borderRadius: '10px',
           overflow: 'hidden',
           backgroundColor: '#ffffff'
         }}>
           {/* Decorative Top Bar - Gradient */}
           <div style={{
-            height: '8px',
+            height: '5px',
             background: 'linear-gradient(to right, #0d9488, #14b8a6, #06b6d4)'
           }}></div>
           
@@ -1133,8 +1133,8 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '24px 32px',
-            gap: '32px',
+            padding: '16px 20px',
+            gap: '20px',
             background: 'linear-gradient(135deg, #ffffff 0%, #f0fdfa 50%, #ecfeff 100%)'
           }}>
             {/* Left Column - Signature Card */}
@@ -1142,7 +1142,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
-              gap: '16px',
+              gap: '12px',
               flex: 1
             }}>
               {/* Professional Photo with Gradient Border Effect */}
@@ -1150,20 +1150,20 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 {/* Blur/Glow Effect */}
                 <div style={{
                   position: 'absolute',
-                  inset: '-4px',
+                  inset: '-3px',
                   borderRadius: '50%',
                   background: 'linear-gradient(135deg, #14b8a6, #06b6d4, #0d9488)',
                   opacity: 0.6
                 }}></div>
                 <div style={{
                   position: 'relative',
-                  width: '80px',
-                  height: '80px',
+                  width: '56px',
+                  height: '56px',
                   borderRadius: '50%',
-                  border: '4px solid #ffffff',
+                  border: '3px solid #ffffff',
                   overflow: 'hidden',
                   backgroundColor: '#ccfbf1',
-                  boxShadow: '0 4px 15px rgba(13, 148, 136, 0.3)'
+                  boxShadow: '0 3px 10px rgba(13, 148, 136, 0.3)'
                 }}>
                   {professionalPhotoBase64 ? (
                     <img
@@ -1182,7 +1182,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '28px',
+                      fontSize: '20px',
                       fontWeight: 'bold',
                       color: '#0d9488'
                     }}>
@@ -1195,10 +1195,10 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               {/* Professional Info */}
               <div style={{ flex: 1 }}>
                 <p style={{
-                  fontSize: '16px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   color: '#0d9488',
-                  marginBottom: '6px'
+                  marginBottom: '4px'
                 }}>
                   {professionalData?.name || 'Musicoterapeuta'}
                 </p>
@@ -1207,45 +1207,45 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     backgroundColor: '#f0fdfa',
                     border: '1px solid #99f6e4',
-                    borderRadius: '16px',
-                    padding: '4px 12px',
-                    marginBottom: '8px'
+                    borderRadius: '12px',
+                    padding: '3px 8px',
+                    marginBottom: '5px'
                   }}>
-                    <span style={{ fontSize: '12px' }}>♪</span>
-                    <span style={{ fontSize: '12px', color: '#0d9488', fontWeight: 600 }}>
+                    <span style={{ fontSize: '9px' }}>♪</span>
+                    <span style={{ fontSize: '10px', color: '#0d9488', fontWeight: 600 }}>
                       {professionalData.specialty}
                     </span>
                   </div>
                 )}
                 
-                <div style={{ marginTop: '4px' }}>
+                <div style={{ marginTop: '3px' }}>
                   {professionalData?.register && (
-                    <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ fontSize: '10px' }}>📋</span> {professionalData.register}
+                    <p style={{ fontSize: '9px', color: '#6b7280', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span style={{ fontSize: '8px' }}>📋</span> {professionalData.register}
                     </p>
                   )}
                   {professionalData?.email && (
-                    <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ fontSize: '10px' }}>✉</span> {professionalData.email}
+                    <p style={{ fontSize: '9px', color: '#6b7280', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span style={{ fontSize: '8px' }}>✉</span> {professionalData.email}
                     </p>
                   )}
                   {professionalData?.phone && (
-                    <p style={{ fontSize: '11px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ fontSize: '10px' }}>☎</span> {professionalData.phone}
+                    <p style={{ fontSize: '9px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span style={{ fontSize: '8px' }}>☎</span> {professionalData.phone}
                     </p>
                   )}
                 </div>
               </div>
             </div>
             
-            {/* Right Column - Circular Stamp (Redesenhado igual à pré-visualização) */}
+            {/* Right Column - Circular Stamp (Compacto) */}
             <div style={{
               position: 'relative',
-              width: '180px',
-              height: '180px',
+              width: '120px',
+              height: '120px',
               flexShrink: 0
             }}>
               {/* Outer Decorative Ring - Dashed */}
@@ -1253,23 +1253,23 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 position: 'absolute',
                 inset: '0',
                 borderRadius: '50%',
-                border: '4px dashed #99f6e4',
+                border: '2px dashed #99f6e4',
                 opacity: 0.5
               }}></div>
               
               {/* Second Ring - Solid */}
               <div style={{
                 position: 'absolute',
-                inset: '8px',
+                inset: '5px',
                 borderRadius: '50%',
-                border: '2px solid #5eead4',
+                border: '1px solid #5eead4',
                 opacity: 0.7
               }}></div>
               
               {/* Gradient Blur Background */}
               <div style={{
                 position: 'absolute',
-                inset: '12px',
+                inset: '8px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #14b8a6, #06b6d4, #0d9488)',
                 opacity: 0.15
@@ -1278,32 +1278,32 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               {/* Main Stamp Border */}
               <div style={{
                 position: 'absolute',
-                inset: '12px',
+                inset: '8px',
                 borderRadius: '50%',
-                border: '6px solid #0d9488',
+                border: '4px solid #0d9488',
                 backgroundColor: '#f0fdfa',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '12px',
-                boxShadow: '0 4px 20px rgba(13, 148, 136, 0.25)'
+                padding: '8px',
+                boxShadow: '0 3px 12px rgba(13, 148, 136, 0.25)'
               }}>
                 {/* Professional Photo with Gradient Effect */}
-                <div style={{ position: 'relative', marginBottom: '8px' }}>
+                <div style={{ position: 'relative', marginBottom: '5px' }}>
                   <div style={{
                     position: 'absolute',
-                    inset: '-3px',
+                    inset: '-2px',
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #14b8a6, #06b6d4, #0d9488)',
                     opacity: 0.7
                   }}></div>
                   <div style={{
                     position: 'relative',
-                    width: '50px',
-                    height: '50px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
-                    border: '2px solid #ffffff',
+                    border: '1px solid #ffffff',
                     overflow: 'hidden',
                     backgroundColor: '#ccfbf1'
                   }}>
@@ -1324,7 +1324,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '18px',
+                        fontSize: '12px',
                         fontWeight: 'bold',
                         color: '#0d9488'
                       }}>
@@ -1336,26 +1336,26 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 
                 {/* Professional Name */}
                 <p style={{
-                  fontSize: '11px',
+                  fontSize: '9px',
                   fontWeight: 700,
                   color: '#0d9488',
                   textAlign: 'center',
                   lineHeight: 1.2,
-                  maxWidth: '120px',
+                  maxWidth: '80px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  marginBottom: '4px'
+                  marginBottom: '3px'
                 }}>
                   {professionalData?.name || 'Musicoterapeuta'}
                 </p>
                 
                 {/* Decorative Separator */}
                 <div style={{
-                  width: '50px',
-                  height: '2px',
+                  width: '30px',
+                  height: '1px',
                   background: 'linear-gradient(to right, transparent, #14b8a6, transparent)',
-                  marginBottom: '6px'
+                  marginBottom: '4px'
                 }}></div>
                 
                 {/* Specialty Badge */}
@@ -1363,34 +1363,34 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '3px',
+                    gap: '2px',
                     backgroundColor: '#ccfbf1',
                     border: '1px solid #5eead4',
-                    borderRadius: '10px',
-                    padding: '2px 8px',
-                    marginBottom: '4px'
+                    borderRadius: '8px',
+                    padding: '1px 5px',
+                    marginBottom: '3px'
                   }}>
-                    <span style={{ fontSize: '8px' }}>♪</span>
+                    <span style={{ fontSize: '6px' }}>♪</span>
                     <span style={{
-                      fontSize: '8px',
+                      fontSize: '6px',
                       fontWeight: 600,
                       color: '#0d9488',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
+                      letterSpacing: '0.3px'
                     }}>
                       {professionalData.specialty}
                     </span>
-                    <span style={{ fontSize: '8px' }}>♪</span>
+                    <span style={{ fontSize: '6px' }}>♪</span>
                   </div>
                 )}
                 
                 {/* Registration */}
                 {professionalData?.register && (
                   <p style={{
-                    fontSize: '9px',
+                    fontSize: '7px',
                     color: '#6b7280',
                     textAlign: 'center',
-                    marginBottom: '6px'
+                    marginBottom: '4px'
                   }}>
                     {professionalData.register}
                   </p>
@@ -1400,23 +1400,23 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 <div style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '2px',
                   background: 'linear-gradient(135deg, #0d9488, #06b6d4)',
-                  borderRadius: '10px',
-                  padding: '3px 8px',
-                  boxShadow: '0 2px 8px rgba(13, 148, 136, 0.3)'
+                  borderRadius: '8px',
+                  padding: '2px 5px',
+                  boxShadow: '0 1px 4px rgba(13, 148, 136, 0.3)'
                 }}>
-                  <span style={{ fontSize: '8px', color: '#ffffff' }}>✔</span>
+                  <span style={{ fontSize: '6px', color: '#ffffff' }}>✔</span>
                   <span style={{
-                    fontSize: '7px',
+                    fontSize: '5px',
                     fontWeight: 700,
                     color: '#ffffff',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
+                    letterSpacing: '0.3px'
                   }}>
                     MuseTera Verified
                   </span>
-                  <span style={{ fontSize: '8px', color: '#ffffff' }}>♪</span>
+                  <span style={{ fontSize: '6px', color: '#ffffff' }}>♪</span>
                 </div>
               </div>
             </div>
@@ -1426,20 +1426,20 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           <div style={{
             borderTop: '1px solid #99f6e4',
             background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)',
-            padding: '10px 16px',
+            padding: '6px 12px',
             textAlign: 'center'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', color: '#0d9488' }}>✔</span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#0d9488' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '10px', color: '#0d9488' }}>✔</span>
+              <span style={{ fontSize: '9px', fontWeight: 600, color: '#0d9488' }}>
                 Assinatura Digital Verificada
               </span>
-              <span style={{ fontSize: '12px', color: '#0d9488' }}>♪</span>
-              <span style={{ fontSize: '10px', color: '#6b7280' }}>
+              <span style={{ fontSize: '10px', color: '#0d9488' }}>♪</span>
+              <span style={{ fontSize: '8px', color: '#6b7280' }}>
                 Sistema MuseTera
               </span>
             </div>
-            <p style={{ fontSize: '9px', color: '#6b7280', marginTop: '4px' }}>
+            <p style={{ fontSize: '7px', color: '#6b7280', marginTop: '2px' }}>
               Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
             </p>
           </div>
