@@ -44,6 +44,18 @@ export function ProductAnnouncementCard({ product }: ProductAnnouncementCardProp
             <div>
               <h3 className="font-semibold text-foreground">{product.name}</h3>
               <p className="text-xs text-muted-foreground line-clamp-1">{product.tagline}</p>
+              {product.badge && (
+                <span 
+                  className="inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-full"
+                  style={{ 
+                    backgroundColor: `${product.color}15`,
+                    color: product.color,
+                    border: `1px solid ${product.color}30`
+                  }}
+                >
+                  {product.badge}
+                </span>
+              )}
             </div>
           </div>
           <Badge 

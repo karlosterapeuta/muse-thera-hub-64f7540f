@@ -9,6 +9,7 @@ export interface Product {
   priceType: 'free' | 'paid';
   url: string;
   color: string;
+  badge?: string;
 }
 
 export const products: Product[] = [
@@ -44,6 +45,7 @@ export const products: Product[] = [
     price: 'R$19,90/mês',
     priceType: 'paid',
     url: 'https://session-tracker-pro.onrender.com/',
-    color: '#14b8a6'
+    color: '#14b8a6',
+    badge: '👥 Para todos os Terapeutas'
   }
 ];
