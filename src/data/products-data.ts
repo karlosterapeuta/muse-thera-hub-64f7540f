@@ -24,8 +24,8 @@ export const products: Product[] = [
       'Campanhas em massa',
       'Relatórios detalhados'
     ],
-    price: 'Grátis',
-    priceType: 'free',
+    price: 'A partir de R$69,90/mês',
+    priceType: 'paid',
     url: 'https://whatspro.onrender.com/',
     color: '#25D366'
   },
