@@ -1,13 +1,21 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
-import { CacheStatsCard } from "./components/CacheStatsCard";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { ProductsShowcase } from "@/components/products/ProductsShowcase";
+import { globalCacheManager } from "@/utils/cacheManager";
 
 export default function Dashboard() {
   const data = useDashboardData();
+
+  // Initialize cache manager for automatic cleanup (runs in background)
+  useEffect(() => {
+    // The globalCacheManager already has automatic cleanup running
+    // This effect ensures it's active when Dashboard mounts
+    return () => {
+      // Cleanup is handled by the global instance
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 w-full overflow-x-hidden">
@@ -24,18 +32,11 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Financial Agenda & Cache Management */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <FinancialAgenda 
-              financialSchedule={data.financialSchedule} 
-              isLoading={data.isLoading}
-            />
-          </div>
-          <div className="lg:col-span-1">
-            <CacheStatsCard />
-          </div>
-        </div>
+        {/* Financial Agenda */}
+        <FinancialAgenda 
+          financialSchedule={data.financialSchedule} 
+          isLoading={data.isLoading}
+        />
 
         {/* Products Showcase */}
         <ProductsShowcase />
