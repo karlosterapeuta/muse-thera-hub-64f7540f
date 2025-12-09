@@ -4,6 +4,7 @@ import { DashboardStats } from "./components/DashboardStats";
 import { FinancialAgenda } from "./components/FinancialAgenda";
 import { CacheStatsCard } from "./components/CacheStatsCard";
 import { useDashboardData } from "./hooks/useDashboardData";
+import { ProductsShowcase } from "@/components/products/ProductsShowcase";
 
 export default function Dashboard() {
   const data = useDashboardData();
@@ -35,6 +36,9 @@ export default function Dashboard() {
             <CacheStatsCard />
           </div>
         </div>
+
+        {/* Products Showcase */}
+        <ProductsShowcase />
       </div>
     </div>
   );
