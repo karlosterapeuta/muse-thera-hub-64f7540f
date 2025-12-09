@@ -329,225 +329,449 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         </div>
 
-        {/* Evolution Timeline Section - Only show if we have multiple evaluations */}
-        {allEvaluations.length > 1 && (() => {
-          // Sort evaluations by date
-          const sortedEvals = [...allEvaluations].sort((a, b) => 
-            new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
+        {/* Evolution & Areas Section - Different display for 1 vs 2+ evaluations */}
+        {allEvaluations.length >= 1 && (() => {
+          const hasMultipleEvaluations = allEvaluations.length > 1;
           
-          // Prepare chart data
-          const chartData = sortedEvals.map(evaluation => {
-            const domainScores = evaluation.content?.domainScores || [];
-            const dataPoint: Record<string, any> = {
-              date: format(new Date(evaluation.date), 'dd/MM/yy'),
-              "Score Global": evaluation.content?.overallScore?.percentage || 0
-            };
-            domainScores.forEach((d: any) => {
-              dataPoint[d.domain] = d.score || 0;
-            });
-            return dataPoint;
-          });
-          
-          // Calculate progress
-          const firstScore = sortedEvals[0]?.content?.overallScore?.percentage || 0;
-          const lastScore = sortedEvals[sortedEvals.length - 1]?.content?.overallScore?.percentage || 0;
-          const variation = lastScore - firstScore;
-          
-          // Get available domains
-          const availableDomains = sortedEvals[0]?.content?.domainScores?.map((d: any) => d.domain) || [];
-          
-          // Analyze areas
-          const areasAnalysis: { improved: any[], attention: any[] } = { improved: [], attention: [] };
-          if (sortedEvals.length >= 2) {
-            const firstEval = sortedEvals[0];
-            const lastEval = sortedEvals[sortedEvals.length - 1];
-            const firstDomains = firstEval.content?.domainScores || [];
-            const lastDomains = lastEval.content?.domainScores || [];
+          if (hasMultipleEvaluations) {
+            // Sort evaluations by date
+            const sortedEvals = [...allEvaluations].sort((a, b) => 
+              new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
             
-            lastDomains.forEach((lastDomain: any) => {
-              const firstDomain = firstDomains.find((d: any) => d.domain === lastDomain.domain);
-              if (firstDomain) {
-                const domainVariation = (lastDomain.score || 0) - (firstDomain.score || 0);
-                if (domainVariation > 5) {
-                  areasAnalysis.improved.push({
-                    domain: lastDomain.domain,
-                    firstScore: firstDomain.score || 0,
-                    lastScore: lastDomain.score || 0,
-                    variation: domainVariation
-                  });
-                } else {
-                  areasAnalysis.attention.push({
-                    domain: lastDomain.domain,
-                    firstScore: firstDomain.score || 0,
-                    lastScore: lastDomain.score || 0,
-                    variation: domainVariation
-                  });
-                }
-              }
+            // Prepare chart data
+            const chartData = sortedEvals.map(evaluation => {
+              const domainScores = evaluation.content?.domainScores || [];
+              const dataPoint: Record<string, any> = {
+                date: format(new Date(evaluation.date), 'dd/MM/yy'),
+                "Score Global": evaluation.content?.overallScore?.percentage || 0
+              };
+              domainScores.forEach((d: any) => {
+                dataPoint[d.domain] = d.score || 0;
+              });
+              return dataPoint;
             });
-          }
+            
+            // Calculate progress
+            const firstScore = sortedEvals[0]?.content?.overallScore?.percentage || 0;
+            const lastScore = sortedEvals[sortedEvals.length - 1]?.content?.overallScore?.percentage || 0;
+            const variation = lastScore - firstScore;
+            
+            // Get available domains
+            const availableDomains = sortedEvals[0]?.content?.domainScores?.map((d: any) => d.domain) || [];
+            
+            // Analyze areas
+            const areasAnalysis: { improved: any[], attention: any[] } = { improved: [], attention: [] };
+            if (sortedEvals.length >= 2) {
+              const firstEval = sortedEvals[0];
+              const lastEval = sortedEvals[sortedEvals.length - 1];
+              const firstDomains = firstEval.content?.domainScores || [];
+              const lastDomains = lastEval.content?.domainScores || [];
+              
+              lastDomains.forEach((lastDomain: any) => {
+                const firstDomain = firstDomains.find((d: any) => d.domain === lastDomain.domain);
+                if (firstDomain) {
+                  const domainVariation = (lastDomain.score || 0) - (firstDomain.score || 0);
+                  if (domainVariation > 5) {
+                    areasAnalysis.improved.push({
+                      domain: lastDomain.domain,
+                      firstScore: firstDomain.score || 0,
+                      lastScore: lastDomain.score || 0,
+                      variation: domainVariation
+                    });
+                  } else {
+                    areasAnalysis.attention.push({
+                      domain: lastDomain.domain,
+                      firstScore: firstDomain.score || 0,
+                      lastScore: lastDomain.score || 0,
+                      variation: domainVariation
+                    });
+                  }
+                }
+              });
+            }
 
-          return (
-            <>
-              {/* Evolution Timeline */}
-              <div style={{ 
-                ...cardLargeStyle, 
-                marginBottom: '24px',
-                pageBreakBefore: 'always'
-              }}>
-                <h3 style={{ 
-                  fontSize: '18px', 
-                  fontWeight: 600, 
-                  marginBottom: '8px', 
-                  color: '#1f2937' 
-                }}>
-                  Linha do Tempo de Evolução
-                </h3>
-                <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
-                  Progresso ao longo de {sortedEvals.length} avaliações
-                </p>
-                
-                {/* Progress Summary */}
+            return (
+              <>
+                {/* Evolution Timeline */}
                 <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-around', 
-                  padding: '16px', 
-                  backgroundColor: '#f0fdf4', 
-                  borderRadius: '8px',
-                  marginBottom: '16px'
+                  ...cardLargeStyle, 
+                  marginBottom: '24px',
+                  pageBreakBefore: 'always'
                 }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Primeira Avaliação</p>
-                    <p style={{ fontSize: '20px', fontWeight: 700, color: '#374151' }}>{firstScore}%</p>
-                    <p style={{ fontSize: '11px', color: '#9ca3af' }}>{format(new Date(sortedEvals[0].date), 'dd/MM/yyyy')}</p>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Última Avaliação</p>
-                    <p style={{ fontSize: '20px', fontWeight: 700, color: '#374151' }}>{lastScore}%</p>
-                    <p style={{ fontSize: '11px', color: '#9ca3af' }}>{format(new Date(sortedEvals[sortedEvals.length - 1].date), 'dd/MM/yyyy')}</p>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Variação Total</p>
-                    <p style={{ 
-                      fontSize: '20px', 
-                      fontWeight: 700, 
-                      color: variation > 0 ? '#10b981' : variation < 0 ? '#ef4444' : '#6b7280'
-                    }}>
-                      {variation > 0 ? '+' : ''}{variation.toFixed(1)}%
-                    </p>
-                    <p style={{ fontSize: '11px', color: '#9ca3af' }}>
-                      {variation > 0 ? '↑ Melhora' : variation < 0 ? '↓ Declínio' : '→ Estável'}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Line Chart */}
-                <div style={{ width: '100%', height: '250px' }}>
-                  <LineChart width={700} height={240} data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis 
-                      dataKey="date" 
-                      tick={{ fontSize: 11, fill: '#6b7280' }}
-                      tickLine={{ stroke: '#e5e7eb' }}
-                    />
-                    <YAxis 
-                      domain={[0, 100]} 
-                      tick={{ fontSize: 11, fill: '#6b7280' }}
-                      tickLine={{ stroke: '#e5e7eb' }}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#ffffff', 
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        fontSize: '12px'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="Score Global" 
-                      stroke="#3b82f6" 
-                      strokeWidth={3}
-                      dot={{ fill: '#3b82f6', strokeWidth: 2 }}
-                    />
-                    {availableDomains.map((domain: string) => (
-                      <Line 
-                        key={domain}
-                        type="monotone" 
-                        dataKey={domain} 
-                        stroke={DOMAIN_COLORS[domain] || '#888888'}
-                        strokeWidth={1.5}
-                        strokeDasharray="5 5"
-                        dot={{ fill: DOMAIN_COLORS[domain] || '#888888', r: 3 }}
-                      />
-                    ))}
-                  </LineChart>
-                </div>
-                
-                {/* Legend */}
-                <div style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '12px', 
-                  justifyContent: 'center',
-                  marginTop: '12px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ width: '20px', height: '3px', backgroundColor: '#3b82f6' }}></div>
-                    <span style={{ fontSize: '11px', color: '#374151' }}>Score Global</span>
-                  </div>
-                  {availableDomains.map((domain: string) => (
-                    <div key={domain} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <div style={{ 
-                        width: '20px', 
-                        height: '2px', 
-                        backgroundColor: DOMAIN_COLORS[domain] || '#888888',
-                        borderTop: '2px dashed ' + (DOMAIN_COLORS[domain] || '#888888')
-                      }}></div>
-                      <span style={{ fontSize: '11px', color: '#374151' }}>{domain}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Areas Analysis */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: '16px',
-                marginBottom: '24px'
-              }}>
-                {/* Improved Areas */}
-                <div style={{ 
-                  ...cardStyle, 
-                  backgroundColor: '#f0fdf4',
-                  border: '1px solid #bbf7d0'
-                }}>
-                  <h4 style={{ 
-                    fontSize: '16px', 
+                  <h3 style={{ 
+                    fontSize: '18px', 
                     fontWeight: 600, 
-                    color: '#166534',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
+                    marginBottom: '8px', 
+                    color: '#1f2937' 
                   }}>
-                    <span style={{ fontSize: '18px' }}>&#x2714;</span> Áreas que Melhoraram
-                  </h4>
-                  {areasAnalysis.improved.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {areasAnalysis.improved.map((area, idx) => (
-                        <div key={idx} style={{ 
-                          padding: '10px', 
-                          backgroundColor: '#dcfce7', 
-                          borderRadius: '6px'
-                        }}>
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            marginBottom: '4px'
+                    Linha do Tempo de Evolução
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
+                    Progresso ao longo de {sortedEvals.length} avaliações
+                  </p>
+                  
+                  {/* Progress Summary */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-around', 
+                    padding: '16px', 
+                    backgroundColor: '#f0fdf4', 
+                    borderRadius: '8px',
+                    marginBottom: '16px'
+                  }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ fontSize: '12px', color: '#6b7280' }}>Primeira Avaliação</p>
+                      <p style={{ fontSize: '20px', fontWeight: 700, color: '#374151' }}>{firstScore}%</p>
+                      <p style={{ fontSize: '11px', color: '#9ca3af' }}>{format(new Date(sortedEvals[0].date), 'dd/MM/yyyy')}</p>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ fontSize: '12px', color: '#6b7280' }}>Última Avaliação</p>
+                      <p style={{ fontSize: '20px', fontWeight: 700, color: '#374151' }}>{lastScore}%</p>
+                      <p style={{ fontSize: '11px', color: '#9ca3af' }}>{format(new Date(sortedEvals[sortedEvals.length - 1].date), 'dd/MM/yyyy')}</p>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ fontSize: '12px', color: '#6b7280' }}>Variação Total</p>
+                      <p style={{ 
+                        fontSize: '20px', 
+                        fontWeight: 700, 
+                        color: variation > 0 ? '#10b981' : variation < 0 ? '#ef4444' : '#6b7280'
+                      }}>
+                        {variation > 0 ? '+' : ''}{variation.toFixed(1)}%
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#9ca3af' }}>
+                        {variation > 0 ? '↑ Melhora' : variation < 0 ? '↓ Declínio' : '→ Estável'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Line Chart */}
+                  <div style={{ width: '100%', height: '250px' }}>
+                    <LineChart width={700} height={240} data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 11, fill: '#6b7280' }}
+                        tickLine={{ stroke: '#e5e7eb' }}
+                      />
+                      <YAxis 
+                        domain={[0, 100]} 
+                        tick={{ fontSize: 11, fill: '#6b7280' }}
+                        tickLine={{ stroke: '#e5e7eb' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#ffffff', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="Score Global" 
+                        stroke="#3b82f6" 
+                        strokeWidth={3}
+                        dot={{ fill: '#3b82f6', strokeWidth: 2 }}
+                      />
+                      {availableDomains.map((domain: string) => (
+                        <Line 
+                          key={domain}
+                          type="monotone" 
+                          dataKey={domain} 
+                          stroke={DOMAIN_COLORS[domain] || '#888888'}
+                          strokeWidth={1.5}
+                          strokeDasharray="5 5"
+                          dot={{ fill: DOMAIN_COLORS[domain] || '#888888', r: 3 }}
+                        />
+                      ))}
+                    </LineChart>
+                  </div>
+                  
+                  {/* Legend */}
+                  <div style={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: '12px', 
+                    justifyContent: 'center',
+                    marginTop: '12px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ width: '20px', height: '3px', backgroundColor: '#3b82f6' }}></div>
+                      <span style={{ fontSize: '11px', color: '#374151' }}>Score Global</span>
+                    </div>
+                    {availableDomains.map((domain: string) => (
+                      <div key={domain} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ 
+                          width: '20px', 
+                          height: '2px', 
+                          backgroundColor: DOMAIN_COLORS[domain] || '#888888',
+                          borderTop: '2px dashed ' + (DOMAIN_COLORS[domain] || '#888888')
+                        }}></div>
+                        <span style={{ fontSize: '11px', color: '#374151' }}>{domain}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Areas Analysis */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '1fr 1fr', 
+                  gap: '16px',
+                  marginBottom: '24px'
+                }}>
+                  {/* Improved Areas */}
+                  <div style={{ 
+                    ...cardStyle, 
+                    backgroundColor: '#f0fdf4',
+                    border: '1px solid #bbf7d0'
+                  }}>
+                    <h4 style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: '#166534',
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ fontSize: '18px' }}>&#x2714;</span> Áreas que Melhoraram
+                    </h4>
+                    {areasAnalysis.improved.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {areasAnalysis.improved.map((area, idx) => (
+                          <div key={idx} style={{ 
+                            padding: '10px', 
+                            backgroundColor: '#dcfce7', 
+                            borderRadius: '6px'
+                          }}>
+                            <div style={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              marginBottom: '4px'
+                            }}>
+                              <span style={{ 
+                                fontSize: '13px', 
+                                fontWeight: 600, 
+                                color: '#166534' 
+                              }}>{area.domain}</span>
+                              <span style={{ 
+                                fontSize: '12px', 
+                                fontWeight: 700, 
+                                color: '#15803d',
+                                backgroundColor: '#bbf7d0',
+                                padding: '2px 8px',
+                                borderRadius: '12px'
+                              }}>+{area.variation.toFixed(1)}%</span>
+                            </div>
+                            <p style={{ fontSize: '11px', color: '#4b5563' }}>
+                              {area.firstScore}% → {area.lastScore}%
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
+                        Nenhuma área com melhora significativa (&gt;5%)
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Attention Areas */}
+                  <div style={{ 
+                    ...cardStyle, 
+                    backgroundColor: '#fffbeb',
+                    border: '1px solid #fde68a'
+                  }}>
+                    <h4 style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: '#92400e',
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ fontSize: '18px' }}>&#x26A0;</span> Áreas que Precisam Atenção
+                    </h4>
+                    {areasAnalysis.attention.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {areasAnalysis.attention.map((area, idx) => (
+                          <div key={idx} style={{ 
+                            padding: '10px', 
+                            backgroundColor: area.variation < 0 ? '#fef2f2' : '#fef3c7', 
+                            borderRadius: '6px'
+                          }}>
+                            <div style={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              marginBottom: '4px'
+                            }}>
+                              <span style={{ 
+                                fontSize: '13px', 
+                                fontWeight: 600, 
+                                color: area.variation < 0 ? '#991b1b' : '#92400e'
+                              }}>{area.domain}</span>
+                              <span style={{ 
+                                fontSize: '12px', 
+                                fontWeight: 700, 
+                                color: area.variation < 0 ? '#dc2626' : '#d97706',
+                                backgroundColor: area.variation < 0 ? '#fecaca' : '#fde68a',
+                                padding: '2px 8px',
+                                borderRadius: '12px'
+                              }}>
+                                {area.variation > 0 ? '+' : ''}{area.variation.toFixed(1)}%
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '11px', color: '#4b5563' }}>
+                              {area.firstScore}% → {area.lastScore}%
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
+                        Todas as áreas apresentaram melhora significativa
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+              </>
+            );
+          } else {
+            // Single evaluation - Show Current Performance Profile + Areas by Score
+            const singleEval = allEvaluations[0];
+            const domainScores: any[] = singleEval?.content?.domainScores || [];
+            const currentScore = singleEval?.content?.overallScore?.percentage || 0;
+            
+            // Separate areas by score threshold
+            const strongAreas = domainScores.filter((d: any) => (d.score || 0) >= 60);
+            const priorityAreas = domainScores.filter((d: any) => (d.score || 0) < 60);
+            
+            // Sort by score
+            strongAreas.sort((a, b) => (b.score || 0) - (a.score || 0));
+            priorityAreas.sort((a, b) => (a.score || 0) - (b.score || 0));
+            
+            return (
+              <>
+                {/* Current Performance Profile */}
+                <div style={{ 
+                  ...cardLargeStyle, 
+                  marginBottom: '24px',
+                  pageBreakBefore: 'always'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '18px', 
+                    fontWeight: 600, 
+                    marginBottom: '8px', 
+                    color: '#1f2937' 
+                  }}>
+                    Perfil de Desempenho Atual
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
+                    Primeira avaliação do paciente - Score Global: <strong>{currentScore}%</strong>
+                  </p>
+                  
+                  {/* Horizontal Bar Chart by Domain */}
+                  <div style={{ width: '100%', height: '200px' }}>
+                    <BarChart
+                      layout="vertical"
+                      width={700}
+                      height={180}
+                      data={domainScores}
+                      margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 100]} 
+                        tick={{ fontSize: 11, fill: '#6b7280' }}
+                        tickFormatter={(value) => `${value}%`}
+                      />
+                      <YAxis 
+                        dataKey="domain" 
+                        type="category" 
+                        tick={{ fontSize: 12, fill: '#374151' }}
+                        width={90}
+                      />
+                      <Tooltip 
+                        formatter={(value: number) => [`${value}%`, 'Score']}
+                        contentStyle={{ 
+                          backgroundColor: '#ffffff', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Bar 
+                        dataKey="score" 
+                        radius={[0, 4, 4, 0]}
+                      >
+                        {domainScores.map((entry: any, index: number) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={DOMAIN_COLORS[entry.domain] || '#3b82f6'} 
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </div>
+                  
+                  <p style={{ 
+                    marginTop: '16px', 
+                    fontSize: '12px', 
+                    color: '#6b7280', 
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    padding: '12px',
+                    backgroundColor: '#f0f9ff',
+                    borderRadius: '6px'
+                  }}>
+                    ℹ️ A evolução temporal estará disponível após a próxima avaliação.
+                  </p>
+                </div>
+
+                {/* Areas by Absolute Score */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '1fr 1fr', 
+                  gap: '16px',
+                  marginBottom: '24px'
+                }}>
+                  {/* Strong Areas (≥60%) */}
+                  <div style={{ 
+                    ...cardStyle, 
+                    backgroundColor: '#f0fdf4',
+                    border: '1px solid #bbf7d0'
+                  }}>
+                    <h4 style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: '#166534',
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ fontSize: '18px' }}>&#x2B50;</span> Áreas de Destaque
+                    </h4>
+                    <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '10px' }}>
+                      Domínios com score ≥60%
+                    </p>
+                    {strongAreas.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {strongAreas.map((area: any, idx: number) => (
+                          <div key={idx} style={{ 
+                            padding: '10px', 
+                            backgroundColor: '#dcfce7', 
+                            borderRadius: '6px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                           }}>
                             <span style={{ 
                               fontSize: '13px', 
@@ -555,90 +779,81 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                               color: '#166534' 
                             }}>{area.domain}</span>
                             <span style={{ 
-                              fontSize: '12px', 
+                              fontSize: '14px', 
                               fontWeight: 700, 
                               color: '#15803d',
                               backgroundColor: '#bbf7d0',
-                              padding: '2px 8px',
+                              padding: '4px 10px',
                               borderRadius: '12px'
-                            }}>+{area.variation.toFixed(1)}%</span>
+                            }}>{area.score}%</span>
                           </div>
-                          <p style={{ fontSize: '11px', color: '#4b5563' }}>
-                            {area.firstScore}% → {area.lastScore}%
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
-                      Nenhuma área com melhora significativa (&gt;5%)
-                    </p>
-                  )}
-                </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
+                        Nenhum domínio com score ≥60%
+                      </p>
+                    )}
+                  </div>
 
-                {/* Attention Areas */}
-                <div style={{ 
-                  ...cardStyle, 
-                  backgroundColor: '#fffbeb',
-                  border: '1px solid #fde68a'
-                }}>
-                  <h4 style={{ 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    color: '#92400e',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
+                  {/* Priority Areas (<60%) */}
+                  <div style={{ 
+                    ...cardStyle, 
+                    backgroundColor: '#fffbeb',
+                    border: '1px solid #fde68a'
                   }}>
-                    <span style={{ fontSize: '18px' }}>&#x26A0;</span> Áreas que Precisam Atenção
-                  </h4>
-                  {areasAnalysis.attention.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {areasAnalysis.attention.map((area, idx) => (
-                        <div key={idx} style={{ 
-                          padding: '10px', 
-                          backgroundColor: area.variation < 0 ? '#fef2f2' : '#fef3c7', 
-                          borderRadius: '6px'
-                        }}>
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            marginBottom: '4px'
+                    <h4 style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: '#92400e',
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ fontSize: '18px' }}>&#x1F3AF;</span> Áreas Prioritárias
+                    </h4>
+                    <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '10px' }}>
+                      Domínios com score &lt;60% (foco terapêutico)
+                    </p>
+                    {priorityAreas.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {priorityAreas.map((area: any, idx: number) => (
+                          <div key={idx} style={{ 
+                            padding: '10px', 
+                            backgroundColor: (area.score || 0) < 40 ? '#fef2f2' : '#fef3c7', 
+                            borderRadius: '6px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                           }}>
                             <span style={{ 
                               fontSize: '13px', 
                               fontWeight: 600, 
-                              color: area.variation < 0 ? '#991b1b' : '#92400e'
+                              color: (area.score || 0) < 40 ? '#991b1b' : '#92400e'
                             }}>{area.domain}</span>
                             <span style={{ 
-                              fontSize: '12px', 
+                              fontSize: '14px', 
                               fontWeight: 700, 
-                              color: area.variation < 0 ? '#dc2626' : '#d97706',
-                              backgroundColor: area.variation < 0 ? '#fecaca' : '#fde68a',
-                              padding: '2px 8px',
+                              color: (area.score || 0) < 40 ? '#dc2626' : '#d97706',
+                              backgroundColor: (area.score || 0) < 40 ? '#fecaca' : '#fde68a',
+                              padding: '4px 10px',
                               borderRadius: '12px'
-                            }}>
-                              {area.variation > 0 ? '+' : ''}{area.variation.toFixed(1)}%
-                            </span>
+                            }}>{area.score}%</span>
                           </div>
-                          <p style={{ fontSize: '11px', color: '#4b5563' }}>
-                            {area.firstScore}% → {area.lastScore}%
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
-                      Todas as áreas apresentaram melhora significativa
-                    </p>
-                  )}
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
+                        Todos os domínios estão acima de 60%
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-            </>
-          );
+              </>
+            );
+          }
         })()}
 
         {/* Therapeutic Suggestions Section - Works with 1+ evaluations */}
