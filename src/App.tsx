@@ -151,6 +151,8 @@ const App = () => {
             <Route path="intervention" element={<Intervention />} />
             <Route path="intervention-plans" element={<InterventionPlans />} />
             <Route path="evaluation" element={<Evaluation />} />
+            <Route path="evaluation/article" element={<EvaluationArticle />} />
+            <Route path="evaluation/tea-article" element={<TeaArticle />} />
             <Route path="reevaluation" element={<Reevaluation />} />
             <Route path="finance" element={<Finance />} />
             <Route path="finance/records" element={<FinanceRecords />} />
