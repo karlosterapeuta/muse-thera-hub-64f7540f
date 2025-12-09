@@ -13,16 +13,29 @@ const updateSW = registerSW({
   onRegisteredSW(swUrl, registration) {
     console.log('[PWA] SW registrado:', swUrl);
     if (registration) {
-      // Verificar atualizações a cada 60 segundos
+      // Verificar atualizações a cada 30 segundos
       setInterval(() => {
-        console.log('[PWA] Verificando atualizações...');
+        console.log('[PWA] Verificando atualizações (intervalo)...');
         registration.update();
-      }, 60 * 1000);
+      }, 30 * 1000);
+
+      // Verificar quando usuário volta ao app (tab visible)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('[PWA] Verificando atualizações (visibility)...');
+          registration.update();
+        }
+      });
+
+      // Verificar ao focar na janela
+      window.addEventListener('focus', () => {
+        console.log('[PWA] Verificando atualizações (focus)...');
+        registration.update();
+      });
     }
   },
   onNeedRefresh() {
     console.log('[PWA] Nova versão disponível, atualizando...');
-    // Força ativação do novo SW e recarrega
     updateSW(true);
   },
   onOfflineReady() {
