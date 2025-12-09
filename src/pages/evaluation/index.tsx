@@ -49,12 +49,12 @@ import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useEvaluationPDF } from "@/hooks/useEvaluationPDF";
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { useEvaluationStorage, SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { EvaluationHistory } from "@/pages/processes/evaluation/components/EvaluationHistory";
-import { EvaluationComparison } from "@/pages/processes/evaluation/components/EvaluationComparison";
-import { PatientEvaluationCards, PatientWithEvaluations } from "@/pages/processes/evaluation/components/PatientEvaluationCards";
-import { EvolutionTimeline } from "@/pages/processes/evaluation/components/EvolutionTimeline";
-import { AreasAnalysis } from "@/pages/processes/evaluation/components/AreasAnalysis";
-import { TherapeuticSuggestions } from "@/pages/processes/evaluation/components/TherapeuticSuggestions";
+import { EvaluationHistory } from "./components/EvaluationHistory";
+import { EvaluationComparison } from "./components/EvaluationComparison";
+import { PatientEvaluationCards, PatientWithEvaluations } from "./components/PatientEvaluationCards";
+import { EvolutionTimeline } from "./components/EvolutionTimeline";
+import { AreasAnalysis } from "./components/AreasAnalysis";
+import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 
 interface Patient {
   id: string;

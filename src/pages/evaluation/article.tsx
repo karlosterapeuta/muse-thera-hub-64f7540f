@@ -21,7 +21,7 @@ export default function EvaluationArticle() {
               </p>
             </div>
             <Button variant="outline" asChild>
-              <Link to="/processes/evaluation">
+              <Link to="/evaluation">
                 Ir para Avaliação
               </Link>
             </Button>
@@ -584,7 +584,7 @@ export default function EvaluationArticle() {
             </p>
             <div className="mt-6 flex justify-center">
               <Button asChild>
-                <Link to="/processes/evaluation">
+                <Link to="/evaluation">
                   Experimente a Avaliação
                 </Link>
               </Button>

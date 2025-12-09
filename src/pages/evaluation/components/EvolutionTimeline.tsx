@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { TrendingUp, TrendingDown, Minus, LineChart as LineChartIcon } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { calculateTrend } from "../utils/suggestionEngine";
+import { calculateTrend } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface EvolutionTimelineProps {
   evaluations: SavedEvaluation[];
